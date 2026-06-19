@@ -7,3 +7,4 @@
 | 编号 | 标题 | 状态 | 日期 |
 | --- | --- | --- | --- |
 | [ADR-0001](0001-codegen-from-typetree-dumps.md) | 基于 TypeTreeDumps 的离线代码生成构建类型化 Rust 结构与 Parser | Proposed | 2026-06-19 |
+| [ADR-0002](0002-python-bindings-pyo3-inheritance-projection.md) | Python 绑定采用 pyo3 + 继承投影 codegen，类型来源限定 tpk 与 AB typetree | Proposed | 2026-06-20 |
