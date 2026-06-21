@@ -1,0 +1,30 @@
+pub use bytes::Bytes;
+pub use bundle::{Bundle, BundleFile};
+pub use decompress::{CompressionType, Decompressor, IdentityDecompressor, Lz4Decompressor, Registry};
+pub use error::{Error, Result};
+
+mod bundle;
+pub mod decompress;
+mod error;
+
+/// 从文件路径加载 UnityFS bundle。
+pub fn load(path: impl AsRef<std::path::Path>) -> Result<Bundle> {
+    load_with(path, &Registry::defaults())
+}
+
+/// 用自定义解压器注册表加载。
+pub fn load_with(path: impl AsRef<std::path::Path>, registry: &Registry) -> Result<Bundle> {
+    let path = path.as_ref();
+    let bytes = std::fs::read(path).map_err(|e| Error::Io { source: e })?;
+    load_bytes_with(Bytes::from(bytes), registry)
+}
+
+/// 从内存字节加载 UnityFS bundle。
+pub fn load_bytes(src: Bytes) -> Result<Bundle> {
+    load_bytes_with(src, &Registry::defaults())
+}
+
+/// 用自定义解压器注册表从内存字节加载。
+pub fn load_bytes_with(src: Bytes, registry: &Registry) -> Result<Bundle> {
+    bundle::parse(src, registry)
+}
