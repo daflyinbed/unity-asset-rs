@@ -1,0 +1,37 @@
+//! 自动生成。请勿手动修改。
+
+#[derive(Debug, Clone)]
+pub struct ArticulationDrive {
+    pub lower_limit: f32,
+    pub upper_limit: f32,
+    pub stiffness: f32,
+    pub damping: f32,
+    pub force_limit: f32,
+    pub target: f32,
+    pub target_velocity: f32,
+}
+
+impl crate::Parse for ArticulationDrive {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        let lower_limit = r.read_f32()?;
+        let upper_limit = r.read_f32()?;
+        let stiffness = r.read_f32()?;
+        let damping = r.read_f32()?;
+        let force_limit = r.read_f32()?;
+        let target = r.read_f32()?;
+        let target_velocity = r.read_f32()?;
+
+        Ok(ArticulationDrive {
+            lower_limit,
+            upper_limit,
+            stiffness,
+            damping,
+            force_limit,
+            target,
+            target_velocity,
+        })
+    }
+}

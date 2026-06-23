@@ -565,17 +565,32 @@ for obj in &world.objects {
 |---|---|---|---|
 | `crates/unity-asset` | **io + core 合一**：文件加载 + 对象解析 + `World` | `io` 模块（`Loader`/`Tree`/`SerializedFileMeta`/`Decompressor`，`pub(crate)`）<br>`core` 模块（`World`/`UnityObject`/parser，对外 `pub`） | `bytes`、`memmap2`、`lzma-rs`、`lz4_flex`、`crates/generated` |
 | `crates/generated` | **只装 codegen 产出的 Rust 代码**，独立编译缓存 | `UnityObject` enum、各 class 的 `struct` + `parse`（~2 万行，提交进仓库） | 无（纯生成代码） |
-| `crates/codegen` | **codegen CLI**：读 TPK → 生成 Rust（写 `crates/generated/src/`）+ `.pyi`（写 `crates/pyo3/pyi/`） | 独立 bin | TPK |
-| `crates/pyo3` | Python 绑定（ADR-0002） | pyclass + 继承投影 + `.pyi` | `crates/unity-asset`、`pyo3` |
+| `crates/codegen` | **库维护者 CLI**：TPK → Rust（写 `crates/generated/src/`）。只读 TPK，生成 struct + `parse` impl，不接触任何 .ab | 独立 bin | TPK |
+| `crates/pyo3` | Python 绑定（ADR-0002）；含 **下游开发者 `gen_pyi` 子模块**：TPK + .ab → `.pyi`（为具体项目的 MonoBehaviour 脚本生成存根） | pyclass + 继承投影；`gen_pyi` 加载 .ab 抽取 MonoScript | `crates/unity-asset`、`pyo3`；`gen_pyi` 可能额外需要 il2cpp/dotnet 元数据 |
 
 **为什么 io 和 core 合一**：`Tree` 是 parse 管线的内部中间状态，不暴露给终端用户；分两个 crate 会强制把 `Tree`/`SerializedFileMeta` 设成跨 crate `pub`，反而泄露内部类型。合并后它们是 `pub(crate)`，io→core 在同一 crate 内交接，零泄露。终端用户只看到 `crates/unity-asset` 的公共 API（§5）。
 
-**为什么 codegen 拆成两个 crate（CLI + 产物）**：
+**为什么 `generated` 与 codegen CLI 分离**：
 - `crates/generated` 只含生成代码、无逻辑，**独立编译一次后 cargo 缓存其 artifact**。改 `crates/unity-asset` 的手写代码时不必重编这 ~2 万行生成代码——这是拆分的核心收益。
 - `crates/codegen` 是离线工具（读 TPK、跑生成），**不参与主 crate 的依赖图**——TPK 升级或生成逻辑改动时手动/CI 跑一次，把产物提交进 `crates/generated`。它失败或改动不阻塞 `crates/unity-asset` 的构建。
 - `crates/unity-asset` 通过 `crates/generated` 依赖拿到 `UnityObject` 等类型，无运行时对 codegen CLI 的依赖。
 
-生成流程：`crates/codegen`（CLI）→ 写 `crates/generated/src/`（Rust）+ `crates/pyo3/pyi/`（.pyi）→ 提交 → `crates/unity-asset` 与 `crates/pyo3` 消费。
+**为什么 Rust codegen（`crates/codegen`）与 pyi codegen（`crates/pyo3::gen_pyi`）不在同一个 crate**：两者都"读 TPK"，但复用率低（真正语言无关的核心——TPK 加载 + 节点遍历 + 拓扑排序——约 150 行，其余各异），且关键维度的分歧足以抵消合并收益：
+
+| 维度 | `crates/codegen`（Rust） | `crates/pyo3::gen_pyi`（.pyi） |
+|---|---|---|
+| 输入 | **仅 TPK** | **TPK + .ab**（.ab 提供 MonoBehaviour 脚本信息，TPK 不含） |
+| 输出语义 | 可执行解析代码（struct + `impl parse`，字节级读取） | 纯声明式类型存根（仅字段名 + Python 类型，不执行） |
+| IR 颗粒度 | 每版本字节级布局（byte_size / align / 版本条件分支） | 逻辑字段（名 + 类型 + optional/required） |
+| 依赖 | 轻（仅需 TPK 解析） | 重（需 `crates/unity-asset` 加载 .ab；MonoBehaviour 字段还要 il2cpp/dotnet 元数据） |
+| 触发频率 | TPK 升级时（季度级，库维护者） | 每个项目一次（下游开发者） |
+| 产物去向 | 提交进 `crates/generated/` | 跟随 Python 包，或用户现场生成 |
+
+合并会让 Rust 生成器被迫拉进整套 `unity-asset` io/parse 依赖（它完全不需要 .ab），还会形成 `codegen → unity-asset → generated` 的循环嫌疑；两个 IR 颗粒度差太大，强行共用要么对 pyi 过度规格化、要么对 Rust 信息不足。TPK 加载逻辑本身 `unity-asset` 运行时也要用（TPK 兜底解析），各生成器直接复用即可，不必再抽独立的共享 crate。
+
+生成流程：
+- **Rust**：`crates/codegen`（CLI）读 TPK → 写 `crates/generated/src/` → 提交 → `crates/unity-asset` 消费。
+- **.pyi**：`crates/pyo3::gen_pyi` 读 TPK + 用户提供的 .ab → 写 `.pyi`（随 Python 包发布或用户现场生成）→ 下游类型检查器消费。
 
 ---
 

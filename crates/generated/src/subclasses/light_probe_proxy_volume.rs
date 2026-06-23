@@ -1,0 +1,65 @@
+//! 自动生成。请勿手动修改。
+
+use crate::PPtr;
+use crate::subclasses::vector3f::Vector3f;
+
+#[derive(Debug, Clone)]
+pub struct LightProbeProxyVolume {
+    pub m_object_hide_flags: u32,
+    pub m_prefab_parent_object: PPtr,
+    pub m_prefab_internal: PPtr,
+    pub m_game_object: PPtr,
+    pub m_enabled: u8,
+    pub m_bounding_box_mode: i32,
+    pub m_resolution_x: u32,
+    pub m_resolution_y: u32,
+    pub m_resolution_z: u32,
+    pub m_resolution_probes_per_unit: f32,
+    pub m_bounding_box_size: Vector3f,
+    pub m_bounding_box_origin: Vector3f,
+    pub m_resolution_mode: i32,
+    pub m_probe_position_mode: i32,
+    pub m_refresh_mode: i32,
+}
+
+impl crate::Parse for LightProbeProxyVolume {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        let m_object_hide_flags = r.read_u32()?;
+        let m_prefab_parent_object = crate::PPtr::parse(r, ver)?;
+        let m_prefab_internal = crate::PPtr::parse(r, ver)?;
+        let m_game_object = crate::PPtr::parse(r, ver)?;
+        let m_enabled = r.read_u8()?;
+        r.align(4)?;
+        let m_bounding_box_mode = r.read_i32()?;
+        let m_resolution_x = r.read_u32()?;
+        let m_resolution_y = r.read_u32()?;
+        let m_resolution_z = r.read_u32()?;
+        let m_resolution_probes_per_unit = r.read_f32()?;
+        let m_bounding_box_size = Vector3f::parse(r, ver)?;
+        let m_bounding_box_origin = Vector3f::parse(r, ver)?;
+        let m_resolution_mode = r.read_i32()?;
+        let m_probe_position_mode = r.read_i32()?;
+        let m_refresh_mode = r.read_i32()?;
+
+        Ok(LightProbeProxyVolume {
+            m_object_hide_flags,
+            m_prefab_parent_object,
+            m_prefab_internal,
+            m_game_object,
+            m_enabled,
+            m_bounding_box_mode,
+            m_resolution_x,
+            m_resolution_y,
+            m_resolution_z,
+            m_resolution_probes_per_unit,
+            m_bounding_box_size,
+            m_bounding_box_origin,
+            m_resolution_mode,
+            m_probe_position_mode,
+            m_refresh_mode,
+        })
+    }
+}

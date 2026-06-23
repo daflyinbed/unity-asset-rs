@@ -1,0 +1,23 @@
+//! 自动生成。请勿手动修改。
+
+#[derive(Debug, Clone)]
+pub struct BuildTargetDefaultTextureCompressionFormat {
+    pub m_build_target: String,
+    pub m_format: i32,
+}
+
+impl crate::Parse for BuildTargetDefaultTextureCompressionFormat {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        let m_build_target = r.read_aligned_string()?;
+        r.align(4)?;
+        let m_format = r.read_i32()?;
+
+        Ok(BuildTargetDefaultTextureCompressionFormat {
+            m_build_target,
+            m_format,
+        })
+    }
+}
