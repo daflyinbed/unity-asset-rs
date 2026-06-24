@@ -1,5 +1,6 @@
 use bytes::Bytes;
 
+use crate::cursor::{Cursor, Endian};
 use crate::decompress::{CompressionType, Registry};
 use crate::error::{
     BadSignatureSnafu, DecompressSnafu, Result, TruncatedSnafu, UnsupportedCompressionSnafu,
@@ -51,61 +52,9 @@ pub struct BundleFile {
     pub flags: u32,
 }
 
-/// 大端游标读取器（带边界检查）。
-struct Cursor<'a> {
-    buf: &'a [u8],
-    pos: usize,
-}
 
-impl<'a> Cursor<'a> {
-    fn new(buf: &'a [u8]) -> Self {
-        Self { buf, pos: 0 }
-    }
 
-    fn remaining(&self) -> usize {
-        self.buf.len() - self.pos
-    }
 
-    fn need(&self, n: usize, what: &'static str) -> Result<()> {
-        if self.remaining() < n {
-            return Err(TruncatedSnafu { reason: what }.build());
-        }
-        Ok(())
-    }
-
-    fn take(&mut self, n: usize, what: &'static str) -> Result<&'a [u8]> {
-        self.need(n, what)?;
-        let s = &self.buf[self.pos..self.pos + n];
-        self.pos += n;
-        Ok(s)
-    }
-
-    fn read_u16(&mut self, what: &'static str) -> Result<u16> {
-        Ok(u16::from_be_bytes(self.take(2, what)?.try_into().unwrap()))
-    }
-
-    fn read_u32(&mut self, what: &'static str) -> Result<u32> {
-        Ok(u32::from_be_bytes(self.take(4, what)?.try_into().unwrap()))
-    }
-
-    fn read_i64(&mut self, what: &'static str) -> Result<i64> {
-        Ok(i64::from_be_bytes(self.take(8, what)?.try_into().unwrap()))
-    }
-
-    /// 读到第一个 0x00 为止（不含终止符）。
-    fn read_cstr(&mut self, what: &'static str) -> Result<String> {
-        let start = self.pos;
-        let end = self.buf[start..]
-            .iter()
-            .position(|&b| b == 0)
-            .ok_or_else(|| TruncatedSnafu { reason: what }.build())?;
-        let s = std::str::from_utf8(&self.buf[start..start + end])
-            .map_err(|e| DecompressSnafu { reason: format!("非 UTF-8 字符串: {e}") }.build())?
-            .to_owned();
-        self.pos = start + end + 1;
-        Ok(s)
-    }
-}
 
 fn align_up(pos: usize, alignment: usize) -> usize {
     let r = pos % alignment;
@@ -122,7 +71,7 @@ fn align_up(pos: usize, alignment: usize) -> usize {
 pub fn parse(src: Bytes, registry: &Registry) -> Result<Bundle> {
     let total = src.len();
 
-    let mut c = Cursor::new(&src);
+    let mut c = Cursor::new(&src, Endian::Big);
 
     let signature = c.read_cstr("signature")?;
     if signature != "UnityFS" {
@@ -144,7 +93,7 @@ pub fn parse(src: Bytes, registry: &Registry) -> Result<Bundle> {
     let uncompressed_blocks_info_size = c.read_u32("uncompressed blocks info size")? as usize;
     let archive_flags = c.read_u32("archive flags")?;
 
-    let header_end = c.pos;
+    let header_end = c.pos();
 
     log::debug!(
         "header: signature={signature} format_version={format_version} \
@@ -171,7 +120,7 @@ pub fn parse(src: Bytes, registry: &Registry) -> Result<Bundle> {
             .checked_sub(compressed_blocks_info_size)
             .ok_or_else(|| {
                 TruncatedSnafu {
-                    reason: "blocks-info 末尾偏移越界",
+                    reason: "blocks-info 末尾偏移越界".to_string(),
                 }
                 .build()
             })?
@@ -181,7 +130,7 @@ pub fn parse(src: Bytes, registry: &Registry) -> Result<Bundle> {
 
     if bi_start + compressed_blocks_info_size > total {
         return Err(TruncatedSnafu {
-            reason: "blocks-info 压缩块越界",
+            reason: "blocks-info 压缩块越界".to_string(),
         }
         .build());
     }
@@ -198,7 +147,7 @@ pub fn parse(src: Bytes, registry: &Registry) -> Result<Bundle> {
         .get(bi_ct)?
         .decompress(bi_compressed, uncompressed_blocks_info_size)?;
 
-    let mut bi = Cursor::new(&bi_bytes);
+    let mut bi = Cursor::new(&bi_bytes, Endian::Big);
     bi.take(16, "uncompressed data hash")?; // 16 字节 hash，忽略
 
     let block_count = bi.read_u32("block count")?;
@@ -267,7 +216,7 @@ pub fn parse(src: Bytes, registry: &Registry) -> Result<Bundle> {
         let comp_len = blk.compressed_size as usize;
         if data_pos + comp_len > total {
             return Err(TruncatedSnafu {
-                reason: "block 数据越界",
+                reason: "block 数据越界".to_string(),
             }
             .build());
         }
@@ -297,7 +246,7 @@ pub fn parse(src: Bytes, registry: &Registry) -> Result<Bundle> {
         let sz = nd.size as usize;
         if off + sz > blob_bytes.len() {
             return Err(TruncatedSnafu {
-                reason: "node 切片越界",
+                reason: "node 切片越界".to_string(),
             }
             .build());
         }

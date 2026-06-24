@@ -7,7 +7,7 @@ pub enum Error {
     Io { source: std::io::Error },
 
     #[snafu(display("data truncated: {reason}"))]
-    Truncated { reason: &'static str },
+    Truncated { reason: String },
 
     #[snafu(display("bad signature: {sig:?} (expected \"UnityFS\")"))]
     BadSignature { sig: String },
@@ -23,6 +23,24 @@ pub enum Error {
 
     #[snafu(display("lz4 decompress failed: expected {expected} bytes, got {actual}"))]
     Lz4SizeMismatch { expected: usize, actual: usize },
+
+    #[snafu(display("serialized file error: {reason}"))]
+    SerializedFile { reason: String },
+
+    #[snafu(display("typetree: expected to read {expected} bytes, got {actual}"))]
+    TypeTreeSizeMismatch { expected: usize, actual: usize },
+
+    #[snafu(display("typetree: negative array length {len}"))]
+    NegativeArrayLen { len: i32 },
+
+    #[snafu(display("referenced type not found: {class} {ns} {asm}"))]
+    RefTypeNotFound { class: String, ns: String, asm: String },
+
+    #[snafu(display("empty type tree"))]
+    EmptyTypeTree,
+
+    #[snafu(display("typetree error: {reason}"))]
+    TypeTree { reason: String },
 }
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;

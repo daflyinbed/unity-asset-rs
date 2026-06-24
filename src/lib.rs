@@ -1,11 +1,19 @@
 pub use bytes::Bytes;
 pub use bundle::{Bundle, BundleFile};
+pub use cursor::{Cursor, Endian};
 pub use decompress::{CompressionType, Decompressor, IdentityDecompressor, Lz4Decompressor, Registry};
 pub use error::{Error, Result};
+pub use serialized_file::{ObjectInfo, SerializedFile, SerializedType};
+pub use typetree::{build_tree, interpret, parse_blob, BlobNode, PPtrValue, RefTypeTable, TypeKind, TypeNode, Value};
+pub use version::UnityVersion;
 
 mod bundle;
+mod cursor;
 pub mod decompress;
 mod error;
+mod serialized_file;
+mod typetree;
+mod version;
 
 /// 从文件路径加载 UnityFS bundle。
 pub fn load(path: impl AsRef<std::path::Path>) -> Result<Bundle> {
