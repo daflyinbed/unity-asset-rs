@@ -8,11 +8,9 @@ use crate::subclasses::tile::Tile;
 use crate::subclasses::tile_animation_data::TileAnimationData;
 use crate::subclasses::tilemap_ref_counted_data::TilemapRefCountedData;
 use crate::subclasses::vector3f::Vector3f;
-use super::grid_layout::GridLayout;
 
 #[derive(Debug, Clone)]
 pub struct Tilemap {
-    pub parent: GridLayout,
     pub m_game_object: PPtr,
     pub m_enabled: u8,
     pub m_tiles: Vec<(int3_storage, Tile)>,
@@ -36,7 +34,6 @@ impl crate::Parse for Tilemap {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = GridLayout::parse(r, ver)?;
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_enabled = r.read_u8()?;
         r.align(4)?;
@@ -68,7 +65,6 @@ impl crate::Parse for Tilemap {
         let m_tile_orientation_matrix = Matrix4x4f::parse(r, ver)?;
 
         Ok(Tilemap {
-            parent,
             m_game_object,
             m_enabled,
             m_tiles,

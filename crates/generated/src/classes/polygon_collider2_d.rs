@@ -5,18 +5,9 @@ use crate::subclasses::bit_field::BitField;
 use crate::subclasses::polygon2_d::Polygon2D;
 use crate::subclasses::sprite_tiling_property::SpriteTilingProperty;
 use crate::subclasses::vector2f::Vector2f;
-use super::collider2_d::Collider2D;
-use super::polygon_collider_base2_d::PolygonColliderBase2D;
-
-#[derive(Debug, Clone)]
-pub enum PolygonCollider2DParent {
-    PolygonColliderBase2D(PolygonColliderBase2D),
-    Collider2D(Collider2D),
-}
 
 #[derive(Debug, Clone)]
 pub struct PolygonCollider2D {
-    pub parent: PolygonCollider2DParent,
     pub m_game_object: PPtr,
     pub m_enabled: u8,
     pub m_material: PPtr,
@@ -46,13 +37,6 @@ impl crate::Parse for PolygonCollider2D {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            PolygonCollider2DParent::PolygonColliderBase2D(PolygonColliderBase2D::parse(r, ver)?)
-        } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            PolygonCollider2DParent::Collider2D(Collider2D::parse(r, ver)?)
-        } else {
-            panic!("无匹配的父类分支：version = {:?}", ver)
-        };
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_enabled = r.read_u8()?;
         r.align(4)?;
@@ -63,7 +47,6 @@ impl crate::Parse for PolygonCollider2D {
             None
         };
         let m_is_trigger = r.read_bool()?;
-        r.align(4)?;
         let m_poly = if *ver >= crate::UnityVersion::new(4, 3, 0) {
             Some(Polygon2D::parse(r, ver)?)
         } else {
@@ -92,7 +75,9 @@ impl crate::Parse for PolygonCollider2D {
             None
         };
         let m_points = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(Polygon2D::parse(r, ver)?)
+            let v = Polygon2D::parse(r, ver)?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
@@ -161,7 +146,6 @@ impl crate::Parse for PolygonCollider2D {
         };
 
         Ok(PolygonCollider2D {
-            parent,
             m_game_object,
             m_enabled,
             m_material,

@@ -3,15 +3,13 @@
 use crate::PPtr;
 use crate::subclasses::build_texture_stack_reference::BuildTextureStackReference;
 use crate::subclasses::unity_property_sheet::UnityPropertySheet;
-use super::named_object::NamedObject;
 
 #[derive(Debug, Clone)]
 pub struct Material {
-    pub parent: NamedObject,
     pub m_name: String,
     pub m_shader: PPtr,
     pub m_saved_properties: UnityPropertySheet,
-    pub m_shader_keywords: Option<Vec<String>>,
+    pub m_shader_keywords: Option<String>,
     pub m_valid_keywords: Option<Vec<String>>,
     pub m_custom_render_queue: Option<i32>,
     pub m_lightmap_flags: Option<u32>,
@@ -28,14 +26,13 @@ impl crate::Parse for Material {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = NamedObject::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_shader = crate::PPtr::parse(r, ver)?;
         let m_saved_properties = UnityPropertySheet::parse(r, ver)?;
         r.align(4)?;
         let m_shader_keywords = if *ver >= crate::UnityVersion::new(4, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = r.read_aligned_string()?;
             r.align(4)?;
             Some(v)
         } else {
@@ -66,9 +63,7 @@ impl crate::Parse for Material {
             None
         };
         let m_enable_instancing_variants = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
@@ -102,7 +97,6 @@ impl crate::Parse for Material {
         };
 
         Ok(Material {
-            parent,
             m_name,
             m_shader,
             m_saved_properties,

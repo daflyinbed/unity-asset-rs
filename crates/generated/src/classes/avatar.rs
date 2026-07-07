@@ -2,11 +2,9 @@
 
 use crate::subclasses::avatar_constant::AvatarConstant;
 use crate::subclasses::human_description::HumanDescription;
-use super::named_object::NamedObject;
 
 #[derive(Debug, Clone)]
 pub struct Avatar {
-    pub parent: NamedObject,
     pub m_name: String,
     pub m_avatar_size: u32,
     pub m_avatar: AvatarConstant,
@@ -19,7 +17,6 @@ impl crate::Parse for Avatar {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = NamedObject::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_avatar_size = r.read_u32()?;
@@ -36,7 +33,6 @@ impl crate::Parse for Avatar {
         };
 
         Ok(Avatar {
-            parent,
             m_name,
             m_avatar_size,
             m_avatar,

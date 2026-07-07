@@ -5,11 +5,9 @@ use crate::subclasses::bit_field::BitField;
 use crate::subclasses::color_rgba::ColorRgba;
 use crate::subclasses::rectf::Rectf;
 use crate::subclasses::vector2f::Vector2f;
-use super::camera::Camera;
 
 #[derive(Debug, Clone)]
 pub struct ScriptableCamera {
-    pub parent: Camera,
     pub m_game_object: PPtr,
     pub m_enabled: u8,
     pub m_clear_flags: u32,
@@ -46,7 +44,6 @@ impl crate::Parse for ScriptableCamera {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Camera::parse(r, ver)?;
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_enabled = r.read_u8()?;
         r.align(4)?;
@@ -82,7 +79,6 @@ impl crate::Parse for ScriptableCamera {
         let m_script = crate::PPtr::parse(r, ver)?;
 
         Ok(ScriptableCamera {
-            parent,
             m_game_object,
             m_enabled,
             m_clear_flags,

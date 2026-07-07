@@ -2,11 +2,9 @@
 
 use crate::PPtr;
 use crate::subclasses::extension_property_value::ExtensionPropertyValue;
-use super::audio_behaviour::AudioBehaviour;
 
 #[derive(Debug, Clone)]
 pub struct AudioListener {
-    pub parent: AudioBehaviour,
     pub m_game_object: PPtr,
     pub m_enabled: u8,
     pub m_extension_property_values: Option<Vec<ExtensionPropertyValue>>,
@@ -17,7 +15,6 @@ impl crate::Parse for AudioListener {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = AudioBehaviour::parse(r, ver)?;
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_enabled = r.read_u8()?;
         r.align(4)?;
@@ -30,7 +27,6 @@ impl crate::Parse for AudioListener {
         };
 
         Ok(AudioListener {
-            parent,
             m_game_object,
             m_enabled,
             m_extension_property_values,

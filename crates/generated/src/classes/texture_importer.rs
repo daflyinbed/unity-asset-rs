@@ -4,20 +4,18 @@ use crate::PPtr;
 use crate::subclasses::build_target_settings::BuildTargetSettings;
 use crate::subclasses::gl_texture_settings::GlTextureSettings;
 use crate::subclasses::md_four::MdFour;
-use crate::subclasses::platform_settings::PlatformSettings;
 use crate::subclasses::source_asset_identifier::SourceAssetIdentifier;
 use crate::subclasses::source_texture_information::SourceTextureInformation;
 use crate::subclasses::sprite_sheet_meta_data::SpriteSheetMetaData;
 use crate::subclasses::texture_import_output::TextureImportOutput;
+use crate::subclasses::texture_importer_platform_settings::TextureImporterPlatformSettings;
 use crate::subclasses::vector2f::Vector2f;
 use crate::subclasses::vector4f::Vector4f;
-use super::asset_importer::AssetImporter;
 
 #[derive(Debug, Clone)]
 pub struct TextureImporter {
-    pub parent: AssetImporter,
     pub m_name: String,
-    pub m_file_id_to_recycle_name: Option<Vec<(i32, String)>>,
+    pub m_file_id_to_recycle_name: Option<Vec<(i64, String)>>,
     pub m_mip_map_mode: i32,
     pub m_internal_id_to_name_table: Option<Vec<((i32, i64), String)>>,
     pub m_old_hash_identity: Option<MdFour>,
@@ -83,7 +81,7 @@ pub struct TextureImporter {
     pub m_max_texture_size_set: Option<i32>,
     pub m_compression_quality_set: Option<i32>,
     pub m_texture_format_set: Option<i32>,
-    pub m_platform_settings: Option<Vec<PlatformSettings>>,
+    pub m_platform_settings: Option<Vec<TextureImporterPlatformSettings>>,
     pub m_single_channel_component: Option<i32>,
     pub m_asset_bundle_name: Option<String>,
     pub m_asset_bundle_variant: Option<String>,
@@ -91,7 +89,7 @@ pub struct TextureImporter {
     pub m_push_pull_dilation: Option<i32>,
     pub m_flipbook_columns: Option<i32>,
     pub m_apply_gamma_decoding: Option<i32>,
-    pub m_ignore_png_gamma: Option<bool>,
+    pub m_ignore_png_gamma: Option<i32>,
     pub m_psd_remove_matte: Option<bool>,
     pub m_psd_show_remove_matte_option: Option<bool>,
     pub m_cookie_light_type: Option<i32>,
@@ -104,428 +102,971 @@ impl crate::Parse for TextureImporter {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = AssetImporter::parse(r, ver)?;
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_file_id_to_recycle_name = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i32()?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        let mut m_name = None;
+        let mut m_file_id_to_recycle_name = None;
+        let mut m_mip_map_mode = None;
+        let mut m_internal_id_to_name_table = None;
+        let mut m_old_hash_identity = None;
+        let mut m_enable_mip_map = None;
+        let mut m_external_objects = None;
+        let mut m_new_hash_identity = None;
+        let mut m_linear_texture = None;
+        let mut m_used_file_i_ds = None;
+        let mut correct_gamma = None;
+        let mut m_s_rgb_texture = None;
+        let mut m_fade_out = None;
+        let mut m_correct_gamma = None;
+        let mut m_border_mip_map = None;
+        let mut m_mip_map_fade_distance_start = None;
+        let mut m_mip_map_fade_distance_end = None;
+        let mut m_mip_maps_preserve_coverage = None;
+        let mut m_convert_to_normal_map = None;
+        let mut m_alpha_test_reference_value = None;
+        let mut m_external_normal_map = None;
+        let mut m_height_scale = None;
+        let mut m_normal_map_filter = None;
+        let mut m_is_readable = None;
+        let mut m_gray_scale_to_alpha = None;
+        let mut m_generate_cubemap = None;
+        let mut m_texture_format = None;
+        let mut m_seamless_cubemap = None;
+        let mut m_max_texture_size = None;
+        let mut m_cubemap_convolution = None;
+        let mut m_texture_settings = None;
+        let mut m_cubemap_convolution_steps = None;
+        let mut m_streaming_mipmaps = None;
+        let mut m_flip_green_channel = None;
+        let mut m_npot_scale = None;
+        let mut m_cubemap_convolution_exponent = None;
+        let mut m_streaming_mipmaps_priority = None;
+        let mut m_lightmap = None;
+        let mut m_compression_quality = None;
+        let mut m_vt_only = None;
+        let mut m_texture_type = None;
+        let mut m_ignore_master_texture_limit = None;
+        let mut m_recommended_texture_format = None;
+        let mut m_alpha_is_transparency = None;
+        let mut m_sprite_mode = None;
+        let mut m_ignore_mipmap_limit = None;
+        let mut m_source_texture_information = None;
+        let mut m_build_target_settings = None;
+        let mut m_sprite_extrude = None;
+        let mut m_output = None;
+        let mut m_sprite_mesh_type = None;
+        let mut m_user_data = None;
+        let mut m_alignment = None;
+        let mut m_rgbm = None;
+        let mut m_sprite_pivot = None;
+        let mut m_sprite_pixels_to_units = None;
+        let mut m_sprite_border = None;
+        let mut m_allows_alpha_splitting = None;
+        let mut m_sprite_sheet = None;
+        let mut m_alpha_usage = None;
+        let mut m_sprite_packing_tag = None;
+        let mut m_sprite_tessellation_detail = None;
+        let mut m_sprite_generate_fallback_physics_shape = None;
+        let mut m_texture_shape = None;
+        let mut m_max_texture_size_set = None;
+        let mut m_compression_quality_set = None;
+        let mut m_texture_format_set = None;
+        let mut m_platform_settings = None;
+        let mut m_single_channel_component = None;
+        let mut m_asset_bundle_name = None;
+        let mut m_asset_bundle_variant = None;
+        let mut m_flipbook_rows = None;
+        let mut m_push_pull_dilation = None;
+        let mut m_flipbook_columns = None;
+        let mut m_apply_gamma_decoding = None;
+        let mut m_ignore_png_gamma = None;
+        let mut m_psd_remove_matte = None;
+        let mut m_psd_show_remove_matte_option = None;
+        let mut m_cookie_light_type = None;
+        let mut m_swizzle = None;
+        let mut m_mipmap_limit_group_name = None;
+            m_name = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_mip_map_mode = r.read_i32()?;
-        let m_internal_id_to_name_table = if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = ( { let a = r.read_i32()?; let b = r.read_i64()?; Ok((a, b)) } )?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        if *ver >= crate::UnityVersion::new(2019, 1, 0) {
+            m_internal_id_to_name_table = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = ( { let a = r.read_i32()?; let b = r.read_i64()?; Ok((a, b)) } )?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_old_hash_identity = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = MdFour::parse(r, ver)?;
+            m_external_objects = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(r, ver)?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_enable_mip_map = r.read_i32()?;
-        let m_external_objects = if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(r, ver)?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            m_used_file_i_ds = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_new_hash_identity = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = MdFour::parse(r, ver)?;
+        } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
+            m_file_id_to_recycle_name = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i64()?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_linear_texture = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_used_file_i_ds = if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i64() }).collect::<Result<Vec<_>, _>>() } )?;
+            m_external_objects = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(r, ver)?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let correct_gamma = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_s_rgb_texture = if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_fade_out = r.read_i32()?;
-        let m_correct_gamma = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_border_mip_map = r.read_i32()?;
-        let m_mip_map_fade_distance_start = r.read_i32()?;
-        let m_mip_map_fade_distance_end = r.read_i32()?;
-        let m_mip_maps_preserve_coverage = if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_convert_to_normal_map = r.read_i32()?;
-        let m_alpha_test_reference_value = if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
-        let m_external_normal_map = r.read_i32()?;
-        let m_height_scale = r.read_f32()?;
-        let m_normal_map_filter = r.read_i32()?;
-        let m_is_readable = r.read_i32()?;
-        r.align(4)?;
-        let m_gray_scale_to_alpha = r.read_i32()?;
-        r.align(4)?;
-        let m_generate_cubemap = r.read_i32()?;
-        let m_texture_format = r.read_i32()?;
-        r.align(4)?;
-        let m_seamless_cubemap = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_max_texture_size = r.read_i32()?;
-        let m_cubemap_convolution = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_texture_settings = GlTextureSettings::parse(r, ver)?;
-        let m_cubemap_convolution_steps = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_streaming_mipmaps = if *ver >= crate::UnityVersion::new(2018, 2, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_flip_green_channel = if *ver >= crate::UnityVersion::new(2022, 1, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_npot_scale = r.read_i32()?;
-        let m_cubemap_convolution_exponent = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
-        let m_streaming_mipmaps_priority = if *ver >= crate::UnityVersion::new(2018, 2, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_lightmap = r.read_i32()?;
-        let m_compression_quality = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_vt_only = if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_texture_type = r.read_i32()?;
-        let m_ignore_master_texture_limit = if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_recommended_texture_format = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_alpha_is_transparency = if *ver >= crate::UnityVersion::new(4, 2, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_sprite_mode = if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_ignore_mipmap_limit = if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_source_texture_information = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = SourceTextureInformation::parse(r, ver)?;
+        } else if *ver >= crate::UnityVersion::new(4, 5, 2) {
+            m_file_id_to_recycle_name = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i64()?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
+        } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
         } else {
-            None
-        };
-        let m_build_target_settings = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { BuildTargetSettings::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            m_file_id_to_recycle_name = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i64()?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_sprite_extrude = if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            Some(r.read_u32()?)
-        } else {
-            None
-        };
-        let m_output = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            let v = TextureImportOutput::parse(r, ver)?;
+            m_old_hash_identity = Some(MdFour::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_sprite_mesh_type = if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_user_data = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            let v = r.read_aligned_string()?;
+            m_new_hash_identity = Some(MdFour::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
+        }
+            m_mip_map_mode = Some(r.read_i32()?);
+            m_enable_mip_map = Some(r.read_i32()?);
+        if *ver >= crate::UnityVersion::new(5, 5, 0) {
+            m_s_rgb_texture = Some(r.read_i32()?);
+            m_linear_texture = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
+            m_linear_texture = Some(r.read_i32()?);
+            correct_gamma = Some(r.read_i32()?);
         } else {
-            None
-        };
-        let m_alignment = if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            Some(r.read_i32()?)
+            m_correct_gamma = Some(r.read_i32()?);
+        }
+            m_fade_out = Some(r.read_i32()?);
+            m_border_mip_map = Some(r.read_i32()?);
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            m_mip_maps_preserve_coverage = Some(r.read_i32()?);
+            m_alpha_test_reference_value = Some(r.read_f32()?);
         } else {
-            None
-        };
-        let m_rgbm = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_i32()?)
+        }
+            m_mip_map_fade_distance_start = Some(r.read_i32()?);
+            m_mip_map_fade_distance_end = Some(r.read_i32()?);
+            m_convert_to_normal_map = Some(r.read_i32()?);
+            m_external_normal_map = Some(r.read_i32()?);
+        if *ver >= crate::UnityVersion::new(3, 5, 0) {
         } else {
-            None
-        };
-        let m_sprite_pivot = if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            Some(Vector2f::parse(r, ver)?)
+            m_is_readable = Some(r.read_i32()?);
+        }
+            m_height_scale = Some(r.read_f32()?);
+            m_normal_map_filter = Some(r.read_i32()?);
+        if *ver >= crate::UnityVersion::new(2023, 1, 0) {
+            m_flip_green_channel = Some(r.read_i32()?);
+            m_is_readable = Some(r.read_i32()?);
+            m_streaming_mipmaps = Some(r.read_i32()?);
+            m_streaming_mipmaps_priority = Some(r.read_i32()?);
+            m_vt_only = Some(r.read_i32()?);
+            m_ignore_mipmap_limit = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2023, 1, 0) {
+            m_flip_green_channel = Some(r.read_i32()?);
+            m_is_readable = Some(r.read_i32()?);
+            m_streaming_mipmaps = Some(r.read_i32()?);
+            m_streaming_mipmaps_priority = Some(r.read_i32()?);
+            m_vt_only = Some(r.read_i32()?);
+            m_ignore_master_texture_limit = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            m_flip_green_channel = Some(r.read_i32()?);
+            m_is_readable = Some(r.read_i32()?);
+            m_streaming_mipmaps = Some(r.read_i32()?);
+            m_streaming_mipmaps_priority = Some(r.read_i32()?);
+            m_vt_only = Some(r.read_i32()?);
+            m_ignore_mipmap_limit = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
+            m_flip_green_channel = Some(r.read_i32()?);
+            m_is_readable = Some(r.read_i32()?);
+            m_streaming_mipmaps = Some(r.read_i32()?);
+            m_streaming_mipmaps_priority = Some(r.read_i32()?);
+            m_vt_only = Some(r.read_i32()?);
+            m_ignore_master_texture_limit = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
+            m_is_readable = Some(r.read_i32()?);
+            m_streaming_mipmaps = Some(r.read_i32()?);
+            m_streaming_mipmaps_priority = Some(r.read_i32()?);
+            m_vt_only = Some(r.read_i32()?);
+            m_ignore_master_texture_limit = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
+            m_is_readable = Some(r.read_i32()?);
+            m_streaming_mipmaps = Some(r.read_i32()?);
+            m_streaming_mipmaps_priority = Some(r.read_i32()?);
+            m_vt_only = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2018, 2, 0) {
+            m_is_readable = Some(r.read_i32()?);
+            m_streaming_mipmaps = Some(r.read_i32()?);
+            m_streaming_mipmaps_priority = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
+            m_is_readable = Some(r.read_i32()?);
         } else {
-            None
-        };
-        let m_sprite_pixels_to_units = if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            Some(r.read_f32()?)
+        }
+            m_gray_scale_to_alpha = Some(r.read_i32()?);
+            m_generate_cubemap = Some(r.read_i32()?);
+        if *ver >= crate::UnityVersion::new(5, 5, 0) {
+            m_cubemap_convolution = Some(r.read_i32()?);
+            m_seamless_cubemap = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            m_cubemap_convolution = Some(r.read_i32()?);
+            m_cubemap_convolution_steps = Some(r.read_i32()?);
+            m_cubemap_convolution_exponent = Some(r.read_f32()?);
+            m_seamless_cubemap = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
+            m_seamless_cubemap = Some(r.read_i32()?);
         } else {
-            None
-        };
-        let m_sprite_border = if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            Some(Vector4f::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_allows_alpha_splitting = if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            let v = r.read_i32()?;
+        }
+            m_texture_format = Some(r.read_i32()?);
+            m_max_texture_size = Some(r.read_i32()?);
+            m_texture_settings = Some(GlTextureSettings::parse(r, ver)?);
+            m_npot_scale = Some(r.read_i32()?);
+            m_lightmap = Some(r.read_i32()?);
+        if *ver >= crate::UnityVersion::new(2018, 1, 0) {
+            m_compression_quality = Some(r.read_i32()?);
+            m_sprite_mode = Some(r.read_i32()?);
+            m_sprite_extrude = Some(r.read_u32()?);
+            m_sprite_mesh_type = Some(r.read_i32()?);
+            m_alignment = Some(r.read_i32()?);
+            m_sprite_pivot = Some(Vector2f::parse(r, ver)?);
+            m_sprite_pixels_to_units = Some(r.read_f32()?);
+            m_sprite_border = Some(Vector4f::parse(r, ver)?);
+            m_sprite_generate_fallback_physics_shape = Some(r.read_i32()?);
+            m_alpha_usage = Some(r.read_i32()?);
+            m_alpha_is_transparency = Some(r.read_i32()?);
+            m_sprite_tessellation_detail = Some(r.read_f32()?);
+        } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
+            m_compression_quality = Some(r.read_i32()?);
+            m_sprite_mode = Some(r.read_i32()?);
+            m_sprite_extrude = Some(r.read_u32()?);
+            m_sprite_mesh_type = Some(r.read_i32()?);
+            m_alignment = Some(r.read_i32()?);
+            m_sprite_pivot = Some(Vector2f::parse(r, ver)?);
+            m_sprite_border = Some(Vector4f::parse(r, ver)?);
+            m_sprite_pixels_to_units = Some(r.read_f32()?);
+            m_alpha_usage = Some(r.read_i32()?);
+            m_alpha_is_transparency = Some(r.read_i32()?);
+            m_sprite_tessellation_detail = Some(r.read_f32()?);
+        } else if *ver >= crate::UnityVersion::new(2017, 3, 1) {
+            m_compression_quality = Some(r.read_i32()?);
+            m_sprite_mode = Some(r.read_i32()?);
+            m_sprite_extrude = Some(r.read_u32()?);
+            m_sprite_mesh_type = Some(r.read_i32()?);
+            m_alignment = Some(r.read_i32()?);
+            m_sprite_pivot = Some(Vector2f::parse(r, ver)?);
+            m_sprite_pixels_to_units = Some(r.read_f32()?);
+            m_sprite_border = Some(Vector4f::parse(r, ver)?);
+            m_sprite_generate_fallback_physics_shape = Some(r.read_i32()?);
+            m_alpha_usage = Some(r.read_i32()?);
+            m_alpha_is_transparency = Some(r.read_i32()?);
+            m_sprite_tessellation_detail = Some(r.read_f32()?);
+        } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
+            m_compression_quality = Some(r.read_i32()?);
+            m_sprite_mode = Some(r.read_i32()?);
+            m_sprite_extrude = Some(r.read_u32()?);
+            m_sprite_mesh_type = Some(r.read_i32()?);
+            m_alignment = Some(r.read_i32()?);
+            m_sprite_pivot = Some(Vector2f::parse(r, ver)?);
+            m_sprite_border = Some(Vector4f::parse(r, ver)?);
+            m_sprite_pixels_to_units = Some(r.read_f32()?);
+            m_alpha_usage = Some(r.read_i32()?);
+            m_alpha_is_transparency = Some(r.read_i32()?);
+            m_sprite_tessellation_detail = Some(r.read_f32()?);
+        } else if *ver >= crate::UnityVersion::new(5, 4, 4) {
+            m_rgbm = Some(r.read_i32()?);
+            m_compression_quality = Some(r.read_i32()?);
+            m_sprite_mode = Some(r.read_i32()?);
+            m_sprite_extrude = Some(r.read_u32()?);
+            m_sprite_mesh_type = Some(r.read_i32()?);
+            m_alignment = Some(r.read_i32()?);
+            m_sprite_pivot = Some(Vector2f::parse(r, ver)?);
+            m_sprite_border = Some(Vector4f::parse(r, ver)?);
+            m_sprite_pixels_to_units = Some(r.read_f32()?);
+            m_alpha_is_transparency = Some(r.read_i32()?);
+            m_sprite_tessellation_detail = Some(r.read_f32()?);
+        } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
+            m_rgbm = Some(r.read_i32()?);
+            m_compression_quality = Some(r.read_i32()?);
+            m_allows_alpha_splitting = Some(r.read_i32()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_sprite_sheet = if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            let v = SpriteSheetMetaData::parse(r, ver)?;
+            m_sprite_mode = Some(r.read_i32()?);
+            m_sprite_extrude = Some(r.read_u32()?);
+            m_sprite_mesh_type = Some(r.read_i32()?);
+            m_alignment = Some(r.read_i32()?);
+            m_sprite_pivot = Some(Vector2f::parse(r, ver)?);
+            m_sprite_border = Some(Vector4f::parse(r, ver)?);
+            m_sprite_pixels_to_units = Some(r.read_f32()?);
+            m_alpha_is_transparency = Some(r.read_i32()?);
+            m_sprite_tessellation_detail = Some(r.read_f32()?);
+        } else if *ver >= crate::UnityVersion::new(5, 3, 8) {
+            m_rgbm = Some(r.read_i32()?);
+            m_compression_quality = Some(r.read_i32()?);
+            m_sprite_mode = Some(r.read_i32()?);
+            m_sprite_extrude = Some(r.read_u32()?);
+            m_sprite_mesh_type = Some(r.read_i32()?);
+            m_alignment = Some(r.read_i32()?);
+            m_sprite_pivot = Some(Vector2f::parse(r, ver)?);
+            m_sprite_border = Some(Vector4f::parse(r, ver)?);
+            m_sprite_pixels_to_units = Some(r.read_f32()?);
+            m_alpha_is_transparency = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(5, 2, 0) {
+            m_rgbm = Some(r.read_i32()?);
+            m_compression_quality = Some(r.read_i32()?);
+            m_allows_alpha_splitting = Some(r.read_i32()?);
             r.align(4)?;
-            Some(v)
+            m_sprite_mode = Some(r.read_i32()?);
+            m_sprite_extrude = Some(r.read_u32()?);
+            m_sprite_mesh_type = Some(r.read_i32()?);
+            m_alignment = Some(r.read_i32()?);
+            m_sprite_pivot = Some(Vector2f::parse(r, ver)?);
+            m_sprite_border = Some(Vector4f::parse(r, ver)?);
+            m_sprite_pixels_to_units = Some(r.read_f32()?);
+            m_alpha_is_transparency = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            m_rgbm = Some(r.read_i32()?);
+            m_compression_quality = Some(r.read_i32()?);
+            m_sprite_mode = Some(r.read_i32()?);
+            m_sprite_extrude = Some(r.read_u32()?);
+            m_sprite_mesh_type = Some(r.read_i32()?);
+            m_alignment = Some(r.read_i32()?);
+            m_sprite_pivot = Some(Vector2f::parse(r, ver)?);
+            m_sprite_border = Some(Vector4f::parse(r, ver)?);
+            m_sprite_pixels_to_units = Some(r.read_f32()?);
+            m_alpha_is_transparency = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(4, 5, 0) {
+            m_compression_quality = Some(r.read_i32()?);
+            m_sprite_mode = Some(r.read_i32()?);
+            m_sprite_extrude = Some(r.read_u32()?);
+            m_sprite_mesh_type = Some(r.read_i32()?);
+            m_alignment = Some(r.read_i32()?);
+            m_sprite_pivot = Some(Vector2f::parse(r, ver)?);
+            m_sprite_border = Some(Vector4f::parse(r, ver)?);
+            m_sprite_pixels_to_units = Some(r.read_f32()?);
+            m_alpha_is_transparency = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
+            m_compression_quality = Some(r.read_i32()?);
+            m_sprite_mode = Some(r.read_i32()?);
+            m_sprite_extrude = Some(r.read_u32()?);
+            m_sprite_mesh_type = Some(r.read_i32()?);
+            m_alignment = Some(r.read_i32()?);
+            m_sprite_pivot = Some(Vector2f::parse(r, ver)?);
+            m_sprite_pixels_to_units = Some(r.read_f32()?);
+            m_alpha_is_transparency = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(4, 2, 0) {
+            m_compression_quality = Some(r.read_i32()?);
+            m_alpha_is_transparency = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
+            m_compression_quality = Some(r.read_i32()?);
         } else {
-            None
-        };
-        let m_alpha_usage = if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_sprite_packing_tag = if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            let v = r.read_aligned_string()?;
+        }
+            m_texture_type = Some(r.read_i32()?);
+        if *ver >= crate::UnityVersion::new(2023, 1, 0) {
+            m_texture_shape = Some(r.read_i32()?);
+            m_single_channel_component = Some(r.read_i32()?);
+            m_flipbook_rows = Some(r.read_i32()?);
+            m_flipbook_columns = Some(r.read_i32()?);
+            m_max_texture_size_set = Some(r.read_i32()?);
+            m_compression_quality_set = Some(r.read_i32()?);
+            m_texture_format_set = Some(r.read_i32()?);
+            m_ignore_png_gamma = Some(r.read_i32()?);
+            m_apply_gamma_decoding = Some(r.read_i32()?);
+            m_swizzle = Some(r.read_u32()?);
+            m_cookie_light_type = Some(r.read_i32()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_sprite_tessellation_detail = if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
-        let m_sprite_generate_fallback_physics_shape = if *ver >= crate::UnityVersion::new(2017, 3, 1) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_texture_shape = if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_max_texture_size_set = if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_compression_quality_set = if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_texture_format_set = if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = r.read_i32()?;
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { TextureImporterPlatformSettings::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_platform_settings = if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { PlatformSettings::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            m_sprite_sheet = Some(SpriteSheetMetaData::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_single_channel_component = if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_asset_bundle_name = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_aligned_string()?;
+            m_mipmap_limit_group_name = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_asset_bundle_variant = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_aligned_string()?;
+            m_output = Some(TextureImportOutput::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_flipbook_rows = if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_push_pull_dilation = if *ver >= crate::UnityVersion::new(2018, 2, 0) {
-            let v = r.read_i32()?;
+            m_psd_remove_matte = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_flipbook_columns = if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_apply_gamma_decoding = if *ver >= crate::UnityVersion::new(2019, 3, 6) {
-            let v = r.read_i32()?;
+            m_user_data = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_ignore_png_gamma = if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            let v = r.read_bool()?;
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_psd_remove_matte = if *ver >= crate::UnityVersion::new(2018, 2, 1) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_psd_show_remove_matte_option = if *ver >= crate::UnityVersion::new(2018, 2, 1) {
-            let v = r.read_bool()?;
+            m_asset_bundle_variant = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_cookie_light_type = if *ver >= crate::UnityVersion::new(2020, 3, 38) {
-            let v = r.read_i32()?;
+        } else if *ver >= crate::UnityVersion::new(2023, 1, 0) {
+            m_texture_shape = Some(r.read_i32()?);
+            m_single_channel_component = Some(r.read_i32()?);
+            m_flipbook_rows = Some(r.read_i32()?);
+            m_flipbook_columns = Some(r.read_i32()?);
+            m_max_texture_size_set = Some(r.read_i32()?);
+            m_compression_quality_set = Some(r.read_i32()?);
+            m_texture_format_set = Some(r.read_i32()?);
+            m_ignore_png_gamma = Some(r.read_i32()?);
+            m_apply_gamma_decoding = Some(r.read_i32()?);
+            m_swizzle = Some(r.read_u32()?);
+            m_cookie_light_type = Some(r.read_i32()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_swizzle = if *ver >= crate::UnityVersion::new(2022, 1, 0) {
-            let v = r.read_u32()?;
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { TextureImporterPlatformSettings::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_mipmap_limit_group_name = if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            let v = r.read_aligned_string()?;
+            m_sprite_sheet = Some(SpriteSheetMetaData::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
+            m_output = Some(TextureImportOutput::parse(r, ver)?);
+            r.align(4)?;
+            m_psd_remove_matte = Some(r.read_bool()?);
+            r.align(4)?;
+            m_user_data = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_variant = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2023, 1, 0) {
+            m_texture_shape = Some(r.read_i32()?);
+            m_single_channel_component = Some(r.read_i32()?);
+            m_flipbook_rows = Some(r.read_i32()?);
+            m_flipbook_columns = Some(r.read_i32()?);
+            m_max_texture_size_set = Some(r.read_i32()?);
+            m_compression_quality_set = Some(r.read_i32()?);
+            m_texture_format_set = Some(r.read_i32()?);
+            m_ignore_png_gamma = Some(r.read_i32()?);
+            m_apply_gamma_decoding = Some(r.read_i32()?);
+            m_swizzle = Some(r.read_u32()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { TextureImporterPlatformSettings::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_sprite_sheet = Some(SpriteSheetMetaData::parse(r, ver)?);
+            r.align(4)?;
+            m_output = Some(TextureImportOutput::parse(r, ver)?);
+            r.align(4)?;
+            m_psd_remove_matte = Some(r.read_bool()?);
+            r.align(4)?;
+            m_user_data = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_variant = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            m_texture_shape = Some(r.read_i32()?);
+            m_single_channel_component = Some(r.read_i32()?);
+            m_flipbook_rows = Some(r.read_i32()?);
+            m_flipbook_columns = Some(r.read_i32()?);
+            m_max_texture_size_set = Some(r.read_i32()?);
+            m_compression_quality_set = Some(r.read_i32()?);
+            m_texture_format_set = Some(r.read_i32()?);
+            m_ignore_png_gamma = Some(r.read_i32()?);
+            m_apply_gamma_decoding = Some(r.read_i32()?);
+            m_swizzle = Some(r.read_u32()?);
+            m_cookie_light_type = Some(r.read_i32()?);
+            r.align(4)?;
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { TextureImporterPlatformSettings::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_sprite_sheet = Some(SpriteSheetMetaData::parse(r, ver)?);
+            r.align(4)?;
+            m_mipmap_limit_group_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_output = Some(TextureImportOutput::parse(r, ver)?);
+            r.align(4)?;
+            m_psd_remove_matte = Some(r.read_bool()?);
+            r.align(4)?;
+            m_user_data = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_variant = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            m_texture_shape = Some(r.read_i32()?);
+            m_single_channel_component = Some(r.read_i32()?);
+            m_flipbook_rows = Some(r.read_i32()?);
+            m_flipbook_columns = Some(r.read_i32()?);
+            m_max_texture_size_set = Some(r.read_i32()?);
+            m_compression_quality_set = Some(r.read_i32()?);
+            m_texture_format_set = Some(r.read_i32()?);
+            m_ignore_png_gamma = Some(r.read_i32()?);
+            m_apply_gamma_decoding = Some(r.read_i32()?);
+            m_swizzle = Some(r.read_u32()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { TextureImporterPlatformSettings::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_sprite_sheet = Some(SpriteSheetMetaData::parse(r, ver)?);
+            r.align(4)?;
+            m_mipmap_limit_group_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_output = Some(TextureImportOutput::parse(r, ver)?);
+            r.align(4)?;
+            m_psd_remove_matte = Some(r.read_bool()?);
+            r.align(4)?;
+            m_user_data = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_variant = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            m_texture_shape = Some(r.read_i32()?);
+            m_single_channel_component = Some(r.read_i32()?);
+            m_flipbook_rows = Some(r.read_i32()?);
+            m_flipbook_columns = Some(r.read_i32()?);
+            m_max_texture_size_set = Some(r.read_i32()?);
+            m_compression_quality_set = Some(r.read_i32()?);
+            m_texture_format_set = Some(r.read_i32()?);
+            m_ignore_png_gamma = Some(r.read_i32()?);
+            m_apply_gamma_decoding = Some(r.read_i32()?);
+            m_swizzle = Some(r.read_u32()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { TextureImporterPlatformSettings::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_sprite_sheet = Some(SpriteSheetMetaData::parse(r, ver)?);
+            r.align(4)?;
+            m_output = Some(TextureImportOutput::parse(r, ver)?);
+            r.align(4)?;
+            m_psd_remove_matte = Some(r.read_bool()?);
+            r.align(4)?;
+            m_user_data = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_variant = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2022, 1, 13) {
+            m_texture_shape = Some(r.read_i32()?);
+            m_single_channel_component = Some(r.read_i32()?);
+            m_flipbook_rows = Some(r.read_i32()?);
+            m_flipbook_columns = Some(r.read_i32()?);
+            m_max_texture_size_set = Some(r.read_i32()?);
+            m_compression_quality_set = Some(r.read_i32()?);
+            m_texture_format_set = Some(r.read_i32()?);
+            m_ignore_png_gamma = Some(r.read_i32()?);
+            m_apply_gamma_decoding = Some(r.read_i32()?);
+            m_swizzle = Some(r.read_u32()?);
+            m_cookie_light_type = Some(r.read_i32()?);
+            r.align(4)?;
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { TextureImporterPlatformSettings::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_sprite_sheet = Some(SpriteSheetMetaData::parse(r, ver)?);
+            r.align(4)?;
+            m_sprite_packing_tag = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_output = Some(TextureImportOutput::parse(r, ver)?);
+            r.align(4)?;
+            m_psd_remove_matte = Some(r.read_bool()?);
+            r.align(4)?;
+            m_user_data = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_variant = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
+            m_texture_shape = Some(r.read_i32()?);
+            m_single_channel_component = Some(r.read_i32()?);
+            m_flipbook_rows = Some(r.read_i32()?);
+            m_flipbook_columns = Some(r.read_i32()?);
+            m_max_texture_size_set = Some(r.read_i32()?);
+            m_compression_quality_set = Some(r.read_i32()?);
+            m_texture_format_set = Some(r.read_i32()?);
+            m_ignore_png_gamma = Some(r.read_i32()?);
+            m_apply_gamma_decoding = Some(r.read_i32()?);
+            m_swizzle = Some(r.read_u32()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { TextureImporterPlatformSettings::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_sprite_sheet = Some(SpriteSheetMetaData::parse(r, ver)?);
+            r.align(4)?;
+            m_sprite_packing_tag = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_output = Some(TextureImportOutput::parse(r, ver)?);
+            r.align(4)?;
+            m_psd_remove_matte = Some(r.read_bool()?);
+            r.align(4)?;
+            m_user_data = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_variant = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
+            m_texture_shape = Some(r.read_i32()?);
+            m_single_channel_component = Some(r.read_i32()?);
+            m_flipbook_rows = Some(r.read_i32()?);
+            m_flipbook_columns = Some(r.read_i32()?);
+            m_max_texture_size_set = Some(r.read_i32()?);
+            m_compression_quality_set = Some(r.read_i32()?);
+            m_texture_format_set = Some(r.read_i32()?);
+            m_ignore_png_gamma = Some(r.read_i32()?);
+            m_apply_gamma_decoding = Some(r.read_i32()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { TextureImporterPlatformSettings::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_sprite_sheet = Some(SpriteSheetMetaData::parse(r, ver)?);
+            r.align(4)?;
+            m_sprite_packing_tag = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_output = Some(TextureImportOutput::parse(r, ver)?);
+            r.align(4)?;
+            m_psd_remove_matte = Some(r.read_bool()?);
+            r.align(4)?;
+            m_psd_show_remove_matte_option = Some(r.read_bool()?);
+            r.align(4)?;
+            m_user_data = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_variant = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2021, 3, 9) {
+            m_texture_shape = Some(r.read_i32()?);
+            m_single_channel_component = Some(r.read_i32()?);
+            m_flipbook_rows = Some(r.read_i32()?);
+            m_flipbook_columns = Some(r.read_i32()?);
+            m_max_texture_size_set = Some(r.read_i32()?);
+            m_compression_quality_set = Some(r.read_i32()?);
+            m_texture_format_set = Some(r.read_i32()?);
+            m_ignore_png_gamma = Some(r.read_i32()?);
+            m_apply_gamma_decoding = Some(r.read_i32()?);
+            m_cookie_light_type = Some(r.read_i32()?);
+            r.align(4)?;
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { TextureImporterPlatformSettings::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_sprite_sheet = Some(SpriteSheetMetaData::parse(r, ver)?);
+            r.align(4)?;
+            m_sprite_packing_tag = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_output = Some(TextureImportOutput::parse(r, ver)?);
+            r.align(4)?;
+            m_psd_remove_matte = Some(r.read_bool()?);
+            r.align(4)?;
+            m_psd_show_remove_matte_option = Some(r.read_bool()?);
+            r.align(4)?;
+            m_user_data = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_variant = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2021, 1, 0) {
+            m_texture_shape = Some(r.read_i32()?);
+            m_single_channel_component = Some(r.read_i32()?);
+            m_flipbook_rows = Some(r.read_i32()?);
+            m_flipbook_columns = Some(r.read_i32()?);
+            m_max_texture_size_set = Some(r.read_i32()?);
+            m_compression_quality_set = Some(r.read_i32()?);
+            m_texture_format_set = Some(r.read_i32()?);
+            m_ignore_png_gamma = Some(r.read_i32()?);
+            m_apply_gamma_decoding = Some(r.read_i32()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { TextureImporterPlatformSettings::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_sprite_sheet = Some(SpriteSheetMetaData::parse(r, ver)?);
+            r.align(4)?;
+            m_sprite_packing_tag = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_output = Some(TextureImportOutput::parse(r, ver)?);
+            r.align(4)?;
+            m_psd_remove_matte = Some(r.read_bool()?);
+            r.align(4)?;
+            m_psd_show_remove_matte_option = Some(r.read_bool()?);
+            r.align(4)?;
+            m_user_data = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_variant = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2020, 3, 38) {
+            m_texture_shape = Some(r.read_i32()?);
+            m_single_channel_component = Some(r.read_i32()?);
+            m_flipbook_rows = Some(r.read_i32()?);
+            m_flipbook_columns = Some(r.read_i32()?);
+            m_max_texture_size_set = Some(r.read_i32()?);
+            m_compression_quality_set = Some(r.read_i32()?);
+            m_texture_format_set = Some(r.read_i32()?);
+            m_ignore_png_gamma = Some(r.read_i32()?);
+            m_apply_gamma_decoding = Some(r.read_i32()?);
+            m_cookie_light_type = Some(r.read_i32()?);
+            r.align(4)?;
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { TextureImporterPlatformSettings::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_sprite_sheet = Some(SpriteSheetMetaData::parse(r, ver)?);
+            r.align(4)?;
+            m_sprite_packing_tag = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_output = Some(TextureImportOutput::parse(r, ver)?);
+            r.align(4)?;
+            m_psd_remove_matte = Some(r.read_bool()?);
+            r.align(4)?;
+            m_psd_show_remove_matte_option = Some(r.read_bool()?);
+            r.align(4)?;
+            m_user_data = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_variant = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
+            m_texture_shape = Some(r.read_i32()?);
+            m_single_channel_component = Some(r.read_i32()?);
+            m_flipbook_rows = Some(r.read_i32()?);
+            m_flipbook_columns = Some(r.read_i32()?);
+            m_max_texture_size_set = Some(r.read_i32()?);
+            m_compression_quality_set = Some(r.read_i32()?);
+            m_texture_format_set = Some(r.read_i32()?);
+            m_ignore_png_gamma = Some(r.read_i32()?);
+            m_apply_gamma_decoding = Some(r.read_i32()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { TextureImporterPlatformSettings::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_sprite_sheet = Some(SpriteSheetMetaData::parse(r, ver)?);
+            r.align(4)?;
+            m_sprite_packing_tag = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_output = Some(TextureImportOutput::parse(r, ver)?);
+            r.align(4)?;
+            m_psd_remove_matte = Some(r.read_bool()?);
+            r.align(4)?;
+            m_psd_show_remove_matte_option = Some(r.read_bool()?);
+            r.align(4)?;
+            m_user_data = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_variant = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
+            m_texture_shape = Some(r.read_i32()?);
+            m_single_channel_component = Some(r.read_i32()?);
+            m_max_texture_size_set = Some(r.read_i32()?);
+            m_compression_quality_set = Some(r.read_i32()?);
+            m_texture_format_set = Some(r.read_i32()?);
+            m_ignore_png_gamma = Some(r.read_i32()?);
+            m_apply_gamma_decoding = Some(r.read_i32()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { TextureImporterPlatformSettings::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_sprite_sheet = Some(SpriteSheetMetaData::parse(r, ver)?);
+            r.align(4)?;
+            m_sprite_packing_tag = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_output = Some(TextureImportOutput::parse(r, ver)?);
+            r.align(4)?;
+            m_psd_remove_matte = Some(r.read_bool()?);
+            r.align(4)?;
+            m_psd_show_remove_matte_option = Some(r.read_bool()?);
+            r.align(4)?;
+            m_user_data = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_variant = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
+            m_texture_shape = Some(r.read_i32()?);
+            m_single_channel_component = Some(r.read_i32()?);
+            m_max_texture_size_set = Some(r.read_i32()?);
+            m_compression_quality_set = Some(r.read_i32()?);
+            m_texture_format_set = Some(r.read_i32()?);
+            m_ignore_png_gamma = Some(r.read_i32()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { TextureImporterPlatformSettings::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_sprite_sheet = Some(SpriteSheetMetaData::parse(r, ver)?);
+            r.align(4)?;
+            m_sprite_packing_tag = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_output = Some(TextureImportOutput::parse(r, ver)?);
+            r.align(4)?;
+            m_psd_remove_matte = Some(r.read_bool()?);
+            r.align(4)?;
+            m_psd_show_remove_matte_option = Some(r.read_bool()?);
+            r.align(4)?;
+            m_user_data = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_variant = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2019, 3, 6) {
+            m_texture_shape = Some(r.read_i32()?);
+            m_single_channel_component = Some(r.read_i32()?);
+            m_max_texture_size_set = Some(r.read_i32()?);
+            m_compression_quality_set = Some(r.read_i32()?);
+            m_texture_format_set = Some(r.read_i32()?);
+            m_apply_gamma_decoding = Some(r.read_i32()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { TextureImporterPlatformSettings::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_sprite_sheet = Some(SpriteSheetMetaData::parse(r, ver)?);
+            r.align(4)?;
+            m_sprite_packing_tag = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_output = Some(TextureImportOutput::parse(r, ver)?);
+            r.align(4)?;
+            m_psd_remove_matte = Some(r.read_bool()?);
+            r.align(4)?;
+            m_psd_show_remove_matte_option = Some(r.read_bool()?);
+            r.align(4)?;
+            m_user_data = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_variant = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2018, 2, 1) {
+            m_texture_shape = Some(r.read_i32()?);
+            m_single_channel_component = Some(r.read_i32()?);
+            m_max_texture_size_set = Some(r.read_i32()?);
+            m_compression_quality_set = Some(r.read_i32()?);
+            m_texture_format_set = Some(r.read_i32()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { TextureImporterPlatformSettings::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_sprite_sheet = Some(SpriteSheetMetaData::parse(r, ver)?);
+            r.align(4)?;
+            m_sprite_packing_tag = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_output = Some(TextureImportOutput::parse(r, ver)?);
+            r.align(4)?;
+            m_psd_remove_matte = Some(r.read_bool()?);
+            r.align(4)?;
+            m_psd_show_remove_matte_option = Some(r.read_bool()?);
+            r.align(4)?;
+            m_user_data = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_variant = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2018, 2, 0) {
+            m_texture_shape = Some(r.read_i32()?);
+            m_single_channel_component = Some(r.read_i32()?);
+            m_max_texture_size_set = Some(r.read_i32()?);
+            m_compression_quality_set = Some(r.read_i32()?);
+            m_texture_format_set = Some(r.read_i32()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { TextureImporterPlatformSettings::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_sprite_sheet = Some(SpriteSheetMetaData::parse(r, ver)?);
+            r.align(4)?;
+            m_sprite_packing_tag = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_output = Some(TextureImportOutput::parse(r, ver)?);
+            r.align(4)?;
+            m_user_data = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_variant = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2018, 2, 0) {
+            m_texture_shape = Some(r.read_i32()?);
+            m_single_channel_component = Some(r.read_i32()?);
+            m_max_texture_size_set = Some(r.read_i32()?);
+            m_compression_quality_set = Some(r.read_i32()?);
+            m_texture_format_set = Some(r.read_i32()?);
+            m_push_pull_dilation = Some(r.read_i32()?);
+            r.align(4)?;
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { TextureImporterPlatformSettings::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_sprite_sheet = Some(SpriteSheetMetaData::parse(r, ver)?);
+            r.align(4)?;
+            m_sprite_packing_tag = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_output = Some(TextureImportOutput::parse(r, ver)?);
+            r.align(4)?;
+            m_user_data = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_variant = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
+            m_texture_shape = Some(r.read_i32()?);
+            m_single_channel_component = Some(r.read_i32()?);
+            m_max_texture_size_set = Some(r.read_i32()?);
+            m_compression_quality_set = Some(r.read_i32()?);
+            m_texture_format_set = Some(r.read_i32()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { TextureImporterPlatformSettings::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_sprite_sheet = Some(SpriteSheetMetaData::parse(r, ver)?);
+            r.align(4)?;
+            m_sprite_packing_tag = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_output = Some(TextureImportOutput::parse(r, ver)?);
+            r.align(4)?;
+            m_user_data = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_variant = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
+            m_texture_shape = Some(r.read_i32()?);
+            m_max_texture_size_set = Some(r.read_i32()?);
+            m_compression_quality_set = Some(r.read_i32()?);
+            m_texture_format_set = Some(r.read_i32()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { TextureImporterPlatformSettings::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_sprite_sheet = Some(SpriteSheetMetaData::parse(r, ver)?);
+            r.align(4)?;
+            m_sprite_packing_tag = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_output = Some(TextureImportOutput::parse(r, ver)?);
+            r.align(4)?;
+            m_user_data = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_variant = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            m_build_target_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { BuildTargetSettings::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_sprite_sheet = Some(SpriteSheetMetaData::parse(r, ver)?);
+            r.align(4)?;
+            m_sprite_packing_tag = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_output = Some(TextureImportOutput::parse(r, ver)?);
+            r.align(4)?;
+            m_user_data = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_variant = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
+            m_build_target_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { BuildTargetSettings::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_sprite_sheet = Some(SpriteSheetMetaData::parse(r, ver)?);
+            r.align(4)?;
+            m_sprite_packing_tag = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_output = Some(TextureImportOutput::parse(r, ver)?);
+            r.align(4)?;
+            m_user_data = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
+            m_build_target_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { BuildTargetSettings::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_output = Some(TextureImportOutput::parse(r, ver)?);
+            r.align(4)?;
+            m_user_data = Some(r.read_aligned_string()?);
+            r.align(4)?;
         } else {
-            None
-        };
+            m_recommended_texture_format = Some(r.read_i32()?);
+            m_source_texture_information = Some(SourceTextureInformation::parse(r, ver)?);
+            r.align(4)?;
+            m_build_target_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { BuildTargetSettings::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        }
 
         Ok(TextureImporter {
-            parent,
-            m_name,
+            m_name: m_name.unwrap(),
             m_file_id_to_recycle_name,
-            m_mip_map_mode,
+            m_mip_map_mode: m_mip_map_mode.unwrap(),
             m_internal_id_to_name_table,
             m_old_hash_identity,
-            m_enable_mip_map,
+            m_enable_mip_map: m_enable_mip_map.unwrap(),
             m_external_objects,
             m_new_hash_identity,
             m_linear_texture,
             m_used_file_i_ds,
             correct_gamma,
             m_s_rgb_texture,
-            m_fade_out,
+            m_fade_out: m_fade_out.unwrap(),
             m_correct_gamma,
-            m_border_mip_map,
-            m_mip_map_fade_distance_start,
-            m_mip_map_fade_distance_end,
+            m_border_mip_map: m_border_mip_map.unwrap(),
+            m_mip_map_fade_distance_start: m_mip_map_fade_distance_start.unwrap(),
+            m_mip_map_fade_distance_end: m_mip_map_fade_distance_end.unwrap(),
             m_mip_maps_preserve_coverage,
-            m_convert_to_normal_map,
+            m_convert_to_normal_map: m_convert_to_normal_map.unwrap(),
             m_alpha_test_reference_value,
-            m_external_normal_map,
-            m_height_scale,
-            m_normal_map_filter,
-            m_is_readable,
-            m_gray_scale_to_alpha,
-            m_generate_cubemap,
-            m_texture_format,
+            m_external_normal_map: m_external_normal_map.unwrap(),
+            m_height_scale: m_height_scale.unwrap(),
+            m_normal_map_filter: m_normal_map_filter.unwrap(),
+            m_is_readable: m_is_readable.unwrap(),
+            m_gray_scale_to_alpha: m_gray_scale_to_alpha.unwrap(),
+            m_generate_cubemap: m_generate_cubemap.unwrap(),
+            m_texture_format: m_texture_format.unwrap(),
             m_seamless_cubemap,
-            m_max_texture_size,
+            m_max_texture_size: m_max_texture_size.unwrap(),
             m_cubemap_convolution,
-            m_texture_settings,
+            m_texture_settings: m_texture_settings.unwrap(),
             m_cubemap_convolution_steps,
             m_streaming_mipmaps,
             m_flip_green_channel,
-            m_npot_scale,
+            m_npot_scale: m_npot_scale.unwrap(),
             m_cubemap_convolution_exponent,
             m_streaming_mipmaps_priority,
-            m_lightmap,
+            m_lightmap: m_lightmap.unwrap(),
             m_compression_quality,
             m_vt_only,
-            m_texture_type,
+            m_texture_type: m_texture_type.unwrap(),
             m_ignore_master_texture_limit,
             m_recommended_texture_format,
             m_alpha_is_transparency,

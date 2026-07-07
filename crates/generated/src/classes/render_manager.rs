@@ -6,11 +6,9 @@ use crate::subclasses::platform_shader_defines::PlatformShaderDefines;
 use crate::subclasses::platform_shader_settings::PlatformShaderSettings;
 use crate::subclasses::tier_graphics_settings::TierGraphicsSettings;
 use crate::subclasses::vector3f::Vector3f;
-use super::global_game_manager::GlobalGameManager;
 
 #[derive(Debug, Clone)]
 pub struct RenderManager {
-    pub parent: GlobalGameManager,
     pub m_always_included_shaders: Option<Vec<PPtr>>,
     pub m_deferred: Option<BuiltinShaderSettings>,
     pub m_legacy_deferred: Option<BuiltinShaderSettings>,
@@ -62,9 +60,10 @@ impl crate::Parse for RenderManager {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = GlobalGameManager::parse(r, ver)?;
         let m_always_included_shaders = if *ver >= crate::UnityVersion::new(4, 2, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?)
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
@@ -89,7 +88,9 @@ impl crate::Parse for RenderManager {
             None
         };
         let m_preloaded_shaders = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?)
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
@@ -253,7 +254,9 @@ impl crate::Parse for RenderManager {
             None
         };
         let m_lights_use_color_temperature = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            Some(r.read_bool()?)
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
@@ -270,7 +273,9 @@ impl crate::Parse for RenderManager {
             None
         };
         let m_log_when_shader_is_compiled = if *ver >= crate::UnityVersion::new(2018, 4, 6) {
-            Some(r.read_bool()?)
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
@@ -290,7 +295,9 @@ impl crate::Parse for RenderManager {
             None
         };
         let m_camera_relative_light_culling = if *ver >= crate::UnityVersion::new(2020, 3, 45) {
-            Some(r.read_bool()?)
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
@@ -307,13 +314,14 @@ impl crate::Parse for RenderManager {
             None
         };
         let m_camera_relative_shadow_culling = if *ver >= crate::UnityVersion::new(2020, 3, 45) {
-            Some(r.read_bool()?)
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
 
         Ok(RenderManager {
-            parent,
             m_always_included_shaders,
             m_deferred,
             m_legacy_deferred,

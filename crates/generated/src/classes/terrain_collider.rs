@@ -2,11 +2,9 @@
 
 use crate::PPtr;
 use crate::subclasses::bit_field::BitField;
-use super::collider::Collider;
 
 #[derive(Debug, Clone)]
 pub struct TerrainCollider {
-    pub parent: Collider,
     pub m_game_object: PPtr,
     pub m_material: Option<PPtr>,
     pub m_is_trigger: Option<bool>,
@@ -25,7 +23,6 @@ impl crate::Parse for TerrainCollider {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Collider::parse(r, ver)?;
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_material = if *ver >= crate::UnityVersion::new(3, 4, 0) {
             Some(crate::PPtr::parse(r, ver)?)
@@ -74,7 +71,6 @@ impl crate::Parse for TerrainCollider {
         };
 
         Ok(TerrainCollider {
-            parent,
             m_game_object,
             m_material,
             m_is_trigger,

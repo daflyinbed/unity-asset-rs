@@ -3,11 +3,9 @@
 use crate::PPtr;
 use crate::subclasses::md_four::MdFour;
 use crate::subclasses::source_asset_identifier::SourceAssetIdentifier;
-use super::asset_importer::AssetImporter;
 
 #[derive(Debug, Clone)]
 pub struct MonoImporter {
-    pub parent: AssetImporter,
     pub m_name: String,
     pub m_file_id_to_recycle_name: Option<Vec<(i32, String)>>,
     pub m_default_references: Vec<(String, PPtr)>,
@@ -27,7 +25,6 @@ impl crate::Parse for MonoImporter {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = AssetImporter::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_file_id_to_recycle_name = if *ver >= crate::UnityVersion::new(3, 4, 0) {
@@ -70,6 +67,7 @@ impl crate::Parse for MonoImporter {
             None
         };
         let icon = crate::PPtr::parse(r, ver)?;
+        r.align(4)?;
         let m_user_data = if *ver >= crate::UnityVersion::new(4, 0, 0) {
             let v = r.read_aligned_string()?;
             r.align(4)?;
@@ -93,7 +91,6 @@ impl crate::Parse for MonoImporter {
         };
 
         Ok(MonoImporter {
-            parent,
             m_name,
             m_file_id_to_recycle_name,
             m_default_references,

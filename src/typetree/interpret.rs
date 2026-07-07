@@ -5,7 +5,7 @@
 use crate::cursor::{Cursor, Endian};
 use crate::error::{NegativeArrayLenSnafu, RefTypeNotFoundSnafu, Result, TypeTreeSizeMismatchSnafu};
 use crate::typetree::{PPtrValue, RefTypeTable, TypeKind, TypeNode, Value};
-use crate::version::UnityVersion;
+use crate::UnityVersion;
 
 const ALIGN_MASK: u32 = 0x4000;
 

@@ -2,11 +2,9 @@
 
 use crate::PPtr;
 use crate::subclasses::guid::Guid;
-use super::named_object::NamedObject;
 
 #[derive(Debug, Clone)]
 pub struct BlockShaderContainer {
-    pub parent: NamedObject,
     pub m_name: String,
     pub guid: Guid,
     pub dependencies: Vec<PPtr>,
@@ -20,7 +18,6 @@ impl crate::Parse for BlockShaderContainer {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = NamedObject::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let guid = Guid::parse(r, ver)?;
@@ -33,7 +30,6 @@ impl crate::Parse for BlockShaderContainer {
         let state = r.read_i32()?;
 
         Ok(BlockShaderContainer {
-            parent,
             m_name,
             guid,
             dependencies,

@@ -2,18 +2,9 @@
 
 use crate::PPtr;
 use crate::subclasses::vector2f::Vector2f;
-use super::anchored_joint2_d::AnchoredJoint2D;
-use super::joint2_d::Joint2D;
-
-#[derive(Debug, Clone)]
-pub enum DistanceJoint2DParent {
-    Joint2D(Joint2D),
-    AnchoredJoint2D(AnchoredJoint2D),
-}
 
 #[derive(Debug, Clone)]
 pub struct DistanceJoint2D {
-    pub parent: DistanceJoint2DParent,
     pub m_game_object: PPtr,
     pub m_enabled: u8,
     pub m_collide_connected: Option<bool>,
@@ -35,13 +26,6 @@ impl crate::Parse for DistanceJoint2D {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            DistanceJoint2DParent::Joint2D(Joint2D::parse(r, ver)?)
-        } else if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            DistanceJoint2DParent::AnchoredJoint2D(AnchoredJoint2D::parse(r, ver)?)
-        } else {
-            panic!("无匹配的父类分支：version = {:?}", ver)
-        };
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_enabled = r.read_u8()?;
         r.align(4)?;
@@ -101,7 +85,6 @@ impl crate::Parse for DistanceJoint2D {
         };
 
         Ok(DistanceJoint2D {
-            parent,
             m_game_object,
             m_enabled,
             m_collide_connected,

@@ -3,11 +3,9 @@
 use crate::PPtr;
 use crate::subclasses::static_batch_info::StaticBatchInfo;
 use crate::subclasses::vector4f::Vector4f;
-use super::renderer::Renderer;
 
 #[derive(Debug, Clone)]
 pub struct PanelRenderer {
-    pub parent: Renderer,
     pub m_game_object: PPtr,
     pub m_enabled: bool,
     pub m_cast_shadows: u8,
@@ -55,7 +53,6 @@ impl crate::Parse for PanelRenderer {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Renderer::parse(r, ver)?;
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_enabled = r.read_bool()?;
         let m_cast_shadows = r.read_u8()?;
@@ -104,7 +101,6 @@ impl crate::Parse for PanelRenderer {
         let m_position = r.read_i32()?;
 
         Ok(PanelRenderer {
-            parent,
             m_game_object,
             m_enabled,
             m_cast_shadows,

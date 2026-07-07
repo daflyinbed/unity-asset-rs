@@ -1,10 +1,7 @@
 //! 自动生成。请勿手动修改。
 
-use super::global_game_manager::GlobalGameManager;
-
 #[derive(Debug, Clone)]
 pub struct AnimationManager {
-    pub parent: GlobalGameManager,
 }
 
 impl crate::Parse for AnimationManager {
@@ -12,10 +9,8 @@ impl crate::Parse for AnimationManager {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = GlobalGameManager::parse(r, ver)?;
 
         Ok(AnimationManager {
-            parent,
         })
     }
 }

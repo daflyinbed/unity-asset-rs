@@ -1,11 +1,9 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
-use super::component::Component;
 
 #[derive(Debug, Clone)]
 pub struct MeshFilter {
-    pub parent: Component,
     pub m_game_object: PPtr,
     pub m_mesh: PPtr,
 }
@@ -15,12 +13,10 @@ impl crate::Parse for MeshFilter {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Component::parse(r, ver)?;
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_mesh = crate::PPtr::parse(r, ver)?;
 
         Ok(MeshFilter {
-            parent,
             m_game_object,
             m_mesh,
         })

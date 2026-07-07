@@ -4,11 +4,9 @@ use crate::PPtr;
 use crate::subclasses::color_rgba::ColorRgba;
 use crate::subclasses::vector2f::Vector2f;
 use crate::subclasses::vector4f::Vector4f;
-use super::named_object::NamedObject;
 
 #[derive(Debug, Clone)]
 pub struct TerrainLayer {
-    pub parent: NamedObject,
     pub m_name: String,
     pub m_diffuse_texture: PPtr,
     pub m_normal_map_texture: PPtr,
@@ -31,7 +29,6 @@ impl crate::Parse for TerrainLayer {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = NamedObject::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_diffuse_texture = crate::PPtr::parse(r, ver)?;
@@ -54,7 +51,6 @@ impl crate::Parse for TerrainLayer {
         };
 
         Ok(TerrainLayer {
-            parent,
             m_name,
             m_diffuse_texture,
             m_normal_map_texture,

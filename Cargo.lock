@@ -449,6 +449,9 @@ dependencies = [
 [[package]]
 name = "unity-asset-generated"
 version = "0.1.0"
+dependencies = [
+ "unity-core",
+]
 
 [[package]]
 name = "unity-asset-rs"
@@ -459,7 +462,13 @@ dependencies = [
  "log",
  "lz4_flex",
  "snafu",
+ "unity-asset-generated",
+ "unity-core",
 ]
+
+[[package]]
+name = "unity-core"
+version = "0.1.0"
 
 [[package]]
 name = "utf8parse"

@@ -769,7 +769,7 @@ impl UnityObject {
             crate::ClassIDType::BlockShaderImporter => Ok(Self::BlockShaderImporter(crate::classes::block_shader_importer::BlockShaderImporter::parse(r, ver)?)),
             crate::ClassIDType::ShaderIncludeImporter => Ok(Self::ShaderIncludeImporter(crate::classes::shader_include_importer::ShaderIncludeImporter::parse(r, ver)?)),
             crate::ClassIDType::TilemapEditorUserSettings => Ok(Self::TilemapEditorUserSettings(crate::classes::tilemap_editor_user_settings::TilemapEditorUserSettings::parse(r, ver)?)),
-            _ => unimplemented!("未覆盖的 class_id: {:?}", class_id),
+            _ => return Err(r.make_error(&format!("unsupported class_id: {:?}", class_id))),
         }
     }
 }

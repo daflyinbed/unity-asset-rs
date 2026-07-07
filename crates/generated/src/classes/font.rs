@@ -2,11 +2,9 @@
 
 use crate::PPtr;
 use crate::subclasses::character_info::CharacterInfo;
-use super::named_object::NamedObject;
 
 #[derive(Debug, Clone)]
 pub struct Font {
-    pub parent: NamedObject,
     pub m_name: String,
     pub m_ascii_start_offset: i32,
     pub m_line_spacing: f32,
@@ -41,125 +39,168 @@ impl crate::Parse for Font {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = NamedObject::parse(r, ver)?;
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_ascii_start_offset = r.read_i32()?;
-        let m_line_spacing = r.read_f32()?;
-        let m_font_count_x = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_kerning = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
-        let m_default_material = crate::PPtr::parse(r, ver)?;
-        let m_tracking = if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
-        let m_font_count_y = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_font_size = r.read_f32()?;
-        let m_texture = crate::PPtr::parse(r, ver)?;
-        let m_character_spacing = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_character_padding = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_per_character_kerning = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i32()?; let b = r.read_f32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?)
-        } else {
-            None
-        };
-        let m_convert_case = r.read_i32()?;
-        let m_character_rects = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { CharacterInfo::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        let m_kerning_values = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = ( { let a = r.read_u16()?; let b = r.read_u16()?; Ok((a, b)) } )?; let b = r.read_f32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-        let m_pixel_scale = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            let v = r.read_f32()?;
+        let mut m_name = None;
+        let mut m_ascii_start_offset = None;
+        let mut m_line_spacing = None;
+        let mut m_font_count_x = None;
+        let mut m_kerning = None;
+        let mut m_default_material = None;
+        let mut m_tracking = None;
+        let mut m_font_count_y = None;
+        let mut m_font_size = None;
+        let mut m_texture = None;
+        let mut m_character_spacing = None;
+        let mut m_character_padding = None;
+        let mut m_per_character_kerning = None;
+        let mut m_convert_case = None;
+        let mut m_character_rects = None;
+        let mut m_kerning_values = None;
+        let mut m_pixel_scale = None;
+        let mut m_grid_font = None;
+        let mut m_font_data = None;
+        let mut m_ascent = None;
+        let mut m_default_style = None;
+        let mut m_descent = None;
+        let mut m_font_names = None;
+        let mut m_fallback_fonts = None;
+        let mut m_font_rendering_mode = None;
+        let mut m_use_legacy_bounds_calculation = None;
+        let mut m_should_round_advance_value = None;
+            m_name = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
+        if *ver >= crate::UnityVersion::new(5, 5, 0) {
+        } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
+            m_ascii_start_offset = Some(r.read_i32()?);
+            m_tracking = Some(r.read_f32()?);
+        } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
+            m_ascii_start_offset = Some(r.read_i32()?);
+            m_kerning = Some(r.read_f32()?);
         } else {
-            None
-        };
-        let m_grid_font = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_bool()?;
+            m_ascii_start_offset = Some(r.read_i32()?);
+            m_font_count_x = Some(r.read_i32()?);
+            m_font_count_y = Some(r.read_i32()?);
+            m_kerning = Some(r.read_f32()?);
+        }
+            m_line_spacing = Some(r.read_f32()?);
+        if *ver >= crate::UnityVersion::new(5, 5, 0) {
+        } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
+            m_character_spacing = Some(r.read_i32()?);
+            m_character_padding = Some(r.read_i32()?);
+            m_convert_case = Some(r.read_i32()?);
+        } else {
+            m_per_character_kerning = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i32()?; let b = r.read_f32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_convert_case = Some(r.read_i32()?);
+        }
+            m_default_material = Some(crate::PPtr::parse(r, ver)?);
+        if *ver >= crate::UnityVersion::new(5, 5, 0) {
+            m_font_size = Some(r.read_f32()?);
+        } else {
+            m_character_rects = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { CharacterInfo::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_font_data = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_ascent = r.read_f32()?;
-        let m_default_style = r.read_u32()?;
-        let m_descent = if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
-        let m_font_names = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_fallback_fonts = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        }
+            m_texture = Some(crate::PPtr::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
+        if *ver >= crate::UnityVersion::new(5, 5, 0) {
+            m_ascii_start_offset = Some(r.read_i32()?);
+            m_tracking = Some(r.read_f32()?);
+            m_character_spacing = Some(r.read_i32()?);
+            m_character_padding = Some(r.read_i32()?);
+            m_convert_case = Some(r.read_i32()?);
+            m_character_rects = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { CharacterInfo::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
         } else {
-            None
-        };
-        let m_font_rendering_mode = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(r.read_i32()?)
+        }
+            m_kerning_values = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = ( { let a = r.read_u16()?; let b = r.read_u16()?; Ok((a, b)) } )?; let b = r.read_f32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+        if *ver >= crate::UnityVersion::new(4, 0, 0) {
+            m_pixel_scale = Some(r.read_f32()?);
+            r.align(4)?;
         } else {
-            None
-        };
-        let m_use_legacy_bounds_calculation = if *ver >= crate::UnityVersion::new(5, 6, 5) {
-            Some(r.read_bool()?)
+            m_grid_font = Some(r.read_bool()?);
+            r.align(4)?;
+        }
+            m_font_data = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        if *ver >= crate::UnityVersion::new(5, 5, 0) {
         } else {
-            None
-        };
-        let m_should_round_advance_value = if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            Some(r.read_bool()?)
+            m_font_size = Some(r.read_f32()?);
+        }
+            m_ascent = Some(r.read_f32()?);
+        if *ver >= crate::UnityVersion::new(5, 4, 0) {
+            m_descent = Some(r.read_f32()?);
         } else {
-            None
-        };
+        }
+            m_default_style = Some(r.read_u32()?);
+            m_font_names = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        if *ver >= crate::UnityVersion::new(2018, 1, 0) {
+            m_fallback_fonts = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_font_rendering_mode = Some(r.read_i32()?);
+            m_use_legacy_bounds_calculation = Some(r.read_bool()?);
+            m_should_round_advance_value = Some(r.read_bool()?);
+        } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
+            m_fallback_fonts = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_font_rendering_mode = Some(r.read_i32()?);
+            m_use_legacy_bounds_calculation = Some(r.read_bool()?);
+        } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
+            m_fallback_fonts = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_font_rendering_mode = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
+            m_fallback_fonts = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_font_rendering_mode = Some(r.read_i32()?);
+            m_use_legacy_bounds_calculation = Some(r.read_bool()?);
+        } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
+            m_fallback_fonts = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_font_rendering_mode = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2017, 1, 2) {
+            m_fallback_fonts = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_font_rendering_mode = Some(r.read_i32()?);
+            m_use_legacy_bounds_calculation = Some(r.read_bool()?);
+        } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            m_fallback_fonts = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_font_rendering_mode = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(5, 6, 5) {
+            m_fallback_fonts = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_font_rendering_mode = Some(r.read_i32()?);
+            m_use_legacy_bounds_calculation = Some(r.read_bool()?);
+        } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
+            m_fallback_fonts = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_font_rendering_mode = Some(r.read_i32()?);
+        } else {
+        }
 
         Ok(Font {
-            parent,
-            m_name,
-            m_ascii_start_offset,
-            m_line_spacing,
+            m_name: m_name.unwrap(),
+            m_ascii_start_offset: m_ascii_start_offset.unwrap(),
+            m_line_spacing: m_line_spacing.unwrap(),
             m_font_count_x,
             m_kerning,
-            m_default_material,
+            m_default_material: m_default_material.unwrap(),
             m_tracking,
             m_font_count_y,
-            m_font_size,
-            m_texture,
+            m_font_size: m_font_size.unwrap(),
+            m_texture: m_texture.unwrap(),
             m_character_spacing,
             m_character_padding,
             m_per_character_kerning,
-            m_convert_case,
-            m_character_rects,
-            m_kerning_values,
+            m_convert_case: m_convert_case.unwrap(),
+            m_character_rects: m_character_rects.unwrap(),
+            m_kerning_values: m_kerning_values.unwrap(),
             m_pixel_scale,
             m_grid_font,
-            m_font_data,
-            m_ascent,
-            m_default_style,
+            m_font_data: m_font_data.unwrap(),
+            m_ascent: m_ascent.unwrap(),
+            m_default_style: m_default_style.unwrap(),
             m_descent,
-            m_font_names,
+            m_font_names: m_font_names.unwrap(),
             m_fallback_fonts,
             m_font_rendering_mode,
             m_use_legacy_bounds_calculation,

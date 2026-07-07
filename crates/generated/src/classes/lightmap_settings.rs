@@ -4,11 +4,9 @@ use crate::PPtr;
 use crate::subclasses::enlighten_scene_mapping::EnlightenSceneMapping;
 use crate::subclasses::gi_settings::GiSettings;
 use crate::subclasses::lightmap_data::LightmapData;
-use super::level_game_manager::LevelGameManager;
 
 #[derive(Debug, Clone)]
 pub struct LightmapSettings {
-    pub parent: LevelGameManager,
     pub m_lightmaps: Vec<LightmapData>,
     pub m_light_probes: Option<PPtr>,
     pub m_enlighten_scene_mapping: Option<EnlightenSceneMapping>,
@@ -28,15 +26,17 @@ impl crate::Parse for LightmapSettings {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = LevelGameManager::parse(r, ver)?;
         let m_lightmaps = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { LightmapData::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        r.align(4)?;
         let m_light_probes = if *ver >= crate::UnityVersion::new(3, 5, 0) {
             Some(crate::PPtr::parse(r, ver)?)
         } else {
             None
         };
         let m_enlighten_scene_mapping = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(EnlightenSceneMapping::parse(r, ver)?)
+            let v = EnlightenSceneMapping::parse(r, ver)?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
@@ -87,7 +87,6 @@ impl crate::Parse for LightmapSettings {
         };
 
         Ok(LightmapSettings {
-            parent,
             m_lightmaps,
             m_light_probes,
             m_enlighten_scene_mapping,

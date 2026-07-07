@@ -3,11 +3,9 @@
 use crate::PPtr;
 use crate::subclasses::constraint_source::ConstraintSource;
 use crate::subclasses::vector3f::Vector3f;
-use super::i_constraint::IConstraint;
 
 #[derive(Debug, Clone)]
 pub struct LookAtConstraint {
-    pub parent: IConstraint,
     pub m_game_object: PPtr,
     pub m_enabled: u8,
     pub m_weight: f32,
@@ -26,7 +24,6 @@ impl crate::Parse for LookAtConstraint {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = IConstraint::parse(r, ver)?;
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_enabled = r.read_u8()?;
         r.align(4)?;
@@ -55,7 +52,6 @@ impl crate::Parse for LookAtConstraint {
         r.align(4)?;
 
         Ok(LookAtConstraint {
-            parent,
             m_game_object,
             m_enabled,
             m_weight,

@@ -8,7 +8,7 @@ use bytes::Bytes;
 use crate::cursor::{Cursor, Endian};
 use crate::error::{Result, SerializedFileSnafu};
 use crate::typetree::{self, RefTypeTable, TypeNode, Value};
-use crate::version::UnityVersion;
+use crate::UnityVersion;
 
 /// 解析后的 SerializedFile。
 pub struct SerializedFile {

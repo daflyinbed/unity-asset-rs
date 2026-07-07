@@ -6,11 +6,9 @@ use crate::subclasses::performance_reporting_settings::PerformanceReportingSetti
 use crate::subclasses::unity_ads_settings::UnityAdsSettings;
 use crate::subclasses::unity_analytics_settings::UnityAnalyticsSettings;
 use crate::subclasses::unity_purchasing_settings::UnityPurchasingSettings;
-use super::global_game_manager::GlobalGameManager;
 
 #[derive(Debug, Clone)]
 pub struct UnityConnectSettings {
-    pub parent: GlobalGameManager,
     pub unity_purchasing_settings: UnityPurchasingSettings,
     pub m_enabled: Option<bool>,
     pub unity_analytics_settings: UnityAnalyticsSettings,
@@ -33,7 +31,6 @@ impl crate::Parse for UnityConnectSettings {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = GlobalGameManager::parse(r, ver)?;
         let unity_purchasing_settings = UnityPurchasingSettings::parse(r, ver)?;
         r.align(4)?;
         let m_enabled = if *ver >= crate::UnityVersion::new(5, 4, 0) {
@@ -129,7 +126,6 @@ impl crate::Parse for UnityConnectSettings {
         };
 
         Ok(UnityConnectSettings {
-            parent,
             unity_purchasing_settings,
             m_enabled,
             unity_analytics_settings,

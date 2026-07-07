@@ -1,11 +1,9 @@
 //! 自动生成。请勿手动修改。
 
 use crate::subclasses::layout_data_one::LayoutDataOne;
-use super::object::Object;
 
 #[derive(Debug, Clone)]
 pub struct TestObjectWithSpecialLayoutOne {
-    pub parent: Object,
     pub different_layout: LayoutDataOne,
     pub same_layout: LayoutDataOne,
 }
@@ -15,14 +13,12 @@ impl crate::Parse for TestObjectWithSpecialLayoutOne {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Object::parse(r, ver)?;
         let different_layout = LayoutDataOne::parse(r, ver)?;
         r.align(4)?;
         let same_layout = LayoutDataOne::parse(r, ver)?;
         r.align(4)?;
 
         Ok(TestObjectWithSpecialLayoutOne {
-            parent,
             different_layout,
             same_layout,
         })

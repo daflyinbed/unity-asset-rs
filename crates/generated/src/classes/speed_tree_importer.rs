@@ -4,11 +4,9 @@ use crate::PPtr;
 use crate::subclasses::color_rgba::ColorRgba;
 use crate::subclasses::per_lod_settings::PerLodSettings;
 use crate::subclasses::source_asset_identifier::SourceAssetIdentifier;
-use super::asset_importer::AssetImporter;
 
 #[derive(Debug, Clone)]
 pub struct SpeedTreeImporter {
-    pub parent: AssetImporter,
     pub m_name: String,
     pub m_main_color: ColorRgba,
     pub m_external_objects: Option<Vec<(SourceAssetIdentifier, PPtr)>>,
@@ -52,7 +50,6 @@ impl crate::Parse for SpeedTreeImporter {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = AssetImporter::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_main_color = ColorRgba::parse(r, ver)?;
@@ -93,7 +90,6 @@ impl crate::Parse for SpeedTreeImporter {
             None
         };
         let m_enable_smooth_lod_transition = r.read_bool()?;
-        r.align(4)?;
         let m_enable_bump_mapping = if *ver >= crate::UnityVersion::new(2022, 3, 12) {
             Some(r.read_bool()?)
         } else {
@@ -121,16 +117,13 @@ impl crate::Parse for SpeedTreeImporter {
             None
         };
         let m_scale_factor = r.read_f32()?;
-        r.align(4)?;
         let m_enable_shadow_casting = if *ver >= crate::UnityVersion::new(2022, 3, 12) {
             Some(r.read_bool()?)
         } else {
             None
         };
         let m_material_version = if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            let v = r.read_i32()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_i32()?)
         } else {
             None
         };
@@ -207,7 +200,6 @@ impl crate::Parse for SpeedTreeImporter {
         };
 
         Ok(SpeedTreeImporter {
-            parent,
             m_name,
             m_main_color,
             m_external_objects,

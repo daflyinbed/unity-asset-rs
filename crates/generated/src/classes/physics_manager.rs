@@ -3,11 +3,9 @@
 use crate::PPtr;
 use crate::subclasses::aabb::Aabb;
 use crate::subclasses::vector3f::Vector3f;
-use super::global_game_manager::GlobalGameManager;
 
 #[derive(Debug, Clone)]
 pub struct PhysicsManager {
-    pub parent: GlobalGameManager,
     pub m_gravity: Vector3f,
     pub m_default_material: PPtr,
     pub m_bounce_threshold: f32,
@@ -64,7 +62,6 @@ impl crate::Parse for PhysicsManager {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = GlobalGameManager::parse(r, ver)?;
         let m_gravity = Vector3f::parse(r, ver)?;
         let m_default_material = crate::PPtr::parse(r, ver)?;
         let m_bounce_threshold = r.read_f32()?;
@@ -114,9 +111,7 @@ impl crate::Parse for PhysicsManager {
             None
         };
         let m_raycasts_hit_triggers = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
@@ -148,6 +143,7 @@ impl crate::Parse for PhysicsManager {
             None
         };
         let m_layer_collision_matrix = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+        r.align(4)?;
         let m_enable_pcm = if *ver >= crate::UnityVersion::new(5, 5, 0) {
             let v = r.read_bool()?;
             r.align(4)?;
@@ -161,7 +157,9 @@ impl crate::Parse for PhysicsManager {
             None
         };
         let m_cloth_inter_collision_stiffness = if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            Some(r.read_f32()?)
+            let v = r.read_f32()?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
@@ -227,7 +225,9 @@ impl crate::Parse for PhysicsManager {
             None
         };
         let m_world_subdivisions = if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            Some(r.read_i32()?)
+            let v = r.read_i32()?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
@@ -247,9 +247,7 @@ impl crate::Parse for PhysicsManager {
             None
         };
         let m_improved_patch_friction = if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
@@ -318,7 +316,6 @@ impl crate::Parse for PhysicsManager {
         };
 
         Ok(PhysicsManager {
-            parent,
             m_gravity,
             m_default_material,
             m_bounce_threshold,

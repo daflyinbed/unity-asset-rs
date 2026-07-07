@@ -5,11 +5,9 @@ use crate::subclasses::color_rgba::ColorRgba;
 use crate::subclasses::md_four::MdFour;
 use crate::subclasses::output::Output;
 use crate::subclasses::source_asset_identifier::SourceAssetIdentifier;
-use super::asset_importer::AssetImporter;
 
 #[derive(Debug, Clone)]
 pub struct TrueTypeFontImporter {
-    pub parent: AssetImporter,
     pub m_name: String,
     pub m_file_id_to_recycle_name: Option<Vec<(i32, String)>>,
     pub m_font_size: i32,
@@ -44,7 +42,6 @@ impl crate::Parse for TrueTypeFontImporter {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = AssetImporter::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_file_id_to_recycle_name = if *ver >= crate::UnityVersion::new(3, 4, 0) {
@@ -110,6 +107,7 @@ impl crate::Parse for TrueTypeFontImporter {
             None
         };
         let m_include_font_data = r.read_bool()?;
+        r.align(4)?;
         let m_use2x_behaviour = if *ver >= crate::UnityVersion::new(3, 4, 0) {
             let v = r.read_bool()?;
             r.align(4)?;
@@ -127,7 +125,9 @@ impl crate::Parse for TrueTypeFontImporter {
             None
         };
         let m_fallback_font_references = if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?)
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
@@ -158,9 +158,7 @@ impl crate::Parse for TrueTypeFontImporter {
             None
         };
         let m_ascent_calculation_mode = if *ver >= crate::UnityVersion::new(5, 3, 4) {
-            let v = r.read_i32()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_i32()?)
         } else {
             None
         };
@@ -179,9 +177,7 @@ impl crate::Parse for TrueTypeFontImporter {
             None
         };
         let m_use_legacy_bounds_calculation = if *ver >= crate::UnityVersion::new(5, 6, 5) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
@@ -194,7 +190,6 @@ impl crate::Parse for TrueTypeFontImporter {
         };
 
         Ok(TrueTypeFontImporter {
-            parent,
             m_name,
             m_file_id_to_recycle_name,
             m_font_size,

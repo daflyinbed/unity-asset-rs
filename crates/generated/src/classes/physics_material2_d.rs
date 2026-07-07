@@ -1,10 +1,7 @@
 //! 自动生成。请勿手动修改。
 
-use super::named_object::NamedObject;
-
 #[derive(Debug, Clone)]
 pub struct PhysicsMaterial2D {
-    pub parent: NamedObject,
     pub m_name: String,
     pub friction: f32,
     pub bounciness: f32,
@@ -17,7 +14,6 @@ impl crate::Parse for PhysicsMaterial2D {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = NamedObject::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let friction = r.read_f32()?;
@@ -34,7 +30,6 @@ impl crate::Parse for PhysicsMaterial2D {
         };
 
         Ok(PhysicsMaterial2D {
-            parent,
             m_name,
             friction,
             bounciness,

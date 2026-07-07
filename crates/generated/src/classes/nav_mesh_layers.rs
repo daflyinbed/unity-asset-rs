@@ -3,11 +3,9 @@
 use crate::subclasses::nav_mesh_area_data::NavMeshAreaData;
 use crate::subclasses::nav_mesh_build_settings::NavMeshBuildSettings;
 use crate::subclasses::nav_mesh_layer_data::NavMeshLayerData;
-use super::global_game_manager::GlobalGameManager;
 
 #[derive(Debug, Clone)]
 pub struct NavMeshLayers {
-    pub parent: GlobalGameManager,
     pub built_in_layer_0: Option<NavMeshLayerData>,
     pub areas: Option<Vec<NavMeshAreaData>>,
     pub built_in_layer_1: Option<NavMeshLayerData>,
@@ -51,7 +49,6 @@ impl crate::Parse for NavMeshLayers {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = GlobalGameManager::parse(r, ver)?;
         let built_in_layer_0 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
             let v = NavMeshLayerData::parse(r, ver)?;
             r.align(4)?;
@@ -304,7 +301,6 @@ impl crate::Parse for NavMeshLayers {
         };
 
         Ok(NavMeshLayers {
-            parent,
             built_in_layer_0,
             areas,
             built_in_layer_1,

@@ -2,11 +2,9 @@
 
 use crate::subclasses::class_info::ClassInfo;
 use crate::subclasses::class_method_info::ClassMethodInfo;
-use super::global_game_manager::GlobalGameManager;
 
 #[derive(Debug, Clone)]
 pub struct RuntimeInitializeOnLoadManager {
-    pub parent: GlobalGameManager,
     pub m_assembly_names: Option<Vec<String>>,
     pub m_namespace_names: Option<Vec<String>>,
     pub m_class_infos: Option<Vec<ClassInfo>>,
@@ -30,7 +28,6 @@ impl crate::Parse for RuntimeInitializeOnLoadManager {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = GlobalGameManager::parse(r, ver)?;
         let m_assembly_names = if *ver >= crate::UnityVersion::new(5, 0, 0) {
             let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
             r.align(4)?;
@@ -65,7 +62,9 @@ impl crate::Parse for RuntimeInitializeOnLoadManager {
             None
         };
         let m_before_unity_method_execution_orders = if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i32() }).collect::<Result<Vec<_>, _>>() } )?)
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
@@ -77,12 +76,16 @@ impl crate::Parse for RuntimeInitializeOnLoadManager {
             None
         };
         let m_after_unity_method_execution_orders = if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i32() }).collect::<Result<Vec<_>, _>>() } )?)
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
         let m_before_method_execution_orders = if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i32() }).collect::<Result<Vec<_>, _>>() } )?)
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
@@ -137,7 +140,6 @@ impl crate::Parse for RuntimeInitializeOnLoadManager {
         };
 
         Ok(RuntimeInitializeOnLoadManager {
-            parent,
             m_assembly_names,
             m_namespace_names,
             m_class_infos,

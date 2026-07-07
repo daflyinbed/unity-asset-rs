@@ -1,10 +1,7 @@
 //! 自动生成。请勿手动修改。
 
-use super::named_object::NamedObject;
-
 #[derive(Debug, Clone)]
 pub struct LocalizationAsset {
-    pub parent: NamedObject,
     pub m_name: String,
     pub locale_iso_code: String,
     pub editor_asset: bool,
@@ -16,7 +13,6 @@ impl crate::Parse for LocalizationAsset {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = NamedObject::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let locale_iso_code = r.read_aligned_string()?;
@@ -27,7 +23,6 @@ impl crate::Parse for LocalizationAsset {
         r.align(4)?;
 
         Ok(LocalizationAsset {
-            parent,
             m_name,
             locale_iso_code,
             editor_asset,

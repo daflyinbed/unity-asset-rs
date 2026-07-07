@@ -3,11 +3,9 @@
 use crate::PPtr;
 use crate::subclasses::static_batch_info::StaticBatchInfo;
 use crate::subclasses::vector4f::Vector4f;
-use super::renderer::Renderer;
 
 #[derive(Debug, Clone)]
 pub struct UiRenderer_1931382933 {
-    pub parent: Renderer,
     pub m_game_object: PPtr,
     pub m_enabled: bool,
     pub m_cast_shadows: u8,
@@ -46,7 +44,6 @@ impl crate::Parse for UiRenderer_1931382933 {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Renderer::parse(r, ver)?;
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_enabled = r.read_bool()?;
         let m_cast_shadows = r.read_u8()?;
@@ -60,7 +57,6 @@ impl crate::Parse for UiRenderer_1931382933 {
         let m_ray_trace_procedural = r.read_u8()?;
         let m_ray_tracing_accel_struct_build_flags_override = r.read_u8()?;
         let m_ray_tracing_accel_struct_build_flags = r.read_u8()?;
-        r.align(4)?;
         let m_rendering_layer_mask = r.read_u32()?;
         let m_small_mesh_culling = if *ver >= crate::UnityVersion::new(2023, 3, 0) {
             let v = r.read_u8()?;
@@ -106,7 +102,6 @@ impl crate::Parse for UiRenderer_1931382933 {
         };
 
         Ok(UiRenderer_1931382933 {
-            parent,
             m_game_object,
             m_enabled,
             m_cast_shadows,

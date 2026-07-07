@@ -2,11 +2,9 @@
 
 use crate::PPtr;
 use crate::subclasses::hash128::Hash128;
-use super::global_game_manager::GlobalGameManager;
 
 #[derive(Debug, Clone)]
 pub struct MonoManager {
-    pub parent: GlobalGameManager,
     pub m_scripts: Vec<PPtr>,
     pub m_script_hashes: Option<Vec<(Hash128, Hash128)>>,
     pub m_assembly_names: Option<Vec<String>>,
@@ -19,7 +17,6 @@ impl crate::Parse for MonoManager {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = GlobalGameManager::parse(r, ver)?;
         let m_scripts = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
         let m_script_hashes = if *ver >= crate::UnityVersion::new(2020, 2, 0) {
             Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = Hash128::parse(r, ver)?; let b = Hash128::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?)
@@ -47,7 +44,6 @@ impl crate::Parse for MonoManager {
         };
 
         Ok(MonoManager {
-            parent,
             m_scripts,
             m_script_hashes,
             m_assembly_names,

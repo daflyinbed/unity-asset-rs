@@ -1,11 +1,9 @@
 //! 自动生成。请勿手动修改。
 
 use crate::subclasses::sorting_layer_entry::SortingLayerEntry;
-use super::global_game_manager::GlobalGameManager;
 
 #[derive(Debug, Clone)]
 pub struct TagManager {
-    pub parent: GlobalGameManager,
     pub tags: Vec<String>,
     pub builtin_layer_0: Option<String>,
     pub layers: Option<Vec<String>>,
@@ -49,7 +47,6 @@ impl crate::Parse for TagManager {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = GlobalGameManager::parse(r, ver)?;
         let tags = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
         r.align(4)?;
         let builtin_layer_0 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
@@ -299,7 +296,6 @@ impl crate::Parse for TagManager {
         };
 
         Ok(TagManager {
-            parent,
             tags,
             builtin_layer_0,
             layers,

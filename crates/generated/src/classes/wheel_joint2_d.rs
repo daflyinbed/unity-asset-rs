@@ -4,11 +4,9 @@ use crate::PPtr;
 use crate::subclasses::joint_motor2_d::JointMotor2D;
 use crate::subclasses::joint_suspension2_d::JointSuspension2D;
 use crate::subclasses::vector2f::Vector2f;
-use super::anchored_joint2_d::AnchoredJoint2D;
 
 #[derive(Debug, Clone)]
 pub struct WheelJoint2D {
-    pub parent: AnchoredJoint2D,
     pub m_game_object: PPtr,
     pub m_enabled: u8,
     pub m_collide_connected: Option<bool>,
@@ -30,7 +28,6 @@ impl crate::Parse for WheelJoint2D {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = AnchoredJoint2D::parse(r, ver)?;
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_enabled = r.read_u8()?;
         r.align(4)?;
@@ -79,7 +76,6 @@ impl crate::Parse for WheelJoint2D {
         let m_motor = JointMotor2D::parse(r, ver)?;
 
         Ok(WheelJoint2D {
-            parent,
             m_game_object,
             m_enabled,
             m_collide_connected,

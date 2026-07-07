@@ -1,10 +1,7 @@
 //! 自动生成。请勿手动修改。
 
-use super::named_object::NamedObject;
-
 #[derive(Debug, Clone)]
 pub struct LightmapParameters {
-    pub parent: NamedObject,
     pub m_name: String,
     pub resolution: f32,
     pub cluster_resolution: f32,
@@ -31,61 +28,75 @@ impl crate::Parse for LightmapParameters {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = NamedObject::parse(r, ver)?;
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let resolution = r.read_f32()?;
-        let cluster_resolution = r.read_f32()?;
-        let irradiance_budget = r.read_i32()?;
-        let irradiance_quality = r.read_i32()?;
-        let back_face_tolerance = r.read_f32()?;
-        let is_transparent = r.read_i32()?;
-        let modelling_tolerance = r.read_f32()?;
-        let system_tag = r.read_i32()?;
-        let edge_stitching = r.read_i32()?;
-        let blur_radius = r.read_i32()?;
-        let direct_light_quality = r.read_i32()?;
-        let anti_aliasing_samples = r.read_i32()?;
-        let ao_quality = r.read_i32()?;
-        let baked_lightmap_tag = r.read_i32()?;
-        let pushoff = if *ver >= crate::UnityVersion::new(5, 0, 1) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
-        let ao_anti_aliasing_samples = r.read_i32()?;
-        let limit_lightmap_count = if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            let v = r.read_bool()?;
+        let mut m_name = None;
+        let mut resolution = None;
+        let mut cluster_resolution = None;
+        let mut irradiance_budget = None;
+        let mut irradiance_quality = None;
+        let mut back_face_tolerance = None;
+        let mut is_transparent = None;
+        let mut modelling_tolerance = None;
+        let mut system_tag = None;
+        let mut edge_stitching = None;
+        let mut blur_radius = None;
+        let mut direct_light_quality = None;
+        let mut anti_aliasing_samples = None;
+        let mut ao_quality = None;
+        let mut baked_lightmap_tag = None;
+        let mut pushoff = None;
+        let mut ao_anti_aliasing_samples = None;
+        let mut limit_lightmap_count = None;
+        let mut max_lightmap_count = None;
+            m_name = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
+            resolution = Some(r.read_f32()?);
+            cluster_resolution = Some(r.read_f32()?);
+            irradiance_budget = Some(r.read_i32()?);
+            irradiance_quality = Some(r.read_i32()?);
+            back_face_tolerance = Some(r.read_f32()?);
+            is_transparent = Some(r.read_i32()?);
+            modelling_tolerance = Some(r.read_f32()?);
+            system_tag = Some(r.read_i32()?);
+            edge_stitching = Some(r.read_i32()?);
+            blur_radius = Some(r.read_i32()?);
+            direct_light_quality = Some(r.read_i32()?);
+            anti_aliasing_samples = Some(r.read_i32()?);
+        if *ver >= crate::UnityVersion::new(2019, 1, 0) {
+            pushoff = Some(r.read_f32()?);
+            baked_lightmap_tag = Some(r.read_i32()?);
+            limit_lightmap_count = Some(r.read_bool()?);
+            r.align(4)?;
+            max_lightmap_count = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(5, 0, 1) {
+            baked_lightmap_tag = Some(r.read_i32()?);
+            pushoff = Some(r.read_f32()?);
         } else {
-            None
-        };
-        let max_lightmap_count = if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            Some(r.read_i32()?)
+        }
+            ao_quality = Some(r.read_i32()?);
+            ao_anti_aliasing_samples = Some(r.read_i32()?);
+        if *ver >= crate::UnityVersion::new(5, 0, 1) {
         } else {
-            None
-        };
+            baked_lightmap_tag = Some(r.read_i32()?);
+        }
 
         Ok(LightmapParameters {
-            parent,
-            m_name,
-            resolution,
-            cluster_resolution,
-            irradiance_budget,
-            irradiance_quality,
-            back_face_tolerance,
-            is_transparent,
-            modelling_tolerance,
-            system_tag,
-            edge_stitching,
-            blur_radius,
-            direct_light_quality,
-            anti_aliasing_samples,
-            ao_quality,
-            baked_lightmap_tag,
+            m_name: m_name.unwrap(),
+            resolution: resolution.unwrap(),
+            cluster_resolution: cluster_resolution.unwrap(),
+            irradiance_budget: irradiance_budget.unwrap(),
+            irradiance_quality: irradiance_quality.unwrap(),
+            back_face_tolerance: back_face_tolerance.unwrap(),
+            is_transparent: is_transparent.unwrap(),
+            modelling_tolerance: modelling_tolerance.unwrap(),
+            system_tag: system_tag.unwrap(),
+            edge_stitching: edge_stitching.unwrap(),
+            blur_radius: blur_radius.unwrap(),
+            direct_light_quality: direct_light_quality.unwrap(),
+            anti_aliasing_samples: anti_aliasing_samples.unwrap(),
+            ao_quality: ao_quality.unwrap(),
+            baked_lightmap_tag: baked_lightmap_tag.unwrap(),
             pushoff,
-            ao_anti_aliasing_samples,
+            ao_anti_aliasing_samples: ao_anti_aliasing_samples.unwrap(),
             limit_lightmap_count,
             max_lightmap_count,
         })

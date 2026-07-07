@@ -58,15 +58,17 @@ fallback 需要在 typed parse 失败后重新从头解析。用 `&[u8]` 切片�
 
 ## 3. TypeNode 设计
 
-### 3.1 TypeName — 类型分类 enum
+### 3.1 TypeKind — 类型分类 enum
 
 替代字符串比较。原语比较 = 整数比较；PPtr/Struct 带关联 String。
 
 ```rust
-/// Unity TypeTree 节点的类型分类。
-/// 从 TPK 和 AB-embedded 两个来源的原始字符串统一构造。
+/// TypeTree 节点的类型分类。
+///
+/// `Array/Vector/Map` 不单独成变体——它们结构同构（集合节点有唯一 `type="Array"`
+/// 子节点，该子节点固定 `[size:int, data:元素]`），靠 `TypeNode::is_sequence` 判别。
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum TypeName {
+pub enum TypeKind {
     // ── 原语（无关联数据）──
     Bool,
     U8,            // UInt8, char, unsigned char
@@ -75,7 +77,7 @@ pub enum TypeName {
     I16,           // SInt16, short
     U32,           // UInt32, uint, unsigned int
     I32,           // SInt32, int, Type*, EntityId
-    U64,           // UInt64, unsigned long long, FileSize
+    U64,           // UInt64, FileSize, unsigned long long
     I64,           // SInt64, long long
     F32,           // float
     F64,           // double
@@ -83,60 +85,39 @@ pub enum TypeName {
     // ── 特殊容器 ──
     String,        // string, Utf8String — size + char[] + align
     TypelessData,  // size + u8[]
-    Array,         // [size, data]
-    Vector,        // vector, staticvector, set — 包装一个 Array
-    Map,           // map — Array of pair
-    Pair,          // first + second
+    Pair,          // first + second（两个子节点）
 
     // ── 引用 ──
     PPtr(String),  // target type name, e.g. "GameObject"
 
-    // ── 用户 struct ──
-    Struct(String), // struct name, e.g. "Vector3f"
+    // ── 用户 struct（含 vector/staticvector/set/map/Array，靠 is_sequence 区分）──
+    Struct(String), // struct name, e.g. "Vector3f"、"Array"
 }
 
-impl TypeName {
-    /// 从 Unity 原始类型字符串构造（含归一化）。
-    /// TPK 字符串和 AB 字符串都走这个函数，保证两端产出相同。
+impl TypeKind {
+    /// 从 Unity 原始类型字符串构造（含归一化别名）。
     pub fn from_unity(s: &str) -> Self {
         match s {
-            // 归一化别名
-            "short"            => Self::I16,
-            "ushort"           => Self::U16,
-            "int"              => Self::I32,
-            "uint"             => Self::U32,
-            "long long"        => Self::I64,
-            "unsigned short"   => Self::U16,
-            "unsigned int"     => Self::U32,
-            "unsigned long long" => Self::U64,
-            "unsigned char"    => Self::U8,
-            "signed char"      => Self::I8,
-            "Utf8String"       => Self::String,
-            // 已规范名
-            "bool"             => Self::Bool,
-            "UInt8" | "char"   => Self::U8,
-            "SInt8"            => Self::I8,
-            "UInt16"           => Self::U16,
-            "SInt16"           => Self::I16,
-            "UInt32"           => Self::U32,
-            "SInt32" | "Type*" | "EntityId" => Self::I32,
-            "UInt64" | "FileSize" => Self::U64,
-            "SInt64"           => Self::I64,
-            "float"            => Self::F32,
-            "double"           => Self::F64,
-            "string"           => Self::String,
-            "TypelessData"     => Self::TypelessData,
-            "Array"            => Self::Array,
-            "vector" | "staticvector" | "set" => Self::Vector,
-            "map"              => Self::Map,
-            "pair"             => Self::Pair,
-            // PPtr<T> 提取 target
+            "bool" => Self::Bool,
+            "UInt8" | "char" | "unsigned char" => Self::U8,
+            "SInt8" | "signed char" => Self::I8,
+            "UInt16" | "ushort" | "unsigned short" => Self::U16,
+            "SInt16" | "short" => Self::I16,
+            "UInt32" | "uint" | "unsigned int" => Self::U32,
+            "SInt32" | "int" | "Type*" | "EntityId" => Self::I32,
+            "UInt64" | "FileSize" | "unsigned long long" => Self::U64,
+            "SInt64" | "long long" => Self::I64,
+            "float" => Self::F32,
+            "double" => Self::F64,
+            "string" | "Utf8String" => Self::String,
+            "TypelessData" => Self::TypelessData,
+            "pair" => Self::Pair,
             s if s.starts_with("PPtr<") && s.ends_with('>') => {
-                let inner = &s[5..s.len()-1];
+                let inner = &s[5..s.len() - 1];
                 let target = inner.strip_prefix('$').unwrap_or(inner);
                 Self::PPtr(target.to_owned())
             }
-            // 其余 = 用户 struct
+            // 其余（含 "vector"/"staticvector"/"set"/"map"/"Array"）按 struct 处理
             other => Self::Struct(other.to_owned()),
         }
     }
@@ -146,21 +127,37 @@ impl TypeName {
 ### 3.2 TypeNode — 统一节点
 
 ```rust
-/// 归一化的 TypeTree 节点。
+/// 归一化的 TypeTree 节点（嵌套树）。
 /// TPK 节点池和 AB 扁平列表都转换为此格式。
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone)]
 pub struct TypeNode {
-    pub type_name: TypeName,
+    pub kind: TypeKind,
     pub name: String,         // 字段名："m_Width", "Array", "data"
     pub byte_size: i32,       // -1 = 变长
     pub version: i16,         // 节点 schema 版本
-    pub type_flags: u8,       // bit0 = Array/TypelessData
-    pub meta_flag: u32,       // 0x4000 = align, 0x8000 = child align
+    pub meta_flag: u32,       // 0x4000 = align
     pub children: Vec<TypeNode>,
+}
+
+const ALIGN_MASK: u32 = 0x4000;
+
+impl TypeNode {
+    /// 是否为集合（vector/staticvector/set/map/Array）——children[0] 是 `Array` 包装器。
+    pub fn is_sequence(&self) -> bool {
+        matches!(
+            self.children.first(),
+            Some(c) if matches!(&c.kind, TypeKind::Struct(s) if s == "Array")
+        )
+    }
+
+    pub fn is_aligned(&self) -> bool {
+        self.meta_flag & ALIGN_MASK != 0
+    }
 }
 ```
 
-`PartialEq` 递归比较全树——每个字段 + 子树。用于测试和调试。
+`type_flags` 不保留在 `TypeNode` 里——解释器用 `is_sequence()` 判断集合，不需要它。
+不做 `PartialEq/Eq` 派生（树比较当前无需求）。
 
 ### 3.3 从 AB-embedded TypeTree 构建
 
@@ -168,76 +165,44 @@ AB TypeTree 是**扁平节点数组**，用 `level: u8` 表达树深度。
 
 ```rust
 /// AB TypeTree 的原始扁平节点（从 SerializedFile 二进制读出）。
-pub struct AbRawNode {
-    pub version: u16,
+/// 字段全部保留（含 index / ref_type_hash），即便解释器当前不消费它们。
+#[derive(Debug, Clone)]
+pub struct BlobNode {
+    pub version: i16,
     pub level: u8,
     pub type_flags: u8,
     pub type_str_offset: u32,  // bit31=0 本地 buffer, bit31=1 CommonString
     pub name_str_offset: u32,
     pub byte_size: i32,
+    pub index: i32,
     pub meta_flag: u32,
-    // index, ref_type_hash 丢弃（解析不需要）
+    pub ref_type_hash: Option<u64>,  // version>=19 才读
 }
 
-impl TypeNode {
-    /// 从 AB 扁平节点列表构建 TypeNode 树。
-    ///
-    /// `string_buffer` 是 AB TypeTree 自带的字符串缓冲区。
-    /// `common` 是 Unity 全局 CommonString 表（~113 条硬编码）。
-    pub fn from_ab(
-        nodes: &[AbRawNode],
-        string_buffer: &[u8],
-        common: &CommonStringTable,
-    ) -> Option<Self> {
-        if nodes.is_empty() { return None; }
-        let mut idx = 0;
-        Self::build_ab_tree(nodes, &mut idx, 0, string_buffer, common)
-    }
+/// 读 blob 格式 TypeTree。返回 (扁平节点列表, 字符串缓冲)。
+/// 单节点磁盘布局 `{endian}hBBIIiii[Q]`（version>=19 加 u64 ref_type_hash），
+/// 定长 24（或 32）字节。对应 UnityPy `_get_blob_node_struct`。
+pub fn parse_blob(r: &mut Cursor, file_ver: u32) -> Result<(Vec<BlobNode>, Vec<u8>)> { /* … */ }
 
-    fn build_ab_tree(
-        nodes: &[AbRawNode],
-        idx: &mut usize,
-        expected_level: u8,
-        str_buf: &[u8],
-        common: &CommonStringTable,
-    ) -> Option<Self> {
-        if *idx >= nodes.len() { return None; }
-        let raw = &nodes[*idx];
-        if raw.level != expected_level { return None; }
-        *idx += 1;
+/// 把扁平节点列表按 `level` 还原成 `TypeNode` 嵌套树（递归）。
+/// `string_buffer` 是 AB TypeTree 自带的字符串缓冲区；
+/// bit31=1 的偏移走全局 CommonString 表（见 §3.4）。
+pub fn build_tree(flat: &[BlobNode], str_buf: &[u8]) -> Result<TypeNode> { /* … */ }
+```
 
-        let type_name = TypeName::from_unity(&resolve_str(raw.type_str_offset, str_buf, common));
-        let name = resolve_str(raw.name_str_offset, str_buf, common);
+`build_subtree` 内部按 `level` 递归：当前节点 `level == expected_level`，随后所有
+`level > expected_level` 的连续节点归为子树。类型名/字段名通过 `resolve_str` 解析：
 
-        let mut children = Vec::new();
-        while *idx < nodes.len() && nodes[*idx].level > expected_level {
-            children.push(Self::build_ab_tree(nodes, idx, expected_level + 1, str_buf, common)?);
-        }
-
-        Some(Self {
-            type_name,
-            name,
-            byte_size: raw.byte_size,
-            version: raw.version as i16,
-            type_flags: raw.type_flags,
-            meta_flag: raw.meta_flag,
-            children,
-        })
-    }
-}
-
-/// 解析 AB 字符串偏移。
-/// bit31=0: null-terminated string in local buffer
-/// bit31=1: index into CommonString table
-fn resolve_str(offset: u32, buf: &[u8], common: &CommonStringTable) -> String {
+```rust
+/// 解析 AB 字符串偏移：bit31=0 本地 buffer null-terminated；bit31=1 CommonString 索引。
+fn resolve_str(offset: u32, str_buf: &[u8]) -> String {
     if offset & 0x8000_0000 == 0 {
         let start = offset as usize;
-        let end = buf[start..].iter().position(|&b| b == 0)
-            .map(|p| start + p)
-            .unwrap_or(buf.len());
-        String::from_utf8_lossy(&buf[start..end]).into()
+        let end = str_buf[start..].iter().position(|&b| b == 0)
+            .map(|p| start + p).unwrap_or(str_buf.len());
+        String::from_utf8_lossy(&str_buf[start..end]).into_owned()
     } else {
-        common.get(offset & !0x8000_0000).to_owned()
+        common_string::get(offset & 0x7FFF_FFFF).to_owned()
     }
 }
 ```
@@ -245,26 +210,25 @@ fn resolve_str(offset: u32, buf: &[u8], common: &CommonStringTable) -> String {
 ### 3.4 CommonString 表
 
 Unity 硬编码的 ~113 个全局共享类型/字段名。AB TypeTree 用它去重常见字符串。
+实现为模块级自由函数 + 静态数组，不需要封装成 struct：
 
 ```rust
-/// 从 AssetRipper CommonString.cs 抄录的硬编码表。
-pub struct CommonStringTable;
-
-static COMMON: &[(u32, &str)] = &[
-    (0, ""),     (1, "AABB"),   (49, "Array"),  (222, "SInt32"),
-    (840, "string"), (894, "TypelessData"),
-    // ... 完整 113 条
-];
-
-impl CommonStringTable {
-    pub fn get(&self, offset: u32) -> &'static str {
-        COMMON.iter()
-            .find(|(k, _)| *k == offset)
-            .map(|(_, v)| *v)
-            .unwrap_or("")
-    }
+/// 按偏移取共享字符串；未命中返回空串。
+pub fn get(offset: u32) -> &'static str {
+    TABLE.iter()
+        .find(|(k, _)| *k == offset)
+        .map(|(_, v)| *v)
+        .unwrap_or("")
 }
+
+static TABLE: &[(u32, &str)] = &[
+    (0, "AABB"),   (5, "AnimationClip"),   (19, "AnimationCurve"),
+    (34, "AnimationState"),  (49, "Array"),  (55, "Base"),
+    // ... 完整 113 条，从 AssetRipper CommonString.cs 抄录
+];
 ```
+
+注意 offset 0 对应 `"AABB"`（非空串）——与 AssetRipper 一致。
 
 ### 3.5 从 TPK 构建（codegen 用）
 
@@ -282,11 +246,10 @@ impl TypeNode {
         let raw_type = strings[node.type_name_index as usize].as_str();
         let raw_name = strings[node.name_index as usize].as_str();
         Self {
-            type_name: TypeName::from_unity(raw_type),
+            kind: TypeKind::from_unity(raw_type),
             name: raw_name.to_owned(),
             byte_size: node.byte_size,
             version: node.node_version,
-            type_flags: node.type_flags,
             meta_flag: node.meta_flag,
             children: node.sub_nodes.iter()
                 .map(|&i| Self::from_tpk(i, pool, strings))
@@ -295,6 +258,8 @@ impl TypeNode {
     }
 }
 ```
+
+`type_flags` 不存进 `TypeNode`（解释器用 `is_sequence()` 判集合，不需要它）。
 
 ---
 
@@ -315,6 +280,7 @@ pub enum Value {
     F32(f32), F64(f64),
     String(String),
     Bytes(Vec<u8>),
+    Pair(Box<Value>, Box<Value>),
     Array(Vec<Value>),
     Struct(Vec<(String, Value)>),  // 保序字段列表
     PPtr(PPtrValue),
@@ -329,107 +295,115 @@ pub struct PPtrValue {
 
 ### 4.2 interpret — 递归走 TypeNode 读字节
 
+解释器用具体 `Cursor`（不用泛型 trait），`refs` 是 `[SerializeReference]` 引用类型查表。
+走完后校验 `cursor.pos() == data.len()`，不匹配报 `TypeTreeSizeMismatch`（版本不匹配的强信号）。
+
 ```rust
+/// 解释器上下文（Copy，因为只含不可变引用 + 一个 bool 标志）。
+#[derive(Clone, Copy)]
+struct Ctx<'a> {
+    ver: &'a UnityVersion,
+    refs: &'a RefTypeTable,
+    has_registry: bool,
+}
+
 /// TypeTree 解释器：按 node 的 TypeNode 树递归读字节。
 /// 用于 MonoBehaviour 和 typed parse 失败时的回退。
 pub fn interpret(
     data: &[u8],
-    node: &TypeNode,
+    root: &TypeNode,
     ver: &UnityVersion,
     endian: Endian,
-) -> Result<Value, ParseError> {
+    refs: &RefTypeTable,
+) -> Result<Value> {
     let mut r = Cursor::new(data, endian);
-    interpret_node(&mut r, node, ver)
+    let ctx = Ctx { ver, refs, has_registry: false };
+    let v = walk(&mut r, root, ctx)?;
+    if r.pos() != data.len() {
+        return Err(TypeTreeSizeMismatchSnafu { expected: data.len(), actual: r.pos() }.build());
+    }
+    Ok(v)
 }
 
-fn interpret_node<R: EndianReader>(
-    r: &mut R,
-    node: &TypeNode,
-    ver: &UnityVersion,
-) -> Result<Value, R::Error> {
-    let value = match &node.type_name {
-        TypeName::Bool  => Value::Bool(r.read_bool()?),
-        TypeName::U8    => Value::U8(r.read_u8()?),
-        TypeName::I8    => Value::I8(r.read_i8()?),
-        TypeName::U16   => Value::U16(r.read_u16()?),
-        TypeName::I16   => Value::I16(r.read_i16()?),
-        TypeName::U32   => Value::U32(r.read_u32()?),
-        TypeName::I32   => Value::I32(r.read_i32()?),
-        TypeName::U64   => Value::U64(r.read_u64()?),
-        TypeName::I64   => Value::I64(r.read_i64()?),
-        TypeName::F32   => Value::F32(r.read_f32()?),
-        TypeName::F64   => Value::F64(r.read_f64()?),
+fn walk(r: &mut Cursor, node: &TypeNode, ctx: Ctx) -> Result<Value> {
+    let mut align = node.meta_flag & ALIGN_MASK != 0;
 
-        TypeName::String => {
-            let n = r.read_i32()? as usize;
-            let bytes = r.read_bytes(n)?;
-            Value::String(String::from_utf8_lossy(&bytes).into())
+    let v = match &node.kind {
+        TypeKind::Bool  => Value::Bool(r.read_bool()?),
+        TypeKind::U8    => Value::U8(r.read_u8()?),
+        TypeKind::I8    => Value::I8(r.read_i8()?),
+        TypeKind::U16   => Value::U16(r.read_u16("u16")?),
+        TypeKind::I16   => Value::I16(r.read_i16("i16")?),
+        TypeKind::U32   => Value::U32(r.read_u32("u32")?),
+        TypeKind::I32   => Value::I32(r.read_i32("i32")?),
+        TypeKind::U64   => Value::U64(r.read_u64("u64")?),
+        TypeKind::I64   => Value::I64(r.read_i64("i64")?),
+        TypeKind::F32   => Value::F32(r.read_f32("f32")?),
+        TypeKind::F64   => Value::F64(r.read_f64("f64")?),
+
+        TypeKind::String => {
+            let n = r.read_i32("string len")? as usize;
+            let b = r.read_bytes(n, "string data")?;
+            let s = String::from_utf8_lossy(b).into_owned();
+            r.align(4);                         // ← 字符串数据后无条件对齐到 4
+            Value::String(s)
+        }
+        TypeKind::TypelessData => {
+            let n = r.read_i32("typeless len")? as usize;
+            Value::Bytes(r.read_bytes(n, "typeless data")?.to_vec())
         }
 
-        TypeName::TypelessData => {
-            let n = r.read_i32()? as usize;
-            Value::Bytes(r.read_bytes(n)?)
+        // pair → 两个子节点
+        TypeKind::Pair => {
+            let first = walk(r, &node.children[0], ctx)?;
+            let second = walk(r, &node.children[1], ctx)?;
+            Value::Pair(Box::new(first), Box::new(second))
         }
 
-        // vector / staticvector / set / map → 包一层 Array
-        TypeName::Vector | TypeName::Map => {
-            let array_node = &node.children[0]; // "Array" 子节点
-            read_array(r, array_node, ver)?
-        }
-
-        TypeName::Array => {
-            read_array(r, node, ver)?
-        }
-
-        TypeName::PPtr(_) => {
-            let file_id = r.read_i32()?;
-            let path_id = if *ver >= UnityVersion::new(5, 0, 0) {
-                r.read_i64()?
+        TypeKind::PPtr(_) => {
+            let file_id = r.read_i32("pptr file_id")?;
+            let path_id = if *ctx.ver >= UnityVersion::new(5, 0, 0) {
+                r.read_i64("pptr path_id")?
             } else {
-                r.read_i32()? as i64
+                r.read_i32("pptr path_id")? as i64
             };
             Value::PPtr(PPtrValue { file_id, path_id })
         }
 
-        // pair / Struct → 读子节点
-        TypeName::Pair | TypeName::Struct(_) => {
-            let mut fields = Vec::with_capacity(node.children.len());
-            for child in &node.children {
-                let name = child.name.clone();
-                let value = interpret_node(r, child, ver)?;
-                fields.push((name, value));
+        TypeKind::Struct(_) => {
+            if node.is_sequence() {
+                // vector / staticvector / set / map / Array：[size, N×element]
+                let array_wrapper = &node.children[0];   // "Array" 子节点
+                if array_wrapper.meta_flag & ALIGN_MASK != 0 {
+                    align = true;
+                }
+                let size = r.read_i32("array size")?;
+                let elem = &array_wrapper.children[1];   // [0]=size, [1]=data
+                let mut out = Vec::with_capacity((size as usize).min(4096));
+                for _ in 0..size {
+                    out.push(walk(r, elem, ctx)?);
+                }
+                Value::Array(out)
+            } else {
+                read_struct(r, node, ctx)?
             }
-            Value::Struct(fields)
         }
     };
 
-    // 对齐：meta_flag bit 0x4000
-    if node.meta_flag & 0x4000 != 0 {
-        r.align(4)?;
+    if align {
+        r.align(4);
     }
-
-    Ok(value)
-}
-
-/// Array 节点 = [size:int, data:element_type]
-fn read_array<R: EndianReader>(
-    r: &mut R,
-    array_node: &TypeNode,
-    ver: &UnityVersion,
-) -> Result<Value, R::Error> {
-    let count = r.read_i32()?;
-    // Array 的 children: [0]=size(int), [1]=data(元素类型)
-    let elem_node = &array_node.children[1];
-    let mut elements = Vec::with_capacity(count.min(1024) as usize);
-    for _ in 0..count {
-        elements.push(interpret_node(r, elem_node, ver)?);
-    }
-    Ok(Value::Array(elements))
+    Ok(v)
 }
 ```
 
-**对齐说明**：每个 `interpret_node` 调用结束后检查自己的 `meta_flag & 0x4000`。
-递归调用天然保证子节点的对齐在子节点自己的 interpret 里处理。
+`read_struct` 遍历子节点逐个 `walk`，产出 `Value::Struct(Vec<(String, Value)>)`；
+其中对 `ManagedReferencesRegistry`（同一对象只读一次）和
+`ReferencedObjectData`（用已读的 `type{class,ns,asm}` 兄弟字段查 `refs`）做特判。
+
+**对齐说明**：对齐来源有两个——①`meta_flag & 0x4000`（节点自身/集合的 Array 子节点）；
+②String 数据后无条件对齐到 4（Unity 字符串固定如此）。递归调用天然保证子节点对齐在
+子节点自己的 `walk` 里处理。
 
 ---
 
@@ -449,8 +423,9 @@ MonoBehaviour 解析产出一个 `Value::Struct`，包含基类字段 + 脚本�
 
 ```rust
 // 解析 MonoBehaviour
-let ab_tree = TypeNode::from_ab(ab_nodes, str_buf, &common)?;
-let value = interpret(data, &ab_tree, ver, endian)?;
+let (flat, str_buf) = parse_blob(&mut cursor, sf.version)?;
+let tree = build_tree(&flat, &str_buf)?;
+let value = interpret(data, &tree, ver, endian, &refs)?;
 
 // value 是 Value::Struct，例如：
 // Value::Struct([
@@ -490,39 +465,35 @@ typed parse 返回 `Err`。常见原因：
 /// 解析一个 SerializedFile object。
 ///
 /// `data` 是该 object 的原始字节（从 SerializedFile 的 block info 解出）。
-/// `ab_type_tree` 是 AB 内嵌 TypeTree（如果有）。
+/// `ab_type_tree` 是 AB 内嵌 TypeTree（已构建好的 `TypeNode` 根节点，如果有）。
 pub fn parse_object(
     data: &[u8],
     class_id: i32,
     ver: &UnityVersion,
     endian: Endian,
-    ab_type_tree: Option<(&[AbRawNode], &[u8])>,  // (nodes, string_buffer)
-) -> Result<ObjectValue, ParseError> {
+    refs: &RefTypeTable,
+    ab_type_tree: Option<&TypeNode>,
+) -> Result<ParsedObject, ParseError> {
 
     // ── MonoBehaviour：直接走 TypeTree ──
     if class_id == 114 {
-        let (nodes, str_buf) = ab_type_tree
-            .ok_or(ParseError::MonoBehaviourWithoutTypeTree)?;
-        let tree = TypeNode::from_ab(nodes, str_buf, &CommonStringTable)
-            .ok_or(ParseError::EmptyTypeTree)?;
-        let value = interpret(data, &tree, ver, endian)?;
-        return Ok(ObjectValue::Dynamic(value));
+        let tree = ab_type_tree.ok_or(ParseError::MonoBehaviourWithoutTypeTree)?;
+        let value = interpret(data, tree, ver, endian, refs)?;
+        return Ok(ParsedObject::Dynamic(value));
     }
 
     // ── 其他类型：先试 typed parse ──
     match crate::generated::parse_typed(class_id, data, ver, endian) {
-        Ok(typed) => Ok(ObjectValue::Typed(typed)),
+        Ok(typed) => Ok(ParsedObject::Typed(typed)),
         Err(typed_err) => {
             // 回退到 TypeTree 解释器
-            if let Some((nodes, str_buf)) = ab_type_tree {
+            if let Some(tree) = ab_type_tree {
                 log::warn!(
                     "classID {class_id}: typed parse failed ({typed_err}), \
                      falling back to TypeTree interpreter"
                 );
-                let tree = TypeNode::from_ab(nodes, str_buf, &CommonStringTable)
-                    .ok_or(ParseError::EmptyTypeTree)?;
-                let value = interpret(data, &tree, ver, endian)?;
-                Ok(ObjectValue::Dynamic(value))
+                let value = interpret(data, tree, ver, endian, refs)?;
+                Ok(ParsedObject::Dynamic(value))
             } else {
                 // AB 没有 TypeTree，无法回退
                 Err(typed_err)
@@ -532,11 +503,11 @@ pub fn parse_object(
 }
 ```
 
-### 6.3 ObjectValue — 统一返回类型
+### 6.3 ParsedObject — 统一返回类型
 
 ```rust
 /// 解析结果：typed struct 或动态 Value。
-pub enum ObjectValue {
+pub enum ParsedObject {
     /// codegen'd typed struct（大多数原生类型）
     Typed(UnityObject),
     /// TypeTree 解释器产出的动态值（MonoBehaviour + fallback）
@@ -547,11 +518,11 @@ pub enum ObjectValue {
 用户 match：
 
 ```rust
-match parse_object(data, class_id, ver, endian, ab_tt)? {
-    ObjectValue::Typed(UnityObject::Texture2D(tex)) => {
+match parse_object(data, class_id, ver, endian, &refs, ab_tree)? {
+    ParsedObject::Typed(UnityObject::Texture2D(tex)) => {
         println!("{}x{} {}", tex.m_width, tex.m_height, tex.m_name);
     }
-    ObjectValue::Dynamic(value) => {
+    ParsedObject::Dynamic(value) => {
         // MonoBehaviour 或 fallback
         if let Value::Struct(fields) = value {
             for (name, val) in fields {
@@ -564,173 +535,328 @@ match parse_object(data, class_id, ver, endian, ab_tt)? {
 
 ---
 
-## 7. Codegen 输出（变化点）
+## 7. 现状与目标
 
-### 7.1 不变的
+### 7.1 已实现（✅）
 
-- 扁平 struct + 版本门控（`Option<T>` + `if ver >= V`）
-- 对齐烤死（`meta_flag & 0x4000`）
-- 字段类型映射（`SInt32 → i32` 等）
-- 命名规则（`to_rust_field_name` / `to_rust_type_name`）
-
-### 7.2 变化的
-
-| 项 | 旧 | 新 |
+| 模块 | 位置 | 说明 |
 |---|---|---|
-| MonoBehaviour | 生成 typed struct（空壳） | **不生成**，从 `enum UnityObject` 排除 |
-| `enum UnityObject` | 含 MonoBehaviour 变体 | **移除** MonoBehaviour 变体 |
-| Parse trait | `fn parse(&mut R, ver)` | `fn parse(data: &[u8], ver, endian)` — 用 `&[u8]` 支持 fallback |
+| TypeTree 解释器 | `src/typetree/` | `TypeKind` + `TypeNode` + `Value` + `interpret()`（5 参，含 `&RefTypeTable`）+ `blob.rs` + `common_string.rs` + `RefTypeTable` |
+| SerializedFile 解析 | `src/serialized_file.rs` | 读 header / types / objects / ref_types，每个 type 可带内嵌 TypeNode |
+| Cursor | `src/cursor.rs` | 大/小端切换游标，`read_*` + `align` |
+| UnityVersion | `src/version.rs` | `{ major, minor, patch }` + `parse("2017.4.39f1")` |
+| Bundle 解包 | `src/bundle.rs` + `src/decompress.rs` | UnityFS + LZ4 |
+| codegen | `crates/codegen/` | TPK reader + 7 pass + emit |
+| generated structs | `crates/generated/` | ~412 class + ~903 subclass，含 `Parse` trait + `EndianReader` trait + `UnityObject` enum |
 
-### 7.3 Parse 签名变化
+### 7.2 待实现（⬜）
 
-**旧**（`&mut R`，无法回退）：
-```rust
-pub trait Parse: Sized {
-    fn parse<R: EndianReader>(r: &mut R, ver: &UnityVersion) -> Result<Self, R::Error>;
-}
-```
-
-**新**（`&[u8]`，支持回退）：
-```rust
-pub trait Parse: Sized {
-    fn parse(data: &[u8], ver: &UnityVersion, endian: Endian) -> Result<Self, ParseError>;
-}
-```
-
-每个生成函数内部创建 cursor，从 `data` 开头读。fallback 时用同一个 `data` 重新创建 cursor。
+| 改动 | 位置 | 说明 |
+|---|---|---|
+| **抽 unity-core crate** | `crates/unity-core/` | 共享 `UnityVersion` + `EndianReader` + `Parse` + `PPtr`；src/generated 都依赖它 |
+| **移除 MonoBehaviour + parent** | `crates/generated/` + `crates/codegen/` | 不生成 MB struct；不生成 parent 字段/enum/抽象类空壳 |
+| **impl EndianReader for Cursor** | `src/cursor.rs` | `impl unity_core::EndianReader for Cursor` |
+| **`object_parser.rs`** | `src/object_parser.rs` | dispatch：MonoBehaviour→TypeTree，其他→typed，失败→fallback |
+| **依赖 generated + unity-core** | `Cargo.toml` | 主 crate 加两个 dependency |
 
 ---
 
-## 8. SerializedFile 集成
+## 8. Parse 签名：不改
 
-SerializedFile 解析后，每个 object 有：
+之前的设计稿提议把 `Parse` trait 从 `&mut R` 改为 `&[u8]`。**不需要**——fallback 用 `&[u8]` 切片各自创建 Cursor 即可：
 
-```
-ObjectInfo {
-    class_id: i32,
-    data: &[u8],            // 解压后的对象字节
-    type_tree: Option<TypeTree>,  // AB 内嵌的 TypeTree（如果有）
+```rust
+// generated crate 的 Parse trait 来自 unity-core，签名不变
+// unity_core::Parse: fn parse<R: EndianReader>(r: &mut R, ver: &UnityVersion) -> Result<Self, R::Error>
+
+// 主 crate 的 dispatch：两条路径各自 new Cursor
+fn try_typed(class_id, data: &[u8], ver, endian) -> Result<UnityObject, Error> {
+    let mut cursor = Cursor::new(data, endian);  // Cursor 实现 unity_core::EndianReader
+    UnityObject::parse(class_id, &mut cursor, ver)  // ver 已是 unity_core::UnityVersion
+    //   ↑ 失败时丢弃 cursor，data 切片完好
+}
+
+fn try_dynamic(data: &[u8], tree: &TypeNode, ver, endian) -> Result<Value, Error> {
+    interpret(data, tree, ver, endian, &refs)
+    //   ↑ interpret 内部自己 new Cursor，不依赖上面的 cursor
 }
 ```
 
-集成流程：
+`data: &[u8]` 是不可变引用，typed parse 和 interpret 各自消费自己的 Cursor。**zero-cost fallback**。
+UnityVersion 不再需要桥接——主 crate 和 generated 共用 `unity_core::UnityVersion`。
+
+---
+
+## 9. 最终 Crate 结构
+
+```
+unity-asset-rs/                         # 主 crate（bin + lib）
+├── Cargo.toml                          # deps: bytes, lz4, snafu, unity-core, generated
+├── src/
+│   ├── lib.rs                          # 公开 API
+│   ├── bundle.rs                       # ✅ UnityFS 解包
+│   ├── cursor.rs                       # ✅ Cursor + Endian  →  ⬜ +impl EndianReader
+│   ├── decompress.rs                   # ✅ 解压注册表
+│   ├── error.rs                        # ✅ 错误类型
+│   ├── serialized_file.rs              # ✅ SerializedFile → objects + types + ref_types
+│   ├── version.rs                      # 删除（改用 unity_core::UnityVersion）
+│   ├── object_parser.rs                # ⬜ dispatch + fallback（唯一新增文件）
+│   └── typetree/                       # ✅ TypeTree 解释器（已完成）
+│       ├── mod.rs                      #    TypeKind, TypeNode, Value, PPtrValue, RefTypeTable
+│       ├── blob.rs                     #    AB TypeTree blob → 扁平节点 → 树
+│       ├── common_string.rs            #    113 条 CommonString 硬编码表
+│       └── interpret.rs                #    interpret() 递归走树
+│
+└── crates/
+    ├── unity-core/                     # ⬜ 新增：共享 crate（~150 行，零依赖）
+    │   └── src/
+    │       ├── lib.rs                  #    re-export
+    │       ├── version.rs              #    UnityVersion { major, minor, build } + parse()
+    │       ├── reader.rs               #    Endian, EndianReader trait, Parse trait
+    │       └── pptr.rs                 #    PPtr { m_file_id, m_path_id }
+    │
+    ├── codegen/                        # 离线工具（微调：去掉 parent 逻辑）
+    │   └── src/                        #    TPK reader + pipeline（无 ParentSpec）+ emit
+    │
+    └── generated/                      # ⬜ 微调：移除 MonoBehaviour + parent + 抽象类空壳
+        ├── Cargo.toml                  #    deps: unity-core
+        └── src/
+            ├── lib.rs                  #    use unity_core::*; + 模块声明
+            ├── class_id.rs             #    enum ClassIDType
+            ├── unity_object.rs         #    enum UnityObject（无 MB，无抽象类）
+            ├── classes/                #    扁平 struct（无 parent 字段）
+            └── subclasses/             #    Vector3f, StreamingInfo, ...
+```
+
+### 依赖关系
+
+```
+crates/unity-core     ←──零依赖──  (~150 行)
+       ↑          ↑
+       │          │
+       │   crates/generated       (depends on unity-core)
+       │          ↑
+       │          │
+       │   src/ (主 crate)         (depends on unity-core + generated)
+       │
+crates/codegen                   (不依赖 unity-core，只生成引用它的代码)
+```
+
+---
+
+## 10. object_parser.rs — dispatch 设计
+
+这是主 crate 里**唯一新增**的文件，负责把 SerializedFile 的每个 object 路由到正确的 parser。
 
 ```rust
-let bundle = load("x.bundle")?;
-let serialized = SerializedFile::parse(&bundle.files[0].data)?;
+//! src/object_parser.rs
+//! 对象解析 dispatch：MonoBehaviour → TypeTree，其他 → typed，失败 → fallback。
 
-for obj in &serialized.objects {
-    let class_id = obj.class_id;
-    let ver = &serialized.version;
-    let endian = serialized.endian;
-    let ab_tt = obj.type_tree.as_ref()
-        .map(|tt| (tt.nodes.as_slice(), tt.string_buffer.as_slice()));
+use crate::cursor::{Cursor, Endian};
+use crate::error::{Result, Error};
+use crate::serialized_file::{ObjectInfo, SerializedFile};
+use crate::typetree::{self, interpret, RefTypeTable, TypeNode, Value};
+use crate::version::UnityVersion;
+use generated::{ClassIDType, UnityObject};
 
-    match parse_object(obj.data, class_id, ver, endian, ab_tt) {
-        Ok(ObjectValue::Typed(typed)) => { /* Texture2D, Mesh, ... */ }
-        Ok(ObjectValue::Dynamic(value)) => { /* MonoBehaviour / fallback */ }
-        Err(e) => log::error!("Failed to parse classID {class_id}: {e}"),
+/// 解析结果。
+pub enum ParsedObject {
+    /// codegen'd typed struct（Texture2D, Mesh, ...）
+    Typed(UnityObject),
+    /// TypeTree 解释器产出（MonoBehaviour 或 fallback）
+    Dynamic(Value),
+}
+
+/// 解析单个对象。
+///
+/// 由 `SerializedFile::iter_objects()` 的调用方逐个调用。
+pub fn parse_object(
+    sf: &SerializedFile,
+    obj: &ObjectInfo,
+    refs: &RefTypeTable,
+) -> Result<ParsedObject> {
+    let data = obj.data(sf);
+    let class_id = obj.class_id(sf);
+    let ver = &sf.unity_version_parsed;
+    let endian = sf.endian;
+
+    // 获取该对象类型的 AB 内嵌 TypeTree（如果有）
+    let ab_tree = sf.types.get(obj.type_idx)
+        .and_then(|t| t.node.as_ref());
+
+    // ── MonoBehaviour (classID=114)：直接走 TypeTree ──
+    if class_id == 114 {
+        let tree = ab_tree.ok_or(Error::MonoBehaviourWithoutTypeTree)?;
+        let value = interpret(data, tree, ver, endian, refs)?;
+        return Ok(ParsedObject::Dynamic(value));
+    }
+
+    // ── 其他类型：先试 typed parse ──
+    match try_typed(class_id, data, ver, endian) {
+        Ok(typed) => Ok(ParsedObject::Typed(typed)),
+        Err(typed_err) => {
+            // 回退到 TypeTree
+            if let Some(tree) = ab_tree {
+                log::warn!("classID {class_id}: typed parse failed, falling back to TypeTree");
+                let value = interpret(data, tree, ver, endian, refs)?;
+                Ok(ParsedObject::Dynamic(value))
+            } else {
+                Err(typed_err)
+            }
+        }
+    }
+}
+
+/// 尝试 codegen'd typed parse。内部创建 Cursor。
+fn try_typed(
+    class_id: i32,
+    data: &[u8],
+    ver: &UnityVersion,
+    endian: Endian,
+) -> Result<UnityObject> {
+    let class = ClassIDType::from_i32(class_id)
+        .ok_or(Error::UnknownClassId { id: class_id })?;
+
+    let mut cursor = Cursor::new(data, endian);
+    let ver_g = generated::UnityVersion::new(ver.major, ver.minor, ver.patch);
+    let obj = UnityObject::parse(class, &mut cursor, &ver_g)
+        .map_err(|e| Error::TypedParse { class_id, source: Box::new(e) })?;
+    Ok(obj)
+}
+```
+
+### 用户调用端
+
+```rust
+let bundle = load("char_002_amiya.ab")?;
+let sf = SerializedFile::parse(&bundle.files[0].bytes, &bundle.files[0].name)?;
+let refs = sf.ref_type_table();
+
+for obj in &sf.objects {
+    match parse_object(&sf, obj, &refs)? {
+        ParsedObject::Typed(UnityObject::Texture2D(tex)) => {
+            println!("{}x{} {}", tex.m_width, tex.m_height, tex.m_name);
+        }
+        ParsedObject::Typed(UnityObject::Mesh(mesh)) => { /* ... */ }
+        ParsedObject::Dynamic(value) => {
+            // MonoBehaviour 或 fallback
+            if let Value::Struct(fields) = value {
+                for (name, val) in &fields {
+                    println!("  {name}: {val:?}");
+                }
+            }
+        }
+        _ => {}
     }
 }
 ```
 
-### AB TypeTree 存在性
-
-| 构建类型 | 原生类型 TypeTree | MonoBehaviour TypeTree |
-|---|---|---|
-| Editor build | ✅ 有 | ✅ 有 |
-| Release build（默认） | ❌ 通常被 strip | ✅ 始终有 |
-| Release + `BuildOptions.StripTypeTree` | ❌ | ❌（极少见）|
-
-所以：
-- 原生类型：正常走 typed parse（不依赖 AB TypeTree）
-- MonoBehaviour：正常走 TypeTree（AB TypeTree 存在）
-- Fallback：只在 editor build 或未被 strip 的 release build 中生效
-
 ---
 
-## 9. Crate 结构
+## 11. 具体改动清单
 
-```
-unity-asset-rs/
-├── crates/
-│   ├── codegen/              # 离线工具（不变）
-│   ├── generated/            # codegen 产物（微调：移除 MonoBehaviour）
-│   │   └── src/
-│   │       ├── lib.rs        # Parse trait, EndianReader, PPtr, UnityVersion
-│   │       ├── unity_object.rs  # enum UnityObject（无 MonoBehaviour 变体）
-│   │       └── classes/      # typed structs
-│   └── ...
-└── src/
-    ├── lib.rs
-    ├── bundle.rs             # UnityFS 解包（已有）
-    ├── decompress.rs         # 解压（已有）
-    ├── serialized_file.rs    # ★ 新增：SerializedFile 解析
-    ├── object_parser.rs      # ★ 新增：dispatch + fallback
-    └── typetree/             # ★ 新增：TypeTree 解释器
-        ├── mod.rs            # TypeNode, TypeName, Value, PPtrValue
-        ├── interpret.rs      # interpret() 递归走树
-        ├── from_ab.rs        # AB 扁平节点 → TypeNode 树
-        └── common_string.rs  # CommonString 硬编码表
+### 11.1 `crates/unity-core/` — 新增共享 crate
+
+抽出 `UnityVersion` + `Endian` + `EndianReader` trait + `Parse` trait + `PPtr`。
+主 crate 的 `src/version.rs` 删除，改用 `unity_core::UnityVersion`。
+generated 的 `lib.rs` 改为 `pub use unity_core::*;`。
+
+### 11.2 `crates/generated/` + `crates/codegen/` — 移除 MonoBehaviour + parent
+
+| 文件 | 改动 |
+|---|---|
+| `crates/codegen/src/ir.rs` | 删除 `ParentSpec` enum；`EmitClass` 删除 `parent` 字段，`own_fields` 改名 `fields` |
+| `crates/codegen/src/pipeline.rs` | p04 不算继承（改名 `create_class_skeletons`）；p05 不变（字段已扁平） |
+| `crates/codegen/src/emit.rs` | 不 emit parent 字段 / parent enum / parent parse 调用；跳过 `is_abstract`/`is_mono_behaviour` |
+| `src/unity_object.rs` | 删除 MonoBehaviour variant + match arm；删除抽象类 variant |
+| `src/classes/mono_behaviour.rs` | 删除 |
+| `src/classes/object.rs` `named_object.rs` `texture.rs` 等 | 删除（抽象类空壳不生成） |
+| `src/class_id.rs` | 保留 `MonoBehaviour = 114`（运行时识别用） |
+
+### 11.3 `src/cursor.rs` — impl EndianReader
+
+```rust
+impl unity_core::EndianReader for Cursor<'_> {
+    type Error = crate::error::Error;
+    // ... 各 read 方法委托给 Cursor 现有方法 ...
+}
 ```
 
-`typetree/` 模块是纯运行时代码（不在 codegen 里），依赖：
-- `TypeName` / `TypeNode` — 数据结构
-- `EndianReader` trait（从 generated crate 复用，或独立定义）
-- `UnityVersion`（同上）
+### 11.4 `src/object_parser.rs` — 新增
+
+见 §10 的完整代码。约 80 行。
+
+### 11.5 `Cargo.toml` — 加依赖
+
+```toml
+[dependencies]
+unity-core = { path = "crates/unity-core" }
+generated = { path = "crates/generated" }
+```
 
 ---
 
-## 10. 实施步骤
+## 12. 与 codegen-design.md / codegen-implementation.md 的关系
 
-| 阶段 | 产出 | 验证 |
+| 维度 | codegen-design.md | codegen-implementation.md | 本文档 |
+|---|---|---|---|
+| 角色 | 原始设计稿 | 当前实现记录 | **parse 路径的目标设计** |
+| Parse trait | `&mut R: EndianReader` | 同左 | **不改**（保持 `&mut R`） |
+| MonoBehaviour | 最小骨架 + token | 生成了空壳 struct | **不生成**，从 codegen 排除 |
+| dispatch | 在 generated 里 | 在 generated `unity_object.rs` | **移到主 crate** `object_parser.rs` |
+| TypeTree 解释器 | 未涉及 | 未涉及 | ✅ 已实现 `src/typetree/` |
+| fallback | 不存在 | 不存在 | try typed → fail → try TypeTree |
+
+**codegen 的 struct 生成逻辑**（命名、字段并集、版本门控、对齐）不受影响。
+唯一变化：codegen 跳过 MonoBehaviour，不再为其生成 struct。
+
+---
+
+## 13. 实施步骤（增量）
+
+| 步骤 | 改动 | 验证 |
 |---|---|---|
-| **P1** | `typetree/` 模块：TypeName + TypeNode + from_ab + CommonString | 单元测试：从 AB 读出 TypeNode 树 |
-| **P2** | `interpret()` + Value | 单元测试：给 TypeNode + bytes → Value，对照 UnityPy |
-| **P3** | `object_parser.rs`：dispatch + fallback | MonoBehaviour 解出 Value::Struct |
-| **P4** | `serialized_file.rs`：SerializedFile 解析 | 从 .bundle 提取 object list + AB TypeTree |
-| **P5** | 接入 `crates/generated`：typed parse | 原生类型解出 typed struct |
-| **P6** | 端到端验证 | 用 `char_002_amiya.ab` 解出全部对象，字段值对比 UnityPy |
-
-P1-P2 是核心工作量（~60%）。P4 的 SerializedFile 解析涉及 Unity 的 metadata 格式（big-endian header + serialized type info + object info table），有一定复杂度。
-
----
-
-## 11. 与 codegen-design.md 的关系
-
-| 维度 | codegen-design.md | 本文档 |
-|---|---|---|
-| parse 路径 | 只有 codegen'd typed parse | typed + TypeTree 解释器 + fallback |
-| MonoBehaviour | 最小骨架 + token 兜底 | **不 codegen**，直接走 TypeTree |
-| TPK 在 runtime | 不需要 | 不需要（相同） |
-| AB TypeTree | 提及但未设计 | **完整设计**（from_ab + CommonString + interpret） |
-| Value | 不存在 | 新增（MonoBehaviour + fallback 的输出） |
-| Parse 签名 | `&mut R` | `&[u8]`（支持 fallback） |
-| 比较逻辑 | — | **不做**（直接 try + fallback） |
-
-`codegen-design.md` 仍然有效，但 parse 路径部分（§4 的 parse 代码形态、§7.2 算法）
-以本文档为准。codegen 的 struct 生成逻辑（命名、字段并集、版本门控）不变。
+| **S1** | `crates/unity-core/` 新建（UnityVersion + traits + PPtr） | 编译通过 |
+| **S2** | `crates/generated/` 改依赖 unity-core + 去掉重复定义 | `cargo build -p generated` 通过 |
+| **S3** | codegen 去 parent（ir.rs + pipeline.rs + emit.rs）+ 去 MB + 重跑 | `cargo build --workspace` 通过 |
+| **S4** | `src/cursor.rs` 加 `impl unity_core::EndianReader for Cursor` | 编译通过 |
+| **S5** | `Cargo.toml` 加 unity-core + generated 依赖 | `cargo build` 通过 |
+| **S6** | `src/object_parser.rs`：dispatch + fallback | 单元测试（mock data） |
+| **S7** | 端到端：`char_002_amiya.ab` | 全部 object 解出，字段值对比 UnityPy |
 
 ---
 
-## 12. 设计取舍记录
+## 14. 设计取舍记录
 
 ### 为什么不做 TypeTree 比较？
 
-之前的讨论中考虑过：比较 AB TypeTree 和 TPK TypeTree，一致走 typed，不一致走 dynamic。
-最终放弃，原因：
+考虑过比较 AB TypeTree 和 TPK TypeTree，一致走 typed，不一致走 dynamic。放弃：
 
-1. **复杂度**：需要加载 TPK 到 runtime，做树比较，处理 prefix match（MonoBehaviour）
-2. **收益低**：typed parse 失败的情况很少（版本覆盖足够 + 引擎不魔改时不会失败）
-3. **Fallback 更简单**：try-catch 一行代码，无额外数据结构
-4. **性能**：不需要每次都比较两棵树
+1. **复杂度**：需要加载 TPK 到 runtime + 树比较 + prefix match
+2. **收益低**：typed parse 失败的情况很少
+3. **Fallback 更简单**：try-catch，无额外数据结构
 
 ### 为什么 MonoBehaviour 不 codegen？
 
-即使 codegen 了基类字段，脚本字段仍然需要 TypeTree 解释器。两套机制（codegen + interpret）
-共存增加复杂度。统一用 TypeTree 解释器，一步到位。
+脚本字段不在 TPK 里。即使 codegen 基类字段，脚本字段仍需 TypeTree 解释器。
+统一用 TypeTree，一步到位。
 
-### 为什么用 `&[u8]` 而不是 `&mut R`？
+### 为什么不改 Parse trait 签名？
 
-Fallback 需要在 typed parse 失败后从头重试。`&[u8]` 不可变引用让两条路径各自创建 cursor，
-天然支持重试。`&mut R` 失败后 reader 位置已乱，无法回退。
+`&mut R: EndianReader` 和 `&[u8]` 可以共存：dispatch 层持有 `&[u8]`，
+两条路径各自 `Cursor::new(data, endian)` 创建独立 cursor。
+typed parse 失败后，`data` 切片完好，直接喂给 interpret。不需要改任何生成代码。
+
+### 为什么 dispatch 在主 crate 而不在 generated？
+
+generated 是纯数据 crate（struct + Parse impl），不依赖 TypeTree 解释器。
+dispatch 需要 import 两侧（generated 的 UnityObject + typetree 的 interpret），
+放主 crate 最自然。generated 只依赖 unity-core，保持独立编译缓存。
+
+### 为什么抽 unity-core？
+
+之前 UnityVersion 有两份（主 crate `{major,minor,patch}` 和 generated `{major,minor,build}`），
+EndianReader trait 也在 generated 里定义、主 crate 需要 impl。抽出 unity-core 后：
+- 消除重复定义和类型不匹配
+- generated 只依赖 unity-core（~150 行零依赖），编译缓存更稳定
+- 主 crate 依赖 unity-core + generated，职责清晰

@@ -1,21 +1,12 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
-use crate::subclasses::joint_angle_limit2_d::JointAngleLimit2D;
+use crate::subclasses::joint_angle_limits2_d::JointAngleLimits2D;
 use crate::subclasses::joint_motor2_d::JointMotor2D;
 use crate::subclasses::vector2f::Vector2f;
-use super::anchored_joint2_d::AnchoredJoint2D;
-use super::joint2_d::Joint2D;
-
-#[derive(Debug, Clone)]
-pub enum HingeJoint2DParent {
-    Joint2D(Joint2D),
-    AnchoredJoint2D(AnchoredJoint2D),
-}
 
 #[derive(Debug, Clone)]
 pub struct HingeJoint2D {
-    pub parent: HingeJoint2DParent,
     pub m_game_object: PPtr,
     pub m_enabled: u8,
     pub m_collide_connected: Option<bool>,
@@ -30,7 +21,7 @@ pub struct HingeJoint2D {
     pub m_break_action: Option<i32>,
     pub m_motor: JointMotor2D,
     pub m_use_limits: bool,
-    pub m_angle_limits: JointAngleLimit2D,
+    pub m_angle_limits: JointAngleLimits2D,
     pub m_use_connected_anchor: Option<bool>,
 }
 
@@ -39,13 +30,6 @@ impl crate::Parse for HingeJoint2D {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            HingeJoint2DParent::Joint2D(Joint2D::parse(r, ver)?)
-        } else if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            HingeJoint2DParent::AnchoredJoint2D(AnchoredJoint2D::parse(r, ver)?)
-        } else {
-            panic!("无匹配的父类分支：version = {:?}", ver)
-        };
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_enabled = r.read_u8()?;
         r.align(4)?;
@@ -93,7 +77,7 @@ impl crate::Parse for HingeJoint2D {
         let m_motor = JointMotor2D::parse(r, ver)?;
         let m_use_limits = r.read_bool()?;
         r.align(4)?;
-        let m_angle_limits = JointAngleLimit2D::parse(r, ver)?;
+        let m_angle_limits = JointAngleLimits2D::parse(r, ver)?;
         let m_use_connected_anchor = if *ver >= crate::UnityVersion::new(2023, 1, 0) {
             Some(r.read_bool()?)
         } else {
@@ -101,7 +85,6 @@ impl crate::Parse for HingeJoint2D {
         };
 
         Ok(HingeJoint2D {
-            parent,
             m_game_object,
             m_enabled,
             m_collide_connected,

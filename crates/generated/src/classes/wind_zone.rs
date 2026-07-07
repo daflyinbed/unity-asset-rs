@@ -1,11 +1,9 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
-use super::behaviour::Behaviour;
 
 #[derive(Debug, Clone)]
 pub struct WindZone {
-    pub parent: Behaviour,
     pub m_game_object: PPtr,
     pub m_enabled: u8,
     pub m_mode: i32,
@@ -21,7 +19,6 @@ impl crate::Parse for WindZone {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Behaviour::parse(r, ver)?;
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_enabled = r.read_u8()?;
         r.align(4)?;
@@ -33,7 +30,6 @@ impl crate::Parse for WindZone {
         let m_wind_pulse_frequency = r.read_f32()?;
 
         Ok(WindZone {
-            parent,
             m_game_object,
             m_enabled,
             m_mode,

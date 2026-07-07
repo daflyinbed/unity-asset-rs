@@ -3,15 +3,10 @@
 //! - `bundle.rs` 用 `Endian::Big`（UnityFS 在磁盘上是 大端）。
 //! - `SerializedFile` 读到 endian 字节后切换。
 //! - TypeTree 解释器继承 SerializedFile 的 endian。
+//! - 通过 `impl EndianReader for Cursor` 桥接 generated crate 的 `Parse` trait。
 
 use crate::error::{DecompressSnafu, Result, TruncatedSnafu};
-
-/// 字节序。
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Endian {
-    Little,
-    Big,
-}
+pub use unity_core::Endian;
 
 /// 可切换字节序的带边界检查游标读取器。
 pub struct Cursor<'a> {
@@ -180,6 +175,77 @@ impl<'a> Cursor<'a> {
         let r = self.pos % alignment;
         if r != 0 {
             self.pos += alignment - r;
+        }
+    }
+}
+
+// ────────────────────────────────────────────────────────────────────
+// EndianReader impl：桥接 generated crate 的 Parse trait
+// ────────────────────────────────────────────────────────────────────
+
+impl unity_core::EndianReader for Cursor<'_> {
+    type Error = crate::error::Error;
+
+    fn read_bool(&mut self) -> Result<bool, Self::Error> {
+        self.read_u8().map(|b| b != 0)
+    }
+
+    fn read_i8(&mut self) -> Result<i8, Self::Error> {
+        self.read_i8()
+    }
+
+    fn read_u8(&mut self) -> Result<u8, Self::Error> {
+        self.read_u8()
+    }
+
+    fn read_i16(&mut self) -> Result<i16, Self::Error> {
+        self.read_i16("typed")
+    }
+
+    fn read_u16(&mut self) -> Result<u16, Self::Error> {
+        self.read_u16("typed")
+    }
+
+    fn read_i32(&mut self) -> Result<i32, Self::Error> {
+        self.read_i32("typed")
+    }
+
+    fn read_u32(&mut self) -> Result<u32, Self::Error> {
+        self.read_u32("typed")
+    }
+
+    fn read_i64(&mut self) -> Result<i64, Self::Error> {
+        self.read_i64("typed")
+    }
+
+    fn read_u64(&mut self) -> Result<u64, Self::Error> {
+        self.read_u64("typed")
+    }
+
+    fn read_f32(&mut self) -> Result<f32, Self::Error> {
+        self.read_f32("typed")
+    }
+
+    fn read_f64(&mut self) -> Result<f64, Self::Error> {
+        self.read_f64("typed")
+    }
+
+    fn read_bytes(&mut self, n: usize) -> Result<Vec<u8>, Self::Error> {
+        Ok(self.read_bytes(n, "typed")?.to_vec())
+    }
+
+    fn read_aligned_string(&mut self) -> Result<String, Self::Error> {
+        self.read_aligned_string("typed")
+    }
+
+    fn align(&mut self, n: usize) -> Result<(), Self::Error> {
+        Cursor::align(self, n);
+        Ok(())
+    }
+
+    fn make_error(&self, msg: &str) -> Self::Error {
+        crate::error::Error::TypedParse {
+            reason: msg.to_string(),
         }
     }
 }

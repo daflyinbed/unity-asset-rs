@@ -2,11 +2,9 @@
 
 use crate::PPtr;
 use crate::subclasses::source_asset_identifier::SourceAssetIdentifier;
-use super::asset_importer::AssetImporter;
 
 #[derive(Debug, Clone)]
 pub struct ScriptedImporter {
-    pub parent: AssetImporter,
     pub m_name: String,
     pub m_user_data: String,
     pub m_file_id_to_recycle_name: Option<Vec<(i64, String)>>,
@@ -23,7 +21,6 @@ impl crate::Parse for ScriptedImporter {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = AssetImporter::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_user_data = r.read_aligned_string()?;
@@ -63,7 +60,6 @@ impl crate::Parse for ScriptedImporter {
         let m_script = crate::PPtr::parse(r, ver)?;
 
         Ok(ScriptedImporter {
-            parent,
             m_name,
             m_user_data,
             m_file_id_to_recycle_name,

@@ -1,11 +1,9 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
-use super::named_object::NamedObject;
 
 #[derive(Debug, Clone)]
 pub struct LightingSettings {
-    pub parent: NamedObject,
     pub m_name: String,
     pub m_gi_workflow_mode: Option<i32>,
     pub m_enable_baked_lightmaps: bool,
@@ -65,7 +63,6 @@ impl crate::Parse for LightingSettings {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = NamedObject::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_gi_workflow_mode = if *ver >= crate::UnityVersion::new(2020, 1, 0) {
@@ -75,7 +72,6 @@ impl crate::Parse for LightingSettings {
         };
         let m_enable_baked_lightmaps = r.read_bool()?;
         let m_enable_realtime_lightmaps = r.read_bool()?;
-        r.align(4)?;
         let m_realtime_environment_lighting = r.read_bool()?;
         r.align(4)?;
         let m_bounce_scale = r.read_f32()?;
@@ -318,7 +314,6 @@ impl crate::Parse for LightingSettings {
         };
 
         Ok(LightingSettings {
-            parent,
             m_name,
             m_gi_workflow_mode,
             m_enable_baked_lightmaps,

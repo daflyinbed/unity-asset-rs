@@ -3,11 +3,9 @@
 use crate::PPtr;
 use crate::subclasses::cloth_constrain_coefficients::ClothConstrainCoefficients;
 use crate::subclasses::vector3f::Vector3f;
-use super::cloth::Cloth;
 
 #[derive(Debug, Clone)]
 pub struct SkinnedCloth {
-    pub parent: Cloth,
     pub m_game_object: PPtr,
     pub m_enabled: u8,
     pub m_bending_stiffness: f32,
@@ -28,7 +26,6 @@ impl crate::Parse for SkinnedCloth {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Cloth::parse(r, ver)?;
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_enabled = r.read_u8()?;
         r.align(4)?;
@@ -46,7 +43,6 @@ impl crate::Parse for SkinnedCloth {
         let m_coefficients = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ClothConstrainCoefficients::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
 
         Ok(SkinnedCloth {
-            parent,
             m_game_object,
             m_enabled,
             m_bending_stiffness,

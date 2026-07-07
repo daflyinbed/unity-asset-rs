@@ -9,11 +9,9 @@ use crate::subclasses::float_curve::FloatCurve;
 use crate::subclasses::p_ptr_curve::PPtrCurve;
 use crate::subclasses::quaternion_curve::QuaternionCurve;
 use crate::subclasses::vector3_curve::Vector3Curve;
-use super::animation_clip::AnimationClip;
 
 #[derive(Debug, Clone)]
 pub struct PreviewAnimationClip {
-    pub parent: AnimationClip,
     pub m_name: String,
     pub m_legacy: bool,
     pub m_compressed: bool,
@@ -41,7 +39,6 @@ impl crate::Parse for PreviewAnimationClip {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = AnimationClip::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_legacy = r.read_bool()?;
@@ -86,7 +83,6 @@ impl crate::Parse for PreviewAnimationClip {
         };
 
         Ok(PreviewAnimationClip {
-            parent,
             m_name,
             m_legacy,
             m_compressed,

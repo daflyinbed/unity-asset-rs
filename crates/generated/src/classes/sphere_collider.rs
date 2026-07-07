@@ -3,11 +3,9 @@
 use crate::PPtr;
 use crate::subclasses::bit_field::BitField;
 use crate::subclasses::vector3f::Vector3f;
-use super::collider::Collider;
 
 #[derive(Debug, Clone)]
 pub struct SphereCollider {
-    pub parent: Collider,
     pub m_game_object: PPtr,
     pub m_material: PPtr,
     pub m_is_trigger: bool,
@@ -25,7 +23,6 @@ impl crate::Parse for SphereCollider {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Collider::parse(r, ver)?;
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_material = crate::PPtr::parse(r, ver)?;
         let m_is_trigger = r.read_bool()?;
@@ -57,7 +54,6 @@ impl crate::Parse for SphereCollider {
         };
 
         Ok(SphereCollider {
-            parent,
             m_game_object,
             m_material,
             m_is_trigger,

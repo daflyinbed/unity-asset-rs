@@ -17,7 +17,9 @@ lz4_flex = "0.11"
 log = "0.4"
 snafu = "0.8"
 env_logger = "0.11"
+unity-core = { path = "crates/unity-core" }
+generated = { package = "unity-asset-generated", path = "crates/generated" }
 
 [workspace]
-members = ["crates/codegen", "crates/generated"]
+members = ["crates/codegen", "crates/generated", "crates/unity-core"]
 resolver = "3"

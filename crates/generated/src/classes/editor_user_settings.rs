@@ -1,11 +1,9 @@
 //! 自动生成。请勿手动修改。
 
 use crate::subclasses::config_setting::ConfigSetting;
-use super::object::Object;
 
 #[derive(Debug, Clone)]
 pub struct EditorUserSettings {
-    pub parent: Object,
     pub m_vc_user_name: Option<String>,
     pub m_config_values: Option<Vec<(String, String)>>,
     pub m_config_settings: Option<Vec<(String, ConfigSetting)>>,
@@ -41,7 +39,6 @@ impl crate::Parse for EditorUserSettings {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Object::parse(r, ver)?;
         let m_vc_user_name = if *ver >= crate::UnityVersion::new(3, 5, 0) {
             let v = r.read_aligned_string()?;
             r.align(4)?;
@@ -88,18 +85,13 @@ impl crate::Parse for EditorUserSettings {
         };
         let m_vc_debug_cmd = r.read_bool()?;
         let m_vc_debug_out = r.read_bool()?;
-        r.align(4)?;
         let m_semantic_merge_mode = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_i32()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_i32()?)
         } else {
             None
         };
         let m_vc_show_failed_checkout = if *ver >= crate::UnityVersion::new(5, 1, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
@@ -109,9 +101,7 @@ impl crate::Parse for EditorUserSettings {
             None
         };
         let m_vc_allow_async_update = if *ver >= crate::UnityVersion::new(5, 6, 6) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
@@ -173,9 +163,7 @@ impl crate::Parse for EditorUserSettings {
             None
         };
         let m_artifact_garbage_collection = if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
@@ -193,7 +181,6 @@ impl crate::Parse for EditorUserSettings {
         };
 
         Ok(EditorUserSettings {
-            parent,
             m_vc_user_name,
             m_config_values,
             m_config_settings,

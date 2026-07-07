@@ -2,11 +2,9 @@
 
 use crate::PPtr;
 use crate::subclasses::guid::Guid;
-use super::level_game_manager::LevelGameManager;
 
 #[derive(Debug, Clone)]
 pub struct Scene {
-    pub parent: LevelGameManager,
     pub m_pvs_data: Option<Vec<u8>>,
     pub m_scene_guid: Option<Guid>,
     pub m_pvs_objects_array: Option<Vec<PPtr>>,
@@ -22,7 +20,6 @@ impl crate::Parse for Scene {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = LevelGameManager::parse(r, ver)?;
         let m_pvs_data = if *ver >= crate::UnityVersion::new(3, 4, 0) {
             let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
             r.align(4)?;
@@ -56,18 +53,21 @@ impl crate::Parse for Scene {
             None
         };
         let m_static_renderers = if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?)
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
         let m_portals = if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?)
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
 
         Ok(Scene {
-            parent,
             m_pvs_data,
             m_scene_guid,
             m_pvs_objects_array,

@@ -2,11 +2,9 @@
 
 use crate::subclasses::asset_stats::AssetStats;
 use crate::subclasses::type_stats::TypeStats;
-use super::object::Object;
 
 #[derive(Debug, Clone)]
 pub struct ContentSummary {
-    pub parent: Object,
     pub m_serialized_file_size: u64,
     pub m_generated_file_size: Option<u64>,
     pub m_reused_serialized_file_size: Option<u64>,
@@ -27,7 +25,6 @@ impl crate::Parse for ContentSummary {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Object::parse(r, ver)?;
         let m_serialized_file_size = r.read_u64()?;
         let m_generated_file_size = if *ver >= crate::UnityVersion::new(6000, 4, 0) {
             Some(r.read_u64()?)
@@ -61,7 +58,6 @@ impl crate::Parse for ContentSummary {
         r.align(4)?;
 
         Ok(ContentSummary {
-            parent,
             m_serialized_file_size,
             m_generated_file_size,
             m_reused_serialized_file_size,

@@ -3,18 +3,9 @@
 use crate::PPtr;
 use crate::subclasses::guid::Guid;
 use crate::subclasses::serialized_shader::SerializedShader;
-use super::named_object::NamedObject;
-use super::text_asset::TextAsset;
-
-#[derive(Debug, Clone)]
-pub enum ShaderParent {
-    TextAsset(TextAsset),
-    NamedObject(NamedObject),
-}
 
 #[derive(Debug, Clone)]
 pub struct Shader {
-    pub parent: ShaderParent,
     pub m_name: String,
     pub m_script: Option<String>,
     pub m_parsed_form: Option<SerializedShader>,
@@ -22,11 +13,11 @@ pub struct Shader {
     pub platforms: Option<Vec<u32>>,
     pub m_dependencies: Option<Vec<PPtr>>,
     pub decompressed_size: Option<u32>,
-    pub offsets: Option<Vec<u32>>,
+    pub offsets: Option<Vec<Vec<u32>>>,
     pub m_shader_is_baked: Option<bool>,
     pub m_sub_program_blob: Option<Vec<u8>>,
-    pub compressed_lengths: Option<Vec<u32>>,
-    pub decompressed_lengths: Option<Vec<u32>>,
+    pub compressed_lengths: Option<Vec<Vec<u32>>>,
+    pub decompressed_lengths: Option<Vec<Vec<u32>>>,
     pub compressed_blob: Option<Vec<u8>>,
     pub stage_counts: Option<Vec<u32>>,
     pub m_non_modifiable_textures: Option<Vec<(String, PPtr)>>,
@@ -39,13 +30,6 @@ impl crate::Parse for Shader {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            ShaderParent::TextAsset(TextAsset::parse(r, ver)?)
-        } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            ShaderParent::NamedObject(NamedObject::parse(r, ver)?)
-        } else {
-            panic!("无匹配的父类分支：version = {:?}", ver)
-        };
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_script = if *ver >= crate::UnityVersion::new(3, 4, 0) {
@@ -70,12 +54,16 @@ impl crate::Parse for Shader {
             None
         };
         let platforms = if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?)
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
         let m_dependencies = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?)
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
@@ -85,7 +73,9 @@ impl crate::Parse for Shader {
             None
         };
         let offsets = if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?)
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
@@ -104,12 +94,16 @@ impl crate::Parse for Shader {
             None
         };
         let compressed_lengths = if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?)
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
         let decompressed_lengths = if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?)
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
@@ -146,7 +140,6 @@ impl crate::Parse for Shader {
         };
 
         Ok(Shader {
-            parent,
             m_name,
             m_script,
             m_parsed_form,

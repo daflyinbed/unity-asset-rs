@@ -1,11 +1,9 @@
 //! 自动生成。请勿手动修改。
 
 use crate::subclasses::quality_setting::QualitySetting;
-use super::global_game_manager::GlobalGameManager;
 
 #[derive(Debug, Clone)]
 pub struct QualitySettings {
-    pub parent: GlobalGameManager,
     pub m_default_standalone_quality: Option<i32>,
     pub m_current_quality: Option<i32>,
     pub m_default_web_player_quality: Option<i32>,
@@ -27,7 +25,6 @@ impl crate::Parse for QualitySettings {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = GlobalGameManager::parse(r, ver)?;
         let m_default_standalone_quality = if *ver >= crate::UnityVersion::new(3, 4, 0) {
             Some(r.read_i32()?)
         } else {
@@ -116,7 +113,6 @@ impl crate::Parse for QualitySettings {
         };
 
         Ok(QualitySettings {
-            parent,
             m_default_standalone_quality,
             m_current_quality,
             m_default_web_player_quality,

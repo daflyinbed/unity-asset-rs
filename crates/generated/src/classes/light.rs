@@ -8,11 +8,9 @@ use crate::subclasses::light_baking_output::LightBakingOutput;
 use crate::subclasses::shadow_settings::ShadowSettings;
 use crate::subclasses::vector2f::Vector2f;
 use crate::subclasses::vector4f::Vector4f;
-use super::behaviour::Behaviour;
 
 #[derive(Debug, Clone)]
 pub struct Light {
-    pub parent: Behaviour,
     pub m_game_object: PPtr,
     pub m_enabled: u8,
     pub m_type: i32,
@@ -57,7 +55,6 @@ impl crate::Parse for Light {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Behaviour::parse(r, ver)?;
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_enabled = r.read_u8()?;
         r.align(4)?;
@@ -82,6 +79,7 @@ impl crate::Parse for Light {
             None
         };
         let m_shadows = ShadowSettings::parse(r, ver)?;
+        r.align(4)?;
         let m_cookie_size2_d = if *ver >= crate::UnityVersion::new(6000, 3, 0) {
             Some(Vector2f::parse(r, ver)?)
         } else {
@@ -89,6 +87,7 @@ impl crate::Parse for Light {
         };
         let m_cookie = crate::PPtr::parse(r, ver)?;
         let m_draw_halo = r.read_bool()?;
+        r.align(4)?;
         let m_actually_lightmapped = if *ver >= crate::UnityVersion::new(3, 4, 0) {
             let v = r.read_bool()?;
             r.align(4)?;
@@ -104,7 +103,9 @@ impl crate::Parse for Light {
             None
         };
         let m_baking_output = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            Some(LightBakingOutput::parse(r, ver)?)
+            let v = LightBakingOutput::parse(r, ver)?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
@@ -162,16 +163,12 @@ impl crate::Parse for Light {
             None
         };
         let m_use_bounding_sphere_override = if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
         let m_use_view_frustum_for_shadow_caster_cull = if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
@@ -206,7 +203,6 @@ impl crate::Parse for Light {
         };
 
         Ok(Light {
-            parent,
             m_game_object,
             m_enabled,
             m_type,

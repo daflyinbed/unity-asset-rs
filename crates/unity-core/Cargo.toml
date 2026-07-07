@@ -1,0 +1,9 @@
+[package]
+name = "unity-core"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[lib]
+name = "unity_core"
+path = "src/lib.rs"

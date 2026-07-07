@@ -1,11 +1,9 @@
 //! 自动生成。请勿手动修改。
 
 use crate::subclasses::vector3f::Vector3f;
-use super::named_object::NamedObject;
 
 #[derive(Debug, Clone)]
 pub struct PhysicMaterial {
-    pub parent: NamedObject,
     pub m_name: String,
     pub dynamic_friction: Option<f32>,
     pub m_dynamic_friction: Option<f32>,
@@ -27,7 +25,6 @@ impl crate::Parse for PhysicMaterial {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = NamedObject::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let dynamic_friction = if *ver >= crate::UnityVersion::new(3, 4, 0) {
@@ -97,7 +94,6 @@ impl crate::Parse for PhysicMaterial {
         };
 
         Ok(PhysicMaterial {
-            parent,
             m_name,
             dynamic_friction,
             m_dynamic_friction,

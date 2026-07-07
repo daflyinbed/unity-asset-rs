@@ -4,11 +4,9 @@ use crate::PPtr;
 use crate::subclasses::color_rgba::ColorRgba;
 use crate::subclasses::hash128::Hash128;
 use crate::subclasses::vector4f::Vector4f;
-use super::behaviour::Behaviour;
 
 #[derive(Debug, Clone)]
 pub struct Terrain {
-    pub parent: Behaviour,
     pub m_game_object: PPtr,
     pub m_enabled: u8,
     pub m_terrain_data: PPtr,
@@ -59,7 +57,6 @@ impl crate::Parse for Terrain {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Behaviour::parse(r, ver)?;
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_enabled = r.read_u8()?;
         r.align(4)?;
@@ -90,7 +87,6 @@ impl crate::Parse for Terrain {
         };
         let m_draw_heightmap = r.read_bool()?;
         let m_draw_trees_and_foliage = r.read_bool()?;
-        r.align(4)?;
         let m_draw_instanced = if *ver >= crate::UnityVersion::new(2018, 3, 0) {
             Some(r.read_bool()?)
         } else {
@@ -149,7 +145,6 @@ impl crate::Parse for Terrain {
             None
         };
         let m_bake_light_probes_for_trees = r.read_bool()?;
-        r.align(4)?;
         let m_preserve_tree_prototype_layers = if *ver >= crate::UnityVersion::new(2018, 2, 0) {
             let v = r.read_bool()?;
             r.align(4)?;
@@ -159,6 +154,7 @@ impl crate::Parse for Terrain {
         };
         let m_dynamic_uvst = Vector4f::parse(r, ver)?;
         let m_chunk_dynamic_uvst = Vector4f::parse(r, ver)?;
+        r.align(4)?;
         let m_grouping_id = if *ver >= crate::UnityVersion::new(2018, 3, 0) {
             Some(r.read_i32()?)
         } else {
@@ -180,7 +176,9 @@ impl crate::Parse for Terrain {
             None
         };
         let m_enable_trees_and_details_ray_tracing = if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            Some(r.read_bool()?)
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
@@ -198,7 +196,6 @@ impl crate::Parse for Terrain {
         };
 
         Ok(Terrain {
-            parent,
             m_game_object,
             m_enabled,
             m_terrain_data,

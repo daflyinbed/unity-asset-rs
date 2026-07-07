@@ -3,11 +3,9 @@
 use crate::PPtr;
 use crate::subclasses::guid::Guid;
 use crate::subclasses::platform_settings_data::PlatformSettingsData;
-use super::object::Object;
 
 #[derive(Debug, Clone)]
 pub struct EditorUserBuildSettings {
-    pub parent: Object,
     pub m_build_location: Vec<String>,
     pub m_active_build_target: i32,
     pub m_selected_build_target_group: i32,
@@ -164,828 +162,3176 @@ impl crate::Parse for EditorUserBuildSettings {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Object::parse(r, ver)?;
-        let m_build_location = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_active_build_target = r.read_i32()?;
-        let m_selected_build_target_group = r.read_i32()?;
-        let m_active_build_target_group = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_selected_build_target = if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_active_platform_guid = if *ver >= crate::UnityVersion::new(6000, 0, 4) {
-            Some(Guid::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_selected_standalone_target = r.read_i32()?;
-        let m_architecture_flags = r.read_i32()?;
-        let m_active_build_platform_group_name = if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            let v = r.read_aligned_string()?;
+        let mut m_build_location = None;
+        let mut m_active_build_target = None;
+        let mut m_selected_build_target_group = None;
+        let mut m_active_build_target_group = None;
+        let mut m_selected_build_target = None;
+        let mut m_active_platform_guid = None;
+        let mut m_selected_standalone_target = None;
+        let mut m_architecture_flags = None;
+        let mut m_active_build_platform_group_name = None;
+        let mut m_selected_wii_subtarget = None;
+        let mut m_selected_psp2_subtarget = None;
+        let mut m_selected_facebook_target = None;
+        let mut m_selected_build_platform_group_name = None;
+        let mut m_development = None;
+        let mut m_selected_wii_debug_level = None;
+        let mut m_selected_ps3_subtarget = None;
+        let mut m_selected_ps4_subtarget = None;
+        let mut m_connect_profiler = None;
+        let mut m_selected_xbox_subtarget = None;
+        let mut m_ps4_hardware_target = None;
+        let mut m_selected_standalone_build_subtarget = None;
+        let mut m_allow_debugging = None;
+        let mut m_selected_xbox_run_method = None;
+        let mut m_selected_psm_subtarget = None;
+        let mut m_active_standalone_build_subtarget = None;
+        let mut m_web_player_streamed = None;
+        let mut m_selected_ios_build_type = None;
+        let mut m_selected_wii_u_debug_level = None;
+        let mut m_web_player_offline_deployment = None;
+        let mut m_selected_wii_u_build_output = None;
+        let mut m_android_build_system = None;
+        let mut m_web_player_na_cl_support = None;
+        let mut m_selected_wii_u_boot_mode = None;
+        let mut m_android_build_type = None;
+        let mut m_install_in_build_folder = None;
+        let mut m_android_release_minification = None;
+        let mut m_symlink_libraries = None;
+        let mut m_android_debug_minification = None;
+        let mut m_selected_android_subtarget = None;
+        let mut m_selected_android_etc2_fallback = None;
+        let mut m_android_device_socket_address = None;
+        let mut m_explicit_null_checks = None;
+        let mut m_web_gl_use_pre_built_unity_engine = None;
+        let mut m_android_current_deployment_target_id = None;
+        let mut m_enable_headless_mode = None;
+        let mut m_selected_compression_type = None;
+        let mut m_xbox_compressed_xex = None;
+        let mut m_web_player_deploy_online = None;
+        let mut m_need_submission_materials = None;
+        let mut m_symlink_trampoline = None;
+        let mut m_facebook_access_token = None;
+        let mut m_compress_with_ps_arc = None;
+        let mut m_selected_metro_build_type = None;
+        let mut m_selected_metro_target = None;
+        let mut m_build_with_deep_profiling_support = None;
+        let mut m_dataless_player = None;
+        let mut m_selected_metro_sdk = None;
+        let mut m_build_scripts_only = None;
+        let mut m_wait_for_player_connection = None;
+        let mut m_selected_diagnostic_setting = None;
+        let mut m_selected_black_berry_subtarget = None;
+        let mut m_generate_metro_reference_projects = None;
+        let mut m_selected_metro_build_and_run_deploy_target = None;
+        let mut m_selected_black_berry_build_type = None;
+        let mut m_web_gl_optimization_level = None;
+        let mut m_symlink_sources = None;
+        let mut m_wsa_holographic_remoting = None;
+        let mut m_selected_tizen_subtarget = None;
+        let mut m_selected_wsasdk = None;
+        let mut m_compress_files_in_package = None;
+        let mut m_build_with_code_coverage = None;
+        let mut m_selected_wsa_build_and_run_deploy_target = None;
+        let mut m_explicit_divide_by_zero_checks = None;
+        let mut m_move_package_to_disc_outer_edge = None;
+        let mut m_generate_wsa_reference_projects = None;
+        let mut m_wii_u_enable_net_api = None;
+        let mut m_force_installation = None;
+        let mut m_export_as_google_android_project = None;
+        let mut m_xbox_one_streaming_install_launch_chunk_range = None;
+        let mut m_selected_wsauwp_build_type = None;
+        let mut m_explicit_array_bounds_checks = None;
+        let mut m_selected_xbox_one_deploy_method = None;
+        let mut m_selected_wsa_subtarget = None;
+        let mut m_wsa_dot_net_native_enabled = None;
+        let mut m_create_solution_file_for_switch = None;
+        let mut m_create_rom_file_for_switch = None;
+        let mut m_selected_wsauwpsdk = None;
+        let mut m_nvn_graphics_debugger_for_switch = None;
+        let mut m_nvn_shader_debugging = None;
+        let mut m_generate_nintendo_switch_shader_info = None;
+        let mut m_enable_rom_compression_for_switch = None;
+        let mut m_save_adf_for_switch = None;
+        let mut m_nvn_draw_validation_light = None;
+        let mut m_force_optimize_script_compilation = None;
+        let mut m_xbox_one_username = None;
+        let mut m_enable_debug_pad_for_switch = None;
+        let mut m_rom_compression_type_for_switch = None;
+        let mut m_nvn_draw_validation_heavy = None;
+        let mut m_xbox_one_network_share_path = None;
+        let mut m_redirect_writes_to_host_mount_for_switch = None;
+        let mut m_nvn_draw_validation = None;
+        let mut m_enable_heap_inspector_for_switch = None;
+        let mut m_rom_compression_level_for_switch = None;
+        let mut m_rom_compression_config_for_switch = None;
+        let mut m_platform_settings = None;
+        let mut m_htcs_script_debugging_for_switch = None;
+        let mut m_build_app_bundle = None;
+        let mut m_use_legacy_nvn_pool_allocator_for_switch = None;
+        let mut m_android_create_symbols_zip = None;
+        let mut m_ps5_keep_package_files = None;
+        let mut m_android_create_symbols = None;
+        let mut m_override_max_texture_size = None;
+        let mut m_selected_wsauwpvs_version = None;
+        let mut m_android_use_legacy_sdk_tools = None;
+        let mut m_selected_ps5_subtarget = None;
+        let mut m_override_texture_compression = None;
+        let mut m_nvn_aftermath = None;
+        let mut m_selected_ps5_compression_type = None;
+        let mut m_enable_memory_tracker_for_switch = None;
+        let mut m_nvn_aftermath_level = None;
+        let mut m_selected_wsa_min_uwpsdk = None;
+        let mut m_selected_ps5_compression_level = None;
+        let mut m_il2_cpp_code_generation = None;
+        let mut m_wait_for_switch_memory_tracker_on_startup = None;
+        let mut m_facebook_create_package_for_submission = None;
+        let mut m_selected_wsa_architecture = None;
+        let mut m_ps5_workspace_name = None;
+        let mut m_windows_device_portal_address = None;
+        let mut m_enable_host_io_for_switch = None;
+        let mut m_windows_device_portal_username = None;
+        let mut m_selected_web_gl_subtarget = None;
+        let mut m_selected_xbox_one_deploy_drive = None;
+        let mut m_enable_unpublishable_errors_for_switch = None;
+        let mut m_web_gl_client_browser_type = None;
+        let mut m_web_gl_client_browser_path = None;
+        let mut m_web_gl_client_platform = None;
+        let mut m_macos_xcode_build_config = None;
+        let mut m_selected_embedded_linux_architecture = None;
+        let mut m_selected_windows_build_and_run_deploy_target = None;
+        let mut m_remote_device_info = None;
+        let mut m_remote_device_address = None;
+        let mut m_remote_device_username = None;
+        let mut m_remote_device_exports = None;
+        let mut m_path_on_remote_device = None;
+        let mut m_selected_qnx_os_version = None;
+        let mut m_selected_qnx_architecture = None;
+        let mut m_active_profile_path = None;
+        let mut m_active_build_profile = None;
+        let mut m_build_output_to_build_metadata_map = None;
+            m_build_location = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
+            m_active_build_target = Some(r.read_i32()?);
+        if *ver >= crate::UnityVersion::new(6000, 0, 4) {
+            m_active_platform_guid = Some(Guid::parse(r, ver)?);
+            m_selected_build_target = Some(r.read_i32()?);
+            m_active_build_target_group = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2023, 3, 0) {
+            m_selected_build_target = Some(r.read_i32()?);
+            m_active_build_target_group = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            m_active_build_target_group = Some(r.read_i32()?);
         } else {
-            None
-        };
-        let m_selected_wii_subtarget = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_selected_psp2_subtarget = if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_selected_facebook_target = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_selected_build_platform_group_name = if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            let v = r.read_aligned_string()?;
+        }
+            m_selected_build_target_group = Some(r.read_i32()?);
+        if *ver >= crate::UnityVersion::new(2021, 2, 0) {
+            m_active_build_platform_group_name = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_development = r.read_bool()?;
-        let m_selected_wii_debug_level = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_selected_ps3_subtarget = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_selected_ps4_subtarget = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_connect_profiler = r.read_bool()?;
-        let m_selected_xbox_subtarget = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_ps4_hardware_target = if *ver >= crate::UnityVersion::new(5, 3, 7) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_selected_standalone_build_subtarget = if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_allow_debugging = r.read_bool()?;
-        let m_selected_xbox_run_method = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_selected_psm_subtarget = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_active_standalone_build_subtarget = if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_web_player_streamed = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_selected_ios_build_type = if *ver >= crate::UnityVersion::new(5, 1, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_selected_wii_u_debug_level = if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_web_player_offline_deployment = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_selected_wii_u_build_output = if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_android_build_system = if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_web_player_na_cl_support = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_selected_wii_u_boot_mode = if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_android_build_type = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_install_in_build_folder = r.read_bool()?;
-        let m_android_release_minification = if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_symlink_libraries = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_bool()?;
+            m_selected_build_platform_group_name = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
         } else {
-            None
-        };
-        let m_android_debug_minification = if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            Some(r.read_i32()?)
+        }
+            m_selected_standalone_target = Some(r.read_i32()?);
+        if *ver >= crate::UnityVersion::new(2021, 2, 0) {
+            m_selected_standalone_build_subtarget = Some(r.read_i32()?);
+            m_active_standalone_build_subtarget = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
+        } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            m_selected_facebook_target = Some(r.read_i32()?);
         } else {
-            None
-        };
-        let m_selected_android_subtarget = r.read_i32()?;
-        let m_selected_android_etc2_fallback = if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_android_device_socket_address = if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            let v = r.read_aligned_string()?;
+        }
+            m_architecture_flags = Some(r.read_i32()?);
+        if *ver >= crate::UnityVersion::new(2023, 2, 0) {
+            m_selected_ps4_subtarget = Some(r.read_i32()?);
+            m_ps4_hardware_target = Some(r.read_i32()?);
+            m_selected_xbox_subtarget = Some(r.read_i32()?);
+            m_selected_ios_build_type = Some(r.read_i32()?);
+            m_android_build_system = Some(r.read_i32()?);
+            m_android_build_type = Some(r.read_i32()?);
+            m_android_release_minification = Some(r.read_i32()?);
+            m_android_debug_minification = Some(r.read_i32()?);
+            m_android_device_socket_address = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_explicit_null_checks = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_web_gl_use_pre_built_unity_engine = if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_android_current_deployment_target_id = if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            let v = r.read_aligned_string()?;
+            m_android_current_deployment_target_id = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_enable_headless_mode = if *ver >= crate::UnityVersion::new(4, 2, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_selected_compression_type = if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            m_selected_compression_type = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_xbox_compressed_xex = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_web_player_deploy_online = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = r.read_bool()?;
+        } else if *ver >= crate::UnityVersion::new(2023, 1, 0) {
+            m_selected_ps4_subtarget = Some(r.read_i32()?);
+            m_ps4_hardware_target = Some(r.read_i32()?);
+            m_selected_xbox_subtarget = Some(r.read_i32()?);
+            m_selected_ios_build_type = Some(r.read_i32()?);
+            m_android_build_system = Some(r.read_i32()?);
+            m_android_build_type = Some(r.read_i32()?);
+            m_android_release_minification = Some(r.read_i32()?);
+            m_android_debug_minification = Some(r.read_i32()?);
+            m_selected_android_etc2_fallback = Some(r.read_i32()?);
+            m_android_device_socket_address = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_need_submission_materials = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_symlink_trampoline = if *ver >= crate::UnityVersion::new(5, 1, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_facebook_access_token = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            let v = r.read_aligned_string()?;
+            m_android_current_deployment_target_id = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_compress_with_ps_arc = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_selected_metro_build_type = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_selected_metro_target = if *ver >= crate::UnityVersion::new(4, 2, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_build_with_deep_profiling_support = if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_dataless_player = if *ver >= crate::UnityVersion::new(2018, 2, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_selected_metro_sdk = if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_build_scripts_only = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_wait_for_player_connection = if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_selected_diagnostic_setting = if *ver >= crate::UnityVersion::new(2022, 3, 70) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            m_selected_compression_type = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_selected_black_berry_subtarget = if *ver >= crate::UnityVersion::new(4, 2, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_generate_metro_reference_projects = if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            let v = r.read_bool()?;
+        } else if *ver >= crate::UnityVersion::new(2022, 3, 70) {
+            m_selected_ps4_subtarget = Some(r.read_i32()?);
+            m_ps4_hardware_target = Some(r.read_i32()?);
+            m_selected_xbox_subtarget = Some(r.read_i32()?);
+            m_selected_ios_build_type = Some(r.read_i32()?);
+            m_android_build_system = Some(r.read_i32()?);
+            m_android_build_type = Some(r.read_i32()?);
+            m_android_release_minification = Some(r.read_i32()?);
+            m_android_debug_minification = Some(r.read_i32()?);
+            m_selected_android_etc2_fallback = Some(r.read_i32()?);
+            m_android_device_socket_address = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_selected_metro_build_and_run_deploy_target = if *ver >= crate::UnityVersion::new(4, 5, 3) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_selected_black_berry_build_type = if *ver >= crate::UnityVersion::new(4, 2, 0) {
-            let v = r.read_i32()?;
+            m_android_current_deployment_target_id = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_web_gl_optimization_level = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_symlink_sources = if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_wsa_holographic_remoting = if *ver >= crate::UnityVersion::new(2018, 2, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_selected_tizen_subtarget = if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            let v = r.read_i32()?;
+            m_selected_compression_type = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_selected_wsasdk = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_compress_files_in_package = if *ver >= crate::UnityVersion::new(5, 5, 1) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_build_with_code_coverage = if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_selected_wsa_build_and_run_deploy_target = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_explicit_divide_by_zero_checks = if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_move_package_to_disc_outer_edge = if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_generate_wsa_reference_projects = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_bool()?;
+            m_selected_diagnostic_setting = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_wii_u_enable_net_api = if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            let v = r.read_bool()?;
+        } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
+            m_selected_ps4_subtarget = Some(r.read_i32()?);
+            m_ps4_hardware_target = Some(r.read_i32()?);
+            m_selected_xbox_subtarget = Some(r.read_i32()?);
+            m_selected_ios_build_type = Some(r.read_i32()?);
+            m_android_build_system = Some(r.read_i32()?);
+            m_android_build_type = Some(r.read_i32()?);
+            m_android_release_minification = Some(r.read_i32()?);
+            m_android_debug_minification = Some(r.read_i32()?);
+            m_selected_android_etc2_fallback = Some(r.read_i32()?);
+            m_android_device_socket_address = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_force_installation = if *ver >= crate::UnityVersion::new(5, 6, 3) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_export_as_google_android_project = if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = r.read_bool()?;
+            m_android_current_deployment_target_id = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_xbox_one_streaming_install_launch_chunk_range = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_selected_wsauwp_build_type = if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_explicit_array_bounds_checks = if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_selected_xbox_one_deploy_method = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_selected_wsa_subtarget = if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_wsa_dot_net_native_enabled = if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_bool() }).collect::<Result<Vec<_>, _>>() } )?;
+            m_selected_compression_type = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_create_solution_file_for_switch = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_create_rom_file_for_switch = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_selected_wsauwpsdk = if *ver >= crate::UnityVersion::new(5, 5, 2) {
-            let v = r.read_aligned_string()?;
+        } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
+            m_selected_ps4_subtarget = Some(r.read_i32()?);
+            m_ps4_hardware_target = Some(r.read_i32()?);
+            m_selected_xbox_subtarget = Some(r.read_i32()?);
+            m_selected_ios_build_type = Some(r.read_i32()?);
+            m_android_build_system = Some(r.read_i32()?);
+            m_android_build_type = Some(r.read_i32()?);
+            m_android_release_minification = Some(r.read_i32()?);
+            m_android_debug_minification = Some(r.read_i32()?);
+            m_selected_android_etc2_fallback = Some(r.read_i32()?);
+            m_android_device_socket_address = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_nvn_graphics_debugger_for_switch = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            let v = r.read_bool()?;
+            m_android_current_deployment_target_id = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_nvn_shader_debugging = if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_generate_nintendo_switch_shader_info = if *ver >= crate::UnityVersion::new(2018, 4, 35) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_enable_rom_compression_for_switch = if *ver >= crate::UnityVersion::new(2019, 4, 38) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_save_adf_for_switch = if *ver >= crate::UnityVersion::new(2019, 4, 38) {
-            let v = r.read_bool()?;
+            m_selected_compression_type = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_nvn_draw_validation_light = if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_force_optimize_script_compilation = if *ver >= crate::UnityVersion::new(5, 2, 2) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_xbox_one_username = if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            let v = r.read_aligned_string()?;
+            m_facebook_access_token = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_enable_debug_pad_for_switch = if *ver >= crate::UnityVersion::new(5, 6, 2) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_rom_compression_type_for_switch = if *ver >= crate::UnityVersion::new(2019, 4, 38) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_nvn_draw_validation_heavy = if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_xbox_one_network_share_path = if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            let v = r.read_aligned_string()?;
+        } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
+            m_selected_psp2_subtarget = Some(r.read_i32()?);
+            m_selected_ps4_subtarget = Some(r.read_i32()?);
+            m_ps4_hardware_target = Some(r.read_i32()?);
+            m_selected_xbox_subtarget = Some(r.read_i32()?);
+            m_selected_ios_build_type = Some(r.read_i32()?);
+            m_android_build_system = Some(r.read_i32()?);
+            m_android_build_type = Some(r.read_i32()?);
+            m_android_release_minification = Some(r.read_i32()?);
+            m_android_debug_minification = Some(r.read_i32()?);
+            m_selected_android_etc2_fallback = Some(r.read_i32()?);
+            m_android_device_socket_address = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_redirect_writes_to_host_mount_for_switch = if *ver >= crate::UnityVersion::new(5, 6, 2) {
-            let v = r.read_bool()?;
+            m_android_current_deployment_target_id = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_nvn_draw_validation = if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_enable_heap_inspector_for_switch = if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_rom_compression_level_for_switch = if *ver >= crate::UnityVersion::new(2019, 4, 38) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_rom_compression_config_for_switch = if *ver >= crate::UnityVersion::new(2019, 4, 38) {
-            let v = r.read_aligned_string()?;
+            m_selected_compression_type = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_platform_settings = if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            m_facebook_access_token = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_htcs_script_debugging_for_switch = if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_build_app_bundle = if *ver >= crate::UnityVersion::new(2017, 4, 17) {
-            let v = r.read_bool()?;
+        } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
+            m_selected_psp2_subtarget = Some(r.read_i32()?);
+            m_selected_ps4_subtarget = Some(r.read_i32()?);
+            m_ps4_hardware_target = Some(r.read_i32()?);
+            m_selected_psm_subtarget = Some(r.read_i32()?);
+            m_selected_wii_u_debug_level = Some(r.read_i32()?);
+            m_selected_wii_u_build_output = Some(r.read_i32()?);
+            m_selected_wii_u_boot_mode = Some(r.read_i32()?);
+            m_selected_xbox_subtarget = Some(r.read_i32()?);
+            m_selected_ios_build_type = Some(r.read_i32()?);
+            m_android_build_system = Some(r.read_i32()?);
+            m_android_build_type = Some(r.read_i32()?);
+            m_android_release_minification = Some(r.read_i32()?);
+            m_android_debug_minification = Some(r.read_i32()?);
+            m_selected_android_etc2_fallback = Some(r.read_i32()?);
+            m_android_device_socket_address = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_use_legacy_nvn_pool_allocator_for_switch = if *ver >= crate::UnityVersion::new(2019, 4, 24) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_android_create_symbols_zip = if *ver >= crate::UnityVersion::new(2018, 4, 13) {
-            let v = r.read_bool()?;
+            m_selected_compression_type = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_ps5_keep_package_files = if *ver >= crate::UnityVersion::new(2019, 4, 23) {
-            let v = r.read_bool()?;
+            m_facebook_access_token = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_android_create_symbols = if *ver >= crate::UnityVersion::new(2021, 1, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_override_max_texture_size = if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_selected_wsauwpvs_version = if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            let v = r.read_aligned_string()?;
+        } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
+            m_selected_psp2_subtarget = Some(r.read_i32()?);
+            m_selected_ps4_subtarget = Some(r.read_i32()?);
+            m_ps4_hardware_target = Some(r.read_i32()?);
+            m_selected_psm_subtarget = Some(r.read_i32()?);
+            m_selected_wii_u_debug_level = Some(r.read_i32()?);
+            m_selected_wii_u_build_output = Some(r.read_i32()?);
+            m_selected_wii_u_boot_mode = Some(r.read_i32()?);
+            m_selected_xbox_subtarget = Some(r.read_i32()?);
+            m_selected_ios_build_type = Some(r.read_i32()?);
+            m_android_build_system = Some(r.read_i32()?);
+            m_android_build_type = Some(r.read_i32()?);
+            m_android_release_minification = Some(r.read_i32()?);
+            m_android_debug_minification = Some(r.read_i32()?);
+            m_android_device_socket_address = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_android_use_legacy_sdk_tools = if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_selected_ps5_subtarget = if *ver >= crate::UnityVersion::new(2019, 4, 23) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_override_texture_compression = if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            let v = r.read_i32()?;
+            m_selected_compression_type = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_nvn_aftermath = if *ver >= crate::UnityVersion::new(2022, 3, 49) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_selected_ps5_compression_type = if *ver >= crate::UnityVersion::new(2019, 4, 23) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_enable_memory_tracker_for_switch = if *ver >= crate::UnityVersion::new(2021, 3, 29) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_nvn_aftermath_level = if *ver >= crate::UnityVersion::new(6000, 0, 61) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_selected_wsa_min_uwpsdk = if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            let v = r.read_aligned_string()?;
+            m_facebook_access_token = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_selected_ps5_compression_level = if *ver >= crate::UnityVersion::new(2019, 4, 23) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_il2_cpp_code_generation = if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            let v = r.read_i32()?;
+        } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            m_selected_psp2_subtarget = Some(r.read_i32()?);
+            m_selected_ps4_subtarget = Some(r.read_i32()?);
+            m_ps4_hardware_target = Some(r.read_i32()?);
+            m_selected_psm_subtarget = Some(r.read_i32()?);
+            m_selected_wii_u_debug_level = Some(r.read_i32()?);
+            m_selected_wii_u_build_output = Some(r.read_i32()?);
+            m_selected_wii_u_boot_mode = Some(r.read_i32()?);
+            m_selected_xbox_subtarget = Some(r.read_i32()?);
+            m_selected_ios_build_type = Some(r.read_i32()?);
+            m_android_build_system = Some(r.read_i32()?);
+            m_android_build_type = Some(r.read_i32()?);
+            m_android_release_minification = Some(r.read_i32()?);
+            m_android_debug_minification = Some(r.read_i32()?);
+            m_facebook_access_token = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_wait_for_switch_memory_tracker_on_startup = if *ver >= crate::UnityVersion::new(2021, 3, 29) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_facebook_create_package_for_submission = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            let v = r.read_bool()?;
+        } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            m_selected_psp2_subtarget = Some(r.read_i32()?);
+            m_selected_ps4_subtarget = Some(r.read_i32()?);
+            m_ps4_hardware_target = Some(r.read_i32()?);
+            m_selected_psm_subtarget = Some(r.read_i32()?);
+            m_selected_wii_u_debug_level = Some(r.read_i32()?);
+            m_selected_wii_u_build_output = Some(r.read_i32()?);
+            m_selected_wii_u_boot_mode = Some(r.read_i32()?);
+            m_selected_xbox_subtarget = Some(r.read_i32()?);
+            m_selected_ios_build_type = Some(r.read_i32()?);
+            m_android_build_system = Some(r.read_i32()?);
+            m_android_build_type = Some(r.read_i32()?);
+            m_facebook_access_token = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
+        } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
+            m_selected_psp2_subtarget = Some(r.read_i32()?);
+            m_selected_ps4_subtarget = Some(r.read_i32()?);
+            m_ps4_hardware_target = Some(r.read_i32()?);
+            m_selected_psm_subtarget = Some(r.read_i32()?);
+            m_selected_wii_u_debug_level = Some(r.read_i32()?);
+            m_selected_wii_u_build_output = Some(r.read_i32()?);
+            m_selected_wii_u_boot_mode = Some(r.read_i32()?);
+            m_selected_xbox_subtarget = Some(r.read_i32()?);
+            m_selected_ios_build_type = Some(r.read_i32()?);
+            m_android_build_system = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(5, 4, 2) {
+            m_selected_psp2_subtarget = Some(r.read_i32()?);
+            m_selected_ps4_subtarget = Some(r.read_i32()?);
+            m_ps4_hardware_target = Some(r.read_i32()?);
+            m_selected_psm_subtarget = Some(r.read_i32()?);
+            m_selected_wii_u_debug_level = Some(r.read_i32()?);
+            m_selected_wii_u_build_output = Some(r.read_i32()?);
+            m_selected_wii_u_boot_mode = Some(r.read_i32()?);
+            m_selected_xbox_subtarget = Some(r.read_i32()?);
+            m_selected_xbox_run_method = Some(r.read_i32()?);
+            m_selected_ios_build_type = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
+            m_selected_psp2_subtarget = Some(r.read_i32()?);
+            m_selected_ps4_subtarget = Some(r.read_i32()?);
+            m_selected_ps3_subtarget = Some(r.read_i32()?);
+            m_selected_psm_subtarget = Some(r.read_i32()?);
+            m_selected_wii_u_debug_level = Some(r.read_i32()?);
+            m_selected_wii_u_build_output = Some(r.read_i32()?);
+            m_selected_wii_u_boot_mode = Some(r.read_i32()?);
+            m_selected_xbox_subtarget = Some(r.read_i32()?);
+            m_selected_xbox_run_method = Some(r.read_i32()?);
+            m_selected_ios_build_type = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(5, 3, 7) {
+            m_selected_psp2_subtarget = Some(r.read_i32()?);
+            m_selected_ps4_subtarget = Some(r.read_i32()?);
+            m_ps4_hardware_target = Some(r.read_i32()?);
+            m_selected_ps3_subtarget = Some(r.read_i32()?);
+            m_selected_psm_subtarget = Some(r.read_i32()?);
+            m_selected_wii_u_debug_level = Some(r.read_i32()?);
+            m_selected_wii_u_build_output = Some(r.read_i32()?);
+            m_selected_wii_u_boot_mode = Some(r.read_i32()?);
+            m_selected_xbox_subtarget = Some(r.read_i32()?);
+            m_selected_xbox_run_method = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(5, 2, 0) {
+            m_selected_psp2_subtarget = Some(r.read_i32()?);
+            m_selected_ps4_subtarget = Some(r.read_i32()?);
+            m_selected_ps3_subtarget = Some(r.read_i32()?);
+            m_selected_psm_subtarget = Some(r.read_i32()?);
+            m_selected_wii_u_debug_level = Some(r.read_i32()?);
+            m_selected_wii_u_build_output = Some(r.read_i32()?);
+            m_selected_wii_u_boot_mode = Some(r.read_i32()?);
+            m_selected_xbox_subtarget = Some(r.read_i32()?);
+            m_selected_xbox_run_method = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            m_selected_psp2_subtarget = Some(r.read_i32()?);
+            m_selected_ps4_subtarget = Some(r.read_i32()?);
+            m_selected_ps3_subtarget = Some(r.read_i32()?);
+            m_selected_psm_subtarget = Some(r.read_i32()?);
+            m_selected_xbox_subtarget = Some(r.read_i32()?);
+            m_selected_xbox_run_method = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(4, 5, 0) {
+            m_selected_psp2_subtarget = Some(r.read_i32()?);
+            m_selected_ps3_subtarget = Some(r.read_i32()?);
+            m_selected_xbox_subtarget = Some(r.read_i32()?);
+            m_selected_xbox_run_method = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
+            m_selected_wii_subtarget = Some(r.read_i32()?);
+            m_selected_ps3_subtarget = Some(r.read_i32()?);
+            m_selected_wii_debug_level = Some(r.read_i32()?);
+            m_selected_xbox_subtarget = Some(r.read_i32()?);
+            m_selected_xbox_run_method = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
+            m_selected_wii_subtarget = Some(r.read_i32()?);
+            m_selected_wii_debug_level = Some(r.read_i32()?);
+            m_selected_xbox_subtarget = Some(r.read_i32()?);
+            m_selected_xbox_run_method = Some(r.read_i32()?);
         } else {
-            None
-        };
-        let m_selected_wsa_architecture = if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            let v = r.read_aligned_string()?;
+            m_selected_wii_subtarget = Some(r.read_i32()?);
+        }
+            m_development = Some(r.read_bool()?);
+        if *ver >= crate::UnityVersion::new(2019, 3, 0) {
+        } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
+            m_dataless_player = Some(r.read_bool()?);
+        } else if *ver >= crate::UnityVersion::new(2018, 2, 0) {
+            m_dataless_player = Some(r.read_bool()?);
+            m_web_gl_use_pre_built_unity_engine = Some(r.read_bool()?);
+        } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
+            m_web_gl_use_pre_built_unity_engine = Some(r.read_bool()?);
+        } else {
+        }
+            m_connect_profiler = Some(r.read_bool()?);
+        if *ver >= crate::UnityVersion::new(6000, 5, 0) {
+            m_build_with_deep_profiling_support = Some(r.read_bool()?);
+            m_build_with_code_coverage = Some(r.read_bool()?);
+        } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
+            m_build_with_deep_profiling_support = Some(r.read_bool()?);
+        } else {
+        }
+            m_allow_debugging = Some(r.read_bool()?);
+        if *ver >= crate::UnityVersion::new(2019, 1, 0) {
+            m_wait_for_player_connection = Some(r.read_bool()?);
+        } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
+            m_wait_for_player_connection = Some(r.read_bool()?);
+            m_wsa_holographic_remoting = Some(r.read_bool()?);
+        } else if *ver >= crate::UnityVersion::new(2018, 2, 0) {
+            m_wsa_holographic_remoting = Some(r.read_bool()?);
+        } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
+        } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
+            m_web_player_streamed = Some(r.read_bool()?);
+            m_web_player_offline_deployment = Some(r.read_bool()?);
+        } else {
+            m_web_player_streamed = Some(r.read_bool()?);
+            m_web_player_offline_deployment = Some(r.read_bool()?);
+            m_web_player_na_cl_support = Some(r.read_bool()?);
+        }
+            m_install_in_build_folder = Some(r.read_bool()?);
+        if *ver >= crate::UnityVersion::new(6000, 4, 0) {
+            m_symlink_sources = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_enable_rom_compression_for_switch = Some(r.read_bool()?);
+            m_save_adf_for_switch = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_ps5_workspace_name = if *ver >= crate::UnityVersion::new(2019, 4, 23) {
-            let v = r.read_aligned_string()?;
+            m_rom_compression_type_for_switch = Some(r.read_i32()?);
+            m_rom_compression_level_for_switch = Some(r.read_i32()?);
+            m_rom_compression_config_for_switch = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_windows_device_portal_address = if *ver >= crate::UnityVersion::new(2019, 2, 0) {
-            let v = r.read_aligned_string()?;
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_generate_nintendo_switch_shader_info = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_enable_host_io_for_switch = if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_windows_device_portal_username = if *ver >= crate::UnityVersion::new(2019, 2, 0) {
-            let v = r.read_aligned_string()?;
+            m_nvn_aftermath_level = Some(r.read_i32()?);
+            m_nvn_draw_validation_light = Some(r.read_bool()?);
+            m_nvn_draw_validation_heavy = Some(r.read_bool()?);
+            m_enable_memory_tracker_for_switch = Some(r.read_bool()?);
+            m_wait_for_switch_memory_tracker_on_startup = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_enable_host_io_for_switch = Some(r.read_bool()?);
+            m_htcs_script_debugging_for_switch = Some(r.read_bool()?);
+            m_use_legacy_nvn_pool_allocator_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_selected_web_gl_subtarget = if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_selected_xbox_one_deploy_drive = if *ver >= crate::UnityVersion::new(2018, 2, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_enable_unpublishable_errors_for_switch = if *ver >= crate::UnityVersion::new(2022, 3, 57) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_web_gl_client_browser_type = if *ver >= crate::UnityVersion::new(2023, 2, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_web_gl_client_browser_path = if *ver >= crate::UnityVersion::new(2023, 2, 0) {
-            let v = r.read_aligned_string()?;
+            m_override_max_texture_size = Some(r.read_i32()?);
+            m_override_texture_compression = Some(r.read_i32()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_web_gl_client_platform = if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_macos_xcode_build_config = if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_selected_embedded_linux_architecture = if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_selected_windows_build_and_run_deploy_target = if *ver >= crate::UnityVersion::new(2023, 1, 10) {
-            let v = r.read_i32()?;
+            m_android_create_symbols = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(6000, 1, 0) {
+            m_symlink_sources = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_enable_rom_compression_for_switch = Some(r.read_bool()?);
+            m_save_adf_for_switch = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_remote_device_info = if *ver >= crate::UnityVersion::new(2021, 2, 14) {
-            let v = r.read_bool()?;
+            m_rom_compression_type_for_switch = Some(r.read_i32()?);
+            m_rom_compression_level_for_switch = Some(r.read_i32()?);
+            m_rom_compression_config_for_switch = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_remote_device_address = if *ver >= crate::UnityVersion::new(2021, 2, 14) {
-            let v = r.read_aligned_string()?;
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_generate_nintendo_switch_shader_info = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_remote_device_username = if *ver >= crate::UnityVersion::new(2021, 2, 14) {
-            let v = r.read_aligned_string()?;
+            m_nvn_aftermath = Some(r.read_bool()?);
+            m_nvn_draw_validation_light = Some(r.read_bool()?);
+            m_nvn_draw_validation_heavy = Some(r.read_bool()?);
+            m_enable_memory_tracker_for_switch = Some(r.read_bool()?);
+            m_wait_for_switch_memory_tracker_on_startup = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_enable_host_io_for_switch = Some(r.read_bool()?);
+            m_htcs_script_debugging_for_switch = Some(r.read_bool()?);
+            m_use_legacy_nvn_pool_allocator_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_remote_device_exports = if *ver >= crate::UnityVersion::new(2021, 2, 14) {
-            let v = r.read_aligned_string()?;
+            m_override_max_texture_size = Some(r.read_i32()?);
+            m_override_texture_compression = Some(r.read_i32()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_path_on_remote_device = if *ver >= crate::UnityVersion::new(2021, 2, 14) {
-            let v = r.read_aligned_string()?;
+            m_android_create_symbols = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(6000, 0, 61) {
+            m_symlink_sources = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_enable_rom_compression_for_switch = Some(r.read_bool()?);
+            m_save_adf_for_switch = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_selected_qnx_os_version = if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_selected_qnx_architecture = if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_active_profile_path = if *ver >= crate::UnityVersion::new(6000, 0, 0) {
-            let v = r.read_aligned_string()?;
+            m_rom_compression_type_for_switch = Some(r.read_i32()?);
+            m_rom_compression_level_for_switch = Some(r.read_i32()?);
+            m_rom_compression_config_for_switch = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_active_build_profile = if *ver >= crate::UnityVersion::new(6000, 0, 20) {
-            Some(crate::PPtr::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_build_output_to_build_metadata_map = if *ver >= crate::UnityVersion::new(6000, 4, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_generate_nintendo_switch_shader_info = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
+            m_nvn_aftermath_level = Some(r.read_i32()?);
+            m_nvn_draw_validation_light = Some(r.read_bool()?);
+            m_nvn_draw_validation_heavy = Some(r.read_bool()?);
+            m_enable_memory_tracker_for_switch = Some(r.read_bool()?);
+            m_wait_for_switch_memory_tracker_on_startup = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_enable_host_io_for_switch = Some(r.read_bool()?);
+            m_htcs_script_debugging_for_switch = Some(r.read_bool()?);
+            m_use_legacy_nvn_pool_allocator_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_override_max_texture_size = Some(r.read_i32()?);
+            m_override_texture_compression = Some(r.read_i32()?);
+            r.align(4)?;
+            m_android_create_symbols = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2023, 3, 0) {
+            m_symlink_sources = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_enable_rom_compression_for_switch = Some(r.read_bool()?);
+            m_save_adf_for_switch = Some(r.read_bool()?);
+            r.align(4)?;
+            m_rom_compression_type_for_switch = Some(r.read_i32()?);
+            m_rom_compression_level_for_switch = Some(r.read_i32()?);
+            m_rom_compression_config_for_switch = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_generate_nintendo_switch_shader_info = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_aftermath = Some(r.read_bool()?);
+            m_nvn_draw_validation_light = Some(r.read_bool()?);
+            m_nvn_draw_validation_heavy = Some(r.read_bool()?);
+            m_enable_memory_tracker_for_switch = Some(r.read_bool()?);
+            m_wait_for_switch_memory_tracker_on_startup = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_enable_host_io_for_switch = Some(r.read_bool()?);
+            m_htcs_script_debugging_for_switch = Some(r.read_bool()?);
+            m_use_legacy_nvn_pool_allocator_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_override_max_texture_size = Some(r.read_i32()?);
+            m_override_texture_compression = Some(r.read_i32()?);
+            r.align(4)?;
+            m_android_create_symbols = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2023, 3, 0) {
+            m_symlink_sources = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_enable_rom_compression_for_switch = Some(r.read_bool()?);
+            m_save_adf_for_switch = Some(r.read_bool()?);
+            r.align(4)?;
+            m_rom_compression_type_for_switch = Some(r.read_i32()?);
+            m_rom_compression_level_for_switch = Some(r.read_i32()?);
+            m_rom_compression_config_for_switch = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_generate_nintendo_switch_shader_info = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_aftermath = Some(r.read_bool()?);
+            m_nvn_draw_validation_light = Some(r.read_bool()?);
+            m_nvn_draw_validation_heavy = Some(r.read_bool()?);
+            m_enable_memory_tracker_for_switch = Some(r.read_bool()?);
+            m_wait_for_switch_memory_tracker_on_startup = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_htcs_script_debugging_for_switch = Some(r.read_bool()?);
+            m_use_legacy_nvn_pool_allocator_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_override_max_texture_size = Some(r.read_i32()?);
+            m_override_texture_compression = Some(r.read_i32()?);
+            r.align(4)?;
+            m_android_create_symbols = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2023, 2, 0) {
+            m_symlink_sources = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_enable_rom_compression_for_switch = Some(r.read_bool()?);
+            m_save_adf_for_switch = Some(r.read_bool()?);
+            r.align(4)?;
+            m_rom_compression_type_for_switch = Some(r.read_i32()?);
+            m_rom_compression_level_for_switch = Some(r.read_i32()?);
+            m_rom_compression_config_for_switch = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_generate_nintendo_switch_shader_info = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation_light = Some(r.read_bool()?);
+            m_nvn_draw_validation_heavy = Some(r.read_bool()?);
+            m_enable_memory_tracker_for_switch = Some(r.read_bool()?);
+            m_wait_for_switch_memory_tracker_on_startup = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_htcs_script_debugging_for_switch = Some(r.read_bool()?);
+            m_use_legacy_nvn_pool_allocator_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_override_max_texture_size = Some(r.read_i32()?);
+            m_override_texture_compression = Some(r.read_i32()?);
+            r.align(4)?;
+            m_android_create_symbols = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2023, 2, 0) {
+            m_symlink_sources = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_enable_rom_compression_for_switch = Some(r.read_bool()?);
+            m_save_adf_for_switch = Some(r.read_bool()?);
+            r.align(4)?;
+            m_rom_compression_type_for_switch = Some(r.read_i32()?);
+            m_rom_compression_level_for_switch = Some(r.read_i32()?);
+            m_rom_compression_config_for_switch = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_generate_nintendo_switch_shader_info = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation_light = Some(r.read_bool()?);
+            m_nvn_draw_validation_heavy = Some(r.read_bool()?);
+            m_enable_heap_inspector_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_htcs_script_debugging_for_switch = Some(r.read_bool()?);
+            m_use_legacy_nvn_pool_allocator_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_override_max_texture_size = Some(r.read_i32()?);
+            m_override_texture_compression = Some(r.read_i32()?);
+            r.align(4)?;
+            m_android_create_symbols = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2023, 1, 4) {
+            m_symlink_sources = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_enable_rom_compression_for_switch = Some(r.read_bool()?);
+            m_save_adf_for_switch = Some(r.read_bool()?);
+            r.align(4)?;
+            m_rom_compression_type_for_switch = Some(r.read_i32()?);
+            m_rom_compression_level_for_switch = Some(r.read_i32()?);
+            m_rom_compression_config_for_switch = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_generate_nintendo_switch_shader_info = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation_light = Some(r.read_bool()?);
+            m_nvn_draw_validation_heavy = Some(r.read_bool()?);
+            m_enable_memory_tracker_for_switch = Some(r.read_bool()?);
+            m_wait_for_switch_memory_tracker_on_startup = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_htcs_script_debugging_for_switch = Some(r.read_bool()?);
+            m_use_legacy_nvn_pool_allocator_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_override_max_texture_size = Some(r.read_i32()?);
+            m_override_texture_compression = Some(r.read_i32()?);
+            r.align(4)?;
+            m_android_create_symbols = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2023, 1, 0) {
+            m_symlink_sources = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_enable_rom_compression_for_switch = Some(r.read_bool()?);
+            m_save_adf_for_switch = Some(r.read_bool()?);
+            r.align(4)?;
+            m_rom_compression_type_for_switch = Some(r.read_i32()?);
+            m_rom_compression_level_for_switch = Some(r.read_i32()?);
+            m_rom_compression_config_for_switch = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_generate_nintendo_switch_shader_info = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation_light = Some(r.read_bool()?);
+            m_nvn_draw_validation_heavy = Some(r.read_bool()?);
+            m_enable_heap_inspector_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_htcs_script_debugging_for_switch = Some(r.read_bool()?);
+            m_use_legacy_nvn_pool_allocator_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_override_max_texture_size = Some(r.read_i32()?);
+            m_override_texture_compression = Some(r.read_i32()?);
+            r.align(4)?;
+            m_android_create_symbols = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2022, 3, 57) {
+            m_symlink_sources = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_enable_rom_compression_for_switch = Some(r.read_bool()?);
+            m_save_adf_for_switch = Some(r.read_bool()?);
+            r.align(4)?;
+            m_rom_compression_type_for_switch = Some(r.read_i32()?);
+            m_rom_compression_level_for_switch = Some(r.read_i32()?);
+            m_rom_compression_config_for_switch = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_generate_nintendo_switch_shader_info = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_aftermath = Some(r.read_bool()?);
+            m_nvn_draw_validation_light = Some(r.read_bool()?);
+            m_nvn_draw_validation_heavy = Some(r.read_bool()?);
+            m_enable_memory_tracker_for_switch = Some(r.read_bool()?);
+            m_wait_for_switch_memory_tracker_on_startup = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_htcs_script_debugging_for_switch = Some(r.read_bool()?);
+            m_use_legacy_nvn_pool_allocator_for_switch = Some(r.read_bool()?);
+            m_enable_unpublishable_errors_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_override_max_texture_size = Some(r.read_i32()?);
+            m_override_texture_compression = Some(r.read_i32()?);
+            r.align(4)?;
+            m_android_create_symbols = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2022, 3, 49) {
+            m_symlink_sources = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_enable_rom_compression_for_switch = Some(r.read_bool()?);
+            m_save_adf_for_switch = Some(r.read_bool()?);
+            r.align(4)?;
+            m_rom_compression_type_for_switch = Some(r.read_i32()?);
+            m_rom_compression_level_for_switch = Some(r.read_i32()?);
+            m_rom_compression_config_for_switch = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_generate_nintendo_switch_shader_info = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_aftermath = Some(r.read_bool()?);
+            m_nvn_draw_validation_light = Some(r.read_bool()?);
+            m_nvn_draw_validation_heavy = Some(r.read_bool()?);
+            m_enable_memory_tracker_for_switch = Some(r.read_bool()?);
+            m_wait_for_switch_memory_tracker_on_startup = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_htcs_script_debugging_for_switch = Some(r.read_bool()?);
+            m_use_legacy_nvn_pool_allocator_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_override_max_texture_size = Some(r.read_i32()?);
+            m_override_texture_compression = Some(r.read_i32()?);
+            r.align(4)?;
+            m_android_create_symbols = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2022, 3, 5) {
+            m_symlink_sources = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_enable_rom_compression_for_switch = Some(r.read_bool()?);
+            m_save_adf_for_switch = Some(r.read_bool()?);
+            r.align(4)?;
+            m_rom_compression_type_for_switch = Some(r.read_i32()?);
+            m_rom_compression_level_for_switch = Some(r.read_i32()?);
+            m_rom_compression_config_for_switch = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_generate_nintendo_switch_shader_info = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation_light = Some(r.read_bool()?);
+            m_nvn_draw_validation_heavy = Some(r.read_bool()?);
+            m_enable_memory_tracker_for_switch = Some(r.read_bool()?);
+            m_wait_for_switch_memory_tracker_on_startup = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_htcs_script_debugging_for_switch = Some(r.read_bool()?);
+            m_use_legacy_nvn_pool_allocator_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_override_max_texture_size = Some(r.read_i32()?);
+            m_override_texture_compression = Some(r.read_i32()?);
+            r.align(4)?;
+            m_android_create_symbols = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
+            m_symlink_sources = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_enable_rom_compression_for_switch = Some(r.read_bool()?);
+            m_save_adf_for_switch = Some(r.read_bool()?);
+            r.align(4)?;
+            m_rom_compression_type_for_switch = Some(r.read_i32()?);
+            m_rom_compression_level_for_switch = Some(r.read_i32()?);
+            m_rom_compression_config_for_switch = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_generate_nintendo_switch_shader_info = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation_light = Some(r.read_bool()?);
+            m_nvn_draw_validation_heavy = Some(r.read_bool()?);
+            m_enable_heap_inspector_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_htcs_script_debugging_for_switch = Some(r.read_bool()?);
+            m_use_legacy_nvn_pool_allocator_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_override_max_texture_size = Some(r.read_i32()?);
+            m_override_texture_compression = Some(r.read_i32()?);
+            r.align(4)?;
+            m_android_create_symbols = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
+            m_symlink_sources = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_generate_nintendo_switch_shader_info = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation_light = Some(r.read_bool()?);
+            m_nvn_draw_validation_heavy = Some(r.read_bool()?);
+            m_enable_heap_inspector_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_htcs_script_debugging_for_switch = Some(r.read_bool()?);
+            m_use_legacy_nvn_pool_allocator_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_override_max_texture_size = Some(r.read_i32()?);
+            m_override_texture_compression = Some(r.read_i32()?);
+            r.align(4)?;
+            m_android_create_symbols = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
+            m_symlink_sources = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_generate_nintendo_switch_shader_info = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation_light = Some(r.read_bool()?);
+            m_nvn_draw_validation_heavy = Some(r.read_bool()?);
+            m_enable_heap_inspector_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_htcs_script_debugging_for_switch = Some(r.read_bool()?);
+            m_use_legacy_nvn_pool_allocator_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_override_max_texture_size = Some(r.read_i32()?);
+            m_override_texture_compression = Some(r.read_i32()?);
+            r.align(4)?;
+            m_il2_cpp_code_generation = Some(r.read_i32()?);
+            r.align(4)?;
+            m_android_create_symbols = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2021, 3, 29) {
+            m_symlink_sources = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_enable_rom_compression_for_switch = Some(r.read_bool()?);
+            m_save_adf_for_switch = Some(r.read_bool()?);
+            r.align(4)?;
+            m_rom_compression_type_for_switch = Some(r.read_i32()?);
+            m_rom_compression_level_for_switch = Some(r.read_i32()?);
+            m_rom_compression_config_for_switch = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_generate_nintendo_switch_shader_info = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation_light = Some(r.read_bool()?);
+            m_nvn_draw_validation_heavy = Some(r.read_bool()?);
+            m_enable_memory_tracker_for_switch = Some(r.read_bool()?);
+            m_wait_for_switch_memory_tracker_on_startup = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_htcs_script_debugging_for_switch = Some(r.read_bool()?);
+            m_use_legacy_nvn_pool_allocator_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_override_max_texture_size = Some(r.read_i32()?);
+            m_override_texture_compression = Some(r.read_i32()?);
+            r.align(4)?;
+            m_il2_cpp_code_generation = Some(r.read_i32()?);
+            r.align(4)?;
+            m_android_create_symbols = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2021, 2, 17) {
+            m_symlink_sources = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_enable_rom_compression_for_switch = Some(r.read_bool()?);
+            m_save_adf_for_switch = Some(r.read_bool()?);
+            r.align(4)?;
+            m_rom_compression_type_for_switch = Some(r.read_i32()?);
+            m_rom_compression_level_for_switch = Some(r.read_i32()?);
+            m_rom_compression_config_for_switch = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_generate_nintendo_switch_shader_info = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation_light = Some(r.read_bool()?);
+            m_nvn_draw_validation_heavy = Some(r.read_bool()?);
+            m_enable_heap_inspector_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_htcs_script_debugging_for_switch = Some(r.read_bool()?);
+            m_use_legacy_nvn_pool_allocator_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_override_max_texture_size = Some(r.read_i32()?);
+            m_override_texture_compression = Some(r.read_i32()?);
+            r.align(4)?;
+            m_il2_cpp_code_generation = Some(r.read_i32()?);
+            r.align(4)?;
+            m_android_create_symbols = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
+            m_symlink_sources = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_generate_nintendo_switch_shader_info = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation_light = Some(r.read_bool()?);
+            m_nvn_draw_validation_heavy = Some(r.read_bool()?);
+            m_enable_heap_inspector_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_htcs_script_debugging_for_switch = Some(r.read_bool()?);
+            m_use_legacy_nvn_pool_allocator_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_override_max_texture_size = Some(r.read_i32()?);
+            m_override_texture_compression = Some(r.read_i32()?);
+            r.align(4)?;
+            m_il2_cpp_code_generation = Some(r.read_i32()?);
+            r.align(4)?;
+            m_android_create_symbols = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
+            m_symlink_sources = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_generate_nintendo_switch_shader_info = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation_light = Some(r.read_bool()?);
+            m_nvn_draw_validation_heavy = Some(r.read_bool()?);
+            m_enable_heap_inspector_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_htcs_script_debugging_for_switch = Some(r.read_bool()?);
+            m_use_legacy_nvn_pool_allocator_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_override_max_texture_size = Some(r.read_i32()?);
+            m_override_texture_compression = Some(r.read_i32()?);
+            r.align(4)?;
+            m_il2_cpp_code_generation = Some(r.read_i32()?);
+            r.align(4)?;
+            m_android_create_symbols = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
+            m_symlink_sources = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_generate_nintendo_switch_shader_info = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation_light = Some(r.read_bool()?);
+            m_nvn_draw_validation_heavy = Some(r.read_bool()?);
+            m_enable_heap_inspector_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_htcs_script_debugging_for_switch = Some(r.read_bool()?);
+            m_use_legacy_nvn_pool_allocator_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_override_max_texture_size = Some(r.read_i32()?);
+            m_override_texture_compression = Some(r.read_i32()?);
+            r.align(4)?;
+            m_android_create_symbols = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
+            m_symlink_sources = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation_light = Some(r.read_bool()?);
+            m_nvn_draw_validation_heavy = Some(r.read_bool()?);
+            m_enable_heap_inspector_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_htcs_script_debugging_for_switch = Some(r.read_bool()?);
+            m_use_legacy_nvn_pool_allocator_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_override_max_texture_size = Some(r.read_i32()?);
+            m_override_texture_compression = Some(r.read_i32()?);
+            r.align(4)?;
+            m_android_create_symbols = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
+            m_symlink_sources = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation_light = Some(r.read_bool()?);
+            m_nvn_draw_validation_heavy = Some(r.read_bool()?);
+            m_enable_heap_inspector_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_htcs_script_debugging_for_switch = Some(r.read_bool()?);
+            m_use_legacy_nvn_pool_allocator_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_android_create_symbols = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2021, 1, 5) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_generate_nintendo_switch_shader_info = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation_light = Some(r.read_bool()?);
+            m_nvn_draw_validation_heavy = Some(r.read_bool()?);
+            m_enable_heap_inspector_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_htcs_script_debugging_for_switch = Some(r.read_bool()?);
+            m_use_legacy_nvn_pool_allocator_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_android_create_symbols = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2021, 1, 0) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation_light = Some(r.read_bool()?);
+            m_nvn_draw_validation_heavy = Some(r.read_bool()?);
+            m_enable_heap_inspector_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_htcs_script_debugging_for_switch = Some(r.read_bool()?);
+            m_use_legacy_nvn_pool_allocator_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_android_create_symbols = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2021, 1, 0) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation_light = Some(r.read_bool()?);
+            m_nvn_draw_validation_heavy = Some(r.read_bool()?);
+            m_enable_heap_inspector_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_htcs_script_debugging_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_android_create_symbols = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2021, 1, 0) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation_light = Some(r.read_bool()?);
+            m_nvn_draw_validation_heavy = Some(r.read_bool()?);
+            m_enable_heap_inspector_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_htcs_script_debugging_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_android_create_symbols_zip = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2020, 3, 31) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_enable_rom_compression_for_switch = Some(r.read_bool()?);
+            m_save_adf_for_switch = Some(r.read_bool()?);
+            r.align(4)?;
+            m_rom_compression_type_for_switch = Some(r.read_i32()?);
+            m_rom_compression_level_for_switch = Some(r.read_i32()?);
+            m_rom_compression_config_for_switch = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_generate_nintendo_switch_shader_info = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation_light = Some(r.read_bool()?);
+            m_nvn_draw_validation_heavy = Some(r.read_bool()?);
+            m_enable_heap_inspector_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_htcs_script_debugging_for_switch = Some(r.read_bool()?);
+            m_use_legacy_nvn_pool_allocator_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_android_create_symbols_zip = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2020, 3, 7) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_generate_nintendo_switch_shader_info = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation_light = Some(r.read_bool()?);
+            m_nvn_draw_validation_heavy = Some(r.read_bool()?);
+            m_enable_heap_inspector_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_htcs_script_debugging_for_switch = Some(r.read_bool()?);
+            m_use_legacy_nvn_pool_allocator_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_android_create_symbols_zip = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2020, 3, 4) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation_light = Some(r.read_bool()?);
+            m_nvn_draw_validation_heavy = Some(r.read_bool()?);
+            m_enable_heap_inspector_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_htcs_script_debugging_for_switch = Some(r.read_bool()?);
+            m_use_legacy_nvn_pool_allocator_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_android_create_symbols_zip = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation_light = Some(r.read_bool()?);
+            m_nvn_draw_validation_heavy = Some(r.read_bool()?);
+            m_enable_heap_inspector_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_htcs_script_debugging_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_android_create_symbols_zip = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_solution_file_for_switch = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation_light = Some(r.read_bool()?);
+            m_nvn_draw_validation_heavy = Some(r.read_bool()?);
+            m_enable_heap_inspector_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_htcs_script_debugging_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_android_create_symbols_zip = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_solution_file_for_switch = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation_light = Some(r.read_bool()?);
+            m_nvn_draw_validation_heavy = Some(r.read_bool()?);
+            m_enable_heap_inspector_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_android_create_symbols_zip = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_solution_file_for_switch = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation = Some(r.read_bool()?);
+            m_enable_heap_inspector_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_android_create_symbols_zip = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_solution_file_for_switch = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation = Some(r.read_bool()?);
+            m_enable_heap_inspector_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2019, 4, 38) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_solution_file_for_switch = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_enable_rom_compression_for_switch = Some(r.read_bool()?);
+            m_save_adf_for_switch = Some(r.read_bool()?);
+            r.align(4)?;
+            m_rom_compression_type_for_switch = Some(r.read_i32()?);
+            m_rom_compression_level_for_switch = Some(r.read_i32()?);
+            m_rom_compression_config_for_switch = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_generate_nintendo_switch_shader_info = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation = Some(r.read_bool()?);
+            m_enable_heap_inspector_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_use_legacy_nvn_pool_allocator_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_android_create_symbols_zip = Some(r.read_bool()?);
+            r.align(4)?;
+            m_ps5_keep_package_files = Some(r.read_bool()?);
+            r.align(4)?;
+            m_selected_ps5_subtarget = Some(r.read_i32()?);
+            m_selected_ps5_compression_type = Some(r.read_i32()?);
+            m_selected_ps5_compression_level = Some(r.read_i32()?);
+            m_ps5_workspace_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2019, 4, 25) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_solution_file_for_switch = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_generate_nintendo_switch_shader_info = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation = Some(r.read_bool()?);
+            m_enable_heap_inspector_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_use_legacy_nvn_pool_allocator_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_android_create_symbols_zip = Some(r.read_bool()?);
+            r.align(4)?;
+            m_ps5_keep_package_files = Some(r.read_bool()?);
+            r.align(4)?;
+            m_selected_ps5_subtarget = Some(r.read_i32()?);
+            m_selected_ps5_compression_type = Some(r.read_i32()?);
+            m_selected_ps5_compression_level = Some(r.read_i32()?);
+            m_ps5_workspace_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2019, 4, 24) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_solution_file_for_switch = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation = Some(r.read_bool()?);
+            m_enable_heap_inspector_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_use_legacy_nvn_pool_allocator_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_android_create_symbols_zip = Some(r.read_bool()?);
+            r.align(4)?;
+            m_ps5_keep_package_files = Some(r.read_bool()?);
+            r.align(4)?;
+            m_selected_ps5_subtarget = Some(r.read_i32()?);
+            m_selected_ps5_compression_type = Some(r.read_i32()?);
+            m_selected_ps5_compression_level = Some(r.read_i32()?);
+            m_ps5_workspace_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2019, 4, 23) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_solution_file_for_switch = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation = Some(r.read_bool()?);
+            m_enable_heap_inspector_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_android_create_symbols_zip = Some(r.read_bool()?);
+            r.align(4)?;
+            m_ps5_keep_package_files = Some(r.read_bool()?);
+            r.align(4)?;
+            m_selected_ps5_subtarget = Some(r.read_i32()?);
+            m_selected_ps5_compression_type = Some(r.read_i32()?);
+            m_selected_ps5_compression_level = Some(r.read_i32()?);
+            m_ps5_workspace_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_solution_file_for_switch = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation = Some(r.read_bool()?);
+            m_enable_heap_inspector_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_android_create_symbols_zip = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_solution_file_for_switch = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation = Some(r.read_bool()?);
+            m_enable_heap_inspector_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2019, 2, 11) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_solution_file_for_switch = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation = Some(r.read_bool()?);
+            m_enable_heap_inspector_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_android_create_symbols_zip = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_solution_file_for_switch = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation = Some(r.read_bool()?);
+            m_enable_heap_inspector_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2018, 4, 35) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_solution_file_for_switch = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_generate_nintendo_switch_shader_info = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation = Some(r.read_bool()?);
+            m_enable_heap_inspector_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_android_use_legacy_sdk_tools = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_android_create_symbols_zip = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2018, 4, 13) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_solution_file_for_switch = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation = Some(r.read_bool()?);
+            m_enable_heap_inspector_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_android_use_legacy_sdk_tools = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_android_create_symbols_zip = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_solution_file_for_switch = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_nvn_shader_debugging = Some(r.read_bool()?);
+            r.align(4)?;
+            m_nvn_draw_validation = Some(r.read_bool()?);
+            m_enable_heap_inspector_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_android_use_legacy_sdk_tools = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_move_package_to_disc_outer_edge = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_explicit_array_bounds_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_solution_file_for_switch = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+        } else if *ver >= crate::UnityVersion::new(2017, 4, 17) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_wii_u_enable_net_api = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_solution_file_for_switch = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+            m_build_app_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_wii_u_enable_net_api = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_solution_file_for_switch = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+        } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_wii_u_enable_net_api = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_solution_file_for_switch = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+        } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_wii_u_enable_net_api = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_solution_file_for_switch = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+        } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_wii_u_enable_net_api = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_solution_file_for_switch = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+        } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_wii_u_enable_net_api = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_solution_file_for_switch = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+        } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_wii_u_enable_net_api = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_solution_file_for_switch = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+        } else if *ver >= crate::UnityVersion::new(5, 6, 3) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_force_installation = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_wii_u_enable_net_api = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_solution_file_for_switch = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+        } else if *ver >= crate::UnityVersion::new(5, 6, 2) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_wii_u_enable_net_api = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_solution_file_for_switch = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+            m_enable_debug_pad_for_switch = Some(r.read_bool()?);
+            m_redirect_writes_to_host_mount_for_switch = Some(r.read_bool()?);
+        } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_wii_u_enable_net_api = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+            m_create_solution_file_for_switch = Some(r.read_bool()?);
+            m_create_rom_file_for_switch = Some(r.read_bool()?);
+            m_nvn_graphics_debugger_for_switch = Some(r.read_bool()?);
+        } else if *ver >= crate::UnityVersion::new(5, 5, 1) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_compress_files_in_package = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_wii_u_enable_net_api = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+        } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_wii_u_enable_net_api = Some(r.read_bool()?);
+            m_export_as_google_android_project = Some(r.read_bool()?);
+        } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_explicit_divide_by_zero_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_wii_u_enable_net_api = Some(r.read_bool()?);
+        } else if *ver >= crate::UnityVersion::new(5, 2, 0) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_selected_ios_build_type = Some(r.read_i32()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_wii_u_enable_net_api = Some(r.read_bool()?);
+            m_web_gl_optimization_level = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(5, 1, 0) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_symlink_trampoline = Some(r.read_bool()?);
+            m_selected_ios_build_type = Some(r.read_i32()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_web_player_deploy_online = Some(r.read_bool()?);
+            r.align(4)?;
+            m_web_gl_optimization_level = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_need_submission_materials = Some(r.read_bool()?);
+            m_compress_with_ps_arc = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_build_scripts_only = Some(r.read_bool()?);
+            m_web_player_deploy_online = Some(r.read_bool()?);
+            r.align(4)?;
+            m_web_gl_optimization_level = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(4, 2, 0) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_enable_headless_mode = Some(r.read_bool()?);
+            m_web_player_deploy_online = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_web_player_deploy_online = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
+            m_symlink_libraries = Some(r.read_bool()?);
+            m_explicit_null_checks = Some(r.read_bool()?);
+            m_xbox_compressed_xex = Some(r.read_bool()?);
+            m_web_player_deploy_online = Some(r.read_bool()?);
+            r.align(4)?;
         } else {
-            None
-        };
+            m_symlink_libraries = Some(r.read_bool()?);
+        }
+            m_selected_android_subtarget = Some(r.read_i32()?);
+        if *ver >= crate::UnityVersion::new(6000, 6, 0) {
+            m_selected_web_gl_subtarget = Some(r.read_i32()?);
+            m_web_gl_client_platform = Some(r.read_i32()?);
+            m_web_gl_client_browser_type = Some(r.read_i32()?);
+            m_web_gl_client_browser_path = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsauwp_build_type = Some(r.read_i32()?);
+            m_selected_wsauwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_min_uwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_architecture = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsauwpvs_version = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_build_and_run_deploy_target = Some(r.read_i32()?);
+            m_selected_windows_build_and_run_deploy_target = Some(r.read_i32()?);
+            r.align(4)?;
+            m_windows_device_portal_address = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_windows_device_portal_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_xbox_one_streaming_install_launch_chunk_range = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_method = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_drive = Some(r.read_i32()?);
+            m_macos_xcode_build_config = Some(r.read_i32()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_selected_embedded_linux_architecture = Some(r.read_i32()?);
+            m_selected_qnx_os_version = Some(r.read_i32()?);
+            m_selected_qnx_architecture = Some(r.read_i32()?);
+            m_remote_device_info = Some(r.read_bool()?);
+            r.align(4)?;
+            m_remote_device_address = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_remote_device_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_remote_device_exports = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_path_on_remote_device = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_active_build_profile = Some(crate::PPtr::parse(r, ver)?);
+        } else if *ver >= crate::UnityVersion::new(6000, 4, 0) {
+            m_selected_web_gl_subtarget = Some(r.read_i32()?);
+            m_web_gl_client_platform = Some(r.read_i32()?);
+            m_web_gl_client_browser_type = Some(r.read_i32()?);
+            m_web_gl_client_browser_path = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsauwp_build_type = Some(r.read_i32()?);
+            m_selected_wsauwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_min_uwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_architecture = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsauwpvs_version = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_build_and_run_deploy_target = Some(r.read_i32()?);
+            m_selected_windows_build_and_run_deploy_target = Some(r.read_i32()?);
+            r.align(4)?;
+            m_windows_device_portal_address = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_windows_device_portal_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_xbox_one_streaming_install_launch_chunk_range = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_method = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_drive = Some(r.read_i32()?);
+            m_macos_xcode_build_config = Some(r.read_i32()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_selected_embedded_linux_architecture = Some(r.read_i32()?);
+            m_selected_qnx_os_version = Some(r.read_i32()?);
+            m_selected_qnx_architecture = Some(r.read_i32()?);
+            m_remote_device_info = Some(r.read_bool()?);
+            r.align(4)?;
+            m_remote_device_address = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_remote_device_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_remote_device_exports = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_path_on_remote_device = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_active_build_profile = Some(crate::PPtr::parse(r, ver)?);
+            m_build_output_to_build_metadata_map = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(6000, 0, 20) {
+            m_selected_web_gl_subtarget = Some(r.read_i32()?);
+            m_web_gl_client_platform = Some(r.read_i32()?);
+            m_web_gl_client_browser_type = Some(r.read_i32()?);
+            m_web_gl_client_browser_path = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsauwp_build_type = Some(r.read_i32()?);
+            m_selected_wsauwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_min_uwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_architecture = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsauwpvs_version = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_build_and_run_deploy_target = Some(r.read_i32()?);
+            m_selected_windows_build_and_run_deploy_target = Some(r.read_i32()?);
+            r.align(4)?;
+            m_windows_device_portal_address = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_windows_device_portal_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_xbox_one_streaming_install_launch_chunk_range = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_method = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_drive = Some(r.read_i32()?);
+            m_macos_xcode_build_config = Some(r.read_i32()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_selected_embedded_linux_architecture = Some(r.read_i32()?);
+            m_selected_qnx_os_version = Some(r.read_i32()?);
+            m_selected_qnx_architecture = Some(r.read_i32()?);
+            m_remote_device_info = Some(r.read_bool()?);
+            r.align(4)?;
+            m_remote_device_address = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_remote_device_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_remote_device_exports = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_path_on_remote_device = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_active_build_profile = Some(crate::PPtr::parse(r, ver)?);
+        } else if *ver >= crate::UnityVersion::new(6000, 0, 0) {
+            m_selected_web_gl_subtarget = Some(r.read_i32()?);
+            m_web_gl_client_platform = Some(r.read_i32()?);
+            m_web_gl_client_browser_type = Some(r.read_i32()?);
+            m_web_gl_client_browser_path = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsauwp_build_type = Some(r.read_i32()?);
+            m_selected_wsauwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_min_uwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_architecture = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsauwpvs_version = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_build_and_run_deploy_target = Some(r.read_i32()?);
+            m_selected_windows_build_and_run_deploy_target = Some(r.read_i32()?);
+            r.align(4)?;
+            m_windows_device_portal_address = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_windows_device_portal_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_xbox_one_streaming_install_launch_chunk_range = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_method = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_drive = Some(r.read_i32()?);
+            m_macos_xcode_build_config = Some(r.read_i32()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_selected_embedded_linux_architecture = Some(r.read_i32()?);
+            m_selected_qnx_os_version = Some(r.read_i32()?);
+            m_selected_qnx_architecture = Some(r.read_i32()?);
+            m_remote_device_info = Some(r.read_bool()?);
+            r.align(4)?;
+            m_remote_device_address = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_remote_device_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_remote_device_exports = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_path_on_remote_device = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_active_profile_path = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2023, 3, 0) {
+            m_selected_web_gl_subtarget = Some(r.read_i32()?);
+            m_web_gl_client_platform = Some(r.read_i32()?);
+            m_web_gl_client_browser_type = Some(r.read_i32()?);
+            m_web_gl_client_browser_path = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsauwp_build_type = Some(r.read_i32()?);
+            m_selected_wsauwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_min_uwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_architecture = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsauwpvs_version = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_build_and_run_deploy_target = Some(r.read_i32()?);
+            m_selected_windows_build_and_run_deploy_target = Some(r.read_i32()?);
+            r.align(4)?;
+            m_windows_device_portal_address = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_windows_device_portal_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_xbox_one_streaming_install_launch_chunk_range = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_method = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_drive = Some(r.read_i32()?);
+            m_macos_xcode_build_config = Some(r.read_i32()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_selected_embedded_linux_architecture = Some(r.read_i32()?);
+            m_selected_qnx_os_version = Some(r.read_i32()?);
+            m_selected_qnx_architecture = Some(r.read_i32()?);
+            m_remote_device_info = Some(r.read_bool()?);
+            r.align(4)?;
+            m_remote_device_address = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_remote_device_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_remote_device_exports = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_path_on_remote_device = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2023, 2, 0) {
+            m_selected_web_gl_subtarget = Some(r.read_i32()?);
+            m_web_gl_client_browser_type = Some(r.read_i32()?);
+            m_web_gl_client_browser_path = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsauwp_build_type = Some(r.read_i32()?);
+            m_selected_wsauwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_min_uwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_architecture = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsauwpvs_version = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_build_and_run_deploy_target = Some(r.read_i32()?);
+            m_selected_windows_build_and_run_deploy_target = Some(r.read_i32()?);
+            r.align(4)?;
+            m_windows_device_portal_address = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_windows_device_portal_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_xbox_one_streaming_install_launch_chunk_range = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_method = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_drive = Some(r.read_i32()?);
+            m_macos_xcode_build_config = Some(r.read_i32()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_selected_embedded_linux_architecture = Some(r.read_i32()?);
+            m_selected_qnx_os_version = Some(r.read_i32()?);
+            m_selected_qnx_architecture = Some(r.read_i32()?);
+            m_remote_device_info = Some(r.read_bool()?);
+            r.align(4)?;
+            m_remote_device_address = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_remote_device_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_remote_device_exports = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_path_on_remote_device = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2023, 2, 0) {
+            m_selected_web_gl_subtarget = Some(r.read_i32()?);
+            m_web_gl_client_browser_type = Some(r.read_i32()?);
+            m_web_gl_client_browser_path = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsauwp_build_type = Some(r.read_i32()?);
+            m_selected_wsauwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_min_uwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_architecture = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsauwpvs_version = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_build_and_run_deploy_target = Some(r.read_i32()?);
+            m_windows_device_portal_address = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_windows_device_portal_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_xbox_one_streaming_install_launch_chunk_range = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_method = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_drive = Some(r.read_i32()?);
+            m_macos_xcode_build_config = Some(r.read_i32()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_selected_embedded_linux_architecture = Some(r.read_i32()?);
+            m_selected_qnx_os_version = Some(r.read_i32()?);
+            m_selected_qnx_architecture = Some(r.read_i32()?);
+            m_remote_device_info = Some(r.read_bool()?);
+            r.align(4)?;
+            m_remote_device_address = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_remote_device_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_remote_device_exports = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_path_on_remote_device = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2023, 2, 0) {
+            m_selected_web_gl_subtarget = Some(r.read_i32()?);
+            m_selected_wsauwp_build_type = Some(r.read_i32()?);
+            m_selected_wsauwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_min_uwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_architecture = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsauwpvs_version = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_build_and_run_deploy_target = Some(r.read_i32()?);
+            m_windows_device_portal_address = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_windows_device_portal_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_xbox_one_streaming_install_launch_chunk_range = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_method = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_drive = Some(r.read_i32()?);
+            m_macos_xcode_build_config = Some(r.read_i32()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_selected_embedded_linux_architecture = Some(r.read_i32()?);
+            m_selected_qnx_os_version = Some(r.read_i32()?);
+            m_selected_qnx_architecture = Some(r.read_i32()?);
+            m_remote_device_info = Some(r.read_bool()?);
+            r.align(4)?;
+            m_remote_device_address = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_remote_device_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_remote_device_exports = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_path_on_remote_device = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2023, 1, 10) {
+            m_selected_web_gl_subtarget = Some(r.read_i32()?);
+            m_selected_wsauwp_build_type = Some(r.read_i32()?);
+            m_selected_wsauwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_min_uwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_architecture = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsauwpvs_version = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_build_and_run_deploy_target = Some(r.read_i32()?);
+            m_selected_windows_build_and_run_deploy_target = Some(r.read_i32()?);
+            r.align(4)?;
+            m_windows_device_portal_address = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_windows_device_portal_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_xbox_one_streaming_install_launch_chunk_range = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_method = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_drive = Some(r.read_i32()?);
+            m_macos_xcode_build_config = Some(r.read_i32()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_selected_embedded_linux_architecture = Some(r.read_i32()?);
+            m_selected_qnx_os_version = Some(r.read_i32()?);
+            m_selected_qnx_architecture = Some(r.read_i32()?);
+            m_remote_device_info = Some(r.read_bool()?);
+            r.align(4)?;
+            m_remote_device_address = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_remote_device_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_remote_device_exports = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_path_on_remote_device = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            m_selected_web_gl_subtarget = Some(r.read_i32()?);
+            m_selected_wsauwp_build_type = Some(r.read_i32()?);
+            m_selected_wsauwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_min_uwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_architecture = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsauwpvs_version = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_build_and_run_deploy_target = Some(r.read_i32()?);
+            m_windows_device_portal_address = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_windows_device_portal_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_xbox_one_streaming_install_launch_chunk_range = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_method = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_drive = Some(r.read_i32()?);
+            m_macos_xcode_build_config = Some(r.read_i32()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_selected_embedded_linux_architecture = Some(r.read_i32()?);
+            m_selected_qnx_os_version = Some(r.read_i32()?);
+            m_selected_qnx_architecture = Some(r.read_i32()?);
+            m_remote_device_info = Some(r.read_bool()?);
+            r.align(4)?;
+            m_remote_device_address = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_remote_device_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_remote_device_exports = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_path_on_remote_device = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            m_selected_web_gl_subtarget = Some(r.read_i32()?);
+            m_selected_wsauwp_build_type = Some(r.read_i32()?);
+            m_selected_wsauwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_min_uwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_architecture = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsauwpvs_version = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_build_and_run_deploy_target = Some(r.read_i32()?);
+            m_windows_device_portal_address = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_windows_device_portal_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_xbox_one_streaming_install_launch_chunk_range = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_method = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_drive = Some(r.read_i32()?);
+            m_macos_xcode_build_config = Some(r.read_i32()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_selected_embedded_linux_architecture = Some(r.read_i32()?);
+            m_remote_device_info = Some(r.read_bool()?);
+            r.align(4)?;
+            m_remote_device_address = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_remote_device_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_remote_device_exports = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_path_on_remote_device = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
+            m_selected_web_gl_subtarget = Some(r.read_i32()?);
+            m_selected_wsauwp_build_type = Some(r.read_i32()?);
+            m_selected_wsauwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_min_uwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_architecture = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsauwpvs_version = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_build_and_run_deploy_target = Some(r.read_i32()?);
+            m_windows_device_portal_address = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_windows_device_portal_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_xbox_one_streaming_install_launch_chunk_range = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_method = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_drive = Some(r.read_i32()?);
+            m_macos_xcode_build_config = Some(r.read_i32()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_selected_embedded_linux_architecture = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2021, 2, 14) {
+            m_selected_web_gl_subtarget = Some(r.read_i32()?);
+            m_selected_wsauwp_build_type = Some(r.read_i32()?);
+            m_selected_wsauwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_min_uwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_architecture = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsauwpvs_version = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_build_and_run_deploy_target = Some(r.read_i32()?);
+            m_windows_device_portal_address = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_windows_device_portal_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_xbox_one_streaming_install_launch_chunk_range = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_method = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_drive = Some(r.read_i32()?);
+            m_macos_xcode_build_config = Some(r.read_i32()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_selected_embedded_linux_architecture = Some(r.read_i32()?);
+            m_remote_device_info = Some(r.read_bool()?);
+            r.align(4)?;
+            m_remote_device_address = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_remote_device_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_remote_device_exports = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_path_on_remote_device = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
+            m_selected_web_gl_subtarget = Some(r.read_i32()?);
+            m_selected_wsauwp_build_type = Some(r.read_i32()?);
+            m_selected_wsauwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_min_uwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_architecture = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsauwpvs_version = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_build_and_run_deploy_target = Some(r.read_i32()?);
+            m_windows_device_portal_address = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_windows_device_portal_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_xbox_one_streaming_install_launch_chunk_range = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_method = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_drive = Some(r.read_i32()?);
+            m_macos_xcode_build_config = Some(r.read_i32()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_selected_embedded_linux_architecture = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
+            m_selected_wsauwp_build_type = Some(r.read_i32()?);
+            m_selected_wsauwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_min_uwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_architecture = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsauwpvs_version = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_build_and_run_deploy_target = Some(r.read_i32()?);
+            m_windows_device_portal_address = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_windows_device_portal_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_xbox_one_streaming_install_launch_chunk_range = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_method = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_drive = Some(r.read_i32()?);
+            m_macos_xcode_build_config = Some(r.read_i32()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_selected_embedded_linux_architecture = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
+            m_selected_wsauwp_build_type = Some(r.read_i32()?);
+            m_selected_wsauwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_min_uwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_architecture = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsauwpvs_version = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_build_and_run_deploy_target = Some(r.read_i32()?);
+            m_windows_device_portal_address = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_windows_device_portal_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_xbox_one_streaming_install_launch_chunk_range = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_method = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_drive = Some(r.read_i32()?);
+            m_macos_xcode_build_config = Some(r.read_i32()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
+            m_selected_wsauwp_build_type = Some(r.read_i32()?);
+            m_selected_wsauwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_min_uwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_architecture = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsauwpvs_version = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_build_and_run_deploy_target = Some(r.read_i32()?);
+            m_windows_device_portal_address = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_windows_device_portal_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_xbox_one_streaming_install_launch_chunk_range = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_method = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_drive = Some(r.read_i32()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2019, 2, 0) {
+            m_selected_wsa_subtarget = Some(r.read_i32()?);
+            m_selected_wsauwp_build_type = Some(r.read_i32()?);
+            m_selected_wsauwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_min_uwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_architecture = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsauwpvs_version = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_build_and_run_deploy_target = Some(r.read_i32()?);
+            m_windows_device_portal_address = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_windows_device_portal_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_xbox_one_streaming_install_launch_chunk_range = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_method = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_drive = Some(r.read_i32()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
+            m_selected_wsa_subtarget = Some(r.read_i32()?);
+            m_selected_wsauwp_build_type = Some(r.read_i32()?);
+            m_selected_wsauwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_min_uwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_architecture = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsauwpvs_version = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_build_and_run_deploy_target = Some(r.read_i32()?);
+            m_xbox_one_streaming_install_launch_chunk_range = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_method = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_drive = Some(r.read_i32()?);
+            m_xbox_one_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_xbox_one_network_share_path = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
+            m_selected_wsa_subtarget = Some(r.read_i32()?);
+            m_selected_wsauwp_build_type = Some(r.read_i32()?);
+            m_selected_wsauwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_min_uwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_architecture = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsauwpvs_version = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_build_and_run_deploy_target = Some(r.read_i32()?);
+            m_generate_wsa_reference_projects = Some(r.read_bool()?);
+            r.align(4)?;
+            m_wsa_dot_net_native_enabled = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_xbox_one_streaming_install_launch_chunk_range = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_method = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_drive = Some(r.read_i32()?);
+            m_xbox_one_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_xbox_one_network_share_path = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2018, 2, 0) {
+            m_selected_wsa_subtarget = Some(r.read_i32()?);
+            m_selected_wsauwp_build_type = Some(r.read_i32()?);
+            m_selected_wsauwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsauwpvs_version = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_build_and_run_deploy_target = Some(r.read_i32()?);
+            m_generate_wsa_reference_projects = Some(r.read_bool()?);
+            r.align(4)?;
+            m_wsa_dot_net_native_enabled = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_xbox_one_streaming_install_launch_chunk_range = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_method = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_drive = Some(r.read_i32()?);
+            m_xbox_one_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_xbox_one_network_share_path = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
+            m_selected_wsa_subtarget = Some(r.read_i32()?);
+            m_selected_wsauwp_build_type = Some(r.read_i32()?);
+            m_selected_wsauwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsauwpvs_version = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_build_and_run_deploy_target = Some(r.read_i32()?);
+            m_generate_wsa_reference_projects = Some(r.read_bool()?);
+            r.align(4)?;
+            m_wsa_dot_net_native_enabled = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_selected_tizen_subtarget = Some(r.read_i32()?);
+            r.align(4)?;
+            m_xbox_one_streaming_install_launch_chunk_range = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_method = Some(r.read_i32()?);
+            m_xbox_one_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_xbox_one_network_share_path = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            m_selected_wsa_subtarget = Some(r.read_i32()?);
+            m_selected_wsauwp_build_type = Some(r.read_i32()?);
+            m_selected_wsauwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_build_and_run_deploy_target = Some(r.read_i32()?);
+            m_generate_wsa_reference_projects = Some(r.read_bool()?);
+            r.align(4)?;
+            m_wsa_dot_net_native_enabled = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_selected_tizen_subtarget = Some(r.read_i32()?);
+            r.align(4)?;
+            m_xbox_one_streaming_install_launch_chunk_range = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_method = Some(r.read_i32()?);
+            m_xbox_one_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_xbox_one_network_share_path = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_facebook_create_package_for_submission = Some(r.read_bool()?);
+            r.align(4)?;
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            m_selected_wsa_subtarget = Some(r.read_i32()?);
+            m_selected_wsasdk = Some(r.read_i32()?);
+            m_selected_wsauwp_build_type = Some(r.read_i32()?);
+            m_selected_wsauwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_build_and_run_deploy_target = Some(r.read_i32()?);
+            m_generate_wsa_reference_projects = Some(r.read_bool()?);
+            r.align(4)?;
+            m_wsa_dot_net_native_enabled = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_selected_tizen_subtarget = Some(r.read_i32()?);
+            r.align(4)?;
+            m_xbox_one_streaming_install_launch_chunk_range = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_method = Some(r.read_i32()?);
+            m_xbox_one_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_xbox_one_network_share_path = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_facebook_create_package_for_submission = Some(r.read_bool()?);
+            r.align(4)?;
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            m_selected_wsa_subtarget = Some(r.read_i32()?);
+            m_selected_wsasdk = Some(r.read_i32()?);
+            m_selected_wsauwp_build_type = Some(r.read_i32()?);
+            m_selected_wsauwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_build_and_run_deploy_target = Some(r.read_i32()?);
+            m_generate_wsa_reference_projects = Some(r.read_bool()?);
+            r.align(4)?;
+            m_wsa_dot_net_native_enabled = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_selected_tizen_subtarget = Some(r.read_i32()?);
+            r.align(4)?;
+            m_xbox_one_streaming_install_launch_chunk_range = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_method = Some(r.read_i32()?);
+            m_xbox_one_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_xbox_one_network_share_path = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_force_optimize_script_compilation = Some(r.read_bool()?);
+            m_facebook_create_package_for_submission = Some(r.read_bool()?);
+            r.align(4)?;
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            m_selected_wsa_subtarget = Some(r.read_i32()?);
+            m_selected_wsasdk = Some(r.read_i32()?);
+            m_selected_wsauwp_build_type = Some(r.read_i32()?);
+            m_selected_wsa_build_and_run_deploy_target = Some(r.read_i32()?);
+            m_generate_wsa_reference_projects = Some(r.read_bool()?);
+            r.align(4)?;
+            m_wsa_dot_net_native_enabled = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_selected_tizen_subtarget = Some(r.read_i32()?);
+            r.align(4)?;
+            m_xbox_one_streaming_install_launch_chunk_range = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_method = Some(r.read_i32()?);
+            m_xbox_one_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_xbox_one_network_share_path = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_force_optimize_script_compilation = Some(r.read_bool()?);
+            m_facebook_create_package_for_submission = Some(r.read_bool()?);
+            r.align(4)?;
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(5, 5, 2) {
+            m_selected_wsa_subtarget = Some(r.read_i32()?);
+            m_selected_wsasdk = Some(r.read_i32()?);
+            m_selected_wsauwp_build_type = Some(r.read_i32()?);
+            m_selected_wsauwpsdk = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_selected_wsa_build_and_run_deploy_target = Some(r.read_i32()?);
+            m_generate_wsa_reference_projects = Some(r.read_bool()?);
+            r.align(4)?;
+            m_wsa_dot_net_native_enabled = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_selected_tizen_subtarget = Some(r.read_i32()?);
+            r.align(4)?;
+            m_xbox_one_streaming_install_launch_chunk_range = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_method = Some(r.read_i32()?);
+            m_xbox_one_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_xbox_one_network_share_path = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_force_optimize_script_compilation = Some(r.read_bool()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
+            m_selected_wsa_subtarget = Some(r.read_i32()?);
+            m_selected_wsasdk = Some(r.read_i32()?);
+            m_selected_wsauwp_build_type = Some(r.read_i32()?);
+            m_selected_wsa_build_and_run_deploy_target = Some(r.read_i32()?);
+            m_generate_wsa_reference_projects = Some(r.read_bool()?);
+            r.align(4)?;
+            m_wsa_dot_net_native_enabled = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_selected_tizen_subtarget = Some(r.read_i32()?);
+            r.align(4)?;
+            m_xbox_one_streaming_install_launch_chunk_range = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_method = Some(r.read_i32()?);
+            m_xbox_one_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_xbox_one_network_share_path = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_force_optimize_script_compilation = Some(r.read_bool()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
+            m_selected_wsasdk = Some(r.read_i32()?);
+            m_selected_wsauwp_build_type = Some(r.read_i32()?);
+            m_selected_wsa_build_and_run_deploy_target = Some(r.read_i32()?);
+            m_generate_wsa_reference_projects = Some(r.read_bool()?);
+            r.align(4)?;
+            m_wsa_dot_net_native_enabled = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_selected_tizen_subtarget = Some(r.read_i32()?);
+            r.align(4)?;
+            m_xbox_one_streaming_install_launch_chunk_range = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_method = Some(r.read_i32()?);
+            m_xbox_one_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_xbox_one_network_share_path = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_force_optimize_script_compilation = Some(r.read_bool()?);
+            m_platform_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
+            m_selected_wsasdk = Some(r.read_i32()?);
+            m_selected_wsauwp_build_type = Some(r.read_i32()?);
+            m_selected_wsa_build_and_run_deploy_target = Some(r.read_i32()?);
+            m_generate_wsa_reference_projects = Some(r.read_bool()?);
+            r.align(4)?;
+            m_wsa_dot_net_native_enabled = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_selected_black_berry_subtarget = Some(r.read_i32()?);
+            m_selected_black_berry_build_type = Some(r.read_i32()?);
+            m_selected_tizen_subtarget = Some(r.read_i32()?);
+            r.align(4)?;
+            m_xbox_one_streaming_install_launch_chunk_range = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_method = Some(r.read_i32()?);
+            m_xbox_one_username = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_xbox_one_network_share_path = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_force_optimize_script_compilation = Some(r.read_bool()?);
+        } else if *ver >= crate::UnityVersion::new(5, 2, 2) {
+            m_selected_wsasdk = Some(r.read_i32()?);
+            m_selected_wsauwp_build_type = Some(r.read_i32()?);
+            m_selected_wsa_build_and_run_deploy_target = Some(r.read_i32()?);
+            m_generate_wsa_reference_projects = Some(r.read_bool()?);
+            r.align(4)?;
+            m_selected_black_berry_subtarget = Some(r.read_i32()?);
+            m_selected_black_berry_build_type = Some(r.read_i32()?);
+            m_selected_tizen_subtarget = Some(r.read_i32()?);
+            r.align(4)?;
+            m_xbox_one_streaming_install_launch_chunk_range = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_method = Some(r.read_i32()?);
+            m_force_optimize_script_compilation = Some(r.read_bool()?);
+        } else if *ver >= crate::UnityVersion::new(5, 2, 0) {
+            m_selected_wsasdk = Some(r.read_i32()?);
+            m_selected_wsauwp_build_type = Some(r.read_i32()?);
+            m_selected_wsa_build_and_run_deploy_target = Some(r.read_i32()?);
+            m_generate_wsa_reference_projects = Some(r.read_bool()?);
+            r.align(4)?;
+            m_selected_black_berry_subtarget = Some(r.read_i32()?);
+            m_selected_black_berry_build_type = Some(r.read_i32()?);
+            m_selected_tizen_subtarget = Some(r.read_i32()?);
+            r.align(4)?;
+            m_xbox_one_streaming_install_launch_chunk_range = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_method = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            m_selected_wsasdk = Some(r.read_i32()?);
+            m_selected_wsa_build_and_run_deploy_target = Some(r.read_i32()?);
+            m_generate_wsa_reference_projects = Some(r.read_bool()?);
+            r.align(4)?;
+            m_selected_black_berry_subtarget = Some(r.read_i32()?);
+            m_selected_black_berry_build_type = Some(r.read_i32()?);
+            m_selected_tizen_subtarget = Some(r.read_i32()?);
+            r.align(4)?;
+            m_xbox_one_streaming_install_launch_chunk_range = Some(r.read_i32()?);
+            m_selected_xbox_one_deploy_method = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(4, 5, 3) {
+            m_selected_metro_target = Some(r.read_i32()?);
+            m_selected_metro_build_type = Some(r.read_i32()?);
+            m_selected_metro_sdk = Some(r.read_i32()?);
+            m_selected_metro_build_and_run_deploy_target = Some(r.read_i32()?);
+            m_generate_metro_reference_projects = Some(r.read_bool()?);
+            r.align(4)?;
+            m_selected_black_berry_subtarget = Some(r.read_i32()?);
+            m_selected_black_berry_build_type = Some(r.read_i32()?);
+            m_selected_tizen_subtarget = Some(r.read_i32()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(4, 5, 0) {
+            m_selected_metro_target = Some(r.read_i32()?);
+            m_selected_metro_build_type = Some(r.read_i32()?);
+            m_selected_metro_sdk = Some(r.read_i32()?);
+            m_generate_metro_reference_projects = Some(r.read_bool()?);
+            r.align(4)?;
+            m_selected_black_berry_subtarget = Some(r.read_i32()?);
+            m_selected_black_berry_build_type = Some(r.read_i32()?);
+            m_selected_tizen_subtarget = Some(r.read_i32()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
+            m_selected_metro_target = Some(r.read_i32()?);
+            m_selected_metro_build_type = Some(r.read_i32()?);
+            m_selected_metro_sdk = Some(r.read_i32()?);
+            m_selected_black_berry_subtarget = Some(r.read_i32()?);
+            m_selected_black_berry_build_type = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(4, 2, 0) {
+            m_selected_metro_target = Some(r.read_i32()?);
+            m_selected_metro_build_type = Some(r.read_i32()?);
+            m_selected_black_berry_subtarget = Some(r.read_i32()?);
+            m_selected_black_berry_build_type = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
+            m_selected_metro_build_type = Some(r.read_i32()?);
+        } else {
+        }
 
         Ok(EditorUserBuildSettings {
-            parent,
-            m_build_location,
-            m_active_build_target,
-            m_selected_build_target_group,
+            m_build_location: m_build_location.unwrap(),
+            m_active_build_target: m_active_build_target.unwrap(),
+            m_selected_build_target_group: m_selected_build_target_group.unwrap(),
             m_active_build_target_group,
             m_selected_build_target,
             m_active_platform_guid,
-            m_selected_standalone_target,
-            m_architecture_flags,
+            m_selected_standalone_target: m_selected_standalone_target.unwrap(),
+            m_architecture_flags: m_architecture_flags.unwrap(),
             m_active_build_platform_group_name,
             m_selected_wii_subtarget,
             m_selected_psp2_subtarget,
             m_selected_facebook_target,
             m_selected_build_platform_group_name,
-            m_development,
+            m_development: m_development.unwrap(),
             m_selected_wii_debug_level,
             m_selected_ps3_subtarget,
             m_selected_ps4_subtarget,
-            m_connect_profiler,
+            m_connect_profiler: m_connect_profiler.unwrap(),
             m_selected_xbox_subtarget,
             m_ps4_hardware_target,
             m_selected_standalone_build_subtarget,
-            m_allow_debugging,
+            m_allow_debugging: m_allow_debugging.unwrap(),
             m_selected_xbox_run_method,
             m_selected_psm_subtarget,
             m_active_standalone_build_subtarget,
@@ -998,11 +3344,11 @@ impl crate::Parse for EditorUserBuildSettings {
             m_web_player_na_cl_support,
             m_selected_wii_u_boot_mode,
             m_android_build_type,
-            m_install_in_build_folder,
+            m_install_in_build_folder: m_install_in_build_folder.unwrap(),
             m_android_release_minification,
             m_symlink_libraries,
             m_android_debug_minification,
-            m_selected_android_subtarget,
+            m_selected_android_subtarget: m_selected_android_subtarget.unwrap(),
             m_selected_android_etc2_fallback,
             m_android_device_socket_address,
             m_explicit_null_checks,

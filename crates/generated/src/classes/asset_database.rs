@@ -6,11 +6,9 @@ use crate::subclasses::asset_database_metrics::AssetDatabaseMetrics;
 use crate::subclasses::asset_importer_hash_key::AssetImporterHashKey;
 use crate::subclasses::asset_time_stamp::AssetTimeStamp;
 use crate::subclasses::guid::Guid;
-use super::object::Object;
 
 #[derive(Debug, Clone)]
 pub struct AssetDatabase {
-    pub parent: Object,
     pub m_assets: Vec<(Guid, Asset)>,
     pub m_asset_time_stamps: Option<Vec<(String, AssetTimeStamp)>>,
     pub m_unity_shaders_version: Option<i32>,
@@ -25,7 +23,6 @@ impl crate::Parse for AssetDatabase {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Object::parse(r, ver)?;
         let m_assets = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = Guid::parse(r, ver)?; let b = Asset::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
         r.align(4)?;
         let m_asset_time_stamps = if *ver >= crate::UnityVersion::new(3, 5, 0) {
@@ -66,7 +63,6 @@ impl crate::Parse for AssetDatabase {
         };
 
         Ok(AssetDatabase {
-            parent,
             m_assets,
             m_asset_time_stamps,
             m_unity_shaders_version,

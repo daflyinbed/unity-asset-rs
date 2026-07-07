@@ -1,18 +1,9 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
-use super::base_video_texture::BaseVideoTexture;
-use super::texture::Texture;
-
-#[derive(Debug, Clone)]
-pub enum MovieTextureParent {
-    Texture(Texture),
-    BaseVideoTexture(BaseVideoTexture),
-}
 
 #[derive(Debug, Clone)]
 pub struct MovieTexture {
-    pub parent: MovieTextureParent,
     pub m_name: String,
     pub m_loop: Option<bool>,
     pub m_forced_fallback_format: Option<i32>,
@@ -28,15 +19,6 @@ impl crate::Parse for MovieTexture {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            MovieTextureParent::Texture(Texture::parse(r, ver)?)
-        } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            MovieTextureParent::BaseVideoTexture(BaseVideoTexture::parse(r, ver)?)
-        } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            MovieTextureParent::Texture(Texture::parse(r, ver)?)
-        } else {
-            panic!("无匹配的父类分支：version = {:?}", ver)
-        };
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_loop = if *ver >= crate::UnityVersion::new(3, 4, 0) {
@@ -64,9 +46,7 @@ impl crate::Parse for MovieTexture {
             None
         };
         let m_downscale_fallback = if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
@@ -84,7 +64,6 @@ impl crate::Parse for MovieTexture {
         };
 
         Ok(MovieTexture {
-            parent,
             m_name,
             m_loop,
             m_forced_fallback_format,

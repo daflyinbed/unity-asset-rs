@@ -1,13 +1,11 @@
 //! 自动生成。请勿手动修改。
 
-use crate::subclasses::child::Child;
-use super::motion::Motion;
+use crate::subclasses::child_motion::ChildMotion;
 
 #[derive(Debug, Clone)]
 pub struct BlendTree {
-    pub parent: Motion,
     pub m_name: String,
-    pub m_childs: Vec<Child>,
+    pub m_childs: Vec<ChildMotion>,
     pub m_blend_event: Option<String>,
     pub m_blend_parameter: Option<String>,
     pub m_min_threshold: f32,
@@ -15,7 +13,7 @@ pub struct BlendTree {
     pub m_blend_parameter_y: Option<String>,
     pub m_max_threshold: f32,
     pub m_use_automatic_thresholds: bool,
-    pub m_blend_type: Option<u32>,
+    pub m_blend_type: Option<i32>,
     pub m_normalized_blend_values: Option<bool>,
 }
 
@@ -24,10 +22,9 @@ impl crate::Parse for BlendTree {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Motion::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
-        let m_childs = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Child::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_childs = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ChildMotion::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
         r.align(4)?;
         let m_blend_event = if *ver >= crate::UnityVersion::new(4, 0, 0) {
             let v = r.read_aligned_string()?;
@@ -60,9 +57,8 @@ impl crate::Parse for BlendTree {
         };
         let m_max_threshold = r.read_f32()?;
         let m_use_automatic_thresholds = r.read_bool()?;
-        r.align(4)?;
         let m_blend_type = if *ver >= crate::UnityVersion::new(4, 1, 0) {
-            Some(r.read_u32()?)
+            Some(r.read_i32()?)
         } else {
             None
         };
@@ -75,7 +71,6 @@ impl crate::Parse for BlendTree {
         };
 
         Ok(BlendTree {
-            parent,
             m_name,
             m_childs,
             m_blend_event,

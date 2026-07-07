@@ -2,11 +2,9 @@
 
 use crate::PPtr;
 use crate::subclasses::vector3f::Vector3f;
-use super::named_object::NamedObject;
 
 #[derive(Debug, Clone)]
 pub struct State {
-    pub parent: NamedObject,
     pub m_name: String,
     pub m_speed: f32,
     pub m_motions: Option<Vec<PPtr>>,
@@ -35,7 +33,6 @@ impl crate::Parse for State {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = NamedObject::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_speed = r.read_f32()?;
@@ -55,24 +52,25 @@ impl crate::Parse for State {
             None
         };
         let m_transitions = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?)
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
         let m_position = Vector3f::parse(r, ver)?;
         let m_state_machine_behaviours = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?)
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
         let m_ik_on_feet = r.read_bool()?;
-        r.align(4)?;
         let m_tag = r.read_aligned_string()?;
         r.align(4)?;
         let m_mirror = if *ver >= crate::UnityVersion::new(4, 1, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
@@ -97,9 +95,7 @@ impl crate::Parse for State {
             None
         };
         let m_cycle_offset_parameter_active = if *ver >= crate::UnityVersion::new(5, 1, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
@@ -140,7 +136,6 @@ impl crate::Parse for State {
         };
 
         Ok(State {
-            parent,
             m_name,
             m_speed,
             m_motions,

@@ -5,18 +5,9 @@ use crate::subclasses::built_asset_bundle_info::BuiltAssetBundleInfo;
 use crate::subclasses::source_asset_identifier::SourceAssetIdentifier;
 use crate::subclasses::video_clip_importer_output::VideoClipImporterOutput;
 use crate::subclasses::video_clip_importer_target_settings::VideoClipImporterTargetSettings;
-use super::asset_importer::AssetImporter;
-use super::object::Object;
-
-#[derive(Debug, Clone)]
-pub enum BuiltAssetBundleInfoSetParent {
-    Object(Object),
-    AssetImporter(AssetImporter),
-}
 
 #[derive(Debug, Clone)]
 pub struct BuiltAssetBundleInfoSet {
-    pub parent: BuiltAssetBundleInfoSetParent,
     pub bundle_infos: Option<Vec<BuiltAssetBundleInfo>>,
     pub m_name: Option<String>,
     pub m_use_legacy_importer: Option<bool>,
@@ -37,7 +28,7 @@ pub struct BuiltAssetBundleInfoSet {
     pub m_frame_rate: Option<f64>,
     pub m_flip_horizontal: Option<bool>,
     pub m_import_audio: Option<bool>,
-    pub m_target_settings: Option<Vec<(i32, VideoClipImporterTargetSettings)>>,
+    pub m_target_settings: Option<Vec<(String, VideoClipImporterTargetSettings)>>,
     pub m_source_file_size: Option<u64>,
     pub m_output: Option<VideoClipImporterOutput>,
     pub m_user_data: Option<String>,
@@ -56,13 +47,6 @@ impl crate::Parse for BuiltAssetBundleInfoSet {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = if *ver >= crate::UnityVersion::new(5, 5, 4) {
-            BuiltAssetBundleInfoSetParent::Object(Object::parse(r, ver)?)
-        } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            BuiltAssetBundleInfoSetParent::AssetImporter(AssetImporter::parse(r, ver)?)
-        } else {
-            panic!("无匹配的父类分支：version = {:?}", ver)
-        };
         let bundle_infos = if *ver >= crate::UnityVersion::new(5, 5, 4) {
             let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { BuiltAssetBundleInfo::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             r.align(4)?;
@@ -180,7 +164,7 @@ impl crate::Parse for BuiltAssetBundleInfoSet {
             None
         };
         let m_target_settings = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i32()?; let b = VideoClipImporterTargetSettings::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = VideoClipImporterTargetSettings::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
             r.align(4)?;
             Some(v)
         } else {
@@ -259,7 +243,6 @@ impl crate::Parse for BuiltAssetBundleInfoSet {
         };
 
         Ok(BuiltAssetBundleInfoSet {
-            parent,
             bundle_infos,
             m_name,
             m_use_legacy_importer,

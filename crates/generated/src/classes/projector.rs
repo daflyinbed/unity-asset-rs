@@ -2,11 +2,9 @@
 
 use crate::PPtr;
 use crate::subclasses::bit_field::BitField;
-use super::behaviour::Behaviour;
 
 #[derive(Debug, Clone)]
 pub struct Projector {
-    pub parent: Behaviour,
     pub m_game_object: PPtr,
     pub m_enabled: u8,
     pub m_near_clip_plane: f32,
@@ -24,7 +22,6 @@ impl crate::Parse for Projector {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Behaviour::parse(r, ver)?;
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_enabled = r.read_u8()?;
         r.align(4)?;
@@ -39,7 +36,6 @@ impl crate::Parse for Projector {
         let m_ignore_layers = BitField::parse(r, ver)?;
 
         Ok(Projector {
-            parent,
             m_game_object,
             m_enabled,
             m_near_clip_plane,

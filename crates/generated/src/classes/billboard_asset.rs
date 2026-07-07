@@ -3,11 +3,9 @@
 use crate::PPtr;
 use crate::subclasses::vector2f::Vector2f;
 use crate::subclasses::vector4f::Vector4f;
-use super::named_object::NamedObject;
 
 #[derive(Debug, Clone)]
 pub struct BillboardAsset {
-    pub parent: NamedObject,
     pub m_name: String,
     pub width: f32,
     pub bottom: f32,
@@ -24,13 +22,13 @@ impl crate::Parse for BillboardAsset {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = NamedObject::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let width = r.read_f32()?;
         let bottom = r.read_f32()?;
         let height = r.read_f32()?;
         let image_tex_coords = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Vector4f::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        r.align(4)?;
         let rotated = if *ver >= crate::UnityVersion::new(5, 0, 0) {
             let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
             r.align(4)?;
@@ -45,7 +43,6 @@ impl crate::Parse for BillboardAsset {
         let material = crate::PPtr::parse(r, ver)?;
 
         Ok(BillboardAsset {
-            parent,
             m_name,
             width,
             bottom,

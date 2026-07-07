@@ -1,12 +1,10 @@
 //! 自动生成。请勿手动修改。
 
 use crate::subclasses::guid::Guid;
-use crate::subclasses::md_four::MdFour;
-use super::object::Object;
+use crate::subclasses::hash128::Hash128;
 
 #[derive(Debug, Clone)]
 pub struct AssetMetaData {
-    pub parent: Object,
     pub guid: Guid,
     pub path_name: String,
     pub original_changeset: Option<u32>,
@@ -15,7 +13,7 @@ pub struct AssetMetaData {
     pub labels: Vec<String>,
     pub original_parent: Option<Guid>,
     pub asset_store_ref: u64,
-    pub original_digest: Option<MdFour>,
+    pub original_digest: Option<Hash128>,
     pub license_type: Option<i32>,
 }
 
@@ -24,7 +22,6 @@ impl crate::Parse for AssetMetaData {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Object::parse(r, ver)?;
         let guid = Guid::parse(r, ver)?;
         let path_name = r.read_aligned_string()?;
         r.align(4)?;
@@ -49,9 +46,7 @@ impl crate::Parse for AssetMetaData {
         };
         let asset_store_ref = r.read_u64()?;
         let original_digest = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = MdFour::parse(r, ver)?;
-            r.align(4)?;
-            Some(v)
+            Some(Hash128::parse(r, ver)?)
         } else {
             None
         };
@@ -62,7 +57,6 @@ impl crate::Parse for AssetMetaData {
         };
 
         Ok(AssetMetaData {
-            parent,
             guid,
             path_name,
             original_changeset,

@@ -3,11 +3,9 @@
 use crate::PPtr;
 use crate::subclasses::asset_bundle_script_info::AssetBundleScriptInfo;
 use crate::subclasses::asset_info::AssetInfo;
-use super::named_object::NamedObject;
 
 #[derive(Debug, Clone)]
 pub struct AssetBundle {
-    pub parent: NamedObject,
     pub m_name: String,
     pub m_preload_table: Vec<PPtr>,
     pub m_container: Vec<(String, AssetInfo)>,
@@ -29,10 +27,10 @@ impl crate::Parse for AssetBundle {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = NamedObject::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_preload_table = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        r.align(4)?;
         let m_container = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = AssetInfo::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
         r.align(4)?;
         let m_main_asset = AssetInfo::parse(r, ver)?;
@@ -98,7 +96,6 @@ impl crate::Parse for AssetBundle {
         };
 
         Ok(AssetBundle {
-            parent,
             m_name,
             m_preload_table,
             m_container,

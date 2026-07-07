@@ -3,11 +3,9 @@
 use crate::PPtr;
 use crate::subclasses::color_rgba::ColorRgba;
 use crate::subclasses::rectf::Rectf;
-use super::gui_element::GuiElement;
 
 #[derive(Debug, Clone)]
 pub struct GuiTexture {
-    pub parent: GuiElement,
     pub m_game_object: PPtr,
     pub m_enabled: u8,
     pub m_texture: PPtr,
@@ -24,7 +22,6 @@ impl crate::Parse for GuiTexture {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = GuiElement::parse(r, ver)?;
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_enabled = r.read_u8()?;
         r.align(4)?;
@@ -37,7 +34,6 @@ impl crate::Parse for GuiTexture {
         let m_bottom_border = r.read_i32()?;
 
         Ok(GuiTexture {
-            parent,
             m_game_object,
             m_enabled,
             m_texture,

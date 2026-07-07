@@ -1,11 +1,9 @@
 //! 自动生成。请勿手动修改。
 
 use crate::subclasses::build_report_packed_asset_info::BuildReportPackedAssetInfo;
-use super::object::Object;
 
 #[derive(Debug, Clone)]
 pub struct PackedAssets {
-    pub parent: Object,
     pub m_file: Option<u32>,
     pub m_short_path: String,
     pub m_overhead: u64,
@@ -17,7 +15,6 @@ impl crate::Parse for PackedAssets {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Object::parse(r, ver)?;
         let m_file = if *ver >= crate::UnityVersion::new(5, 4, 0) {
             Some(r.read_u32()?)
         } else {
@@ -27,9 +24,9 @@ impl crate::Parse for PackedAssets {
         r.align(4)?;
         let m_overhead = r.read_u64()?;
         let m_contents = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { BuildReportPackedAssetInfo::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        r.align(4)?;
 
         Ok(PackedAssets {
-            parent,
             m_file,
             m_short_path,
             m_overhead,

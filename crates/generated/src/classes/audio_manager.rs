@@ -1,10 +1,7 @@
 //! 自动生成。请勿手动修改。
 
-use super::global_game_manager::GlobalGameManager;
-
 #[derive(Debug, Clone)]
 pub struct AudioManager {
-    pub parent: GlobalGameManager,
     pub m_volume: f32,
     pub m_speed_of_sound: Option<f32>,
     pub rolloff_scale: f32,
@@ -29,88 +26,159 @@ impl crate::Parse for AudioManager {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = GlobalGameManager::parse(r, ver)?;
-        let m_volume = r.read_f32()?;
-        let m_speed_of_sound = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_f32()?)
+        let mut m_volume = None;
+        let mut m_speed_of_sound = None;
+        let mut rolloff_scale = None;
+        let mut doppler_factor = None;
+        let mut default_speaker_mode = None;
+        let mut m_sample_rate = None;
+        let mut m_dsp_buffer_size = None;
+        let mut m_disable_audio = None;
+        let mut m_virtual_voice_count = None;
+        let mut m_real_voice_count = None;
+        let mut m_spatializer_plugin = None;
+        let mut m_ambisonic_decoder_plugin = None;
+        let mut m_virtualize_effects = None;
+        let mut m_requested_dsp_buffer_size = None;
+        let mut m_audio_foundation = None;
+        let mut m_output_channel_layout = None;
+        let mut m_output_sampling_rate = None;
+            m_volume = Some(r.read_f32()?);
+        if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            rolloff_scale = Some(r.read_f32()?);
+        } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
+            rolloff_scale = Some(r.read_f32()?);
+            m_speed_of_sound = Some(r.read_f32()?);
         } else {
-            None
-        };
-        let rolloff_scale = r.read_f32()?;
-        let doppler_factor = r.read_f32()?;
-        let default_speaker_mode = r.read_i32()?;
-        let m_sample_rate = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_i32()?)
+            m_speed_of_sound = Some(r.read_f32()?);
+        }
+            doppler_factor = Some(r.read_f32()?);
+            default_speaker_mode = Some(r.read_i32()?);
+        if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            m_sample_rate = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
         } else {
-            None
-        };
-        let m_dsp_buffer_size = r.read_i32()?;
-        let m_disable_audio = if *ver >= crate::UnityVersion::new(4, 2, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_virtual_voice_count = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_real_voice_count = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_spatializer_plugin = if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            let v = r.read_aligned_string()?;
+            rolloff_scale = Some(r.read_f32()?);
+        }
+            m_dsp_buffer_size = Some(r.read_i32()?);
+        if *ver >= crate::UnityVersion::new(6000, 3, 0) {
+            m_virtual_voice_count = Some(r.read_i32()?);
+            m_real_voice_count = Some(r.read_i32()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_ambisonic_decoder_plugin = if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = r.read_aligned_string()?;
+            m_spatializer_plugin = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_virtualize_effects = if *ver >= crate::UnityVersion::new(5, 3, 6) {
-            let v = r.read_bool()?;
+            m_ambisonic_decoder_plugin = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
+            m_disable_audio = Some(r.read_bool()?);
+            m_virtualize_effects = Some(r.read_bool()?);
+            r.align(4)?;
+            m_requested_dsp_buffer_size = Some(r.read_i32()?);
+            m_audio_foundation = Some(r.read_i32()?);
+            m_output_channel_layout = Some(r.read_i32()?);
+            m_output_sampling_rate = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2019, 2, 0) {
+            m_virtual_voice_count = Some(r.read_i32()?);
+            m_real_voice_count = Some(r.read_i32()?);
+            r.align(4)?;
+            m_spatializer_plugin = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_ambisonic_decoder_plugin = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_disable_audio = Some(r.read_bool()?);
+            m_virtualize_effects = Some(r.read_bool()?);
+            r.align(4)?;
+            m_requested_dsp_buffer_size = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2019, 2, 0) {
+            m_virtual_voice_count = Some(r.read_i32()?);
+            m_real_voice_count = Some(r.read_i32()?);
+            r.align(4)?;
+            m_spatializer_plugin = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_ambisonic_decoder_plugin = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_disable_audio = Some(r.read_bool()?);
+            m_virtualize_effects = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2019, 1, 1) {
+            m_virtual_voice_count = Some(r.read_i32()?);
+            m_real_voice_count = Some(r.read_i32()?);
+            r.align(4)?;
+            m_spatializer_plugin = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_ambisonic_decoder_plugin = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_disable_audio = Some(r.read_bool()?);
+            m_virtualize_effects = Some(r.read_bool()?);
+            r.align(4)?;
+            m_requested_dsp_buffer_size = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
+            m_virtual_voice_count = Some(r.read_i32()?);
+            m_real_voice_count = Some(r.read_i32()?);
+            r.align(4)?;
+            m_spatializer_plugin = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_ambisonic_decoder_plugin = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_disable_audio = Some(r.read_bool()?);
+            m_virtualize_effects = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2018, 3, 14) {
+            m_virtual_voice_count = Some(r.read_i32()?);
+            m_real_voice_count = Some(r.read_i32()?);
+            r.align(4)?;
+            m_spatializer_plugin = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_ambisonic_decoder_plugin = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_disable_audio = Some(r.read_bool()?);
+            m_virtualize_effects = Some(r.read_bool()?);
+            r.align(4)?;
+            m_requested_dsp_buffer_size = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            m_virtual_voice_count = Some(r.read_i32()?);
+            m_real_voice_count = Some(r.read_i32()?);
+            r.align(4)?;
+            m_spatializer_plugin = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_ambisonic_decoder_plugin = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_disable_audio = Some(r.read_bool()?);
+            m_virtualize_effects = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(5, 3, 6) {
+            m_virtual_voice_count = Some(r.read_i32()?);
+            m_real_voice_count = Some(r.read_i32()?);
+            r.align(4)?;
+            m_spatializer_plugin = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_disable_audio = Some(r.read_bool()?);
+            m_virtualize_effects = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(5, 2, 0) {
+            m_virtual_voice_count = Some(r.read_i32()?);
+            m_real_voice_count = Some(r.read_i32()?);
+            r.align(4)?;
+            m_spatializer_plugin = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_disable_audio = Some(r.read_bool()?);
+        } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            m_virtual_voice_count = Some(r.read_i32()?);
+            m_real_voice_count = Some(r.read_i32()?);
+            r.align(4)?;
+            m_disable_audio = Some(r.read_bool()?);
+        } else if *ver >= crate::UnityVersion::new(4, 2, 0) {
+            m_disable_audio = Some(r.read_bool()?);
         } else {
-            None
-        };
-        let m_requested_dsp_buffer_size = if *ver >= crate::UnityVersion::new(2018, 3, 14) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_audio_foundation = if *ver >= crate::UnityVersion::new(6000, 3, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_output_channel_layout = if *ver >= crate::UnityVersion::new(6000, 3, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_output_sampling_rate = if *ver >= crate::UnityVersion::new(6000, 3, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
+        }
 
         Ok(AudioManager {
-            parent,
-            m_volume,
+            m_volume: m_volume.unwrap(),
             m_speed_of_sound,
-            rolloff_scale,
-            doppler_factor,
-            default_speaker_mode,
+            rolloff_scale: rolloff_scale.unwrap(),
+            doppler_factor: doppler_factor.unwrap(),
+            default_speaker_mode: default_speaker_mode.unwrap(),
             m_sample_rate,
-            m_dsp_buffer_size,
+            m_dsp_buffer_size: m_dsp_buffer_size.unwrap(),
             m_disable_audio,
             m_virtual_voice_count,
             m_real_voice_count,

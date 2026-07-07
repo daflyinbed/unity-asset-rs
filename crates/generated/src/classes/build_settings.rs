@@ -1,11 +1,10 @@
 //! 自动生成。请勿手动修改。
 
+use crate::subclasses::guid::Guid;
 use crate::subclasses::hash128::Hash128;
-use super::global_game_manager::GlobalGameManager;
 
 #[derive(Debug, Clone)]
 pub struct BuildSettings {
-    pub parent: GlobalGameManager,
     pub levels: Option<Vec<String>>,
     pub scenes: Option<Vec<String>>,
     pub has_render_texture: Option<bool>,
@@ -17,7 +16,7 @@ pub struct BuildSettings {
     pub build_tags: Option<Vec<String>>,
     pub has_publishing_rights: bool,
     pub is_prototyping_build: Option<bool>,
-    pub build_guid: Option<String>,
+    pub build_guid: Option<Guid>,
     pub has_shadows: bool,
     pub has_advanced_version: bool,
     pub is_embedded: Option<bool>,
@@ -30,7 +29,7 @@ pub struct BuildSettings {
     pub has_local_light_shadows: Option<bool>,
     pub uses_on_mouse_events: Option<bool>,
     pub is_wsa_holographic_remoting_enabled: Option<bool>,
-    pub runtime_class_hashes: Option<Vec<(i32, u32)>>,
+    pub runtime_class_hashes: Option<Vec<(i32, Hash128)>>,
     pub has_oculus_plugin: Option<bool>,
     pub has_cluster_rendering: Option<bool>,
     pub enable_multiple_displays: Option<bool>,
@@ -43,7 +42,6 @@ impl crate::Parse for BuildSettings {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = GlobalGameManager::parse(r, ver)?;
         let levels = if *ver >= crate::UnityVersion::new(3, 4, 0) {
             let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
             r.align(4)?;
@@ -98,9 +96,7 @@ impl crate::Parse for BuildSettings {
             None
         };
         let build_guid = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            let v = r.read_aligned_string()?;
-            r.align(4)?;
-            Some(v)
+            Some(Guid::parse(r, ver)?)
         } else {
             None
         };
@@ -113,9 +109,7 @@ impl crate::Parse for BuildSettings {
         };
         let enable_dynamic_batching = r.read_bool()?;
         let is_debug_build = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
@@ -144,9 +138,7 @@ impl crate::Parse for BuildSettings {
             None
         };
         let uses_on_mouse_events = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
@@ -156,7 +148,7 @@ impl crate::Parse for BuildSettings {
             None
         };
         let runtime_class_hashes = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i32()?; let b = r.read_u32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?)
+            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i32()?; let b = Hash128::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?)
         } else {
             None
         };
@@ -185,13 +177,14 @@ impl crate::Parse for BuildSettings {
             None
         };
         let m_graphics_ap_is = if *ver >= crate::UnityVersion::new(5, 1, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i32() }).collect::<Result<Vec<_>, _>>() } )?)
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
 
         Ok(BuildSettings {
-            parent,
             levels,
             scenes,
             has_render_texture,

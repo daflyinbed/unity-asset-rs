@@ -2,11 +2,9 @@
 
 use crate::PPtr;
 use crate::subclasses::vector3f::Vector3f;
-use super::particle_emitter::ParticleEmitter;
 
 #[derive(Debug, Clone)]
 pub struct EllipsoidParticleEmitter {
-    pub parent: ParticleEmitter,
     pub m_game_object: PPtr,
     pub m_enabled: bool,
     pub m_emit: bool,
@@ -35,7 +33,6 @@ impl crate::Parse for EllipsoidParticleEmitter {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = ParticleEmitter::parse(r, ver)?;
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_enabled = r.read_bool()?;
         let m_emit = r.read_bool()?;
@@ -61,7 +58,6 @@ impl crate::Parse for EllipsoidParticleEmitter {
         let m_min_emitter_range = r.read_f32()?;
 
         Ok(EllipsoidParticleEmitter {
-            parent,
             m_game_object,
             m_enabled,
             m_emit,

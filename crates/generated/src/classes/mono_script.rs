@@ -1,13 +1,12 @@
 //! 自动生成。请勿手动修改。
 
-use super::text_asset::TextAsset;
+use crate::subclasses::hash128::Hash128;
 
 #[derive(Debug, Clone)]
 pub struct MonoScript {
-    pub parent: TextAsset,
     pub m_name: String,
     pub m_execution_order: i32,
-    pub m_properties_hash: u32,
+    pub m_properties_hash: Hash128,
     pub m_class_name: String,
     pub m_namespace: String,
     pub m_assembly_name: String,
@@ -19,11 +18,10 @@ impl crate::Parse for MonoScript {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = TextAsset::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_execution_order = r.read_i32()?;
-        let m_properties_hash = r.read_u32()?;
+        let m_properties_hash = Hash128::parse(r, ver)?;
         let m_class_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_namespace = r.read_aligned_string()?;
@@ -37,7 +35,6 @@ impl crate::Parse for MonoScript {
         };
 
         Ok(MonoScript {
-            parent,
             m_name,
             m_execution_order,
             m_properties_hash,

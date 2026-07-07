@@ -1,19 +1,23 @@
 pub use bytes::Bytes;
 pub use bundle::{Bundle, BundleFile};
-pub use cursor::{Cursor, Endian};
+pub use cursor::Cursor;
 pub use decompress::{CompressionType, Decompressor, IdentityDecompressor, Lz4Decompressor, Registry};
 pub use error::{Error, Result};
 pub use serialized_file::{ObjectInfo, SerializedFile, SerializedType};
 pub use typetree::{build_tree, interpret, parse_blob, BlobNode, PPtrValue, RefTypeTable, TypeKind, TypeNode, Value};
-pub use version::UnityVersion;
+pub use unity_core::{Endian, PPtr, UnityVersion};
 
 mod bundle;
-mod cursor;
+pub mod cursor;
 pub mod decompress;
 mod error;
+pub mod object_parser;
 mod serialized_file;
-mod typetree;
-mod version;
+pub mod typetree;
+
+// ── generated crate 桥接 ──
+pub use generated::{ClassIDType, UnityObject};
+pub use object_parser::{parse_object, ParsedObject};
 
 /// 从文件路径加载 UnityFS bundle。
 pub fn load(path: impl AsRef<std::path::Path>) -> Result<Bundle> {

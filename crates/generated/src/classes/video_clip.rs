@@ -1,11 +1,9 @@
 //! 自动生成。请勿手动修改。
 
 use crate::subclasses::streamed_resource::StreamedResource;
-use super::named_object::NamedObject;
 
 #[derive(Debug, Clone)]
 pub struct VideoClip {
-    pub parent: NamedObject,
     pub m_name: String,
     pub m_original_path: String,
     pub m_proxy_width: u32,
@@ -27,7 +25,6 @@ impl crate::Parse for VideoClip {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = NamedObject::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_original_path = r.read_aligned_string()?;
@@ -50,7 +47,6 @@ impl crate::Parse for VideoClip {
         let m_has_split_alpha = r.read_bool()?;
 
         Ok(VideoClip {
-            parent,
             m_name,
             m_original_path,
             m_proxy_width,

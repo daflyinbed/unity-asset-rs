@@ -4,16 +4,14 @@ use crate::PPtr;
 use crate::subclasses::static_batch_info::StaticBatchInfo;
 use crate::subclasses::vector3f::Vector3f;
 use crate::subclasses::vector4f::Vector4f;
-use super::renderer::Renderer;
 
 #[derive(Debug, Clone)]
 pub struct ParticleSystemRenderer {
-    pub parent: Renderer,
     pub m_game_object: PPtr,
     pub m_enabled: bool,
-    pub m_cast_shadows: bool,
-    pub m_receive_shadows: bool,
-    pub m_lightmap_index: u8,
+    pub m_cast_shadows: u8,
+    pub m_receive_shadows: u8,
+    pub m_lightmap_index: u16,
     pub m_motion_vectors: Option<u8>,
     pub m_dynamic_occludee: Option<u8>,
     pub m_lightmap_tiling_offset: Vector4f,
@@ -21,7 +19,7 @@ pub struct ParticleSystemRenderer {
     pub m_light_probe_usage: Option<u8>,
     pub m_static_shadow_caster: Option<u8>,
     pub m_materials: Vec<PPtr>,
-    pub m_reflection_probe_usage: Option<i32>,
+    pub m_reflection_probe_usage: Option<u8>,
     pub m_subset_indices: Option<Vec<u32>>,
     pub m_lightmap_tiling_offset_dynamic: Option<Vector4f>,
     pub m_static_batch_root: PPtr,
@@ -31,9 +29,9 @@ pub struct ParticleSystemRenderer {
     pub m_renderer_priority: Option<i32>,
     pub m_ray_trace_procedural: Option<u8>,
     pub m_light_probe_anchor: Option<PPtr>,
-    pub m_render_mode: i32,
+    pub m_render_mode: u16,
     pub m_sorting_layer: Option<i16>,
-    pub m_sorting_layer_id: Option<u32>,
+    pub m_sorting_layer_id: Option<i32>,
     pub m_ray_tracing_accel_struct_build_flags_override: Option<u8>,
     pub m_max_particle_size: f32,
     pub m_sorting_order: Option<i16>,
@@ -48,7 +46,7 @@ pub struct ParticleSystemRenderer {
     pub m_light_probe_volume_override: Option<PPtr>,
     pub m_mesh_lod_selection_bias: Option<f32>,
     pub m_sorting_fudge: f32,
-    pub m_sort_mode: i32,
+    pub m_sort_mode: u8,
     pub m_normal_direction: Option<f32>,
     pub m_mesh: PPtr,
     pub m_min_particle_size: Option<f32>,
@@ -82,350 +80,541 @@ impl crate::Parse for ParticleSystemRenderer {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Renderer::parse(r, ver)?;
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_enabled = r.read_bool()?;
-        let m_cast_shadows = r.read_bool()?;
-        let m_receive_shadows = r.read_bool()?;
-        let m_lightmap_index = r.read_u8()?;
-        let m_motion_vectors = if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            Some(r.read_u8()?)
-        } else {
-            None
-        };
-        let m_dynamic_occludee = if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            Some(r.read_u8()?)
-        } else {
-            None
-        };
-        let m_lightmap_tiling_offset = Vector4f::parse(r, ver)?;
-        let m_lightmap_index_dynamic = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_u16()?)
-        } else {
-            None
-        };
-        let m_light_probe_usage = if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            Some(r.read_u8()?)
-        } else {
-            None
-        };
-        let m_static_shadow_caster = if *ver >= crate::UnityVersion::new(2021, 1, 0) {
-            Some(r.read_u8()?)
-        } else {
-            None
-        };
-        let m_materials = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        let m_reflection_probe_usage = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_subset_indices = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?)
-        } else {
-            None
-        };
-        let m_lightmap_tiling_offset_dynamic = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(Vector4f::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_static_batch_root = crate::PPtr::parse(r, ver)?;
-        let m_rendering_layer_mask = if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            Some(r.read_u32()?)
-        } else {
-            None
-        };
-        let m_ray_tracing_mode = if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            let v = r.read_u8()?;
+        let mut m_game_object = None;
+        let mut m_enabled = None;
+        let mut m_cast_shadows = None;
+        let mut m_receive_shadows = None;
+        let mut m_lightmap_index = None;
+        let mut m_motion_vectors = None;
+        let mut m_dynamic_occludee = None;
+        let mut m_lightmap_tiling_offset = None;
+        let mut m_lightmap_index_dynamic = None;
+        let mut m_light_probe_usage = None;
+        let mut m_static_shadow_caster = None;
+        let mut m_materials = None;
+        let mut m_reflection_probe_usage = None;
+        let mut m_subset_indices = None;
+        let mut m_lightmap_tiling_offset_dynamic = None;
+        let mut m_static_batch_root = None;
+        let mut m_rendering_layer_mask = None;
+        let mut m_ray_tracing_mode = None;
+        let mut m_use_light_probes = None;
+        let mut m_renderer_priority = None;
+        let mut m_ray_trace_procedural = None;
+        let mut m_light_probe_anchor = None;
+        let mut m_render_mode = None;
+        let mut m_sorting_layer = None;
+        let mut m_sorting_layer_id = None;
+        let mut m_ray_tracing_accel_struct_build_flags_override = None;
+        let mut m_max_particle_size = None;
+        let mut m_sorting_order = None;
+        let mut m_static_batch_info = None;
+        let mut m_ray_tracing_accel_struct_build_flags = None;
+        let mut m_camera_velocity_scale = None;
+        let mut m_probe_anchor = None;
+        let mut m_small_mesh_culling = None;
+        let mut m_velocity_scale = None;
+        let mut m_force_mesh_lod = None;
+        let mut m_length_scale = None;
+        let mut m_light_probe_volume_override = None;
+        let mut m_mesh_lod_selection_bias = None;
+        let mut m_sorting_fudge = None;
+        let mut m_sort_mode = None;
+        let mut m_normal_direction = None;
+        let mut m_mesh = None;
+        let mut m_min_particle_size = None;
+        let mut m_mesh1 = None;
+        let mut m_mesh2 = None;
+        let mut m_mesh3 = None;
+        let mut m_render_alignment = None;
+        let mut m_pivot = None;
+        let mut m_mesh_distribution = None;
+        let mut m_use_custom_vertex_streams = None;
+        let mut m_vertex_stream_mask = None;
+        let mut m_vertex_streams = None;
+        let mut m_mask_interaction = None;
+        let mut m_shadow_bias = None;
+        let mut m_enable_gpu_instancing = None;
+        let mut m_apply_active_color_space = None;
+        let mut m_flip = None;
+        let mut m_allow_roll = None;
+        let mut m_freeform_stretching = None;
+        let mut m_rotate_with_stretch_direction = None;
+        let mut m_use_custom_trail_vertex_streams = None;
+        let mut m_trail_vertex_streams = None;
+        let mut m_mesh_weighting = None;
+        let mut m_mesh_weighting1 = None;
+        let mut m_mesh_weighting2 = None;
+        let mut m_mesh_weighting3 = None;
+            m_game_object = Some(crate::PPtr::parse(r, ver)?);
+            m_enabled = Some(r.read_bool()?);
+            m_cast_shadows = Some(r.read_u8()?);
+            m_receive_shadows = Some(r.read_u8()?);
+        if *ver >= crate::UnityVersion::new(6000, 2, 0) {
+            m_dynamic_occludee = Some(r.read_u8()?);
+            m_static_shadow_caster = Some(r.read_u8()?);
+            m_motion_vectors = Some(r.read_u8()?);
+            m_light_probe_usage = Some(r.read_u8()?);
+            m_reflection_probe_usage = Some(r.read_u8()?);
+            m_ray_tracing_mode = Some(r.read_u8()?);
+            m_ray_trace_procedural = Some(r.read_u8()?);
+            m_ray_tracing_accel_struct_build_flags_override = Some(r.read_u8()?);
+            m_ray_tracing_accel_struct_build_flags = Some(r.read_u8()?);
+            m_small_mesh_culling = Some(r.read_u8()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_use_light_probes = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = r.read_bool()?;
+            m_force_mesh_lod = Some(r.read_i16()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_renderer_priority = if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_ray_trace_procedural = if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            let v = r.read_u8()?;
+            m_mesh_lod_selection_bias = Some(r.read_f32()?);
+            m_rendering_layer_mask = Some(r.read_u32()?);
+            m_renderer_priority = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2023, 3, 0) {
+            m_dynamic_occludee = Some(r.read_u8()?);
+            m_static_shadow_caster = Some(r.read_u8()?);
+            m_motion_vectors = Some(r.read_u8()?);
+            m_light_probe_usage = Some(r.read_u8()?);
+            m_reflection_probe_usage = Some(r.read_u8()?);
+            m_ray_tracing_mode = Some(r.read_u8()?);
+            m_ray_trace_procedural = Some(r.read_u8()?);
+            m_ray_tracing_accel_struct_build_flags_override = Some(r.read_u8()?);
+            m_ray_tracing_accel_struct_build_flags = Some(r.read_u8()?);
+            m_small_mesh_culling = Some(r.read_u8()?);
             r.align(4)?;
-            Some(v)
+            m_rendering_layer_mask = Some(r.read_u32()?);
+            m_renderer_priority = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2023, 2, 0) {
+            m_dynamic_occludee = Some(r.read_u8()?);
+            m_static_shadow_caster = Some(r.read_u8()?);
+            m_motion_vectors = Some(r.read_u8()?);
+            m_light_probe_usage = Some(r.read_u8()?);
+            m_reflection_probe_usage = Some(r.read_u8()?);
+            m_ray_tracing_mode = Some(r.read_u8()?);
+            m_ray_trace_procedural = Some(r.read_u8()?);
+            m_ray_tracing_accel_struct_build_flags_override = Some(r.read_u8()?);
+            m_ray_tracing_accel_struct_build_flags = Some(r.read_u8()?);
+            m_rendering_layer_mask = Some(r.read_u32()?);
+            m_renderer_priority = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2021, 1, 0) {
+            m_dynamic_occludee = Some(r.read_u8()?);
+            m_static_shadow_caster = Some(r.read_u8()?);
+            m_motion_vectors = Some(r.read_u8()?);
+            m_light_probe_usage = Some(r.read_u8()?);
+            m_reflection_probe_usage = Some(r.read_u8()?);
+            m_ray_tracing_mode = Some(r.read_u8()?);
+            m_ray_trace_procedural = Some(r.read_u8()?);
+            m_rendering_layer_mask = Some(r.read_u32()?);
+            m_renderer_priority = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
+            m_dynamic_occludee = Some(r.read_u8()?);
+            m_motion_vectors = Some(r.read_u8()?);
+            m_light_probe_usage = Some(r.read_u8()?);
+            m_reflection_probe_usage = Some(r.read_u8()?);
+            m_ray_tracing_mode = Some(r.read_u8()?);
+            m_ray_trace_procedural = Some(r.read_u8()?);
+            m_rendering_layer_mask = Some(r.read_u32()?);
+            m_renderer_priority = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
+            m_dynamic_occludee = Some(r.read_u8()?);
+            m_motion_vectors = Some(r.read_u8()?);
+            m_light_probe_usage = Some(r.read_u8()?);
+            m_reflection_probe_usage = Some(r.read_u8()?);
+            m_ray_tracing_mode = Some(r.read_u8()?);
+            m_rendering_layer_mask = Some(r.read_u32()?);
+            m_renderer_priority = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
+            m_dynamic_occludee = Some(r.read_u8()?);
+            m_motion_vectors = Some(r.read_u8()?);
+            m_light_probe_usage = Some(r.read_u8()?);
+            m_reflection_probe_usage = Some(r.read_u8()?);
+            m_rendering_layer_mask = Some(r.read_u32()?);
+            m_renderer_priority = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
+            m_dynamic_occludee = Some(r.read_u8()?);
+            m_motion_vectors = Some(r.read_u8()?);
+            m_light_probe_usage = Some(r.read_u8()?);
+            m_reflection_probe_usage = Some(r.read_u8()?);
+            m_rendering_layer_mask = Some(r.read_u32()?);
+        } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
+            m_dynamic_occludee = Some(r.read_u8()?);
+            m_motion_vectors = Some(r.read_u8()?);
+            m_light_probe_usage = Some(r.read_u8()?);
+            m_reflection_probe_usage = Some(r.read_u8()?);
+        } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
+            m_motion_vectors = Some(r.read_u8()?);
+            m_light_probe_usage = Some(r.read_u8()?);
+            m_reflection_probe_usage = Some(r.read_u8()?);
         } else {
-            None
-        };
-        let m_light_probe_anchor = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(crate::PPtr::parse(r, ver)?)
+        }
+            m_lightmap_index = Some(r.read_u16()?);
+        if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            m_lightmap_index_dynamic = Some(r.read_u16()?);
         } else {
-            None
-        };
-        let m_render_mode = r.read_i32()?;
-        let m_sorting_layer = if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            Some(r.read_i16()?)
+        }
+            m_lightmap_tiling_offset = Some(Vector4f::parse(r, ver)?);
+        if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            m_lightmap_tiling_offset_dynamic = Some(Vector4f::parse(r, ver)?);
         } else {
-            None
-        };
-        let m_sorting_layer_id = if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            Some(r.read_u32()?)
-        } else {
-            None
-        };
-        let m_ray_tracing_accel_struct_build_flags_override = if *ver >= crate::UnityVersion::new(2023, 2, 0) {
-            Some(r.read_u8()?)
-        } else {
-            None
-        };
-        let m_max_particle_size = r.read_f32()?;
-        let m_sorting_order = if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            Some(r.read_i16()?)
-        } else {
-            None
-        };
-        let m_static_batch_info = if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            Some(StaticBatchInfo::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_ray_tracing_accel_struct_build_flags = if *ver >= crate::UnityVersion::new(2023, 2, 0) {
-            let v = r.read_u8()?;
+        }
+            m_materials = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
+        if *ver >= crate::UnityVersion::new(5, 5, 0) {
+            m_static_batch_info = Some(StaticBatchInfo::parse(r, ver)?);
         } else {
-            None
-        };
-        let m_camera_velocity_scale = r.read_f32()?;
-        let m_probe_anchor = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = crate::PPtr::parse(r, ver)?;
+            m_subset_indices = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
+        }
+            m_static_batch_root = Some(crate::PPtr::parse(r, ver)?);
+        if *ver >= crate::UnityVersion::new(6000, 3, 0) {
+            m_probe_anchor = Some(crate::PPtr::parse(r, ver)?);
+            m_light_probe_volume_override = Some(crate::PPtr::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_small_mesh_culling = if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            let v = r.read_u8()?;
+            m_sorting_layer_id = Some(r.read_i32()?);
+            m_sorting_layer = Some(r.read_i16()?);
+            m_sorting_order = Some(r.read_i16()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_velocity_scale = r.read_f32()?;
-        let m_force_mesh_lod = if *ver >= crate::UnityVersion::new(6000, 2, 0) {
-            let v = r.read_i16()?;
+            m_mask_interaction = Some(r.read_i32()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_length_scale = r.read_f32()?;
-        let m_light_probe_volume_override = if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            let v = crate::PPtr::parse(r, ver)?;
+        } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            m_probe_anchor = Some(crate::PPtr::parse(r, ver)?);
+            m_light_probe_volume_override = Some(crate::PPtr::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_mesh_lod_selection_bias = if *ver >= crate::UnityVersion::new(6000, 2, 0) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
-        let m_sorting_fudge = r.read_f32()?;
-        let m_sort_mode = r.read_i32()?;
-        let m_normal_direction = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
-        let m_mesh = crate::PPtr::parse(r, ver)?;
-        let m_min_particle_size = if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
-        let m_mesh1 = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(crate::PPtr::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_mesh2 = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(crate::PPtr::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_mesh3 = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(crate::PPtr::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_render_alignment = if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_pivot = if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            Some(Vector3f::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_mesh_distribution = if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            Some(r.read_u8()?)
-        } else {
-            None
-        };
-        let m_use_custom_vertex_streams = if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = r.read_bool()?;
+            m_sorting_layer_id = Some(r.read_i32()?);
+            m_sorting_layer = Some(r.read_i16()?);
+            m_sorting_order = Some(r.read_i16()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_vertex_stream_mask = if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_vertex_streams = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
+        } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            m_probe_anchor = Some(crate::PPtr::parse(r, ver)?);
+            m_light_probe_volume_override = Some(crate::PPtr::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_mask_interaction = if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_shadow_bias = if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
-        let m_enable_gpu_instancing = if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            let v = r.read_bool()?;
+            m_sorting_layer = Some(r.read_i16()?);
+            m_sorting_order = Some(r.read_i16()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_apply_active_color_space = if *ver >= crate::UnityVersion::new(2018, 2, 0) {
-            let v = r.read_bool()?;
+        } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
+            m_probe_anchor = Some(crate::PPtr::parse(r, ver)?);
+            m_light_probe_volume_override = Some(crate::PPtr::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_flip = if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            Some(Vector3f::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_allow_roll = if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            let v = r.read_bool()?;
+            m_sorting_layer_id = Some(r.read_i32()?);
+            m_sorting_order = Some(r.read_i16()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_freeform_stretching = if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_rotate_with_stretch_direction = if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            let v = r.read_bool()?;
+        } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            m_use_light_probes = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_use_custom_trail_vertex_streams = if *ver >= crate::UnityVersion::new(2022, 3, 11) {
-            let v = r.read_bool()?;
+            m_reflection_probe_usage = Some(r.read_u8()?);
+            m_probe_anchor = Some(crate::PPtr::parse(r, ver)?);
+            m_sorting_layer_id = Some(r.read_i32()?);
+            m_sorting_order = Some(r.read_i16()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_trail_vertex_streams = if *ver >= crate::UnityVersion::new(2022, 3, 11) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
+        } else if *ver >= crate::UnityVersion::new(4, 5, 0) {
+            m_use_light_probes = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
+            m_light_probe_anchor = Some(crate::PPtr::parse(r, ver)?);
+            r.align(4)?;
+            m_sorting_layer_id = Some(r.read_i32()?);
+            m_sorting_order = Some(r.read_i16()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
+            m_use_light_probes = Some(r.read_bool()?);
+            r.align(4)?;
+            m_light_probe_anchor = Some(crate::PPtr::parse(r, ver)?);
+            r.align(4)?;
+            m_sorting_layer = Some(r.read_i16()?);
+            m_sorting_order = Some(r.read_i16()?);
+            r.align(4)?;
         } else {
-            None
-        };
-        let m_mesh_weighting = if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            Some(r.read_f32()?)
+            m_use_light_probes = Some(r.read_bool()?);
+            r.align(4)?;
+            m_light_probe_anchor = Some(crate::PPtr::parse(r, ver)?);
+            r.align(4)?;
+        }
+            m_render_mode = Some(r.read_u16()?);
+        if *ver >= crate::UnityVersion::new(2021, 2, 0) {
+            m_mesh_distribution = Some(r.read_u8()?);
+            m_sort_mode = Some(r.read_u8()?);
+            m_min_particle_size = Some(r.read_f32()?);
+        } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
+            m_sort_mode = Some(r.read_u8()?);
+            m_min_particle_size = Some(r.read_f32()?);
         } else {
-            None
-        };
-        let m_mesh_weighting1 = if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            Some(r.read_f32()?)
+        }
+            m_max_particle_size = Some(r.read_f32()?);
+            m_camera_velocity_scale = Some(r.read_f32()?);
+            m_velocity_scale = Some(r.read_f32()?);
+            m_length_scale = Some(r.read_f32()?);
+            m_sorting_fudge = Some(r.read_f32()?);
+        if *ver >= crate::UnityVersion::new(2023, 3, 0) {
+            m_normal_direction = Some(r.read_f32()?);
+            m_shadow_bias = Some(r.read_f32()?);
+            m_render_alignment = Some(r.read_i32()?);
+            m_pivot = Some(Vector3f::parse(r, ver)?);
+            m_flip = Some(Vector3f::parse(r, ver)?);
+            m_enable_gpu_instancing = Some(r.read_bool()?);
+            m_apply_active_color_space = Some(r.read_bool()?);
+            m_allow_roll = Some(r.read_bool()?);
+            m_freeform_stretching = Some(r.read_bool()?);
+            m_rotate_with_stretch_direction = Some(r.read_bool()?);
+            r.align(4)?;
+            m_use_custom_vertex_streams = Some(r.read_bool()?);
+            r.align(4)?;
+            m_vertex_streams = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_use_custom_trail_vertex_streams = Some(r.read_bool()?);
+            r.align(4)?;
+            m_trail_vertex_streams = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2023, 3, 0) {
+            m_normal_direction = Some(r.read_f32()?);
+            m_shadow_bias = Some(r.read_f32()?);
+            m_render_alignment = Some(r.read_i32()?);
+            m_pivot = Some(Vector3f::parse(r, ver)?);
+            m_flip = Some(Vector3f::parse(r, ver)?);
+            m_use_custom_vertex_streams = Some(r.read_bool()?);
+            r.align(4)?;
+            m_enable_gpu_instancing = Some(r.read_bool()?);
+            m_apply_active_color_space = Some(r.read_bool()?);
+            m_allow_roll = Some(r.read_bool()?);
+            m_freeform_stretching = Some(r.read_bool()?);
+            m_rotate_with_stretch_direction = Some(r.read_bool()?);
+            r.align(4)?;
+            m_vertex_streams = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2023, 2, 0) {
+            m_normal_direction = Some(r.read_f32()?);
+            m_shadow_bias = Some(r.read_f32()?);
+            m_render_alignment = Some(r.read_i32()?);
+            m_pivot = Some(Vector3f::parse(r, ver)?);
+            m_flip = Some(Vector3f::parse(r, ver)?);
+            m_enable_gpu_instancing = Some(r.read_bool()?);
+            m_apply_active_color_space = Some(r.read_bool()?);
+            m_allow_roll = Some(r.read_bool()?);
+            m_freeform_stretching = Some(r.read_bool()?);
+            m_rotate_with_stretch_direction = Some(r.read_bool()?);
+            r.align(4)?;
+            m_use_custom_vertex_streams = Some(r.read_bool()?);
+            r.align(4)?;
+            m_vertex_streams = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_use_custom_trail_vertex_streams = Some(r.read_bool()?);
+            r.align(4)?;
+            m_trail_vertex_streams = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2023, 2, 0) {
+            m_normal_direction = Some(r.read_f32()?);
+            m_shadow_bias = Some(r.read_f32()?);
+            m_render_alignment = Some(r.read_i32()?);
+            m_pivot = Some(Vector3f::parse(r, ver)?);
+            m_flip = Some(Vector3f::parse(r, ver)?);
+            m_use_custom_vertex_streams = Some(r.read_bool()?);
+            r.align(4)?;
+            m_enable_gpu_instancing = Some(r.read_bool()?);
+            m_apply_active_color_space = Some(r.read_bool()?);
+            m_allow_roll = Some(r.read_bool()?);
+            m_freeform_stretching = Some(r.read_bool()?);
+            m_rotate_with_stretch_direction = Some(r.read_bool()?);
+            r.align(4)?;
+            m_vertex_streams = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2023, 1, 16) {
+            m_normal_direction = Some(r.read_f32()?);
+            m_shadow_bias = Some(r.read_f32()?);
+            m_render_alignment = Some(r.read_i32()?);
+            m_pivot = Some(Vector3f::parse(r, ver)?);
+            m_flip = Some(Vector3f::parse(r, ver)?);
+            m_enable_gpu_instancing = Some(r.read_bool()?);
+            m_apply_active_color_space = Some(r.read_bool()?);
+            m_allow_roll = Some(r.read_bool()?);
+            m_freeform_stretching = Some(r.read_bool()?);
+            m_rotate_with_stretch_direction = Some(r.read_bool()?);
+            r.align(4)?;
+            m_use_custom_vertex_streams = Some(r.read_bool()?);
+            r.align(4)?;
+            m_vertex_streams = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_use_custom_trail_vertex_streams = Some(r.read_bool()?);
+            r.align(4)?;
+            m_trail_vertex_streams = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2023, 1, 0) {
+            m_normal_direction = Some(r.read_f32()?);
+            m_shadow_bias = Some(r.read_f32()?);
+            m_render_alignment = Some(r.read_i32()?);
+            m_pivot = Some(Vector3f::parse(r, ver)?);
+            m_flip = Some(Vector3f::parse(r, ver)?);
+            m_use_custom_vertex_streams = Some(r.read_bool()?);
+            r.align(4)?;
+            m_enable_gpu_instancing = Some(r.read_bool()?);
+            m_apply_active_color_space = Some(r.read_bool()?);
+            m_allow_roll = Some(r.read_bool()?);
+            m_freeform_stretching = Some(r.read_bool()?);
+            m_rotate_with_stretch_direction = Some(r.read_bool()?);
+            r.align(4)?;
+            m_vertex_streams = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2022, 3, 11) {
+            m_normal_direction = Some(r.read_f32()?);
+            m_shadow_bias = Some(r.read_f32()?);
+            m_render_alignment = Some(r.read_i32()?);
+            m_pivot = Some(Vector3f::parse(r, ver)?);
+            m_flip = Some(Vector3f::parse(r, ver)?);
+            m_enable_gpu_instancing = Some(r.read_bool()?);
+            m_apply_active_color_space = Some(r.read_bool()?);
+            m_allow_roll = Some(r.read_bool()?);
+            m_freeform_stretching = Some(r.read_bool()?);
+            m_rotate_with_stretch_direction = Some(r.read_bool()?);
+            r.align(4)?;
+            m_use_custom_vertex_streams = Some(r.read_bool()?);
+            r.align(4)?;
+            m_vertex_streams = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_use_custom_trail_vertex_streams = Some(r.read_bool()?);
+            r.align(4)?;
+            m_trail_vertex_streams = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
+            m_normal_direction = Some(r.read_f32()?);
+            m_shadow_bias = Some(r.read_f32()?);
+            m_render_alignment = Some(r.read_i32()?);
+            m_pivot = Some(Vector3f::parse(r, ver)?);
+            m_flip = Some(Vector3f::parse(r, ver)?);
+            m_use_custom_vertex_streams = Some(r.read_bool()?);
+            r.align(4)?;
+            m_enable_gpu_instancing = Some(r.read_bool()?);
+            m_apply_active_color_space = Some(r.read_bool()?);
+            m_allow_roll = Some(r.read_bool()?);
+            m_freeform_stretching = Some(r.read_bool()?);
+            m_rotate_with_stretch_direction = Some(r.read_bool()?);
+            r.align(4)?;
+            m_vertex_streams = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
+            m_normal_direction = Some(r.read_f32()?);
+            m_shadow_bias = Some(r.read_f32()?);
+            m_render_alignment = Some(r.read_i32()?);
+            m_pivot = Some(Vector3f::parse(r, ver)?);
+            m_flip = Some(Vector3f::parse(r, ver)?);
+            m_use_custom_vertex_streams = Some(r.read_bool()?);
+            r.align(4)?;
+            m_enable_gpu_instancing = Some(r.read_bool()?);
+            m_apply_active_color_space = Some(r.read_bool()?);
+            m_allow_roll = Some(r.read_bool()?);
+            m_vertex_streams = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2018, 2, 0) {
+            m_normal_direction = Some(r.read_f32()?);
+            m_render_alignment = Some(r.read_i32()?);
+            m_pivot = Some(Vector3f::parse(r, ver)?);
+            m_use_custom_vertex_streams = Some(r.read_bool()?);
+            r.align(4)?;
+            m_enable_gpu_instancing = Some(r.read_bool()?);
+            m_apply_active_color_space = Some(r.read_bool()?);
+            m_vertex_streams = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
+            m_normal_direction = Some(r.read_f32()?);
+            m_render_alignment = Some(r.read_i32()?);
+            m_pivot = Some(Vector3f::parse(r, ver)?);
+            m_use_custom_vertex_streams = Some(r.read_bool()?);
+            r.align(4)?;
+            m_enable_gpu_instancing = Some(r.read_bool()?);
+            m_vertex_streams = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            m_normal_direction = Some(r.read_f32()?);
+            m_render_alignment = Some(r.read_i32()?);
+            m_pivot = Some(Vector3f::parse(r, ver)?);
+            m_use_custom_vertex_streams = Some(r.read_bool()?);
+            r.align(4)?;
+            m_vertex_streams = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
+            m_normal_direction = Some(r.read_f32()?);
+            m_render_alignment = Some(r.read_i32()?);
+            m_pivot = Some(Vector3f::parse(r, ver)?);
+            m_use_custom_vertex_streams = Some(r.read_bool()?);
+            r.align(4)?;
+            m_vertex_stream_mask = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
+            m_normal_direction = Some(r.read_f32()?);
+            m_render_alignment = Some(r.read_i32()?);
+            m_pivot = Some(Vector3f::parse(r, ver)?);
+        } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
+            m_normal_direction = Some(r.read_f32()?);
+            m_sort_mode = Some(r.read_u8()?);
         } else {
-            None
-        };
-        let m_mesh_weighting2 = if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            Some(r.read_f32()?)
+            m_sort_mode = Some(r.read_u8()?);
+        }
+            m_mesh = Some(crate::PPtr::parse(r, ver)?);
+        if *ver >= crate::UnityVersion::new(6000, 3, 0) {
+            m_mesh1 = Some(crate::PPtr::parse(r, ver)?);
+            m_mesh2 = Some(crate::PPtr::parse(r, ver)?);
+            m_mesh3 = Some(crate::PPtr::parse(r, ver)?);
+            m_mesh_weighting = Some(r.read_f32()?);
+            m_mesh_weighting1 = Some(r.read_f32()?);
+            m_mesh_weighting2 = Some(r.read_f32()?);
+            m_mesh_weighting3 = Some(r.read_f32()?);
+        } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
+            m_mesh1 = Some(crate::PPtr::parse(r, ver)?);
+            m_mesh2 = Some(crate::PPtr::parse(r, ver)?);
+            m_mesh3 = Some(crate::PPtr::parse(r, ver)?);
+            m_mesh_weighting = Some(r.read_f32()?);
+            m_mesh_weighting1 = Some(r.read_f32()?);
+            m_mesh_weighting2 = Some(r.read_f32()?);
+            m_mesh_weighting3 = Some(r.read_f32()?);
+            m_mask_interaction = Some(r.read_i32()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            m_mesh1 = Some(crate::PPtr::parse(r, ver)?);
+            m_mesh2 = Some(crate::PPtr::parse(r, ver)?);
+            m_mesh3 = Some(crate::PPtr::parse(r, ver)?);
+            m_mask_interaction = Some(r.read_i32()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
+            m_mesh1 = Some(crate::PPtr::parse(r, ver)?);
+            m_mesh2 = Some(crate::PPtr::parse(r, ver)?);
+            m_mesh3 = Some(crate::PPtr::parse(r, ver)?);
         } else {
-            None
-        };
-        let m_mesh_weighting3 = if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
+        }
 
         Ok(ParticleSystemRenderer {
-            parent,
-            m_game_object,
-            m_enabled,
-            m_cast_shadows,
-            m_receive_shadows,
-            m_lightmap_index,
+            m_game_object: m_game_object.unwrap(),
+            m_enabled: m_enabled.unwrap(),
+            m_cast_shadows: m_cast_shadows.unwrap(),
+            m_receive_shadows: m_receive_shadows.unwrap(),
+            m_lightmap_index: m_lightmap_index.unwrap(),
             m_motion_vectors,
             m_dynamic_occludee,
-            m_lightmap_tiling_offset,
+            m_lightmap_tiling_offset: m_lightmap_tiling_offset.unwrap(),
             m_lightmap_index_dynamic,
             m_light_probe_usage,
             m_static_shadow_caster,
-            m_materials,
+            m_materials: m_materials.unwrap(),
             m_reflection_probe_usage,
             m_subset_indices,
             m_lightmap_tiling_offset_dynamic,
-            m_static_batch_root,
+            m_static_batch_root: m_static_batch_root.unwrap(),
             m_rendering_layer_mask,
             m_ray_tracing_mode,
             m_use_light_probes,
             m_renderer_priority,
             m_ray_trace_procedural,
             m_light_probe_anchor,
-            m_render_mode,
+            m_render_mode: m_render_mode.unwrap(),
             m_sorting_layer,
             m_sorting_layer_id,
             m_ray_tracing_accel_struct_build_flags_override,
-            m_max_particle_size,
+            m_max_particle_size: m_max_particle_size.unwrap(),
             m_sorting_order,
             m_static_batch_info,
             m_ray_tracing_accel_struct_build_flags,
-            m_camera_velocity_scale,
+            m_camera_velocity_scale: m_camera_velocity_scale.unwrap(),
             m_probe_anchor,
             m_small_mesh_culling,
-            m_velocity_scale,
+            m_velocity_scale: m_velocity_scale.unwrap(),
             m_force_mesh_lod,
-            m_length_scale,
+            m_length_scale: m_length_scale.unwrap(),
             m_light_probe_volume_override,
             m_mesh_lod_selection_bias,
-            m_sorting_fudge,
-            m_sort_mode,
+            m_sorting_fudge: m_sorting_fudge.unwrap(),
+            m_sort_mode: m_sort_mode.unwrap(),
             m_normal_direction,
-            m_mesh,
+            m_mesh: m_mesh.unwrap(),
             m_min_particle_size,
             m_mesh1,
             m_mesh2,

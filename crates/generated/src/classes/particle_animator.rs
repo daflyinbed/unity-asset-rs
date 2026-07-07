@@ -3,11 +3,9 @@
 use crate::PPtr;
 use crate::subclasses::color_rgba::ColorRgba;
 use crate::subclasses::vector3f::Vector3f;
-use super::component::Component;
 
 #[derive(Debug, Clone)]
 pub struct ParticleAnimator {
-    pub parent: Component,
     pub m_game_object: PPtr,
     pub does_animate_color: bool,
     pub color_animation_0: ColorRgba,
@@ -30,7 +28,6 @@ impl crate::Parse for ParticleAnimator {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Component::parse(r, ver)?;
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let does_animate_color = r.read_bool()?;
         r.align(4)?;
@@ -49,7 +46,6 @@ impl crate::Parse for ParticleAnimator {
         let autodestruct = r.read_bool()?;
 
         Ok(ParticleAnimator {
-            parent,
             m_game_object,
             does_animate_color,
             color_animation_0,

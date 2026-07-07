@@ -7,3 +7,6 @@ publish = false
 [lib]
 name = "unity_asset_generated"
 path = "src/lib.rs"
+
+[dependencies]
+unity-core = { path = "../unity-core" }

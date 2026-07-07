@@ -4,11 +4,9 @@ use crate::PPtr;
 use crate::subclasses::bit_field::BitField;
 use crate::subclasses::physics_job_options2_d::PhysicsJobOptions2D;
 use crate::subclasses::vector2f::Vector2f;
-use super::global_game_manager::GlobalGameManager;
 
 #[derive(Debug, Clone)]
 pub struct Physics2DSettings {
-    pub parent: GlobalGameManager,
     pub m_gravity: Vector2f,
     pub m_default_material: PPtr,
     pub m_velocity_iterations: i32,
@@ -53,15 +51,12 @@ impl crate::Parse for Physics2DSettings {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = GlobalGameManager::parse(r, ver)?;
         let m_gravity = Vector2f::parse(r, ver)?;
         let m_default_material = crate::PPtr::parse(r, ver)?;
         let m_velocity_iterations = r.read_i32()?;
         let m_position_iterations = r.read_i32()?;
         let m_raycasts_hit_triggers = if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
@@ -76,6 +71,7 @@ impl crate::Parse for Physics2DSettings {
             None
         };
         let m_layer_collision_matrix = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+        r.align(4)?;
         let m_max_linear_correction = if *ver >= crate::UnityVersion::new(4, 5, 0) {
             Some(r.read_f32()?)
         } else {
@@ -176,9 +172,7 @@ impl crate::Parse for Physics2DSettings {
             None
         };
         let m_change_stops_callbacks = if *ver >= crate::UnityVersion::new(4, 6, 1) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
@@ -193,9 +187,7 @@ impl crate::Parse for Physics2DSettings {
             None
         };
         let m_callbacks_on_disable = if *ver >= crate::UnityVersion::new(5, 6, 1) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
@@ -233,7 +225,6 @@ impl crate::Parse for Physics2DSettings {
         };
 
         Ok(Physics2DSettings {
-            parent,
             m_gravity,
             m_default_material,
             m_velocity_iterations,

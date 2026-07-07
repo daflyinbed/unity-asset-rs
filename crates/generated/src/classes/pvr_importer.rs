@@ -1,11 +1,9 @@
 //! 自动生成。请勿手动修改。
 
 use crate::subclasses::md_four::MdFour;
-use super::asset_importer::AssetImporter;
 
 #[derive(Debug, Clone)]
 pub struct PvrImporter {
-    pub parent: AssetImporter,
     pub m_name: String,
     pub m_file_id_to_recycle_name: Option<Vec<(i32, String)>>,
     pub m_user_data: Option<String>,
@@ -20,7 +18,6 @@ impl crate::Parse for PvrImporter {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = AssetImporter::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_file_id_to_recycle_name = if *ver >= crate::UnityVersion::new(3, 4, 0) {
@@ -67,7 +64,6 @@ impl crate::Parse for PvrImporter {
         };
 
         Ok(PvrImporter {
-            parent,
             m_name,
             m_file_id_to_recycle_name,
             m_user_data,

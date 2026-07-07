@@ -164,10 +164,22 @@ pub struct EmitClass {
     pub name: String,
     /// 原始 Unity 名（`Texture2D`、`Vector3f`）
     pub unity_name: String,
-    pub parent: ParentSpec,
     pub own_fields: Vec<EmitField>,
     pub is_abstract: bool,
     pub is_mono_behaviour: bool,
+    /// 每个版本区间的 own_field 顺序（TPK release_root 的真实顺序）。
+    /// 用于生成 version-gated parse 块。
+    /// 为空 = 所有版本顺序相同，用 own_fields 的合并顺序即可。
+    pub version_layouts: Vec<VersionLayout>,
+}
+
+/// 一个版本区间的 own_field 布局。
+#[derive(Debug, Clone)]
+pub struct VersionLayout {
+    /// 该布局适用的起始版本（inclusive）。
+    pub since: (u16, u16, u16),
+    /// 该版本的 own_fields（已扣除祖先字段），按字节流顺序排列。
+    pub fields: Vec<EmitField>,
 }
 
 impl EmitClass {
@@ -181,20 +193,6 @@ impl EmitClass {
     pub fn is_main(&self) -> bool {
         matches!(self.key, ClassKey::Main(_))
     }
-}
-
-#[derive(Debug, Clone)]
-pub enum ParentSpec {
-    /// 顶层（无父类）
-    Root,
-    /// 所有版本里父类都相同（389/412）
-    Stable(String),
-    /// 父类跨版本变化（23/412）—— 生成 `{Class}Parent` enum
-    Variable {
-        enum_name: String,
-        /// `[(版本门控, 父类 Rust 名)]`，按版本升序
-        branches: Vec<(VersionGate, String)>,
-    },
 }
 
 #[derive(Debug, Clone)]

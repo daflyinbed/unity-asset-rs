@@ -2,11 +2,9 @@
 
 use crate::PPtr;
 use crate::subclasses::bitset::bitset;
-use super::object::Object;
 
 #[derive(Debug, Clone)]
 pub struct EditorExtensionImpl {
-    pub parent: Object,
     pub m_object: Option<PPtr>,
     pub m_template_father: Option<PPtr>,
     pub m_data_template: Option<PPtr>,
@@ -19,7 +17,6 @@ impl crate::Parse for EditorExtensionImpl {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Object::parse(r, ver)?;
         let m_object = if *ver >= crate::UnityVersion::new(3, 4, 0) {
             Some(crate::PPtr::parse(r, ver)?)
         } else {
@@ -51,7 +48,6 @@ impl crate::Parse for EditorExtensionImpl {
         };
 
         Ok(EditorExtensionImpl {
-            parent,
             m_object,
             m_template_father,
             m_data_template,

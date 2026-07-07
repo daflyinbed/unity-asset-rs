@@ -1,11 +1,9 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
-use super::behaviour::Behaviour;
 
 #[derive(Debug, Clone)]
 pub struct SortingGroup {
-    pub parent: Behaviour,
     pub m_game_object: PPtr,
     pub m_enabled: u8,
     pub m_sorting_layer: i16,
@@ -20,7 +18,6 @@ impl crate::Parse for SortingGroup {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Behaviour::parse(r, ver)?;
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_enabled = r.read_u8()?;
         r.align(4)?;
@@ -31,11 +28,8 @@ impl crate::Parse for SortingGroup {
             None
         };
         let m_sorting_order = r.read_i16()?;
-        r.align(4)?;
         let m_sort_at_root = if *ver >= crate::UnityVersion::new(2022, 1, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
@@ -48,7 +42,6 @@ impl crate::Parse for SortingGroup {
         };
 
         Ok(SortingGroup {
-            parent,
             m_game_object,
             m_enabled,
             m_sorting_layer,

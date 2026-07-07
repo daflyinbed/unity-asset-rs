@@ -1,20 +1,16 @@
 /// Unity 引擎版本（从 SerializedFile 的 unity_version 字符串解析）。
 ///
-/// 仅用于版本门控判断（如 PPtr 的 path_id 在 ver>=5 时是 i64）。
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// 用于版本门控判断（如 PPtr 的 path_id 在 ver>=5 时是 i64）。
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct UnityVersion {
     pub major: u16,
     pub minor: u16,
-    pub patch: u16,
+    pub build: u16,
 }
 
 impl UnityVersion {
-    pub const fn new(major: u16, minor: u16, patch: u16) -> Self {
-        Self {
-            major,
-            minor,
-            patch,
-        }
+    pub const fn new(major: u16, minor: u16, build: u16) -> Self {
+        Self { major, minor, build }
     }
 
     /// 解析 "2017.4.39f1" 之类；无法解析的部分归 0。
@@ -22,12 +18,8 @@ impl UnityVersion {
         let mut parts = s.split('.');
         let major = parts.next().and_then(parse_digits).unwrap_or(0);
         let minor = parts.next().and_then(parse_digits).unwrap_or(0);
-        let patch = parts.next().and_then(parse_digits).unwrap_or(0);
-        Self {
-            major,
-            minor,
-            patch,
-        }
+        let build = parts.next().and_then(parse_digits).unwrap_or(0);
+        Self { major, minor, build }
     }
 }
 
@@ -48,7 +40,13 @@ impl PartialOrd for UnityVersion {
 
 impl Ord for UnityVersion {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        (self.major, self.minor, self.patch).cmp(&(other.major, other.minor, other.patch))
+        (self.major, self.minor, self.build).cmp(&(other.major, other.minor, other.build))
+    }
+}
+
+impl std::fmt::Display for UnityVersion {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}.{}.{}", self.major, self.minor, self.build)
     }
 }
 

@@ -3,11 +3,9 @@
 use crate::subclasses::scene_data_container::SceneDataContainer;
 use crate::subclasses::scene_identifier::SceneIdentifier;
 use crate::subclasses::scene_visibility_data::SceneVisibilityData;
-use super::object::Object;
 
 #[derive(Debug, Clone)]
 pub struct SceneVisibilityState {
-    pub parent: Object,
     pub m_scene_data: Option<Vec<(SceneIdentifier, SceneVisibilityData)>>,
     pub m_scene_visibility_data: Option<SceneDataContainer>,
     pub m_main_stage_isolated: Option<bool>,
@@ -22,7 +20,6 @@ impl crate::Parse for SceneVisibilityState {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Object::parse(r, ver)?;
         let m_scene_data = if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = SceneIdentifier::parse(r, ver)?; let b = SceneVisibilityData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?)
         } else {
@@ -60,7 +57,6 @@ impl crate::Parse for SceneVisibilityState {
         };
 
         Ok(SceneVisibilityState {
-            parent,
             m_scene_data,
             m_scene_visibility_data,
             m_main_stage_isolated,

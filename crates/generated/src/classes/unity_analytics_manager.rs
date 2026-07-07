@@ -1,10 +1,7 @@
 //! 自动生成。请勿手动修改。
 
-use super::global_game_manager::GlobalGameManager;
-
 #[derive(Debug, Clone)]
 pub struct UnityAnalyticsManager {
-    pub parent: GlobalGameManager,
     pub m_enabled: Option<bool>,
     pub m_initialize_on_startup: Option<bool>,
     pub m_test_mode: Option<bool>,
@@ -17,7 +14,6 @@ impl crate::Parse for UnityAnalyticsManager {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = GlobalGameManager::parse(r, ver)?;
         let m_enabled = if *ver >= crate::UnityVersion::new(5, 2, 0) {
             Some(r.read_bool()?)
         } else {
@@ -51,7 +47,6 @@ impl crate::Parse for UnityAnalyticsManager {
         };
 
         Ok(UnityAnalyticsManager {
-            parent,
             m_enabled,
             m_initialize_on_startup,
             m_test_mode,

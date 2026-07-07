@@ -3,11 +3,9 @@
 use crate::PPtr;
 use crate::subclasses::md_four::MdFour;
 use crate::subclasses::source_asset_identifier::SourceAssetIdentifier;
-use super::asset_importer::AssetImporter;
 
 #[derive(Debug, Clone)]
 pub struct MovieImporter {
-    pub parent: AssetImporter,
     pub m_name: String,
     pub m_file_id_to_recycle_name: Option<Vec<(i32, String)>>,
     pub m_quality: f32,
@@ -26,7 +24,6 @@ impl crate::Parse for MovieImporter {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = AssetImporter::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_file_id_to_recycle_name = if *ver >= crate::UnityVersion::new(3, 4, 0) {
@@ -52,7 +49,9 @@ impl crate::Parse for MovieImporter {
             None
         };
         let m_linear_texture = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(r.read_bool()?)
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
@@ -93,7 +92,6 @@ impl crate::Parse for MovieImporter {
         };
 
         Ok(MovieImporter {
-            parent,
             m_name,
             m_file_id_to_recycle_name,
             m_quality,

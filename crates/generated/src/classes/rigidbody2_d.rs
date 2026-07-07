@@ -2,11 +2,9 @@
 
 use crate::PPtr;
 use crate::subclasses::bit_field::BitField;
-use super::component::Component;
 
 #[derive(Debug, Clone)]
 pub struct Rigidbody2D {
-    pub parent: Component,
     pub m_game_object: PPtr,
     pub m_mass: f32,
     pub m_use_auto_mass: Option<bool>,
@@ -18,11 +16,11 @@ pub struct Rigidbody2D {
     pub m_gravity_scale: f32,
     pub m_fixed_angle: Option<bool>,
     pub m_is_kinematic: Option<bool>,
-    pub m_interpolate: u8,
+    pub m_interpolate: i32,
     pub m_linear_damping: Option<f32>,
-    pub m_sleeping_mode: u8,
+    pub m_sleeping_mode: i32,
     pub m_angular_damping: Option<f32>,
-    pub m_collision_detection: u8,
+    pub m_collision_detection: i32,
     pub m_constraints: Option<i32>,
     pub m_material: Option<PPtr>,
     pub m_include_layers: Option<BitField>,
@@ -34,7 +32,6 @@ impl crate::Parse for Rigidbody2D {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Component::parse(r, ver)?;
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_mass = r.read_f32()?;
         let m_use_auto_mass = if *ver >= crate::UnityVersion::new(5, 3, 0) {
@@ -80,20 +77,19 @@ impl crate::Parse for Rigidbody2D {
         } else {
             None
         };
-        let m_interpolate = r.read_u8()?;
+        let m_interpolate = r.read_i32()?;
         let m_linear_damping = if *ver >= crate::UnityVersion::new(6000, 0, 11) {
             Some(r.read_f32()?)
         } else {
             None
         };
-        let m_sleeping_mode = r.read_u8()?;
+        let m_sleeping_mode = r.read_i32()?;
         let m_angular_damping = if *ver >= crate::UnityVersion::new(6000, 0, 11) {
             Some(r.read_f32()?)
         } else {
             None
         };
-        let m_collision_detection = r.read_u8()?;
-        r.align(4)?;
+        let m_collision_detection = r.read_i32()?;
         let m_constraints = if *ver >= crate::UnityVersion::new(5, 1, 0) {
             Some(r.read_i32()?)
         } else {
@@ -116,7 +112,6 @@ impl crate::Parse for Rigidbody2D {
         };
 
         Ok(Rigidbody2D {
-            parent,
             m_game_object,
             m_mass,
             m_use_auto_mass,

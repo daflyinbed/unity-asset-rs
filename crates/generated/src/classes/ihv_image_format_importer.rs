@@ -3,11 +3,9 @@
 use crate::PPtr;
 use crate::subclasses::gl_texture_settings::GlTextureSettings;
 use crate::subclasses::source_asset_identifier::SourceAssetIdentifier;
-use super::asset_importer::AssetImporter;
 
 #[derive(Debug, Clone)]
 pub struct IhvImageFormatImporter {
-    pub parent: AssetImporter,
     pub m_name: String,
     pub m_texture_settings: GlTextureSettings,
     pub m_external_objects: Option<Vec<(SourceAssetIdentifier, PPtr)>>,
@@ -28,7 +26,6 @@ impl crate::Parse for IhvImageFormatImporter {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = AssetImporter::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_texture_settings = GlTextureSettings::parse(r, ver)?;
@@ -40,7 +37,6 @@ impl crate::Parse for IhvImageFormatImporter {
             None
         };
         let m_is_readable = r.read_bool()?;
-        r.align(4)?;
         let m_used_file_i_ds = if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i64() }).collect::<Result<Vec<_>, _>>() } )?;
             r.align(4)?;
@@ -53,9 +49,7 @@ impl crate::Parse for IhvImageFormatImporter {
         let m_asset_bundle_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_s_rgb_texture = if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
@@ -69,9 +63,7 @@ impl crate::Parse for IhvImageFormatImporter {
             None
         };
         let m_streaming_mipmaps_priority = if *ver >= crate::UnityVersion::new(2018, 2, 0) {
-            let v = r.read_i32()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_i32()?)
         } else {
             None
         };
@@ -91,7 +83,6 @@ impl crate::Parse for IhvImageFormatImporter {
         };
 
         Ok(IhvImageFormatImporter {
-            parent,
             m_name,
             m_texture_settings,
             m_external_objects,

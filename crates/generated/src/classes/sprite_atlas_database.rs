@@ -1,10 +1,7 @@
 //! 自动生成。请勿手动修改。
 
-use super::object::Object;
-
 #[derive(Debug, Clone)]
 pub struct SpriteAtlasDatabase {
-    pub parent: Object,
 }
 
 impl crate::Parse for SpriteAtlasDatabase {
@@ -12,10 +9,8 @@ impl crate::Parse for SpriteAtlasDatabase {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Object::parse(r, ver)?;
 
         Ok(SpriteAtlasDatabase {
-            parent,
         })
     }
 }

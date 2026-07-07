@@ -2,18 +2,9 @@
 
 use crate::subclasses::gl_texture_settings::GlTextureSettings;
 use crate::subclasses::streaming_info::StreamingInfo;
-use super::texture2_d::Texture2D;
-use super::texture::Texture;
-
-#[derive(Debug, Clone)]
-pub enum Texture3DParent {
-    Texture2D(Texture2D),
-    Texture(Texture),
-}
 
 #[derive(Debug, Clone)]
 pub struct Texture3D {
-    pub parent: Texture3DParent,
     pub m_name: String,
     pub m_width: i32,
     pub m_forced_fallback_format: Option<i32>,
@@ -23,7 +14,7 @@ pub struct Texture3D {
     pub m_downscale_fallback: Option<bool>,
     pub m_complete_image_size: Option<i32>,
     pub m_depth: Option<i32>,
-    pub m_format: Option<u32>,
+    pub m_format: Option<i32>,
     pub m_texture_format: Option<i32>,
     pub m_mip_map: Option<bool>,
     pub m_mip_count: Option<i32>,
@@ -44,128 +35,113 @@ impl crate::Parse for Texture3D {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Texture3DParent::Texture2D(Texture2D::parse(r, ver)?)
+        let mut m_name = None;
+        let mut m_width = None;
+        let mut m_forced_fallback_format = None;
+        let mut m_is_alpha_channel_optional = None;
+        let mut m_height = None;
+        let mut m_color_space = None;
+        let mut m_downscale_fallback = None;
+        let mut m_complete_image_size = None;
+        let mut m_depth = None;
+        let mut m_format = None;
+        let mut m_texture_format = None;
+        let mut m_mip_map = None;
+        let mut m_mip_count = None;
+        let mut m_is_readable = None;
+        let mut m_data_size = None;
+        let mut m_read_allowed = None;
+        let mut m_texture_settings = None;
+        let mut m_image_count = None;
+        let mut image_data = None;
+        let mut m_texture_dimension = None;
+        let mut m_stream_data = None;
+        let mut m_usage_mode = None;
+        let mut m_lightmap_format = None;
+            m_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        if *ver >= crate::UnityVersion::new(2023, 2, 0) {
+            m_is_alpha_channel_optional = Some(r.read_bool()?);
+            r.align(4)?;
+            m_color_space = Some(r.read_i32()?);
+            m_format = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
+            m_forced_fallback_format = Some(r.read_i32()?);
+            m_downscale_fallback = Some(r.read_bool()?);
+            m_is_alpha_channel_optional = Some(r.read_bool()?);
+            r.align(4)?;
+            m_color_space = Some(r.read_i32()?);
+            m_format = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
+            m_forced_fallback_format = Some(r.read_i32()?);
+            m_downscale_fallback = Some(r.read_bool()?);
+            m_color_space = Some(r.read_i32()?);
+            m_format = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
+            m_forced_fallback_format = Some(r.read_i32()?);
+            m_downscale_fallback = Some(r.read_bool()?);
+        } else {
+        }
+            m_width = Some(r.read_i32()?);
+            m_height = Some(r.read_i32()?);
+        if *ver >= crate::UnityVersion::new(2019, 1, 0) {
+            m_depth = Some(r.read_i32()?);
+            m_mip_count = Some(r.read_i32()?);
+            r.align(4)?;
+            m_data_size = Some(r.read_u32()?);
+        } else if *ver >= crate::UnityVersion::new(5, 2, 0) {
+            m_depth = Some(r.read_i32()?);
+            m_format = Some(r.read_i32()?);
+            m_mip_count = Some(r.read_i32()?);
+            r.align(4)?;
+            m_data_size = Some(r.read_u32()?);
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Texture3DParent::Texture(Texture::parse(r, ver)?)
-        } else {
-            panic!("无匹配的父类分支：version = {:?}", ver)
-        };
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_width = r.read_i32()?;
-        let m_forced_fallback_format = if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_is_alpha_channel_optional = if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            let v = r.read_bool()?;
+            m_depth = Some(r.read_i32()?);
+            m_format = Some(r.read_i32()?);
+            m_mip_map = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
+            m_data_size = Some(r.read_u32()?);
         } else {
-            None
-        };
-        let m_height = r.read_i32()?;
-        let m_color_space = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_downscale_fallback = if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            let v = r.read_bool()?;
+            m_complete_image_size = Some(r.read_i32()?);
+            m_texture_format = Some(r.read_i32()?);
+            m_mip_map = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_complete_image_size = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_depth = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_format = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(r.read_u32()?)
-        } else {
-            None
-        };
-        let m_texture_format = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_mip_map = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_mip_count = if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            let v = r.read_i32()?;
+            m_is_readable = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_is_readable = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_data_size = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(r.read_u32()?)
-        } else {
-            None
-        };
-        let m_read_allowed = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_bool()?;
+            m_read_allowed = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_texture_settings = GlTextureSettings::parse(r, ver)?;
-        let m_image_count = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let image_data = ( { let n = r.read_i32()? as usize; r.read_bytes(n) } )?;
-        r.align(4)?;
-        let m_texture_dimension = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_stream_data = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            let v = StreamingInfo::parse(r, ver)?;
+            m_image_count = Some(r.read_i32()?);
+            m_texture_dimension = Some(r.read_i32()?);
+        }
+            m_texture_settings = Some(GlTextureSettings::parse(r, ver)?);
+        if *ver >= crate::UnityVersion::new(2020, 2, 0) {
+            m_usage_mode = Some(r.read_i32()?);
+            m_is_readable = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
+        } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
+            m_is_readable = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
+        } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
+            m_lightmap_format = Some(r.read_i32()?);
+            m_color_space = Some(r.read_i32()?);
         } else {
-            None
-        };
-        let m_usage_mode = if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            Some(r.read_i32()?)
+            m_lightmap_format = Some(r.read_i32()?);
+        }
+            image_data = Some(( { let n = r.read_i32()? as usize; r.read_bytes(n) } )?);
+            r.align(4)?;
+        if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            m_stream_data = Some(StreamingInfo::parse(r, ver)?);
+            r.align(4)?;
         } else {
-            None
-        };
-        let m_lightmap_format = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
+        }
 
         Ok(Texture3D {
-            parent,
-            m_name,
-            m_width,
+            m_name: m_name.unwrap(),
+            m_width: m_width.unwrap(),
             m_forced_fallback_format,
             m_is_alpha_channel_optional,
-            m_height,
+            m_height: m_height.unwrap(),
             m_color_space,
             m_downscale_fallback,
             m_complete_image_size,
@@ -177,9 +153,9 @@ impl crate::Parse for Texture3D {
             m_is_readable,
             m_data_size,
             m_read_allowed,
-            m_texture_settings,
+            m_texture_settings: m_texture_settings.unwrap(),
             m_image_count,
-            image_data,
+            image_data: image_data.unwrap(),
             m_texture_dimension,
             m_stream_data,
             m_usage_mode,

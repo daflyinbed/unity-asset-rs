@@ -2,11 +2,9 @@
 
 use crate::subclasses::preset_type::PresetType;
 use crate::subclasses::property_modification::PropertyModification;
-use super::named_object::NamedObject;
 
 #[derive(Debug, Clone)]
 pub struct Preset {
-    pub parent: NamedObject,
     pub m_name: String,
     pub m_target_type: PresetType,
     pub m_properties: Vec<PropertyModification>,
@@ -20,7 +18,6 @@ impl crate::Parse for Preset {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = NamedObject::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_target_type = PresetType::parse(r, ver)?;
@@ -50,7 +47,6 @@ impl crate::Parse for Preset {
         };
 
         Ok(Preset {
-            parent,
             m_name,
             m_target_type,
             m_properties,

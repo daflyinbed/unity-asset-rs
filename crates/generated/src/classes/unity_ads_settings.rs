@@ -1,10 +1,7 @@
 //! 自动生成。请勿手动修改。
 
-use super::global_game_manager::GlobalGameManager;
-
 #[derive(Debug, Clone)]
 pub struct UnityAdsSettings {
-    pub parent: GlobalGameManager,
     pub m_enabled: Option<bool>,
     pub m_initialize_on_startup: Option<bool>,
     pub m_test_mode: Option<bool>,
@@ -18,7 +15,6 @@ impl crate::Parse for UnityAdsSettings {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = GlobalGameManager::parse(r, ver)?;
         let m_enabled = if *ver >= crate::UnityVersion::new(5, 2, 0) {
             Some(r.read_bool()?)
         } else {
@@ -57,7 +53,6 @@ impl crate::Parse for UnityAdsSettings {
         };
 
         Ok(UnityAdsSettings {
-            parent,
             m_enabled,
             m_initialize_on_startup,
             m_test_mode,

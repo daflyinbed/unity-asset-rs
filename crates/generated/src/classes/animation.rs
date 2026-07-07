@@ -2,11 +2,9 @@
 
 use crate::PPtr;
 use crate::subclasses::aabb::Aabb;
-use super::behaviour::Behaviour;
 
 #[derive(Debug, Clone)]
 pub struct Animation {
-    pub parent: Behaviour,
     pub m_game_object: PPtr,
     pub m_enabled: u8,
     pub m_animation: PPtr,
@@ -24,12 +22,12 @@ impl crate::Parse for Animation {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Behaviour::parse(r, ver)?;
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_enabled = r.read_u8()?;
         r.align(4)?;
         let m_animation = crate::PPtr::parse(r, ver)?;
         let m_animations = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        r.align(4)?;
         let m_wrap_mode = r.read_i32()?;
         let m_play_automatically = r.read_bool()?;
         let m_animate_physics = r.read_bool()?;
@@ -47,7 +45,6 @@ impl crate::Parse for Animation {
         };
 
         Ok(Animation {
-            parent,
             m_game_object,
             m_enabled,
             m_animation,

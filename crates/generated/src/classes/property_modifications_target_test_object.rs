@@ -1,11 +1,9 @@
 //! 自动生成。请勿手动修改。
 
 use crate::subclasses::property_modifications_target_test_native_object::PropertyModificationsTargetTestNativeObject;
-use super::object::Object;
 
 #[derive(Debug, Clone)]
 pub struct PropertyModificationsTargetTestObject {
-    pub parent: Object,
     pub m_data: PropertyModificationsTargetTestNativeObject,
     pub m_array: Vec<PropertyModificationsTargetTestNativeObject>,
     pub m_float_test_value: f32,
@@ -20,7 +18,6 @@ impl crate::Parse for PropertyModificationsTargetTestObject {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Object::parse(r, ver)?;
         let m_data = PropertyModificationsTargetTestNativeObject::parse(r, ver)?;
         let m_array = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { PropertyModificationsTargetTestNativeObject::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
         r.align(4)?;
@@ -53,7 +50,6 @@ impl crate::Parse for PropertyModificationsTargetTestObject {
         };
 
         Ok(PropertyModificationsTargetTestObject {
-            parent,
             m_data,
             m_array,
             m_float_test_value,

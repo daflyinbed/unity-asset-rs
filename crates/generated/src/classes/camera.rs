@@ -5,11 +5,9 @@ use crate::subclasses::bit_field::BitField;
 use crate::subclasses::color_rgba::ColorRgba;
 use crate::subclasses::rectf::Rectf;
 use crate::subclasses::vector2f::Vector2f;
-use super::behaviour::Behaviour;
 
 #[derive(Debug, Clone)]
 pub struct Camera {
-    pub parent: Behaviour,
     pub m_game_object: PPtr,
     pub m_enabled: u8,
     pub m_clear_flags: u32,
@@ -37,7 +35,7 @@ pub struct Camera {
     pub m_target_texture: PPtr,
     pub m_barrel_clipping: Option<f32>,
     pub m_hdr: Option<bool>,
-    pub m_target_display: Option<u32>,
+    pub m_target_display: Option<i32>,
     pub m_anamorphism: Option<f32>,
     pub m_occlusion_culling: Option<bool>,
     pub m_target_eye: Option<i32>,
@@ -54,168 +52,186 @@ impl crate::Parse for Camera {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Behaviour::parse(r, ver)?;
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_enabled = r.read_u8()?;
-        r.align(4)?;
-        let m_clear_flags = r.read_u32()?;
-        let m_back_ground_color = ColorRgba::parse(r, ver)?;
-        let m_normalized_view_port_rect = Rectf::parse(r, ver)?;
-        let m_projection_matrix_mode = if *ver >= crate::UnityVersion::new(2018, 2, 0) {
-            let v = r.read_i32()?;
+        let mut m_game_object = None;
+        let mut m_enabled = None;
+        let mut m_clear_flags = None;
+        let mut m_back_ground_color = None;
+        let mut m_normalized_view_port_rect = None;
+        let mut m_projection_matrix_mode = None;
+        let mut near_clip_plane = None;
+        let mut m_sensor_size = None;
+        let mut m_gate_fit_mode = None;
+        let mut far_clip_plane = None;
+        let mut m_lens_shift = None;
+        let mut m_iso = None;
+        let mut field_of_view = None;
+        let mut m_focal_length = None;
+        let mut m_shutter_speed = None;
+        let mut orthographic = None;
+        let mut m_aperture = None;
+        let mut orthographic_size = None;
+        let mut m_focus_distance = None;
+        let mut m_depth = None;
+        let mut m_culling_mask = None;
+        let mut m_blade_count = None;
+        let mut m_rendering_path = None;
+        let mut m_curvature = None;
+        let mut m_target_texture = None;
+        let mut m_barrel_clipping = None;
+        let mut m_hdr = None;
+        let mut m_target_display = None;
+        let mut m_anamorphism = None;
+        let mut m_occlusion_culling = None;
+        let mut m_target_eye = None;
+        let mut m_stereo_convergence = None;
+        let mut m_allow_msaa = None;
+        let mut m_stereo_separation = None;
+        let mut m_force_into_rt = None;
+        let mut m_allow_dynamic_resolution = None;
+        let mut m_stereo_mirror_mode = None;
+            m_game_object = Some(crate::PPtr::parse(r, ver)?);
+            m_enabled = Some(r.read_u8()?);
             r.align(4)?;
-            Some(v)
+            m_clear_flags = Some(r.read_u32()?);
+            m_back_ground_color = Some(ColorRgba::parse(r, ver)?);
+        if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            m_projection_matrix_mode = Some(r.read_i32()?);
+            m_gate_fit_mode = Some(r.read_i32()?);
+            r.align(4)?;
+            m_iso = Some(r.read_i32()?);
+            m_shutter_speed = Some(r.read_f32()?);
+            m_aperture = Some(r.read_f32()?);
+            m_focus_distance = Some(r.read_f32()?);
+            m_focal_length = Some(r.read_f32()?);
+            m_blade_count = Some(r.read_i32()?);
+            m_curvature = Some(Vector2f::parse(r, ver)?);
+            m_barrel_clipping = Some(r.read_f32()?);
+            m_anamorphism = Some(r.read_f32()?);
+            m_sensor_size = Some(Vector2f::parse(r, ver)?);
+            m_lens_shift = Some(Vector2f::parse(r, ver)?);
+        } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
+            m_projection_matrix_mode = Some(r.read_i32()?);
+            m_gate_fit_mode = Some(r.read_i32()?);
+            r.align(4)?;
+            m_sensor_size = Some(Vector2f::parse(r, ver)?);
+            m_lens_shift = Some(Vector2f::parse(r, ver)?);
+            m_focal_length = Some(r.read_f32()?);
+        } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
+            m_projection_matrix_mode = Some(r.read_i32()?);
+            m_sensor_size = Some(Vector2f::parse(r, ver)?);
+            m_lens_shift = Some(Vector2f::parse(r, ver)?);
+            m_gate_fit_mode = Some(r.read_i32()?);
+            r.align(4)?;
+            m_focal_length = Some(r.read_f32()?);
+        } else if *ver >= crate::UnityVersion::new(2018, 2, 0) {
+            m_projection_matrix_mode = Some(r.read_i32()?);
+            m_sensor_size = Some(Vector2f::parse(r, ver)?);
+            m_lens_shift = Some(Vector2f::parse(r, ver)?);
+            m_focal_length = Some(r.read_f32()?);
         } else {
-            None
-        };
-        let near_clip_plane = r.read_f32()?;
-        let m_sensor_size = if *ver >= crate::UnityVersion::new(2018, 2, 0) {
-            Some(Vector2f::parse(r, ver)?)
+        }
+            m_normalized_view_port_rect = Some(Rectf::parse(r, ver)?);
+            near_clip_plane = Some(r.read_f32()?);
+            far_clip_plane = Some(r.read_f32()?);
+            field_of_view = Some(r.read_f32()?);
+            orthographic = Some(r.read_bool()?);
+            r.align(4)?;
+            orthographic_size = Some(r.read_f32()?);
+            m_depth = Some(r.read_f32()?);
+            m_culling_mask = Some(BitField::parse(r, ver)?);
+            m_rendering_path = Some(r.read_i32()?);
+            m_target_texture = Some(crate::PPtr::parse(r, ver)?);
+        if *ver >= crate::UnityVersion::new(2017, 3, 0) {
+            m_target_display = Some(r.read_i32()?);
+            m_target_eye = Some(r.read_i32()?);
+            m_hdr = Some(r.read_bool()?);
+            m_allow_msaa = Some(r.read_bool()?);
+            m_allow_dynamic_resolution = Some(r.read_bool()?);
+            m_force_into_rt = Some(r.read_bool()?);
+            m_occlusion_culling = Some(r.read_bool()?);
+            r.align(4)?;
+            m_stereo_convergence = Some(r.read_f32()?);
+            m_stereo_separation = Some(r.read_f32()?);
+        } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
+            m_target_display = Some(r.read_i32()?);
+            m_target_eye = Some(r.read_i32()?);
+            m_hdr = Some(r.read_bool()?);
+            m_allow_msaa = Some(r.read_bool()?);
+            m_force_into_rt = Some(r.read_bool()?);
+            m_occlusion_culling = Some(r.read_bool()?);
+            r.align(4)?;
+            m_stereo_convergence = Some(r.read_f32()?);
+            m_stereo_separation = Some(r.read_f32()?);
+        } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            m_target_display = Some(r.read_i32()?);
+            m_target_eye = Some(r.read_i32()?);
+            m_hdr = Some(r.read_bool()?);
+            m_allow_msaa = Some(r.read_bool()?);
+            m_force_into_rt = Some(r.read_bool()?);
+            m_occlusion_culling = Some(r.read_bool()?);
+            r.align(4)?;
+            m_stereo_convergence = Some(r.read_f32()?);
+            m_stereo_separation = Some(r.read_f32()?);
+            m_stereo_mirror_mode = Some(r.read_bool()?);
+        } else if *ver >= crate::UnityVersion::new(5, 1, 3) {
+            m_target_display = Some(r.read_i32()?);
+            m_target_eye = Some(r.read_i32()?);
+            m_hdr = Some(r.read_bool()?);
+            m_occlusion_culling = Some(r.read_bool()?);
+            r.align(4)?;
+            m_stereo_convergence = Some(r.read_f32()?);
+            m_stereo_separation = Some(r.read_f32()?);
+            m_stereo_mirror_mode = Some(r.read_bool()?);
+        } else if *ver >= crate::UnityVersion::new(5, 1, 0) {
+            m_target_display = Some(r.read_i32()?);
+            m_hdr = Some(r.read_bool()?);
+            m_occlusion_culling = Some(r.read_bool()?);
+            r.align(4)?;
+            m_stereo_convergence = Some(r.read_f32()?);
+            m_stereo_separation = Some(r.read_f32()?);
+            m_stereo_mirror_mode = Some(r.read_bool()?);
+        } else if *ver >= crate::UnityVersion::new(4, 5, 0) {
+            m_target_display = Some(r.read_i32()?);
+            m_hdr = Some(r.read_bool()?);
+            m_occlusion_culling = Some(r.read_bool()?);
+            r.align(4)?;
+            m_stereo_convergence = Some(r.read_f32()?);
+            m_stereo_separation = Some(r.read_f32()?);
+        } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
+            m_hdr = Some(r.read_bool()?);
+            m_occlusion_culling = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
+            m_hdr = Some(r.read_bool()?);
         } else {
-            None
-        };
-        let m_gate_fit_mode = if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let far_clip_plane = r.read_f32()?;
-        let m_lens_shift = if *ver >= crate::UnityVersion::new(2018, 2, 0) {
-            Some(Vector2f::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_iso = if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let field_of_view = r.read_f32()?;
-        let m_focal_length = if *ver >= crate::UnityVersion::new(2018, 2, 0) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
-        let m_shutter_speed = if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
-        let orthographic = r.read_bool()?;
-        r.align(4)?;
-        let m_aperture = if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
-        let orthographic_size = r.read_f32()?;
-        let m_focus_distance = if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
-        let m_depth = r.read_f32()?;
-        let m_culling_mask = BitField::parse(r, ver)?;
-        let m_blade_count = if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_rendering_path = r.read_i32()?;
-        let m_curvature = if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            Some(Vector2f::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_target_texture = crate::PPtr::parse(r, ver)?;
-        let m_barrel_clipping = if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
-        let m_hdr = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_target_display = if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            Some(r.read_u32()?)
-        } else {
-            None
-        };
-        let m_anamorphism = if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
-        let m_occlusion_culling = if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_target_eye = if *ver >= crate::UnityVersion::new(5, 1, 3) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_stereo_convergence = if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
-        let m_allow_msaa = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_stereo_separation = if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
-        let m_force_into_rt = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_allow_dynamic_resolution = if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_stereo_mirror_mode = if *ver >= crate::UnityVersion::new(5, 1, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
+        }
 
         Ok(Camera {
-            parent,
-            m_game_object,
-            m_enabled,
-            m_clear_flags,
-            m_back_ground_color,
-            m_normalized_view_port_rect,
+            m_game_object: m_game_object.unwrap(),
+            m_enabled: m_enabled.unwrap(),
+            m_clear_flags: m_clear_flags.unwrap(),
+            m_back_ground_color: m_back_ground_color.unwrap(),
+            m_normalized_view_port_rect: m_normalized_view_port_rect.unwrap(),
             m_projection_matrix_mode,
-            near_clip_plane,
+            near_clip_plane: near_clip_plane.unwrap(),
             m_sensor_size,
             m_gate_fit_mode,
-            far_clip_plane,
+            far_clip_plane: far_clip_plane.unwrap(),
             m_lens_shift,
             m_iso,
-            field_of_view,
+            field_of_view: field_of_view.unwrap(),
             m_focal_length,
             m_shutter_speed,
-            orthographic,
+            orthographic: orthographic.unwrap(),
             m_aperture,
-            orthographic_size,
+            orthographic_size: orthographic_size.unwrap(),
             m_focus_distance,
-            m_depth,
-            m_culling_mask,
+            m_depth: m_depth.unwrap(),
+            m_culling_mask: m_culling_mask.unwrap(),
             m_blade_count,
-            m_rendering_path,
+            m_rendering_path: m_rendering_path.unwrap(),
             m_curvature,
-            m_target_texture,
+            m_target_texture: m_target_texture.unwrap(),
             m_barrel_clipping,
             m_hdr,
             m_target_display,

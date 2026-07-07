@@ -2,11 +2,9 @@
 
 use crate::PPtr;
 use crate::subclasses::flare_element::FlareElement;
-use super::named_object::NamedObject;
 
 #[derive(Debug, Clone)]
 pub struct Flare {
-    pub parent: NamedObject,
     pub m_name: String,
     pub m_flare_texture: PPtr,
     pub m_texture_layout: i32,
@@ -19,16 +17,15 @@ impl crate::Parse for Flare {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = NamedObject::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_flare_texture = crate::PPtr::parse(r, ver)?;
         let m_texture_layout = r.read_i32()?;
         let m_elements = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { FlareElement::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        r.align(4)?;
         let m_use_fog = r.read_bool()?;
 
         Ok(Flare {
-            parent,
             m_name,
             m_flare_texture,
             m_texture_layout,

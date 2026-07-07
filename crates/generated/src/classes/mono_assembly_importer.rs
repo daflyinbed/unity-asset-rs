@@ -5,11 +5,9 @@ use crate::subclasses::md_four::MdFour;
 use crate::subclasses::platform_settings_data::PlatformSettingsData;
 use crate::subclasses::plugin_import_output::PluginImportOutput;
 use crate::subclasses::source_asset_identifier::SourceAssetIdentifier;
-use super::asset_importer::AssetImporter;
 
 #[derive(Debug, Clone)]
 pub struct MonoAssemblyImporter {
-    pub parent: AssetImporter,
     pub m_name: String,
     pub m_file_id_to_recycle_name: Option<Vec<(i32, String)>>,
     pub m_icon_map: Vec<(String, PPtr)>,
@@ -35,127 +33,208 @@ impl crate::Parse for MonoAssemblyImporter {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = AssetImporter::parse(r, ver)?;
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_file_id_to_recycle_name = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i32()?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        let mut m_name = None;
+        let mut m_file_id_to_recycle_name = None;
+        let mut m_icon_map = None;
+        let mut m_external_objects = None;
+        let mut m_old_hash_identity = None;
+        let mut m_execution_order = None;
+        let mut m_used_file_i_ds = None;
+        let mut m_new_hash_identity = None;
+        let mut m_user_data = None;
+        let mut m_is_preloaded = None;
+        let mut m_platform_data = None;
+        let mut m_is_overridable = None;
+        let mut m_define_constraints = None;
+        let mut m_output = None;
+        let mut m_asset_bundle_name = None;
+        let mut m_is_explicitly_referenced = None;
+        let mut m_asset_bundle_variant = None;
+        let mut m_validate_references = None;
+            m_name = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_icon_map = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_external_objects = if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(r, ver)?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        if *ver >= crate::UnityVersion::new(2019, 1, 0) {
+            m_external_objects = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(r, ver)?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_old_hash_identity = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = MdFour::parse(r, ver)?;
+            m_used_file_i_ds = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_execution_order = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_used_file_i_ds = if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i64() }).collect::<Result<Vec<_>, _>>() } )?;
+        } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
+            m_external_objects = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(r, ver)?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
+        } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
         } else {
-            None
-        };
-        let m_new_hash_identity = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = MdFour::parse(r, ver)?;
+            m_file_id_to_recycle_name = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i32()?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_user_data = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            let v = r.read_aligned_string()?;
+            m_old_hash_identity = Some(MdFour::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_is_preloaded = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_bool()?;
+            m_new_hash_identity = Some(MdFour::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_platform_data = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            m_execution_order = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_is_overridable = if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = r.read_bool()?;
+        }
+            m_icon_map = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_define_constraints = if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+        if *ver >= crate::UnityVersion::new(2019, 2, 0) {
+            m_execution_order = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_output = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = PluginImportOutput::parse(r, ver)?;
+            m_define_constraints = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_asset_bundle_name = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_aligned_string()?;
+            m_is_preloaded = Some(r.read_bool()?);
+            m_is_overridable = Some(r.read_bool()?);
+            m_is_explicitly_referenced = Some(r.read_bool()?);
+            m_validate_references = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_is_explicitly_referenced = if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            let v = r.read_bool()?;
+            m_platform_data = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_asset_bundle_variant = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_aligned_string()?;
+            m_output = Some(PluginImportOutput::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_validate_references = if *ver >= crate::UnityVersion::new(2018, 3, 10) {
-            let v = r.read_bool()?;
+            m_user_data = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_variant = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2019, 2, 0) {
+            m_execution_order = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_define_constraints = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_is_preloaded = Some(r.read_bool()?);
+            m_is_overridable = Some(r.read_bool()?);
+            m_is_explicitly_referenced = Some(r.read_bool()?);
+            m_platform_data = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_output = Some(PluginImportOutput::parse(r, ver)?);
+            r.align(4)?;
+            m_user_data = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_variant = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
+            m_execution_order = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_define_constraints = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_is_preloaded = Some(r.read_bool()?);
+            m_is_overridable = Some(r.read_bool()?);
+            m_is_explicitly_referenced = Some(r.read_bool()?);
+            m_validate_references = Some(r.read_bool()?);
+            r.align(4)?;
+            m_platform_data = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_output = Some(PluginImportOutput::parse(r, ver)?);
+            r.align(4)?;
+            m_user_data = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_variant = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
+            m_execution_order = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_define_constraints = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_is_preloaded = Some(r.read_bool()?);
+            m_is_overridable = Some(r.read_bool()?);
+            m_is_explicitly_referenced = Some(r.read_bool()?);
+            m_platform_data = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_output = Some(PluginImportOutput::parse(r, ver)?);
+            r.align(4)?;
+            m_user_data = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_variant = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2018, 3, 10) {
+            m_execution_order = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_define_constraints = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_is_preloaded = Some(r.read_bool()?);
+            m_is_overridable = Some(r.read_bool()?);
+            m_is_explicitly_referenced = Some(r.read_bool()?);
+            m_validate_references = Some(r.read_bool()?);
+            r.align(4)?;
+            m_platform_data = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_output = Some(PluginImportOutput::parse(r, ver)?);
+            r.align(4)?;
+            m_user_data = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_variant = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
+            m_execution_order = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_define_constraints = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_is_preloaded = Some(r.read_bool()?);
+            m_is_overridable = Some(r.read_bool()?);
+            m_is_explicitly_referenced = Some(r.read_bool()?);
+            m_platform_data = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_output = Some(PluginImportOutput::parse(r, ver)?);
+            r.align(4)?;
+            m_user_data = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_variant = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
+            m_execution_order = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_is_preloaded = Some(r.read_bool()?);
+            m_is_overridable = Some(r.read_bool()?);
+            m_platform_data = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_output = Some(PluginImportOutput::parse(r, ver)?);
+            r.align(4)?;
+            m_user_data = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_variant = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            m_execution_order = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_is_preloaded = Some(r.read_bool()?);
+            m_platform_data = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_output = Some(PluginImportOutput::parse(r, ver)?);
+            r.align(4)?;
+            m_user_data = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_variant = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
+            m_execution_order = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_user_data = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
+            m_execution_order = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
         } else {
-            None
-        };
+        }
 
         Ok(MonoAssemblyImporter {
-            parent,
-            m_name,
+            m_name: m_name.unwrap(),
             m_file_id_to_recycle_name,
-            m_icon_map,
+            m_icon_map: m_icon_map.unwrap(),
             m_external_objects,
             m_old_hash_identity,
-            m_execution_order,
+            m_execution_order: m_execution_order.unwrap(),
             m_used_file_i_ds,
             m_new_hash_identity,
             m_user_data,

@@ -3,11 +3,9 @@
 use crate::PPtr;
 use crate::subclasses::guid::Guid;
 use crate::subclasses::sprite_atlas_data::SpriteAtlasData;
-use super::named_object::NamedObject;
 
 #[derive(Debug, Clone)]
 pub struct SpriteAtlas {
-    pub parent: NamedObject,
     pub m_name: String,
     pub m_packed_sprites: Vec<PPtr>,
     pub m_packed_sprite_names_to_index: Vec<String>,
@@ -22,7 +20,6 @@ impl crate::Parse for SpriteAtlas {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = NamedObject::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_packed_sprites = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
@@ -30,6 +27,7 @@ impl crate::Parse for SpriteAtlas {
         let m_packed_sprite_names_to_index = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
         r.align(4)?;
         let m_render_data_map = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = ( { let a = Guid::parse(r, ver)?; let b = r.read_i64()?; Ok((a, b)) } )?; let b = SpriteAtlasData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        r.align(4)?;
         let m_tag = r.read_aligned_string()?;
         r.align(4)?;
         let m_is_variant = r.read_bool()?;
@@ -43,7 +41,6 @@ impl crate::Parse for SpriteAtlas {
         };
 
         Ok(SpriteAtlas {
-            parent,
             m_name,
             m_packed_sprites,
             m_packed_sprite_names_to_index,

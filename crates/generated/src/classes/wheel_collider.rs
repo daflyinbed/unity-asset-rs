@@ -5,11 +5,9 @@ use crate::subclasses::bit_field::BitField;
 use crate::subclasses::joint_spring::JointSpring;
 use crate::subclasses::vector3f::Vector3f;
 use crate::subclasses::wheel_friction_curve::WheelFrictionCurve;
-use super::collider::Collider;
 
 #[derive(Debug, Clone)]
 pub struct WheelCollider {
-    pub parent: Collider,
     pub m_game_object: PPtr,
     pub m_center: Vector3f,
     pub m_radius: f32,
@@ -32,66 +30,63 @@ impl crate::Parse for WheelCollider {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Collider::parse(r, ver)?;
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_center = Vector3f::parse(r, ver)?;
-        let m_radius = r.read_f32()?;
-        let m_suspension_distance = r.read_f32()?;
-        let m_suspension_spring = JointSpring::parse(r, ver)?;
-        let m_mass = r.read_f32()?;
-        let m_force_app_point_distance = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_f32()?)
+        let mut m_game_object = None;
+        let mut m_center = None;
+        let mut m_radius = None;
+        let mut m_suspension_distance = None;
+        let mut m_suspension_spring = None;
+        let mut m_mass = None;
+        let mut m_force_app_point_distance = None;
+        let mut m_forward_friction = None;
+        let mut m_sideways_friction = None;
+        let mut m_wheel_damping_rate = None;
+        let mut m_enabled = None;
+        let mut m_include_layers = None;
+        let mut m_exclude_layers = None;
+        let mut m_layer_override_priority = None;
+        let mut m_provides_contacts = None;
+            m_game_object = Some(crate::PPtr::parse(r, ver)?);
+            m_center = Some(Vector3f::parse(r, ver)?);
+            m_radius = Some(r.read_f32()?);
+        if *ver >= crate::UnityVersion::new(5, 0, 0) {
         } else {
-            None
-        };
-        let m_forward_friction = WheelFrictionCurve::parse(r, ver)?;
-        let m_sideways_friction = WheelFrictionCurve::parse(r, ver)?;
-        let m_wheel_damping_rate = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_f32()?)
+            m_suspension_distance = Some(r.read_f32()?);
+        }
+            m_suspension_spring = Some(JointSpring::parse(r, ver)?);
+        if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            m_suspension_distance = Some(r.read_f32()?);
+            m_force_app_point_distance = Some(r.read_f32()?);
         } else {
-            None
-        };
-        let m_enabled = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = r.read_bool()?;
+        }
+            m_mass = Some(r.read_f32()?);
+        if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            m_wheel_damping_rate = Some(r.read_f32()?);
+        } else {
+        }
+            m_forward_friction = Some(WheelFrictionCurve::parse(r, ver)?);
+            m_sideways_friction = Some(WheelFrictionCurve::parse(r, ver)?);
+        if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            m_include_layers = Some(BitField::parse(r, ver)?);
+            m_exclude_layers = Some(BitField::parse(r, ver)?);
+            m_layer_override_priority = Some(r.read_i32()?);
+            m_enabled = Some(r.read_bool()?);
+            m_provides_contacts = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
+        } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
+            m_enabled = Some(r.read_bool()?);
         } else {
-            None
-        };
-        let m_include_layers = if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            Some(BitField::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_exclude_layers = if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            Some(BitField::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_layer_override_priority = if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_provides_contacts = if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
+        }
 
         Ok(WheelCollider {
-            parent,
-            m_game_object,
-            m_center,
-            m_radius,
-            m_suspension_distance,
-            m_suspension_spring,
-            m_mass,
+            m_game_object: m_game_object.unwrap(),
+            m_center: m_center.unwrap(),
+            m_radius: m_radius.unwrap(),
+            m_suspension_distance: m_suspension_distance.unwrap(),
+            m_suspension_spring: m_suspension_spring.unwrap(),
+            m_mass: m_mass.unwrap(),
             m_force_app_point_distance,
-            m_forward_friction,
-            m_sideways_friction,
+            m_forward_friction: m_forward_friction.unwrap(),
+            m_sideways_friction: m_sideways_friction.unwrap(),
             m_wheel_damping_rate,
             m_enabled,
             m_include_layers,

@@ -5,11 +5,9 @@ use crate::subclasses::render_pass_info::RenderPassInfo;
 use crate::subclasses::render_state_info::RenderStateInfo;
 use crate::subclasses::variant_info::VariantInfo;
 use crate::subclasses::vertex_layout_info::VertexLayoutInfo;
-use super::named_object::NamedObject;
 
 #[derive(Debug, Clone)]
 pub struct GraphicsStateCollection {
-    pub parent: NamedObject,
     pub m_name: String,
     pub m_version: i32,
     pub m_device_renderer: i32,
@@ -26,7 +24,6 @@ impl crate::Parse for GraphicsStateCollection {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = NamedObject::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_version = r.read_i32()?;
@@ -44,7 +41,6 @@ impl crate::Parse for GraphicsStateCollection {
         r.align(4)?;
 
         Ok(GraphicsStateCollection {
-            parent,
             m_name,
             m_version,
             m_device_renderer,

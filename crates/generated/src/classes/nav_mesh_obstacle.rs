@@ -2,11 +2,9 @@
 
 use crate::PPtr;
 use crate::subclasses::vector3f::Vector3f;
-use super::behaviour::Behaviour;
 
 #[derive(Debug, Clone)]
 pub struct NavMeshObstacle {
-    pub parent: Behaviour,
     pub m_game_object: PPtr,
     pub m_enabled: u8,
     pub m_radius: Option<f32>,
@@ -25,7 +23,6 @@ impl crate::Parse for NavMeshObstacle {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Behaviour::parse(r, ver)?;
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_enabled = r.read_u8()?;
         r.align(4)?;
@@ -78,7 +75,6 @@ impl crate::Parse for NavMeshObstacle {
         };
 
         Ok(NavMeshObstacle {
-            parent,
             m_game_object,
             m_enabled,
             m_radius,

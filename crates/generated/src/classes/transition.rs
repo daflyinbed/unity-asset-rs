@@ -1,22 +1,13 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
-use crate::subclasses::condition::Condition;
-use super::animator_transition_base::AnimatorTransitionBase;
-use super::named_object::NamedObject;
-
-#[derive(Debug, Clone)]
-pub enum TransitionParent {
-    NamedObject(NamedObject),
-    AnimatorTransitionBase(AnimatorTransitionBase),
-}
+use crate::subclasses::animator_condition::AnimatorCondition;
 
 #[derive(Debug, Clone)]
 pub struct Transition {
-    pub parent: TransitionParent,
     pub m_name: String,
     pub m_src_state: Option<PPtr>,
-    pub m_conditions: Vec<Condition>,
+    pub m_conditions: Vec<AnimatorCondition>,
     pub m_dst_state: PPtr,
     pub m_dst_state_machine: Option<PPtr>,
     pub m_transition_duration: f32,
@@ -38,90 +29,79 @@ impl crate::Parse for Transition {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            TransitionParent::NamedObject(NamedObject::parse(r, ver)?)
+        let mut m_name = None;
+        let mut m_src_state = None;
+        let mut m_conditions = None;
+        let mut m_dst_state = None;
+        let mut m_dst_state_machine = None;
+        let mut m_transition_duration = None;
+        let mut m_transition_offset = None;
+        let mut m_solo = None;
+        let mut m_mute = None;
+        let mut m_atomic = None;
+        let mut m_is_exit = None;
+        let mut m_can_transition_to_self = None;
+        let mut m_exit_time = None;
+        let mut m_has_exit_time = None;
+        let mut m_interruption_source = None;
+        let mut m_has_fixed_duration = None;
+        let mut m_ordered_interruption = None;
+            m_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        if *ver >= crate::UnityVersion::new(5, 0, 0) {
+        } else {
+            m_src_state = Some(crate::PPtr::parse(r, ver)?);
+            m_dst_state = Some(crate::PPtr::parse(r, ver)?);
+            m_transition_duration = Some(r.read_f32()?);
+            m_transition_offset = Some(r.read_f32()?);
+        }
+            m_conditions = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { AnimatorCondition::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            m_dst_state_machine = Some(crate::PPtr::parse(r, ver)?);
+            m_dst_state = Some(crate::PPtr::parse(r, ver)?);
+        } else {
+            m_atomic = Some(r.read_bool()?);
+        }
+            m_solo = Some(r.read_bool()?);
+            m_mute = Some(r.read_bool()?);
+        if *ver >= crate::UnityVersion::new(5, 1, 0) {
+            m_is_exit = Some(r.read_bool()?);
+            r.align(4)?;
+            m_transition_duration = Some(r.read_f32()?);
+            m_transition_offset = Some(r.read_f32()?);
+            m_exit_time = Some(r.read_f32()?);
+            m_has_exit_time = Some(r.read_bool()?);
+            m_has_fixed_duration = Some(r.read_bool()?);
+            r.align(4)?;
+            m_interruption_source = Some(r.read_i32()?);
+            m_ordered_interruption = Some(r.read_bool()?);
+            m_can_transition_to_self = Some(r.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            TransitionParent::AnimatorTransitionBase(AnimatorTransitionBase::parse(r, ver)?)
-        } else {
-            panic!("无匹配的父类分支：version = {:?}", ver)
-        };
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_src_state = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(crate::PPtr::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_conditions = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Condition::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_dst_state = crate::PPtr::parse(r, ver)?;
-        let m_dst_state_machine = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(crate::PPtr::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_transition_duration = r.read_f32()?;
-        let m_transition_offset = r.read_f32()?;
-        let m_solo = r.read_bool()?;
-        let m_mute = r.read_bool()?;
-        let m_atomic = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_is_exit = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_bool()?;
+            m_is_exit = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
+            m_transition_duration = Some(r.read_f32()?);
+            m_transition_offset = Some(r.read_f32()?);
+            m_exit_time = Some(r.read_f32()?);
+            m_has_exit_time = Some(r.read_bool()?);
+            m_interruption_source = Some(r.read_i32()?);
+            m_ordered_interruption = Some(r.read_bool()?);
+            m_can_transition_to_self = Some(r.read_bool()?);
+        } else if *ver >= crate::UnityVersion::new(4, 5, 0) {
+            m_can_transition_to_self = Some(r.read_bool()?);
         } else {
-            None
-        };
-        let m_can_transition_to_self = if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_exit_time = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
-        let m_has_exit_time = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_interruption_source = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_has_fixed_duration = if *ver >= crate::UnityVersion::new(5, 1, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_ordered_interruption = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
+        }
 
         Ok(Transition {
-            parent,
-            m_name,
+            m_name: m_name.unwrap(),
             m_src_state,
-            m_conditions,
-            m_dst_state,
+            m_conditions: m_conditions.unwrap(),
+            m_dst_state: m_dst_state.unwrap(),
             m_dst_state_machine,
-            m_transition_duration,
-            m_transition_offset,
-            m_solo,
-            m_mute,
+            m_transition_duration: m_transition_duration.unwrap(),
+            m_transition_offset: m_transition_offset.unwrap(),
+            m_solo: m_solo.unwrap(),
+            m_mute: m_mute.unwrap(),
             m_atomic,
             m_is_exit,
             m_can_transition_to_self,

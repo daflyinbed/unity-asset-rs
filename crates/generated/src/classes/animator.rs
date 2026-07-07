@@ -1,18 +1,9 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
-use super::behaviour::Behaviour;
-use super::director_player::DirectorPlayer;
-
-#[derive(Debug, Clone)]
-pub enum AnimatorParent {
-    Behaviour(Behaviour),
-    DirectorPlayer(DirectorPlayer),
-}
 
 #[derive(Debug, Clone)]
 pub struct Animator {
-    pub parent: AnimatorParent,
     pub m_game_object: PPtr,
     pub m_enabled: u8,
     pub m_avatar: PPtr,
@@ -35,15 +26,6 @@ impl crate::Parse for Animator {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            AnimatorParent::Behaviour(Behaviour::parse(r, ver)?)
-        } else if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            AnimatorParent::DirectorPlayer(DirectorPlayer::parse(r, ver)?)
-        } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            AnimatorParent::Behaviour(Behaviour::parse(r, ver)?)
-        } else {
-            panic!("无匹配的父类分支：version = {:?}", ver)
-        };
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_enabled = r.read_u8()?;
         r.align(4)?;
@@ -57,7 +39,9 @@ impl crate::Parse for Animator {
             None
         };
         let m_animate_physics = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(r.read_bool()?)
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
@@ -67,9 +51,7 @@ impl crate::Parse for Animator {
             None
         };
         let m_linear_velocity_blending = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
@@ -79,9 +61,7 @@ impl crate::Parse for Animator {
             None
         };
         let m_stabilize_feet = if *ver >= crate::UnityVersion::new(2020, 3, 43) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
@@ -93,9 +73,7 @@ impl crate::Parse for Animator {
             None
         };
         let m_keep_animator_state_on_disable = if *ver >= crate::UnityVersion::new(2020, 3, 43) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
@@ -108,7 +86,6 @@ impl crate::Parse for Animator {
         };
 
         Ok(Animator {
-            parent,
             m_game_object,
             m_enabled,
             m_avatar,

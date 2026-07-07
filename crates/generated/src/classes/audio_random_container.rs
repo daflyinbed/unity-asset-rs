@@ -2,11 +2,9 @@
 
 use crate::PPtr;
 use crate::subclasses::vector2f::Vector2f;
-use super::audio_resource::AudioResource;
 
 #[derive(Debug, Clone)]
 pub struct AudioRandomContainer {
-    pub parent: AudioResource,
     pub m_name: String,
     pub m_volume: f32,
     pub m_pitch: f32,
@@ -33,7 +31,6 @@ impl crate::Parse for AudioRandomContainer {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = AudioResource::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_volume = r.read_f32()?;
@@ -57,7 +54,6 @@ impl crate::Parse for AudioRandomContainer {
         let m_loop_count_randomization_enabled = r.read_bool()?;
 
         Ok(AudioRandomContainer {
-            parent,
             m_name,
             m_volume,
             m_pitch,

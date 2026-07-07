@@ -2,11 +2,9 @@
 
 use crate::PPtr;
 use crate::subclasses::bit_field::BitField;
-use super::component::Component;
 
 #[derive(Debug, Clone)]
 pub struct WorldParticleCollider {
-    pub parent: Component,
     pub m_game_object: PPtr,
     pub m_bounce_factor: f32,
     pub m_collision_energy_loss: f32,
@@ -20,7 +18,6 @@ impl crate::Parse for WorldParticleCollider {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Component::parse(r, ver)?;
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_bounce_factor = r.read_f32()?;
         let m_collision_energy_loss = r.read_f32()?;
@@ -30,7 +27,6 @@ impl crate::Parse for WorldParticleCollider {
         let m_min_kill_velocity = r.read_f32()?;
 
         Ok(WorldParticleCollider {
-            parent,
             m_game_object,
             m_bounce_factor,
             m_collision_energy_loss,

@@ -1,11 +1,9 @@
 //! 自动生成。请勿手动修改。
 
 use crate::subclasses::annotation::Annotation;
-use super::object::Object;
 
 #[derive(Debug, Clone)]
 pub struct AnnotationManager {
-    pub parent: Object,
     pub m_current_preset_m_annotation_list: Vec<Annotation>,
     pub m_recently_changed: Vec<Annotation>,
     pub m_icon_size: Option<f32>,
@@ -24,7 +22,6 @@ impl crate::Parse for AnnotationManager {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Object::parse(r, ver)?;
         let m_current_preset_m_annotation_list = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Annotation::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
         r.align(4)?;
         let m_recently_changed = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Annotation::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
@@ -40,9 +37,7 @@ impl crate::Parse for AnnotationManager {
             None
         };
         let m_use3d_gizmos = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
@@ -52,9 +47,7 @@ impl crate::Parse for AnnotationManager {
             None
         };
         let m_show_grid = if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
@@ -69,9 +62,7 @@ impl crate::Parse for AnnotationManager {
             None
         };
         let m_show_selection_wire = if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
@@ -84,7 +75,6 @@ impl crate::Parse for AnnotationManager {
         };
 
         Ok(AnnotationManager {
-            parent,
             m_current_preset_m_annotation_list,
             m_recently_changed,
             m_icon_size,

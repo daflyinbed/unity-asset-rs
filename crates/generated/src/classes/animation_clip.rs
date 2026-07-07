@@ -9,18 +9,9 @@ use crate::subclasses::float_curve::FloatCurve;
 use crate::subclasses::p_ptr_curve::PPtrCurve;
 use crate::subclasses::quaternion_curve::QuaternionCurve;
 use crate::subclasses::vector3_curve::Vector3Curve;
-use super::motion::Motion;
-use super::named_object::NamedObject;
-
-#[derive(Debug, Clone)]
-pub enum AnimationClipParent {
-    NamedObject(NamedObject),
-    Motion(Motion),
-}
 
 #[derive(Debug, Clone)]
 pub struct AnimationClip {
-    pub parent: AnimationClipParent,
     pub m_name: String,
     pub m_compressed: bool,
     pub m_animation_type: Option<i32>,
@@ -49,17 +40,9 @@ impl crate::Parse for AnimationClip {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            AnimationClipParent::NamedObject(NamedObject::parse(r, ver)?)
-        } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            AnimationClipParent::Motion(Motion::parse(r, ver)?)
-        } else {
-            panic!("无匹配的父类分支：version = {:?}", ver)
-        };
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_compressed = r.read_bool()?;
-        r.align(4)?;
         let m_animation_type = if *ver >= crate::UnityVersion::new(4, 0, 0) {
             Some(r.read_i32()?)
         } else {
@@ -119,7 +102,9 @@ impl crate::Parse for AnimationClip {
             None
         };
         let m_clip_binding_constant = if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            Some(AnimationClipBindingConstant::parse(r, ver)?)
+            let v = AnimationClipBindingConstant::parse(r, ver)?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
@@ -137,7 +122,6 @@ impl crate::Parse for AnimationClip {
         };
 
         Ok(AnimationClip {
-            parent,
             m_name,
             m_compressed,
             m_animation_type,

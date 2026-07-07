@@ -3,11 +3,9 @@
 use crate::subclasses::speed_tree_wind::SpeedTreeWind;
 use crate::subclasses::speed_tree_wind_config8::SpeedTreeWindConfig8;
 use crate::subclasses::speed_tree_wind_config9::SpeedTreeWindConfig9;
-use super::named_object::NamedObject;
 
 #[derive(Debug, Clone)]
 pub struct SpeedTreeWindAsset {
-    pub parent: NamedObject,
     pub m_name: String,
     pub m_wind: Option<SpeedTreeWind>,
     pub m_e_version: Option<i32>,
@@ -20,7 +18,6 @@ impl crate::Parse for SpeedTreeWindAsset {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = NamedObject::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_wind = if *ver >= crate::UnityVersion::new(5, 0, 0) {
@@ -45,7 +42,6 @@ impl crate::Parse for SpeedTreeWindAsset {
         };
 
         Ok(SpeedTreeWindAsset {
-            parent,
             m_name,
             m_wind,
             m_e_version,

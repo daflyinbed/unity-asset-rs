@@ -5,11 +5,9 @@ use crate::subclasses::bit_field::BitField;
 use crate::subclasses::polygon2_d::Polygon2D;
 use crate::subclasses::sub_collider::SubCollider;
 use crate::subclasses::vector2f::Vector2f;
-use super::collider2_d::Collider2D;
 
 #[derive(Debug, Clone)]
 pub struct CompositeCollider2D {
-    pub parent: Collider2D,
     pub m_game_object: PPtr,
     pub m_enabled: u8,
     pub m_density: f32,
@@ -43,7 +41,6 @@ impl crate::Parse for CompositeCollider2D {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Collider2D::parse(r, ver)?;
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_enabled = r.read_u8()?;
         r.align(4)?;
@@ -56,6 +53,7 @@ impl crate::Parse for CompositeCollider2D {
             None
         };
         let m_used_by_effector = r.read_bool()?;
+        r.align(4)?;
         let m_exclude_layers = if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             Some(BitField::parse(r, ver)?)
         } else {
@@ -92,6 +90,7 @@ impl crate::Parse for CompositeCollider2D {
             None
         };
         let m_collider_paths = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { SubCollider::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        r.align(4)?;
         let m_edge_radius = if *ver >= crate::UnityVersion::new(5, 6, 0) {
             Some(r.read_f32()?)
         } else {
@@ -103,6 +102,7 @@ impl crate::Parse for CompositeCollider2D {
             None
         };
         let m_composite_paths = Polygon2D::parse(r, ver)?;
+        r.align(4)?;
         let m_vertex_distance = r.read_f32()?;
         let m_composite_operation = if *ver >= crate::UnityVersion::new(2023, 1, 0) {
             Some(r.read_i32()?)
@@ -133,7 +133,6 @@ impl crate::Parse for CompositeCollider2D {
         };
 
         Ok(CompositeCollider2D {
-            parent,
             m_game_object,
             m_enabled,
             m_density,

@@ -2,11 +2,9 @@
 
 use crate::subclasses::d3_d12_device_filter_data::D3D12DeviceFilterData;
 use crate::subclasses::d3_d12_graphics_jobs_device_filter_data::D3D12GraphicsJobsDeviceFilterData;
-use super::named_object::NamedObject;
 
 #[derive(Debug, Clone)]
 pub struct D3D12DeviceFilterLists {
-    pub parent: NamedObject,
     pub m_name: String,
     pub m_allow_filter_list: Vec<D3D12DeviceFilterData>,
     pub m_deny_filter_list: Vec<D3D12DeviceFilterData>,
@@ -18,7 +16,6 @@ impl crate::Parse for D3D12DeviceFilterLists {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = NamedObject::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_allow_filter_list = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { D3D12DeviceFilterData::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
@@ -29,7 +26,6 @@ impl crate::Parse for D3D12DeviceFilterLists {
         r.align(4)?;
 
         Ok(D3D12DeviceFilterLists {
-            parent,
             m_name,
             m_allow_filter_list,
             m_deny_filter_list,

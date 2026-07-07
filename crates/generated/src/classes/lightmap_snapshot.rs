@@ -8,11 +8,9 @@ use crate::subclasses::lightmap_data::LightmapData;
 use crate::subclasses::renderer_data::RendererData;
 use crate::subclasses::scene_object_identifier::SceneObjectIdentifier;
 use crate::subclasses::spherical_harmonics_l2::SphericalHarmonicsL2;
-use super::named_object::NamedObject;
 
 #[derive(Debug, Clone)]
 pub struct LightmapSnapshot {
-    pub parent: NamedObject,
     pub m_name: String,
     pub m_lightmaps: Vec<LightmapData>,
     pub m_scene_guid: Option<Guid>,
@@ -45,10 +43,10 @@ impl crate::Parse for LightmapSnapshot {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = NamedObject::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_lightmaps = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { LightmapData::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        r.align(4)?;
         let m_scene_guid = if *ver >= crate::UnityVersion::new(5, 2, 0) {
             Some(Guid::parse(r, ver)?)
         } else {
@@ -95,24 +93,33 @@ impl crate::Parse for LightmapSnapshot {
             None
         };
         let m_lightmapped_renderer_data = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { RendererData::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        r.align(4)?;
         let m_lightmapped_renderer_data_i_ds = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { SceneObjectIdentifier::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        r.align(4)?;
         let m_baked_ambient_probe_in_gamma = if *ver >= crate::UnityVersion::new(5, 2, 0) {
             Some(SphericalHarmonicsL2::parse(r, ver)?)
         } else {
             None
         };
         let m_enlighten_scene_mapping = EnlightenSceneMapping::parse(r, ver)?;
+        r.align(4)?;
         let m_enlighten_scene_mapping_renderer_i_ds = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { SceneObjectIdentifier::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        r.align(4)?;
         let m_lights = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { SceneObjectIdentifier::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        r.align(4)?;
         let m_baked_reflection_probe_cubemaps = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        r.align(4)?;
         let m_baked_reflection_probes = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { SceneObjectIdentifier::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        r.align(4)?;
         let m_baked_light_indices = if *ver >= crate::UnityVersion::new(5, 4, 0) {
             Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i32() }).collect::<Result<Vec<_>, _>>() } )?)
         } else {
             None
         };
         let m_light_baking_outputs = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { LightBakingOutput::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?)
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { LightBakingOutput::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
@@ -137,7 +144,6 @@ impl crate::Parse for LightmapSnapshot {
         };
 
         Ok(LightmapSnapshot {
-            parent,
             m_name,
             m_lightmaps,
             m_scene_guid,

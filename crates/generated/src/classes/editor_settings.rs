@@ -2,12 +2,10 @@
 
 use crate::PPtr;
 use crate::subclasses::collab_editor_settings::CollabEditorSettings;
-use super::object::Object;
 
 #[derive(Debug, Clone)]
 pub struct EditorSettings {
-    pub parent: Object,
-    pub m_external_version_control_support: Option<i32>,
+    pub m_external_version_control_support: Option<String>,
     pub m_serialization_mode: Option<i32>,
     pub m_web_security_emulation_enabled: Option<i32>,
     pub m_line_endings_for_new_scripts: Option<i32>,
@@ -71,14 +69,17 @@ impl crate::Parse for EditorSettings {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Object::parse(r, ver)?;
         let m_external_version_control_support = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_i32()?)
+            let v = r.read_aligned_string()?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
         let m_serialization_mode = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(r.read_i32()?)
+            let v = r.read_i32()?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
@@ -188,16 +189,12 @@ impl crate::Parse for EditorSettings {
             None
         };
         let m_enable_texture_streaming_in_play_mode = if *ver >= crate::UnityVersion::new(2018, 2, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
         let m_async_shader_compilation = if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
@@ -318,9 +315,7 @@ impl crate::Parse for EditorSettings {
             None
         };
         let m_cache_server_enable_upload = if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
@@ -337,9 +332,7 @@ impl crate::Parse for EditorSettings {
             None
         };
         let m_cache_server_enable_tls = if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
@@ -401,7 +394,6 @@ impl crate::Parse for EditorSettings {
         };
 
         Ok(EditorSettings {
-            parent,
             m_external_version_control_support,
             m_serialization_mode,
             m_web_security_emulation_enabled,

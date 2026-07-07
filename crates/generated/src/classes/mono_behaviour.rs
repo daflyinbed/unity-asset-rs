@@ -1,11 +1,9 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
-use super::behaviour::Behaviour;
 
 #[derive(Debug, Clone)]
 pub struct MonoBehaviour {
-    pub parent: Behaviour,
     pub m_game_object: PPtr,
     pub m_enabled: u8,
     pub m_script: PPtr,
@@ -18,7 +16,6 @@ impl crate::Parse for MonoBehaviour {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         // MonoBehaviour 用户字段不在 TPK 中，token 保留原字节供运行时解释。
-        let parent = Behaviour::parse(r, ver)?;
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_enabled = r.read_u8()?;
         r.align(4)?;
@@ -27,7 +24,6 @@ impl crate::Parse for MonoBehaviour {
         r.align(4)?;
 
         Ok(MonoBehaviour {
-            parent,
             m_game_object,
             m_enabled,
             m_script,

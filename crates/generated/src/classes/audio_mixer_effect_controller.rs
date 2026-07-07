@@ -3,11 +3,9 @@
 use crate::PPtr;
 use crate::subclasses::guid::Guid;
 use crate::subclasses::parameter::Parameter;
-use super::named_object::NamedObject;
 
 #[derive(Debug, Clone)]
 pub struct AudioMixerEffectController {
-    pub parent: NamedObject,
     pub m_name: String,
     pub m_effect_id: Guid,
     pub m_effect_name: String,
@@ -23,7 +21,6 @@ impl crate::Parse for AudioMixerEffectController {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = NamedObject::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_effect_id = Guid::parse(r, ver)?;
@@ -38,7 +35,6 @@ impl crate::Parse for AudioMixerEffectController {
         r.align(4)?;
 
         Ok(AudioMixerEffectController {
-            parent,
             m_name,
             m_effect_id,
             m_effect_name,

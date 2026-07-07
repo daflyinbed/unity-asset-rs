@@ -5,11 +5,9 @@ use crate::subclasses::joint_limits::JointLimits;
 use crate::subclasses::joint_motor::JointMotor;
 use crate::subclasses::joint_spring::JointSpring;
 use crate::subclasses::vector3f::Vector3f;
-use super::joint::Joint;
 
 #[derive(Debug, Clone)]
 pub struct HingeJoint {
-    pub parent: Joint,
     pub m_game_object: PPtr,
     pub m_connected_body: PPtr,
     pub m_anchor: Vector3f,
@@ -39,7 +37,6 @@ impl crate::Parse for HingeJoint {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Joint::parse(r, ver)?;
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_connected_body = crate::PPtr::parse(r, ver)?;
         let m_anchor = Vector3f::parse(r, ver)?;
@@ -68,14 +65,11 @@ impl crate::Parse for HingeJoint {
         r.align(4)?;
         let m_motor = JointMotor::parse(r, ver)?;
         let m_use_limits = r.read_bool()?;
-        r.align(4)?;
         let m_limits = JointLimits::parse(r, ver)?;
         let m_break_force = r.read_f32()?;
         let m_break_torque = r.read_f32()?;
         let m_extended_limits = if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
@@ -92,7 +86,9 @@ impl crate::Parse for HingeJoint {
             None
         };
         let m_enable_preprocessing = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_bool()?)
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
@@ -113,7 +109,6 @@ impl crate::Parse for HingeJoint {
         };
 
         Ok(HingeJoint {
-            parent,
             m_game_object,
             m_connected_body,
             m_anchor,

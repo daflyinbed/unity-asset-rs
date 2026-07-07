@@ -1,11 +1,9 @@
 //! 自动生成。请勿手动修改。
 
 use crate::subclasses::gl_texture_settings::GlTextureSettings;
-use super::texture::Texture;
 
 #[derive(Debug, Clone)]
 pub struct SparseTexture {
-    pub parent: Texture,
     pub m_name: String,
     pub m_width: i32,
     pub m_forced_fallback_format: Option<i32>,
@@ -14,7 +12,7 @@ pub struct SparseTexture {
     pub m_color_space: i32,
     pub m_downscale_fallback: Option<bool>,
     pub m_mip_count: i32,
-    pub m_format: u32,
+    pub m_format: i32,
     pub m_texture_settings: GlTextureSettings,
 }
 
@@ -23,47 +21,61 @@ impl crate::Parse for SparseTexture {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Texture::parse(r, ver)?;
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_width = r.read_i32()?;
-        let m_forced_fallback_format = if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_is_alpha_channel_optional = if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            let v = r.read_bool()?;
+        let mut m_name = None;
+        let mut m_width = None;
+        let mut m_forced_fallback_format = None;
+        let mut m_is_alpha_channel_optional = None;
+        let mut m_height = None;
+        let mut m_color_space = None;
+        let mut m_downscale_fallback = None;
+        let mut m_mip_count = None;
+        let mut m_format = None;
+        let mut m_texture_settings = None;
+            m_name = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_height = r.read_i32()?;
-        let m_color_space = r.read_i32()?;
-        let m_downscale_fallback = if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            let v = r.read_bool()?;
+        if *ver >= crate::UnityVersion::new(2023, 2, 0) {
+            m_is_alpha_channel_optional = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
+            m_color_space = Some(r.read_i32()?);
+            m_format = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
+            m_forced_fallback_format = Some(r.read_i32()?);
+            m_downscale_fallback = Some(r.read_bool()?);
+            m_is_alpha_channel_optional = Some(r.read_bool()?);
+            r.align(4)?;
+            m_color_space = Some(r.read_i32()?);
+            m_format = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
+            m_forced_fallback_format = Some(r.read_i32()?);
+            m_downscale_fallback = Some(r.read_bool()?);
+            m_color_space = Some(r.read_i32()?);
+            m_format = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
+            m_forced_fallback_format = Some(r.read_i32()?);
+            m_downscale_fallback = Some(r.read_bool()?);
         } else {
-            None
-        };
-        let m_mip_count = r.read_i32()?;
-        let m_format = r.read_u32()?;
-        let m_texture_settings = GlTextureSettings::parse(r, ver)?;
+        }
+            m_width = Some(r.read_i32()?);
+            m_height = Some(r.read_i32()?);
+            m_mip_count = Some(r.read_i32()?);
+        if *ver >= crate::UnityVersion::new(2019, 1, 0) {
+        } else {
+            m_format = Some(r.read_i32()?);
+            m_color_space = Some(r.read_i32()?);
+        }
+            m_texture_settings = Some(GlTextureSettings::parse(r, ver)?);
 
         Ok(SparseTexture {
-            parent,
-            m_name,
-            m_width,
+            m_name: m_name.unwrap(),
+            m_width: m_width.unwrap(),
             m_forced_fallback_format,
             m_is_alpha_channel_optional,
-            m_height,
-            m_color_space,
+            m_height: m_height.unwrap(),
+            m_color_space: m_color_space.unwrap(),
             m_downscale_fallback,
-            m_mip_count,
-            m_format,
-            m_texture_settings,
+            m_mip_count: m_mip_count.unwrap(),
+            m_format: m_format.unwrap(),
+            m_texture_settings: m_texture_settings.unwrap(),
         })
     }
 }

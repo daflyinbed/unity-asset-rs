@@ -1,11 +1,9 @@
 //! 自动生成。请勿手动修改。
 
 use crate::subclasses::heightmap_data::HeightmapData;
-use super::named_object::NamedObject;
 
 #[derive(Debug, Clone)]
 pub struct NavMesh {
-    pub parent: NamedObject,
     pub m_name: String,
     pub m_mesh_data: Option<Vec<u8>>,
     pub m_heightmaps: Option<Vec<HeightmapData>>,
@@ -16,7 +14,6 @@ impl crate::Parse for NavMesh {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = NamedObject::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_mesh_data = if *ver >= crate::UnityVersion::new(3, 5, 0) {
@@ -33,7 +30,6 @@ impl crate::Parse for NavMesh {
         };
 
         Ok(NavMesh {
-            parent,
             m_name,
             m_mesh_data,
             m_heightmaps,

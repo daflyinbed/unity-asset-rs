@@ -1,11 +1,9 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
-use super::global_game_manager::GlobalGameManager;
 
 #[derive(Debug, Clone)]
 pub struct VfxManager {
-    pub parent: GlobalGameManager,
     pub m_indirect_shader: PPtr,
     pub m_copy_buffer_shader: PPtr,
     pub m_sort_shader: PPtr,
@@ -28,7 +26,6 @@ impl crate::Parse for VfxManager {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = GlobalGameManager::parse(r, ver)?;
         let m_indirect_shader = crate::PPtr::parse(r, ver)?;
         let m_copy_buffer_shader = crate::PPtr::parse(r, ver)?;
         let m_sort_shader = crate::PPtr::parse(r, ver)?;
@@ -83,7 +80,6 @@ impl crate::Parse for VfxManager {
         };
 
         Ok(VfxManager {
-            parent,
             m_indirect_shader,
             m_copy_buffer_shader,
             m_sort_shader,

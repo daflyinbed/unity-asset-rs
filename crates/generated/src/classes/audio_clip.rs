@@ -1,18 +1,9 @@
 //! 自动生成。请勿手动修改。
 
 use crate::subclasses::streamed_resource::StreamedResource;
-use super::named_object::NamedObject;
-use super::sample_clip::SampleClip;
-
-#[derive(Debug, Clone)]
-pub enum AudioClipParent {
-    NamedObject(NamedObject),
-    SampleClip(SampleClip),
-}
 
 #[derive(Debug, Clone)]
 pub struct AudioClip {
-    pub parent: AudioClipParent,
     pub m_name: String,
     pub m_format: Option<i32>,
     pub m_load_type: Option<i32>,
@@ -40,13 +31,6 @@ impl crate::Parse for AudioClip {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            AudioClipParent::NamedObject(NamedObject::parse(r, ver)?)
-        } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            AudioClipParent::SampleClip(SampleClip::parse(r, ver)?)
-        } else {
-            panic!("无匹配的父类分支：version = {:?}", ver)
-        };
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_format = if *ver >= crate::UnityVersion::new(3, 4, 0) {
@@ -109,9 +93,7 @@ impl crate::Parse for AudioClip {
             None
         };
         let m_is_tracker_format = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
@@ -160,7 +142,6 @@ impl crate::Parse for AudioClip {
         };
 
         Ok(AudioClip {
-            parent,
             m_name,
             m_format,
             m_load_type,

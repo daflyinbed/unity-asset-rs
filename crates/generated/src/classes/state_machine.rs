@@ -4,11 +4,9 @@ use crate::PPtr;
 use crate::subclasses::child_animator_state::ChildAnimatorState;
 use crate::subclasses::child_animator_state_machine::ChildAnimatorStateMachine;
 use crate::subclasses::vector3f::Vector3f;
-use super::named_object::NamedObject;
 
 #[derive(Debug, Clone)]
 pub struct StateMachine {
-    pub parent: NamedObject,
     pub m_name: String,
     pub m_default_state: PPtr,
     pub m_child_states: Option<Vec<ChildAnimatorState>>,
@@ -34,87 +32,73 @@ impl crate::Parse for StateMachine {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = NamedObject::parse(r, ver)?;
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_default_state = crate::PPtr::parse(r, ver)?;
-        let m_child_states = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ChildAnimatorState::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?)
+        let mut m_name = None;
+        let mut m_default_state = None;
+        let mut m_child_states = None;
+        let mut m_states = None;
+        let mut m_child_state_machines = None;
+        let mut m_child_state_machine = None;
+        let mut m_any_state_transitions = None;
+        let mut m_child_state_machine_position = None;
+        let mut m_entry_transitions = None;
+        let mut m_local_transitions = None;
+        let mut m_ordered_transitions = None;
+        let mut m_state_machine_transitions = None;
+        let mut m_motion_set_count = None;
+        let mut m_state_machine_behaviours = None;
+        let mut m_any_state_position = None;
+        let mut m_parent_state_machine_position = None;
+        let mut m_entry_position = None;
+        let mut m_exit_position = None;
+            m_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            m_child_states = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ChildAnimatorState::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_child_state_machines = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ChildAnimatorStateMachine::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_any_state_transitions = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_entry_transitions = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_state_machine_transitions = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = crate::PPtr::parse(r, ver)?; let b = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_state_machine_behaviours = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(4, 2, 0) {
+            m_default_state = Some(crate::PPtr::parse(r, ver)?);
+            r.align(4)?;
+            m_states = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_child_state_machine = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_child_state_machine_position = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { Vector3f::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_ordered_transitions = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = crate::PPtr::parse(r, ver)?; let b = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_motion_set_count = Some(r.read_i32()?);
         } else {
-            None
-        };
-        let m_states = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?)
+            m_default_state = Some(crate::PPtr::parse(r, ver)?);
+            r.align(4)?;
+            m_states = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_child_state_machine = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_child_state_machine_position = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { Vector3f::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_local_transitions = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = crate::PPtr::parse(r, ver)?; let b = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_ordered_transitions = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = crate::PPtr::parse(r, ver)?; let b = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_motion_set_count = Some(r.read_i32()?);
+        }
+            m_any_state_position = Some(Vector3f::parse(r, ver)?);
+        if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            m_entry_position = Some(Vector3f::parse(r, ver)?);
+            m_exit_position = Some(Vector3f::parse(r, ver)?);
         } else {
-            None
-        };
-        let m_child_state_machines = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ChildAnimatorStateMachine::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?)
+        }
+            m_parent_state_machine_position = Some(Vector3f::parse(r, ver)?);
+        if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            m_default_state = Some(crate::PPtr::parse(r, ver)?);
+            r.align(4)?;
         } else {
-            None
-        };
-        let m_child_state_machine = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?)
-        } else {
-            None
-        };
-        let m_any_state_transitions = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?)
-        } else {
-            None
-        };
-        let m_child_state_machine_position = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { Vector3f::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?)
-        } else {
-            None
-        };
-        let m_entry_transitions = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?)
-        } else {
-            None
-        };
-        let m_local_transitions = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = crate::PPtr::parse(r, ver)?; let b = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?)
-        } else {
-            None
-        };
-        let m_ordered_transitions = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = crate::PPtr::parse(r, ver)?; let b = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?)
-        } else {
-            None
-        };
-        let m_state_machine_transitions = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = crate::PPtr::parse(r, ver)?; let b = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?)
-        } else {
-            None
-        };
-        let m_motion_set_count = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_state_machine_behaviours = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?)
-        } else {
-            None
-        };
-        let m_any_state_position = Vector3f::parse(r, ver)?;
-        let m_parent_state_machine_position = Vector3f::parse(r, ver)?;
-        let m_entry_position = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(Vector3f::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_exit_position = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(Vector3f::parse(r, ver)?)
-        } else {
-            None
-        };
+        }
 
         Ok(StateMachine {
-            parent,
-            m_name,
-            m_default_state,
+            m_name: m_name.unwrap(),
+            m_default_state: m_default_state.unwrap(),
             m_child_states,
             m_states,
             m_child_state_machines,
@@ -127,8 +111,8 @@ impl crate::Parse for StateMachine {
             m_state_machine_transitions,
             m_motion_set_count,
             m_state_machine_behaviours,
-            m_any_state_position,
-            m_parent_state_machine_position,
+            m_any_state_position: m_any_state_position.unwrap(),
+            m_parent_state_machine_position: m_parent_state_machine_position.unwrap(),
             m_entry_position,
             m_exit_position,
         })

@@ -1,11 +1,9 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
-use super::default_asset::DefaultAsset;
 
 #[derive(Debug, Clone)]
 pub struct BrokenPrefabAsset {
-    pub parent: DefaultAsset,
     pub m_name: String,
     pub m_message: String,
     pub m_error_code: Option<i32>,
@@ -20,7 +18,6 @@ impl crate::Parse for BrokenPrefabAsset {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = DefaultAsset::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_message = r.read_aligned_string()?;
@@ -37,7 +34,6 @@ impl crate::Parse for BrokenPrefabAsset {
         let m_broken_parent_prefab = crate::PPtr::parse(r, ver)?;
 
         Ok(BrokenPrefabAsset {
-            parent,
             m_name,
             m_message,
             m_error_code,

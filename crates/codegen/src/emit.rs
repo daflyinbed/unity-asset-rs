@@ -16,11 +16,11 @@
 //!     └── {snake_name}.rs    # 每个 subclass
 //! ```
 
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
 
 use crate::ir::{
-    EmitClass, EmitField, ParentSpec, Pipeline, RustType, VersionGate,
+    EmitClass, EmitField, Pipeline, RustType, VersionGate,
 };
 use crate::names::to_rust_type_name;
 
@@ -36,10 +36,15 @@ pub fn emit_all(state: &Pipeline, out_dir: &Path) -> std::io::Result<()> {
         .values()
         .filter(|c| c.is_main() && !c.is_abstract)
         .collect();
-    let all_emit: Vec<&EmitClass> = state.classes.values().collect();
+    // 只生成非抽象类（抽象父类 root 为空，字段已平铺到子类）
+    let emit_classes: Vec<&EmitClass> = state
+        .classes
+        .values()
+        .filter(|c| !c.is_abstract)
+        .collect();
 
     // 每个主 class / subclass 一个文件
-    for class in &all_emit {
+    for class in &emit_classes {
         let sub = class_matches_subclass(class);
         let dir = if sub { "subclasses" } else { "classes" };
         let file_name = format!("{}.rs", snake_case(&class.name));
@@ -53,7 +58,7 @@ pub fn emit_all(state: &Pipeline, out_dir: &Path) -> std::io::Result<()> {
         &state
             .classes
             .values()
-            .filter(|c| c.is_main())
+            .filter(|c| c.is_main() && !c.is_abstract)
             .collect::<Vec<_>>(),
     );
     let subclasses_mod = emit_mod_rs(
@@ -100,16 +105,6 @@ fn emit_class_file(class: &EmitClass) -> String {
         out.push('\n');
     }
 
-    // 父类 enum（如果是 Variable）
-    if let ParentSpec::Variable {
-        enum_name,
-        branches,
-    } = &class.parent
-    {
-        emit_parent_enum(&mut out, enum_name, branches);
-        out.push('\n');
-    }
-
     // struct 定义
     emit_struct(&mut out, class);
 
@@ -123,18 +118,6 @@ fn collect_imports(class: &EmitClass) -> String {
     let mut imports = BTreeSet::new();
     for f in &class.own_fields {
         collect_type_imports(&f.rust_type, &mut imports);
-    }
-    // 父类引用
-    match &class.parent {
-        ParentSpec::Stable(name) => {
-            imports.insert(format!("super::{}::{name}", module_name(name)));
-        }
-        ParentSpec::Variable { branches, .. } => {
-            for (_, name) in branches {
-                imports.insert(format!("super::{}::{name}", module_name(name)));
-            }
-        }
-        ParentSpec::Root => {}
     }
 
     let mut s = String::new();
@@ -178,36 +161,9 @@ fn collect_type_imports(t: &RustType, out: &mut BTreeSet<String>) {
     }
 }
 
-fn emit_parent_enum(out: &mut String, enum_name: &str, branches: &[(VersionGate, String)]) {
-    // 去重（同名父类只保留首个分支，因 enum 不能有重复 variant）
-    let mut seen: BTreeSet<String> = BTreeSet::new();
-    let unique: Vec<&(VersionGate, String)> = branches
-        .iter()
-        .filter(|(_, name)| seen.insert(name.clone()))
-        .collect();
-
-    out.push_str("#[derive(Debug, Clone)]\n");
-    out.push_str(&format!("pub enum {enum_name} {{\n"));
-    for (_, name) in &unique {
-        out.push_str(&format!("    {name}({name}),\n"));
-    }
-    out.push_str("}\n");
-}
-
 fn emit_struct(out: &mut String, class: &EmitClass) {
     out.push_str("#[derive(Debug, Clone)]\n");
     out.push_str(&format!("pub struct {} {{\n", class.name));
-
-    // parent field
-    match &class.parent {
-        ParentSpec::Root => {}
-        ParentSpec::Stable(name) => {
-            out.push_str(&format!("    pub parent: {name},\n"));
-        }
-        ParentSpec::Variable { enum_name, .. } => {
-            out.push_str(&format!("    pub parent: {enum_name},\n"));
-        }
-    }
 
     // own fields
     for f in &class.own_fields {
@@ -231,52 +187,249 @@ fn emit_impl_parse(out: &mut String, class: &EmitClass) {
         out.push_str("        // MonoBehaviour 用户字段不在 TPK 中，token 保留原字节供运行时解释。\n");
     }
 
-    // 解 parent
-    match &class.parent {
-        ParentSpec::Root => {}
-        ParentSpec::Stable(name) => {
-            out.push_str(&format!(
-                "        let parent = {name}::parse(r, ver)?;\n"
-            ));
-        }
-        ParentSpec::Variable {
-            enum_name,
-            branches,
-        } => {
-            // if/else chain
-            for (i, (gate, name)) in branches.iter().enumerate() {
-                let cond = gate_to_rust_cond(gate);
-                if i == 0 {
-                    out.push_str(&format!(
-                        "        let parent = if {cond} {{\n            {enum_name}::{name}({name}::parse(r, ver)?)\n"
-                    ));
-                } else {
-                    out.push_str(&format!(
-                        "        }} else if {cond} {{\n            {enum_name}::{name}({name}::parse(r, ver)?)\n"
-                    ));
-                }
-            }
-            // Fallback：理论上不会触发（branches 应覆盖所有版本），保险起见 panic。
-            out.push_str("        } else {\n            panic!(\"无匹配的父类分支：version = {:?}\", ver)\n        };\n");
-        }
-    }
-
     // 解 own fields
-    for f in &class.own_fields {
-        emit_field_parse(out, f);
+    if class.version_layouts.is_empty() {
+        // 所有版本顺序一致：线性读
+        for f in &class.own_fields {
+            emit_field_parse(out, f);
+        }
+    } else {
+        // 版本间顺序不同：version-gated 块
+        emit_versioned_field_reads(out, class);
     }
 
     // 构造 Self
     out.push_str(&format!("\n        Ok({} {{\n", class.name));
-    if !matches!(class.parent, ParentSpec::Root) {
-        out.push_str("            parent,\n");
-    }
-    for f in &class.own_fields {
-        out.push_str(&format!("            {},\n", f.rust_name));
+    if class.version_layouts.is_empty() {
+        for f in &class.own_fields {
+            out.push_str(&format!("            {},\n", f.rust_name));
+        }
+    } else {
+        for f in &class.own_fields {
+            if matches!(f.version_gate, Some(VersionGate::Always)) {
+                out.push_str(&format!("            {}: {}.unwrap(),\n", f.rust_name, f.rust_name));
+            } else {
+                out.push_str(&format!("            {},\n", f.rust_name));
+            }
+        }
     }
     out.push_str("        })\n");
     out.push_str("    }\n");
     out.push_str("}\n");
+}
+
+/// 生成 version-gated parse 块：按 TPK release_root 的真实顺序读字段。
+///
+/// **锚点分段优化**：先求所有版本字段序列的公共子序列（LCS）作为「锚点」。
+/// 锚点在所有版本里相对顺序一致 → 线性读一次即可。锚点之间的「段」才可能
+/// 因版本而异 → 只对这些段做 version-gate，且**每段只在自己的变化版本点分支**，
+/// 而非把全部分支套到所有字段上。这样大幅减少生成代码体积。
+fn emit_versioned_field_reads(out: &mut String, class: &EmitClass) {
+    let own_map: BTreeMap<&str, &EmitField> = class
+        .own_fields
+        .iter()
+        .map(|f| (f.rust_name.as_str(), f))
+        .collect();
+
+    // 所有版本的字段名顺序
+    let orders: Vec<Vec<String>> = class
+        .version_layouts
+        .iter()
+        .map(|l| l.fields.iter().map(|f| f.rust_name.clone()).collect())
+        .collect();
+
+    // 锚点 = 全部版本字段序列的公共子序列
+    let anchors = compute_anchors(&orders);
+
+    // 声明所有 own_fields 为 None（锚点也走 None+Some，保持构造逻辑一致）
+    for f in &class.own_fields {
+        out.push_str(&format!("        let mut {} = None;\n", f.rust_name));
+    }
+
+    if anchors.is_empty() {
+        // 退化：无公共锚点，全量 version-gated（每版本读全部字段）
+        emit_full_versioned_branches(out, class, &own_map);
+        return;
+    }
+
+    // 按锚点把每个版本切分成 anchors.len()+1 个段
+    // 段 i = 锚点[i-1] 与锚点[i] 之间的非锚点字段（段 0 = 前缀，段 n = 后缀）
+    let per_version_segs: Vec<Vec<Vec<String>>> = class
+        .version_layouts
+        .iter()
+        .map(|l| split_by_anchors(&l.fields.iter().map(|f| f.rust_name.clone()).collect::<Vec<_>>(), &anchors))
+        .collect();
+
+    let n_slots = anchors.len() + 1;
+    for slot in 0..n_slots {
+        // 此 slot 在各版本的字段列表（按版本升序，带 since）
+        let slot_entries: Vec<((u16, u16, u16), Vec<String>)> = class
+            .version_layouts
+            .iter()
+            .zip(&per_version_segs)
+            .map(|(l, segs)| (l.since, segs[slot].clone()))
+            .collect();
+
+        emit_slot_segment(out, &slot_entries, &own_map);
+
+        // 锚点（slot 之后、下一个 slot 之前）线性读
+        if slot < anchors.len() {
+            let fname = &anchors[slot];
+            set_field_none(out, fname, &own_map);
+        }
+    }
+}
+
+/// (起始版本, 该版本此段字段名列表)
+type SlotEntry = ((u16, u16, u16), Vec<String>);
+/// 去重后的段变体：(起始版本, 字段名列表引用)
+type SlotVariant<'a> = ((u16, u16, u16), &'a Vec<String>);
+
+/// 段发射：此 slot 的字段列表在各版本间若全部相同 → 无条件线性读；
+/// 否则 → version-gated（仅在该段变化的版本点分支）。
+fn emit_slot_segment(
+    out: &mut String,
+    slot_entries: &[SlotEntry],
+    own_map: &BTreeMap<&str, &EmitField>,
+) {
+    // 升序去重连续相同字段列表 → 得到若干「段变体」(since, fields)
+    let mut distinct: Vec<SlotVariant> = Vec::new();
+    for (since, fields) in slot_entries {
+        if distinct.last().is_some_and(|(_, f)| f == &fields) {
+            continue;
+        }
+        distinct.push((*since, fields));
+    }
+
+    if distinct.len() <= 1 {
+        // 稳定段：无条件读
+        if let Some((_, fields)) = distinct.first() {
+            for fname in fields.iter() {
+                set_field_none(out, fname, own_map);
+            }
+        }
+        return;
+    }
+
+    // 变化段：从最新版本开始 if/else（distinct 升序，倒序发射）
+    let n = distinct.len();
+    for (i, (since, fields)) in distinct.iter().rev().enumerate() {
+        let (maj, min, build) = since;
+        if i == 0 {
+            out.push_str(&format!(
+                "        if *ver >= crate::UnityVersion::new({maj}, {min}, {build}) {{\n"
+            ));
+        } else if i < n - 1 {
+            out.push_str(&format!(
+                "        }} else if *ver >= crate::UnityVersion::new({maj}, {min}, {build}) {{\n"
+            ));
+        } else {
+            out.push_str("        } else {\n");
+        }
+        for fname in fields.iter() {
+            set_field_none(out, fname, own_map);
+        }
+    }
+    out.push_str("        }\n");
+}
+
+/// 退化路径：无公共锚点时，每版本分支读全部字段。
+fn emit_full_versioned_branches(
+    out: &mut String,
+    class: &EmitClass,
+    own_map: &BTreeMap<&str, &EmitField>,
+) {
+    let n = class.version_layouts.len();
+    for (i, layout) in class.version_layouts.iter().rev().enumerate() {
+        let (maj, min, build) = layout.since;
+        if i == 0 {
+            out.push_str(&format!(
+                "        if *ver >= crate::UnityVersion::new({maj}, {min}, {build}) {{\n"
+            ));
+        } else if i < n - 1 {
+            out.push_str(&format!(
+                "        }} else if *ver >= crate::UnityVersion::new({maj}, {min}, {build}) {{\n"
+            ));
+        } else {
+            out.push_str("        } else {\n");
+        }
+        for lf in &layout.fields {
+            set_field_none(out, &lf.rust_name, own_map);
+        }
+    }
+    out.push_str("        }\n");
+}
+
+/// 读取字段并写入对应的 None 变量：`name = Some(read_expr?);` + 对齐。
+fn set_field_none(out: &mut String, fname: &str, own_map: &BTreeMap<&str, &EmitField>) {
+    let Some(ef) = own_map.get(fname) else { return };
+    let expr = field_read_expr(&ef.rust_type);
+    out.push_str(&format!("            {fname} = Some({expr}?);\n"));
+    if ef.align_after {
+        out.push_str("            r.align(4)?;\n");
+    }
+}
+
+/// 多序列公共子序列（LCS）：所有版本字段序列都保持相对顺序的字段，即「锚点」。
+fn compute_anchors(orders: &[Vec<String>]) -> Vec<String> {
+    if orders.is_empty() {
+        return Vec::new();
+    }
+    let mut acc = orders[0].clone();
+    for v in &orders[1..] {
+        acc = lcs_two(&acc, v);
+        if acc.is_empty() {
+            return Vec::new();
+        }
+    }
+    acc
+}
+
+/// 两条字段名序列的最长公共子序列（标准 DP）。
+fn lcs_two(a: &[String], b: &[String]) -> Vec<String> {
+    let (n, m) = (a.len(), b.len());
+    let mut dp = vec![vec![0usize; m + 1]; n + 1];
+    for i in 1..=n {
+        for j in 1..=m {
+            dp[i][j] = if a[i - 1] == b[j - 1] {
+                dp[i - 1][j - 1] + 1
+            } else {
+                dp[i - 1][j].max(dp[i][j - 1])
+            };
+        }
+    }
+    let (mut i, mut j, mut out) = (n, m, Vec::new());
+    while i > 0 && j > 0 {
+        if a[i - 1] == b[j - 1] {
+            out.push(a[i - 1].clone());
+            i -= 1;
+            j -= 1;
+        } else if dp[i - 1][j] > dp[i][j - 1] {
+            i -= 1;
+        } else {
+            j -= 1;
+        }
+    }
+    out.reverse();
+    out
+}
+
+/// 按锚点把字段列表切成 `anchors.len()+1` 段。
+/// 返回段数组：段[0]=前缀(锚点0前)，段[k]=锚点k-1与k之间，... 段[n]=后缀。
+fn split_by_anchors(fields: &[String], anchors: &[String]) -> Vec<Vec<String>> {
+    let mut slots = vec![Vec::new(); anchors.len() + 1];
+    let mut cur_slot = 0usize; // 当前在第几个段
+    let mut next_anchor = 0usize; // 下一个待匹配的锚点下标
+    for f in fields {
+        if next_anchor < anchors.len() && f == &anchors[next_anchor] {
+            // 命中锚点：之后的字段进入下一段
+            cur_slot = next_anchor + 1;
+            next_anchor += 1;
+        } else {
+            slots[cur_slot].push(f.clone());
+        }
+    }
+    slots
 }
 
 fn emit_field_parse(out: &mut String, f: &EmitField) {
@@ -386,6 +539,7 @@ fn emit_lib_rs() -> String {
     r#"//! 自动生成的 Unity 类型与 parser。请勿手动修改。
 //!
 //! 由 `crates/codegen` 生成（详见 `docs/codegen-design.md`）。
+//! 共享原语（UnityVersion / EndianReader / Parse / PPtr）来自 `unity-core` crate。
 
 pub mod classes;
 pub mod subclasses;
@@ -395,77 +549,9 @@ mod class_id;
 pub use class_id::ClassIDType;
 pub use unity_object::UnityObject;
 
-/// 解析 trait。每个生成的 struct 实现它。
-pub trait Parse: Sized {
-    fn parse<R: EndianReader>(r: &mut R, ver: &UnityVersion) -> Result<Self, R::Error>;
-}
-
-/// 字节序 reader 抽象。
-/// 实际实现由 `crates/unity-asset` 提供（为现有 Cursor impl）。
-pub trait EndianReader {
-    type Error;
-    fn read_bool(&mut self) -> Result<bool, Self::Error>;
-    fn read_i8(&mut self) -> Result<i8, Self::Error>;
-    fn read_u8(&mut self) -> Result<u8, Self::Error>;
-    fn read_i16(&mut self) -> Result<i16, Self::Error>;
-    fn read_u16(&mut self) -> Result<u16, Self::Error>;
-    fn read_i32(&mut self) -> Result<i32, Self::Error>;
-    fn read_u32(&mut self) -> Result<u32, Self::Error>;
-    fn read_i64(&mut self) -> Result<i64, Self::Error>;
-    fn read_u64(&mut self) -> Result<u64, Self::Error>;
-    fn read_f32(&mut self) -> Result<f32, Self::Error>;
-    fn read_f64(&mut self) -> Result<f64, Self::Error>;
-    fn read_bytes(&mut self, n: usize) -> Result<Vec<u8>, Self::Error>;
-    fn read_aligned_string(&mut self) -> Result<String, Self::Error>;
-    fn align(&mut self, n: usize) -> Result<(), Self::Error>;
-}
-
-/// Unity 版本号（生成代码里用到）。
-/// 实际定义在 `crates/unity-asset-primitives`，但为保持 generated crate 自包含，
-/// 这里复制定义。
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub struct UnityVersion {
-    pub major: u16,
-    pub minor: u16,
-    pub build: u16,
-}
-
-impl UnityVersion {
-    pub const fn new(major: u16, minor: u16, build: u16) -> Self {
-        Self {
-            major,
-            minor,
-            build,
-        }
-    }
-}
-
-/// PPtr<X> —— 跨引用指针。所有 PPtr 在磁盘上都是 m_FileID + m_PathID 两整数。
-///
-/// MVP 不带 generic：避免依赖 target class 存在（如 PrefabInstance 在某些 TPK 版本被改名）。
-/// 用户拿不到类型区分（PPtr<GameObject> vs PPtr<Texture2D> 都变成 PPtr），但能编译。
-/// 未来要做类型安全可改为 generic + PhantomData<fn() -> T>。
-#[derive(Debug, Clone)]
-pub struct PPtr {
-    pub m_file_id: i32,
-    pub m_path_id: i64,
-}
-
-impl PPtr {
-    pub fn parse<R: EndianReader>(
-        r: &mut R,
-        _ver: &UnityVersion,
-    ) -> Result<Self, R::Error> {
-        let m_file_id = r.read_i32()?;
-        // 简化：m_PathID 永远按 i64 读。
-        // 老版本（ver < 5）实际是 i32，但生成器暂不做版本分支（D5 后改进）。
-        let m_path_id = r.read_i64()?;
-        Ok(PPtr {
-            m_file_id,
-            m_path_id,
-        })
-    }
-}
+// 从 unity-core re-export，使生成代码中的 `crate::UnityVersion`、`crate::Parse`、
+// `crate::EndianReader`、`crate::PPtr` 等引用仍然解析正确。
+pub use unity_core::{Endian, EndianReader, Parse, PPtr, UnityVersion};
 "#
     .to_string()
 }
@@ -499,7 +585,7 @@ fn emit_unity_object(main_classes: &[&EmitClass]) -> String {
             c.name, c.name, module_name(&c.name), c.name
         ));
     }
-    s.push_str("            _ => unimplemented!(\"未覆盖的 class_id: {:?}\", class_id),\n");
+    s.push_str("            _ => return Err(r.make_error(&format!(\"unsupported class_id: {:?}\", class_id))),\n");
     s.push_str("        }\n");
     s.push_str("    }\n");
     s.push_str("}\n");
@@ -518,6 +604,23 @@ fn emit_class_id(main_classes: &[&EmitClass]) -> String {
         }
     }
     s.push_str("    Unknown = -1,\n");
+    s.push_str("}\n\n");
+
+    // from_i32：只返回有 dispatch arm 的非抽象 main class。
+    s.push_str("impl ClassIDType {\n");
+    s.push_str("    pub fn from_i32(id: i32) -> Option<Self> {\n");
+    s.push_str("        match id {\n");
+    for c in main_classes {
+        if let Some(id) = c.class_id() {
+            s.push_str(&format!(
+                "            {id} => Some(Self::{}),\n",
+                c.name
+            ));
+        }
+    }
+    s.push_str("            _ => None,\n");
+    s.push_str("        }\n");
+    s.push_str("    }\n");
     s.push_str("}\n");
     s
 }

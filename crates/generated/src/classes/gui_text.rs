@@ -3,11 +3,9 @@
 use crate::PPtr;
 use crate::subclasses::color_rgba::ColorRgba;
 use crate::subclasses::vector2f::Vector2f;
-use super::gui_element::GuiElement;
 
 #[derive(Debug, Clone)]
 pub struct GuiText {
-    pub parent: GuiElement,
     pub m_game_object: PPtr,
     pub m_enabled: u8,
     pub m_text: String,
@@ -30,7 +28,6 @@ impl crate::Parse for GuiText {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = GuiElement::parse(r, ver)?;
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_enabled = r.read_u8()?;
         r.align(4)?;
@@ -58,7 +55,6 @@ impl crate::Parse for GuiText {
         };
 
         Ok(GuiText {
-            parent,
             m_game_object,
             m_enabled,
             m_text,

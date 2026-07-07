@@ -9,11 +9,9 @@ use crate::subclasses::nav_mesh_params::NavMeshParams;
 use crate::subclasses::nav_mesh_tile_data::NavMeshTileData;
 use crate::subclasses::quaternionf::Quaternionf;
 use crate::subclasses::vector3f::Vector3f;
-use super::named_object::NamedObject;
 
 #[derive(Debug, Clone)]
 pub struct NavMeshData {
-    pub parent: NamedObject,
     pub m_name: String,
     pub m_nav_mesh_tiles: Vec<NavMeshTileData>,
     pub m_nav_mesh_params: Option<NavMeshParams>,
@@ -32,7 +30,6 @@ impl crate::Parse for NavMeshData {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = NamedObject::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_nav_mesh_tiles = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { NavMeshTileData::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
@@ -50,8 +47,11 @@ impl crate::Parse for NavMeshData {
             None
         };
         let m_heightmaps = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { HeightmapData::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        r.align(4)?;
         let m_height_meshes = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { HeightMeshData::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        r.align(4)?;
         let m_off_mesh_links = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { AutoOffMeshLinkData::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        r.align(4)?;
         let m_source_bounds = if *ver >= crate::UnityVersion::new(5, 6, 1) {
             Some(Aabb::parse(r, ver)?)
         } else {
@@ -74,7 +74,6 @@ impl crate::Parse for NavMeshData {
         };
 
         Ok(NavMeshData {
-            parent,
             m_name,
             m_nav_mesh_tiles,
             m_nav_mesh_params,

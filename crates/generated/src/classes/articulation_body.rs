@@ -5,11 +5,9 @@ use crate::subclasses::articulation_drive::ArticulationDrive;
 use crate::subclasses::bit_field::BitField;
 use crate::subclasses::quaternionf::Quaternionf;
 use crate::subclasses::vector3f::Vector3f;
-use super::behaviour::Behaviour;
 
 #[derive(Debug, Clone)]
 pub struct ArticulationBody {
-    pub parent: Behaviour,
     pub m_game_object: PPtr,
     pub m_enabled: u8,
     pub m_mass: f32,
@@ -49,7 +47,6 @@ impl crate::Parse for ArticulationBody {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Behaviour::parse(r, ver)?;
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_enabled = r.read_u8()?;
         r.align(4)?;
@@ -92,7 +89,9 @@ impl crate::Parse for ArticulationBody {
             None
         };
         let m_use_gravity = if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            Some(r.read_bool()?)
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
@@ -133,7 +132,6 @@ impl crate::Parse for ArticulationBody {
         };
 
         Ok(ArticulationBody {
-            parent,
             m_game_object,
             m_enabled,
             m_mass,

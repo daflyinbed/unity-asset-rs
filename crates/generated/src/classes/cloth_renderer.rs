@@ -2,11 +2,9 @@
 
 use crate::PPtr;
 use crate::subclasses::vector4f::Vector4f;
-use super::renderer::Renderer;
 
 #[derive(Debug, Clone)]
 pub struct ClothRenderer {
-    pub parent: Renderer,
     pub m_game_object: PPtr,
     pub m_enabled: bool,
     pub m_cast_shadows: bool,
@@ -29,7 +27,6 @@ impl crate::Parse for ClothRenderer {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Renderer::parse(r, ver)?;
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_enabled = r.read_bool()?;
         let m_cast_shadows = r.read_bool()?;
@@ -48,7 +45,9 @@ impl crate::Parse for ClothRenderer {
             None
         };
         let m_light_probe_anchor = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(crate::PPtr::parse(r, ver)?)
+            let v = crate::PPtr::parse(r, ver)?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
@@ -63,13 +62,14 @@ impl crate::Parse for ClothRenderer {
             None
         };
         let m_sorting_order = if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            Some(r.read_i16()?)
+            let v = r.read_i16()?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
 
         Ok(ClothRenderer {
-            parent,
             m_game_object,
             m_enabled,
             m_cast_shadows,

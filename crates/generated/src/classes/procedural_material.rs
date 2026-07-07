@@ -5,15 +5,13 @@ use crate::subclasses::build_texture_stack_reference::BuildTextureStackReference
 use crate::subclasses::hash128::Hash128;
 use crate::subclasses::substance_input::SubstanceInput;
 use crate::subclasses::unity_property_sheet::UnityPropertySheet;
-use super::material::Material;
 
 #[derive(Debug, Clone)]
 pub struct ProceduralMaterial {
-    pub parent: Material,
     pub m_name: String,
     pub m_shader: PPtr,
     pub m_saved_properties: UnityPropertySheet,
-    pub m_shader_keywords: Option<Vec<String>>,
+    pub m_shader_keywords: Option<String>,
     pub m_valid_keywords: Option<Vec<String>>,
     pub m_substance_package: Option<PPtr>,
     pub m_width: Option<i32>,
@@ -43,155 +41,232 @@ impl crate::Parse for ProceduralMaterial {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Material::parse(r, ver)?;
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_shader = crate::PPtr::parse(r, ver)?;
-        let m_saved_properties = UnityPropertySheet::parse(r, ver)?;
-        r.align(4)?;
-        let m_shader_keywords = if *ver >= crate::UnityVersion::new(4, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+        let mut m_name = None;
+        let mut m_shader = None;
+        let mut m_saved_properties = None;
+        let mut m_shader_keywords = None;
+        let mut m_valid_keywords = None;
+        let mut m_substance_package = None;
+        let mut m_width = None;
+        let mut m_custom_render_queue = None;
+        let mut m_lightmap_flags = None;
+        let mut m_invalid_keywords = None;
+        let mut m_maximum_size = None;
+        let mut m_height = None;
+        let mut m_enable_instancing_variants = None;
+        let mut m_textures = None;
+        let mut string_tag_map = None;
+        let mut m_double_sided_gi = None;
+        let mut m_inputs = None;
+        let mut m_flags = None;
+        let mut m_loading_behavior = None;
+        let mut m_generate_mipmaps = None;
+        let mut disabled_shader_passes = None;
+        let mut m_cache_size = None;
+        let mut m_animation_update_rate = None;
+        let mut m_build_texture_stacks = None;
+        let mut m_prototype_name = None;
+        let mut m_hash = None;
+            m_name = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_valid_keywords = if *ver >= crate::UnityVersion::new(2021, 2, 18) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            m_shader = Some(crate::PPtr::parse(r, ver)?);
+        if *ver >= crate::UnityVersion::new(2022, 1, 0) {
+            m_valid_keywords = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_substance_package = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(crate::PPtr::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_width = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_custom_render_queue = if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_lightmap_flags = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_u32()?)
-        } else {
-            None
-        };
-        let m_invalid_keywords = if *ver >= crate::UnityVersion::new(2021, 2, 18) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            m_invalid_keywords = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_maximum_size = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_height = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_enable_instancing_variants = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            let v = r.read_bool()?;
+            m_lightmap_flags = Some(r.read_u32()?);
+            m_enable_instancing_variants = Some(r.read_bool()?);
+            m_double_sided_gi = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_textures = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?)
-        } else {
-            None
-        };
-        let string_tag_map = if *ver >= crate::UnityVersion::new(5, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            m_custom_render_queue = Some(r.read_i32()?);
+            string_tag_map = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_double_sided_gi = if *ver >= crate::UnityVersion::new(5, 6, 2) {
-            let v = r.read_bool()?;
+            disabled_shader_passes = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_inputs = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { SubstanceInput::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
+            m_shader_keywords = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_flags = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_u32()?)
-        } else {
-            None
-        };
-        let m_loading_behavior = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_generate_mipmaps = if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            let v = r.read_bool()?;
+            m_lightmap_flags = Some(r.read_u32()?);
+            m_enable_instancing_variants = Some(r.read_bool()?);
+            m_double_sided_gi = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let disabled_shader_passes = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            m_custom_render_queue = Some(r.read_i32()?);
+            string_tag_map = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_cache_size = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_animation_update_rate = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_build_texture_stacks = if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { BuildTextureStackReference::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            disabled_shader_passes = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_prototype_name = if *ver >= crate::UnityVersion::new(4, 2, 0) {
-            let v = r.read_aligned_string()?;
+        } else if *ver >= crate::UnityVersion::new(2021, 2, 18) {
+            m_valid_keywords = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
+            m_invalid_keywords = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_lightmap_flags = Some(r.read_u32()?);
+            m_enable_instancing_variants = Some(r.read_bool()?);
+            m_double_sided_gi = Some(r.read_bool()?);
+            r.align(4)?;
+            m_custom_render_queue = Some(r.read_i32()?);
+            string_tag_map = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            disabled_shader_passes = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            m_shader_keywords = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_lightmap_flags = Some(r.read_u32()?);
+            m_enable_instancing_variants = Some(r.read_bool()?);
+            m_double_sided_gi = Some(r.read_bool()?);
+            r.align(4)?;
+            m_custom_render_queue = Some(r.read_i32()?);
+            string_tag_map = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            disabled_shader_passes = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            m_shader_keywords = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_lightmap_flags = Some(r.read_u32()?);
+            m_enable_instancing_variants = Some(r.read_bool()?);
+            m_custom_render_queue = Some(r.read_i32()?);
+            string_tag_map = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            disabled_shader_passes = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(5, 6, 2) {
+            m_shader_keywords = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_lightmap_flags = Some(r.read_u32()?);
+            m_enable_instancing_variants = Some(r.read_bool()?);
+            m_double_sided_gi = Some(r.read_bool()?);
+            r.align(4)?;
+            m_custom_render_queue = Some(r.read_i32()?);
+            string_tag_map = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            disabled_shader_passes = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            m_shader_keywords = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_lightmap_flags = Some(r.read_u32()?);
+            m_enable_instancing_variants = Some(r.read_bool()?);
+            m_custom_render_queue = Some(r.read_i32()?);
+            string_tag_map = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            disabled_shader_passes = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            m_shader_keywords = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_lightmap_flags = Some(r.read_u32()?);
+            m_enable_instancing_variants = Some(r.read_bool()?);
+            m_custom_render_queue = Some(r.read_i32()?);
+            string_tag_map = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(5, 1, 0) {
+            m_shader_keywords = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_lightmap_flags = Some(r.read_u32()?);
+            m_custom_render_queue = Some(r.read_i32()?);
+            string_tag_map = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            m_shader_keywords = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_lightmap_flags = Some(r.read_u32()?);
+            m_custom_render_queue = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
+            m_shader_keywords = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_custom_render_queue = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(4, 1, 0) {
+            m_shader_keywords = Some(r.read_aligned_string()?);
+            r.align(4)?;
         } else {
-            None
-        };
-        let m_hash = if *ver >= crate::UnityVersion::new(4, 1, 0) {
-            Some(Hash128::parse(r, ver)?)
+        }
+            m_saved_properties = Some(UnityPropertySheet::parse(r, ver)?);
+            r.align(4)?;
+        if *ver >= crate::UnityVersion::new(2020, 1, 0) {
+            m_build_texture_stacks = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { BuildTextureStackReference::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
+        } else if *ver >= crate::UnityVersion::new(4, 5, 0) {
+            m_width = Some(r.read_i32()?);
+            m_height = Some(r.read_i32()?);
+            m_generate_mipmaps = Some(r.read_bool()?);
+            r.align(4)?;
+            m_textures = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_flags = Some(r.read_u32()?);
+            m_loading_behavior = Some(r.read_i32()?);
+            m_substance_package = Some(crate::PPtr::parse(r, ver)?);
+            m_inputs = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { SubstanceInput::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_prototype_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_animation_update_rate = Some(r.read_i32()?);
+            m_hash = Some(Hash128::parse(r, ver)?);
+        } else if *ver >= crate::UnityVersion::new(4, 2, 0) {
+            m_width = Some(r.read_i32()?);
+            m_height = Some(r.read_i32()?);
+            m_textures = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_flags = Some(r.read_u32()?);
+            m_loading_behavior = Some(r.read_i32()?);
+            m_substance_package = Some(crate::PPtr::parse(r, ver)?);
+            m_inputs = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { SubstanceInput::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_prototype_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_animation_update_rate = Some(r.read_i32()?);
+            m_hash = Some(Hash128::parse(r, ver)?);
+        } else if *ver >= crate::UnityVersion::new(4, 1, 0) {
+            m_width = Some(r.read_i32()?);
+            m_height = Some(r.read_i32()?);
+            m_textures = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_flags = Some(r.read_u32()?);
+            m_loading_behavior = Some(r.read_i32()?);
+            m_substance_package = Some(crate::PPtr::parse(r, ver)?);
+            m_inputs = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { SubstanceInput::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_animation_update_rate = Some(r.read_i32()?);
+            m_hash = Some(Hash128::parse(r, ver)?);
+        } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
+            m_width = Some(r.read_i32()?);
+            m_height = Some(r.read_i32()?);
+            m_textures = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_flags = Some(r.read_u32()?);
+            m_loading_behavior = Some(r.read_i32()?);
+            m_substance_package = Some(crate::PPtr::parse(r, ver)?);
+            m_inputs = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { SubstanceInput::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_animation_update_rate = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
+            m_substance_package = Some(crate::PPtr::parse(r, ver)?);
+            m_width = Some(r.read_i32()?);
+            m_height = Some(r.read_i32()?);
+            m_textures = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_inputs = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { SubstanceInput::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_flags = Some(r.read_u32()?);
+            m_animation_update_rate = Some(r.read_i32()?);
         } else {
-            None
-        };
+            m_substance_package = Some(crate::PPtr::parse(r, ver)?);
+            m_maximum_size = Some(r.read_i32()?);
+            m_textures = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_inputs = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { SubstanceInput::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_flags = Some(r.read_u32()?);
+            m_cache_size = Some(r.read_i32()?);
+        }
 
         Ok(ProceduralMaterial {
-            parent,
-            m_name,
-            m_shader,
-            m_saved_properties,
+            m_name: m_name.unwrap(),
+            m_shader: m_shader.unwrap(),
+            m_saved_properties: m_saved_properties.unwrap(),
             m_shader_keywords,
             m_valid_keywords,
             m_substance_package,

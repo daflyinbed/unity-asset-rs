@@ -3,11 +3,9 @@
 use crate::PPtr;
 use crate::subclasses::animation_curve::AnimationCurve;
 use crate::subclasses::extension_property_value::ExtensionPropertyValue;
-use super::audio_behaviour::AudioBehaviour;
 
 #[derive(Debug, Clone)]
 pub struct AudioSource {
-    pub parent: AudioBehaviour,
     pub m_game_object: PPtr,
     pub m_enabled: u8,
     pub m_audio_clip: PPtr,
@@ -41,7 +39,6 @@ impl crate::Parse for AudioSource {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = AudioBehaviour::parse(r, ver)?;
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_enabled = r.read_u8()?;
         r.align(4)?;
@@ -62,13 +59,10 @@ impl crate::Parse for AudioSource {
         let m_pitch = r.read_f32()?;
         let r#loop = r.read_bool()?;
         let mute = r.read_bool()?;
-        r.align(4)?;
         let priority = r.read_i32()?;
         let doppler_level = r.read_f32()?;
         let spatialize = if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
@@ -84,14 +78,15 @@ impl crate::Parse for AudioSource {
         let pan2_d = r.read_f32()?;
         let rolloff_mode = r.read_i32()?;
         let bypass_effects = r.read_bool()?;
-        r.align(4)?;
         let rolloff_custom_curve = AnimationCurve::parse(r, ver)?;
+        r.align(4)?;
         let bypass_listener_effects = if *ver >= crate::UnityVersion::new(4, 2, 0) {
             Some(r.read_bool()?)
         } else {
             None
         };
         let pan_level_custom_curve = AnimationCurve::parse(r, ver)?;
+        r.align(4)?;
         let bypass_reverb_zones = if *ver >= crate::UnityVersion::new(4, 2, 0) {
             let v = r.read_bool()?;
             r.align(4)?;
@@ -100,8 +95,11 @@ impl crate::Parse for AudioSource {
             None
         };
         let spread_custom_curve = AnimationCurve::parse(r, ver)?;
+        r.align(4)?;
         let reverb_zone_mix_custom_curve = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(AnimationCurve::parse(r, ver)?)
+            let v = AnimationCurve::parse(r, ver)?;
+            r.align(4)?;
+            Some(v)
         } else {
             None
         };
@@ -114,7 +112,6 @@ impl crate::Parse for AudioSource {
         };
 
         Ok(AudioSource {
-            parent,
             m_game_object,
             m_enabled,
             m_audio_clip,

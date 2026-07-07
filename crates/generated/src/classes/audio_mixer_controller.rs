@@ -2,11 +2,9 @@
 
 use crate::PPtr;
 use crate::subclasses::audio_mixer_constant::AudioMixerConstant;
-use super::audio_mixer::AudioMixer;
 
 #[derive(Debug, Clone)]
 pub struct AudioMixerController {
-    pub parent: AudioMixer,
     pub m_name: String,
     pub m_output_group: PPtr,
     pub m_master_group: PPtr,
@@ -23,12 +21,12 @@ impl crate::Parse for AudioMixerController {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = AudioMixer::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_output_group = crate::PPtr::parse(r, ver)?;
         let m_master_group = crate::PPtr::parse(r, ver)?;
         let m_snapshots = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        r.align(4)?;
         let m_start_snapshot = crate::PPtr::parse(r, ver)?;
         let m_suspend_threshold = r.read_f32()?;
         let m_enable_suspend = r.read_bool()?;
@@ -44,7 +42,6 @@ impl crate::Parse for AudioMixerController {
         };
 
         Ok(AudioMixerController {
-            parent,
             m_name,
             m_output_group,
             m_master_group,

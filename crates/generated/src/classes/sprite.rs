@@ -7,11 +7,9 @@ use crate::subclasses::sprite_bone::SpriteBone;
 use crate::subclasses::sprite_render_data::SpriteRenderData;
 use crate::subclasses::vector2f::Vector2f;
 use crate::subclasses::vector4f::Vector4f;
-use super::named_object::NamedObject;
 
 #[derive(Debug, Clone)]
 pub struct Sprite {
-    pub parent: NamedObject,
     pub m_name: String,
     pub m_rect: Rectf,
     pub m_offset: Vector2f,
@@ -34,7 +32,6 @@ impl crate::Parse for Sprite {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = NamedObject::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_rect = Rectf::parse(r, ver)?;
@@ -46,6 +43,7 @@ impl crate::Parse for Sprite {
             None
         };
         let m_extrude = r.read_u32()?;
+        r.align(4)?;
         let m_rd = SpriteRenderData::parse(r, ver)?;
         r.align(4)?;
         let m_pivot = if *ver >= crate::UnityVersion::new(5, 4, 2) {
@@ -102,7 +100,6 @@ impl crate::Parse for Sprite {
         };
 
         Ok(Sprite {
-            parent,
             m_name,
             m_rect,
             m_offset,

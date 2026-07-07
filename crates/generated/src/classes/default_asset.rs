@@ -1,10 +1,7 @@
 //! 自动生成。请勿手动修改。
 
-use super::named_object::NamedObject;
-
 #[derive(Debug, Clone)]
 pub struct DefaultAsset {
-    pub parent: NamedObject,
     pub m_name: String,
     pub m_message: Option<String>,
     pub m_error_code: Option<i32>,
@@ -16,7 +13,6 @@ impl crate::Parse for DefaultAsset {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = NamedObject::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_message = if *ver >= crate::UnityVersion::new(5, 0, 0) {
@@ -38,7 +34,6 @@ impl crate::Parse for DefaultAsset {
         };
 
         Ok(DefaultAsset {
-            parent,
             m_name,
             m_message,
             m_error_code,

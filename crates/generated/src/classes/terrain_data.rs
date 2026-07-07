@@ -4,11 +4,9 @@ use crate::PPtr;
 use crate::subclasses::detail_database::DetailDatabase;
 use crate::subclasses::heightmap::Heightmap;
 use crate::subclasses::splat_database::SplatDatabase;
-use super::named_object::NamedObject;
 
 #[derive(Debug, Clone)]
 pub struct TerrainData {
-    pub parent: NamedObject,
     pub m_name: String,
     pub m_splat_database: SplatDatabase,
     pub m_detail_database: DetailDatabase,
@@ -21,10 +19,10 @@ impl crate::Parse for TerrainData {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = NamedObject::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_splat_database = SplatDatabase::parse(r, ver)?;
+        r.align(4)?;
         let m_detail_database = DetailDatabase::parse(r, ver)?;
         r.align(4)?;
         let m_heightmap = Heightmap::parse(r, ver)?;
@@ -38,7 +36,6 @@ impl crate::Parse for TerrainData {
         };
 
         Ok(TerrainData {
-            parent,
             m_name,
             m_splat_database,
             m_detail_database,

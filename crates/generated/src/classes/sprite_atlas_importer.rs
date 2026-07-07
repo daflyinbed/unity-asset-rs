@@ -6,11 +6,9 @@ use crate::subclasses::secondary_texture_settings::SecondaryTextureSettings;
 use crate::subclasses::source_asset_identifier::SourceAssetIdentifier;
 use crate::subclasses::texture_importer_platform_settings::TextureImporterPlatformSettings;
 use crate::subclasses::texture_settings::TextureSettings;
-use super::asset_importer::AssetImporter;
 
 #[derive(Debug, Clone)]
 pub struct SpriteAtlasImporter {
-    pub parent: AssetImporter,
     pub m_name: String,
     pub m_external_objects: Vec<(SourceAssetIdentifier, PPtr)>,
     pub m_used_file_i_ds: Vec<i64>,
@@ -30,7 +28,6 @@ impl crate::Parse for SpriteAtlasImporter {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = AssetImporter::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_external_objects = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(r, ver)?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
@@ -85,7 +82,6 @@ impl crate::Parse for SpriteAtlasImporter {
         };
 
         Ok(SpriteAtlasImporter {
-            parent,
             m_name,
             m_external_objects,
             m_used_file_i_ds,

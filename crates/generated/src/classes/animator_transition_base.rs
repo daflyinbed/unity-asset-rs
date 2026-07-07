@@ -2,11 +2,9 @@
 
 use crate::PPtr;
 use crate::subclasses::animator_condition::AnimatorCondition;
-use super::named_object::NamedObject;
 
 #[derive(Debug, Clone)]
 pub struct AnimatorTransitionBase {
-    pub parent: NamedObject,
     pub m_name: String,
     pub m_conditions: Vec<AnimatorCondition>,
     pub m_dst_state_machine: PPtr,
@@ -21,7 +19,6 @@ impl crate::Parse for AnimatorTransitionBase {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = NamedObject::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_conditions = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { AnimatorCondition::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
@@ -34,7 +31,6 @@ impl crate::Parse for AnimatorTransitionBase {
         r.align(4)?;
 
         Ok(AnimatorTransitionBase {
-            parent,
             m_name,
             m_conditions,
             m_dst_state_machine,

@@ -4,11 +4,9 @@ use crate::PPtr;
 use crate::subclasses::color_rgba::ColorRgba;
 use crate::subclasses::gl_texture_settings::GlTextureSettings;
 use crate::subclasses::update_zone_info::UpdateZoneInfo;
-use super::render_texture::RenderTexture;
 
 #[derive(Debug, Clone)]
 pub struct CustomRenderTexture {
-    pub parent: RenderTexture,
     pub m_name: String,
     pub m_width: i32,
     pub m_forced_fallback_format: Option<i32>,
@@ -54,7 +52,6 @@ impl crate::Parse for CustomRenderTexture {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = RenderTexture::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_width = r.read_i32()?;
@@ -72,9 +69,7 @@ impl crate::Parse for CustomRenderTexture {
         };
         let m_height = r.read_i32()?;
         let m_downscale_fallback = if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
@@ -98,7 +93,6 @@ impl crate::Parse for CustomRenderTexture {
         };
         let m_generate_mips = r.read_bool()?;
         let m_srgb = r.read_bool()?;
-        r.align(4)?;
         let m_texture_settings = GlTextureSettings::parse(r, ver)?;
         let m_dimension = r.read_i32()?;
         let m_volume_depth = r.read_i32()?;
@@ -109,9 +103,7 @@ impl crate::Parse for CustomRenderTexture {
         };
         let m_material = crate::PPtr::parse(r, ver)?;
         let m_bind_ms = if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
@@ -127,9 +119,7 @@ impl crate::Parse for CustomRenderTexture {
             None
         };
         let m_enable_compatible_format = if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
-            Some(v)
+            Some(r.read_bool()?)
         } else {
             None
         };
@@ -163,7 +153,6 @@ impl crate::Parse for CustomRenderTexture {
         r.align(4)?;
 
         Ok(CustomRenderTexture {
-            parent,
             m_name,
             m_width,
             m_forced_fallback_format,

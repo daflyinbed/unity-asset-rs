@@ -4,11 +4,9 @@ use crate::PPtr;
 use crate::subclasses::bit_field::BitField;
 use crate::subclasses::physics_shape_group2_d::PhysicsShapeGroup2D;
 use crate::subclasses::vector2f::Vector2f;
-use super::collider2_d::Collider2D;
 
 #[derive(Debug, Clone)]
 pub struct CustomCollider2D {
-    pub parent: Collider2D,
     pub m_game_object: PPtr,
     pub m_enabled: u8,
     pub m_density: f32,
@@ -34,7 +32,6 @@ impl crate::Parse for CustomCollider2D {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = Collider2D::parse(r, ver)?;
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_enabled = r.read_u8()?;
         r.align(4)?;
@@ -47,6 +44,7 @@ impl crate::Parse for CustomCollider2D {
             None
         };
         let m_used_by_effector = r.read_bool()?;
+        r.align(4)?;
         let m_exclude_layers = if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             Some(BitField::parse(r, ver)?)
         } else {
@@ -99,7 +97,6 @@ impl crate::Parse for CustomCollider2D {
         };
 
         Ok(CustomCollider2D {
-            parent,
             m_game_object,
             m_enabled,
             m_density,

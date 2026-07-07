@@ -41,6 +41,15 @@ pub enum Error {
 
     #[snafu(display("typetree error: {reason}"))]
     TypeTree { reason: String },
+
+    #[snafu(display("typed parse error: {reason}"))]
+    TypedParse { reason: String },
+
+    #[snafu(display("unknown class id: {id}"))]
+    UnknownClassId { id: i32 },
+
+    #[snafu(display("MonoBehaviour has no embedded TypeTree, cannot parse"))]
+    MonoBehaviourWithoutTypeTree,
 }
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;

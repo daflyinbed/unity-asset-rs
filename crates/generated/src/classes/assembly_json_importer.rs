@@ -2,11 +2,9 @@
 
 use crate::PPtr;
 use crate::subclasses::source_asset_identifier::SourceAssetIdentifier;
-use super::asset_importer::AssetImporter;
 
 #[derive(Debug, Clone)]
 pub struct AssemblyJsonImporter {
-    pub parent: AssetImporter,
     pub m_name: String,
     pub m_user_data: String,
     pub m_external_objects: Option<Vec<(SourceAssetIdentifier, PPtr)>>,
@@ -20,7 +18,6 @@ impl crate::Parse for AssemblyJsonImporter {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = AssetImporter::parse(r, ver)?;
         let m_name = r.read_aligned_string()?;
         r.align(4)?;
         let m_user_data = r.read_aligned_string()?;
@@ -45,7 +42,6 @@ impl crate::Parse for AssemblyJsonImporter {
         r.align(4)?;
 
         Ok(AssemblyJsonImporter {
-            parent,
             m_name,
             m_user_data,
             m_external_objects,

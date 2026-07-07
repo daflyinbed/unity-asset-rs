@@ -3,11 +3,9 @@
 use crate::PPtr;
 use crate::subclasses::color_rgba::ColorRgba;
 use crate::subclasses::spherical_harmonics_l2::SphericalHarmonicsL2;
-use super::level_game_manager::LevelGameManager;
 
 #[derive(Debug, Clone)]
 pub struct RenderSettings {
-    pub parent: LevelGameManager,
     pub m_fog: bool,
     pub m_fog_color: ColorRgba,
     pub m_fog_mode: i32,
@@ -45,7 +43,6 @@ impl crate::Parse for RenderSettings {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let parent = LevelGameManager::parse(r, ver)?;
         let m_fog = r.read_bool()?;
         r.align(4)?;
         let m_fog_color = ColorRgba::parse(r, ver)?;
@@ -157,7 +154,6 @@ impl crate::Parse for RenderSettings {
         };
 
         Ok(RenderSettings {
-            parent,
             m_fog,
             m_fog_color,
             m_fog_mode,
