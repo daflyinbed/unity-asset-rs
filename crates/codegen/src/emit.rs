@@ -29,18 +29,29 @@ pub fn emit_all(state: &Pipeline, out_dir: &Path) -> std::io::Result<()> {
     std::fs::create_dir_all(out_dir.join("classes"))?;
     std::fs::create_dir_all(out_dir.join("subclasses"))?;
 
+    // 只生成非抽象类（抽象父类 root 为空，字段已平铺到子类）
+    let emit_classes: Vec<&EmitClass> = state
+        .classes
+        .values()
+        .filter(|c| !c.is_abstract)
+        .collect();
+
+    // 主 class 的 Rust 名字集合。某些 main class（如 Vector3f、Collider、Scene）也被
+    // 其他类按内嵌 struct（RustType::Subclass）引用 —— 这些引用必须指向 classes/ 而非
+    // subclasses/，因为同名 subclass 已不再生成（见 p02 的 main_names 过滤）。
+    let main_names: BTreeSet<String> = state
+        .classes
+        .values()
+        .filter(|c| c.is_main() && !c.is_abstract)
+        .map(|c| c.name.clone())
+        .collect();
+
     // 按需 emit 父类 enum 定义；只有当某 main class 是 Variable 时才需要。
     // 同时记录父类 enum 已写哪些 class（避免重复）。
     let main_classes: Vec<&EmitClass> = state
         .classes
         .values()
         .filter(|c| c.is_main() && !c.is_abstract)
-        .collect();
-    // 只生成非抽象类（抽象父类 root 为空，字段已平铺到子类）
-    let emit_classes: Vec<&EmitClass> = state
-        .classes
-        .values()
-        .filter(|c| !c.is_abstract)
         .collect();
 
     // 每个主 class / subclass 一个文件
@@ -49,7 +60,7 @@ pub fn emit_all(state: &Pipeline, out_dir: &Path) -> std::io::Result<()> {
         let dir = if sub { "subclasses" } else { "classes" };
         let file_name = format!("{}.rs", snake_case(&class.name));
         let path = out_dir.join(dir).join(file_name);
-        let src = emit_class_file(class);
+        let src = emit_class_file(class, &main_names);
         std::fs::write(path, src)?;
     }
 
@@ -94,12 +105,12 @@ fn class_matches_subclass(class: &EmitClass) -> bool {
 // 单个 class 文件
 // ────────────────────────────────────────────────────────────────────
 
-fn emit_class_file(class: &EmitClass) -> String {
+fn emit_class_file(class: &EmitClass, main_names: &BTreeSet<String>) -> String {
     let mut out = String::new();
     out.push_str("//! 自动生成。请勿手动修改。\n\n");
 
     // 收集 imports
-    let imports = collect_imports(class);
+    let imports = collect_imports(class, main_names);
     if !imports.is_empty() {
         out.push_str(&imports);
         out.push('\n');
@@ -114,10 +125,10 @@ fn emit_class_file(class: &EmitClass) -> String {
     out
 }
 
-fn collect_imports(class: &EmitClass) -> String {
+fn collect_imports(class: &EmitClass, main_names: &BTreeSet<String>) -> String {
     let mut imports = BTreeSet::new();
     for f in &class.own_fields {
-        collect_type_imports(&f.rust_type, &mut imports);
+        collect_type_imports(&f.rust_type, &mut imports, main_names);
     }
 
     let mut s = String::new();
@@ -127,7 +138,11 @@ fn collect_imports(class: &EmitClass) -> String {
     s
 }
 
-fn collect_type_imports(t: &RustType, out: &mut BTreeSet<String>) {
+fn collect_type_imports(
+    t: &RustType,
+    out: &mut BTreeSet<String>,
+    main_names: &BTreeSet<String>,
+) {
     match t {
         RustType::Bool
         | RustType::I8
@@ -142,21 +157,28 @@ fn collect_type_imports(t: &RustType, out: &mut BTreeSet<String>) {
         | RustType::F64
         | RustType::String
         | RustType::Bytes => {}
-        RustType::List(t) => collect_type_imports(t, out),
+        RustType::List(t) => collect_type_imports(t, out, main_names),
         RustType::Pair(a, b) => {
-            collect_type_imports(a, out);
-            collect_type_imports(b, out);
+            collect_type_imports(a, out, main_names);
+            collect_type_imports(b, out, main_names);
         }
         RustType::Pptr { target_class: _ } => {
             // MVP: PPtr 非 generic，无需 import target class
             out.insert("crate::PPtr".into());
         }
         RustType::Subclass(name) => {
-            out.insert(format!("crate::subclasses::{}::{name}", module_name(name)));
+            // 若名字是 main class，引用 classes/；否则 subclasses/。
+            // （Vector3f / Collider / Scene 等 main class 也被按内嵌 struct 引用。）
+            let dir = if main_names.contains(name) {
+                "classes"
+            } else {
+                "subclasses"
+            };
+            out.insert(format!("crate::{dir}::{}::{name}", module_name(name)));
         }
         RustType::Option(inner) => {
             // gated 字段：递归到 inner
-            collect_type_imports(inner, out);
+            collect_type_imports(inner, out, main_names);
         }
     }
 }

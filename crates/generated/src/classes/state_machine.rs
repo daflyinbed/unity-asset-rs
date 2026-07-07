@@ -1,9 +1,9 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
+use crate::classes::vector3f::Vector3f;
 use crate::subclasses::child_animator_state::ChildAnimatorState;
 use crate::subclasses::child_animator_state_machine::ChildAnimatorStateMachine;
-use crate::subclasses::vector3f::Vector3f;
 
 #[derive(Debug, Clone)]
 pub struct StateMachine {

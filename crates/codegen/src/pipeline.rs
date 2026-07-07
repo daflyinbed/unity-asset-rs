@@ -77,6 +77,22 @@ fn normalize_one(s: &str) -> String {
 fn p02_extract_subclasses(blob: &TpkTypeTree, state: &mut Pipeline) {
     log::info!("p02: 抽取 subclass");
 
+    // 先收集所有**非抽象** main class 的 Unity 名字。
+    // 每个 main class 的 release_root 节点本身也是 NodeType::Type（type_name = 类名，
+    // 且有子节点），若不排除会被误判成 subclass，导致同名文件在 classes/ 和 subclasses/
+    // 各生成一份（subclass 版本走「首次出现子树」分支，字段会错）。
+    //
+    // 只排除非抽象类：抽象 main class（如 Collider）不会生成 classes/X.rs，但会被其他
+    // 类按内嵌 struct 引用，仍需作为 subclass 留下。
+    let main_names: BTreeSet<String> = blob
+        .classes
+        .values()
+        .flat_map(|info| info.classes.iter())
+        .filter_map(|e| e.class.as_ref())
+        .filter(|c| !c.flags.is_abstract())
+        .filter_map(|c| blob.string_pool.get(c.name_index as usize).cloned())
+        .collect();
+
     // 遍历所有节点，收集 NodeType::Type 的 type_name
     let mut seen: BTreeSet<String> = BTreeSet::new();
     for node in &blob.node_pool {
@@ -85,6 +101,9 @@ fn p02_extract_subclasses(blob: &TpkTypeTree, state: &mut Pipeline) {
             .get(node.type_name_index as usize)
             .cloned()
             .unwrap_or_default();
+        if main_names.contains(&type_name) {
+            continue;
+        }
         let nt = NodeType::classify(&type_name, &node.sub_nodes);
         if nt == NodeType::Type {
             seen.insert(type_name);

@@ -1,11 +1,11 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
+use crate::classes::vector3f::Vector3f;
 use crate::subclasses::joint_drive::JointDrive;
 use crate::subclasses::quaternionf::Quaternionf;
 use crate::subclasses::soft_joint_limit::SoftJointLimit;
 use crate::subclasses::soft_joint_limit_spring::SoftJointLimitSpring;
-use crate::subclasses::vector3f::Vector3f;
 
 #[derive(Debug, Clone)]
 pub struct ConfigurableJoint {

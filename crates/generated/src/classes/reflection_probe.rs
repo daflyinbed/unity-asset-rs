@@ -1,9 +1,9 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
+use crate::classes::vector3f::Vector3f;
 use crate::subclasses::bit_field::BitField;
 use crate::subclasses::color_rgba::ColorRgba;
-use crate::subclasses::vector3f::Vector3f;
 
 #[derive(Debug, Clone)]
 pub struct ReflectionProbe {

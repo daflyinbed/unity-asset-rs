@@ -1,8 +1,8 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
+use crate::classes::polygon2_d::Polygon2D;
 use crate::subclasses::bit_field::BitField;
-use crate::subclasses::polygon2_d::Polygon2D;
 use crate::subclasses::sub_collider::SubCollider;
 use crate::subclasses::vector2f::Vector2f;
 

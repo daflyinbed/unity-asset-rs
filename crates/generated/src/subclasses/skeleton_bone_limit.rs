@@ -1,7 +1,7 @@
 //! 自动生成。请勿手动修改。
 
+use crate::classes::vector3f::Vector3f;
 use crate::subclasses::quaternionf::Quaternionf;
-use crate::subclasses::vector3f::Vector3f;
 
 #[derive(Debug, Clone)]
 pub struct SkeletonBoneLimit {

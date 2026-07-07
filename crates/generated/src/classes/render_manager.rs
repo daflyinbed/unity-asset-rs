@@ -1,11 +1,11 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
+use crate::classes::vector3f::Vector3f;
 use crate::subclasses::builtin_shader_settings::BuiltinShaderSettings;
 use crate::subclasses::platform_shader_defines::PlatformShaderDefines;
 use crate::subclasses::platform_shader_settings::PlatformShaderSettings;
 use crate::subclasses::tier_graphics_settings::TierGraphicsSettings;
-use crate::subclasses::vector3f::Vector3f;
 
 #[derive(Debug, Clone)]
 pub struct RenderManager {

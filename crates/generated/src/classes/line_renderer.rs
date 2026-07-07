@@ -1,9 +1,9 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
+use crate::classes::vector3f::Vector3f;
 use crate::subclasses::line_parameters::LineParameters;
 use crate::subclasses::static_batch_info::StaticBatchInfo;
-use crate::subclasses::vector3f::Vector3f;
 use crate::subclasses::vector4f::Vector4f;
 
 #[derive(Debug, Clone)]

@@ -1,7 +1,7 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
-use crate::subclasses::scene::Scene;
+use crate::classes::scene::Scene;
 
 #[derive(Debug, Clone)]
 pub struct EditorBuildSettings {

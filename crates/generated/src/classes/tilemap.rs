@@ -1,13 +1,13 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
+use crate::classes::vector3f::Vector3f;
 use crate::subclasses::color_rgba::ColorRgba;
 use crate::subclasses::int3_storage::int3_storage;
 use crate::subclasses::matrix4x4f::Matrix4x4f;
 use crate::subclasses::tile::Tile;
 use crate::subclasses::tile_animation_data::TileAnimationData;
 use crate::subclasses::tilemap_ref_counted_data::TilemapRefCountedData;
-use crate::subclasses::vector3f::Vector3f;
 
 #[derive(Debug, Clone)]
 pub struct Tilemap {

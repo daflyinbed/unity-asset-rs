@@ -1,5 +1,6 @@
 //! 自动生成。请勿手动修改。
 
+use crate::classes::vector3f::Vector3f;
 use crate::subclasses::aabb::Aabb;
 use crate::subclasses::auto_off_mesh_link_data::AutoOffMeshLinkData;
 use crate::subclasses::height_mesh_data::HeightMeshData;
@@ -8,7 +9,6 @@ use crate::subclasses::nav_mesh_build_settings::NavMeshBuildSettings;
 use crate::subclasses::nav_mesh_params::NavMeshParams;
 use crate::subclasses::nav_mesh_tile_data::NavMeshTileData;
 use crate::subclasses::quaternionf::Quaternionf;
-use crate::subclasses::vector3f::Vector3f;
 
 #[derive(Debug, Clone)]
 pub struct NavMeshData {

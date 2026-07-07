@@ -1,9 +1,9 @@
 //! 自动生成。请勿手动修改。
 
+use crate::classes::unity_ads_settings::UnityAdsSettings;
 use crate::subclasses::crash_reporting_settings::CrashReportingSettings;
 use crate::subclasses::insights_settings::InsightsSettings;
 use crate::subclasses::performance_reporting_settings::PerformanceReportingSettings;
-use crate::subclasses::unity_ads_settings::UnityAdsSettings;
 use crate::subclasses::unity_analytics_settings::UnityAnalyticsSettings;
 use crate::subclasses::unity_purchasing_settings::UnityPurchasingSettings;
 

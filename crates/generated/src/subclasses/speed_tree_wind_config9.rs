@@ -1,8 +1,8 @@
 //! 自动生成。请勿手动修改。
 
+use crate::classes::vector3f::Vector3f;
 use crate::subclasses::branch_wind_level::BranchWindLevel;
 use crate::subclasses::ripple_group::RippleGroup;
-use crate::subclasses::vector3f::Vector3f;
 
 #[derive(Debug, Clone)]
 pub struct SpeedTreeWindConfig9 {

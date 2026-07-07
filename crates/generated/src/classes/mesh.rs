@@ -1,5 +1,6 @@
 //! 自动生成。请勿手动修改。
 
+use crate::classes::vector3f::Vector3f;
 use crate::subclasses::aabb::Aabb;
 use crate::subclasses::blend_shape_data::BlendShapeData;
 use crate::subclasses::bone_weights4::BoneWeights4;
@@ -13,7 +14,6 @@ use crate::subclasses::streaming_info::StreamingInfo;
 use crate::subclasses::sub_mesh::SubMesh;
 use crate::subclasses::variable_bone_count_weights::VariableBoneCountWeights;
 use crate::subclasses::vector2f::Vector2f;
-use crate::subclasses::vector3f::Vector3f;
 use crate::subclasses::vector4f::Vector4f;
 use crate::subclasses::vertex_data::VertexData;
 

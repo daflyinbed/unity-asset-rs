@@ -1,12 +1,12 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
+use crate::classes::vector3f::Vector3f;
 use crate::subclasses::color_rgba::ColorRgba;
 use crate::subclasses::detail_patch::DetailPatch;
 use crate::subclasses::detail_prototype::DetailPrototype;
 use crate::subclasses::tree_instance::TreeInstance;
 use crate::subclasses::tree_prototype::TreePrototype;
-use crate::subclasses::vector3f::Vector3f;
 
 #[derive(Debug, Clone)]
 pub struct DetailDatabase {

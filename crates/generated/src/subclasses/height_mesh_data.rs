@@ -1,8 +1,8 @@
 //! 自动生成。请勿手动修改。
 
+use crate::classes::vector3f::Vector3f;
 use crate::subclasses::aabb::Aabb;
 use crate::subclasses::height_mesh_bv_node::HeightMeshBvNode;
-use crate::subclasses::vector3f::Vector3f;
 
 #[derive(Debug, Clone)]
 pub struct HeightMeshData {
