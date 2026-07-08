@@ -23,58 +23,63 @@ impl crate::Parse for OffMeshLink {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_start = crate::PPtr::parse(r, ver)?;
-        let m_nav_mesh_layer = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(r.read_u32()?)
-        } else {
-            None
-        };
-        let m_enabled = if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            let v = r.read_u8()?;
+        let mut m_game_object = None;
+        let mut m_start = None;
+        let mut m_nav_mesh_layer = None;
+        let mut m_enabled = None;
+        let mut m_end = None;
+        let mut m_area_index = None;
+        let mut m_dt_poly_ref = None;
+        let mut m_agent_type_id = None;
+        let mut m_cost_override = None;
+        let mut m_bi_directional = None;
+        let mut m_activated = None;
+        let mut m_auto_update_positions = None;
+            m_game_object = Some(crate::PPtr::parse(r, ver)?);
+        if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            m_enabled = Some(r.read_u8()?);
             r.align(4)?;
-            Some(v)
+            m_area_index = Some(r.read_u32()?);
+            m_agent_type_id = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            m_enabled = Some(r.read_u8()?);
+            r.align(4)?;
+            m_area_index = Some(r.read_u32()?);
+        } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
+            m_enabled = Some(r.read_u8()?);
+            r.align(4)?;
+            m_nav_mesh_layer = Some(r.read_u32()?);
+        } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
+            m_nav_mesh_layer = Some(r.read_u32()?);
         } else {
-            None
-        };
-        let m_end = crate::PPtr::parse(r, ver)?;
-        let m_area_index = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_u32()?)
+        }
+            m_start = Some(crate::PPtr::parse(r, ver)?);
+            m_end = Some(crate::PPtr::parse(r, ver)?);
+        if *ver >= crate::UnityVersion::new(5, 0, 0) {
         } else {
-            None
-        };
-        let m_dt_poly_ref = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(r.read_u32()?)
+            m_dt_poly_ref = Some(r.read_u32()?);
+        }
+            m_cost_override = Some(r.read_f32()?);
+            r.align(4)?;
+            m_bi_directional = Some(r.read_bool()?);
+            m_activated = Some(r.read_bool()?);
+        if *ver >= crate::UnityVersion::new(4, 3, 0) {
+            m_auto_update_positions = Some(r.read_bool()?);
         } else {
-            None
-        };
-        let m_agent_type_id = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_cost_override = r.read_f32()?;
-        r.align(4)?;
-        let m_bi_directional = r.read_bool()?;
-        let m_activated = r.read_bool()?;
-        let m_auto_update_positions = if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
+        }
 
         Ok(OffMeshLink {
-            m_game_object,
-            m_start,
+            m_game_object: m_game_object.unwrap(),
+            m_start: m_start.unwrap(),
             m_nav_mesh_layer,
             m_enabled,
-            m_end,
+            m_end: m_end.unwrap(),
             m_area_index,
             m_dt_poly_ref,
             m_agent_type_id,
-            m_cost_override,
-            m_bi_directional,
-            m_activated,
+            m_cost_override: m_cost_override.unwrap(),
+            m_bi_directional: m_bi_directional.unwrap(),
+            m_activated: m_activated.unwrap(),
             m_auto_update_positions,
         })
     }

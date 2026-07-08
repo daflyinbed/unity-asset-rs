@@ -4,20 +4,150 @@ use crate::PPtr;
 use crate::subclasses::guid::Guid;
 use crate::subclasses::serialized_shader::SerializedShader;
 
+
+/// 版本枚举：ShaderPlatformsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum ShaderPlatformsVariant {
+    Default(Vec<u32>),
+    V2017_1(Vec<u32>),
+}
+
+impl crate::Parse for ShaderPlatformsVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：ShaderMDependenciesVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum ShaderMDependenciesVariant {
+    Default(Vec<PPtr>),
+    V2017_1(Vec<PPtr>),
+}
+
+impl crate::Parse for ShaderMDependenciesVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：ShaderOffsetsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum ShaderOffsetsVariant {
+    Default(Vec<u32>),
+    V2017_1(Vec<u32>),
+    V2019_3(Vec<Vec<u32>>),
+}
+
+impl crate::Parse for ShaderOffsetsVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2019, 3, 0) {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Ok(Self::V2019_3(v))
+        } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：ShaderCompressedLengthsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum ShaderCompressedLengthsVariant {
+    Default(Vec<u32>),
+    V2017_1(Vec<u32>),
+    V2019_3(Vec<Vec<u32>>),
+}
+
+impl crate::Parse for ShaderCompressedLengthsVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2019, 3, 0) {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Ok(Self::V2019_3(v))
+        } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：ShaderDecompressedLengthsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum ShaderDecompressedLengthsVariant {
+    Default(Vec<u32>),
+    V2017_1(Vec<u32>),
+    V2019_3(Vec<Vec<u32>>),
+}
+
+impl crate::Parse for ShaderDecompressedLengthsVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2019, 3, 0) {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Ok(Self::V2019_3(v))
+        } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct Shader {
     pub m_name: String,
     pub m_script: Option<String>,
     pub m_parsed_form: Option<SerializedShader>,
     pub m_path_name: Option<String>,
-    pub platforms: Option<Vec<u32>>,
-    pub m_dependencies: Option<Vec<PPtr>>,
+    pub platforms: Option<ShaderPlatformsVariant>,
+    pub m_dependencies: Option<ShaderMDependenciesVariant>,
     pub decompressed_size: Option<u32>,
-    pub offsets: Option<Vec<Vec<u32>>>,
+    pub offsets: Option<ShaderOffsetsVariant>,
     pub m_shader_is_baked: Option<bool>,
     pub m_sub_program_blob: Option<Vec<u8>>,
-    pub compressed_lengths: Option<Vec<Vec<u32>>>,
-    pub decompressed_lengths: Option<Vec<Vec<u32>>>,
+    pub compressed_lengths: Option<ShaderCompressedLengthsVariant>,
+    pub decompressed_lengths: Option<ShaderDecompressedLengthsVariant>,
     pub compressed_blob: Option<Vec<u8>>,
     pub stage_counts: Option<Vec<u32>>,
     pub m_non_modifiable_textures: Option<Vec<(String, PPtr)>>,
@@ -30,117 +160,160 @@ impl crate::Parse for Shader {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_script = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
+        let mut m_name = None;
+        let mut m_script = None;
+        let mut m_parsed_form = None;
+        let mut m_path_name = None;
+        let mut platforms = None;
+        let mut m_dependencies = None;
+        let mut decompressed_size = None;
+        let mut offsets = None;
+        let mut m_shader_is_baked = None;
+        let mut m_sub_program_blob = None;
+        let mut compressed_lengths = None;
+        let mut decompressed_lengths = None;
+        let mut compressed_blob = None;
+        let mut stage_counts = None;
+        let mut m_non_modifiable_textures = None;
+        let mut m_asset_guid = None;
+        let mut m_asset_local_identifier_in_file = None;
+            m_name = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_parsed_form = if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = SerializedShader::parse(r, ver)?;
+        if *ver >= crate::UnityVersion::new(6000, 3, 0) {
+            m_parsed_form = Some(SerializedShader::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_path_name = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
+            platforms = Some(ShaderPlatformsVariant::parse(r, ver)?);
+            offsets = Some(ShaderOffsetsVariant::parse(r, ver)?);
+            compressed_lengths = Some(ShaderCompressedLengthsVariant::parse(r, ver)?);
+            decompressed_lengths = Some(ShaderDecompressedLengthsVariant::parse(r, ver)?);
+            compressed_blob = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let platforms = if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            stage_counts = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_dependencies = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            m_dependencies = Some(ShaderMDependenciesVariant::parse(r, ver)?);
+            m_non_modifiable_textures = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let decompressed_size = if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            Some(r.read_u32()?)
-        } else {
-            None
-        };
-        let offsets = if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            m_shader_is_baked = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_shader_is_baked = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            let v = r.read_bool()?;
+            m_asset_guid = Some(Guid::parse(r, ver)?);
+            m_asset_local_identifier_in_file = Some(r.read_i64()?);
+        } else if *ver >= crate::UnityVersion::new(6000, 0, 0) {
+            m_parsed_form = Some(SerializedShader::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_sub_program_blob = if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
+            platforms = Some(ShaderPlatformsVariant::parse(r, ver)?);
+            offsets = Some(ShaderOffsetsVariant::parse(r, ver)?);
+            compressed_lengths = Some(ShaderCompressedLengthsVariant::parse(r, ver)?);
+            decompressed_lengths = Some(ShaderDecompressedLengthsVariant::parse(r, ver)?);
+            compressed_blob = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let compressed_lengths = if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            stage_counts = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let decompressed_lengths = if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            m_dependencies = Some(ShaderMDependenciesVariant::parse(r, ver)?);
+            m_non_modifiable_textures = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let compressed_blob = if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
+            m_shader_is_baked = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let stage_counts = if *ver >= crate::UnityVersion::new(2021, 3, 12) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            m_asset_guid = Some(Guid::parse(r, ver)?);
+        } else if *ver >= crate::UnityVersion::new(2022, 1, 21) {
+            m_parsed_form = Some(SerializedShader::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_non_modifiable_textures = if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            platforms = Some(ShaderPlatformsVariant::parse(r, ver)?);
+            offsets = Some(ShaderOffsetsVariant::parse(r, ver)?);
+            compressed_lengths = Some(ShaderCompressedLengthsVariant::parse(r, ver)?);
+            decompressed_lengths = Some(ShaderDecompressedLengthsVariant::parse(r, ver)?);
+            compressed_blob = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
+            stage_counts = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_dependencies = Some(ShaderMDependenciesVariant::parse(r, ver)?);
+            m_non_modifiable_textures = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_shader_is_baked = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
+            m_parsed_form = Some(SerializedShader::parse(r, ver)?);
+            r.align(4)?;
+            platforms = Some(ShaderPlatformsVariant::parse(r, ver)?);
+            offsets = Some(ShaderOffsetsVariant::parse(r, ver)?);
+            compressed_lengths = Some(ShaderCompressedLengthsVariant::parse(r, ver)?);
+            decompressed_lengths = Some(ShaderDecompressedLengthsVariant::parse(r, ver)?);
+            compressed_blob = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_dependencies = Some(ShaderMDependenciesVariant::parse(r, ver)?);
+            m_non_modifiable_textures = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_shader_is_baked = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2021, 3, 12) {
+            m_parsed_form = Some(SerializedShader::parse(r, ver)?);
+            r.align(4)?;
+            platforms = Some(ShaderPlatformsVariant::parse(r, ver)?);
+            offsets = Some(ShaderOffsetsVariant::parse(r, ver)?);
+            compressed_lengths = Some(ShaderCompressedLengthsVariant::parse(r, ver)?);
+            decompressed_lengths = Some(ShaderDecompressedLengthsVariant::parse(r, ver)?);
+            compressed_blob = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            stage_counts = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_dependencies = Some(ShaderMDependenciesVariant::parse(r, ver)?);
+            m_non_modifiable_textures = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_shader_is_baked = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
+            m_parsed_form = Some(SerializedShader::parse(r, ver)?);
+            r.align(4)?;
+            platforms = Some(ShaderPlatformsVariant::parse(r, ver)?);
+            offsets = Some(ShaderOffsetsVariant::parse(r, ver)?);
+            compressed_lengths = Some(ShaderCompressedLengthsVariant::parse(r, ver)?);
+            decompressed_lengths = Some(ShaderDecompressedLengthsVariant::parse(r, ver)?);
+            compressed_blob = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_dependencies = Some(ShaderMDependenciesVariant::parse(r, ver)?);
+            m_non_modifiable_textures = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_shader_is_baked = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
+            m_parsed_form = Some(SerializedShader::parse(r, ver)?);
+            r.align(4)?;
+            platforms = Some(ShaderPlatformsVariant::parse(r, ver)?);
+            offsets = Some(ShaderOffsetsVariant::parse(r, ver)?);
+            compressed_lengths = Some(ShaderCompressedLengthsVariant::parse(r, ver)?);
+            decompressed_lengths = Some(ShaderDecompressedLengthsVariant::parse(r, ver)?);
+            compressed_blob = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_dependencies = Some(ShaderMDependenciesVariant::parse(r, ver)?);
+            m_shader_is_baked = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
+            m_script = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_path_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            decompressed_size = Some(r.read_u32()?);
+            m_sub_program_blob = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_dependencies = Some(ShaderMDependenciesVariant::parse(r, ver)?);
+            m_shader_is_baked = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
+            m_script = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_path_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_dependencies = Some(ShaderMDependenciesVariant::parse(r, ver)?);
+            m_shader_is_baked = Some(r.read_bool()?);
+            r.align(4)?;
         } else {
-            None
-        };
-        let m_asset_guid = if *ver >= crate::UnityVersion::new(6000, 0, 0) {
-            Some(Guid::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_asset_local_identifier_in_file = if *ver >= crate::UnityVersion::new(6000, 3, 0) {
-            Some(r.read_i64()?)
-        } else {
-            None
-        };
+            m_script = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_path_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        }
 
         Ok(Shader {
-            m_name,
+            m_name: m_name.unwrap(),
             m_script,
             m_parsed_form,
             m_path_name,

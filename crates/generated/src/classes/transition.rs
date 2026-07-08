@@ -2,13 +2,83 @@
 
 use crate::PPtr;
 use crate::subclasses::animator_condition::AnimatorCondition;
+use crate::subclasses::condition::Condition;
 
+
+/// 版本枚举：TransitionMConditionsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum TransitionMConditionsVariant {
+    Default(Vec<Condition>),
+    V5_0(Vec<AnimatorCondition>),
+}
+
+impl crate::Parse for TransitionMConditionsVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { AnimatorCondition::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Ok(Self::V5_0(v))
+        } else {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Condition::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：TransitionMDstStateVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum TransitionMDstStateVariant {
+    Default(PPtr),
+    V5_0(PPtr),
+}
+
+impl crate::Parse for TransitionMDstStateVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            let v = crate::PPtr::parse(r, ver)?;
+            Ok(Self::V5_0(v))
+        } else {
+            let v = crate::PPtr::parse(r, ver)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：TransitionMHasExitTimeVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum TransitionMHasExitTimeVariant {
+    Default(bool),
+    V5_1(bool),
+}
+
+impl crate::Parse for TransitionMHasExitTimeVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 1, 0) {
+            let v = r.read_bool()?;
+            Ok(Self::V5_1(v))
+        } else {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct Transition {
     pub m_name: String,
     pub m_src_state: Option<PPtr>,
-    pub m_conditions: Vec<AnimatorCondition>,
-    pub m_dst_state: PPtr,
+    pub m_conditions: TransitionMConditionsVariant,
+    pub m_dst_state: TransitionMDstStateVariant,
     pub m_dst_state_machine: Option<PPtr>,
     pub m_transition_duration: f32,
     pub m_transition_offset: f32,
@@ -18,7 +88,7 @@ pub struct Transition {
     pub m_is_exit: Option<bool>,
     pub m_can_transition_to_self: Option<bool>,
     pub m_exit_time: Option<f32>,
-    pub m_has_exit_time: Option<bool>,
+    pub m_has_exit_time: Option<TransitionMHasExitTimeVariant>,
     pub m_interruption_source: Option<i32>,
     pub m_has_fixed_duration: Option<bool>,
     pub m_ordered_interruption: Option<bool>,
@@ -51,15 +121,14 @@ impl crate::Parse for Transition {
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
         } else {
             m_src_state = Some(crate::PPtr::parse(r, ver)?);
-            m_dst_state = Some(crate::PPtr::parse(r, ver)?);
+            m_dst_state = Some(TransitionMDstStateVariant::parse(r, ver)?);
             m_transition_duration = Some(r.read_f32()?);
             m_transition_offset = Some(r.read_f32()?);
         }
-            m_conditions = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { AnimatorCondition::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_conditions = Some(TransitionMConditionsVariant::parse(r, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_dst_state_machine = Some(crate::PPtr::parse(r, ver)?);
-            m_dst_state = Some(crate::PPtr::parse(r, ver)?);
+            m_dst_state = Some(TransitionMDstStateVariant::parse(r, ver)?);
         } else {
             m_atomic = Some(r.read_bool()?);
         }
@@ -71,7 +140,7 @@ impl crate::Parse for Transition {
             m_transition_duration = Some(r.read_f32()?);
             m_transition_offset = Some(r.read_f32()?);
             m_exit_time = Some(r.read_f32()?);
-            m_has_exit_time = Some(r.read_bool()?);
+            m_has_exit_time = Some(TransitionMHasExitTimeVariant::parse(r, ver)?);
             m_has_fixed_duration = Some(r.read_bool()?);
             r.align(4)?;
             m_interruption_source = Some(r.read_i32()?);
@@ -83,7 +152,7 @@ impl crate::Parse for Transition {
             m_transition_duration = Some(r.read_f32()?);
             m_transition_offset = Some(r.read_f32()?);
             m_exit_time = Some(r.read_f32()?);
-            m_has_exit_time = Some(r.read_bool()?);
+            m_has_exit_time = Some(TransitionMHasExitTimeVariant::parse(r, ver)?);
             m_interruption_source = Some(r.read_i32()?);
             m_ordered_interruption = Some(r.read_bool()?);
             m_can_transition_to_self = Some(r.read_bool()?);

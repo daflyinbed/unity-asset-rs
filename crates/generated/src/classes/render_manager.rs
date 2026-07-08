@@ -1,58 +1,195 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
-use crate::classes::vector3f::Vector3f;
 use crate::subclasses::builtin_shader_settings::BuiltinShaderSettings;
 use crate::subclasses::platform_shader_defines::PlatformShaderDefines;
 use crate::subclasses::platform_shader_settings::PlatformShaderSettings;
 use crate::subclasses::tier_graphics_settings::TierGraphicsSettings;
+use crate::subclasses::vector3f::Vector3f;
 
+
+/// 版本枚举：RenderManagerMAlwaysIncludedShadersVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum RenderManagerMAlwaysIncludedShadersVariant {
+    Default(Vec<PPtr>),
+    V2017_1(Vec<PPtr>),
+}
+
+impl crate::Parse for RenderManagerMAlwaysIncludedShadersVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：RenderManagerMPreloadedShadersVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum RenderManagerMPreloadedShadersVariant {
+    Default(Vec<PPtr>),
+    V2017_1(Vec<PPtr>),
+}
+
+impl crate::Parse for RenderManagerMPreloadedShadersVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：RenderManagerMLightsUseColorTemperatureVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum RenderManagerMLightsUseColorTemperatureVariant {
+    Default(bool),
+    V2020_2(bool),
+}
+
+impl crate::Parse for RenderManagerMLightsUseColorTemperatureVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2020, 2, 0) {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::V2020_2(v))
+        } else {
+            let v = r.read_bool()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：RenderManagerMLogWhenShaderIsCompiledVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum RenderManagerMLogWhenShaderIsCompiledVariant {
+    Default(bool),
+    V2021_2(bool),
+}
+
+impl crate::Parse for RenderManagerMLogWhenShaderIsCompiledVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2021, 2, 0) {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::V2021_2(v))
+        } else {
+            let v = r.read_bool()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：RenderManagerMCameraRelativeLightCullingVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum RenderManagerMCameraRelativeLightCullingVariant {
+    Default(bool),
+    V6000_1(bool),
+}
+
+impl crate::Parse for RenderManagerMCameraRelativeLightCullingVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(6000, 1, 0) {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::V6000_1(v))
+        } else {
+            let v = r.read_bool()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：RenderManagerMCameraRelativeShadowCullingVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum RenderManagerMCameraRelativeShadowCullingVariant {
+    Default(bool),
+    V6000_1(bool),
+}
+
+impl crate::Parse for RenderManagerMCameraRelativeShadowCullingVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(6000, 1, 0) {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::V6000_1(v))
+        } else {
+            let v = r.read_bool()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct RenderManager {
-    pub m_always_included_shaders: Option<Vec<PPtr>>,
+    pub m_always_included_shaders: Option<RenderManagerMAlwaysIncludedShadersVariant>,
     pub m_deferred: Option<BuiltinShaderSettings>,
     pub m_legacy_deferred: Option<BuiltinShaderSettings>,
     pub m_deferred_reflections: Option<BuiltinShaderSettings>,
     pub m_screen_space_shadows: Option<BuiltinShaderSettings>,
-    pub m_preloaded_shaders: Option<Vec<PPtr>>,
+    pub m_preloaded_shaders: Option<RenderManagerMPreloadedShadersVariant>,
     pub m_depth_normals: Option<BuiltinShaderSettings>,
     pub m_motion_vectors: Option<BuiltinShaderSettings>,
     pub m_shader_settings: Option<PlatformShaderSettings>,
     pub m_light_halo: Option<BuiltinShaderSettings>,
     pub m_lens_flare: Option<BuiltinShaderSettings>,
     pub m_video_shaders_include_mode: Option<i32>,
-    pub m_shader_settings_tier1: Option<PlatformShaderSettings>,
     pub m_sprites_default_material: Option<PPtr>,
     pub m_preload_shaders_batch_time_limit: Option<i32>,
-    pub m_shader_settings_tier2: Option<PlatformShaderSettings>,
+    pub m_shader_settings_tier1: Option<PlatformShaderSettings>,
     pub m_tier_settings_tier1: Option<TierGraphicsSettings>,
-    pub m_transparency_sort_mode: Option<i32>,
     pub m_custom_render_pipeline: Option<PPtr>,
     pub m_graphics_state_collection: Option<PPtr>,
-    pub m_shader_settings_tier3: Option<PlatformShaderSettings>,
+    pub m_shader_settings_tier2: Option<PlatformShaderSettings>,
     pub m_tier_settings_tier2: Option<TierGraphicsSettings>,
-    pub m_transparency_sort_axis: Option<Vector3f>,
+    pub m_transparency_sort_mode: Option<i32>,
     pub m_collection_startup_action: Option<i32>,
+    pub m_shader_settings_tier3: Option<PlatformShaderSettings>,
     pub m_tier_settings_tier3: Option<TierGraphicsSettings>,
+    pub m_transparency_sort_axis: Option<Vector3f>,
     pub m_trace_save_path: Option<String>,
     pub m_trace_send_to_editor: Option<bool>,
     pub m_additional_warmup_collections: Option<Vec<PPtr>>,
-    pub m_lights_use_linear_intensity: Option<bool>,
     pub m_warmup_async: Option<bool>,
-    pub m_lights_use_cct: Option<bool>,
+    pub m_lights_use_linear_intensity: Option<bool>,
     pub m_shader_defines_per_shader_compiler: Option<Vec<PlatformShaderDefines>>,
     pub m_enable_cache_miss_tracing: Option<bool>,
-    pub m_lights_use_color_temperature: Option<bool>,
+    pub m_lights_use_color_temperature: Option<RenderManagerMLightsUseColorTemperatureVariant>,
     pub m_warmup_progressively_limit: Option<i32>,
     pub m_cache_miss_collection_path: Option<String>,
-    pub m_log_when_shader_is_compiled: Option<bool>,
+    pub m_log_when_shader_is_compiled: Option<RenderManagerMLogWhenShaderIsCompiledVariant>,
     pub m_allow_enlighten_support_for_upgraded_project: Option<bool>,
     pub m_default_rendering_layer_mask: Option<u32>,
     pub m_current_render_pipeline_global_settings: Option<PPtr>,
-    pub m_camera_relative_light_culling: Option<bool>,
+    pub m_camera_relative_light_culling: Option<RenderManagerMCameraRelativeLightCullingVariant>,
     pub m_srp_default_settings: Option<Vec<(String, PPtr)>>,
     pub m_light_probe_outside_hull_strategy: Option<i32>,
-    pub m_camera_relative_shadow_culling: Option<bool>,
+    pub m_camera_relative_shadow_culling: Option<RenderManagerMCameraRelativeShadowCullingVariant>,
 }
 
 impl crate::Parse for RenderManager {
@@ -60,266 +197,640 @@ impl crate::Parse for RenderManager {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_always_included_shaders = if *ver >= crate::UnityVersion::new(4, 2, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let mut m_always_included_shaders = None;
+        let mut m_deferred = None;
+        let mut m_legacy_deferred = None;
+        let mut m_deferred_reflections = None;
+        let mut m_screen_space_shadows = None;
+        let mut m_preloaded_shaders = None;
+        let mut m_depth_normals = None;
+        let mut m_motion_vectors = None;
+        let mut m_shader_settings = None;
+        let mut m_light_halo = None;
+        let mut m_lens_flare = None;
+        let mut m_video_shaders_include_mode = None;
+        let mut m_sprites_default_material = None;
+        let mut m_preload_shaders_batch_time_limit = None;
+        let mut m_shader_settings_tier1 = None;
+        let mut m_tier_settings_tier1 = None;
+        let mut m_custom_render_pipeline = None;
+        let mut m_graphics_state_collection = None;
+        let mut m_shader_settings_tier2 = None;
+        let mut m_tier_settings_tier2 = None;
+        let mut m_transparency_sort_mode = None;
+        let mut m_collection_startup_action = None;
+        let mut m_shader_settings_tier3 = None;
+        let mut m_tier_settings_tier3 = None;
+        let mut m_transparency_sort_axis = None;
+        let mut m_trace_save_path = None;
+        let mut m_trace_send_to_editor = None;
+        let mut m_additional_warmup_collections = None;
+        let mut m_warmup_async = None;
+        let mut m_lights_use_linear_intensity = None;
+        let mut m_shader_defines_per_shader_compiler = None;
+        let mut m_enable_cache_miss_tracing = None;
+        let mut m_lights_use_color_temperature = None;
+        let mut m_warmup_progressively_limit = None;
+        let mut m_cache_miss_collection_path = None;
+        let mut m_log_when_shader_is_compiled = None;
+        let mut m_allow_enlighten_support_for_upgraded_project = None;
+        let mut m_default_rendering_layer_mask = None;
+        let mut m_current_render_pipeline_global_settings = None;
+        let mut m_camera_relative_light_culling = None;
+        let mut m_srp_default_settings = None;
+        let mut m_light_probe_outside_hull_strategy = None;
+        let mut m_camera_relative_shadow_culling = None;
+        if *ver >= crate::UnityVersion::new(6000, 5, 0) {
+            m_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_deferred_reflections = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_screen_space_shadows = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_depth_normals = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_motion_vectors = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_light_halo = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_lens_flare = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_video_shaders_include_mode = Some(r.read_i32()?);
+            m_always_included_shaders = Some(RenderManagerMAlwaysIncludedShadersVariant::parse(r, ver)?);
+            m_preloaded_shaders = Some(RenderManagerMPreloadedShadersVariant::parse(r, ver)?);
+            m_preload_shaders_batch_time_limit = Some(r.read_i32()?);
+            m_graphics_state_collection = Some(crate::PPtr::parse(r, ver)?);
+            m_collection_startup_action = Some(r.read_i32()?);
+            m_trace_save_path = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_deferred = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(BuiltinShaderSettings::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_legacy_deferred = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(BuiltinShaderSettings::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_deferred_reflections = if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            Some(BuiltinShaderSettings::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_screen_space_shadows = if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            Some(BuiltinShaderSettings::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_preloaded_shaders = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            m_trace_send_to_editor = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_depth_normals = if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            Some(BuiltinShaderSettings::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_motion_vectors = if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            Some(BuiltinShaderSettings::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_shader_settings = if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            let v = PlatformShaderSettings::parse(r, ver)?;
+            m_additional_warmup_collections = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_light_halo = if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            Some(BuiltinShaderSettings::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_lens_flare = if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            Some(BuiltinShaderSettings::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_video_shaders_include_mode = if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_shader_settings_tier1 = if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            let v = PlatformShaderSettings::parse(r, ver)?;
+            m_warmup_async = Some(r.read_bool()?);
+            m_enable_cache_miss_tracing = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_sprites_default_material = if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            Some(crate::PPtr::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_preload_shaders_batch_time_limit = if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_shader_settings_tier2 = if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            let v = PlatformShaderSettings::parse(r, ver)?;
+            m_warmup_progressively_limit = Some(r.read_i32()?);
+            m_cache_miss_collection_path = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_tier_settings_tier1 = if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = TierGraphicsSettings::parse(r, ver)?;
+            m_sprites_default_material = Some(crate::PPtr::parse(r, ver)?);
+            m_custom_render_pipeline = Some(crate::PPtr::parse(r, ver)?);
+            m_transparency_sort_mode = Some(r.read_i32()?);
+            m_transparency_sort_axis = Some(Vector3f::parse(r, ver)?);
+            m_tier_settings_tier1 = Some(TierGraphicsSettings::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_transparency_sort_mode = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_custom_render_pipeline = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            Some(crate::PPtr::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_graphics_state_collection = if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            Some(crate::PPtr::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_shader_settings_tier3 = if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            let v = PlatformShaderSettings::parse(r, ver)?;
+            m_tier_settings_tier2 = Some(TierGraphicsSettings::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_tier_settings_tier2 = if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = TierGraphicsSettings::parse(r, ver)?;
+            m_tier_settings_tier3 = Some(TierGraphicsSettings::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_transparency_sort_axis = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            Some(Vector3f::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_collection_startup_action = if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_tier_settings_tier3 = if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = TierGraphicsSettings::parse(r, ver)?;
+            m_shader_defines_per_shader_compiler = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { PlatformShaderDefines::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_trace_save_path = if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            let v = r.read_aligned_string()?;
+            m_lights_use_linear_intensity = Some(r.read_bool()?);
+            m_lights_use_color_temperature = Some(RenderManagerMLightsUseColorTemperatureVariant::parse(r, ver)?);
+            m_log_when_shader_is_compiled = Some(RenderManagerMLogWhenShaderIsCompiledVariant::parse(r, ver)?);
+            m_current_render_pipeline_global_settings = Some(crate::PPtr::parse(r, ver)?);
+            m_light_probe_outside_hull_strategy = Some(r.read_i32()?);
+            m_camera_relative_light_culling = Some(RenderManagerMCameraRelativeLightCullingVariant::parse(r, ver)?);
+            m_camera_relative_shadow_culling = Some(RenderManagerMCameraRelativeShadowCullingVariant::parse(r, ver)?);
+        } else if *ver >= crate::UnityVersion::new(2023, 3, 0) {
+            m_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_deferred_reflections = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_screen_space_shadows = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_depth_normals = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_motion_vectors = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_light_halo = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_lens_flare = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_video_shaders_include_mode = Some(r.read_i32()?);
+            m_always_included_shaders = Some(RenderManagerMAlwaysIncludedShadersVariant::parse(r, ver)?);
+            m_preloaded_shaders = Some(RenderManagerMPreloadedShadersVariant::parse(r, ver)?);
+            m_preload_shaders_batch_time_limit = Some(r.read_i32()?);
+            m_sprites_default_material = Some(crate::PPtr::parse(r, ver)?);
+            m_custom_render_pipeline = Some(crate::PPtr::parse(r, ver)?);
+            m_transparency_sort_mode = Some(r.read_i32()?);
+            m_transparency_sort_axis = Some(Vector3f::parse(r, ver)?);
+            m_tier_settings_tier1 = Some(TierGraphicsSettings::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_trace_send_to_editor = if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            let v = r.read_bool()?;
+            m_tier_settings_tier2 = Some(TierGraphicsSettings::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_additional_warmup_collections = if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            m_tier_settings_tier3 = Some(TierGraphicsSettings::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_lights_use_linear_intensity = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_warmup_async = if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_lights_use_cct = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_shader_defines_per_shader_compiler = if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { PlatformShaderDefines::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            m_shader_defines_per_shader_compiler = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { PlatformShaderDefines::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_enable_cache_miss_tracing = if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            let v = r.read_bool()?;
+            m_lights_use_linear_intensity = Some(r.read_bool()?);
+            m_lights_use_color_temperature = Some(RenderManagerMLightsUseColorTemperatureVariant::parse(r, ver)?);
+            m_log_when_shader_is_compiled = Some(RenderManagerMLogWhenShaderIsCompiledVariant::parse(r, ver)?);
+            m_current_render_pipeline_global_settings = Some(crate::PPtr::parse(r, ver)?);
+            m_light_probe_outside_hull_strategy = Some(r.read_i32()?);
+            m_camera_relative_light_culling = Some(RenderManagerMCameraRelativeLightCullingVariant::parse(r, ver)?);
+            m_camera_relative_shadow_culling = Some(RenderManagerMCameraRelativeShadowCullingVariant::parse(r, ver)?);
+        } else if *ver >= crate::UnityVersion::new(2023, 2, 0) {
+            m_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_deferred_reflections = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_screen_space_shadows = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_depth_normals = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_motion_vectors = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_light_halo = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_lens_flare = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_video_shaders_include_mode = Some(r.read_i32()?);
+            m_always_included_shaders = Some(RenderManagerMAlwaysIncludedShadersVariant::parse(r, ver)?);
+            m_preloaded_shaders = Some(RenderManagerMPreloadedShadersVariant::parse(r, ver)?);
+            m_preload_shaders_batch_time_limit = Some(r.read_i32()?);
+            m_sprites_default_material = Some(crate::PPtr::parse(r, ver)?);
+            m_custom_render_pipeline = Some(crate::PPtr::parse(r, ver)?);
+            m_transparency_sort_mode = Some(r.read_i32()?);
+            m_transparency_sort_axis = Some(Vector3f::parse(r, ver)?);
+            m_tier_settings_tier1 = Some(TierGraphicsSettings::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_lights_use_color_temperature = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            let v = r.read_bool()?;
+            m_tier_settings_tier2 = Some(TierGraphicsSettings::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_warmup_progressively_limit = if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_cache_miss_collection_path = if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            let v = r.read_aligned_string()?;
+            m_tier_settings_tier3 = Some(TierGraphicsSettings::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_log_when_shader_is_compiled = if *ver >= crate::UnityVersion::new(2018, 4, 6) {
-            let v = r.read_bool()?;
+            m_shader_defines_per_shader_compiler = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { PlatformShaderDefines::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_allow_enlighten_support_for_upgraded_project = if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_default_rendering_layer_mask = if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            Some(r.read_u32()?)
-        } else {
-            None
-        };
-        let m_current_render_pipeline_global_settings = if *ver >= crate::UnityVersion::new(2023, 2, 0) {
-            Some(crate::PPtr::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_camera_relative_light_culling = if *ver >= crate::UnityVersion::new(2020, 3, 45) {
-            let v = r.read_bool()?;
+            m_lights_use_linear_intensity = Some(r.read_bool()?);
+            m_lights_use_color_temperature = Some(RenderManagerMLightsUseColorTemperatureVariant::parse(r, ver)?);
+            m_default_rendering_layer_mask = Some(r.read_u32()?);
+            m_log_when_shader_is_compiled = Some(RenderManagerMLogWhenShaderIsCompiledVariant::parse(r, ver)?);
+            m_current_render_pipeline_global_settings = Some(crate::PPtr::parse(r, ver)?);
+            m_light_probe_outside_hull_strategy = Some(r.read_i32()?);
+            m_camera_relative_light_culling = Some(RenderManagerMCameraRelativeLightCullingVariant::parse(r, ver)?);
+            m_camera_relative_shadow_culling = Some(RenderManagerMCameraRelativeShadowCullingVariant::parse(r, ver)?);
+        } else if *ver >= crate::UnityVersion::new(2022, 2, 2) {
+            m_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_deferred_reflections = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_screen_space_shadows = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_depth_normals = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_motion_vectors = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_light_halo = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_lens_flare = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_video_shaders_include_mode = Some(r.read_i32()?);
+            m_always_included_shaders = Some(RenderManagerMAlwaysIncludedShadersVariant::parse(r, ver)?);
+            m_preloaded_shaders = Some(RenderManagerMPreloadedShadersVariant::parse(r, ver)?);
+            m_preload_shaders_batch_time_limit = Some(r.read_i32()?);
+            m_sprites_default_material = Some(crate::PPtr::parse(r, ver)?);
+            m_custom_render_pipeline = Some(crate::PPtr::parse(r, ver)?);
+            m_transparency_sort_mode = Some(r.read_i32()?);
+            m_transparency_sort_axis = Some(Vector3f::parse(r, ver)?);
+            m_tier_settings_tier1 = Some(TierGraphicsSettings::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_srp_default_settings = if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            m_tier_settings_tier2 = Some(TierGraphicsSettings::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_light_probe_outside_hull_strategy = if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_camera_relative_shadow_culling = if *ver >= crate::UnityVersion::new(2020, 3, 45) {
-            let v = r.read_bool()?;
+            m_tier_settings_tier3 = Some(TierGraphicsSettings::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
+            m_shader_defines_per_shader_compiler = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { PlatformShaderDefines::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_lights_use_linear_intensity = Some(r.read_bool()?);
+            m_lights_use_color_temperature = Some(RenderManagerMLightsUseColorTemperatureVariant::parse(r, ver)?);
+            m_default_rendering_layer_mask = Some(r.read_u32()?);
+            m_log_when_shader_is_compiled = Some(RenderManagerMLogWhenShaderIsCompiledVariant::parse(r, ver)?);
+            m_srp_default_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_light_probe_outside_hull_strategy = Some(r.read_i32()?);
+            m_camera_relative_light_culling = Some(RenderManagerMCameraRelativeLightCullingVariant::parse(r, ver)?);
+            m_camera_relative_shadow_culling = Some(RenderManagerMCameraRelativeShadowCullingVariant::parse(r, ver)?);
+        } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            m_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_deferred_reflections = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_screen_space_shadows = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_depth_normals = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_motion_vectors = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_light_halo = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_lens_flare = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_video_shaders_include_mode = Some(r.read_i32()?);
+            m_always_included_shaders = Some(RenderManagerMAlwaysIncludedShadersVariant::parse(r, ver)?);
+            m_preloaded_shaders = Some(RenderManagerMPreloadedShadersVariant::parse(r, ver)?);
+            m_preload_shaders_batch_time_limit = Some(r.read_i32()?);
+            m_sprites_default_material = Some(crate::PPtr::parse(r, ver)?);
+            m_custom_render_pipeline = Some(crate::PPtr::parse(r, ver)?);
+            m_transparency_sort_mode = Some(r.read_i32()?);
+            m_transparency_sort_axis = Some(Vector3f::parse(r, ver)?);
+            m_tier_settings_tier1 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_tier_settings_tier2 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_tier_settings_tier3 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_shader_defines_per_shader_compiler = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { PlatformShaderDefines::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_lights_use_linear_intensity = Some(r.read_bool()?);
+            m_lights_use_color_temperature = Some(RenderManagerMLightsUseColorTemperatureVariant::parse(r, ver)?);
+            m_default_rendering_layer_mask = Some(r.read_u32()?);
+            m_log_when_shader_is_compiled = Some(RenderManagerMLogWhenShaderIsCompiledVariant::parse(r, ver)?);
+            m_srp_default_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_light_probe_outside_hull_strategy = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
+            m_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_deferred_reflections = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_screen_space_shadows = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_legacy_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_depth_normals = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_motion_vectors = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_light_halo = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_lens_flare = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_video_shaders_include_mode = Some(r.read_i32()?);
+            m_always_included_shaders = Some(RenderManagerMAlwaysIncludedShadersVariant::parse(r, ver)?);
+            m_preloaded_shaders = Some(RenderManagerMPreloadedShadersVariant::parse(r, ver)?);
+            m_preload_shaders_batch_time_limit = Some(r.read_i32()?);
+            m_sprites_default_material = Some(crate::PPtr::parse(r, ver)?);
+            m_custom_render_pipeline = Some(crate::PPtr::parse(r, ver)?);
+            m_transparency_sort_mode = Some(r.read_i32()?);
+            m_transparency_sort_axis = Some(Vector3f::parse(r, ver)?);
+            m_tier_settings_tier1 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_tier_settings_tier2 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_tier_settings_tier3 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_shader_defines_per_shader_compiler = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { PlatformShaderDefines::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_lights_use_linear_intensity = Some(r.read_bool()?);
+            m_lights_use_color_temperature = Some(RenderManagerMLightsUseColorTemperatureVariant::parse(r, ver)?);
+            m_default_rendering_layer_mask = Some(r.read_u32()?);
+            m_log_when_shader_is_compiled = Some(RenderManagerMLogWhenShaderIsCompiledVariant::parse(r, ver)?);
+            m_srp_default_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2021, 3, 18) {
+            m_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_deferred_reflections = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_screen_space_shadows = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_legacy_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_depth_normals = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_motion_vectors = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_light_halo = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_lens_flare = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_video_shaders_include_mode = Some(r.read_i32()?);
+            m_always_included_shaders = Some(RenderManagerMAlwaysIncludedShadersVariant::parse(r, ver)?);
+            m_preloaded_shaders = Some(RenderManagerMPreloadedShadersVariant::parse(r, ver)?);
+            m_preload_shaders_batch_time_limit = Some(r.read_i32()?);
+            m_sprites_default_material = Some(crate::PPtr::parse(r, ver)?);
+            m_custom_render_pipeline = Some(crate::PPtr::parse(r, ver)?);
+            m_transparency_sort_mode = Some(r.read_i32()?);
+            m_transparency_sort_axis = Some(Vector3f::parse(r, ver)?);
+            m_tier_settings_tier1 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_tier_settings_tier2 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_tier_settings_tier3 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_shader_defines_per_shader_compiler = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { PlatformShaderDefines::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_lights_use_linear_intensity = Some(r.read_bool()?);
+            m_lights_use_color_temperature = Some(RenderManagerMLightsUseColorTemperatureVariant::parse(r, ver)?);
+            m_default_rendering_layer_mask = Some(r.read_u32()?);
+            m_log_when_shader_is_compiled = Some(RenderManagerMLogWhenShaderIsCompiledVariant::parse(r, ver)?);
+            m_srp_default_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_camera_relative_light_culling = Some(RenderManagerMCameraRelativeLightCullingVariant::parse(r, ver)?);
+            m_camera_relative_shadow_culling = Some(RenderManagerMCameraRelativeShadowCullingVariant::parse(r, ver)?);
+        } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
+            m_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_deferred_reflections = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_screen_space_shadows = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_legacy_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_depth_normals = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_motion_vectors = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_light_halo = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_lens_flare = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_video_shaders_include_mode = Some(r.read_i32()?);
+            m_always_included_shaders = Some(RenderManagerMAlwaysIncludedShadersVariant::parse(r, ver)?);
+            m_preloaded_shaders = Some(RenderManagerMPreloadedShadersVariant::parse(r, ver)?);
+            m_preload_shaders_batch_time_limit = Some(r.read_i32()?);
+            m_sprites_default_material = Some(crate::PPtr::parse(r, ver)?);
+            m_custom_render_pipeline = Some(crate::PPtr::parse(r, ver)?);
+            m_transparency_sort_mode = Some(r.read_i32()?);
+            m_transparency_sort_axis = Some(Vector3f::parse(r, ver)?);
+            m_tier_settings_tier1 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_tier_settings_tier2 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_tier_settings_tier3 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_shader_defines_per_shader_compiler = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { PlatformShaderDefines::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_lights_use_linear_intensity = Some(r.read_bool()?);
+            m_lights_use_color_temperature = Some(RenderManagerMLightsUseColorTemperatureVariant::parse(r, ver)?);
+            m_default_rendering_layer_mask = Some(r.read_u32()?);
+            m_log_when_shader_is_compiled = Some(RenderManagerMLogWhenShaderIsCompiledVariant::parse(r, ver)?);
+            m_srp_default_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2021, 1, 0) {
+            m_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_deferred_reflections = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_screen_space_shadows = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_legacy_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_depth_normals = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_motion_vectors = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_light_halo = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_lens_flare = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_video_shaders_include_mode = Some(r.read_i32()?);
+            m_always_included_shaders = Some(RenderManagerMAlwaysIncludedShadersVariant::parse(r, ver)?);
+            m_preloaded_shaders = Some(RenderManagerMPreloadedShadersVariant::parse(r, ver)?);
+            m_sprites_default_material = Some(crate::PPtr::parse(r, ver)?);
+            m_custom_render_pipeline = Some(crate::PPtr::parse(r, ver)?);
+            m_transparency_sort_mode = Some(r.read_i32()?);
+            m_transparency_sort_axis = Some(Vector3f::parse(r, ver)?);
+            m_tier_settings_tier1 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_tier_settings_tier2 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_tier_settings_tier3 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_shader_defines_per_shader_compiler = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { PlatformShaderDefines::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_lights_use_linear_intensity = Some(r.read_bool()?);
+            m_lights_use_color_temperature = Some(RenderManagerMLightsUseColorTemperatureVariant::parse(r, ver)?);
+            m_default_rendering_layer_mask = Some(r.read_u32()?);
+            m_log_when_shader_is_compiled = Some(RenderManagerMLogWhenShaderIsCompiledVariant::parse(r, ver)?);
+        } else if *ver >= crate::UnityVersion::new(2020, 3, 45) {
+            m_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_deferred_reflections = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_screen_space_shadows = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_legacy_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_depth_normals = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_motion_vectors = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_light_halo = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_lens_flare = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_video_shaders_include_mode = Some(r.read_i32()?);
+            m_always_included_shaders = Some(RenderManagerMAlwaysIncludedShadersVariant::parse(r, ver)?);
+            m_preloaded_shaders = Some(RenderManagerMPreloadedShadersVariant::parse(r, ver)?);
+            m_sprites_default_material = Some(crate::PPtr::parse(r, ver)?);
+            m_custom_render_pipeline = Some(crate::PPtr::parse(r, ver)?);
+            m_transparency_sort_mode = Some(r.read_i32()?);
+            m_transparency_sort_axis = Some(Vector3f::parse(r, ver)?);
+            m_tier_settings_tier1 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_tier_settings_tier2 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_tier_settings_tier3 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_shader_defines_per_shader_compiler = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { PlatformShaderDefines::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_lights_use_linear_intensity = Some(r.read_bool()?);
+            m_lights_use_color_temperature = Some(RenderManagerMLightsUseColorTemperatureVariant::parse(r, ver)?);
+            m_default_rendering_layer_mask = Some(r.read_u32()?);
+            m_log_when_shader_is_compiled = Some(RenderManagerMLogWhenShaderIsCompiledVariant::parse(r, ver)?);
+            m_camera_relative_light_culling = Some(RenderManagerMCameraRelativeLightCullingVariant::parse(r, ver)?);
+            m_camera_relative_shadow_culling = Some(RenderManagerMCameraRelativeShadowCullingVariant::parse(r, ver)?);
+        } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
+            m_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_deferred_reflections = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_screen_space_shadows = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_legacy_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_depth_normals = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_motion_vectors = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_light_halo = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_lens_flare = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_video_shaders_include_mode = Some(r.read_i32()?);
+            m_always_included_shaders = Some(RenderManagerMAlwaysIncludedShadersVariant::parse(r, ver)?);
+            m_preloaded_shaders = Some(RenderManagerMPreloadedShadersVariant::parse(r, ver)?);
+            m_sprites_default_material = Some(crate::PPtr::parse(r, ver)?);
+            m_custom_render_pipeline = Some(crate::PPtr::parse(r, ver)?);
+            m_transparency_sort_mode = Some(r.read_i32()?);
+            m_transparency_sort_axis = Some(Vector3f::parse(r, ver)?);
+            m_tier_settings_tier1 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_tier_settings_tier2 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_tier_settings_tier3 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_shader_defines_per_shader_compiler = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { PlatformShaderDefines::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_lights_use_linear_intensity = Some(r.read_bool()?);
+            m_lights_use_color_temperature = Some(RenderManagerMLightsUseColorTemperatureVariant::parse(r, ver)?);
+            m_default_rendering_layer_mask = Some(r.read_u32()?);
+            m_log_when_shader_is_compiled = Some(RenderManagerMLogWhenShaderIsCompiledVariant::parse(r, ver)?);
+        } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
+            m_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_deferred_reflections = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_screen_space_shadows = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_legacy_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_depth_normals = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_motion_vectors = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_light_halo = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_lens_flare = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_video_shaders_include_mode = Some(r.read_i32()?);
+            m_always_included_shaders = Some(RenderManagerMAlwaysIncludedShadersVariant::parse(r, ver)?);
+            m_preloaded_shaders = Some(RenderManagerMPreloadedShadersVariant::parse(r, ver)?);
+            m_sprites_default_material = Some(crate::PPtr::parse(r, ver)?);
+            m_custom_render_pipeline = Some(crate::PPtr::parse(r, ver)?);
+            m_transparency_sort_mode = Some(r.read_i32()?);
+            m_transparency_sort_axis = Some(Vector3f::parse(r, ver)?);
+            m_tier_settings_tier1 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_tier_settings_tier2 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_tier_settings_tier3 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_shader_defines_per_shader_compiler = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { PlatformShaderDefines::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_lights_use_linear_intensity = Some(r.read_bool()?);
+            m_lights_use_color_temperature = Some(RenderManagerMLightsUseColorTemperatureVariant::parse(r, ver)?);
+            m_log_when_shader_is_compiled = Some(RenderManagerMLogWhenShaderIsCompiledVariant::parse(r, ver)?);
+        } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
+            m_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_deferred_reflections = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_screen_space_shadows = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_legacy_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_depth_normals = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_motion_vectors = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_light_halo = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_lens_flare = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_always_included_shaders = Some(RenderManagerMAlwaysIncludedShadersVariant::parse(r, ver)?);
+            m_preloaded_shaders = Some(RenderManagerMPreloadedShadersVariant::parse(r, ver)?);
+            m_sprites_default_material = Some(crate::PPtr::parse(r, ver)?);
+            m_custom_render_pipeline = Some(crate::PPtr::parse(r, ver)?);
+            m_transparency_sort_mode = Some(r.read_i32()?);
+            m_transparency_sort_axis = Some(Vector3f::parse(r, ver)?);
+            m_tier_settings_tier1 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_tier_settings_tier2 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_tier_settings_tier3 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_shader_defines_per_shader_compiler = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { PlatformShaderDefines::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_lights_use_linear_intensity = Some(r.read_bool()?);
+            m_lights_use_color_temperature = Some(RenderManagerMLightsUseColorTemperatureVariant::parse(r, ver)?);
+            m_log_when_shader_is_compiled = Some(RenderManagerMLogWhenShaderIsCompiledVariant::parse(r, ver)?);
+            m_allow_enlighten_support_for_upgraded_project = Some(r.read_bool()?);
+        } else if *ver >= crate::UnityVersion::new(2019, 2, 7) {
+            m_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_deferred_reflections = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_screen_space_shadows = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_legacy_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_depth_normals = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_motion_vectors = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_light_halo = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_lens_flare = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_always_included_shaders = Some(RenderManagerMAlwaysIncludedShadersVariant::parse(r, ver)?);
+            m_preloaded_shaders = Some(RenderManagerMPreloadedShadersVariant::parse(r, ver)?);
+            m_sprites_default_material = Some(crate::PPtr::parse(r, ver)?);
+            m_custom_render_pipeline = Some(crate::PPtr::parse(r, ver)?);
+            m_transparency_sort_mode = Some(r.read_i32()?);
+            m_transparency_sort_axis = Some(Vector3f::parse(r, ver)?);
+            m_tier_settings_tier1 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_tier_settings_tier2 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_tier_settings_tier3 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_shader_defines_per_shader_compiler = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { PlatformShaderDefines::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_lights_use_linear_intensity = Some(r.read_bool()?);
+            m_lights_use_color_temperature = Some(RenderManagerMLightsUseColorTemperatureVariant::parse(r, ver)?);
+            m_log_when_shader_is_compiled = Some(RenderManagerMLogWhenShaderIsCompiledVariant::parse(r, ver)?);
+        } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
+            m_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_deferred_reflections = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_screen_space_shadows = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_legacy_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_depth_normals = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_motion_vectors = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_light_halo = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_lens_flare = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_always_included_shaders = Some(RenderManagerMAlwaysIncludedShadersVariant::parse(r, ver)?);
+            m_preloaded_shaders = Some(RenderManagerMPreloadedShadersVariant::parse(r, ver)?);
+            m_sprites_default_material = Some(crate::PPtr::parse(r, ver)?);
+            m_custom_render_pipeline = Some(crate::PPtr::parse(r, ver)?);
+            m_transparency_sort_mode = Some(r.read_i32()?);
+            m_transparency_sort_axis = Some(Vector3f::parse(r, ver)?);
+            m_tier_settings_tier1 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_tier_settings_tier2 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_tier_settings_tier3 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_shader_defines_per_shader_compiler = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { PlatformShaderDefines::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_lights_use_linear_intensity = Some(r.read_bool()?);
+            m_lights_use_color_temperature = Some(RenderManagerMLightsUseColorTemperatureVariant::parse(r, ver)?);
+        } else if *ver >= crate::UnityVersion::new(2018, 4, 6) {
+            m_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_deferred_reflections = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_screen_space_shadows = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_legacy_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_depth_normals = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_motion_vectors = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_light_halo = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_lens_flare = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_always_included_shaders = Some(RenderManagerMAlwaysIncludedShadersVariant::parse(r, ver)?);
+            m_preloaded_shaders = Some(RenderManagerMPreloadedShadersVariant::parse(r, ver)?);
+            m_sprites_default_material = Some(crate::PPtr::parse(r, ver)?);
+            m_custom_render_pipeline = Some(crate::PPtr::parse(r, ver)?);
+            m_transparency_sort_mode = Some(r.read_i32()?);
+            m_transparency_sort_axis = Some(Vector3f::parse(r, ver)?);
+            m_tier_settings_tier1 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_tier_settings_tier2 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_tier_settings_tier3 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_shader_defines_per_shader_compiler = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { PlatformShaderDefines::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_lights_use_linear_intensity = Some(r.read_bool()?);
+            m_lights_use_color_temperature = Some(RenderManagerMLightsUseColorTemperatureVariant::parse(r, ver)?);
+            m_log_when_shader_is_compiled = Some(RenderManagerMLogWhenShaderIsCompiledVariant::parse(r, ver)?);
+        } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            m_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_deferred_reflections = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_screen_space_shadows = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_legacy_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_depth_normals = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_motion_vectors = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_light_halo = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_lens_flare = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_always_included_shaders = Some(RenderManagerMAlwaysIncludedShadersVariant::parse(r, ver)?);
+            m_preloaded_shaders = Some(RenderManagerMPreloadedShadersVariant::parse(r, ver)?);
+            m_sprites_default_material = Some(crate::PPtr::parse(r, ver)?);
+            m_custom_render_pipeline = Some(crate::PPtr::parse(r, ver)?);
+            m_transparency_sort_mode = Some(r.read_i32()?);
+            m_transparency_sort_axis = Some(Vector3f::parse(r, ver)?);
+            m_tier_settings_tier1 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_tier_settings_tier2 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_tier_settings_tier3 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_shader_defines_per_shader_compiler = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { PlatformShaderDefines::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_lights_use_linear_intensity = Some(r.read_bool()?);
+            m_lights_use_color_temperature = Some(RenderManagerMLightsUseColorTemperatureVariant::parse(r, ver)?);
+        } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            m_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_deferred_reflections = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_screen_space_shadows = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_legacy_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_depth_normals = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_motion_vectors = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_light_halo = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_lens_flare = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_always_included_shaders = Some(RenderManagerMAlwaysIncludedShadersVariant::parse(r, ver)?);
+            m_preloaded_shaders = Some(RenderManagerMPreloadedShadersVariant::parse(r, ver)?);
+            m_sprites_default_material = Some(crate::PPtr::parse(r, ver)?);
+            m_custom_render_pipeline = Some(crate::PPtr::parse(r, ver)?);
+            m_transparency_sort_mode = Some(r.read_i32()?);
+            m_transparency_sort_axis = Some(Vector3f::parse(r, ver)?);
+            m_tier_settings_tier1 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_tier_settings_tier2 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_tier_settings_tier3 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_lights_use_linear_intensity = Some(r.read_bool()?);
+            m_lights_use_color_temperature = Some(RenderManagerMLightsUseColorTemperatureVariant::parse(r, ver)?);
+        } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
+            m_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_deferred_reflections = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_screen_space_shadows = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_legacy_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_depth_normals = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_motion_vectors = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_light_halo = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_lens_flare = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_always_included_shaders = Some(RenderManagerMAlwaysIncludedShadersVariant::parse(r, ver)?);
+            m_preloaded_shaders = Some(RenderManagerMPreloadedShadersVariant::parse(r, ver)?);
+            m_sprites_default_material = Some(crate::PPtr::parse(r, ver)?);
+            m_tier_settings_tier1 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_tier_settings_tier2 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_tier_settings_tier3 = Some(TierGraphicsSettings::parse(r, ver)?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
+            m_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_deferred_reflections = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_screen_space_shadows = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_legacy_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_depth_normals = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_motion_vectors = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_light_halo = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_lens_flare = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_always_included_shaders = Some(RenderManagerMAlwaysIncludedShadersVariant::parse(r, ver)?);
+            m_preloaded_shaders = Some(RenderManagerMPreloadedShadersVariant::parse(r, ver)?);
+            m_sprites_default_material = Some(crate::PPtr::parse(r, ver)?);
+            m_shader_settings_tier1 = Some(PlatformShaderSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_shader_settings_tier2 = Some(PlatformShaderSettings::parse(r, ver)?);
+            r.align(4)?;
+            m_shader_settings_tier3 = Some(PlatformShaderSettings::parse(r, ver)?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
+            m_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_deferred_reflections = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_legacy_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_always_included_shaders = Some(RenderManagerMAlwaysIncludedShadersVariant::parse(r, ver)?);
+            m_preloaded_shaders = Some(RenderManagerMPreloadedShadersVariant::parse(r, ver)?);
+            m_shader_settings = Some(PlatformShaderSettings::parse(r, ver)?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(5, 2, 0) {
+            m_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_deferred_reflections = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_legacy_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_always_included_shaders = Some(RenderManagerMAlwaysIncludedShadersVariant::parse(r, ver)?);
+            m_preloaded_shaders = Some(RenderManagerMPreloadedShadersVariant::parse(r, ver)?);
+        } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            m_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_legacy_deferred = Some(BuiltinShaderSettings::parse(r, ver)?);
+            m_always_included_shaders = Some(RenderManagerMAlwaysIncludedShadersVariant::parse(r, ver)?);
+            m_preloaded_shaders = Some(RenderManagerMPreloadedShadersVariant::parse(r, ver)?);
+        } else if *ver >= crate::UnityVersion::new(4, 2, 0) {
+            m_always_included_shaders = Some(RenderManagerMAlwaysIncludedShadersVariant::parse(r, ver)?);
         } else {
-            None
-        };
+        }
 
         Ok(RenderManager {
             m_always_included_shaders,
@@ -334,25 +845,24 @@ impl crate::Parse for RenderManager {
             m_light_halo,
             m_lens_flare,
             m_video_shaders_include_mode,
-            m_shader_settings_tier1,
             m_sprites_default_material,
             m_preload_shaders_batch_time_limit,
-            m_shader_settings_tier2,
+            m_shader_settings_tier1,
             m_tier_settings_tier1,
-            m_transparency_sort_mode,
             m_custom_render_pipeline,
             m_graphics_state_collection,
-            m_shader_settings_tier3,
+            m_shader_settings_tier2,
             m_tier_settings_tier2,
-            m_transparency_sort_axis,
+            m_transparency_sort_mode,
             m_collection_startup_action,
+            m_shader_settings_tier3,
             m_tier_settings_tier3,
+            m_transparency_sort_axis,
             m_trace_save_path,
             m_trace_send_to_editor,
             m_additional_warmup_collections,
-            m_lights_use_linear_intensity,
             m_warmup_async,
-            m_lights_use_cct,
+            m_lights_use_linear_intensity,
             m_shader_defines_per_shader_compiler,
             m_enable_cache_miss_tracing,
             m_lights_use_color_temperature,

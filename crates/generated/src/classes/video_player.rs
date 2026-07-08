@@ -2,6 +2,75 @@
 
 use crate::PPtr;
 
+
+/// 版本枚举：VideoPlayerMTargetAudioSourcesVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum VideoPlayerMTargetAudioSourcesVariant {
+    Default(Vec<PPtr>),
+    V2017_1(Vec<PPtr>),
+}
+
+impl crate::Parse for VideoPlayerMTargetAudioSourcesVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：VideoPlayerMDirectAudioVolumesVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum VideoPlayerMDirectAudioVolumesVariant {
+    Default(Vec<f32>),
+    V2017_1(Vec<f32>),
+}
+
+impl crate::Parse for VideoPlayerMDirectAudioVolumesVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_f32() }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_f32() }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：VideoPlayerMFrameReadyEventEnabledVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum VideoPlayerMFrameReadyEventEnabledVariant {
+    Default(bool),
+    V2020_1(bool),
+}
+
+impl crate::Parse for VideoPlayerMFrameReadyEventEnabledVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2020, 1, 0) {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::V2020_1(v))
+        } else {
+            let v = r.read_bool()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct VideoPlayer {
     pub m_game_object: PPtr,
@@ -13,17 +82,16 @@ pub struct VideoPlayer {
     pub m_target_texture: PPtr,
     pub m_target_material_renderer: PPtr,
     pub m_time_reference: Option<i32>,
-    pub m_render_mode: i32,
     pub m_target_material_property: String,
+    pub m_render_mode: i32,
     pub m_aspect_ratio: i32,
     pub m_data_source: i32,
     pub m_playback_speed: f32,
     pub m_audio_output_mode: i32,
-    pub m_target_audio_sources: Vec<PPtr>,
-    pub m_direct_audio_volumes: Vec<f32>,
+    pub m_target_audio_sources: VideoPlayerMTargetAudioSourcesVariant,
     pub m_time_update_mode: Option<i32>,
+    pub m_direct_audio_volumes: VideoPlayerMDirectAudioVolumesVariant,
     pub m_url: String,
-    pub m_target_material_name: Option<String>,
     pub m_enabled_audio_tracks: Vec<bool>,
     pub m_direct_audio_mutes: Vec<bool>,
     pub m_controlled_audio_track_count: u16,
@@ -31,7 +99,7 @@ pub struct VideoPlayer {
     pub m_skip_on_drop: bool,
     pub m_looping: bool,
     pub m_wait_for_first_frame: bool,
-    pub m_frame_ready_event_enabled: bool,
+    pub m_frame_ready_event_enabled: VideoPlayerMFrameReadyEventEnabledVariant,
     pub m_video_shaders: Option<Vec<PPtr>>,
 }
 
@@ -49,17 +117,16 @@ impl crate::Parse for VideoPlayer {
         let mut m_target_texture = None;
         let mut m_target_material_renderer = None;
         let mut m_time_reference = None;
-        let mut m_render_mode = None;
         let mut m_target_material_property = None;
+        let mut m_render_mode = None;
         let mut m_aspect_ratio = None;
         let mut m_data_source = None;
         let mut m_playback_speed = None;
         let mut m_audio_output_mode = None;
         let mut m_target_audio_sources = None;
-        let mut m_direct_audio_volumes = None;
         let mut m_time_update_mode = None;
+        let mut m_direct_audio_volumes = None;
         let mut m_url = None;
-        let mut m_target_material_name = None;
         let mut m_enabled_audio_tracks = None;
         let mut m_direct_audio_mutes = None;
         let mut m_controlled_audio_track_count = None;
@@ -85,11 +152,8 @@ impl crate::Parse for VideoPlayer {
         } else {
         }
             m_target_material_renderer = Some(crate::PPtr::parse(r, ver)?);
-        if *ver >= crate::UnityVersion::new(5, 6, 0) {
             m_target_material_property = Some(r.read_aligned_string()?);
             r.align(4)?;
-        } else {
-        }
             m_render_mode = Some(r.read_i32()?);
             m_aspect_ratio = Some(r.read_i32()?);
             m_data_source = Some(r.read_i32()?);
@@ -99,19 +163,10 @@ impl crate::Parse for VideoPlayer {
         }
             m_playback_speed = Some(r.read_f32()?);
             m_audio_output_mode = Some(r.read_i32()?);
-            m_target_audio_sources = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_direct_audio_volumes = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_f32() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_target_audio_sources = Some(VideoPlayerMTargetAudioSourcesVariant::parse(r, ver)?);
+            m_direct_audio_volumes = Some(VideoPlayerMDirectAudioVolumesVariant::parse(r, ver)?);
             m_url = Some(r.read_aligned_string()?);
             r.align(4)?;
-        if *ver >= crate::UnityVersion::new(5, 6, 0) {
-        } else {
-            m_target_material_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_target_material_property = Some(r.read_aligned_string()?);
-            r.align(4)?;
-        }
             m_enabled_audio_tracks = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
             m_direct_audio_mutes = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
@@ -121,8 +176,7 @@ impl crate::Parse for VideoPlayer {
             m_skip_on_drop = Some(r.read_bool()?);
             m_looping = Some(r.read_bool()?);
             m_wait_for_first_frame = Some(r.read_bool()?);
-            m_frame_ready_event_enabled = Some(r.read_bool()?);
-            r.align(4)?;
+            m_frame_ready_event_enabled = Some(VideoPlayerMFrameReadyEventEnabledVariant::parse(r, ver)?);
         if *ver >= crate::UnityVersion::new(2020, 1, 0) {
             m_video_shaders = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
@@ -139,17 +193,16 @@ impl crate::Parse for VideoPlayer {
             m_target_texture: m_target_texture.unwrap(),
             m_target_material_renderer: m_target_material_renderer.unwrap(),
             m_time_reference,
-            m_render_mode: m_render_mode.unwrap(),
             m_target_material_property: m_target_material_property.unwrap(),
+            m_render_mode: m_render_mode.unwrap(),
             m_aspect_ratio: m_aspect_ratio.unwrap(),
             m_data_source: m_data_source.unwrap(),
             m_playback_speed: m_playback_speed.unwrap(),
             m_audio_output_mode: m_audio_output_mode.unwrap(),
             m_target_audio_sources: m_target_audio_sources.unwrap(),
-            m_direct_audio_volumes: m_direct_audio_volumes.unwrap(),
             m_time_update_mode,
+            m_direct_audio_volumes: m_direct_audio_volumes.unwrap(),
             m_url: m_url.unwrap(),
-            m_target_material_name,
             m_enabled_audio_tracks: m_enabled_audio_tracks.unwrap(),
             m_direct_audio_mutes: m_direct_audio_mutes.unwrap(),
             m_controlled_audio_track_count: m_controlled_audio_track_count.unwrap(),

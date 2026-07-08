@@ -20,7 +20,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
 
 use crate::ir::{
-    EmitClass, EmitField, Pipeline, RustType, VersionGate,
+    EmitClass, EmitField, EnumVariant, Pipeline, RustType, VersionGate,
 };
 use crate::names::to_rust_type_name;
 
@@ -116,6 +116,9 @@ fn emit_class_file(class: &EmitClass, main_names: &BTreeSet<String>) -> String {
         out.push('\n');
     }
 
+    // 版本枚举定义 + impl Parse（在 struct 之前，因为 struct 引用枚举类型）
+    emit_versioned_enums(&mut out, class);
+
     // struct 定义
     emit_struct(&mut out, class);
 
@@ -130,6 +133,8 @@ fn collect_imports(class: &EmitClass, main_names: &BTreeSet<String>) -> String {
     for f in &class.own_fields {
         collect_type_imports(&f.rust_type, &mut imports, main_names);
     }
+    // version_layouts 的类型不再需要单独扫描：VersionedEnum 已把所有变体类型
+    // 包含在 own_fields 里，collect_type_imports 会递归扫描变体。
 
     let mut s = String::new();
     for imp in imports {
@@ -180,6 +185,115 @@ fn collect_type_imports(
             // gated 字段：递归到 inner
             collect_type_imports(inner, out, main_names);
         }
+        RustType::VersionedEnum { name: _, variants } => {
+            // 版本枚举：扫描每个变体的实际类型（参见 §12.2）
+            for v in variants {
+                collect_type_imports(&v.rust_type, out, main_names);
+            }
+        }
+    }
+}
+
+// ────────────────────────────────────────────────────────────────────
+// 版本枚举 emit（参见 docs/codegen-redesign-v2.md §5.4 / §6.3）
+// ────────────────────────────────────────────────────────────────────
+
+/// 扫描 own_fields 中的 VersionedEnum 类型，emit 枚举定义 + impl Parse。
+fn emit_versioned_enums(out: &mut String, class: &EmitClass) {
+    for f in &class.own_fields {
+        match &f.rust_type {
+            RustType::VersionedEnum { name, variants } => {
+                emit_versioned_enum(out, name, variants);
+            }
+            RustType::Option(inner) => {
+                if let RustType::VersionedEnum { name, variants } = inner.as_ref() {
+                    emit_versioned_enum(out, name, variants);
+                }
+            }
+            _ => {}
+        }
+    }
+}
+
+/// emit 单个版本枚举定义 + 其 impl Parse。
+fn emit_versioned_enum(out: &mut String, name: &str, variants: &[EnumVariant]) {
+    // 枚举定义
+    out.push_str(&format!(
+        "\n/// 版本枚举：{} 的类型跨版本变化。\n",
+        name
+    ));
+    out.push_str("#[derive(Debug, Clone)]\n");
+    out.push_str(&format!("pub enum {} {{\n", name));
+    for v in variants {
+        let vname = variant_name(&v.gate);
+        let ty_str = v.rust_type.to_rust_src();
+        out.push_str(&format!("    {}({}),\n", vname, ty_str));
+    }
+    out.push_str("}\n");
+
+    // impl Parse：按版本降序判断（新版本优先），Always 变体走 else。
+    out.push_str(&format!("\nimpl crate::Parse for {} {{\n", name));
+    out.push_str(
+        "    fn parse<R: crate::EndianReader>(\n        r: &mut R,\n        ver: &crate::UnityVersion,\n    ) -> Result<Self, R::Error> {\n",
+    );
+
+    for (i, v) in variants.iter().rev().enumerate() {
+        let vname = variant_name(&v.gate);
+        let is_always = matches!(v.gate, VersionGate::Always);
+
+        if is_always {
+            if i == 0 {
+                out.push_str("        {\n");
+            } else {
+                out.push_str("        } else {\n");
+            }
+        } else {
+            let cond = gate_to_rust_cond(&v.gate);
+            if i == 0 {
+                out.push_str(&format!("        if {cond} {{\n"));
+            } else {
+                out.push_str(&format!("        }} else if {cond} {{\n"));
+            }
+        }
+
+        let expr = field_read_expr(&v.rust_type);
+        out.push_str(&format!("            let v = {expr}?;\n"));
+        if v.align_after {
+            out.push_str("            r.align(4)?;\n");
+        }
+        out.push_str(&format!("            Ok(Self::{vname}(v))\n"));
+    }
+    out.push_str("        }\n");
+    out.push_str("    }\n");
+    out.push_str("}\n");
+}
+
+/// 版本枚举变体名：按版本号命名（如 `V5_6`、`V2017_4_39`），Always → `Default`。
+/// build 非 0 时附加 build 号，避免同 major.minor 不同 build 的变体重名。
+/// 参见 §12.6：避免用 Legacy/Modern，改用版本号。
+fn variant_name(gate: &VersionGate) -> String {
+    match gate {
+        VersionGate::Always => "Default".into(),
+        VersionGate::Since(maj, min, 0) => format!("V{maj}_{min}"),
+        VersionGate::Since(maj, min, build) => format!("V{maj}_{min}_{build}"),
+        VersionGate::Range {
+            from: (maj, min, 0),
+            ..
+        } => format!("V{maj}_{min}"),
+        VersionGate::Range {
+            from: (maj, min, build),
+            ..
+        } => format!("V{maj}_{min}_{build}"),
+    }
+}
+
+/// 判断该类型是否自己处理 align（VersionedEnum 的 Parse 内部对齐）。
+/// 宿主 class 不应对这类字段额外 align。
+fn type_handles_own_align(t: &RustType) -> bool {
+    match t {
+        RustType::VersionedEnum { .. } => true,
+        RustType::Option(inner) => type_handles_own_align(inner),
+        _ => false,
     }
 }
 
@@ -203,11 +317,6 @@ fn emit_impl_parse(out: &mut String, class: &EmitClass) {
     out.push_str(
         "    fn parse<R: crate::EndianReader>(\n        r: &mut R,\n        ver: &crate::UnityVersion,\n    ) -> Result<Self, R::Error> {\n",
     );
-
-    // MonoBehaviour：父类照常 + token: Vec<u8> 兜底（特殊处理）
-    if class.is_mono_behaviour {
-        out.push_str("        // MonoBehaviour 用户字段不在 TPK 中，token 保留原字节供运行时解释。\n");
-    }
 
     // 解 own fields
     if class.version_layouts.is_empty() {
@@ -253,6 +362,18 @@ fn emit_versioned_field_reads(out: &mut String, class: &EmitClass) {
         .map(|f| (f.rust_name.as_str(), f))
         .collect();
 
+    // Per-version field maps：`align_after` 等 field 属性可能跨版本不同。
+    // version-gated 分支必须用对应版本 layout 的 EmitField，不能用 merged own_fields
+    // （否则会把最新版本的 align_after 错误地套到老版本分支上，导致多读/少读 align 字节）。
+    let version_field_maps: BTreeMap<(u16, u16, u16), BTreeMap<&str, &EmitField>> = class
+        .version_layouts
+        .iter()
+        .map(|l| {
+            let map = l.fields.iter().map(|f| (f.rust_name.as_str(), f)).collect();
+            (l.since, map)
+        })
+        .collect();
+
     // 所有版本的字段名顺序
     let orders: Vec<Vec<String>> = class
         .version_layouts
@@ -270,7 +391,7 @@ fn emit_versioned_field_reads(out: &mut String, class: &EmitClass) {
 
     if anchors.is_empty() {
         // 退化：无公共锚点，全量 version-gated（每版本读全部字段）
-        emit_full_versioned_branches(out, class, &own_map);
+        emit_full_versioned_branches(out, class, &own_map, &version_field_maps);
         return;
     }
 
@@ -292,12 +413,13 @@ fn emit_versioned_field_reads(out: &mut String, class: &EmitClass) {
             .map(|(l, segs)| (l.since, segs[slot].clone()))
             .collect();
 
-        emit_slot_segment(out, &slot_entries, &own_map);
+        emit_slot_segment(out, &slot_entries, &own_map, &version_field_maps);
 
         // 锚点（slot 之后、下一个 slot 之前）线性读
+        // 锚点在所有版本中都有且相对顺序一致，用 own_map 的 align_after 即可。
         if slot < anchors.len() {
             let fname = &anchors[slot];
-            set_field_none(out, fname, &own_map);
+            set_field_none(out, fname, &own_map, None);
         }
     }
 }
@@ -309,10 +431,15 @@ type SlotVariant<'a> = ((u16, u16, u16), &'a Vec<String>);
 
 /// 段发射：此 slot 的字段列表在各版本间若全部相同 → 无条件线性读；
 /// 否则 → version-gated（仅在该段变化的版本点分支）。
+///
+/// **field 属性（align_after 等）用 per-version layout 的 EmitField**，不用 merged
+/// own_fields：同一个字段名在不同版本可能有不同的 align_after（如 CircleCollider2D
+/// 的 m_used_by_effector 在 v5.6 无 align，在 v2023.1 有 align）。
 fn emit_slot_segment(
     out: &mut String,
     slot_entries: &[SlotEntry],
     own_map: &BTreeMap<&str, &EmitField>,
+    version_field_maps: &BTreeMap<(u16, u16, u16), BTreeMap<&str, &EmitField>>,
 ) {
     // 升序去重连续相同字段列表 → 得到若干「段变体」(since, fields)
     let mut distinct: Vec<SlotVariant> = Vec::new();
@@ -324,10 +451,11 @@ fn emit_slot_segment(
     }
 
     if distinct.len() <= 1 {
-        // 稳定段：无条件读
-        if let Some((_, fields)) = distinct.first() {
+        // 稳定段：无条件读。用第一个版本的 field map 取 align。
+        if let Some((since, fields)) = distinct.first() {
+            let vmap = version_field_maps.get(since);
             for fname in fields.iter() {
-                set_field_none(out, fname, own_map);
+                set_field_none(out, fname, own_map, vmap);
             }
         }
         return;
@@ -348,8 +476,9 @@ fn emit_slot_segment(
         } else {
             out.push_str("        } else {\n");
         }
+        let vmap = version_field_maps.get(since);
         for fname in fields.iter() {
-            set_field_none(out, fname, own_map);
+            set_field_none(out, fname, own_map, vmap);
         }
     }
     out.push_str("        }\n");
@@ -360,6 +489,7 @@ fn emit_full_versioned_branches(
     out: &mut String,
     class: &EmitClass,
     own_map: &BTreeMap<&str, &EmitField>,
+    version_field_maps: &BTreeMap<(u16, u16, u16), BTreeMap<&str, &EmitField>>,
 ) {
     let n = class.version_layouts.len();
     for (i, layout) in class.version_layouts.iter().rev().enumerate() {
@@ -375,19 +505,36 @@ fn emit_full_versioned_branches(
         } else {
             out.push_str("        } else {\n");
         }
+        let vmap = version_field_maps.get(&layout.since);
         for lf in &layout.fields {
-            set_field_none(out, &lf.rust_name, own_map);
+            set_field_none(out, &lf.rust_name, own_map, vmap);
         }
     }
     out.push_str("        }\n");
 }
 
 /// 读取字段并写入对应的 None 变量：`name = Some(read_expr?);` + 对齐。
-fn set_field_none(out: &mut String, fname: &str, own_map: &BTreeMap<&str, &EmitField>) {
+///
+/// **type 来自 own_map**（与 struct 字段类型一致，避免版本类型不匹配）。
+/// **align_after 优先取 version_map**（per-version 的对齐可能不同），找不到时回退 own_map。
+fn set_field_none(
+    out: &mut String,
+    fname: &str,
+    own_map: &BTreeMap<&str, &EmitField>,
+    version_map: Option<&BTreeMap<&str, &EmitField>>,
+) {
     let Some(ef) = own_map.get(fname) else { return };
     let expr = field_read_expr(&ef.rust_type);
     out.push_str(&format!("            {fname} = Some({expr}?);\n"));
-    if ef.align_after {
+    // VersionedEnum 自己处理 align，宿主 class 不再额外对齐（§12.5）。
+    if type_handles_own_align(&ef.rust_type) {
+        return;
+    }
+    let align = version_map
+        .and_then(|m| m.get(fname))
+        .map(|f| f.align_after)
+        .unwrap_or(ef.align_after);
+    if align {
         out.push_str("            r.align(4)?;\n");
     }
 }
@@ -459,10 +606,12 @@ fn emit_field_parse(out: &mut String, f: &EmitField) {
     let is_gated = !matches!(gate, VersionGate::Always);
     // field_read_expr 返回 Result<T, R::Error> 表达式（不含外层 ?）
     let result_expr = field_read_expr(&f.rust_type);
+    // VersionedEnum 自己处理 align（§12.5）
+    let need_align = f.align_after && !type_handles_own_align(&f.rust_type);
 
     if is_gated {
         let cond = gate_to_rust_cond(&gate);
-        if f.align_after {
+        if need_align {
             // align 在 if 内（仅当字段被读时才对齐）
             out.push_str(&format!(
                 "        let {name} = if {cond} {{\n            let v = {expr}?;\n            r.align(4)?;\n            Some(v)\n        }} else {{\n            None\n        }};\n",
@@ -481,7 +630,7 @@ fn emit_field_parse(out: &mut String, f: &EmitField) {
             "        let {} = {}?;\n",
             f.rust_name, result_expr
         ));
-        if f.align_after {
+        if need_align {
             out.push_str("        r.align(4)?;\n");
         }
     }
@@ -520,6 +669,7 @@ fn field_read_expr(t: &RustType) -> String {
         RustType::Pptr { .. } => "crate::PPtr::parse(r, ver)".into(),
         RustType::Subclass(name) => format!("{name}::parse(r, ver)"),
         RustType::Option(inner) => field_read_expr(inner),
+        RustType::VersionedEnum { name, .. } => format!("{name}::parse(r, ver)"),
     }
 }
 

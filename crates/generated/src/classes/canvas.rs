@@ -2,6 +2,120 @@
 
 use crate::PPtr;
 
+
+/// 版本枚举：CanvasMOverridePixelPerfectVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum CanvasMOverridePixelPerfectVariant {
+    Default(bool),
+    V5_3_4(bool),
+}
+
+impl crate::Parse for CanvasMOverridePixelPerfectVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 3, 4) {
+            let v = r.read_bool()?;
+            Ok(Self::V5_3_4(v))
+        } else {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：CanvasMSortingLayerIdVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum CanvasMSortingLayerIdVariant {
+    Default(u32),
+    V5_0(i32),
+}
+
+impl crate::Parse for CanvasMSortingLayerIdVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            let v = r.read_i32()?;
+            Ok(Self::V5_0(v))
+        } else {
+            let v = r.read_u32()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：CanvasMSortingBucketNormalizedSizeVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum CanvasMSortingBucketNormalizedSizeVariant {
+    Default(f32),
+    V5_6(f32),
+}
+
+impl crate::Parse for CanvasMSortingBucketNormalizedSizeVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            let v = r.read_f32()?;
+            Ok(Self::V5_6(v))
+        } else {
+            let v = r.read_f32()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：CanvasMAdditionalShaderChannelsFlagVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum CanvasMAdditionalShaderChannelsFlagVariant {
+    Default(i32),
+    V2022_1(i32),
+}
+
+impl crate::Parse for CanvasMAdditionalShaderChannelsFlagVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2022, 1, 0) {
+            let v = r.read_i32()?;
+            Ok(Self::V2022_1(v))
+        } else {
+            let v = r.read_i32()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：CanvasMVertexColorAlwaysGammaSpaceVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum CanvasMVertexColorAlwaysGammaSpaceVariant {
+    Default(bool),
+    V6000_4(bool),
+}
+
+impl crate::Parse for CanvasMVertexColorAlwaysGammaSpaceVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(6000, 4, 0) {
+            let v = r.read_bool()?;
+            Ok(Self::V6000_4(v))
+        } else {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct Canvas {
     pub m_game_object: PPtr,
@@ -15,12 +129,12 @@ pub struct Canvas {
     pub m_position_u_vs: Option<bool>,
     pub m_receives_events: Option<bool>,
     pub m_override_sorting: Option<bool>,
-    pub m_override_pixel_perfect: Option<bool>,
-    pub m_sorting_layer_id: Option<i32>,
-    pub m_sorting_bucket_normalized_size: Option<f32>,
+    pub m_override_pixel_perfect: Option<CanvasMOverridePixelPerfectVariant>,
+    pub m_sorting_layer_id: Option<CanvasMSortingLayerIdVariant>,
+    pub m_sorting_bucket_normalized_size: Option<CanvasMSortingBucketNormalizedSizeVariant>,
     pub m_sorting_order: Option<i16>,
-    pub m_additional_shader_channels_flag: Option<i32>,
-    pub m_vertex_color_always_gamma_space: Option<bool>,
+    pub m_additional_shader_channels_flag: Option<CanvasMAdditionalShaderChannelsFlagVariant>,
+    pub m_vertex_color_always_gamma_space: Option<CanvasMVertexColorAlwaysGammaSpaceVariant>,
     pub m_target_display: Option<i8>,
     pub m_update_rect_transform_for_standalone: Option<i32>,
     pub m_use_reflection_probes: Option<bool>,
@@ -31,101 +145,131 @@ impl crate::Parse for Canvas {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_enabled = r.read_u8()?;
-        r.align(4)?;
-        let m_alpha = if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
-        let m_render_mode = r.read_i32()?;
-        let m_camera = crate::PPtr::parse(r, ver)?;
-        let m_plane_distance = if *ver >= crate::UnityVersion::new(4, 6, 0) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
-        let m_normals = if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_pixel_perfect = r.read_bool()?;
-        let m_position_u_vs = if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_receives_events = if *ver >= crate::UnityVersion::new(4, 6, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_override_sorting = if *ver >= crate::UnityVersion::new(4, 6, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_override_pixel_perfect = if *ver >= crate::UnityVersion::new(4, 6, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_sorting_layer_id = if *ver >= crate::UnityVersion::new(4, 6, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_sorting_bucket_normalized_size = if *ver >= crate::UnityVersion::new(5, 3, 4) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
-        let m_sorting_order = if *ver >= crate::UnityVersion::new(4, 6, 0) {
-            Some(r.read_i16()?)
-        } else {
-            None
-        };
-        let m_additional_shader_channels_flag = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_vertex_color_always_gamma_space = if *ver >= crate::UnityVersion::new(2021, 3, 34) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_target_display = if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            Some(r.read_i8()?)
-        } else {
-            None
-        };
-        let m_update_rect_transform_for_standalone = if *ver >= crate::UnityVersion::new(2022, 1, 0) {
-            let v = r.read_i32()?;
+        let mut m_game_object = None;
+        let mut m_enabled = None;
+        let mut m_alpha = None;
+        let mut m_render_mode = None;
+        let mut m_camera = None;
+        let mut m_plane_distance = None;
+        let mut m_normals = None;
+        let mut m_pixel_perfect = None;
+        let mut m_position_u_vs = None;
+        let mut m_receives_events = None;
+        let mut m_override_sorting = None;
+        let mut m_override_pixel_perfect = None;
+        let mut m_sorting_layer_id = None;
+        let mut m_sorting_bucket_normalized_size = None;
+        let mut m_sorting_order = None;
+        let mut m_additional_shader_channels_flag = None;
+        let mut m_vertex_color_always_gamma_space = None;
+        let mut m_target_display = None;
+        let mut m_update_rect_transform_for_standalone = None;
+        let mut m_use_reflection_probes = None;
+            m_game_object = Some(crate::PPtr::parse(r, ver)?);
+            m_enabled = Some(r.read_u8()?);
             r.align(4)?;
-            Some(v)
+        if *ver >= crate::UnityVersion::new(4, 6, 0) {
         } else {
-            None
-        };
-        let m_use_reflection_probes = if *ver >= crate::UnityVersion::new(6000, 4, 0) {
-            let v = r.read_bool()?;
+            m_alpha = Some(r.read_f32()?);
+        }
+            m_render_mode = Some(r.read_i32()?);
+            m_camera = Some(crate::PPtr::parse(r, ver)?);
+        if *ver >= crate::UnityVersion::new(4, 6, 0) {
+            m_plane_distance = Some(r.read_f32()?);
+        } else {
+            m_normals = Some(r.read_bool()?);
+            m_position_u_vs = Some(r.read_bool()?);
+        }
+            m_pixel_perfect = Some(r.read_bool()?);
+        if *ver >= crate::UnityVersion::new(6000, 4, 0) {
+            m_receives_events = Some(r.read_bool()?);
+            m_override_sorting = Some(r.read_bool()?);
+            m_override_pixel_perfect = Some(CanvasMOverridePixelPerfectVariant::parse(r, ver)?);
+            m_sorting_bucket_normalized_size = Some(CanvasMSortingBucketNormalizedSizeVariant::parse(r, ver)?);
+            m_vertex_color_always_gamma_space = Some(CanvasMVertexColorAlwaysGammaSpaceVariant::parse(r, ver)?);
+            m_use_reflection_probes = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
+            m_additional_shader_channels_flag = Some(CanvasMAdditionalShaderChannelsFlagVariant::parse(r, ver)?);
+            m_update_rect_transform_for_standalone = Some(r.read_i32()?);
+            r.align(4)?;
+            m_sorting_layer_id = Some(CanvasMSortingLayerIdVariant::parse(r, ver)?);
+            m_sorting_order = Some(r.read_i16()?);
+            m_target_display = Some(r.read_i8()?);
+        } else if *ver >= crate::UnityVersion::new(2022, 2, 15) {
+            m_receives_events = Some(r.read_bool()?);
+            m_override_sorting = Some(r.read_bool()?);
+            m_override_pixel_perfect = Some(CanvasMOverridePixelPerfectVariant::parse(r, ver)?);
+            m_sorting_bucket_normalized_size = Some(CanvasMSortingBucketNormalizedSizeVariant::parse(r, ver)?);
+            m_vertex_color_always_gamma_space = Some(CanvasMVertexColorAlwaysGammaSpaceVariant::parse(r, ver)?);
+            m_additional_shader_channels_flag = Some(CanvasMAdditionalShaderChannelsFlagVariant::parse(r, ver)?);
+            m_update_rect_transform_for_standalone = Some(r.read_i32()?);
+            r.align(4)?;
+            m_sorting_layer_id = Some(CanvasMSortingLayerIdVariant::parse(r, ver)?);
+            m_sorting_order = Some(r.read_i16()?);
+            m_target_display = Some(r.read_i8()?);
+        } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
+            m_receives_events = Some(r.read_bool()?);
+            m_override_sorting = Some(r.read_bool()?);
+            m_override_pixel_perfect = Some(CanvasMOverridePixelPerfectVariant::parse(r, ver)?);
+            m_sorting_bucket_normalized_size = Some(CanvasMSortingBucketNormalizedSizeVariant::parse(r, ver)?);
+            m_additional_shader_channels_flag = Some(CanvasMAdditionalShaderChannelsFlagVariant::parse(r, ver)?);
+            m_update_rect_transform_for_standalone = Some(r.read_i32()?);
+            r.align(4)?;
+            m_sorting_layer_id = Some(CanvasMSortingLayerIdVariant::parse(r, ver)?);
+            m_sorting_order = Some(r.read_i16()?);
+            m_target_display = Some(r.read_i8()?);
+        } else if *ver >= crate::UnityVersion::new(2021, 3, 34) {
+            m_receives_events = Some(r.read_bool()?);
+            m_override_sorting = Some(r.read_bool()?);
+            m_override_pixel_perfect = Some(CanvasMOverridePixelPerfectVariant::parse(r, ver)?);
+            m_sorting_bucket_normalized_size = Some(CanvasMSortingBucketNormalizedSizeVariant::parse(r, ver)?);
+            m_vertex_color_always_gamma_space = Some(CanvasMVertexColorAlwaysGammaSpaceVariant::parse(r, ver)?);
+            m_additional_shader_channels_flag = Some(CanvasMAdditionalShaderChannelsFlagVariant::parse(r, ver)?);
+            m_sorting_layer_id = Some(CanvasMSortingLayerIdVariant::parse(r, ver)?);
+            m_sorting_order = Some(r.read_i16()?);
+            m_target_display = Some(r.read_i8()?);
+        } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            m_receives_events = Some(r.read_bool()?);
+            m_override_sorting = Some(r.read_bool()?);
+            m_override_pixel_perfect = Some(CanvasMOverridePixelPerfectVariant::parse(r, ver)?);
+            m_sorting_bucket_normalized_size = Some(CanvasMSortingBucketNormalizedSizeVariant::parse(r, ver)?);
+            m_additional_shader_channels_flag = Some(CanvasMAdditionalShaderChannelsFlagVariant::parse(r, ver)?);
+            m_sorting_layer_id = Some(CanvasMSortingLayerIdVariant::parse(r, ver)?);
+            m_sorting_order = Some(r.read_i16()?);
+            m_target_display = Some(r.read_i8()?);
+        } else if *ver >= crate::UnityVersion::new(5, 3, 4) {
+            m_receives_events = Some(r.read_bool()?);
+            m_override_sorting = Some(r.read_bool()?);
+            m_override_pixel_perfect = Some(CanvasMOverridePixelPerfectVariant::parse(r, ver)?);
+            m_sorting_bucket_normalized_size = Some(CanvasMSortingBucketNormalizedSizeVariant::parse(r, ver)?);
+            m_sorting_layer_id = Some(CanvasMSortingLayerIdVariant::parse(r, ver)?);
+            m_sorting_order = Some(r.read_i16()?);
+            m_target_display = Some(r.read_i8()?);
+        } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
+            m_receives_events = Some(r.read_bool()?);
+            m_override_sorting = Some(r.read_bool()?);
+            m_override_pixel_perfect = Some(CanvasMOverridePixelPerfectVariant::parse(r, ver)?);
+            m_sorting_layer_id = Some(CanvasMSortingLayerIdVariant::parse(r, ver)?);
+            m_sorting_order = Some(r.read_i16()?);
+            m_target_display = Some(r.read_i8()?);
+        } else if *ver >= crate::UnityVersion::new(4, 6, 0) {
+            m_receives_events = Some(r.read_bool()?);
+            m_override_sorting = Some(r.read_bool()?);
+            m_override_pixel_perfect = Some(CanvasMOverridePixelPerfectVariant::parse(r, ver)?);
+            m_sorting_layer_id = Some(CanvasMSortingLayerIdVariant::parse(r, ver)?);
+            m_sorting_order = Some(r.read_i16()?);
         } else {
-            None
-        };
+        }
 
         Ok(Canvas {
-            m_game_object,
-            m_enabled,
+            m_game_object: m_game_object.unwrap(),
+            m_enabled: m_enabled.unwrap(),
             m_alpha,
-            m_render_mode,
-            m_camera,
+            m_render_mode: m_render_mode.unwrap(),
+            m_camera: m_camera.unwrap(),
             m_plane_distance,
             m_normals,
-            m_pixel_perfect,
+            m_pixel_perfect: m_pixel_perfect.unwrap(),
             m_position_u_vs,
             m_receives_events,
             m_override_sorting,

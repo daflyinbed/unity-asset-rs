@@ -10,7 +10,7 @@ not link `unity-core` or `generated`; it only emits source strings that referenc
 them.
 
 ```
-type_tree.tpk ──→ run_pipeline (6 pass) ──→ emit_all ──→ crates/generated/src/*.rs
+type_tree.tpk ──→ run_pipeline (7 pass) ──→ emit_all ──→ crates/generated/src/*.rs
 ```
 
 ## Commands
@@ -36,15 +36,18 @@ cargo run    -p unity-asset-codegen --example explain_inheritance  # 查看 TPK 
 - fixture `tests/fixtures/type_tree.tpk`（brotli 压缩 ~186KB）已提交，勿删改。
 - 没有 emit 阶段的单元测试；emit 正确性靠 `crates/generated` 能否编译 + 主 crate
   `src/bin/verify_codegen.rs` 实跑 `example/char_002_amiya.ab` 验证。
+- `pipeline.rs` 的 `merged_order_compatible` 有单元测试（覆盖「新字段插在现有字段
+  之间」的核心场景）。
 
 ## Architecture: pass 管线（`pipeline.rs`）
 
-`run_pipeline` 跑 6 个 pass，产物是 `Pipeline { classes, pptr_targets, all_versions }`：
+`run_pipeline` 跑 7 个 pass，产物是 `Pipeline { classes, pptr_targets, all_versions }`：
 
 | pass | 函数 | 职责 |
 |---|---|---|
+| p00 | `p00_filter_engine_types` | 过滤 classID 100000-100011（引擎内部类型，对齐 AssetRipper `Pass000`） |
 | p01 | `p01_normalize_types` | 类型名归一化（`int→SInt32` 等别名） |
-| p02 | `p02_extract_subclasses` | 扫所有 `NodeType::Type` 节点 → subclass |
+| p02 | `p02_extract_subclasses` | 扫 `node_pool` 收集 `NodeType::Type` → subclass（排除非抽象 main class 名字，见下） |
 | p03 | `p03_collect_pptr_targets` | 收集 `PPtr<X>` 目标（记录用；PPtr 非 generic） |
 | p04 | `p04_resolve_inheritance` | 为每个 main class 建骨架：名字 + `is_abstract`/`is_mono_behaviour` + 重名加 `_ID` |
 | p05 | `p05_merge_fields` ★ | **核心**：字段并集 + 版本门控（见下） |
@@ -64,17 +67,54 @@ p05 后 `emit.rs` 的 `emit_all` 把每个 `EmitClass` 写成一个 `.rs` 文件
 - 想加回 parent 链前，先读 `docs/codegen-target-design.md` §2/§6.3——那是已废弃
   的旧方案。
 
-### version-gated parse：只在真重排时启用
+### p00 过滤引擎内部类型 + p02 排除 main class 名字
+
+**p00** 硬编码过滤 classID **100000-100011**（`int`/`bool`/`float`/`MonoObject`/
+`Collision`/`Vector3f`/`RootMotionData`/`Collision2D`/`AudioMixerLiveUpdate*`/
+`Polygon2D`/`void`）。对齐 AssetRipper `Pass000_ProcessTpk.cs:85` 的
+`IsUnacceptable(int typeId) => typeId is >= 100000 and <= 100011`。
+
+这些在 Unity 类型系统里注册了 classID 但**从不作为独立对象序列化**，TPK 里
+`abstract=false` 但 `release_root=None` —— 字段定义只作为内嵌 Type 节点出现在其他
+类的字段里。若不过滤会生成空 struct + 空 parse，引用它们的类（如 `Transform` 用
+`Vector3f`）会读 0 字节导致后续字段错位 → `data truncated`。
+
+**p02** 扫 `node_pool` 收集 `NodeType::Type` 节点为 subclass，但排除非抽象 main class
+名字（它们的 `release_root` 节点本身也是 `NodeType::Type`，不排除会导致同名文件在
+`classes/` 和 `subclasses/` 各一份）。p00 已移除 100000-100011，所以排除逻辑只需
+`!is_abstract()`，不再需要 `release_root.is_some()` 检查。
+
+> **为什么不像 AssetRipper Pass007 那样走 release_root 字段树？** 因为 p05 的 subclass
+> 字段提取取「`node_pool` 首次出现」，可能拿到 editor 树节点，引用了 release 树里没有
+> 的 subclass（如 `PackingParameters` 只出现在 editor 树的 `SpriteAtlasEditorData` 里）。
+> 全面对齐 Pass007 需要同时重写 p05 的版本变体合并逻辑（`SubclassCandidate` 那一套）。
+
+emit 侧 `collect_type_imports` 对 `RustType::Subclass(name)` 按同样规则选路径：
+是 main class → `crate::classes::X::X`，否则 → `crate::subclasses::X::X`。
+
+### version-gated parse：线性 vs 重排的判定（`dedup_layouts`）
 
 跨版本字段顺序处理分两档，由 `dedup_layouts`（`pipeline.rs`）决定：
 
-1. **线性 parse + per-field `Option<T>` 门控**（默认）：字段仅增减、公共字段
-   相对顺序不变时用。`dedup_layouts` 用 `common_order_consistent` 判定——两个版本
-   的公共字段若相对顺序一致即视为「线性可处理」，返回空 layouts。
-2. **version-gated 块**（仅 ~40 个真重排类）：字段相对顺序真变了才用。
+1. **线性 parse + per-field `Option<T>` 门控**（默认）：所有版本字段可以用单一线性
+   顺序读取，差异字段用 `Option` 门控。
+2. **version-gated 块**（~80 个类）：字段顺序跨版本真变了，必须按版本分支读。
 
-> **不要去掉 `common_order_consistent`**：否则 ~220 个类会触发 version-gated，
-> 生成代码从 ~95K 行暴涨到 ~160K 行（`generated.rlib` 22M→78M）。
+判定线性 parse 安全需**两道检查都通过**：
+
+- **`common_order_consistent`**：两个版本的公共字段相对顺序一致（快检）。
+- **`merged_order_compatible`**：`merge_fields_across_versions` 按首次出现位置排序
+  得到的合并顺序，对每个版本的字段验证位置序列严格递增。
+
+> **为什么需要第二道检查？** 新字段可能插在现有字段之间（如 v5.3 在 `material` 前
+> 插入 `density`）。此时公共字段顺序不变（第一道过），但合并顺序把 `material` 排在
+> `density` 前面（因 `material` 首次出现在更老版本），与 v5.3+ 实际字节顺序矛盾 →
+> 线性 parse 读错字节。`merged_order_compatible` 检测此矛盾，不兼容时升级为
+> version-gated。
+
+> **不要去掉任一检查**：去掉 `common_order_consistent` 会让 ~220 个类触发
+> version-gated，生成代码从 ~80K 行暴涨到 ~160K 行。去掉 `merged_order_compatible`
+> 会让新字段插入型重排漏检，typed parse 读错字节。
 
 ### version-gated 的锚点分段优化（`emit.rs`）
 
@@ -88,6 +128,25 @@ p05 后 `emit.rs` 的 `emit_all` 把每个 `EmitClass` 写成一个 `.rs` 文件
 这把 `player_settings.rs` 从 32K 行压到 13K 行。无公共锚点时退化为全量
 version-gated（`emit_full_versioned_branches`）。
 
+### version-gated emit 的 per-version align_after（`emit.rs`）
+
+`set_field_none` 在 version-gated 分支里读字段时：
+
+- **rust_type 取 `own_map`**（merged，与 struct 字段类型一致，避免版本类型不匹配
+  导致编译错误）。
+- **align_after 优先取 per-version `version_field_maps`**：同一个字段在不同版本的
+  对齐可能不同（如 `CircleCollider2D.m_used_by_effector` 在 v5.6 无 align、v2023.1
+  有 align）。用 merged align 会在老版本分支多读 align 字节 → 后续字段错位。
+
+锚点字段用 `own_map` 的 align（锚点在所有版本都有且顺序一致，align 也应一致）。
+
+### collect_imports 必须扫 version_layouts
+
+`collect_imports`（`emit.rs`）除了扫 `own_fields`，还要扫 `version_layouts` 的字段
+类型。version-gated 块可能引用老版本的字段类型（如 `Mesh.m_shapes` 老版本是
+`Vec<MeshBlendShape>`，新版本是 `Vec<MeshBlendShapeVertex>`），`own_fields` 只取最新
+版本类型，不扫 `version_layouts` 会漏 import → 编译错误。
+
 ### 字段类型取最新版本
 
 `merge_fields_across_versions`（`pipeline.rs`）对跨版本改类型的字段取**最新版本**
@@ -100,8 +159,8 @@ crates/generated/src/
 ├── lib.rs              # re-export unity_core 的 Parse/EndianReader/UnityVersion/PPtr
 ├── unity_object.rs     # enum UnityObject + parse 分派（不含抽象类、不含 MonoBehaviour）
 ├── class_id.rs         # enum ClassIDType（含全部 classID，dispatch 只列非抽象）
-├── classes/            # ~379 个 main class（不含抽象类）
-└── subclasses/         # ~904 个内嵌 struct
+├── classes/            # ~400 个 main class（不含抽象类、不含 100000-100011）
+└── subclasses/         # ~535 个内嵌 struct
 ```
 
 每个 class 文件 = `pub struct`（扁平字段，version-gated 字段为 `Option<T>`）+
@@ -110,14 +169,20 @@ crates/generated/src/
 
 ## 已知限制
 
-- **TPK 与具体 bundle 可能不匹配**：TPK 是通用 dump，某些类（如 Arknights 的
-  Rigidbody2D/SpriteRenderer/CircleCollider2D/AssetBundle）的字段顺序/集合与
-  实际序列化数据不一致，typed parse 会 `data truncated`。主 crate 的
-  `object_parser.rs` 会自动回退到 bundle 内嵌 TypeTree 解释器——这是设计如此，
-  不是 codegen bug。
+- **TPK 与具体 bundle 仍可能不匹配**：typed parse 失败时，主 crate 的
+  `object_parser.rs` 会自动回退到 bundle 内嵌 TypeTree 解释器（设计如此）。
+  曾确认 `CircleCollider2D`/`Rigidbody2D`/`SpriteRenderer`/`AssetBundle` 在
+  `example/char_002_amiya.ab`（Unity 2017.4）上 typed parse 成功（修复了
+  `dedup_layouts` 漏检 + version-gated `align_after` 两个 bug 后）。其他 bundle
+  如仍回退到 dynamic，说明有未覆盖的版本差异。
 - PPtr 非 generic：所有 `PPtr<X>` 生成同一 `PPtr` 类型，丢失目标类型信息。
 - subclass 无版本并集：取第一次出现的子树，跨版本变化的 subclass 会错。
-- `VersionGate` 只有 `Always`/`Since`，无 `Range`（消失后重现的罕见字段会误判）。
+- `VersionGate::Range` 变体存在且 emit 能处理，但 `merge_fields_across_versions`
+  只产出 `Always`/`Since`，不产出 `Range`（消失后重现的罕见字段会误判为 `Since`）。
+- version-gated 块的 **rust_type** 统一取最新版本（`own_map`），老版本改类型的
+  字段（如 `Mesh.m_shapes` 从 `MeshBlendShape` 变为 `MeshBlendShapeVertex`）在
+  version-gated 分支里仍按新类型读，老版本数据会错。正确处理需要 per-version
+  类型 + 转换逻辑，目前不做。
 
 ## Conventions
 

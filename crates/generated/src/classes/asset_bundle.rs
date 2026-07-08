@@ -4,10 +4,33 @@ use crate::PPtr;
 use crate::subclasses::asset_bundle_script_info::AssetBundleScriptInfo;
 use crate::subclasses::asset_info::AssetInfo;
 
+
+/// 版本枚举：AssetBundleMPreloadTableVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum AssetBundleMPreloadTableVariant {
+    Default(Vec<PPtr>),
+    V2017_1(Vec<PPtr>),
+}
+
+impl crate::Parse for AssetBundleMPreloadTableVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct AssetBundle {
     pub m_name: String,
-    pub m_preload_table: Vec<PPtr>,
+    pub m_preload_table: AssetBundleMPreloadTableVariant,
     pub m_container: Vec<(String, AssetInfo)>,
     pub m_main_asset: AssetInfo,
     pub m_script_compatibility: Option<Vec<AssetBundleScriptInfo>>,
@@ -27,79 +50,91 @@ impl crate::Parse for AssetBundle {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_preload_table = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_container = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = AssetInfo::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_main_asset = AssetInfo::parse(r, ver)?;
-        let m_script_compatibility = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { AssetBundleScriptInfo::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let mut m_name = None;
+        let mut m_preload_table = None;
+        let mut m_container = None;
+        let mut m_main_asset = None;
+        let mut m_script_compatibility = None;
+        let mut m_runtime_compatibility = None;
+        let mut m_class_version_map = None;
+        let mut m_class_compatibility = None;
+        let mut m_asset_bundle_name = None;
+        let mut m_dependencies = None;
+        let mut m_is_streamed_scene_asset_bundle = None;
+        let mut m_path_flags = None;
+        let mut m_explicit_data_layout = None;
+        let mut m_scene_hashes = None;
+            m_name = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_runtime_compatibility = if *ver >= crate::UnityVersion::new(4, 2, 0) {
-            Some(r.read_u32()?)
-        } else {
-            None
-        };
-        let m_class_version_map = if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i32()?; let b = r.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?)
-        } else {
-            None
-        };
-        let m_class_compatibility = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i32()?; let b = r.read_u32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?)
-        } else {
-            None
-        };
-        let m_asset_bundle_name = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_aligned_string()?;
+            m_preload_table = Some(AssetBundleMPreloadTableVariant::parse(r, ver)?);
+            m_container = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = AssetInfo::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_dependencies = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            m_main_asset = Some(AssetInfo::parse(r, ver)?);
+        if *ver >= crate::UnityVersion::new(2017, 3, 0) {
+            m_runtime_compatibility = Some(r.read_u32()?);
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_is_streamed_scene_asset_bundle = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_bool()?;
+            m_dependencies = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_path_flags = if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_explicit_data_layout = if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_scene_hashes = if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            m_is_streamed_scene_asset_bundle = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
+            m_explicit_data_layout = Some(r.read_i32()?);
+            m_path_flags = Some(r.read_i32()?);
+            m_scene_hashes = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            m_runtime_compatibility = Some(r.read_u32()?);
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_dependencies = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_is_streamed_scene_asset_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+            m_path_flags = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
+            m_runtime_compatibility = Some(r.read_u32()?);
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_dependencies = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_is_streamed_scene_asset_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
+            m_class_version_map = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i32()?; let b = r.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_runtime_compatibility = Some(r.read_u32()?);
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_dependencies = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_is_streamed_scene_asset_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            m_runtime_compatibility = Some(r.read_u32()?);
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_dependencies = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_is_streamed_scene_asset_bundle = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(4, 2, 0) {
+            m_script_compatibility = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { AssetBundleScriptInfo::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_class_compatibility = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i32()?; let b = r.read_u32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_runtime_compatibility = Some(r.read_u32()?);
+        } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
+            m_script_compatibility = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { AssetBundleScriptInfo::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_class_compatibility = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i32()?; let b = r.read_u32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
         } else {
-            None
-        };
+            m_script_compatibility = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { AssetBundleScriptInfo::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        }
 
         Ok(AssetBundle {
-            m_name,
-            m_preload_table,
-            m_container,
-            m_main_asset,
+            m_name: m_name.unwrap(),
+            m_preload_table: m_preload_table.unwrap(),
+            m_container: m_container.unwrap(),
+            m_main_asset: m_main_asset.unwrap(),
             m_script_compatibility,
             m_runtime_compatibility,
             m_class_version_map,

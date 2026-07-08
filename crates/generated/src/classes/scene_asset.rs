@@ -4,7 +4,6 @@
 pub struct SceneAsset {
     pub m_name: String,
     pub m_message: Option<String>,
-    pub m_error_code: Option<i32>,
     pub m_is_warning: Option<bool>,
 }
 
@@ -22,11 +21,6 @@ impl crate::Parse for SceneAsset {
         } else {
             None
         };
-        let m_error_code = if *ver >= crate::UnityVersion::new(6000, 2, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
         let m_is_warning = if *ver >= crate::UnityVersion::new(5, 0, 0) {
             Some(r.read_bool()?)
         } else {
@@ -36,7 +30,6 @@ impl crate::Parse for SceneAsset {
         Ok(SceneAsset {
             m_name,
             m_message,
-            m_error_code,
             m_is_warning,
         })
     }

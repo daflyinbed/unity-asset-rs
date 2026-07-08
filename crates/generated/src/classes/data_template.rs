@@ -4,6 +4,29 @@ use crate::PPtr;
 use crate::subclasses::guid::Guid;
 use crate::subclasses::prefab_modification::PrefabModification;
 
+
+/// 版本枚举：DataTemplateMIsPrefabParentVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum DataTemplateMIsPrefabParentVariant {
+    Default(bool),
+    V5_0(bool),
+}
+
+impl crate::Parse for DataTemplateMIsPrefabParentVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::V5_0(v))
+        } else {
+            let v = r.read_bool()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct DataTemplate {
     pub m_last_merge_identifier: Option<Guid>,
@@ -14,7 +37,7 @@ pub struct DataTemplate {
     pub m_source_prefab: Option<PPtr>,
     pub m_father: Option<PPtr>,
     pub m_is_data_template: Option<bool>,
-    pub m_is_prefab_parent: Option<bool>,
+    pub m_is_prefab_parent: Option<DataTemplateMIsPrefabParentVariant>,
     pub m_is_prefab_asset: Option<bool>,
     pub m_name: Option<String>,
     pub m_is_exploded: Option<bool>,
@@ -54,15 +77,13 @@ impl crate::Parse for DataTemplate {
             r.align(4)?;
             m_parent_prefab = Some(crate::PPtr::parse(r, ver)?);
             m_root_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_is_prefab_parent = Some(r.read_bool()?);
-            r.align(4)?;
+            m_is_prefab_parent = Some(DataTemplateMIsPrefabParentVariant::parse(r, ver)?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
             m_modification = Some(PrefabModification::parse(r, ver)?);
             r.align(4)?;
             m_parent_prefab = Some(crate::PPtr::parse(r, ver)?);
             m_root_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_is_prefab_parent = Some(r.read_bool()?);
-            r.align(4)?;
+            m_is_prefab_parent = Some(DataTemplateMIsPrefabParentVariant::parse(r, ver)?);
             m_is_exploded = Some(r.read_bool()?);
             r.align(4)?;
         } else {

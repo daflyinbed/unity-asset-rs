@@ -25,92 +25,50 @@ impl crate::Parse for QualitySettings {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_default_standalone_quality = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_current_quality = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_default_web_player_quality = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_quality_settings = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { QualitySetting::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let mut m_default_standalone_quality = None;
+        let mut m_current_quality = None;
+        let mut m_default_web_player_quality = None;
+        let mut m_quality_settings = None;
+        let mut m_default_mobile_quality = None;
+        let mut m_stripped_maximum_lod_level = None;
+        let mut m_texture_mipmap_limit_group_names = None;
+        let mut m_editor_quality = None;
+        let mut fastest = None;
+        let mut fast = None;
+        let mut simple = None;
+        let mut good = None;
+        let mut beautiful = None;
+        let mut fantastic = None;
+        if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            m_current_quality = Some(r.read_i32()?);
+            m_quality_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { QualitySetting::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_default_mobile_quality = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_stripped_maximum_lod_level = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_texture_mipmap_limit_group_names = if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            m_texture_mipmap_limit_group_names = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_editor_quality = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let fastest = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = QualitySetting::parse(r, ver)?;
+            m_stripped_maximum_lod_level = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
+            m_current_quality = Some(r.read_i32()?);
+            m_quality_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { QualitySetting::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
+            m_stripped_maximum_lod_level = Some(r.read_i32()?);
         } else {
-            None
-        };
-        let fast = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = QualitySetting::parse(r, ver)?;
+            m_default_standalone_quality = Some(r.read_i32()?);
+            m_default_web_player_quality = Some(r.read_i32()?);
+            m_default_mobile_quality = Some(r.read_i32()?);
+            m_editor_quality = Some(r.read_i32()?);
+            fastest = Some(QualitySetting::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let simple = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = QualitySetting::parse(r, ver)?;
+            fast = Some(QualitySetting::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let good = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = QualitySetting::parse(r, ver)?;
+            simple = Some(QualitySetting::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let beautiful = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = QualitySetting::parse(r, ver)?;
+            good = Some(QualitySetting::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let fantastic = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = QualitySetting::parse(r, ver)?;
+            beautiful = Some(QualitySetting::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
+            fantastic = Some(QualitySetting::parse(r, ver)?);
+            r.align(4)?;
+        }
 
         Ok(QualitySettings {
             m_default_standalone_quality,

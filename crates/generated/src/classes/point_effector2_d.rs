@@ -3,6 +3,73 @@
 use crate::PPtr;
 use crate::subclasses::bit_field::BitField;
 
+
+/// 版本枚举：PointEffector2DMForceSourceVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum PointEffector2DMForceSourceVariant {
+    Default(u8),
+    V5_5(i32),
+}
+
+impl crate::Parse for PointEffector2DMForceSourceVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 5, 0) {
+            let v = r.read_i32()?;
+            Ok(Self::V5_5(v))
+        } else {
+            let v = r.read_u8()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：PointEffector2DMForceTargetVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum PointEffector2DMForceTargetVariant {
+    Default(u8),
+    V5_5(i32),
+}
+
+impl crate::Parse for PointEffector2DMForceTargetVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 5, 0) {
+            let v = r.read_i32()?;
+            Ok(Self::V5_5(v))
+        } else {
+            let v = r.read_u8()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：PointEffector2DMForceModeVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum PointEffector2DMForceModeVariant {
+    Default(u8),
+    V5_5(i32),
+}
+
+impl crate::Parse for PointEffector2DMForceModeVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 5, 0) {
+            let v = r.read_i32()?;
+            Ok(Self::V5_5(v))
+        } else {
+            let v = r.read_u8()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct PointEffector2D {
     pub m_game_object: PPtr,
@@ -14,9 +81,9 @@ pub struct PointEffector2D {
     pub m_distance_scale: f32,
     pub m_drag: Option<f32>,
     pub m_angular_drag: Option<f32>,
-    pub m_force_source: i32,
-    pub m_force_target: i32,
-    pub m_force_mode: i32,
+    pub m_force_source: PointEffector2DMForceSourceVariant,
+    pub m_force_target: PointEffector2DMForceTargetVariant,
+    pub m_force_mode: PointEffector2DMForceModeVariant,
     pub m_linear_damping: Option<f32>,
     pub m_angular_damping: Option<f32>,
 }
@@ -57,9 +124,9 @@ impl crate::Parse for PointEffector2D {
             m_drag = Some(r.read_f32()?);
             m_angular_drag = Some(r.read_f32()?);
         }
-            m_force_source = Some(r.read_i32()?);
-            m_force_target = Some(r.read_i32()?);
-            m_force_mode = Some(r.read_i32()?);
+            m_force_source = Some(PointEffector2DMForceSourceVariant::parse(r, ver)?);
+            m_force_target = Some(PointEffector2DMForceTargetVariant::parse(r, ver)?);
+            m_force_mode = Some(PointEffector2DMForceModeVariant::parse(r, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 1, 0) {
             m_linear_damping = Some(r.read_f32()?);
             m_angular_damping = Some(r.read_f32()?);

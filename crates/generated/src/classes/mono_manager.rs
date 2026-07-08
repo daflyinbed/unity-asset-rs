@@ -17,34 +17,30 @@ impl crate::Parse for MonoManager {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_scripts = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        let m_script_hashes = if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = Hash128::parse(r, ver)?; let b = Hash128::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?)
+        let mut m_scripts = None;
+        let mut m_script_hashes = None;
+        let mut m_assembly_names = None;
+        let mut m_runtime_class_hashes = None;
+        let mut m_assembly_types = None;
+        if *ver >= crate::UnityVersion::new(2020, 2, 0) {
+            m_script_hashes = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = Hash128::parse(r, ver)?; let b = Hash128::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_runtime_class_hashes = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i32()?; let b = Hash128::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
         } else {
-            None
-        };
-        let m_assembly_names = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+        }
+            m_scripts = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+        if *ver >= crate::UnityVersion::new(2020, 2, 0) {
+        } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            m_assembly_names = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_runtime_class_hashes = if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i32()?; let b = Hash128::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?)
-        } else {
-            None
-        };
-        let m_assembly_types = if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+            m_assembly_types = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
         } else {
-            None
-        };
+            m_assembly_names = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        }
 
         Ok(MonoManager {
-            m_scripts,
+            m_scripts: m_scripts.unwrap(),
             m_script_hashes,
             m_assembly_names,
             m_runtime_class_hashes,

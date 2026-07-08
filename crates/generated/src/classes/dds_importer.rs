@@ -19,60 +19,47 @@ impl crate::Parse for DdsImporter {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_file_id_to_recycle_name = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i32()?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        let mut m_name = None;
+        let mut m_file_id_to_recycle_name = None;
+        let mut m_user_data = None;
+        let mut m_is_readable = None;
+        let mut m_old_hash_identity = None;
+        let mut m_asset_bundle_name = None;
+        let mut m_new_hash_identity = None;
+        let mut m_asset_bundle_variant = None;
+            m_name = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_user_data = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            let v = r.read_aligned_string()?;
+        if *ver >= crate::UnityVersion::new(5, 5, 0) {
+            m_is_readable = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_is_readable = if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = r.read_bool()?;
+            m_user_data = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_old_hash_identity = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = MdFour::parse(r, ver)?;
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_asset_bundle_name = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_aligned_string()?;
+            m_asset_bundle_variant = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_new_hash_identity = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = MdFour::parse(r, ver)?;
+        } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            m_user_data = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_asset_bundle_variant = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_aligned_string()?;
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
+            m_asset_bundle_variant = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
+            m_user_data = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
         } else {
-            None
-        };
+            m_file_id_to_recycle_name = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i32()?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_old_hash_identity = Some(MdFour::parse(r, ver)?);
+            r.align(4)?;
+            m_new_hash_identity = Some(MdFour::parse(r, ver)?);
+            r.align(4)?;
+        }
 
         Ok(DdsImporter {
-            m_name,
+            m_name: m_name.unwrap(),
             m_file_id_to_recycle_name,
             m_user_data,
             m_is_readable,

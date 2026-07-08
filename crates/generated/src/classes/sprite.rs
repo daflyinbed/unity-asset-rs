@@ -8,6 +8,29 @@ use crate::subclasses::sprite_render_data::SpriteRenderData;
 use crate::subclasses::vector2f::Vector2f;
 use crate::subclasses::vector4f::Vector4f;
 
+
+/// 版本枚举：SpriteMExtrudeVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum SpriteMExtrudeVariant {
+    Default(u32),
+    V6000_5(u32),
+}
+
+impl crate::Parse for SpriteMExtrudeVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(6000, 5, 0) {
+            let v = r.read_u32()?;
+            r.align(4)?;
+            Ok(Self::V6000_5(v))
+        } else {
+            let v = r.read_u32()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct Sprite {
     pub m_name: String,
@@ -15,7 +38,7 @@ pub struct Sprite {
     pub m_offset: Vector2f,
     pub m_pixels_to_units: f32,
     pub m_border: Option<Vector4f>,
-    pub m_extrude: u32,
+    pub m_extrude: SpriteMExtrudeVariant,
     pub m_rd: SpriteRenderData,
     pub m_pivot: Option<Vector2f>,
     pub m_is_polygon: Option<bool>,
@@ -32,81 +55,82 @@ impl crate::Parse for Sprite {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_rect = Rectf::parse(r, ver)?;
-        let m_offset = Vector2f::parse(r, ver)?;
-        let m_pixels_to_units = r.read_f32()?;
-        let m_border = if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            Some(Vector4f::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_extrude = r.read_u32()?;
-        r.align(4)?;
-        let m_rd = SpriteRenderData::parse(r, ver)?;
-        r.align(4)?;
-        let m_pivot = if *ver >= crate::UnityVersion::new(5, 4, 2) {
-            Some(Vector2f::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_is_polygon = if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            let v = r.read_bool()?;
+        let mut m_name = None;
+        let mut m_rect = None;
+        let mut m_offset = None;
+        let mut m_pixels_to_units = None;
+        let mut m_border = None;
+        let mut m_extrude = None;
+        let mut m_rd = None;
+        let mut m_pivot = None;
+        let mut m_is_polygon = None;
+        let mut m_render_data_key = None;
+        let mut m_atlas_tags = None;
+        let mut m_sprite_atlas = None;
+        let mut m_physics_shape = None;
+        let mut m_bones = None;
+        let mut m_scriptable_objects = None;
+            m_name = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
+            m_rect = Some(Rectf::parse(r, ver)?);
+            m_offset = Some(Vector2f::parse(r, ver)?);
+        if *ver >= crate::UnityVersion::new(4, 5, 0) {
+            m_border = Some(Vector4f::parse(r, ver)?);
         } else {
-            None
-        };
-        let m_render_data_key = if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            Some(( { let a = Guid::parse(r, ver)?; let b = r.read_i64()?; Ok((a, b)) } )?)
+        }
+            m_pixels_to_units = Some(r.read_f32()?);
+        if *ver >= crate::UnityVersion::new(5, 4, 2) {
+            m_pivot = Some(Vector2f::parse(r, ver)?);
         } else {
-            None
-        };
-        let m_atlas_tags = if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+        }
+            m_extrude = Some(SpriteMExtrudeVariant::parse(r, ver)?);
+        if *ver >= crate::UnityVersion::new(6000, 5, 0) {
+            m_render_data_key = Some(( { let a = Guid::parse(r, ver)?; let b = r.read_i64()?; Ok((a, b)) } )?);
+            m_atlas_tags = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_sprite_atlas = if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = crate::PPtr::parse(r, ver)?;
+            m_sprite_atlas = Some(crate::PPtr::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_physics_shape = if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            m_is_polygon = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_bones = if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { SpriteBone::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            m_render_data_key = Some(( { let a = Guid::parse(r, ver)?; let b = r.read_i64()?; Ok((a, b)) } )?);
+            m_atlas_tags = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_scriptable_objects = if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            m_sprite_atlas = Some(crate::PPtr::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
+        } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
+            m_is_polygon = Some(r.read_bool()?);
+            r.align(4)?;
         } else {
-            None
-        };
+        }
+            m_rd = Some(SpriteRenderData::parse(r, ver)?);
+            r.align(4)?;
+        if *ver >= crate::UnityVersion::new(2023, 1, 0) {
+            m_physics_shape = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_bones = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { SpriteBone::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_scriptable_objects = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
+            m_physics_shape = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_bones = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { SpriteBone::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            m_physics_shape = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        } else {
+        }
 
         Ok(Sprite {
-            m_name,
-            m_rect,
-            m_offset,
-            m_pixels_to_units,
+            m_name: m_name.unwrap(),
+            m_rect: m_rect.unwrap(),
+            m_offset: m_offset.unwrap(),
+            m_pixels_to_units: m_pixels_to_units.unwrap(),
             m_border,
-            m_extrude,
-            m_rd,
+            m_extrude: m_extrude.unwrap(),
+            m_rd: m_rd.unwrap(),
             m_pivot,
             m_is_polygon,
             m_render_data_key,

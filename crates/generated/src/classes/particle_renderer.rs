@@ -5,20 +5,255 @@ use crate::subclasses::static_batch_info::StaticBatchInfo;
 use crate::subclasses::uv_animation::UvAnimation;
 use crate::subclasses::vector4f::Vector4f;
 
+
+/// 版本枚举：ParticleRendererMEnabledVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum ParticleRendererMEnabledVariant {
+    Default(bool),
+    V5_0(bool),
+    V5_4(bool),
+}
+
+impl crate::Parse for ParticleRendererMEnabledVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 4, 0) {
+            let v = r.read_bool()?;
+            Ok(Self::V5_4(v))
+        } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::V5_0(v))
+        } else {
+            let v = r.read_bool()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：ParticleRendererMCastShadowsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum ParticleRendererMCastShadowsVariant {
+    Default(bool),
+    V5_0(u8),
+}
+
+impl crate::Parse for ParticleRendererMCastShadowsVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            let v = r.read_u8()?;
+            Ok(Self::V5_0(v))
+        } else {
+            let v = r.read_bool()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：ParticleRendererMReceiveShadowsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum ParticleRendererMReceiveShadowsVariant {
+    Default(bool),
+    V5_0(bool),
+    V5_4(u8),
+}
+
+impl crate::Parse for ParticleRendererMReceiveShadowsVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 4, 0) {
+            let v = r.read_u8()?;
+            Ok(Self::V5_4(v))
+        } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::V5_0(v))
+        } else {
+            let v = r.read_bool()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：ParticleRendererMLightmapIndexVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum ParticleRendererMLightmapIndexVariant {
+    Default(u8),
+    V5_0(u16),
+}
+
+impl crate::Parse for ParticleRendererMLightmapIndexVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            let v = r.read_u16()?;
+            Ok(Self::V5_0(v))
+        } else {
+            let v = r.read_u8()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：ParticleRendererMMaterialsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum ParticleRendererMMaterialsVariant {
+    Default(Vec<PPtr>),
+    V2017_1(Vec<PPtr>),
+}
+
+impl crate::Parse for ParticleRendererMMaterialsVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：ParticleRendererMReflectionProbeUsageVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum ParticleRendererMReflectionProbeUsageVariant {
+    Default(i32),
+    V5_4(u8),
+}
+
+impl crate::Parse for ParticleRendererMReflectionProbeUsageVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 4, 0) {
+            let v = r.read_u8()?;
+            r.align(4)?;
+            Ok(Self::V5_4(v))
+        } else {
+            let v = r.read_i32()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：ParticleRendererMLightProbeAnchorVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum ParticleRendererMLightProbeAnchorVariant {
+    Default(PPtr),
+    V4_3(PPtr),
+}
+
+impl crate::Parse for ParticleRendererMLightProbeAnchorVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(4, 3, 0) {
+            let v = crate::PPtr::parse(r, ver)?;
+            r.align(4)?;
+            Ok(Self::V4_3(v))
+        } else {
+            let v = crate::PPtr::parse(r, ver)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：ParticleRendererMSortingLayerIdVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum ParticleRendererMSortingLayerIdVariant {
+    Default(u32),
+    V5_0(i32),
+}
+
+impl crate::Parse for ParticleRendererMSortingLayerIdVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            let v = r.read_i32()?;
+            Ok(Self::V5_0(v))
+        } else {
+            let v = r.read_u32()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：ParticleRendererMSortingOrderVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum ParticleRendererMSortingOrderVariant {
+    Default(i16),
+    V4_5(i16),
+}
+
+impl crate::Parse for ParticleRendererMSortingOrderVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(4, 5, 0) {
+            let v = r.read_i16()?;
+            r.align(4)?;
+            Ok(Self::V4_5(v))
+        } else {
+            let v = r.read_i16()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：ParticleRendererMProbeAnchorVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum ParticleRendererMProbeAnchorVariant {
+    Default(PPtr),
+    V5_4(PPtr),
+}
+
+impl crate::Parse for ParticleRendererMProbeAnchorVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 4, 0) {
+            let v = crate::PPtr::parse(r, ver)?;
+            Ok(Self::V5_4(v))
+        } else {
+            let v = crate::PPtr::parse(r, ver)?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct ParticleRenderer {
     pub m_game_object: PPtr,
-    pub m_enabled: bool,
-    pub m_cast_shadows: u8,
-    pub m_receive_shadows: u8,
-    pub m_lightmap_index: u16,
+    pub m_enabled: ParticleRendererMEnabledVariant,
+    pub m_cast_shadows: ParticleRendererMCastShadowsVariant,
+    pub m_receive_shadows: ParticleRendererMReceiveShadowsVariant,
+    pub m_lightmap_index: ParticleRendererMLightmapIndexVariant,
     pub m_motion_vectors: Option<u8>,
     pub m_dynamic_occludee: Option<u8>,
     pub m_lightmap_tiling_offset: Vector4f,
     pub m_lightmap_index_dynamic: Option<u16>,
     pub m_light_probe_usage: Option<u8>,
-    pub m_materials: Vec<PPtr>,
-    pub m_reflection_probe_usage: Option<u8>,
+    pub m_materials: ParticleRendererMMaterialsVariant,
+    pub m_reflection_probe_usage: Option<ParticleRendererMReflectionProbeUsageVariant>,
     pub m_subset_indices: Option<Vec<u32>>,
     pub m_lightmap_tiling_offset_dynamic: Option<Vector4f>,
     pub m_static_batch_root: PPtr,
@@ -26,15 +261,15 @@ pub struct ParticleRenderer {
     pub m_camera_velocity_scale: f32,
     pub m_use_light_probes: Option<bool>,
     pub m_stretch_particles: i32,
-    pub m_light_probe_anchor: Option<PPtr>,
+    pub m_light_probe_anchor: Option<ParticleRendererMLightProbeAnchorVariant>,
     pub m_length_scale: f32,
     pub m_sorting_layer: Option<i16>,
-    pub m_sorting_layer_id: Option<i32>,
+    pub m_sorting_layer_id: Option<ParticleRendererMSortingLayerIdVariant>,
     pub m_velocity_scale: f32,
-    pub m_sorting_order: Option<i16>,
+    pub m_sorting_order: Option<ParticleRendererMSortingOrderVariant>,
     pub m_static_batch_info: Option<StaticBatchInfo>,
     pub m_max_particle_size: f32,
-    pub m_probe_anchor: Option<PPtr>,
+    pub m_probe_anchor: Option<ParticleRendererMProbeAnchorVariant>,
     pub uv_animation: UvAnimation,
     pub m_light_probe_volume_override: Option<PPtr>,
 }
@@ -75,30 +310,27 @@ impl crate::Parse for ParticleRenderer {
         let mut uv_animation = None;
         let mut m_light_probe_volume_override = None;
             m_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_enabled = Some(r.read_bool()?);
-            m_cast_shadows = Some(r.read_u8()?);
-            m_receive_shadows = Some(r.read_u8()?);
+            m_enabled = Some(ParticleRendererMEnabledVariant::parse(r, ver)?);
+            m_cast_shadows = Some(ParticleRendererMCastShadowsVariant::parse(r, ver)?);
+            m_receive_shadows = Some(ParticleRendererMReceiveShadowsVariant::parse(r, ver)?);
         if *ver >= crate::UnityVersion::new(2018, 1, 0) {
             m_dynamic_occludee = Some(r.read_u8()?);
             m_motion_vectors = Some(r.read_u8()?);
             m_light_probe_usage = Some(r.read_u8()?);
-            m_reflection_probe_usage = Some(r.read_u8()?);
-            r.align(4)?;
+            m_reflection_probe_usage = Some(ParticleRendererMReflectionProbeUsageVariant::parse(r, ver)?);
             m_rendering_layer_mask = Some(r.read_u32()?);
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             m_dynamic_occludee = Some(r.read_u8()?);
             m_motion_vectors = Some(r.read_u8()?);
             m_light_probe_usage = Some(r.read_u8()?);
-            m_reflection_probe_usage = Some(r.read_u8()?);
-            r.align(4)?;
+            m_reflection_probe_usage = Some(ParticleRendererMReflectionProbeUsageVariant::parse(r, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
             m_motion_vectors = Some(r.read_u8()?);
             m_light_probe_usage = Some(r.read_u8()?);
-            m_reflection_probe_usage = Some(r.read_u8()?);
-            r.align(4)?;
+            m_reflection_probe_usage = Some(ParticleRendererMReflectionProbeUsageVariant::parse(r, ver)?);
         } else {
         }
-            m_lightmap_index = Some(r.read_u16()?);
+            m_lightmap_index = Some(ParticleRendererMLightmapIndexVariant::parse(r, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_lightmap_index_dynamic = Some(r.read_u16()?);
         } else {
@@ -108,8 +340,7 @@ impl crate::Parse for ParticleRenderer {
             m_lightmap_tiling_offset_dynamic = Some(Vector4f::parse(r, ver)?);
         } else {
         }
-            m_materials = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_materials = Some(ParticleRendererMMaterialsVariant::parse(r, ver)?);
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
             m_static_batch_info = Some(StaticBatchInfo::parse(r, ver)?);
         } else {
@@ -117,57 +348,41 @@ impl crate::Parse for ParticleRenderer {
         }
             m_static_batch_root = Some(crate::PPtr::parse(r, ver)?);
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            m_probe_anchor = Some(crate::PPtr::parse(r, ver)?);
+            m_probe_anchor = Some(ParticleRendererMProbeAnchorVariant::parse(r, ver)?);
             m_light_probe_volume_override = Some(crate::PPtr::parse(r, ver)?);
             r.align(4)?;
-            m_sorting_layer_id = Some(r.read_i32()?);
+            m_sorting_layer_id = Some(ParticleRendererMSortingLayerIdVariant::parse(r, ver)?);
             m_sorting_layer = Some(r.read_i16()?);
-            m_sorting_order = Some(r.read_i16()?);
-            r.align(4)?;
-        } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            m_probe_anchor = Some(crate::PPtr::parse(r, ver)?);
-            m_light_probe_volume_override = Some(crate::PPtr::parse(r, ver)?);
-            r.align(4)?;
-            m_sorting_layer = Some(r.read_i16()?);
-            m_sorting_order = Some(r.read_i16()?);
-            r.align(4)?;
+            m_sorting_order = Some(ParticleRendererMSortingOrderVariant::parse(r, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            m_probe_anchor = Some(crate::PPtr::parse(r, ver)?);
+            m_probe_anchor = Some(ParticleRendererMProbeAnchorVariant::parse(r, ver)?);
             m_light_probe_volume_override = Some(crate::PPtr::parse(r, ver)?);
             r.align(4)?;
-            m_sorting_layer_id = Some(r.read_i32()?);
-            m_sorting_order = Some(r.read_i16()?);
-            r.align(4)?;
+            m_sorting_layer_id = Some(ParticleRendererMSortingLayerIdVariant::parse(r, ver)?);
+            m_sorting_order = Some(ParticleRendererMSortingOrderVariant::parse(r, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_use_light_probes = Some(r.read_bool()?);
             r.align(4)?;
-            m_reflection_probe_usage = Some(r.read_u8()?);
-            r.align(4)?;
-            m_probe_anchor = Some(crate::PPtr::parse(r, ver)?);
-            m_sorting_layer_id = Some(r.read_i32()?);
-            m_sorting_order = Some(r.read_i16()?);
-            r.align(4)?;
+            m_reflection_probe_usage = Some(ParticleRendererMReflectionProbeUsageVariant::parse(r, ver)?);
+            m_probe_anchor = Some(ParticleRendererMProbeAnchorVariant::parse(r, ver)?);
+            m_sorting_layer_id = Some(ParticleRendererMSortingLayerIdVariant::parse(r, ver)?);
+            m_sorting_order = Some(ParticleRendererMSortingOrderVariant::parse(r, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 5, 0) {
             m_use_light_probes = Some(r.read_bool()?);
             r.align(4)?;
-            m_light_probe_anchor = Some(crate::PPtr::parse(r, ver)?);
-            r.align(4)?;
-            m_sorting_layer_id = Some(r.read_i32()?);
-            m_sorting_order = Some(r.read_i16()?);
-            r.align(4)?;
+            m_light_probe_anchor = Some(ParticleRendererMLightProbeAnchorVariant::parse(r, ver)?);
+            m_sorting_layer_id = Some(ParticleRendererMSortingLayerIdVariant::parse(r, ver)?);
+            m_sorting_order = Some(ParticleRendererMSortingOrderVariant::parse(r, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
             m_use_light_probes = Some(r.read_bool()?);
             r.align(4)?;
-            m_light_probe_anchor = Some(crate::PPtr::parse(r, ver)?);
-            r.align(4)?;
+            m_light_probe_anchor = Some(ParticleRendererMLightProbeAnchorVariant::parse(r, ver)?);
             m_sorting_layer = Some(r.read_i16()?);
-            m_sorting_order = Some(r.read_i16()?);
-            r.align(4)?;
+            m_sorting_order = Some(ParticleRendererMSortingOrderVariant::parse(r, ver)?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
             m_use_light_probes = Some(r.read_bool()?);
             r.align(4)?;
-            m_light_probe_anchor = Some(crate::PPtr::parse(r, ver)?);
-            r.align(4)?;
+            m_light_probe_anchor = Some(ParticleRendererMLightProbeAnchorVariant::parse(r, ver)?);
         } else {
         }
             m_camera_velocity_scale = Some(r.read_f32()?);

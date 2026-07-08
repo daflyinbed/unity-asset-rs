@@ -1,10 +1,12 @@
 //! Pass 管线：从 `TpkTypeTree` 到 `Pipeline`（含 `EmitClass` 集合）。
 //!
-//! 顺序：p01 归一化 → p02 抽 subclass → p03 收 PPtr 目标 → p04 解析继承
-//!     → p05 字段并集 → p06 计算对齐。
+//! 顺序：p00 过滤引擎类型 → p01 归一化 → p02 抽 subclass → p03 收 PPtr 目标
+//!     → p04 解析继承 → p05 字段并集 → p06 计算对齐。
 //! emit 在 `emit.rs` 里。
 
 use std::collections::{BTreeMap, BTreeSet};
+
+use heck::ToUpperCamelCase;
 
 use crate::ir::*;
 use crate::names::{to_rust_field_name, to_rust_type_name};
@@ -14,7 +16,7 @@ use crate::tpk::{TpkTypeTree, TpkUnityNode, UnityVersion};
 // 入口
 // ────────────────────────────────────────────────────────────────────
 
-/// 跑完整 pass 管线（p01-p06）。消耗 `TpkTypeTree`。
+/// 跑完整 pass 管线（p00-p06）。消耗 `TpkTypeTree`。
 pub fn run_pipeline(blob: TpkTypeTree) -> Pipeline {
     // 收集所有 Unity 版本（按升序）
     let all_versions = {
@@ -31,6 +33,7 @@ pub fn run_pipeline(blob: TpkTypeTree) -> Pipeline {
     };
     let mut blob = blob;
 
+    p00_filter_engine_types(&mut blob);
     p01_normalize_types(&mut blob);
     p02_extract_subclasses(&blob, &mut state);
     p03_collect_pptr_targets(&blob, &mut state);
@@ -39,6 +42,34 @@ pub fn run_pipeline(blob: TpkTypeTree) -> Pipeline {
     p06_plan_alignment(&mut state);
 
     state
+}
+
+// ────────────────────────────────────────────────────────────────────
+// p00：过滤引擎内部类型（classID 100000-100011）
+// ────────────────────────────────────────────────────────────────────
+
+/// 过滤 Unity 引擎内部类型。对齐 AssetRipper `Pass000_ProcessTpk.cs:85` 的
+/// `IsUnacceptable(int typeId) => typeId is >= 100000 and <= 100011`。
+///
+/// 这些 classID（`int`=100000、`bool`=100001、`float`=100002、`MonoObject`、
+/// `Collision`、`Vector3f`=100005、`RootMotionData`、`Collision2D`、
+/// `AudioMixerLiveUpdateFloat/Bool`、`Polygon2D`=100010、`void`=100011）在 Unity
+/// 类型系统里注册了 classID 但**从不作为独立对象序列化**。TPK 里它们的
+/// `abstract=false` 但 `release_root=None` —— 字段定义只作为内嵌 Type 节点出现在
+/// 其他类的字段里。若不过滤，会生成空 struct + 空 parse，引用它们的类
+/// （如 `Transform` 用 `Vector3f`）会读 0 字节导致后续字段错位。
+fn p00_filter_engine_types(blob: &mut TpkTypeTree) {
+    log::info!("p00: 过滤引擎内部类型 (classID 100000-100011)");
+    let engine_type_ids: Vec<i32> = blob
+        .classes
+        .keys()
+        .filter(|&&id| (100000..=100011).contains(&id))
+        .copied()
+        .collect();
+    for id in engine_type_ids {
+        log::debug!("p00: 移除 classID={id}");
+        blob.classes.remove(&id);
+    }
 }
 
 // ────────────────────────────────────────────────────────────────────
@@ -77,13 +108,17 @@ fn normalize_one(s: &str) -> String {
 fn p02_extract_subclasses(blob: &TpkTypeTree, state: &mut Pipeline) {
     log::info!("p02: 抽取 subclass");
 
-    // 先收集所有**非抽象** main class 的 Unity 名字。
-    // 每个 main class 的 release_root 节点本身也是 NodeType::Type（type_name = 类名，
-    // 且有子节点），若不排除会被误判成 subclass，导致同名文件在 classes/ 和 subclasses/
-    // 各生成一份（subclass 版本走「首次出现子树」分支，字段会错）。
+    // 收集所有非抽象 main class 的 Unity 名字。p00 已过滤 classID 100000-100011，
+    // 所以这里不再需要 release_root 检查 —— 剩下的非抽象 main class 都有 release_root。
     //
-    // 只排除非抽象类：抽象 main class（如 Collider）不会生成 classes/X.rs，但会被其他
-    // 类按内嵌 struct 引用，仍需作为 subclass 留下。
+    // 排除 main class 名字是因为：每个 main class 的 release_root 节点本身也是
+    // NodeType::Type（type_name = 类名，且有子节点），若不排除会被误判成 subclass，
+    // 导致同名文件在 classes/ 和 subclasses/ 各生成一份。
+    //
+    // 注意：这里不扫 release_root 字段树（AssetRipper Pass007 的做法），因为 p05 的
+    // subclass 字段提取取「node_pool 首次出现」，可能拿到 editor 树节点，引用了 release
+    // 树里没有的 subclass（如 PackingParameters 只出现在 editor 树的 SpriteAtlasEditorData
+    // 里）。全面对齐 Pass007 需要同时重写 p05 的版本变体合并逻辑。
     let main_names: BTreeSet<String> = blob
         .classes
         .values()
@@ -118,7 +153,6 @@ fn p02_extract_subclasses(blob: &TpkTypeTree, state: &mut Pipeline) {
             unity_name: unity_name.clone(),
             own_fields: Vec::new(),
             is_abstract: false,
-            is_mono_behaviour: false,
             version_layouts: Vec::new(),
         };
         state.classes.insert(ClassKey::Subclass(unity_name), class);
@@ -151,14 +185,23 @@ fn parse_pptr_target(type_name: &str) -> Option<String> {
 }
 
 // ────────────────────────────────────────────────────────────────────
-// p04：创建 main class 骨架（名字 + abstract/mono_behaviour 标志）
+// p04：创建 main class 骨架（名字 + abstract 标志）
 // ────────────────────────────────────────────────────────────────────
 
 fn p04_resolve_inheritance(blob: &TpkTypeTree, state: &mut Pipeline) {
     log::info!("p04: 创建 main class 骨架");
 
     // 第一遍：创建所有 EmitClass
+    // p00 已过滤掉 classID 100000-100011（引擎内部类型，无 release_root），
+    // 这里无需再检查 release_root。
     for (class_id, info) in &blob.classes {
+        // MonoBehaviour (classID=114) 不生成：用户脚本字段不在 TPK 里，
+        // 运行时由主 crate 用 bundle 内嵌 TypeTree 解释器处理。
+        if *class_id == 114 {
+            log::debug!("p04: 跳过 MonoBehaviour (classID=114)");
+            continue;
+        }
+
         // 第一个 class 的 name/abstract 标志
         let first_with_class = info.classes.iter().find_map(|e| e.class.as_ref());
         let (name, is_abstract) = if let Some(c) = first_with_class {
@@ -173,7 +216,6 @@ fn p04_resolve_inheritance(blob: &TpkTypeTree, state: &mut Pipeline) {
         };
 
         let rust_name = to_rust_type_name(&name);
-        let is_mono_behaviour = *class_id == 114 || name == "MonoBehaviour";
 
         let class = EmitClass {
             key: ClassKey::Main(*class_id),
@@ -181,7 +223,6 @@ fn p04_resolve_inheritance(blob: &TpkTypeTree, state: &mut Pipeline) {
             unity_name: name,
             own_fields: Vec::new(),
             is_abstract,
-            is_mono_behaviour,
             version_layouts: Vec::new(),
         };
         state.classes.insert(ClassKey::Main(*class_id), class);
@@ -221,8 +262,14 @@ fn p05_merge_fields(blob: &TpkTypeTree, state: &mut Pipeline) {
     let mut layouts_cache: BTreeMap<i32, Vec<VersionLayout>> = BTreeMap::new();
     let main_ids: Vec<i32> = blob.classes.keys().copied().collect();
     for class_id in &main_ids {
+        let class_name = state
+            .classes
+            .get(&ClassKey::Main(*class_id))
+            .map(|c| c.name.as_str())
+            .unwrap_or("Unknown");
         compute_main_fields(
             *class_id,
+            class_name,
             blob,
             &mut self_cache,
             &mut layouts_cache,
@@ -290,6 +337,7 @@ fn p05_merge_fields(blob: &TpkTypeTree, state: &mut Pipeline) {
 /// 存为 `VersionLayout` 供 emit 生成 version-gated parse 块。
 fn compute_main_fields(
     class_id: i32,
+    class_name: &str,
     blob: &TpkTypeTree,
     self_cache: &mut BTreeMap<i32, Vec<EmitField>>,
     layouts_cache: &mut BTreeMap<i32, Vec<VersionLayout>>,
@@ -297,7 +345,7 @@ fn compute_main_fields(
     if self_cache.contains_key(&class_id) {
         return;
     }
-    let self_fields = compute_main_self_fields(class_id, blob, self_cache);
+    let self_fields = compute_main_self_fields(class_id, class_name, blob, self_cache);
     self_cache.insert(class_id, self_fields.clone());
 
     // Per-version layouts：每个版本变体按 release_root 真实顺序（扁平，含继承链字段）
@@ -317,8 +365,7 @@ fn compute_main_fields(
             let fields: Vec<EmitField> = flat
                 .into_iter()
                 .map(|f| {
-                    let align_after =
-                        (f.meta_flag & 0x4000) != 0 || (f.meta_flag & 0x8000) != 0;
+                    let align_after = meta_to_align(f.meta_flag);
                     EmitField {
                         rust_name: f.rust_name,
                         unity_name: f.unity_name,
@@ -329,10 +376,16 @@ fn compute_main_fields(
                     }
                 })
                 .collect();
-            layouts.push(VersionLayout {
-                since: (entry.version.major, entry.version.minor, entry.version.build),
+            let new_layout = VersionLayout {
+                since: entry.version.major_minor_build(),
                 fields,
-            });
+            };
+            // 去重：同 (major, minor, build) 的版本取最后一个
+            if layouts.last().is_some_and(|l| l.since == new_layout.since) {
+                *layouts.last_mut().unwrap() = new_layout;
+            } else {
+                layouts.push(new_layout);
+            }
         }
     }
     layouts_cache.insert(class_id, layouts);
@@ -340,19 +393,25 @@ fn compute_main_fields(
 
 /// 判定是否需要 version-gated parse 块，需要时返回按版本去重后的 layouts。
 ///
-/// **只有当某两个版本变体的公共字段相对顺序不一致（真重排）时才需要 version-gated**；
-/// 字段仅增减（公共字段相对顺序不变）时，线性 parse + per-field `Option<T>` 门控即可正确处理，
-/// 无需冗长的 `let mut x = None; if/else` 块。
+/// 线性 parse + per-field `Option<T>` 门控**只在以下两个条件都满足时才安全**：
+/// 1. 所有版本变体的公共字段相对顺序一致（`common_order_consistent`）
+/// 2. 合并后的字段顺序兼容每个版本的实际字节布局（`merged_order_compatible`）
+///
+/// 条件 2 是必要的因为：新字段可能插在现有字段之间（如 v5.3 在 `material` 前插入
+/// `density`）。此时公共字段顺序不变（条件 1 过），但 `merge_fields_across_versions`
+/// 按首次出现位置排序得到的合并顺序（`material` 先于 `density`）与新版本的实际字节
+/// 顺序（`density` 先于 `material`）不兼容，线性 parse 会读到错误的字节。
 fn dedup_layouts(layouts: &[VersionLayout]) -> Vec<VersionLayout> {
     if layouts.len() <= 1 {
         return Vec::new(); // 0 或 1 个 = 无需分块
     }
 
-    // 所有版本变体的公共字段相对顺序都一致 → 线性 parse 足够
     let orders: Vec<Vec<&str>> = layouts
         .iter()
         .map(|l| l.fields.iter().map(|f| f.rust_name.as_str()).collect())
         .collect();
+
+    // 条件 1：公共字段相对顺序是否一致
     let mut any_reorder = false;
     'outer: for i in 0..orders.len() {
         for j in (i + 1)..orders.len() {
@@ -362,11 +421,20 @@ fn dedup_layouts(layouts: &[VersionLayout]) -> Vec<VersionLayout> {
             }
         }
     }
+
     if !any_reorder {
-        return Vec::new();
+        // 条件 2：合并顺序是否兼容每个版本的实际字段顺序
+        let merged_order = compute_merged_field_order(&orders);
+        if orders
+            .iter()
+            .all(|ver_order| merged_order_compatible(&merged_order, ver_order))
+        {
+            return Vec::new(); // 线性 parse 安全
+        }
+        // 合并顺序不兼容某些版本（新字段插在现有字段之间）→ 需要 version-gated
     }
 
-    // 有真重排：合并连续相同顺序的 layouts，减少分支数
+    // 有真重排（或合并顺序不兼容）：合并连续相同顺序的 layouts，减少分支数
     let mut merged: Vec<VersionLayout> = Vec::new();
     for layout in layouts {
         let order: Vec<&str> = layout.fields.iter().map(|f| f.rust_name.as_str()).collect();
@@ -394,9 +462,57 @@ fn common_order_consistent(a: &[&str], b: &[&str]) -> bool {
     a_common == b_common
 }
 
+/// 计算合并后的字段顺序。逻辑同 `merge_fields_across_versions` 的排序：
+/// 按"所有版本中首次出现的最小位置"稳定排序。
+///
+/// 这一步必须和 `merge_fields_across_versions` 产出相同的顺序，否则兼容性检查
+/// 会验证错误的序列。
+fn compute_merged_field_order<'a>(orders: &[Vec<&'a str>]) -> Vec<&'a str> {
+    let mut all_names: Vec<&str> = Vec::new();
+    let mut seen: BTreeSet<&str> = BTreeSet::new();
+    for order in orders {
+        for &name in order {
+            if seen.insert(name) {
+                all_names.push(name);
+            }
+        }
+    }
+    // 稳定排序：按"所有版本中的最小位置"
+    all_names.sort_by_key(|&name| {
+        orders
+            .iter()
+            .filter_map(|order| order.iter().position(|&n| n == name))
+            .min()
+            .unwrap_or(usize::MAX)
+    });
+    all_names
+}
+
+/// 检查合并顺序是否兼容某个版本的实际字段顺序。
+///
+/// 兼容 = 该版本的字段在合并顺序中的位置序列**严格递增**。
+/// 不兼容（如新字段插在现有字段之间，导致合并顺序与版本实际顺序矛盾）→
+/// 线性 parse 会读到错误的字节，必须用 version-gated 块。
+fn merged_order_compatible(merged: &[&str], version_fields: &[&str]) -> bool {
+    let merged_pos: BTreeMap<&str, usize> = merged
+        .iter()
+        .enumerate()
+        .map(|(i, &name)| (name, i))
+        .collect();
+
+    let positions: Vec<usize> = version_fields
+        .iter()
+        .filter_map(|&name| merged_pos.get(&name).copied())
+        .collect();
+
+    // 位置序列必须严格递增
+    positions.windows(2).all(|w| w[0] < w[1])
+}
+
 /// class 的 self_fields（含祖先字段，因为 TPK 把继承链平铺到 release_root）。
 fn compute_main_self_fields(
     class_id: i32,
+    class_name: &str,
     blob: &TpkTypeTree,
     cache: &mut BTreeMap<i32, Vec<EmitField>>,
 ) -> Vec<EmitField> {
@@ -414,10 +530,19 @@ fn compute_main_self_fields(
             && let Some(root_idx) = cls.release_root
         {
             let fields = flatten_root(root_idx as usize, blob);
-            version_fields.push((entry.version, fields));
+            // 去重：TPK 可能含同 (major, minor, build) 但不同 type 后缀的版本
+            // （如 2021.1.0b1 和 2021.1.0f1）。取最后一个（更接近 final）。
+            if version_fields
+                .last()
+                .is_some_and(|(v, _)| v.major_minor_build() == entry.version.major_minor_build())
+            {
+                *version_fields.last_mut().unwrap() = (entry.version, fields);
+            } else {
+                version_fields.push((entry.version, fields));
+            }
         }
     }
-    let self_fields = merge_fields_across_versions(&version_fields);
+    let self_fields = merge_fields_across_versions(&version_fields, class_name);
     cache.insert(class_id, self_fields.clone());
     self_fields
 }
@@ -568,8 +693,13 @@ fn find_pair_in_map(node: &TpkUnityNode, blob: &TpkTypeTree) -> Option<u16> {
 }
 
 /// 把多个版本变体的字段列表合并成一份并集，每字段带 VersionGate。
+///
+/// 当同名字段在不同版本里类型不同时（如 `Mesh.m_shapes` 旧版为
+/// `Vec<MeshBlendShape>`，新版为 `Vec<MeshBlendShapeVertex>`），
+/// 不再取最新版本类型，而是生成 `VersionedEnum`。
 fn merge_fields_across_versions(
     versions: &[(UnityVersion, Vec<FlatField>)],
+    class_name: &str,
 ) -> Vec<EmitField> {
     if versions.is_empty() {
         return Vec::new();
@@ -591,27 +721,19 @@ fn merge_fields_across_versions(
     let mut result: Vec<EmitField> = Vec::with_capacity(all_names_ordered.len());
 
     for rust_name in &all_names_ordered {
-        // 该字段在哪些版本里出现？（按 rust_name 匹配）
-        let present_versions: Vec<UnityVersion> = versions
+        // 收集该字段在所有版本里的 (version, rust_type, meta_flag)
+        let present: Vec<(UnityVersion, RustType, u32)> = versions
             .iter()
             .filter_map(|(v, fields)| {
-                if fields.iter().any(|f| &f.rust_name == rust_name) {
-                    Some(*v)
-                } else {
-                    None
-                }
+                fields
+                    .iter()
+                    .find(|f| &f.rust_name == rust_name)
+                    .map(|f| (*v, f.rust_type.clone(), f.meta_flag))
             })
             .collect();
 
-        // 取**最新版本**的字段定义作为类型基准（而非最老的）。
-        // 原因：某些字段跨版本会改类型（如 GameObject.m_Component 从 pair<SInt32,PPtr>
-        // 变为 ComponentPair{PPtr}）。取最新版本的类型，因为我们主要面向现代 Unity 版本。
-        let field_def = versions
-            .iter()
-            .rev() // 最新版本优先
-            .flat_map(|(_, fields)| fields.iter())
-            .find(|f| &f.rust_name == rust_name)
-            .expect("字段应在某版本出现");
+        let present_versions: Vec<UnityVersion> =
+            present.iter().map(|(v, _, _)| *v).collect();
 
         let gate = if present_versions.len() == total {
             VersionGate::Always
@@ -621,19 +743,42 @@ fn merge_fields_across_versions(
             VersionGate::Always
         };
 
-        let rust_type = if matches!(gate, VersionGate::Always) {
-            field_def.rust_type.clone()
+        // 检测该字段在所有版本里的 (类型, align_after) 是否一致。
+        // 类型不变但 align_after 变了也要生成 VersionedEnum，
+        // 否则老版本会按新版本的 align 读，多读/少读对齐字节。
+        let first = &present[0];
+        let first_align = meta_to_align(first.2);
+        let all_same = present
+            .iter()
+            .all(|(_, t, m)| t == &first.1 && meta_to_align(*m) == first_align);
+
+        let base_type = if all_same {
+            first.1.clone()
         } else {
-            RustType::Option(Box::new(field_def.rust_type.clone()))
+            build_versioned_enum(&present, rust_name, class_name)
         };
 
+        let rust_type = if matches!(gate, VersionGate::Always) {
+            base_type
+        } else {
+            RustType::Option(Box::new(base_type))
+        };
+
+        // 取最新版本的字段定义（unity_name / meta_flag）
+        let latest_field = versions
+            .iter()
+            .rev()
+            .flat_map(|(_, fields)| fields.iter())
+            .find(|f| &f.rust_name == rust_name)
+            .expect("字段应在某版本出现");
+
         result.push(EmitField {
-            rust_name: field_def.rust_name.clone(),
-            unity_name: field_def.unity_name.clone(),
+            rust_name: latest_field.rust_name.clone(),
+            unity_name: latest_field.unity_name.clone(),
             rust_type,
             version_gate: Some(gate),
             align_after: false,
-            unity_meta_flag: field_def.meta_flag,
+            unity_meta_flag: latest_field.meta_flag,
         });
     }
 
@@ -649,6 +794,58 @@ fn merge_fields_across_versions(
     result
 }
 
+/// 为类型或 align_after 跨版本变化的字段构建 `VersionedEnum`。
+///
+/// `present` 按版本升序排列。按 `(类型, align_after)` 分组：连续相同
+/// (类型, align_after) 的版本归为一组。类型不变但 align_after 变了
+/// 也拆成新变体——否则老版本会按新版本的 align 读，多读/少读对齐字节。
+/// 第一组 → `VersionGate::Always`；后续组 → `VersionGate::Since(该组起始版本)`。
+fn build_versioned_enum(
+    present: &[(UnityVersion, RustType, u32)],
+    field_name: &str,
+    class_name: &str,
+) -> RustType {
+    // 按 (类型, align_after) 分组
+    let mut groups: Vec<(UnityVersion, RustType, bool)> = Vec::new();
+    for (ver, ty, meta) in present {
+        let align = meta_to_align(*meta);
+        if let Some(last) = groups.last()
+            && last.1 == *ty
+            && last.2 == align
+        {
+            continue; // 同 (类型, align)，合并
+        }
+        groups.push((*ver, ty.clone(), align));
+    }
+
+    let pascal = field_name.to_upper_camel_case(); // m_shapes → MShapes
+    let enum_name = format!("{}{}Variant", class_name, pascal);
+
+    let mut variants = Vec::new();
+    for (i, (ver, ty, align)) in groups.iter().enumerate() {
+        let vgate = if i == 0 {
+            VersionGate::Always
+        } else {
+            VersionGate::Since(ver.major, ver.minor, ver.build)
+        };
+        variants.push(EnumVariant {
+            gate: vgate,
+            rust_type: ty.clone(),
+            align_after: *align,
+        });
+    }
+
+    RustType::VersionedEnum {
+        name: enum_name,
+        variants,
+    }
+}
+
+/// meta_flag → align_after：AlignBytes (0x4000) 或 AnyChildUsesAlignBytes (0x8000)。
+fn meta_to_align(meta: u32) -> bool {
+    (meta & 0x4000) != 0 || (meta & 0x8000) != 0
+}
+
 // ────────────────────────────────────────────────────────────────────
 // p06：计算对齐（meta_flag & (0x4000 | 0x8000) → align_after）
 // ────────────────────────────────────────────────────────────────────
@@ -659,8 +856,7 @@ fn p06_plan_alignment(state: &mut Pipeline) {
         for field in &mut class.own_fields {
             // AlignBytes (0x4000) 或 AnyChildUsesAlignBytes (0x8000) 任一置位 → 该字段后对齐。
             // 参考 AssetRipper SerializablePrimitive.cs:66。
-            field.align_after = (field.unity_meta_flag & 0x4000) != 0
-                || (field.unity_meta_flag & 0x8000) != 0;
+            field.align_after = meta_to_align(field.unity_meta_flag);
         }
     }
 }
@@ -689,5 +885,36 @@ mod tests {
     fn parse_pptr_not_pptr() {
         assert_eq!(parse_pptr_target("int"), None);
         assert_eq!(parse_pptr_target("vector"), None);
+    }
+
+    #[test]
+    fn merged_order_compatible_simple() {
+        // 合并顺序与版本顺序完全一致
+        let merged = ["a", "b", "c"];
+        assert!(merged_order_compatible(&merged, &["a", "b", "c"]));
+        // 版本少了字段（Option 门控），顺序仍兼容
+        assert!(merged_order_compatible(&merged, &["a", "c"]));
+        assert!(merged_order_compatible(&merged, &["b"]));
+    }
+
+    #[test]
+    fn merged_order_incompatible_field_inserted() {
+        // 核心测试：新字段插在现有字段之间
+        // 版本 v5.3 实际顺序：[a, density, b]
+        // merge 后合并顺序：[a, b, density]（b 首次出现在更早版本，排在 density 前面）
+        let merged = ["a", "b", "density"];
+        // v5.0 没有 density → 兼容
+        assert!(merged_order_compatible(&merged, &["a", "b"]));
+        // v5.3 有 density 在 a 和 b 之间 → 合并顺序 [a,b,density] 把 density 排到 b 后面
+        // 版本顺序 [a,density,b] 在合并顺序中的位置序列 [0,2,1] → 不递增 → 不兼容
+        assert!(!merged_order_compatible(&merged, &["a", "density", "b"]));
+    }
+
+    #[test]
+    fn merged_order_compatible_new_field_at_end() {
+        // 新字段加在末尾 → 兼容（合并在末尾读取，Option 门控）
+        let merged = ["a", "b", "c"];
+        assert!(merged_order_compatible(&merged, &["a", "b", "c"]));
+        assert!(merged_order_compatible(&merged, &["a", "b"]));
     }
 }

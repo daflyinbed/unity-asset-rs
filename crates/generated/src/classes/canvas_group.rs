@@ -17,27 +17,31 @@ impl crate::Parse for CanvasGroup {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_alpha = r.read_f32()?;
-        let m_enabled = if *ver >= crate::UnityVersion::new(4, 6, 1) {
-            let v = r.read_u8()?;
+        let mut m_game_object = None;
+        let mut m_alpha = None;
+        let mut m_enabled = None;
+        let mut m_interactable = None;
+        let mut m_blocks_raycasts = None;
+        let mut m_ignore_parent_groups = None;
+            m_game_object = Some(crate::PPtr::parse(r, ver)?);
+        if *ver >= crate::UnityVersion::new(4, 6, 1) {
+            m_enabled = Some(r.read_u8()?);
             r.align(4)?;
-            Some(v)
         } else {
-            None
-        };
-        let m_interactable = r.read_bool()?;
-        let m_blocks_raycasts = r.read_bool()?;
-        let m_ignore_parent_groups = r.read_bool()?;
-        r.align(4)?;
+        }
+            m_alpha = Some(r.read_f32()?);
+            m_interactable = Some(r.read_bool()?);
+            m_blocks_raycasts = Some(r.read_bool()?);
+            m_ignore_parent_groups = Some(r.read_bool()?);
+            r.align(4)?;
 
         Ok(CanvasGroup {
-            m_game_object,
-            m_alpha,
+            m_game_object: m_game_object.unwrap(),
+            m_alpha: m_alpha.unwrap(),
             m_enabled,
-            m_interactable,
-            m_blocks_raycasts,
-            m_ignore_parent_groups,
+            m_interactable: m_interactable.unwrap(),
+            m_blocks_raycasts: m_blocks_raycasts.unwrap(),
+            m_ignore_parent_groups: m_ignore_parent_groups.unwrap(),
         })
     }
 }

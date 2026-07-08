@@ -3,6 +3,97 @@
 use crate::subclasses::gl_texture_settings::GlTextureSettings;
 use crate::subclasses::streaming_info::StreamingInfo;
 
+
+/// 版本枚举：Texture3DMDownscaleFallbackVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum Texture3DMDownscaleFallbackVariant {
+    Default(bool),
+    V2020_2(bool),
+}
+
+impl crate::Parse for Texture3DMDownscaleFallbackVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2020, 2, 0) {
+            let v = r.read_bool()?;
+            Ok(Self::V2020_2(v))
+        } else {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：Texture3DMFormatVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum Texture3DMFormatVariant {
+    Default(u32),
+    V5_0(i32),
+}
+
+impl crate::Parse for Texture3DMFormatVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            let v = r.read_i32()?;
+            Ok(Self::V5_0(v))
+        } else {
+            let v = r.read_u32()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：Texture3DMMipMapVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum Texture3DMMipMapVariant {
+    Default(bool),
+    V4_0(bool),
+}
+
+impl crate::Parse for Texture3DMMipMapVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(4, 0, 0) {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::V4_0(v))
+        } else {
+            let v = r.read_bool()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：Texture3DMIsReadableVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum Texture3DMIsReadableVariant {
+    Default(bool),
+    V5_4(bool),
+}
+
+impl crate::Parse for Texture3DMIsReadableVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 4, 0) {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::V5_4(v))
+        } else {
+            let v = r.read_bool()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct Texture3D {
     pub m_name: String,
@@ -11,14 +102,14 @@ pub struct Texture3D {
     pub m_is_alpha_channel_optional: Option<bool>,
     pub m_height: i32,
     pub m_color_space: Option<i32>,
-    pub m_downscale_fallback: Option<bool>,
+    pub m_downscale_fallback: Option<Texture3DMDownscaleFallbackVariant>,
     pub m_complete_image_size: Option<i32>,
     pub m_depth: Option<i32>,
-    pub m_format: Option<i32>,
+    pub m_format: Option<Texture3DMFormatVariant>,
     pub m_texture_format: Option<i32>,
-    pub m_mip_map: Option<bool>,
+    pub m_mip_map: Option<Texture3DMMipMapVariant>,
     pub m_mip_count: Option<i32>,
-    pub m_is_readable: Option<bool>,
+    pub m_is_readable: Option<Texture3DMIsReadableVariant>,
     pub m_data_size: Option<u32>,
     pub m_read_allowed: Option<bool>,
     pub m_texture_settings: GlTextureSettings,
@@ -64,22 +155,22 @@ impl crate::Parse for Texture3D {
             m_is_alpha_channel_optional = Some(r.read_bool()?);
             r.align(4)?;
             m_color_space = Some(r.read_i32()?);
-            m_format = Some(r.read_i32()?);
+            m_format = Some(Texture3DMFormatVariant::parse(r, ver)?);
         } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
             m_forced_fallback_format = Some(r.read_i32()?);
-            m_downscale_fallback = Some(r.read_bool()?);
+            m_downscale_fallback = Some(Texture3DMDownscaleFallbackVariant::parse(r, ver)?);
             m_is_alpha_channel_optional = Some(r.read_bool()?);
             r.align(4)?;
             m_color_space = Some(r.read_i32()?);
-            m_format = Some(r.read_i32()?);
+            m_format = Some(Texture3DMFormatVariant::parse(r, ver)?);
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             m_forced_fallback_format = Some(r.read_i32()?);
-            m_downscale_fallback = Some(r.read_bool()?);
+            m_downscale_fallback = Some(Texture3DMDownscaleFallbackVariant::parse(r, ver)?);
             m_color_space = Some(r.read_i32()?);
-            m_format = Some(r.read_i32()?);
+            m_format = Some(Texture3DMFormatVariant::parse(r, ver)?);
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
             m_forced_fallback_format = Some(r.read_i32()?);
-            m_downscale_fallback = Some(r.read_bool()?);
+            m_downscale_fallback = Some(Texture3DMDownscaleFallbackVariant::parse(r, ver)?);
         } else {
         }
             m_width = Some(r.read_i32()?);
@@ -91,23 +182,20 @@ impl crate::Parse for Texture3D {
             m_data_size = Some(r.read_u32()?);
         } else if *ver >= crate::UnityVersion::new(5, 2, 0) {
             m_depth = Some(r.read_i32()?);
-            m_format = Some(r.read_i32()?);
+            m_format = Some(Texture3DMFormatVariant::parse(r, ver)?);
             m_mip_count = Some(r.read_i32()?);
             r.align(4)?;
             m_data_size = Some(r.read_u32()?);
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
             m_depth = Some(r.read_i32()?);
-            m_format = Some(r.read_i32()?);
-            m_mip_map = Some(r.read_bool()?);
-            r.align(4)?;
+            m_format = Some(Texture3DMFormatVariant::parse(r, ver)?);
+            m_mip_map = Some(Texture3DMMipMapVariant::parse(r, ver)?);
             m_data_size = Some(r.read_u32()?);
         } else {
             m_complete_image_size = Some(r.read_i32()?);
             m_texture_format = Some(r.read_i32()?);
-            m_mip_map = Some(r.read_bool()?);
-            r.align(4)?;
-            m_is_readable = Some(r.read_bool()?);
-            r.align(4)?;
+            m_mip_map = Some(Texture3DMMipMapVariant::parse(r, ver)?);
+            m_is_readable = Some(Texture3DMIsReadableVariant::parse(r, ver)?);
             m_read_allowed = Some(r.read_bool()?);
             r.align(4)?;
             m_image_count = Some(r.read_i32()?);
@@ -116,11 +204,9 @@ impl crate::Parse for Texture3D {
             m_texture_settings = Some(GlTextureSettings::parse(r, ver)?);
         if *ver >= crate::UnityVersion::new(2020, 2, 0) {
             m_usage_mode = Some(r.read_i32()?);
-            m_is_readable = Some(r.read_bool()?);
-            r.align(4)?;
+            m_is_readable = Some(Texture3DMIsReadableVariant::parse(r, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            m_is_readable = Some(r.read_bool()?);
-            r.align(4)?;
+            m_is_readable = Some(Texture3DMIsReadableVariant::parse(r, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
             m_lightmap_format = Some(r.read_i32()?);

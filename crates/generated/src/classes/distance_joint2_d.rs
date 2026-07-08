@@ -26,75 +26,69 @@ impl crate::Parse for DistanceJoint2D {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_enabled = r.read_u8()?;
-        r.align(4)?;
-        let m_collide_connected = if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            let v = r.read_bool()?;
+        let mut m_game_object = None;
+        let mut m_enabled = None;
+        let mut m_collide_connected = None;
+        let mut m_enable_collision = None;
+        let mut m_connected_rigid_body = None;
+        let mut m_anchor = None;
+        let mut m_break_force = None;
+        let mut m_connected_anchor = None;
+        let mut m_break_torque = None;
+        let mut m_distance = None;
+        let mut m_auto_configure_connected_anchor = None;
+        let mut m_break_action = None;
+        let mut m_max_distance_only = None;
+        let mut m_auto_configure_distance = None;
+            m_game_object = Some(crate::PPtr::parse(r, ver)?);
+            m_enabled = Some(r.read_u8()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_enable_collision = if *ver >= crate::UnityVersion::new(5, 0, 1) {
-            let v = r.read_bool()?;
+        if *ver >= crate::UnityVersion::new(5, 0, 1) {
+            m_enable_collision = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
         } else {
-            None
-        };
-        let m_connected_rigid_body = crate::PPtr::parse(r, ver)?;
-        let m_anchor = Vector2f::parse(r, ver)?;
-        let m_break_force = if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
-        let m_connected_anchor = Vector2f::parse(r, ver)?;
-        let m_break_torque = if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
-        let m_distance = r.read_f32()?;
-        let m_auto_configure_connected_anchor = if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            let v = r.read_bool()?;
+            m_collide_connected = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_break_action = if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_max_distance_only = if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            let v = r.read_bool()?;
+        }
+            m_connected_rigid_body = Some(crate::PPtr::parse(r, ver)?);
+        if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            m_break_force = Some(r.read_f32()?);
+            m_break_torque = Some(r.read_f32()?);
+            m_break_action = Some(r.read_i32()?);
+            m_auto_configure_connected_anchor = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_auto_configure_distance = if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            let v = r.read_bool()?;
+        } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
+            m_break_force = Some(r.read_f32()?);
+            m_break_torque = Some(r.read_f32()?);
+            m_auto_configure_connected_anchor = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
         } else {
-            None
-        };
+        }
+            m_anchor = Some(Vector2f::parse(r, ver)?);
+            m_connected_anchor = Some(Vector2f::parse(r, ver)?);
+        if *ver >= crate::UnityVersion::new(5, 3, 0) {
+            m_auto_configure_distance = Some(r.read_bool()?);
+            r.align(4)?;
+        } else {
+        }
+            m_distance = Some(r.read_f32()?);
+        if *ver >= crate::UnityVersion::new(4, 5, 0) {
+            m_max_distance_only = Some(r.read_bool()?);
+            r.align(4)?;
+        } else {
+        }
 
         Ok(DistanceJoint2D {
-            m_game_object,
-            m_enabled,
+            m_game_object: m_game_object.unwrap(),
+            m_enabled: m_enabled.unwrap(),
             m_collide_connected,
             m_enable_collision,
-            m_connected_rigid_body,
-            m_anchor,
+            m_connected_rigid_body: m_connected_rigid_body.unwrap(),
+            m_anchor: m_anchor.unwrap(),
             m_break_force,
-            m_connected_anchor,
+            m_connected_anchor: m_connected_anchor.unwrap(),
             m_break_torque,
-            m_distance,
+            m_distance: m_distance.unwrap(),
             m_auto_configure_connected_anchor,
             m_break_action,
             m_max_distance_only,

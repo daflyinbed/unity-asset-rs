@@ -37,8 +37,7 @@ pub struct RenderAs2D {
     pub m_sorting_layer: i16,
     pub m_sorting_order: i16,
     pub m_mask_interaction: i32,
-    pub m_owner: Option<PPtr>,
-    pub m_owning_sorting_group: Option<PPtr>,
+    pub m_owning_sorting_group: PPtr,
 }
 
 impl crate::Parse for RenderAs2D {
@@ -83,16 +82,7 @@ impl crate::Parse for RenderAs2D {
         r.align(4)?;
         let m_mask_interaction = r.read_i32()?;
         r.align(4)?;
-        let m_owner = if *ver >= crate::UnityVersion::new(6000, 3, 0) {
-            Some(crate::PPtr::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_owning_sorting_group = if *ver >= crate::UnityVersion::new(6000, 3, 0) {
-            Some(crate::PPtr::parse(r, ver)?)
-        } else {
-            None
-        };
+        let m_owning_sorting_group = crate::PPtr::parse(r, ver)?;
 
         Ok(RenderAs2D {
             m_game_object,
@@ -126,7 +116,6 @@ impl crate::Parse for RenderAs2D {
             m_sorting_layer,
             m_sorting_order,
             m_mask_interaction,
-            m_owner,
             m_owning_sorting_group,
         })
     }

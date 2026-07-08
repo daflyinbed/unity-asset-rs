@@ -27,54 +27,67 @@ impl crate::Parse for NavMeshAgent {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_enabled = r.read_u8()?;
-        r.align(4)?;
-        let m_radius = r.read_f32()?;
-        let m_agent_type_id = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            Some(r.read_i32()?)
+        let mut m_game_object = None;
+        let mut m_enabled = None;
+        let mut m_radius = None;
+        let mut m_agent_type_id = None;
+        let mut m_speed = None;
+        let mut m_acceleration = None;
+        let mut m_angular_speed = None;
+        let mut avoidance_priority = None;
+        let mut m_stopping_distance = None;
+        let mut m_auto_traverse_off_mesh_link = None;
+        let mut m_auto_repath = None;
+        let mut m_height = None;
+        let mut m_auto_braking = None;
+        let mut m_base_offset = None;
+        let mut m_walkable_mask = None;
+        let mut m_obstacle_avoidance_type = None;
+            m_game_object = Some(crate::PPtr::parse(r, ver)?);
+            m_enabled = Some(r.read_u8()?);
+            r.align(4)?;
+        if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            m_agent_type_id = Some(r.read_i32()?);
         } else {
-            None
-        };
-        let m_speed = r.read_f32()?;
-        let m_acceleration = r.read_f32()?;
-        let m_angular_speed = r.read_f32()?;
-        let avoidance_priority = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(r.read_i32()?)
+        }
+            m_radius = Some(r.read_f32()?);
+            m_speed = Some(r.read_f32()?);
+            m_acceleration = Some(r.read_f32()?);
+        if *ver >= crate::UnityVersion::new(4, 0, 0) {
+            avoidance_priority = Some(r.read_i32()?);
         } else {
-            None
-        };
-        let m_stopping_distance = r.read_f32()?;
-        let m_auto_traverse_off_mesh_link = r.read_bool()?;
-        let m_auto_repath = r.read_bool()?;
-        r.align(4)?;
-        let m_height = r.read_f32()?;
-        let m_auto_braking = if *ver >= crate::UnityVersion::new(4, 1, 0) {
-            Some(r.read_bool()?)
+        }
+            m_angular_speed = Some(r.read_f32()?);
+            m_stopping_distance = Some(r.read_f32()?);
+            m_auto_traverse_off_mesh_link = Some(r.read_bool()?);
+        if *ver >= crate::UnityVersion::new(4, 1, 0) {
+            m_auto_braking = Some(r.read_bool()?);
         } else {
-            None
-        };
-        let m_base_offset = r.read_f32()?;
-        let m_walkable_mask = r.read_u32()?;
-        let m_obstacle_avoidance_type = r.read_i32()?;
+        }
+            m_auto_repath = Some(r.read_bool()?);
+            r.align(4)?;
+            m_height = Some(r.read_f32()?);
+            m_base_offset = Some(r.read_f32()?);
+            m_walkable_mask = Some(r.read_u32()?);
+            m_obstacle_avoidance_type = Some(r.read_i32()?);
 
         Ok(NavMeshAgent {
-            m_game_object,
-            m_enabled,
-            m_radius,
+            m_game_object: m_game_object.unwrap(),
+            m_enabled: m_enabled.unwrap(),
+            m_radius: m_radius.unwrap(),
             m_agent_type_id,
-            m_speed,
-            m_acceleration,
-            m_angular_speed,
+            m_speed: m_speed.unwrap(),
+            m_acceleration: m_acceleration.unwrap(),
+            m_angular_speed: m_angular_speed.unwrap(),
             avoidance_priority,
-            m_stopping_distance,
-            m_auto_traverse_off_mesh_link,
-            m_auto_repath,
-            m_height,
+            m_stopping_distance: m_stopping_distance.unwrap(),
+            m_auto_traverse_off_mesh_link: m_auto_traverse_off_mesh_link.unwrap(),
+            m_auto_repath: m_auto_repath.unwrap(),
+            m_height: m_height.unwrap(),
             m_auto_braking,
-            m_base_offset,
-            m_walkable_mask,
-            m_obstacle_avoidance_type,
+            m_base_offset: m_base_offset.unwrap(),
+            m_walkable_mask: m_walkable_mask.unwrap(),
+            m_obstacle_avoidance_type: m_obstacle_avoidance_type.unwrap(),
         })
     }
 }

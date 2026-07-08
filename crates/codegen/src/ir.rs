@@ -118,6 +118,21 @@ pub enum RustType {
     Subclass(String),
     /// 版本门控字段（外层包 Option）
     Option(Box<RustType>),
+    /// 跨版本类型变化：生成版本枚举，按版本选择变体。
+    /// 参见 `docs/codegen-redesign-v2.md` §5.4。
+    VersionedEnum {
+        name: String,
+        variants: Vec<EnumVariant>,
+    },
+}
+
+/// 版本枚举的一个变体：某版本区间对应的实际类型 + 对齐。
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct EnumVariant {
+    pub gate: VersionGate,
+    pub rust_type: RustType,
+    /// 该变体读完后是否需要 align(4)。由 per-version meta_flag 计算。
+    pub align_after: bool,
 }
 
 impl RustType {
@@ -141,6 +156,7 @@ impl RustType {
             Self::Pptr { target_class: _ } => "PPtr".into(),
             Self::Subclass(name) => name.clone(),
             Self::Option(t) => format!("Option<{}>", t.to_rust_src()),
+            Self::VersionedEnum { name, .. } => name.clone(),
         }
     }
 }
@@ -166,7 +182,6 @@ pub struct EmitClass {
     pub unity_name: String,
     pub own_fields: Vec<EmitField>,
     pub is_abstract: bool,
-    pub is_mono_behaviour: bool,
     /// 每个版本区间的 own_field 顺序（TPK release_root 的真实顺序）。
     /// 用于生成 version-gated parse 块。
     /// 为空 = 所有版本顺序相同，用 own_fields 的合并顺序即可。

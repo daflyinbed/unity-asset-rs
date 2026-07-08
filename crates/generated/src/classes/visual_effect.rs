@@ -3,6 +3,57 @@
 use crate::PPtr;
 use crate::subclasses::vfx_property_sheet_serialized_base::VfxPropertySheetSerializedBase;
 
+
+/// 版本枚举：VisualEffectMResetSeedOnPlayVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum VisualEffectMResetSeedOnPlayVariant {
+    Default(bool),
+    V2019_3(u8),
+    V2022_2(u8),
+}
+
+impl crate::Parse for VisualEffectMResetSeedOnPlayVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            let v = r.read_u8()?;
+            Ok(Self::V2022_2(v))
+        } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
+            let v = r.read_u8()?;
+            r.align(4)?;
+            Ok(Self::V2019_3(v))
+        } else {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：VisualEffectMAllowInstancingVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum VisualEffectMAllowInstancingVariant {
+    Default(u8),
+    V6000_5(u8),
+}
+
+impl crate::Parse for VisualEffectMAllowInstancingVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(6000, 5, 0) {
+            let v = r.read_u8()?;
+            Ok(Self::V6000_5(v))
+        } else {
+            let v = r.read_u8()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct VisualEffect {
     pub m_game_object: PPtr,
@@ -10,10 +61,10 @@ pub struct VisualEffect {
     pub m_asset: PPtr,
     pub m_start_seed: u32,
     pub m_initial_event_name: Option<String>,
-    pub m_reset_seed_on_play: u8,
+    pub m_reset_seed_on_play: VisualEffectMResetSeedOnPlayVariant,
     pub m_initial_event_name_overriden: Option<u8>,
     pub m_property_sheet: VfxPropertySheetSerializedBase,
-    pub m_allow_instancing: Option<u8>,
+    pub m_allow_instancing: Option<VisualEffectMAllowInstancingVariant>,
     pub m_release_instance_on_disable: Option<u8>,
 }
 
@@ -22,50 +73,49 @@ impl crate::Parse for VisualEffect {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_enabled = r.read_u8()?;
-        r.align(4)?;
-        let m_asset = crate::PPtr::parse(r, ver)?;
-        let m_start_seed = r.read_u32()?;
-        let m_initial_event_name = if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            let v = r.read_aligned_string()?;
+        let mut m_game_object = None;
+        let mut m_enabled = None;
+        let mut m_asset = None;
+        let mut m_start_seed = None;
+        let mut m_initial_event_name = None;
+        let mut m_reset_seed_on_play = None;
+        let mut m_initial_event_name_overriden = None;
+        let mut m_property_sheet = None;
+        let mut m_allow_instancing = None;
+        let mut m_release_instance_on_disable = None;
+            m_game_object = Some(crate::PPtr::parse(r, ver)?);
+            m_enabled = Some(r.read_u8()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_reset_seed_on_play = r.read_u8()?;
-        let m_initial_event_name_overriden = if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            let v = r.read_u8()?;
+            m_asset = Some(crate::PPtr::parse(r, ver)?);
+        if *ver >= crate::UnityVersion::new(2019, 3, 0) {
+            m_initial_event_name = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_property_sheet = VfxPropertySheetSerializedBase::parse(r, ver)?;
-        r.align(4)?;
-        let m_allow_instancing = if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            Some(r.read_u8()?)
-        } else {
-            None
-        };
-        let m_release_instance_on_disable = if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            let v = r.read_u8()?;
+            m_initial_event_name_overriden = Some(r.read_u8()?);
             r.align(4)?;
-            Some(v)
         } else {
-            None
-        };
+        }
+            m_start_seed = Some(r.read_u32()?);
+            m_reset_seed_on_play = Some(VisualEffectMResetSeedOnPlayVariant::parse(r, ver)?);
+        if *ver >= crate::UnityVersion::new(6000, 5, 0) {
+            m_allow_instancing = Some(VisualEffectMAllowInstancingVariant::parse(r, ver)?);
+            m_release_instance_on_disable = Some(r.read_u8()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            m_allow_instancing = Some(VisualEffectMAllowInstancingVariant::parse(r, ver)?);
+        } else {
+        }
+            m_property_sheet = Some(VfxPropertySheetSerializedBase::parse(r, ver)?);
+            r.align(4)?;
 
         Ok(VisualEffect {
-            m_game_object,
-            m_enabled,
-            m_asset,
-            m_start_seed,
+            m_game_object: m_game_object.unwrap(),
+            m_enabled: m_enabled.unwrap(),
+            m_asset: m_asset.unwrap(),
+            m_start_seed: m_start_seed.unwrap(),
             m_initial_event_name,
-            m_reset_seed_on_play,
+            m_reset_seed_on_play: m_reset_seed_on_play.unwrap(),
             m_initial_event_name_overriden,
-            m_property_sheet,
+            m_property_sheet: m_property_sheet.unwrap(),
             m_allow_instancing,
             m_release_instance_on_disable,
         })

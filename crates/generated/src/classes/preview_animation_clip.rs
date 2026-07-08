@@ -39,68 +39,82 @@ impl crate::Parse for PreviewAnimationClip {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_legacy = r.read_bool()?;
-        let m_compressed = r.read_bool()?;
-        let m_use_high_quality_curve = r.read_bool()?;
-        r.align(4)?;
-        let m_rotation_curves = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { QuaternionCurve::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_compressed_rotation_curves = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { CompressedAnimationCurve::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_euler_curves = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Vector3Curve::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_position_curves = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Vector3Curve::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_scale_curves = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Vector3Curve::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_float_curves = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { FloatCurve::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_p_ptr_curves = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { PPtrCurve::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_sample_rate = r.read_f32()?;
-        let m_wrap_mode = r.read_i32()?;
-        let m_bounds = Aabb::parse(r, ver)?;
-        let m_muscle_clip_size = r.read_u32()?;
-        let m_muscle_clip = ClipMuscleConstant::parse(r, ver)?;
-        r.align(4)?;
-        let m_clip_binding_constant = AnimationClipBindingConstant::parse(r, ver)?;
-        r.align(4)?;
-        let m_events = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { AnimationEvent::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_has_generic_root_transform = if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_has_motion_float_curves = if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            let v = r.read_bool()?;
+        let mut m_name = None;
+        let mut m_legacy = None;
+        let mut m_compressed = None;
+        let mut m_use_high_quality_curve = None;
+        let mut m_rotation_curves = None;
+        let mut m_compressed_rotation_curves = None;
+        let mut m_euler_curves = None;
+        let mut m_position_curves = None;
+        let mut m_scale_curves = None;
+        let mut m_float_curves = None;
+        let mut m_p_ptr_curves = None;
+        let mut m_sample_rate = None;
+        let mut m_wrap_mode = None;
+        let mut m_bounds = None;
+        let mut m_muscle_clip_size = None;
+        let mut m_muscle_clip = None;
+        let mut m_clip_binding_constant = None;
+        let mut m_events = None;
+        let mut m_has_generic_root_transform = None;
+        let mut m_has_motion_float_curves = None;
+            m_name = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
+            m_legacy = Some(r.read_bool()?);
+            m_compressed = Some(r.read_bool()?);
+            m_use_high_quality_curve = Some(r.read_bool()?);
+            r.align(4)?;
+            m_rotation_curves = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { QuaternionCurve::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_compressed_rotation_curves = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { CompressedAnimationCurve::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_euler_curves = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { Vector3Curve::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_position_curves = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { Vector3Curve::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_scale_curves = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { Vector3Curve::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_float_curves = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { FloatCurve::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_p_ptr_curves = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { PPtrCurve::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_sample_rate = Some(r.read_f32()?);
+            m_wrap_mode = Some(r.read_i32()?);
+            m_bounds = Some(Aabb::parse(r, ver)?);
+            m_muscle_clip_size = Some(r.read_u32()?);
+            m_muscle_clip = Some(ClipMuscleConstant::parse(r, ver)?);
+            r.align(4)?;
+            m_clip_binding_constant = Some(AnimationClipBindingConstant::parse(r, ver)?);
+            r.align(4)?;
+        if *ver >= crate::UnityVersion::new(2018, 3, 0) {
+            m_has_generic_root_transform = Some(r.read_bool()?);
+            m_has_motion_float_curves = Some(r.read_bool()?);
+            r.align(4)?;
         } else {
-            None
-        };
+        }
+            m_events = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { AnimationEvent::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
 
         Ok(PreviewAnimationClip {
-            m_name,
-            m_legacy,
-            m_compressed,
-            m_use_high_quality_curve,
-            m_rotation_curves,
-            m_compressed_rotation_curves,
-            m_euler_curves,
-            m_position_curves,
-            m_scale_curves,
-            m_float_curves,
-            m_p_ptr_curves,
-            m_sample_rate,
-            m_wrap_mode,
-            m_bounds,
-            m_muscle_clip_size,
-            m_muscle_clip,
-            m_clip_binding_constant,
-            m_events,
+            m_name: m_name.unwrap(),
+            m_legacy: m_legacy.unwrap(),
+            m_compressed: m_compressed.unwrap(),
+            m_use_high_quality_curve: m_use_high_quality_curve.unwrap(),
+            m_rotation_curves: m_rotation_curves.unwrap(),
+            m_compressed_rotation_curves: m_compressed_rotation_curves.unwrap(),
+            m_euler_curves: m_euler_curves.unwrap(),
+            m_position_curves: m_position_curves.unwrap(),
+            m_scale_curves: m_scale_curves.unwrap(),
+            m_float_curves: m_float_curves.unwrap(),
+            m_p_ptr_curves: m_p_ptr_curves.unwrap(),
+            m_sample_rate: m_sample_rate.unwrap(),
+            m_wrap_mode: m_wrap_mode.unwrap(),
+            m_bounds: m_bounds.unwrap(),
+            m_muscle_clip_size: m_muscle_clip_size.unwrap(),
+            m_muscle_clip: m_muscle_clip.unwrap(),
+            m_clip_binding_constant: m_clip_binding_constant.unwrap(),
+            m_events: m_events.unwrap(),
             m_has_generic_root_transform,
             m_has_motion_float_curves,
         })

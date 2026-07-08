@@ -25,43 +25,53 @@ impl crate::Parse for TextMesh {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_text = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_offset_z = r.read_f32()?;
-        let m_character_size = r.read_f32()?;
-        let m_line_spacing = r.read_f32()?;
-        let m_anchor = r.read_i16()?;
-        let m_alignment = r.read_i16()?;
-        let m_tab_size = r.read_f32()?;
-        let m_font_size = r.read_i32()?;
-        let m_font_style = r.read_i32()?;
-        let m_font = crate::PPtr::parse(r, ver)?;
-        let m_rich_text = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            let v = r.read_bool()?;
+        let mut m_game_object = None;
+        let mut m_text = None;
+        let mut m_offset_z = None;
+        let mut m_character_size = None;
+        let mut m_line_spacing = None;
+        let mut m_anchor = None;
+        let mut m_alignment = None;
+        let mut m_tab_size = None;
+        let mut m_font_size = None;
+        let mut m_font_style = None;
+        let mut m_font = None;
+        let mut m_rich_text = None;
+        let mut m_color = None;
+            m_game_object = Some(crate::PPtr::parse(r, ver)?);
+            m_text = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
+            m_offset_z = Some(r.read_f32()?);
+            m_character_size = Some(r.read_f32()?);
+            m_line_spacing = Some(r.read_f32()?);
+            m_anchor = Some(r.read_i16()?);
+            m_alignment = Some(r.read_i16()?);
+            m_tab_size = Some(r.read_f32()?);
+            m_font_size = Some(r.read_i32()?);
+            m_font_style = Some(r.read_i32()?);
+        if *ver >= crate::UnityVersion::new(4, 0, 0) {
+            m_rich_text = Some(r.read_bool()?);
+            r.align(4)?;
         } else {
-            None
-        };
-        let m_color = if *ver >= crate::UnityVersion::new(4, 2, 0) {
-            Some(ColorRgba::parse(r, ver)?)
+        }
+            m_font = Some(crate::PPtr::parse(r, ver)?);
+        if *ver >= crate::UnityVersion::new(4, 2, 0) {
+            m_color = Some(ColorRgba::parse(r, ver)?);
         } else {
-            None
-        };
+        }
 
         Ok(TextMesh {
-            m_game_object,
-            m_text,
-            m_offset_z,
-            m_character_size,
-            m_line_spacing,
-            m_anchor,
-            m_alignment,
-            m_tab_size,
-            m_font_size,
-            m_font_style,
-            m_font,
+            m_game_object: m_game_object.unwrap(),
+            m_text: m_text.unwrap(),
+            m_offset_z: m_offset_z.unwrap(),
+            m_character_size: m_character_size.unwrap(),
+            m_line_spacing: m_line_spacing.unwrap(),
+            m_anchor: m_anchor.unwrap(),
+            m_alignment: m_alignment.unwrap(),
+            m_tab_size: m_tab_size.unwrap(),
+            m_font_size: m_font_size.unwrap(),
+            m_font_style: m_font_style.unwrap(),
+            m_font: m_font.unwrap(),
             m_rich_text,
             m_color,
         })

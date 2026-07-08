@@ -27,24 +27,120 @@ use crate::subclasses::uv_module::UvModule;
 use crate::subclasses::vector2f::Vector2f;
 use crate::subclasses::velocity_module::VelocityModule;
 
+
+/// 版本枚举：ParticleSystemStartDelayVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum ParticleSystemStartDelayVariant {
+    Default(f32),
+    V5_3(MinMaxCurve),
+}
+
+impl crate::Parse for ParticleSystemStartDelayVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 3, 0) {
+            let v = MinMaxCurve::parse(r, ver)?;
+            r.align(4)?;
+            Ok(Self::V5_3(v))
+        } else {
+            let v = r.read_f32()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：ParticleSystemRandomSeedVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum ParticleSystemRandomSeedVariant {
+    Default(u32),
+    V5_4_1(i32),
+}
+
+impl crate::Parse for ParticleSystemRandomSeedVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 4, 1) {
+            let v = r.read_i32()?;
+            Ok(Self::V5_4_1(v))
+        } else {
+            let v = r.read_u32()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：ParticleSystemAutoRandomSeedVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum ParticleSystemAutoRandomSeedVariant {
+    Default(bool),
+    V2017_1(bool),
+    V2021_1(bool),
+}
+
+impl crate::Parse for ParticleSystemAutoRandomSeedVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2021, 1, 0) {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::V2021_1(v))
+        } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = r.read_bool()?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：ParticleSystemMoveWithTransformVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum ParticleSystemMoveWithTransformVariant {
+    Default(bool),
+    V5_5(i32),
+}
+
+impl crate::Parse for ParticleSystemMoveWithTransformVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 5, 0) {
+            let v = r.read_i32()?;
+            r.align(4)?;
+            Ok(Self::V5_5(v))
+        } else {
+            let v = r.read_bool()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct ParticleSystem {
     pub m_game_object: PPtr,
     pub length_in_sec: f32,
-    pub start_delay: MinMaxCurve,
+    pub start_delay: ParticleSystemStartDelayVariant,
     pub speed: Option<f32>,
     pub simulation_speed: Option<f32>,
     pub looping: bool,
     pub stop_action: Option<i32>,
-    pub random_seed: i32,
+    pub random_seed: ParticleSystemRandomSeedVariant,
     pub prewarm: bool,
-    pub ring_buffer_mode: Option<i32>,
     pub culling_mode: Option<i32>,
     pub play_on_awake: bool,
-    pub ring_buffer_loop_range: Option<Vector2f>,
-    pub auto_random_seed: Option<bool>,
+    pub ring_buffer_mode: Option<i32>,
+    pub auto_random_seed: Option<ParticleSystemAutoRandomSeedVariant>,
     pub use_unscaled_time: Option<bool>,
-    pub move_with_transform: i32,
+    pub ring_buffer_loop_range: Option<Vector2f>,
+    pub move_with_transform: ParticleSystemMoveWithTransformVariant,
     pub emitter_velocity_mode: Option<i32>,
     pub use_rigidbody_for_velocity: Option<bool>,
     pub initial_module: InitialModule,
@@ -88,12 +184,12 @@ impl crate::Parse for ParticleSystem {
         let mut stop_action = None;
         let mut random_seed = None;
         let mut prewarm = None;
-        let mut ring_buffer_mode = None;
         let mut culling_mode = None;
         let mut play_on_awake = None;
-        let mut ring_buffer_loop_range = None;
+        let mut ring_buffer_mode = None;
         let mut auto_random_seed = None;
         let mut use_unscaled_time = None;
+        let mut ring_buffer_loop_range = None;
         let mut move_with_transform = None;
         let mut emitter_velocity_mode = None;
         let mut use_rigidbody_for_velocity = None;
@@ -137,11 +233,6 @@ impl crate::Parse for ParticleSystem {
             culling_mode = Some(r.read_i32()?);
             ring_buffer_mode = Some(r.read_i32()?);
             ring_buffer_loop_range = Some(Vector2f::parse(r, ver)?);
-        } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            simulation_speed = Some(r.read_f32()?);
-            stop_action = Some(r.read_i32()?);
-            ring_buffer_mode = Some(r.read_i32()?);
-            ring_buffer_loop_range = Some(Vector2f::parse(r, ver)?);
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             simulation_speed = Some(r.read_f32()?);
             stop_action = Some(r.read_i32()?);
@@ -150,56 +241,40 @@ impl crate::Parse for ParticleSystem {
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
             speed = Some(r.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 1) {
-            start_delay = Some(MinMaxCurve::parse(r, ver)?);
-            r.align(4)?;
+            start_delay = Some(ParticleSystemStartDelayVariant::parse(r, ver)?);
             speed = Some(r.read_f32()?);
         } else {
-            start_delay = Some(MinMaxCurve::parse(r, ver)?);
-            r.align(4)?;
+            start_delay = Some(ParticleSystemStartDelayVariant::parse(r, ver)?);
             speed = Some(r.read_f32()?);
-            random_seed = Some(r.read_i32()?);
+            random_seed = Some(ParticleSystemRandomSeedVariant::parse(r, ver)?);
         }
             looping = Some(r.read_bool()?);
             prewarm = Some(r.read_bool()?);
             play_on_awake = Some(r.read_bool()?);
         if *ver >= crate::UnityVersion::new(2021, 1, 0) {
             use_unscaled_time = Some(r.read_bool()?);
-            auto_random_seed = Some(r.read_bool()?);
-            r.align(4)?;
-            start_delay = Some(MinMaxCurve::parse(r, ver)?);
-            r.align(4)?;
+            auto_random_seed = Some(ParticleSystemAutoRandomSeedVariant::parse(r, ver)?);
+            start_delay = Some(ParticleSystemStartDelayVariant::parse(r, ver)?);
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             use_unscaled_time = Some(r.read_bool()?);
-            auto_random_seed = Some(r.read_bool()?);
-            r.align(4)?;
+            auto_random_seed = Some(ParticleSystemAutoRandomSeedVariant::parse(r, ver)?);
             use_rigidbody_for_velocity = Some(r.read_bool()?);
             r.align(4)?;
-            start_delay = Some(MinMaxCurve::parse(r, ver)?);
-            r.align(4)?;
-        } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            use_unscaled_time = Some(r.read_bool()?);
-            auto_random_seed = Some(r.read_bool()?);
-            r.align(4)?;
-            start_delay = Some(MinMaxCurve::parse(r, ver)?);
-            r.align(4)?;
+            start_delay = Some(ParticleSystemStartDelayVariant::parse(r, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            auto_random_seed = Some(r.read_bool()?);
-            r.align(4)?;
-            start_delay = Some(MinMaxCurve::parse(r, ver)?);
-            r.align(4)?;
+            auto_random_seed = Some(ParticleSystemAutoRandomSeedVariant::parse(r, ver)?);
+            start_delay = Some(ParticleSystemStartDelayVariant::parse(r, ver)?);
         } else {
         }
-            move_with_transform = Some(r.read_i32()?);
-            r.align(4)?;
+            move_with_transform = Some(ParticleSystemMoveWithTransformVariant::parse(r, ver)?);
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
             move_with_custom_transform = Some(crate::PPtr::parse(r, ver)?);
             scaling_mode = Some(r.read_i32()?);
-            random_seed = Some(r.read_i32()?);
+            random_seed = Some(ParticleSystemRandomSeedVariant::parse(r, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 1) {
-            auto_random_seed = Some(r.read_bool()?);
-            r.align(4)?;
+            auto_random_seed = Some(ParticleSystemAutoRandomSeedVariant::parse(r, ver)?);
             scaling_mode = Some(r.read_i32()?);
-            random_seed = Some(r.read_i32()?);
+            random_seed = Some(ParticleSystemRandomSeedVariant::parse(r, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
             scaling_mode = Some(r.read_i32()?);
         } else {
@@ -284,12 +359,12 @@ impl crate::Parse for ParticleSystem {
             stop_action,
             random_seed: random_seed.unwrap(),
             prewarm: prewarm.unwrap(),
-            ring_buffer_mode,
             culling_mode,
             play_on_awake: play_on_awake.unwrap(),
-            ring_buffer_loop_range,
+            ring_buffer_mode,
             auto_random_seed,
             use_unscaled_time,
+            ring_buffer_loop_range,
             move_with_transform: move_with_transform.unwrap(),
             emitter_velocity_mode,
             use_rigidbody_for_velocity,

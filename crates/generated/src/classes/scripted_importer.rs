@@ -21,54 +21,49 @@ impl crate::Parse for ScriptedImporter {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_user_data = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_file_id_to_recycle_name = if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i64()?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        let mut m_name = None;
+        let mut m_user_data = None;
+        let mut m_file_id_to_recycle_name = None;
+        let mut m_internal_id_to_name_table = None;
+        let mut m_asset_bundle_name = None;
+        let mut m_external_objects = None;
+        let mut m_asset_bundle_variant = None;
+        let mut m_used_file_i_ds = None;
+        let mut m_script = None;
+            m_name = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_internal_id_to_name_table = if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = ( { let a = r.read_i32()?; let b = r.read_i64()?; Ok((a, b)) } )?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        if *ver >= crate::UnityVersion::new(2019, 1, 0) {
+            m_internal_id_to_name_table = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = ( { let a = r.read_i32()?; let b = r.read_i64()?; Ok((a, b)) } )?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_asset_bundle_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_external_objects = if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(r, ver)?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            m_external_objects = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(r, ver)?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_asset_bundle_variant = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_used_file_i_ds = if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i64() }).collect::<Result<Vec<_>, _>>() } )?;
+            m_used_file_i_ds = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
+        } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
+            m_file_id_to_recycle_name = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i64()?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_external_objects = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(r, ver)?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
         } else {
-            None
-        };
-        let m_script = crate::PPtr::parse(r, ver)?;
+        }
+            m_user_data = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_variant = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_script = Some(crate::PPtr::parse(r, ver)?);
 
         Ok(ScriptedImporter {
-            m_name,
-            m_user_data,
+            m_name: m_name.unwrap(),
+            m_user_data: m_user_data.unwrap(),
             m_file_id_to_recycle_name,
             m_internal_id_to_name_table,
-            m_asset_bundle_name,
+            m_asset_bundle_name: m_asset_bundle_name.unwrap(),
             m_external_objects,
-            m_asset_bundle_variant,
+            m_asset_bundle_variant: m_asset_bundle_variant.unwrap(),
             m_used_file_i_ds,
-            m_script,
+            m_script: m_script.unwrap(),
         })
     }
 }

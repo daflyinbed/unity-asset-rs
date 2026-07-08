@@ -1,11 +1,126 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
-use crate::classes::vector3f::Vector3f;
 use crate::subclasses::int3_storage::int3_storage;
 use crate::subclasses::static_batch_info::StaticBatchInfo;
+use crate::subclasses::vector3f::Vector3f;
 use crate::subclasses::vector4f::Vector4f;
 
+
+/// 版本枚举：TilemapRendererMReflectionProbeUsageVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum TilemapRendererMReflectionProbeUsageVariant {
+    Default(u8),
+    V2019_3(u8),
+}
+
+impl crate::Parse for TilemapRendererMReflectionProbeUsageVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2019, 3, 0) {
+            let v = r.read_u8()?;
+            Ok(Self::V2019_3(v))
+        } else {
+            let v = r.read_u8()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：TilemapRendererMRayTracingModeVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum TilemapRendererMRayTracingModeVariant {
+    Default(u8),
+    V2020_1(u8),
+}
+
+impl crate::Parse for TilemapRendererMRayTracingModeVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2020, 1, 0) {
+            let v = r.read_u8()?;
+            Ok(Self::V2020_1(v))
+        } else {
+            let v = r.read_u8()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：TilemapRendererMRayTraceProceduralVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum TilemapRendererMRayTraceProceduralVariant {
+    Default(u8),
+    V2023_2(u8),
+}
+
+impl crate::Parse for TilemapRendererMRayTraceProceduralVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2023, 2, 0) {
+            let v = r.read_u8()?;
+            Ok(Self::V2023_2(v))
+        } else {
+            let v = r.read_u8()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：TilemapRendererMRayTracingAccelStructBuildFlagsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum TilemapRendererMRayTracingAccelStructBuildFlagsVariant {
+    Default(u8),
+    V2023_3(u8),
+}
+
+impl crate::Parse for TilemapRendererMRayTracingAccelStructBuildFlagsVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2023, 3, 0) {
+            let v = r.read_u8()?;
+            Ok(Self::V2023_3(v))
+        } else {
+            let v = r.read_u8()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：TilemapRendererMDetectChunkCullingBoundsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum TilemapRendererMDetectChunkCullingBoundsVariant {
+    Default(i32),
+    V6000_3(i32),
+}
+
+impl crate::Parse for TilemapRendererMDetectChunkCullingBoundsVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(6000, 3, 0) {
+            let v = r.read_i32()?;
+            r.align(4)?;
+            Ok(Self::V6000_3(v))
+        } else {
+            let v = r.read_i32()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct TilemapRenderer {
     pub m_game_object: PPtr,
@@ -16,18 +131,18 @@ pub struct TilemapRenderer {
     pub m_motion_vectors: u8,
     pub m_static_shadow_caster: Option<u8>,
     pub m_light_probe_usage: u8,
-    pub m_reflection_probe_usage: u8,
+    pub m_reflection_probe_usage: TilemapRendererMReflectionProbeUsageVariant,
     pub m_lightmap_index: u16,
     pub m_rendering_layer_mask: Option<u32>,
-    pub m_ray_tracing_mode: Option<u8>,
+    pub m_ray_tracing_mode: Option<TilemapRendererMRayTracingModeVariant>,
     pub m_lightmap_index_dynamic: u16,
     pub m_renderer_priority: Option<i32>,
-    pub m_ray_trace_procedural: Option<u8>,
+    pub m_ray_trace_procedural: Option<TilemapRendererMRayTraceProceduralVariant>,
     pub m_lightmap_tiling_offset: Vector4f,
     pub m_lightmap_tiling_offset_dynamic: Vector4f,
     pub m_ray_tracing_accel_struct_build_flags_override: Option<u8>,
     pub m_materials: Vec<PPtr>,
-    pub m_ray_tracing_accel_struct_build_flags: Option<u8>,
+    pub m_ray_tracing_accel_struct_build_flags: Option<TilemapRendererMRayTracingAccelStructBuildFlagsVariant>,
     pub m_static_batch_info: StaticBatchInfo,
     pub m_small_mesh_culling: Option<u8>,
     pub m_static_batch_root: PPtr,
@@ -44,7 +159,7 @@ pub struct TilemapRenderer {
     pub m_max_frame_age: u32,
     pub m_sort_order: i32,
     pub m_mask_interaction: i32,
-    pub m_detect_chunk_culling_bounds: Option<i32>,
+    pub m_detect_chunk_culling_bounds: Option<TilemapRendererMDetectChunkCullingBoundsVariant>,
     pub m_mode: Option<i32>,
 }
 
@@ -102,12 +217,12 @@ impl crate::Parse for TilemapRenderer {
         }
             m_motion_vectors = Some(r.read_u8()?);
             m_light_probe_usage = Some(r.read_u8()?);
-            m_reflection_probe_usage = Some(r.read_u8()?);
+            m_reflection_probe_usage = Some(TilemapRendererMReflectionProbeUsageVariant::parse(r, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 2, 0) {
-            m_ray_tracing_mode = Some(r.read_u8()?);
-            m_ray_trace_procedural = Some(r.read_u8()?);
+            m_ray_tracing_mode = Some(TilemapRendererMRayTracingModeVariant::parse(r, ver)?);
+            m_ray_trace_procedural = Some(TilemapRendererMRayTraceProceduralVariant::parse(r, ver)?);
             m_ray_tracing_accel_struct_build_flags_override = Some(r.read_u8()?);
-            m_ray_tracing_accel_struct_build_flags = Some(r.read_u8()?);
+            m_ray_tracing_accel_struct_build_flags = Some(TilemapRendererMRayTracingAccelStructBuildFlagsVariant::parse(r, ver)?);
             m_small_mesh_culling = Some(r.read_u8()?);
             r.align(4)?;
             m_force_mesh_lod = Some(r.read_i16()?);
@@ -116,28 +231,28 @@ impl crate::Parse for TilemapRenderer {
             m_rendering_layer_mask = Some(r.read_u32()?);
             m_renderer_priority = Some(r.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            m_ray_tracing_mode = Some(r.read_u8()?);
-            m_ray_trace_procedural = Some(r.read_u8()?);
+            m_ray_tracing_mode = Some(TilemapRendererMRayTracingModeVariant::parse(r, ver)?);
+            m_ray_trace_procedural = Some(TilemapRendererMRayTraceProceduralVariant::parse(r, ver)?);
             m_ray_tracing_accel_struct_build_flags_override = Some(r.read_u8()?);
-            m_ray_tracing_accel_struct_build_flags = Some(r.read_u8()?);
+            m_ray_tracing_accel_struct_build_flags = Some(TilemapRendererMRayTracingAccelStructBuildFlagsVariant::parse(r, ver)?);
             m_small_mesh_culling = Some(r.read_u8()?);
             r.align(4)?;
             m_rendering_layer_mask = Some(r.read_u32()?);
             m_renderer_priority = Some(r.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2023, 2, 0) {
-            m_ray_tracing_mode = Some(r.read_u8()?);
-            m_ray_trace_procedural = Some(r.read_u8()?);
+            m_ray_tracing_mode = Some(TilemapRendererMRayTracingModeVariant::parse(r, ver)?);
+            m_ray_trace_procedural = Some(TilemapRendererMRayTraceProceduralVariant::parse(r, ver)?);
             m_ray_tracing_accel_struct_build_flags_override = Some(r.read_u8()?);
-            m_ray_tracing_accel_struct_build_flags = Some(r.read_u8()?);
+            m_ray_tracing_accel_struct_build_flags = Some(TilemapRendererMRayTracingAccelStructBuildFlagsVariant::parse(r, ver)?);
             m_rendering_layer_mask = Some(r.read_u32()?);
             m_renderer_priority = Some(r.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            m_ray_tracing_mode = Some(r.read_u8()?);
-            m_ray_trace_procedural = Some(r.read_u8()?);
+            m_ray_tracing_mode = Some(TilemapRendererMRayTracingModeVariant::parse(r, ver)?);
+            m_ray_trace_procedural = Some(TilemapRendererMRayTraceProceduralVariant::parse(r, ver)?);
             m_rendering_layer_mask = Some(r.read_u32()?);
             m_renderer_priority = Some(r.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            m_ray_tracing_mode = Some(r.read_u8()?);
+            m_ray_tracing_mode = Some(TilemapRendererMRayTracingModeVariant::parse(r, ver)?);
             m_rendering_layer_mask = Some(r.read_u32()?);
             m_renderer_priority = Some(r.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
@@ -168,10 +283,7 @@ impl crate::Parse for TilemapRenderer {
         } else {
         }
             m_chunk_size = Some(int3_storage::parse(r, ver)?);
-        if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            m_chunk_culling_bounds = Some(Vector3f::parse(r, ver)?);
-        } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-        } else if *ver >= crate::UnityVersion::new(2017, 4, 33) {
+        if *ver >= crate::UnityVersion::new(2017, 4, 33) {
             m_chunk_culling_bounds = Some(Vector3f::parse(r, ver)?);
         } else {
         }
@@ -180,17 +292,14 @@ impl crate::Parse for TilemapRenderer {
             m_sort_order = Some(r.read_i32()?);
         if *ver >= crate::UnityVersion::new(6000, 3, 0) {
             m_mode = Some(r.read_i32()?);
-            m_detect_chunk_culling_bounds = Some(r.read_i32()?);
-            r.align(4)?;
+            m_detect_chunk_culling_bounds = Some(TilemapRendererMDetectChunkCullingBoundsVariant::parse(r, ver)?);
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
             m_mode = Some(r.read_i32()?);
-            m_detect_chunk_culling_bounds = Some(r.read_i32()?);
-            r.align(4)?;
+            m_detect_chunk_culling_bounds = Some(TilemapRendererMDetectChunkCullingBoundsVariant::parse(r, ver)?);
             m_mask_interaction = Some(r.read_i32()?);
             r.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            m_detect_chunk_culling_bounds = Some(r.read_i32()?);
-            r.align(4)?;
+            m_detect_chunk_culling_bounds = Some(TilemapRendererMDetectChunkCullingBoundsVariant::parse(r, ver)?);
             m_mask_interaction = Some(r.read_i32()?);
             r.align(4)?;
         } else {

@@ -1,11 +1,34 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
-use crate::classes::vector3f::Vector3f;
 use crate::subclasses::bit_field::BitField;
 use crate::subclasses::joint_spring::JointSpring;
+use crate::subclasses::vector3f::Vector3f;
 use crate::subclasses::wheel_friction_curve::WheelFrictionCurve;
 
+
+/// 版本枚举：WheelColliderMEnabledVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum WheelColliderMEnabledVariant {
+    Default(bool),
+    V2022_2(bool),
+}
+
+impl crate::Parse for WheelColliderMEnabledVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            let v = r.read_bool()?;
+            Ok(Self::V2022_2(v))
+        } else {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct WheelCollider {
     pub m_game_object: PPtr,
@@ -18,7 +41,7 @@ pub struct WheelCollider {
     pub m_forward_friction: WheelFrictionCurve,
     pub m_sideways_friction: WheelFrictionCurve,
     pub m_wheel_damping_rate: Option<f32>,
-    pub m_enabled: Option<bool>,
+    pub m_enabled: Option<WheelColliderMEnabledVariant>,
     pub m_include_layers: Option<BitField>,
     pub m_exclude_layers: Option<BitField>,
     pub m_layer_override_priority: Option<i32>,
@@ -69,11 +92,11 @@ impl crate::Parse for WheelCollider {
             m_include_layers = Some(BitField::parse(r, ver)?);
             m_exclude_layers = Some(BitField::parse(r, ver)?);
             m_layer_override_priority = Some(r.read_i32()?);
-            m_enabled = Some(r.read_bool()?);
+            m_enabled = Some(WheelColliderMEnabledVariant::parse(r, ver)?);
             m_provides_contacts = Some(r.read_bool()?);
             r.align(4)?;
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            m_enabled = Some(r.read_bool()?);
+            m_enabled = Some(WheelColliderMEnabledVariant::parse(r, ver)?);
         } else {
         }
 

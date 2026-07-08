@@ -21,46 +21,50 @@ impl crate::Parse for VisualEffectImporter {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_external_objects = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(r, ver)?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_user_data = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_used_file_i_ds = if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i64() }).collect::<Result<Vec<_>, _>>() } )?;
+        let mut m_name = None;
+        let mut m_external_objects = None;
+        let mut m_user_data = None;
+        let mut m_used_file_i_ds = None;
+        let mut m_asset_bundle_name = None;
+        let mut m_template = None;
+        let mut m_asset_bundle_variant = None;
+        let mut m_use_as_template = None;
+            m_name = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_asset_bundle_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_template = if *ver >= crate::UnityVersion::new(2023, 2, 0) {
-            let v = VfxTemplate::parse(r, ver)?;
+            m_external_objects = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(r, ver)?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_asset_bundle_variant = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_use_as_template = if *ver >= crate::UnityVersion::new(6000, 3, 0) {
-            let v = r.read_bool()?;
+        if *ver >= crate::UnityVersion::new(6000, 3, 0) {
+            m_used_file_i_ds = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
+            m_template = Some(VfxTemplate::parse(r, ver)?);
+            r.align(4)?;
+            m_use_as_template = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2023, 2, 0) {
+            m_used_file_i_ds = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_template = Some(VfxTemplate::parse(r, ver)?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
+            m_used_file_i_ds = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
         } else {
-            None
-        };
+        }
+            m_user_data = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_name = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_asset_bundle_variant = Some(r.read_aligned_string()?);
+            r.align(4)?;
 
         Ok(VisualEffectImporter {
-            m_name,
-            m_external_objects,
-            m_user_data,
+            m_name: m_name.unwrap(),
+            m_external_objects: m_external_objects.unwrap(),
+            m_user_data: m_user_data.unwrap(),
             m_used_file_i_ds,
-            m_asset_bundle_name,
+            m_asset_bundle_name: m_asset_bundle_name.unwrap(),
             m_template,
-            m_asset_bundle_variant,
+            m_asset_bundle_variant: m_asset_bundle_variant.unwrap(),
             m_use_as_template,
         })
     }

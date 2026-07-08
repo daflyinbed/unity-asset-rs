@@ -22,49 +22,43 @@ impl crate::Parse for SurfaceEffector2D {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_enabled = r.read_u8()?;
-        r.align(4)?;
-        let m_collider_mask = BitField::parse(r, ver)?;
-        let m_use_collider_mask = if *ver >= crate::UnityVersion::new(5, 0, 2) {
-            let v = r.read_bool()?;
+        let mut m_game_object = None;
+        let mut m_enabled = None;
+        let mut m_collider_mask = None;
+        let mut m_use_collider_mask = None;
+        let mut m_speed = None;
+        let mut m_speed_variation = None;
+        let mut m_force_scale = None;
+        let mut m_use_contact_force = None;
+        let mut m_use_friction = None;
+        let mut m_use_bounce = None;
+            m_game_object = Some(crate::PPtr::parse(r, ver)?);
+            m_enabled = Some(r.read_u8()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_speed = r.read_f32()?;
-        let m_speed_variation = r.read_f32()?;
-        let m_force_scale = if *ver >= crate::UnityVersion::new(5, 0, 1) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
-        let m_use_contact_force = if *ver >= crate::UnityVersion::new(5, 0, 1) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_use_friction = if *ver >= crate::UnityVersion::new(5, 0, 1) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_use_bounce = if *ver >= crate::UnityVersion::new(5, 0, 1) {
-            let v = r.read_bool()?;
+        if *ver >= crate::UnityVersion::new(5, 0, 2) {
+            m_use_collider_mask = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
         } else {
-            None
-        };
+        }
+            m_collider_mask = Some(BitField::parse(r, ver)?);
+            m_speed = Some(r.read_f32()?);
+            m_speed_variation = Some(r.read_f32()?);
+        if *ver >= crate::UnityVersion::new(5, 0, 1) {
+            m_force_scale = Some(r.read_f32()?);
+            m_use_contact_force = Some(r.read_bool()?);
+            m_use_friction = Some(r.read_bool()?);
+            m_use_bounce = Some(r.read_bool()?);
+            r.align(4)?;
+        } else {
+        }
 
         Ok(SurfaceEffector2D {
-            m_game_object,
-            m_enabled,
-            m_collider_mask,
+            m_game_object: m_game_object.unwrap(),
+            m_enabled: m_enabled.unwrap(),
+            m_collider_mask: m_collider_mask.unwrap(),
             m_use_collider_mask,
-            m_speed,
-            m_speed_variation,
+            m_speed: m_speed.unwrap(),
+            m_speed_variation: m_speed_variation.unwrap(),
             m_force_scale,
             m_use_contact_force,
             m_use_friction,

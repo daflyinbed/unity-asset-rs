@@ -28,46 +28,59 @@ impl crate::Parse for GuiText {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_enabled = r.read_u8()?;
-        r.align(4)?;
-        let m_text = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_anchor = r.read_i16()?;
-        let m_alignment = r.read_i16()?;
-        let m_pixel_offset = Vector2f::parse(r, ver)?;
-        let m_line_spacing = r.read_f32()?;
-        let m_tab_size = r.read_f32()?;
-        let m_font = crate::PPtr::parse(r, ver)?;
-        let m_material = crate::PPtr::parse(r, ver)?;
-        let m_font_size = r.read_i32()?;
-        let m_font_style = r.read_i32()?;
-        let m_pixel_correct = r.read_bool()?;
-        let m_color = if *ver >= crate::UnityVersion::new(4, 2, 0) {
-            Some(ColorRgba::parse(r, ver)?)
+        let mut m_game_object = None;
+        let mut m_enabled = None;
+        let mut m_text = None;
+        let mut m_anchor = None;
+        let mut m_alignment = None;
+        let mut m_pixel_offset = None;
+        let mut m_line_spacing = None;
+        let mut m_tab_size = None;
+        let mut m_font = None;
+        let mut m_material = None;
+        let mut m_font_size = None;
+        let mut m_font_style = None;
+        let mut m_pixel_correct = None;
+        let mut m_color = None;
+        let mut m_rich_text = None;
+            m_game_object = Some(crate::PPtr::parse(r, ver)?);
+            m_enabled = Some(r.read_u8()?);
+            r.align(4)?;
+            m_text = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_anchor = Some(r.read_i16()?);
+            m_alignment = Some(r.read_i16()?);
+            m_pixel_offset = Some(Vector2f::parse(r, ver)?);
+            m_line_spacing = Some(r.read_f32()?);
+            m_tab_size = Some(r.read_f32()?);
+            m_font = Some(crate::PPtr::parse(r, ver)?);
+            m_material = Some(crate::PPtr::parse(r, ver)?);
+            m_font_size = Some(r.read_i32()?);
+            m_font_style = Some(r.read_i32()?);
+        if *ver >= crate::UnityVersion::new(4, 2, 0) {
+            m_color = Some(ColorRgba::parse(r, ver)?);
         } else {
-            None
-        };
-        let m_rich_text = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(r.read_bool()?)
+        }
+            m_pixel_correct = Some(r.read_bool()?);
+        if *ver >= crate::UnityVersion::new(4, 0, 0) {
+            m_rich_text = Some(r.read_bool()?);
         } else {
-            None
-        };
+        }
 
         Ok(GuiText {
-            m_game_object,
-            m_enabled,
-            m_text,
-            m_anchor,
-            m_alignment,
-            m_pixel_offset,
-            m_line_spacing,
-            m_tab_size,
-            m_font,
-            m_material,
-            m_font_size,
-            m_font_style,
-            m_pixel_correct,
+            m_game_object: m_game_object.unwrap(),
+            m_enabled: m_enabled.unwrap(),
+            m_text: m_text.unwrap(),
+            m_anchor: m_anchor.unwrap(),
+            m_alignment: m_alignment.unwrap(),
+            m_pixel_offset: m_pixel_offset.unwrap(),
+            m_line_spacing: m_line_spacing.unwrap(),
+            m_tab_size: m_tab_size.unwrap(),
+            m_font: m_font.unwrap(),
+            m_material: m_material.unwrap(),
+            m_font_size: m_font_size.unwrap(),
+            m_font_style: m_font_style.unwrap(),
+            m_pixel_correct: m_pixel_correct.unwrap(),
             m_color,
             m_rich_text,
         })

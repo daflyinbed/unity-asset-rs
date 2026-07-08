@@ -3,12 +3,126 @@
 use crate::PPtr;
 use crate::subclasses::bit_field::BitField;
 use crate::subclasses::color_rgba::ColorRgba;
-use crate::subclasses::falloff_table::FalloffTable;
 use crate::subclasses::light_baking_output::LightBakingOutput;
 use crate::subclasses::shadow_settings::ShadowSettings;
 use crate::subclasses::vector2f::Vector2f;
 use crate::subclasses::vector4f::Vector4f;
 
+
+/// 版本枚举：LightMShadowsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum LightMShadowsVariant {
+    Default(ShadowSettings),
+    V2019_1(ShadowSettings),
+}
+
+impl crate::Parse for LightMShadowsVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2019, 1, 0) {
+            let v = ShadowSettings::parse(r, ver)?;
+            r.align(4)?;
+            Ok(Self::V2019_1(v))
+        } else {
+            let v = ShadowSettings::parse(r, ver)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：LightMDrawHaloVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum LightMDrawHaloVariant {
+    Default(bool),
+    V5_4(bool),
+}
+
+impl crate::Parse for LightMDrawHaloVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 4, 0) {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::V5_4(v))
+        } else {
+            let v = r.read_bool()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：LightMBakingOutputVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum LightMBakingOutputVariant {
+    Default(LightBakingOutput),
+    V2017_3(LightBakingOutput),
+}
+
+impl crate::Parse for LightMBakingOutputVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 3, 0) {
+            let v = LightBakingOutput::parse(r, ver)?;
+            r.align(4)?;
+            Ok(Self::V2017_3(v))
+        } else {
+            let v = LightBakingOutput::parse(r, ver)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：LightMUseBoundingSphereOverrideVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum LightMUseBoundingSphereOverrideVariant {
+    Default(bool),
+    V2020_2(bool),
+}
+
+impl crate::Parse for LightMUseBoundingSphereOverrideVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2020, 2, 0) {
+            let v = r.read_bool()?;
+            Ok(Self::V2020_2(v))
+        } else {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：LightMUseViewFrustumForShadowCasterCullVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum LightMUseViewFrustumForShadowCasterCullVariant {
+    Default(bool),
+    V2023_3(bool),
+}
+
+impl crate::Parse for LightMUseViewFrustumForShadowCasterCullVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2023, 3, 0) {
+            let v = r.read_bool()?;
+            Ok(Self::V2023_3(v))
+        } else {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct Light {
     pub m_game_object: PPtr,
@@ -21,13 +135,13 @@ pub struct Light {
     pub m_spot_angle: f32,
     pub m_cookie_size: Option<f32>,
     pub m_inner_spot_angle: Option<f32>,
-    pub m_shadows: ShadowSettings,
+    pub m_shadows: LightMShadowsVariant,
     pub m_cookie_size2_d: Option<Vector2f>,
     pub m_cookie: PPtr,
-    pub m_draw_halo: bool,
+    pub m_draw_halo: LightMDrawHaloVariant,
     pub m_actually_lightmapped: Option<bool>,
     pub m_baked_index: Option<i32>,
-    pub m_baking_output: Option<LightBakingOutput>,
+    pub m_baking_output: Option<LightMBakingOutputVariant>,
     pub m_flare: PPtr,
     pub m_render_mode: i32,
     pub m_culling_mask: BitField,
@@ -36,13 +150,11 @@ pub struct Light {
     pub m_area_size: Option<Vector2f>,
     pub m_light_shadow_caster_mode: Option<i32>,
     pub m_rendering_layer_mask: Option<u32>,
-    pub m_cct: Option<f32>,
     pub m_color_temperature: Option<f32>,
-    pub m_falloff_table: Option<FalloffTable>,
     pub m_use_color_temperature: Option<bool>,
     pub m_bounding_sphere_override: Option<Vector4f>,
-    pub m_use_bounding_sphere_override: Option<bool>,
-    pub m_use_view_frustum_for_shadow_caster_cull: Option<bool>,
+    pub m_use_bounding_sphere_override: Option<LightMUseBoundingSphereOverrideVariant>,
+    pub m_use_view_frustum_for_shadow_caster_cull: Option<LightMUseViewFrustumForShadowCasterCullVariant>,
     pub m_force_visible: Option<bool>,
     pub m_light_unit: Option<i32>,
     pub m_shape_radius: Option<f32>,
@@ -55,182 +167,183 @@ impl crate::Parse for Light {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_enabled = r.read_u8()?;
-        r.align(4)?;
-        let m_type = r.read_i32()?;
-        let m_color = ColorRgba::parse(r, ver)?;
-        let m_shape = if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_intensity = r.read_f32()?;
-        let m_range = r.read_f32()?;
-        let m_spot_angle = r.read_f32()?;
-        let m_cookie_size = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
-        let m_inner_spot_angle = if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
-        let m_shadows = ShadowSettings::parse(r, ver)?;
-        r.align(4)?;
-        let m_cookie_size2_d = if *ver >= crate::UnityVersion::new(6000, 3, 0) {
-            Some(Vector2f::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_cookie = crate::PPtr::parse(r, ver)?;
-        let m_draw_halo = r.read_bool()?;
-        r.align(4)?;
-        let m_actually_lightmapped = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_bool()?;
+        let mut m_game_object = None;
+        let mut m_enabled = None;
+        let mut m_type = None;
+        let mut m_color = None;
+        let mut m_shape = None;
+        let mut m_intensity = None;
+        let mut m_range = None;
+        let mut m_spot_angle = None;
+        let mut m_cookie_size = None;
+        let mut m_inner_spot_angle = None;
+        let mut m_shadows = None;
+        let mut m_cookie_size2_d = None;
+        let mut m_cookie = None;
+        let mut m_draw_halo = None;
+        let mut m_actually_lightmapped = None;
+        let mut m_baked_index = None;
+        let mut m_baking_output = None;
+        let mut m_flare = None;
+        let mut m_render_mode = None;
+        let mut m_culling_mask = None;
+        let mut m_lightmapping = None;
+        let mut m_bounce_intensity = None;
+        let mut m_area_size = None;
+        let mut m_light_shadow_caster_mode = None;
+        let mut m_rendering_layer_mask = None;
+        let mut m_color_temperature = None;
+        let mut m_use_color_temperature = None;
+        let mut m_bounding_sphere_override = None;
+        let mut m_use_bounding_sphere_override = None;
+        let mut m_use_view_frustum_for_shadow_caster_cull = None;
+        let mut m_force_visible = None;
+        let mut m_light_unit = None;
+        let mut m_shape_radius = None;
+        let mut m_lux_at_distance = None;
+        let mut m_enable_spot_reflector = None;
+            m_game_object = Some(crate::PPtr::parse(r, ver)?);
+            m_enabled = Some(r.read_u8()?);
             r.align(4)?;
-            Some(v)
+            m_type = Some(r.read_i32()?);
+        if *ver >= crate::UnityVersion::new(2023, 2, 0) {
+        } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
+            m_shape = Some(r.read_i32()?);
         } else {
-            None
-        };
-        let m_baked_index = if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            let v = r.read_i32()?;
+        }
+            m_color = Some(ColorRgba::parse(r, ver)?);
+            m_intensity = Some(r.read_f32()?);
+            m_range = Some(r.read_f32()?);
+            m_spot_angle = Some(r.read_f32()?);
+        if *ver >= crate::UnityVersion::new(6000, 3, 0) {
+            m_inner_spot_angle = Some(r.read_f32()?);
+            m_cookie_size2_d = Some(Vector2f::parse(r, ver)?);
+        } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
+            m_inner_spot_angle = Some(r.read_f32()?);
+            m_cookie_size = Some(r.read_f32()?);
+        } else {
+            m_cookie_size = Some(r.read_f32()?);
+        }
+            m_shadows = Some(LightMShadowsVariant::parse(r, ver)?);
+            m_cookie = Some(crate::PPtr::parse(r, ver)?);
+            m_draw_halo = Some(LightMDrawHaloVariant::parse(r, ver)?);
+        if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            m_baking_output = Some(LightMBakingOutputVariant::parse(r, ver)?);
+        } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
+            m_baked_index = Some(r.read_i32()?);
             r.align(4)?;
-            Some(v)
         } else {
-            None
-        };
-        let m_baking_output = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            let v = LightBakingOutput::parse(r, ver)?;
+            m_actually_lightmapped = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
+        }
+            m_flare = Some(crate::PPtr::parse(r, ver)?);
+            m_render_mode = Some(r.read_i32()?);
+            m_culling_mask = Some(BitField::parse(r, ver)?);
+        if *ver >= crate::UnityVersion::new(2019, 1, 0) {
+            m_rendering_layer_mask = Some(r.read_u32()?);
         } else {
-            None
-        };
-        let m_flare = crate::PPtr::parse(r, ver)?;
-        let m_render_mode = r.read_i32()?;
-        let m_culling_mask = BitField::parse(r, ver)?;
-        let m_lightmapping = r.read_i32()?;
-        let m_bounce_intensity = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
-        let m_area_size = if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            Some(Vector2f::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_light_shadow_caster_mode = if *ver >= crate::UnityVersion::new(2018, 2, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_rendering_layer_mask = if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            Some(r.read_u32()?)
-        } else {
-            None
-        };
-        let m_cct = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            let v = r.read_f32()?;
+        }
+            m_lightmapping = Some(r.read_i32()?);
+        if *ver >= crate::UnityVersion::new(6000, 4, 0) {
+            m_light_shadow_caster_mode = Some(r.read_i32()?);
+            m_area_size = Some(Vector2f::parse(r, ver)?);
+            m_bounce_intensity = Some(r.read_f32()?);
+            m_color_temperature = Some(r.read_f32()?);
+            m_use_color_temperature = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_color_temperature = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
-        let m_falloff_table = if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            Some(FalloffTable::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_use_color_temperature = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            let v = r.read_bool()?;
+            m_bounding_sphere_override = Some(Vector4f::parse(r, ver)?);
+            m_use_bounding_sphere_override = Some(LightMUseBoundingSphereOverrideVariant::parse(r, ver)?);
+            m_use_view_frustum_for_shadow_caster_cull = Some(LightMUseViewFrustumForShadowCasterCullVariant::parse(r, ver)?);
+            m_force_visible = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_bounding_sphere_override = if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            Some(Vector4f::parse(r, ver)?)
-        } else {
-            None
-        };
-        let m_use_bounding_sphere_override = if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_use_view_frustum_for_shadow_caster_cull = if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_force_visible = if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            let v = r.read_bool()?;
+            m_shape_radius = Some(r.read_f32()?);
+            m_light_unit = Some(r.read_i32()?);
+            m_lux_at_distance = Some(r.read_f32()?);
+            m_enable_spot_reflector = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_light_unit = if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_shape_radius = if *ver >= crate::UnityVersion::new(6000, 4, 0) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
-        let m_lux_at_distance = if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
-        let m_enable_spot_reflector = if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            let v = r.read_bool()?;
+        } else if *ver >= crate::UnityVersion::new(2023, 3, 0) {
+            m_light_shadow_caster_mode = Some(r.read_i32()?);
+            m_area_size = Some(Vector2f::parse(r, ver)?);
+            m_bounce_intensity = Some(r.read_f32()?);
+            m_color_temperature = Some(r.read_f32()?);
+            m_use_color_temperature = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
+            m_bounding_sphere_override = Some(Vector4f::parse(r, ver)?);
+            m_use_bounding_sphere_override = Some(LightMUseBoundingSphereOverrideVariant::parse(r, ver)?);
+            m_use_view_frustum_for_shadow_caster_cull = Some(LightMUseViewFrustumForShadowCasterCullVariant::parse(r, ver)?);
+            m_force_visible = Some(r.read_bool()?);
+            r.align(4)?;
+            m_light_unit = Some(r.read_i32()?);
+            m_lux_at_distance = Some(r.read_f32()?);
+            m_enable_spot_reflector = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
+            m_light_shadow_caster_mode = Some(r.read_i32()?);
+            m_area_size = Some(Vector2f::parse(r, ver)?);
+            m_bounce_intensity = Some(r.read_f32()?);
+            m_color_temperature = Some(r.read_f32()?);
+            m_use_color_temperature = Some(r.read_bool()?);
+            r.align(4)?;
+            m_bounding_sphere_override = Some(Vector4f::parse(r, ver)?);
+            m_use_bounding_sphere_override = Some(LightMUseBoundingSphereOverrideVariant::parse(r, ver)?);
+            m_use_view_frustum_for_shadow_caster_cull = Some(LightMUseViewFrustumForShadowCasterCullVariant::parse(r, ver)?);
+        } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
+            m_light_shadow_caster_mode = Some(r.read_i32()?);
+            m_area_size = Some(Vector2f::parse(r, ver)?);
+            m_bounce_intensity = Some(r.read_f32()?);
+            m_color_temperature = Some(r.read_f32()?);
+            m_use_color_temperature = Some(r.read_bool()?);
+            r.align(4)?;
+            m_bounding_sphere_override = Some(Vector4f::parse(r, ver)?);
+            m_use_bounding_sphere_override = Some(LightMUseBoundingSphereOverrideVariant::parse(r, ver)?);
+        } else if *ver >= crate::UnityVersion::new(2018, 2, 0) {
+            m_light_shadow_caster_mode = Some(r.read_i32()?);
+            m_area_size = Some(Vector2f::parse(r, ver)?);
+            m_bounce_intensity = Some(r.read_f32()?);
+            m_color_temperature = Some(r.read_f32()?);
+            m_use_color_temperature = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            m_area_size = Some(Vector2f::parse(r, ver)?);
+            m_bounce_intensity = Some(r.read_f32()?);
+            m_color_temperature = Some(r.read_f32()?);
+            m_use_color_temperature = Some(r.read_bool()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
+            m_area_size = Some(Vector2f::parse(r, ver)?);
+            m_bounce_intensity = Some(r.read_f32()?);
+        } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            m_bounce_intensity = Some(r.read_f32()?);
         } else {
-            None
-        };
+        }
 
         Ok(Light {
-            m_game_object,
-            m_enabled,
-            m_type,
-            m_color,
+            m_game_object: m_game_object.unwrap(),
+            m_enabled: m_enabled.unwrap(),
+            m_type: m_type.unwrap(),
+            m_color: m_color.unwrap(),
             m_shape,
-            m_intensity,
-            m_range,
-            m_spot_angle,
+            m_intensity: m_intensity.unwrap(),
+            m_range: m_range.unwrap(),
+            m_spot_angle: m_spot_angle.unwrap(),
             m_cookie_size,
             m_inner_spot_angle,
-            m_shadows,
+            m_shadows: m_shadows.unwrap(),
             m_cookie_size2_d,
-            m_cookie,
-            m_draw_halo,
+            m_cookie: m_cookie.unwrap(),
+            m_draw_halo: m_draw_halo.unwrap(),
             m_actually_lightmapped,
             m_baked_index,
             m_baking_output,
-            m_flare,
-            m_render_mode,
-            m_culling_mask,
-            m_lightmapping,
+            m_flare: m_flare.unwrap(),
+            m_render_mode: m_render_mode.unwrap(),
+            m_culling_mask: m_culling_mask.unwrap(),
+            m_lightmapping: m_lightmapping.unwrap(),
             m_bounce_intensity,
             m_area_size,
             m_light_shadow_caster_mode,
             m_rendering_layer_mask,
-            m_cct,
             m_color_temperature,
-            m_falloff_table,
             m_use_color_temperature,
             m_bounding_sphere_override,
             m_use_bounding_sphere_override,

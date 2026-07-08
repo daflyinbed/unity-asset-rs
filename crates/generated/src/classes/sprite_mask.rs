@@ -4,6 +4,121 @@ use crate::PPtr;
 use crate::subclasses::static_batch_info::StaticBatchInfo;
 use crate::subclasses::vector4f::Vector4f;
 
+
+/// 版本枚举：SpriteMaskMReflectionProbeUsageVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum SpriteMaskMReflectionProbeUsageVariant {
+    Default(u8),
+    V2019_3(u8),
+}
+
+impl crate::Parse for SpriteMaskMReflectionProbeUsageVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2019, 3, 0) {
+            let v = r.read_u8()?;
+            Ok(Self::V2019_3(v))
+        } else {
+            let v = r.read_u8()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：SpriteMaskMRayTracingModeVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum SpriteMaskMRayTracingModeVariant {
+    Default(u8),
+    V2020_1(u8),
+}
+
+impl crate::Parse for SpriteMaskMRayTracingModeVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2020, 1, 0) {
+            let v = r.read_u8()?;
+            Ok(Self::V2020_1(v))
+        } else {
+            let v = r.read_u8()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：SpriteMaskMRayTraceProceduralVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum SpriteMaskMRayTraceProceduralVariant {
+    Default(u8),
+    V2023_2(u8),
+}
+
+impl crate::Parse for SpriteMaskMRayTraceProceduralVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2023, 2, 0) {
+            let v = r.read_u8()?;
+            Ok(Self::V2023_2(v))
+        } else {
+            let v = r.read_u8()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：SpriteMaskMRayTracingAccelStructBuildFlagsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum SpriteMaskMRayTracingAccelStructBuildFlagsVariant {
+    Default(u8),
+    V2023_3(u8),
+}
+
+impl crate::Parse for SpriteMaskMRayTracingAccelStructBuildFlagsVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2023, 3, 0) {
+            let v = r.read_u8()?;
+            Ok(Self::V2023_3(v))
+        } else {
+            let v = r.read_u8()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：SpriteMaskMSpriteSortPointVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum SpriteMaskMSpriteSortPointVariant {
+    Default(i32),
+    V2023_1(i32),
+}
+
+impl crate::Parse for SpriteMaskMSpriteSortPointVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2023, 1, 0) {
+            let v = r.read_i32()?;
+            Ok(Self::V2023_1(v))
+        } else {
+            let v = r.read_i32()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct SpriteMask {
     pub m_game_object: PPtr,
@@ -14,19 +129,19 @@ pub struct SpriteMask {
     pub m_dynamic_occludee: Option<u8>,
     pub m_light_probe_usage: u8,
     pub m_static_shadow_caster: Option<u8>,
-    pub m_reflection_probe_usage: u8,
+    pub m_reflection_probe_usage: SpriteMaskMReflectionProbeUsageVariant,
     pub m_lightmap_index: u16,
     pub m_lightmap_index_dynamic: u16,
     pub m_rendering_layer_mask: Option<u32>,
-    pub m_ray_tracing_mode: Option<u8>,
+    pub m_ray_tracing_mode: Option<SpriteMaskMRayTracingModeVariant>,
     pub m_lightmap_tiling_offset: Vector4f,
     pub m_renderer_priority: Option<i32>,
-    pub m_ray_trace_procedural: Option<u8>,
+    pub m_ray_trace_procedural: Option<SpriteMaskMRayTraceProceduralVariant>,
     pub m_lightmap_tiling_offset_dynamic: Vector4f,
     pub m_materials: Vec<PPtr>,
     pub m_ray_tracing_accel_struct_build_flags_override: Option<u8>,
     pub m_static_batch_info: StaticBatchInfo,
-    pub m_ray_tracing_accel_struct_build_flags: Option<u8>,
+    pub m_ray_tracing_accel_struct_build_flags: Option<SpriteMaskMRayTracingAccelStructBuildFlagsVariant>,
     pub m_static_batch_root: PPtr,
     pub m_small_mesh_culling: Option<u8>,
     pub m_probe_anchor: PPtr,
@@ -45,7 +160,7 @@ pub struct SpriteMask {
     pub m_front_sorting_layer_id: Option<i32>,
     pub m_is_custom_range_active: bool,
     pub m_back_sorting_layer_id: Option<i32>,
-    pub m_sprite_sort_point: Option<i32>,
+    pub m_sprite_sort_point: Option<SpriteMaskMSpriteSortPointVariant>,
     pub m_mask_interaction: Option<i32>,
     pub m_mask_source: Option<i32>,
 }
@@ -55,164 +170,191 @@ impl crate::Parse for SpriteMask {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_enabled = r.read_bool()?;
-        let m_cast_shadows = r.read_u8()?;
-        let m_receive_shadows = r.read_u8()?;
-        let m_motion_vectors = r.read_u8()?;
-        let m_dynamic_occludee = if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            Some(r.read_u8()?)
+        let mut m_game_object = None;
+        let mut m_enabled = None;
+        let mut m_cast_shadows = None;
+        let mut m_receive_shadows = None;
+        let mut m_motion_vectors = None;
+        let mut m_dynamic_occludee = None;
+        let mut m_light_probe_usage = None;
+        let mut m_static_shadow_caster = None;
+        let mut m_reflection_probe_usage = None;
+        let mut m_lightmap_index = None;
+        let mut m_lightmap_index_dynamic = None;
+        let mut m_rendering_layer_mask = None;
+        let mut m_ray_tracing_mode = None;
+        let mut m_lightmap_tiling_offset = None;
+        let mut m_renderer_priority = None;
+        let mut m_ray_trace_procedural = None;
+        let mut m_lightmap_tiling_offset_dynamic = None;
+        let mut m_materials = None;
+        let mut m_ray_tracing_accel_struct_build_flags_override = None;
+        let mut m_static_batch_info = None;
+        let mut m_ray_tracing_accel_struct_build_flags = None;
+        let mut m_static_batch_root = None;
+        let mut m_small_mesh_culling = None;
+        let mut m_probe_anchor = None;
+        let mut m_force_mesh_lod = None;
+        let mut m_light_probe_volume_override = None;
+        let mut m_mesh_lod_selection_bias = None;
+        let mut m_sorting_layer_id = None;
+        let mut m_sorting_layer = None;
+        let mut m_sorting_order = None;
+        let mut m_sprite = None;
+        let mut m_mask_alpha_cutoff = None;
+        let mut m_front_sorting_layer = None;
+        let mut m_back_sorting_layer = None;
+        let mut m_front_sorting_order = None;
+        let mut m_back_sorting_order = None;
+        let mut m_front_sorting_layer_id = None;
+        let mut m_is_custom_range_active = None;
+        let mut m_back_sorting_layer_id = None;
+        let mut m_sprite_sort_point = None;
+        let mut m_mask_interaction = None;
+        let mut m_mask_source = None;
+            m_game_object = Some(crate::PPtr::parse(r, ver)?);
+            m_enabled = Some(r.read_bool()?);
+            m_cast_shadows = Some(r.read_u8()?);
+            m_receive_shadows = Some(r.read_u8()?);
+        if *ver >= crate::UnityVersion::new(2021, 1, 0) {
+            m_dynamic_occludee = Some(r.read_u8()?);
+            m_static_shadow_caster = Some(r.read_u8()?);
+        } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
+            m_dynamic_occludee = Some(r.read_u8()?);
         } else {
-            None
-        };
-        let m_light_probe_usage = r.read_u8()?;
-        let m_static_shadow_caster = if *ver >= crate::UnityVersion::new(2021, 1, 0) {
-            Some(r.read_u8()?)
-        } else {
-            None
-        };
-        let m_reflection_probe_usage = r.read_u8()?;
-        let m_lightmap_index = r.read_u16()?;
-        let m_lightmap_index_dynamic = r.read_u16()?;
-        let m_rendering_layer_mask = if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            Some(r.read_u32()?)
-        } else {
-            None
-        };
-        let m_ray_tracing_mode = if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            Some(r.read_u8()?)
-        } else {
-            None
-        };
-        let m_lightmap_tiling_offset = Vector4f::parse(r, ver)?;
-        let m_renderer_priority = if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_ray_trace_procedural = if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            Some(r.read_u8()?)
-        } else {
-            None
-        };
-        let m_lightmap_tiling_offset_dynamic = Vector4f::parse(r, ver)?;
-        let m_materials = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_ray_tracing_accel_struct_build_flags_override = if *ver >= crate::UnityVersion::new(2023, 2, 0) {
-            Some(r.read_u8()?)
-        } else {
-            None
-        };
-        let m_static_batch_info = StaticBatchInfo::parse(r, ver)?;
-        let m_ray_tracing_accel_struct_build_flags = if *ver >= crate::UnityVersion::new(2023, 2, 0) {
-            Some(r.read_u8()?)
-        } else {
-            None
-        };
-        let m_static_batch_root = crate::PPtr::parse(r, ver)?;
-        let m_small_mesh_culling = if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            let v = r.read_u8()?;
+        }
+            m_motion_vectors = Some(r.read_u8()?);
+            m_light_probe_usage = Some(r.read_u8()?);
+            m_reflection_probe_usage = Some(SpriteMaskMReflectionProbeUsageVariant::parse(r, ver)?);
+        if *ver >= crate::UnityVersion::new(6000, 2, 0) {
+            m_ray_tracing_mode = Some(SpriteMaskMRayTracingModeVariant::parse(r, ver)?);
+            m_ray_trace_procedural = Some(SpriteMaskMRayTraceProceduralVariant::parse(r, ver)?);
+            m_ray_tracing_accel_struct_build_flags_override = Some(r.read_u8()?);
+            m_ray_tracing_accel_struct_build_flags = Some(SpriteMaskMRayTracingAccelStructBuildFlagsVariant::parse(r, ver)?);
+            m_small_mesh_culling = Some(r.read_u8()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_probe_anchor = crate::PPtr::parse(r, ver)?;
-        let m_force_mesh_lod = if *ver >= crate::UnityVersion::new(6000, 2, 0) {
-            let v = r.read_i16()?;
+            m_force_mesh_lod = Some(r.read_i16()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_light_probe_volume_override = crate::PPtr::parse(r, ver)?;
-        r.align(4)?;
-        let m_mesh_lod_selection_bias = if *ver >= crate::UnityVersion::new(6000, 2, 0) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
-        let m_sorting_layer_id = r.read_i32()?;
-        let m_sorting_layer = r.read_i16()?;
-        let m_sorting_order = r.read_i16()?;
-        r.align(4)?;
-        let m_sprite = crate::PPtr::parse(r, ver)?;
-        let m_mask_alpha_cutoff = r.read_f32()?;
-        let m_front_sorting_layer = r.read_i16()?;
-        let m_back_sorting_layer = r.read_i16()?;
-        let m_front_sorting_order = r.read_i16()?;
-        let m_back_sorting_order = r.read_i16()?;
-        let m_front_sorting_layer_id = if *ver >= crate::UnityVersion::new(2018, 4, 5) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_is_custom_range_active = r.read_bool()?;
-        r.align(4)?;
-        let m_back_sorting_layer_id = if *ver >= crate::UnityVersion::new(2018, 4, 5) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_sprite_sort_point = if *ver >= crate::UnityVersion::new(2018, 2, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_mask_interaction = if *ver >= crate::UnityVersion::new(6000, 3, 0) {
-            let v = r.read_i32()?;
+            m_mesh_lod_selection_bias = Some(r.read_f32()?);
+            m_rendering_layer_mask = Some(r.read_u32()?);
+            m_renderer_priority = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2023, 3, 0) {
+            m_ray_tracing_mode = Some(SpriteMaskMRayTracingModeVariant::parse(r, ver)?);
+            m_ray_trace_procedural = Some(SpriteMaskMRayTraceProceduralVariant::parse(r, ver)?);
+            m_ray_tracing_accel_struct_build_flags_override = Some(r.read_u8()?);
+            m_ray_tracing_accel_struct_build_flags = Some(SpriteMaskMRayTracingAccelStructBuildFlagsVariant::parse(r, ver)?);
+            m_small_mesh_culling = Some(r.read_u8()?);
             r.align(4)?;
-            Some(v)
+            m_rendering_layer_mask = Some(r.read_u32()?);
+            m_renderer_priority = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2023, 2, 0) {
+            m_ray_tracing_mode = Some(SpriteMaskMRayTracingModeVariant::parse(r, ver)?);
+            m_ray_trace_procedural = Some(SpriteMaskMRayTraceProceduralVariant::parse(r, ver)?);
+            m_ray_tracing_accel_struct_build_flags_override = Some(r.read_u8()?);
+            m_ray_tracing_accel_struct_build_flags = Some(SpriteMaskMRayTracingAccelStructBuildFlagsVariant::parse(r, ver)?);
+            m_rendering_layer_mask = Some(r.read_u32()?);
+            m_renderer_priority = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
+            m_ray_tracing_mode = Some(SpriteMaskMRayTracingModeVariant::parse(r, ver)?);
+            m_ray_trace_procedural = Some(SpriteMaskMRayTraceProceduralVariant::parse(r, ver)?);
+            m_rendering_layer_mask = Some(r.read_u32()?);
+            m_renderer_priority = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
+            m_ray_tracing_mode = Some(SpriteMaskMRayTracingModeVariant::parse(r, ver)?);
+            m_rendering_layer_mask = Some(r.read_u32()?);
+            m_renderer_priority = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
+            m_rendering_layer_mask = Some(r.read_u32()?);
+            m_renderer_priority = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
+            m_rendering_layer_mask = Some(r.read_u32()?);
         } else {
-            None
-        };
-        let m_mask_source = if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            let v = r.read_i32()?;
+        }
+            m_lightmap_index = Some(r.read_u16()?);
+            m_lightmap_index_dynamic = Some(r.read_u16()?);
+            m_lightmap_tiling_offset = Some(Vector4f::parse(r, ver)?);
+            m_lightmap_tiling_offset_dynamic = Some(Vector4f::parse(r, ver)?);
+            m_materials = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
+            m_static_batch_info = Some(StaticBatchInfo::parse(r, ver)?);
+            m_static_batch_root = Some(crate::PPtr::parse(r, ver)?);
+            m_probe_anchor = Some(crate::PPtr::parse(r, ver)?);
+            m_light_probe_volume_override = Some(crate::PPtr::parse(r, ver)?);
+            r.align(4)?;
+            m_sorting_layer_id = Some(r.read_i32()?);
+            m_sorting_layer = Some(r.read_i16()?);
+            m_sorting_order = Some(r.read_i16()?);
+            r.align(4)?;
+        if *ver >= crate::UnityVersion::new(6000, 3, 0) {
+            m_mask_interaction = Some(r.read_i32()?);
+            r.align(4)?;
         } else {
-            None
-        };
+        }
+            m_sprite = Some(crate::PPtr::parse(r, ver)?);
+            m_mask_alpha_cutoff = Some(r.read_f32()?);
+        if *ver >= crate::UnityVersion::new(2019, 1, 7) {
+            m_front_sorting_layer_id = Some(r.read_i32()?);
+            m_back_sorting_layer_id = Some(r.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
+        } else if *ver >= crate::UnityVersion::new(2018, 4, 5) {
+            m_front_sorting_layer_id = Some(r.read_i32()?);
+            m_back_sorting_layer_id = Some(r.read_i32()?);
+        } else {
+        }
+            m_front_sorting_layer = Some(r.read_i16()?);
+            m_back_sorting_layer = Some(r.read_i16()?);
+            m_front_sorting_order = Some(r.read_i16()?);
+            m_back_sorting_order = Some(r.read_i16()?);
+            m_is_custom_range_active = Some(r.read_bool()?);
+            r.align(4)?;
+        if *ver >= crate::UnityVersion::new(2023, 1, 0) {
+            m_sprite_sort_point = Some(SpriteMaskMSpriteSortPointVariant::parse(r, ver)?);
+            m_mask_source = Some(r.read_i32()?);
+            r.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2018, 2, 0) {
+            m_sprite_sort_point = Some(SpriteMaskMSpriteSortPointVariant::parse(r, ver)?);
+        } else {
+        }
 
         Ok(SpriteMask {
-            m_game_object,
-            m_enabled,
-            m_cast_shadows,
-            m_receive_shadows,
-            m_motion_vectors,
+            m_game_object: m_game_object.unwrap(),
+            m_enabled: m_enabled.unwrap(),
+            m_cast_shadows: m_cast_shadows.unwrap(),
+            m_receive_shadows: m_receive_shadows.unwrap(),
+            m_motion_vectors: m_motion_vectors.unwrap(),
             m_dynamic_occludee,
-            m_light_probe_usage,
+            m_light_probe_usage: m_light_probe_usage.unwrap(),
             m_static_shadow_caster,
-            m_reflection_probe_usage,
-            m_lightmap_index,
-            m_lightmap_index_dynamic,
+            m_reflection_probe_usage: m_reflection_probe_usage.unwrap(),
+            m_lightmap_index: m_lightmap_index.unwrap(),
+            m_lightmap_index_dynamic: m_lightmap_index_dynamic.unwrap(),
             m_rendering_layer_mask,
             m_ray_tracing_mode,
-            m_lightmap_tiling_offset,
+            m_lightmap_tiling_offset: m_lightmap_tiling_offset.unwrap(),
             m_renderer_priority,
             m_ray_trace_procedural,
-            m_lightmap_tiling_offset_dynamic,
-            m_materials,
+            m_lightmap_tiling_offset_dynamic: m_lightmap_tiling_offset_dynamic.unwrap(),
+            m_materials: m_materials.unwrap(),
             m_ray_tracing_accel_struct_build_flags_override,
-            m_static_batch_info,
+            m_static_batch_info: m_static_batch_info.unwrap(),
             m_ray_tracing_accel_struct_build_flags,
-            m_static_batch_root,
+            m_static_batch_root: m_static_batch_root.unwrap(),
             m_small_mesh_culling,
-            m_probe_anchor,
+            m_probe_anchor: m_probe_anchor.unwrap(),
             m_force_mesh_lod,
-            m_light_probe_volume_override,
+            m_light_probe_volume_override: m_light_probe_volume_override.unwrap(),
             m_mesh_lod_selection_bias,
-            m_sorting_layer_id,
-            m_sorting_layer,
-            m_sorting_order,
-            m_sprite,
-            m_mask_alpha_cutoff,
-            m_front_sorting_layer,
-            m_back_sorting_layer,
-            m_front_sorting_order,
-            m_back_sorting_order,
+            m_sorting_layer_id: m_sorting_layer_id.unwrap(),
+            m_sorting_layer: m_sorting_layer.unwrap(),
+            m_sorting_order: m_sorting_order.unwrap(),
+            m_sprite: m_sprite.unwrap(),
+            m_mask_alpha_cutoff: m_mask_alpha_cutoff.unwrap(),
+            m_front_sorting_layer: m_front_sorting_layer.unwrap(),
+            m_back_sorting_layer: m_back_sorting_layer.unwrap(),
+            m_front_sorting_order: m_front_sorting_order.unwrap(),
+            m_back_sorting_order: m_back_sorting_order.unwrap(),
             m_front_sorting_layer_id,
-            m_is_custom_range_active,
+            m_is_custom_range_active: m_is_custom_range_active.unwrap(),
             m_back_sorting_layer_id,
             m_sprite_sort_point,
             m_mask_interaction,

@@ -2,6 +2,29 @@
 
 use crate::subclasses::streamed_resource::StreamedResource;
 
+
+/// 版本枚举：AudioClipMIsTrackerFormatVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum AudioClipMIsTrackerFormatVariant {
+    Default(bool),
+    V2017_1(bool),
+}
+
+impl crate::Parse for AudioClipMIsTrackerFormatVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = r.read_bool()?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct AudioClip {
     pub m_name: String,
@@ -16,7 +39,7 @@ pub struct AudioClip {
     pub m_stream: Option<i32>,
     pub m_length: Option<f32>,
     pub m_audio_data: Option<Vec<u8>>,
-    pub m_is_tracker_format: Option<bool>,
+    pub m_is_tracker_format: Option<AudioClipMIsTrackerFormatVariant>,
     pub m_subsound_index: Option<i32>,
     pub m_ambisonic: Option<bool>,
     pub m_preload_audio_data: Option<bool>,
@@ -31,118 +54,75 @@ impl crate::Parse for AudioClip {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_format = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_load_type = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_type = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_channels = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_3d = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_frequency = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_use_hardware = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_bool()?;
+        let mut m_name = None;
+        let mut m_format = None;
+        let mut m_load_type = None;
+        let mut m_type = None;
+        let mut m_channels = None;
+        let mut m_3d = None;
+        let mut m_frequency = None;
+        let mut m_use_hardware = None;
+        let mut m_bits_per_sample = None;
+        let mut m_stream = None;
+        let mut m_length = None;
+        let mut m_audio_data = None;
+        let mut m_is_tracker_format = None;
+        let mut m_subsound_index = None;
+        let mut m_ambisonic = None;
+        let mut m_preload_audio_data = None;
+        let mut m_load_in_background = None;
+        let mut m_legacy3_d = None;
+        let mut m_resource = None;
+        let mut m_compression_format = None;
+            m_name = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_bits_per_sample = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_stream = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_length = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_f32()?)
-        } else {
-            None
-        };
-        let m_audio_data = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            m_load_type = Some(r.read_i32()?);
+            m_channels = Some(r.read_i32()?);
+            m_frequency = Some(r.read_i32()?);
+            m_bits_per_sample = Some(r.read_i32()?);
+            m_length = Some(r.read_f32()?);
+            m_is_tracker_format = Some(AudioClipMIsTrackerFormatVariant::parse(r, ver)?);
+            m_ambisonic = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_is_tracker_format = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_subsound_index = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_i32()?)
-        } else {
-            None
-        };
-        let m_ambisonic = if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = r.read_bool()?;
+            m_subsound_index = Some(r.read_i32()?);
+            m_preload_audio_data = Some(r.read_bool()?);
+            m_load_in_background = Some(r.read_bool()?);
+            m_legacy3_d = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_preload_audio_data = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_load_in_background = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_bool()?)
-        } else {
-            None
-        };
-        let m_legacy3_d = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_bool()?;
+            m_resource = Some(StreamedResource::parse(r, ver)?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_resource = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = StreamedResource::parse(r, ver)?;
+            m_compression_format = Some(r.read_i32()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_compression_format = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_i32()?;
+        } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            m_load_type = Some(r.read_i32()?);
+            m_channels = Some(r.read_i32()?);
+            m_frequency = Some(r.read_i32()?);
+            m_bits_per_sample = Some(r.read_i32()?);
+            m_length = Some(r.read_f32()?);
+            m_is_tracker_format = Some(AudioClipMIsTrackerFormatVariant::parse(r, ver)?);
+            m_subsound_index = Some(r.read_i32()?);
+            m_preload_audio_data = Some(r.read_bool()?);
+            m_load_in_background = Some(r.read_bool()?);
+            m_legacy3_d = Some(r.read_bool()?);
             r.align(4)?;
-            Some(v)
+            m_resource = Some(StreamedResource::parse(r, ver)?);
+            r.align(4)?;
+            m_compression_format = Some(r.read_i32()?);
+            r.align(4)?;
         } else {
-            None
-        };
+            m_format = Some(r.read_i32()?);
+            m_type = Some(r.read_i32()?);
+            m_3d = Some(r.read_bool()?);
+            m_use_hardware = Some(r.read_bool()?);
+            r.align(4)?;
+            m_stream = Some(r.read_i32()?);
+            m_audio_data = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        }
 
         Ok(AudioClip {
-            m_name,
+            m_name: m_name.unwrap(),
             m_format,
             m_load_type,
             m_type,

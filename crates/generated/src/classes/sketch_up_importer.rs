@@ -9,18 +9,491 @@ use crate::subclasses::sketch_up_import_data::SketchUpImportData;
 use crate::subclasses::source_asset_identifier::SourceAssetIdentifier;
 use crate::subclasses::take_info::TakeInfo;
 
+
+/// 版本枚举：SketchUpImporterMSelectedNodesVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum SketchUpImporterMSelectedNodesVariant {
+    Default(Vec<i32>),
+    V2017_1(Vec<i32>),
+}
+
+impl crate::Parse for SketchUpImporterMSelectedNodesVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：SketchUpImporterMImportMaterialsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum SketchUpImporterMImportMaterialsVariant {
+    Default(bool),
+    V2017_2(bool),
+}
+
+impl crate::Parse for SketchUpImporterMImportMaterialsVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 2, 0) {
+            let v = r.read_bool()?;
+            Ok(Self::V2017_2(v))
+        } else {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：SketchUpImporterMOptimizeGameObjectsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum SketchUpImporterMOptimizeGameObjectsVariant {
+    Default(bool),
+    V2021_2(bool),
+}
+
+impl crate::Parse for SketchUpImporterMOptimizeGameObjectsVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2021, 2, 0) {
+            let v = r.read_bool()?;
+            Ok(Self::V2021_2(v))
+        } else {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：SketchUpImporterMAnimationDoRetargetingWarningsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum SketchUpImporterMAnimationDoRetargetingWarningsVariant {
+    Default(bool),
+    V2017_2(bool),
+}
+
+impl crate::Parse for SketchUpImporterMAnimationDoRetargetingWarningsVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 2, 0) {
+            let v = r.read_bool()?;
+            Ok(Self::V2017_2(v))
+        } else {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：SketchUpImporterMImportAnimatedCustomPropertiesVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum SketchUpImporterMImportAnimatedCustomPropertiesVariant {
+    Default(bool),
+    V2018_1(bool),
+}
+
+impl crate::Parse for SketchUpImporterMImportAnimatedCustomPropertiesVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2018, 1, 0) {
+            let v = r.read_bool()?;
+            Ok(Self::V2018_1(v))
+        } else {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：SketchUpImporterMLodScreenPercentagesVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum SketchUpImporterMLodScreenPercentagesVariant {
+    Default(Vec<f32>),
+    V2017_1(Vec<f32>),
+}
+
+impl crate::Parse for SketchUpImporterMLodScreenPercentagesVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_f32() }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_f32() }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：SketchUpImporterWeldVerticesVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum SketchUpImporterWeldVerticesVariant {
+    Default(bool),
+    V2017_3(bool),
+}
+
+impl crate::Parse for SketchUpImporterWeldVerticesVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 3, 0) {
+            let v = r.read_bool()?;
+            Ok(Self::V2017_3(v))
+        } else {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：SketchUpImporterMFileScaleVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum SketchUpImporterMFileScaleVariant {
+    Default(f32),
+    V2018_3(f32),
+}
+
+impl crate::Parse for SketchUpImporterMFileScaleVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2018, 3, 0) {
+            let v = r.read_f32()?;
+            Ok(Self::V2018_3(v))
+        } else {
+            let v = r.read_f32()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：SketchUpImporterNormalSmoothAngleVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum SketchUpImporterNormalSmoothAngleVariant {
+    Default(f32),
+    V5_3(f32),
+}
+
+impl crate::Parse for SketchUpImporterNormalSmoothAngleVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 3, 0) {
+            let v = r.read_f32()?;
+            r.align(4)?;
+            Ok(Self::V5_3(v))
+        } else {
+            let v = r.read_f32()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：SketchUpImporterTangentImportModeVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum SketchUpImporterTangentImportModeVariant {
+    Default(i32),
+    V2017_1(i32),
+}
+
+impl crate::Parse for SketchUpImporterTangentImportModeVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = r.read_i32()?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = r.read_i32()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：SketchUpImporterMReferencedClipsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum SketchUpImporterMReferencedClipsVariant {
+    Default(Vec<Guid>),
+    V2017_1(Vec<Guid>),
+    V6000_0(Vec<Guid>),
+}
+
+impl crate::Parse for SketchUpImporterMReferencedClipsVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(6000, 0, 0) {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Guid::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::V6000_0(v))
+        } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Guid::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Guid::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：SketchUpImporterMImportedRootsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum SketchUpImporterMImportedRootsVariant {
+    Default(Vec<PPtr>),
+    V2017_1(Vec<PPtr>),
+}
+
+impl crate::Parse for SketchUpImporterMImportedRootsVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：SketchUpImporterMHasExtraRootVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum SketchUpImporterMHasExtraRootVariant {
+    Default(bool),
+    V2017_2(bool),
+}
+
+impl crate::Parse for SketchUpImporterMHasExtraRootVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 2, 0) {
+            let v = r.read_bool()?;
+            Ok(Self::V2017_2(v))
+        } else {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：SketchUpImporterOptimizeBonesVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum SketchUpImporterOptimizeBonesVariant {
+    Default(bool),
+    V6000_2(bool),
+}
+
+impl crate::Parse for SketchUpImporterOptimizeBonesVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(6000, 2, 0) {
+            let v = r.read_bool()?;
+            Ok(Self::V6000_2(v))
+        } else {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：SketchUpImporterMImportAnimationVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum SketchUpImporterMImportAnimationVariant {
+    Default(bool),
+    V2019_3(bool),
+}
+
+impl crate::Parse for SketchUpImporterMImportAnimationVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2019, 3, 0) {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::V2019_3(v))
+        } else {
+            let v = r.read_bool()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：SketchUpImporterNormalCalculationModeVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum SketchUpImporterNormalCalculationModeVariant {
+    Default(i32),
+    V2018_3(i32),
+}
+
+impl crate::Parse for SketchUpImporterNormalCalculationModeVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2018, 3, 0) {
+            let v = r.read_i32()?;
+            Ok(Self::V2018_3(v))
+        } else {
+            let v = r.read_i32()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：SketchUpImporterMHasEmbeddedTexturesVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum SketchUpImporterMHasEmbeddedTexturesVariant {
+    Default(bool),
+    V2023_1(bool),
+}
+
+impl crate::Parse for SketchUpImporterMHasEmbeddedTexturesVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2023, 1, 0) {
+            let v = r.read_bool()?;
+            Ok(Self::V2023_1(v))
+        } else {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：SketchUpImporterNormalSmoothingSourceVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum SketchUpImporterNormalSmoothingSourceVariant {
+    Default(i32),
+    V6000_5(i32),
+}
+
+impl crate::Parse for SketchUpImporterNormalSmoothingSourceVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(6000, 5, 0) {
+            let v = r.read_i32()?;
+            Ok(Self::V6000_5(v))
+        } else {
+            let v = r.read_i32()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：SketchUpImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum SketchUpImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant {
+    Default(bool),
+    V2020_3_37(bool),
+    V2021_1(bool),
+    V2021_3_5(bool),
+}
+
+impl crate::Parse for SketchUpImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2021, 3, 5) {
+            let v = r.read_bool()?;
+            Ok(Self::V2021_3_5(v))
+        } else if *ver >= crate::UnityVersion::new(2021, 1, 0) {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::V2021_1(v))
+        } else if *ver >= crate::UnityVersion::new(2020, 3, 37) {
+            let v = r.read_bool()?;
+            Ok(Self::V2020_3_37(v))
+        } else {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：SketchUpImporterMImportBlendShapeDeformPercentVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum SketchUpImporterMImportBlendShapeDeformPercentVariant {
+    Default(bool),
+    V2022_1_5(bool),
+}
+
+impl crate::Parse for SketchUpImporterMImportBlendShapeDeformPercentVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2022, 1, 5) {
+            let v = r.read_bool()?;
+            Ok(Self::V2022_1_5(v))
+        } else {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct SketchUpImporter {
     pub m_generate_back_face: bool,
     pub m_name: String,
     pub m_merge_coplanar_faces: bool,
     pub m_internal_id_to_name_table: Option<Vec<((i32, i64), String)>>,
-    pub m_selected_nodes: Vec<i32>,
+    pub m_selected_nodes: SketchUpImporterMSelectedNodesVariant,
     pub m_external_objects: Option<Vec<(SourceAssetIdentifier, PPtr)>>,
     pub m_asset_hash: Hash128,
     pub m_used_file_i_ds: Option<Vec<i64>>,
     pub m_longitude: f64,
-    pub m_import_materials: Option<bool>,
+    pub m_import_materials: Option<SketchUpImporterMImportMaterialsVariant>,
     pub m_supports_embedded_materials: Option<bool>,
     pub m_latitude: f64,
     pub m_material_import_mode: Option<i32>,
@@ -36,8 +509,7 @@ pub struct SketchUpImporter {
     pub m_legacy_generate_animations: i32,
     pub m_bake_simulation: bool,
     pub m_resample_curves: Option<bool>,
-    pub m_optimize_game_objects: bool,
-    pub m_auto_map_external_materials: Option<bool>,
+    pub m_optimize_game_objects: SketchUpImporterMOptimizeGameObjectsVariant,
     pub m_motion_node_name: String,
     pub m_remove_constant_scale_curves: Option<bool>,
     pub m_rig_import_errors: Option<String>,
@@ -46,8 +518,8 @@ pub struct SketchUpImporter {
     pub m_rig_import_warnings: Option<String>,
     pub m_animation_import_warnings: String,
     pub m_animation_retargeting_warnings: String,
-    pub m_animation_do_retargeting_warnings: bool,
-    pub m_import_animated_custom_properties: Option<bool>,
+    pub m_animation_do_retargeting_warnings: SketchUpImporterMAnimationDoRetargetingWarningsVariant,
+    pub m_import_animated_custom_properties: Option<SketchUpImporterMImportAnimatedCustomPropertiesVariant>,
     pub m_import_constraints: Option<bool>,
     pub m_animation_compression: i32,
     pub m_animation_rotation_error: f32,
@@ -58,7 +530,7 @@ pub struct SketchUpImporter {
     pub m_clip_animations: Vec<ClipAnimationInfo>,
     pub m_extra_user_properties: Option<Vec<String>>,
     pub m_is_readable: bool,
-    pub m_lod_screen_percentages: Vec<f32>,
+    pub m_lod_screen_percentages: SketchUpImporterMLodScreenPercentagesVariant,
     pub m_global_scale: f32,
     pub m_mesh_compression: i32,
     pub m_add_colliders: bool,
@@ -68,55 +540,55 @@ pub struct SketchUpImporter {
     pub generate_secondary_uv: bool,
     pub m_sort_hierarchy_by_name: Option<bool>,
     pub m_use_file_units: bool,
-    pub m_import_visibility: Option<bool>,
     pub m_import_physical_cameras: Option<bool>,
     pub optimize_mesh_for_gpu: Option<bool>,
+    pub m_import_visibility: Option<bool>,
     pub keep_quads: bool,
+    pub weld_vertices: SketchUpImporterWeldVerticesVariant,
     pub m_import_cameras: Option<bool>,
-    pub weld_vertices: bool,
-    pub m_import_lights: Option<bool>,
     pub secondary_uv_angle_distortion: f32,
-    pub m_node_name_collision_strategy: Option<i32>,
+    pub m_import_lights: Option<bool>,
     pub secondary_uv_area_distortion: f32,
     pub m_file_ids_generation: Option<i32>,
+    pub m_node_name_collision_strategy: Option<i32>,
     pub secondary_uv_hard_angle: f32,
     pub secondary_uv_pack_margin: f32,
     pub m_use_file_scale: bool,
-    pub m_file_scale: f32,
-    pub normal_smooth_angle: f32,
+    pub m_file_scale: SketchUpImporterMFileScaleVariant,
+    pub normal_smooth_angle: SketchUpImporterNormalSmoothAngleVariant,
     pub m_preserve_hierarchy: Option<bool>,
-    pub bake_axis_conversion: Option<bool>,
     pub split_tangents_across_uv: Option<bool>,
     pub skin_weights_mode: Option<i32>,
+    pub bake_axis_conversion: Option<bool>,
     pub normal_import_mode: i32,
     pub max_bones_per_vertex: Option<i32>,
-    pub tangent_import_mode: i32,
+    pub tangent_import_mode: SketchUpImporterTangentImportModeVariant,
     pub min_bone_weight: Option<f32>,
     pub m_imported_take_infos: Vec<TakeInfo>,
     pub mesh_optimization_flags: Option<i32>,
-    pub m_referenced_clips: Vec<Guid>,
+    pub m_referenced_clips: SketchUpImporterMReferencedClipsVariant,
     pub index_format: Option<i32>,
-    pub m_imported_roots: Vec<PPtr>,
-    pub optimize_bones: Option<bool>,
-    pub m_has_extra_root: bool,
-    pub m_import_animation: bool,
+    pub m_imported_roots: SketchUpImporterMImportedRootsVariant,
+    pub m_has_extra_root: SketchUpImporterMHasExtraRootVariant,
+    pub optimize_bones: Option<SketchUpImporterOptimizeBonesVariant>,
+    pub m_import_animation: SketchUpImporterMImportAnimationVariant,
     pub generate_mesh_lods: Option<bool>,
     pub m_copy_avatar: Option<bool>,
-    pub normal_calculation_mode: Option<i32>,
-    pub secondary_uv_margin_method: Option<i32>,
     pub mesh_lod_generation_flags: Option<i32>,
     pub m_human_description: HumanDescription,
-    pub secondary_uv_min_lightmap_resolution: Option<f32>,
+    pub normal_calculation_mode: Option<SketchUpImporterNormalCalculationModeVariant>,
     pub maximum_mesh_lod: Option<i32>,
     pub m_last_human_description_avatar_source: PPtr,
-    pub secondary_uv_min_object_scale: Option<f32>,
+    pub secondary_uv_margin_method: Option<i32>,
     pub import_u_vs: Option<i32>,
     pub m_animation_type: i32,
     pub m_file_scale_unit: Option<String>,
+    pub secondary_uv_min_lightmap_resolution: Option<f32>,
     pub import_vertex_colors: Option<bool>,
     pub m_additional_bone: bool,
     pub m_humanoid_oversampling: Option<i32>,
     pub m_file_scale_factor: Option<f32>,
+    pub secondary_uv_min_object_scale: Option<f32>,
     pub m_user_data: String,
     pub m_asset_bundle_name: String,
     pub m_previous_calculated_global_scale: Option<f32>,
@@ -124,16 +596,16 @@ pub struct SketchUpImporter {
     pub m_has_previous_calculated_global_scale: Option<bool>,
     pub legacy_compute_all_normals_from_smoothing_groups_when_mesh_has_blend_shapes: Option<bool>,
     pub blend_shape_normal_import_mode: Option<i32>,
-    pub m_has_embedded_textures: Option<bool>,
-    pub normal_smoothing_source: Option<i32>,
+    pub m_has_embedded_textures: Option<SketchUpImporterMHasEmbeddedTexturesVariant>,
+    pub normal_smoothing_source: Option<SketchUpImporterNormalSmoothingSourceVariant>,
     pub m_strict_vertex_data_checks: Option<bool>,
     pub m_auto_generate_avatar_mapping_if_unspecified: Option<bool>,
     pub m_avatar_setup: Option<i32>,
     pub m_contains_animation: Option<bool>,
     pub calculate_blendshape_normals_delta_from_imported_normals: Option<bool>,
-    pub m_add_humanoid_extra_root_only_when_using_avatar: Option<bool>,
+    pub m_add_humanoid_extra_root_only_when_using_avatar: Option<SketchUpImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant>,
     pub m_remap_materials_if_material_import_mode_is_none: Option<bool>,
-    pub m_import_blend_shape_deform_percent: Option<bool>,
+    pub m_import_blend_shape_deform_percent: Option<SketchUpImporterMImportBlendShapeDeformPercentVariant>,
 }
 
 impl crate::Parse for SketchUpImporter {
@@ -167,7 +639,6 @@ impl crate::Parse for SketchUpImporter {
         let mut m_bake_simulation = None;
         let mut m_resample_curves = None;
         let mut m_optimize_game_objects = None;
-        let mut m_auto_map_external_materials = None;
         let mut m_motion_node_name = None;
         let mut m_remove_constant_scale_curves = None;
         let mut m_rig_import_errors = None;
@@ -198,26 +669,26 @@ impl crate::Parse for SketchUpImporter {
         let mut generate_secondary_uv = None;
         let mut m_sort_hierarchy_by_name = None;
         let mut m_use_file_units = None;
-        let mut m_import_visibility = None;
         let mut m_import_physical_cameras = None;
         let mut optimize_mesh_for_gpu = None;
+        let mut m_import_visibility = None;
         let mut keep_quads = None;
-        let mut m_import_cameras = None;
         let mut weld_vertices = None;
-        let mut m_import_lights = None;
+        let mut m_import_cameras = None;
         let mut secondary_uv_angle_distortion = None;
-        let mut m_node_name_collision_strategy = None;
+        let mut m_import_lights = None;
         let mut secondary_uv_area_distortion = None;
         let mut m_file_ids_generation = None;
+        let mut m_node_name_collision_strategy = None;
         let mut secondary_uv_hard_angle = None;
         let mut secondary_uv_pack_margin = None;
         let mut m_use_file_scale = None;
         let mut m_file_scale = None;
         let mut normal_smooth_angle = None;
         let mut m_preserve_hierarchy = None;
-        let mut bake_axis_conversion = None;
         let mut split_tangents_across_uv = None;
         let mut skin_weights_mode = None;
+        let mut bake_axis_conversion = None;
         let mut normal_import_mode = None;
         let mut max_bones_per_vertex = None;
         let mut tangent_import_mode = None;
@@ -227,26 +698,26 @@ impl crate::Parse for SketchUpImporter {
         let mut m_referenced_clips = None;
         let mut index_format = None;
         let mut m_imported_roots = None;
-        let mut optimize_bones = None;
         let mut m_has_extra_root = None;
+        let mut optimize_bones = None;
         let mut m_import_animation = None;
         let mut generate_mesh_lods = None;
         let mut m_copy_avatar = None;
-        let mut normal_calculation_mode = None;
-        let mut secondary_uv_margin_method = None;
         let mut mesh_lod_generation_flags = None;
         let mut m_human_description = None;
-        let mut secondary_uv_min_lightmap_resolution = None;
+        let mut normal_calculation_mode = None;
         let mut maximum_mesh_lod = None;
         let mut m_last_human_description_avatar_source = None;
-        let mut secondary_uv_min_object_scale = None;
+        let mut secondary_uv_margin_method = None;
         let mut import_u_vs = None;
         let mut m_animation_type = None;
         let mut m_file_scale_unit = None;
+        let mut secondary_uv_min_lightmap_resolution = None;
         let mut import_vertex_colors = None;
         let mut m_additional_bone = None;
         let mut m_humanoid_oversampling = None;
         let mut m_file_scale_factor = None;
+        let mut secondary_uv_min_object_scale = None;
         let mut m_user_data = None;
         let mut m_asset_bundle_name = None;
         let mut m_previous_calculated_global_scale = None;
@@ -269,8 +740,7 @@ impl crate::Parse for SketchUpImporter {
             m_generate_back_face = Some(r.read_bool()?);
             m_merge_coplanar_faces = Some(r.read_bool()?);
             r.align(4)?;
-            m_selected_nodes = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_selected_nodes = Some(SketchUpImporterMSelectedNodesVariant::parse(r, ver)?);
             m_asset_hash = Some(Hash128::parse(r, ver)?);
             m_longitude = Some(r.read_f64()?);
             m_latitude = Some(r.read_f64()?);
@@ -299,7 +769,7 @@ impl crate::Parse for SketchUpImporter {
             r.align(4)?;
             m_used_file_i_ds = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            m_import_materials = Some(r.read_bool()?);
+            m_import_materials = Some(SketchUpImporterMImportMaterialsVariant::parse(r, ver)?);
             m_supports_embedded_materials = Some(r.read_bool()?);
             r.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
@@ -307,21 +777,13 @@ impl crate::Parse for SketchUpImporter {
             r.align(4)?;
             m_external_objects = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(r, ver)?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            m_import_materials = Some(r.read_bool()?);
+            m_import_materials = Some(SketchUpImporterMImportMaterialsVariant::parse(r, ver)?);
             m_supports_embedded_materials = Some(r.read_bool()?);
-            r.align(4)?;
-        } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            m_file_id_to_recycle_name = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i64()?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_external_objects = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(r, ver)?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_import_materials = Some(r.read_bool()?);
-            m_auto_map_external_materials = Some(r.read_bool()?);
             r.align(4)?;
         } else {
             m_file_id_to_recycle_name = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i64()?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            m_import_materials = Some(r.read_bool()?);
+            m_import_materials = Some(SketchUpImporterMImportMaterialsVariant::parse(r, ver)?);
         }
             m_material_name = Some(r.read_i32()?);
             m_material_search = Some(r.read_i32()?);
@@ -349,7 +811,7 @@ impl crate::Parse for SketchUpImporter {
             m_resample_rotations = Some(r.read_bool()?);
         } else {
         }
-            m_optimize_game_objects = Some(r.read_bool()?);
+            m_optimize_game_objects = Some(SketchUpImporterMOptimizeGameObjectsVariant::parse(r, ver)?);
         if *ver >= crate::UnityVersion::new(2021, 2, 0) {
             m_remove_constant_scale_curves = Some(r.read_bool()?);
             r.align(4)?;
@@ -371,13 +833,13 @@ impl crate::Parse for SketchUpImporter {
             r.align(4)?;
             m_animation_retargeting_warnings = Some(r.read_aligned_string()?);
             r.align(4)?;
-            m_animation_do_retargeting_warnings = Some(r.read_bool()?);
+            m_animation_do_retargeting_warnings = Some(SketchUpImporterMAnimationDoRetargetingWarningsVariant::parse(r, ver)?);
         if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            m_import_animated_custom_properties = Some(r.read_bool()?);
+            m_import_animated_custom_properties = Some(SketchUpImporterMImportAnimatedCustomPropertiesVariant::parse(r, ver)?);
             m_import_constraints = Some(r.read_bool()?);
             r.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            m_import_animated_custom_properties = Some(r.read_bool()?);
+            m_import_animated_custom_properties = Some(SketchUpImporterMImportAnimatedCustomPropertiesVariant::parse(r, ver)?);
         } else {
         }
             m_animation_compression = Some(r.read_i32()?);
@@ -396,30 +858,11 @@ impl crate::Parse for SketchUpImporter {
             r.align(4)?;
             m_is_readable = Some(r.read_bool()?);
             r.align(4)?;
-            m_lod_screen_percentages = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_f32() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_lod_screen_percentages = Some(SketchUpImporterMLodScreenPercentagesVariant::parse(r, ver)?);
             m_global_scale = Some(r.read_f32()?);
             m_mesh_compression = Some(r.read_i32()?);
             m_add_colliders = Some(r.read_bool()?);
-        if *ver >= crate::UnityVersion::new(2023, 2, 0) {
-            m_use_srgb_material_color = Some(r.read_bool()?);
-            m_sort_hierarchy_by_name = Some(r.read_bool()?);
-            m_import_physical_cameras = Some(r.read_bool()?);
-            m_import_visibility = Some(r.read_bool()?);
-        } else if *ver >= crate::UnityVersion::new(2023, 2, 0) {
-            m_use_srgb_material_color = Some(r.read_bool()?);
-            m_sort_hierarchy_by_name = Some(r.read_bool()?);
-            m_import_visibility = Some(r.read_bool()?);
-        } else if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            m_use_srgb_material_color = Some(r.read_bool()?);
-            m_sort_hierarchy_by_name = Some(r.read_bool()?);
-            m_import_physical_cameras = Some(r.read_bool()?);
-            m_import_visibility = Some(r.read_bool()?);
-        } else if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            m_use_srgb_material_color = Some(r.read_bool()?);
-            m_sort_hierarchy_by_name = Some(r.read_bool()?);
-            m_import_visibility = Some(r.read_bool()?);
-        } else if *ver >= crate::UnityVersion::new(2022, 2, 19) {
+        if *ver >= crate::UnityVersion::new(2022, 2, 19) {
             m_use_srgb_material_color = Some(r.read_bool()?);
             m_sort_hierarchy_by_name = Some(r.read_bool()?);
             m_import_physical_cameras = Some(r.read_bool()?);
@@ -442,15 +885,6 @@ impl crate::Parse for SketchUpImporter {
             r.align(4)?;
             m_node_name_collision_strategy = Some(r.read_i32()?);
             m_file_ids_generation = Some(r.read_i32()?);
-        } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            m_import_cameras = Some(r.read_bool()?);
-            m_import_lights = Some(r.read_bool()?);
-            r.align(4)?;
-            m_file_ids_generation = Some(r.read_i32()?);
-        } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            m_import_cameras = Some(r.read_bool()?);
-            m_import_lights = Some(r.read_bool()?);
-            r.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2019, 3, 17) {
             m_import_cameras = Some(r.read_bool()?);
             m_import_lights = Some(r.read_bool()?);
@@ -470,7 +904,7 @@ impl crate::Parse for SketchUpImporter {
             optimize_mesh_for_gpu = Some(r.read_bool()?);
         }
             keep_quads = Some(r.read_bool()?);
-            weld_vertices = Some(r.read_bool()?);
+            weld_vertices = Some(SketchUpImporterWeldVerticesVariant::parse(r, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 5, 0) {
             bake_axis_conversion = Some(r.read_bool()?);
             m_preserve_hierarchy = Some(r.read_bool()?);
@@ -478,7 +912,7 @@ impl crate::Parse for SketchUpImporter {
             skin_weights_mode = Some(r.read_i32()?);
             max_bones_per_vertex = Some(r.read_i32()?);
             min_bone_weight = Some(r.read_f32()?);
-            optimize_bones = Some(r.read_bool()?);
+            optimize_bones = Some(SketchUpImporterOptimizeBonesVariant::parse(r, ver)?);
             generate_mesh_lods = Some(r.read_bool()?);
             r.align(4)?;
             mesh_lod_generation_flags = Some(r.read_i32()?);
@@ -495,7 +929,7 @@ impl crate::Parse for SketchUpImporter {
             skin_weights_mode = Some(r.read_i32()?);
             max_bones_per_vertex = Some(r.read_i32()?);
             min_bone_weight = Some(r.read_f32()?);
-            optimize_bones = Some(r.read_bool()?);
+            optimize_bones = Some(SketchUpImporterOptimizeBonesVariant::parse(r, ver)?);
             generate_mesh_lods = Some(r.read_bool()?);
             r.align(4)?;
             mesh_lod_generation_flags = Some(r.read_i32()?);
@@ -509,7 +943,7 @@ impl crate::Parse for SketchUpImporter {
             skin_weights_mode = Some(r.read_i32()?);
             max_bones_per_vertex = Some(r.read_i32()?);
             min_bone_weight = Some(r.read_f32()?);
-            optimize_bones = Some(r.read_bool()?);
+            optimize_bones = Some(SketchUpImporterOptimizeBonesVariant::parse(r, ver)?);
             mesh_optimization_flags = Some(r.read_i32()?);
             index_format = Some(r.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
@@ -547,20 +981,8 @@ impl crate::Parse for SketchUpImporter {
             secondary_uv_pack_margin = Some(r.read_f32()?);
             m_use_file_scale = Some(r.read_bool()?);
             r.align(4)?;
-            m_file_scale = Some(r.read_f32()?);
-        if *ver >= crate::UnityVersion::new(2022, 1, 0) {
-            m_file_scale_unit = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_file_scale_factor = Some(r.read_f32()?);
-            r.align(4)?;
-            m_strict_vertex_data_checks = Some(r.read_bool()?);
-            r.align(4)?;
-        } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
-            m_file_scale_unit = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_file_scale_factor = Some(r.read_f32()?);
-            r.align(4)?;
-        } else if *ver >= crate::UnityVersion::new(2021, 3, 36) {
+            m_file_scale = Some(SketchUpImporterMFileScaleVariant::parse(r, ver)?);
+        if *ver >= crate::UnityVersion::new(2021, 3, 36) {
             m_file_scale_unit = Some(r.read_aligned_string()?);
             r.align(4)?;
             m_file_scale_factor = Some(r.read_f32()?);
@@ -586,56 +1008,53 @@ impl crate::Parse for SketchUpImporter {
             r.align(4)?;
         } else {
         }
-            normal_smooth_angle = Some(r.read_f32()?);
-            r.align(4)?;
+            normal_smooth_angle = Some(SketchUpImporterNormalSmoothAngleVariant::parse(r, ver)?);
         if *ver >= crate::UnityVersion::new(5, 3, 0) {
         } else {
             split_tangents_across_uv = Some(r.read_bool()?);
             r.align(4)?;
         }
             normal_import_mode = Some(r.read_i32()?);
-            tangent_import_mode = Some(r.read_i32()?);
+            tangent_import_mode = Some(SketchUpImporterTangentImportModeVariant::parse(r, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            normal_calculation_mode = Some(r.read_i32()?);
+            normal_calculation_mode = Some(SketchUpImporterNormalCalculationModeVariant::parse(r, ver)?);
             legacy_compute_all_normals_from_smoothing_groups_when_mesh_has_blend_shapes = Some(r.read_bool()?);
             r.align(4)?;
             blend_shape_normal_import_mode = Some(r.read_i32()?);
-            normal_smoothing_source = Some(r.read_i32()?);
+            normal_smoothing_source = Some(SketchUpImporterNormalSmoothingSourceVariant::parse(r, ver)?);
             calculate_blendshape_normals_delta_from_imported_normals = Some(r.read_bool()?);
             r.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            normal_calculation_mode = Some(r.read_i32()?);
+            normal_calculation_mode = Some(SketchUpImporterNormalCalculationModeVariant::parse(r, ver)?);
             legacy_compute_all_normals_from_smoothing_groups_when_mesh_has_blend_shapes = Some(r.read_bool()?);
             r.align(4)?;
             blend_shape_normal_import_mode = Some(r.read_i32()?);
-            normal_smoothing_source = Some(r.read_i32()?);
+            normal_smoothing_source = Some(SketchUpImporterNormalSmoothingSourceVariant::parse(r, ver)?);
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            normal_calculation_mode = Some(r.read_i32()?);
+            normal_calculation_mode = Some(SketchUpImporterNormalCalculationModeVariant::parse(r, ver)?);
         } else {
         }
             m_imported_take_infos = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { TakeInfo::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
         } else {
-            m_referenced_clips = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { Guid::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_referenced_clips = Some(SketchUpImporterMReferencedClipsVariant::parse(r, ver)?);
         }
-            m_imported_roots = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_has_extra_root = Some(r.read_bool()?);
+            m_imported_roots = Some(SketchUpImporterMImportedRootsVariant::parse(r, ver)?);
+            m_has_extra_root = Some(SketchUpImporterMHasExtraRootVariant::parse(r, ver)?);
         if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            m_has_embedded_textures = Some(r.read_bool()?);
+            m_has_embedded_textures = Some(SketchUpImporterMHasEmbeddedTexturesVariant::parse(r, ver)?);
             m_contains_animation = Some(r.read_bool()?);
             r.align(4)?;
-            m_referenced_clips = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { Guid::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_referenced_clips = Some(SketchUpImporterMReferencedClipsVariant::parse(r, ver)?);
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_has_embedded_textures = Some(r.read_bool()?);
-            m_referenced_clips = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { Guid::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_has_embedded_textures = Some(SketchUpImporterMHasEmbeddedTexturesVariant::parse(r, ver)?);
+            m_referenced_clips = Some(SketchUpImporterMReferencedClipsVariant::parse(r, ver)?);
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            m_has_embedded_textures = Some(r.read_bool()?);
+            m_has_embedded_textures = Some(SketchUpImporterMHasEmbeddedTexturesVariant::parse(r, ver)?);
         } else {
         }
-            m_import_animation = Some(r.read_bool()?);
-            r.align(4)?;
+            m_import_animation = Some(SketchUpImporterMImportAnimationVariant::parse(r, ver)?);
         if *ver >= crate::UnityVersion::new(2019, 3, 0) {
         } else {
             m_copy_avatar = Some(r.read_bool()?);
@@ -644,11 +1063,7 @@ impl crate::Parse for SketchUpImporter {
             m_human_description = Some(HumanDescription::parse(r, ver)?);
             r.align(4)?;
             m_last_human_description_avatar_source = Some(crate::PPtr::parse(r, ver)?);
-        if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            m_auto_generate_avatar_mapping_if_unspecified = Some(r.read_bool()?);
-            r.align(4)?;
-        } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-        } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
+        if *ver >= crate::UnityVersion::new(2019, 3, 0) {
             m_auto_generate_avatar_mapping_if_unspecified = Some(r.read_bool()?);
             r.align(4)?;
         } else {
@@ -657,42 +1072,35 @@ impl crate::Parse for SketchUpImporter {
         if *ver >= crate::UnityVersion::new(2022, 1, 5) {
             m_humanoid_oversampling = Some(r.read_i32()?);
             m_avatar_setup = Some(r.read_i32()?);
-            m_add_humanoid_extra_root_only_when_using_avatar = Some(r.read_bool()?);
-            m_import_blend_shape_deform_percent = Some(r.read_bool()?);
+            m_add_humanoid_extra_root_only_when_using_avatar = Some(SketchUpImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant::parse(r, ver)?);
+            m_import_blend_shape_deform_percent = Some(SketchUpImporterMImportBlendShapeDeformPercentVariant::parse(r, ver)?);
             m_remap_materials_if_material_import_mode_is_none = Some(r.read_bool()?);
             r.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
             m_humanoid_oversampling = Some(r.read_i32()?);
             m_avatar_setup = Some(r.read_i32()?);
-            m_add_humanoid_extra_root_only_when_using_avatar = Some(r.read_bool()?);
-            m_import_blend_shape_deform_percent = Some(r.read_bool()?);
-        } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
-            m_humanoid_oversampling = Some(r.read_i32()?);
-            m_avatar_setup = Some(r.read_i32()?);
-            m_add_humanoid_extra_root_only_when_using_avatar = Some(r.read_bool()?);
+            m_add_humanoid_extra_root_only_when_using_avatar = Some(SketchUpImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant::parse(r, ver)?);
+            m_import_blend_shape_deform_percent = Some(SketchUpImporterMImportBlendShapeDeformPercentVariant::parse(r, ver)?);
         } else if *ver >= crate::UnityVersion::new(2021, 3, 5) {
             m_humanoid_oversampling = Some(r.read_i32()?);
             m_avatar_setup = Some(r.read_i32()?);
-            m_add_humanoid_extra_root_only_when_using_avatar = Some(r.read_bool()?);
+            m_add_humanoid_extra_root_only_when_using_avatar = Some(SketchUpImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant::parse(r, ver)?);
             m_remap_materials_if_material_import_mode_is_none = Some(r.read_bool()?);
             r.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2021, 1, 0) {
             m_humanoid_oversampling = Some(r.read_i32()?);
             m_avatar_setup = Some(r.read_i32()?);
-            m_add_humanoid_extra_root_only_when_using_avatar = Some(r.read_bool()?);
-        } else if *ver >= crate::UnityVersion::new(2021, 1, 0) {
-            m_humanoid_oversampling = Some(r.read_i32()?);
-            m_avatar_setup = Some(r.read_i32()?);
+            m_add_humanoid_extra_root_only_when_using_avatar = Some(SketchUpImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant::parse(r, ver)?);
         } else if *ver >= crate::UnityVersion::new(2020, 3, 37) {
             m_humanoid_oversampling = Some(r.read_i32()?);
             m_avatar_setup = Some(r.read_i32()?);
-            m_add_humanoid_extra_root_only_when_using_avatar = Some(r.read_bool()?);
+            m_add_humanoid_extra_root_only_when_using_avatar = Some(SketchUpImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant::parse(r, ver)?);
             m_remap_materials_if_material_import_mode_is_none = Some(r.read_bool()?);
             r.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
             m_humanoid_oversampling = Some(r.read_i32()?);
             m_avatar_setup = Some(r.read_i32()?);
-            m_add_humanoid_extra_root_only_when_using_avatar = Some(r.read_bool()?);
+            m_add_humanoid_extra_root_only_when_using_avatar = Some(SketchUpImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant::parse(r, ver)?);
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
             m_humanoid_oversampling = Some(r.read_i32()?);
             m_avatar_setup = Some(r.read_i32()?);
@@ -712,8 +1120,7 @@ impl crate::Parse for SketchUpImporter {
             m_generate_back_face = Some(r.read_bool()?);
             m_merge_coplanar_faces = Some(r.read_bool()?);
             r.align(4)?;
-            m_selected_nodes = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_selected_nodes = Some(SketchUpImporterMSelectedNodesVariant::parse(r, ver)?);
             m_asset_hash = Some(Hash128::parse(r, ver)?);
             m_longitude = Some(r.read_f64()?);
             m_latitude = Some(r.read_f64()?);
@@ -752,7 +1159,6 @@ impl crate::Parse for SketchUpImporter {
             m_bake_simulation: m_bake_simulation.unwrap(),
             m_resample_curves,
             m_optimize_game_objects: m_optimize_game_objects.unwrap(),
-            m_auto_map_external_materials,
             m_motion_node_name: m_motion_node_name.unwrap(),
             m_remove_constant_scale_curves,
             m_rig_import_errors,
@@ -783,26 +1189,26 @@ impl crate::Parse for SketchUpImporter {
             generate_secondary_uv: generate_secondary_uv.unwrap(),
             m_sort_hierarchy_by_name,
             m_use_file_units: m_use_file_units.unwrap(),
-            m_import_visibility,
             m_import_physical_cameras,
             optimize_mesh_for_gpu,
+            m_import_visibility,
             keep_quads: keep_quads.unwrap(),
-            m_import_cameras,
             weld_vertices: weld_vertices.unwrap(),
-            m_import_lights,
+            m_import_cameras,
             secondary_uv_angle_distortion: secondary_uv_angle_distortion.unwrap(),
-            m_node_name_collision_strategy,
+            m_import_lights,
             secondary_uv_area_distortion: secondary_uv_area_distortion.unwrap(),
             m_file_ids_generation,
+            m_node_name_collision_strategy,
             secondary_uv_hard_angle: secondary_uv_hard_angle.unwrap(),
             secondary_uv_pack_margin: secondary_uv_pack_margin.unwrap(),
             m_use_file_scale: m_use_file_scale.unwrap(),
             m_file_scale: m_file_scale.unwrap(),
             normal_smooth_angle: normal_smooth_angle.unwrap(),
             m_preserve_hierarchy,
-            bake_axis_conversion,
             split_tangents_across_uv,
             skin_weights_mode,
+            bake_axis_conversion,
             normal_import_mode: normal_import_mode.unwrap(),
             max_bones_per_vertex,
             tangent_import_mode: tangent_import_mode.unwrap(),
@@ -812,26 +1218,26 @@ impl crate::Parse for SketchUpImporter {
             m_referenced_clips: m_referenced_clips.unwrap(),
             index_format,
             m_imported_roots: m_imported_roots.unwrap(),
-            optimize_bones,
             m_has_extra_root: m_has_extra_root.unwrap(),
+            optimize_bones,
             m_import_animation: m_import_animation.unwrap(),
             generate_mesh_lods,
             m_copy_avatar,
-            normal_calculation_mode,
-            secondary_uv_margin_method,
             mesh_lod_generation_flags,
             m_human_description: m_human_description.unwrap(),
-            secondary_uv_min_lightmap_resolution,
+            normal_calculation_mode,
             maximum_mesh_lod,
             m_last_human_description_avatar_source: m_last_human_description_avatar_source.unwrap(),
-            secondary_uv_min_object_scale,
+            secondary_uv_margin_method,
             import_u_vs,
             m_animation_type: m_animation_type.unwrap(),
             m_file_scale_unit,
+            secondary_uv_min_lightmap_resolution,
             import_vertex_colors,
             m_additional_bone: m_additional_bone.unwrap(),
             m_humanoid_oversampling,
             m_file_scale_factor,
+            secondary_uv_min_object_scale,
             m_user_data: m_user_data.unwrap(),
             m_asset_bundle_name: m_asset_bundle_name.unwrap(),
             m_previous_calculated_global_scale,

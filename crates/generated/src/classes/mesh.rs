@@ -1,12 +1,13 @@
 //! 自动生成。请勿手动修改。
 
-use crate::classes::vector3f::Vector3f;
 use crate::subclasses::aabb::Aabb;
 use crate::subclasses::blend_shape_data::BlendShapeData;
+use crate::subclasses::bone_influence::BoneInfluence;
 use crate::subclasses::bone_weights4::BoneWeights4;
 use crate::subclasses::color_rgba::ColorRgba;
 use crate::subclasses::compressed_mesh::CompressedMesh;
 use crate::subclasses::matrix4x4f::Matrix4x4f;
+use crate::subclasses::mesh_blend_shape::MeshBlendShape;
 use crate::subclasses::mesh_blend_shape_vertex::MeshBlendShapeVertex;
 use crate::subclasses::mesh_lod_info::MeshLodInfo;
 use crate::subclasses::min_max_aabb::MinMaxAabb;
@@ -14,23 +15,186 @@ use crate::subclasses::streaming_info::StreamingInfo;
 use crate::subclasses::sub_mesh::SubMesh;
 use crate::subclasses::variable_bone_count_weights::VariableBoneCountWeights;
 use crate::subclasses::vector2f::Vector2f;
+use crate::subclasses::vector3f::Vector3f;
 use crate::subclasses::vector4f::Vector4f;
 use crate::subclasses::vertex_data::VertexData;
 
+
+/// 版本枚举：MeshMSubMeshesVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum MeshMSubMeshesVariant {
+    Default(Vec<SubMesh>),
+    V2017_1(Vec<SubMesh>),
+}
+
+impl crate::Parse for MeshMSubMeshesVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { SubMesh::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { SubMesh::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：MeshMMeshCompressionVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum MeshMMeshCompressionVariant {
+    Default(u8),
+    V4_0(u8),
+}
+
+impl crate::Parse for MeshMMeshCompressionVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(4, 0, 0) {
+            let v = r.read_u8()?;
+            Ok(Self::V4_0(v))
+        } else {
+            let v = r.read_u8()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：MeshMShapesVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum MeshMShapesVariant {
+    Default(Vec<MeshBlendShape>),
+    V4_3(BlendShapeData),
+}
+
+impl crate::Parse for MeshMShapesVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(4, 3, 0) {
+            let v = BlendShapeData::parse(r, ver)?;
+            r.align(4)?;
+            Ok(Self::V4_3(v))
+        } else {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { MeshBlendShape::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：MeshMBindPoseVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum MeshMBindPoseVariant {
+    Default(Vec<Matrix4x4f>),
+    V2017_1(Vec<Matrix4x4f>),
+}
+
+impl crate::Parse for MeshMBindPoseVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Matrix4x4f::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Matrix4x4f::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：MeshMSkinVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum MeshMSkinVariant {
+    Default(Vec<BoneInfluence>),
+    V2017_1(Vec<BoneWeights4>),
+}
+
+impl crate::Parse for MeshMSkinVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { BoneWeights4::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { BoneInfluence::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：MeshMBoneNameHashesVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum MeshMBoneNameHashesVariant {
+    Default(Vec<u32>),
+    V2017_1(Vec<u32>),
+}
+
+impl crate::Parse for MeshMBoneNameHashesVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：MeshMMeshMetrics1Variant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum MeshMMeshMetrics1Variant {
+    Default(f32),
+    V2018_3(f32),
+}
+
+impl crate::Parse for MeshMMeshMetrics1Variant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2018, 3, 0) {
+            let v = r.read_f32()?;
+            r.align(4)?;
+            Ok(Self::V2018_3(v))
+        } else {
+            let v = r.read_f32()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct Mesh {
     pub m_name: String,
     pub m_use16_bit_indices: Option<i32>,
-    pub m_sub_meshes: Vec<SubMesh>,
-    pub m_mesh_compression: u8,
-    pub m_shapes: Option<BlendShapeData>,
+    pub m_sub_meshes: MeshMSubMeshesVariant,
+    pub m_mesh_compression: MeshMMeshCompressionVariant,
+    pub m_shapes: Option<MeshMShapesVariant>,
     pub m_index_buffer: Vec<u8>,
-    pub m_bind_pose: Vec<Matrix4x4f>,
+    pub m_bind_pose: MeshMBindPoseVariant,
     pub m_stream_compression: Option<u8>,
     pub m_shape_vertices: Option<Vec<MeshBlendShapeVertex>>,
-    pub m_skin: Option<Vec<BoneWeights4>>,
+    pub m_skin: Option<MeshMSkinVariant>,
     pub m_is_readable: Option<bool>,
-    pub m_bone_name_hashes: Option<Vec<u32>>,
+    pub m_bone_name_hashes: Option<MeshMBoneNameHashesVariant>,
     pub m_vertices: Option<Vec<Vector3f>>,
     pub m_keep_vertices: Option<bool>,
     pub m_root_bone_name_hash: Option<u32>,
@@ -53,7 +217,7 @@ pub struct Mesh {
     pub m_baked_triangle_collision_mesh: Option<Vec<u8>>,
     pub m_mesh_metrics_0: Option<f32>,
     pub m_cooking_options: Option<i32>,
-    pub m_mesh_metrics_1: Option<f32>,
+    pub m_mesh_metrics_1: Option<MeshMMeshMetrics1Variant>,
     pub m_stream_data: Option<StreamingInfo>,
     pub m_mesh_lod_info: Option<MeshLodInfo>,
 }
@@ -106,35 +270,27 @@ impl crate::Parse for Mesh {
         } else {
             m_use16_bit_indices = Some(r.read_i32()?);
         }
-            m_sub_meshes = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { SubMesh::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_sub_meshes = Some(MeshMSubMeshesVariant::parse(r, ver)?);
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_shapes = Some(BlendShapeData::parse(r, ver)?);
-            r.align(4)?;
-            m_bind_pose = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { Matrix4x4f::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_bone_name_hashes = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_shapes = Some(MeshMShapesVariant::parse(r, ver)?);
+            m_bind_pose = Some(MeshMBindPoseVariant::parse(r, ver)?);
+            m_bone_name_hashes = Some(MeshMBoneNameHashesVariant::parse(r, ver)?);
             m_root_bone_name_hash = Some(r.read_u32()?);
             m_bones_aabb = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { MinMaxAabb::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
             m_variable_bone_count_weights = Some(VariableBoneCountWeights::parse(r, ver)?);
             r.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            m_shapes = Some(BlendShapeData::parse(r, ver)?);
-            r.align(4)?;
-            m_bind_pose = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { Matrix4x4f::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_bone_name_hashes = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_shapes = Some(MeshMShapesVariant::parse(r, ver)?);
+            m_bind_pose = Some(MeshMBindPoseVariant::parse(r, ver)?);
+            m_bone_name_hashes = Some(MeshMBoneNameHashesVariant::parse(r, ver)?);
             m_root_bone_name_hash = Some(r.read_u32()?);
         } else if *ver >= crate::UnityVersion::new(4, 1, 0) {
-            m_shapes = Some(BlendShapeData::parse(r, ver)?);
-            r.align(4)?;
+            m_shapes = Some(MeshMShapesVariant::parse(r, ver)?);
             m_shape_vertices = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { MeshBlendShapeVertex::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
         } else {
         }
-            m_mesh_compression = Some(r.read_u8()?);
+            m_mesh_compression = Some(MeshMMeshCompressionVariant::parse(r, ver)?);
         if *ver >= crate::UnityVersion::new(2017, 3, 0) {
             m_is_readable = Some(r.read_bool()?);
             m_keep_vertices = Some(r.read_bool()?);
@@ -160,23 +316,18 @@ impl crate::Parse for Mesh {
             m_vertex_data = Some(VertexData::parse(r, ver)?);
             r.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            m_skin = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { BoneWeights4::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_skin = Some(MeshMSkinVariant::parse(r, ver)?);
             m_vertex_data = Some(VertexData::parse(r, ver)?);
             r.align(4)?;
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            m_skin = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { BoneWeights4::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_bind_pose = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { Matrix4x4f::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_skin = Some(MeshMSkinVariant::parse(r, ver)?);
+            m_bind_pose = Some(MeshMBindPoseVariant::parse(r, ver)?);
             m_vertex_data = Some(VertexData::parse(r, ver)?);
             r.align(4)?;
         } else {
             m_vertices = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { Vector3f::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_skin = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { BoneWeights4::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_bind_pose = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { Matrix4x4f::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_skin = Some(MeshMSkinVariant::parse(r, ver)?);
+            m_bind_pose = Some(MeshMBindPoseVariant::parse(r, ver)?);
             m_uv = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             m_uv1 = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             m_tangents = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { Vector4f::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
@@ -200,8 +351,7 @@ impl crate::Parse for Mesh {
             m_baked_triangle_collision_mesh = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
             m_mesh_metrics_0 = Some(r.read_f32()?);
-            m_mesh_metrics_1 = Some(r.read_f32()?);
-            r.align(4)?;
+            m_mesh_metrics_1 = Some(MeshMMeshMetrics1Variant::parse(r, ver)?);
             m_stream_data = Some(StreamingInfo::parse(r, ver)?);
             r.align(4)?;
             m_mesh_lod_info = Some(MeshLodInfo::parse(r, ver)?);
@@ -213,8 +363,7 @@ impl crate::Parse for Mesh {
             m_baked_triangle_collision_mesh = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
             m_mesh_metrics_0 = Some(r.read_f32()?);
-            m_mesh_metrics_1 = Some(r.read_f32()?);
-            r.align(4)?;
+            m_mesh_metrics_1 = Some(MeshMMeshMetrics1Variant::parse(r, ver)?);
             m_stream_data = Some(StreamingInfo::parse(r, ver)?);
             r.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
@@ -223,8 +372,7 @@ impl crate::Parse for Mesh {
             m_baked_triangle_collision_mesh = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
             m_mesh_metrics_0 = Some(r.read_f32()?);
-            m_mesh_metrics_1 = Some(r.read_f32()?);
-            r.align(4)?;
+            m_mesh_metrics_1 = Some(MeshMMeshMetrics1Variant::parse(r, ver)?);
             m_stream_data = Some(StreamingInfo::parse(r, ver)?);
             r.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 2, 0) {
@@ -233,8 +381,7 @@ impl crate::Parse for Mesh {
             m_baked_triangle_collision_mesh = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
             m_mesh_metrics_0 = Some(r.read_f32()?);
-            m_mesh_metrics_1 = Some(r.read_f32()?);
-            r.align(4)?;
+            m_mesh_metrics_1 = Some(MeshMMeshMetrics1Variant::parse(r, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_baked_convex_collision_mesh = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;

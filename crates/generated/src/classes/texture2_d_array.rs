@@ -3,6 +3,52 @@
 use crate::subclasses::gl_texture_settings::GlTextureSettings;
 use crate::subclasses::streaming_info::StreamingInfo;
 
+
+/// 版本枚举：Texture2DArrayMDownscaleFallbackVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum Texture2DArrayMDownscaleFallbackVariant {
+    Default(bool),
+    V2020_2(bool),
+}
+
+impl crate::Parse for Texture2DArrayMDownscaleFallbackVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2020, 2, 0) {
+            let v = r.read_bool()?;
+            Ok(Self::V2020_2(v))
+        } else {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：Texture2DArrayMIsReadableVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum Texture2DArrayMIsReadableVariant {
+    Default(bool),
+    V2023_2(bool),
+}
+
+impl crate::Parse for Texture2DArrayMIsReadableVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2023, 2, 0) {
+            let v = r.read_bool()?;
+            Ok(Self::V2023_2(v))
+        } else {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct Texture2DArray {
     pub m_name: String,
@@ -11,14 +57,14 @@ pub struct Texture2DArray {
     pub m_is_alpha_channel_optional: Option<bool>,
     pub m_height: i32,
     pub m_color_space: i32,
-    pub m_downscale_fallback: Option<bool>,
+    pub m_downscale_fallback: Option<Texture2DArrayMDownscaleFallbackVariant>,
     pub m_depth: i32,
     pub m_format: i32,
     pub m_mip_count: i32,
     pub m_data_size: u32,
     pub m_texture_settings: GlTextureSettings,
     pub m_mips_stripped: Option<i32>,
-    pub m_is_readable: bool,
+    pub m_is_readable: Texture2DArrayMIsReadableVariant,
     pub image_data: Vec<u8>,
     pub m_stream_data: Option<StreamingInfo>,
     pub m_usage_mode: Option<i32>,
@@ -59,19 +105,19 @@ impl crate::Parse for Texture2DArray {
             m_format = Some(r.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
             m_forced_fallback_format = Some(r.read_i32()?);
-            m_downscale_fallback = Some(r.read_bool()?);
+            m_downscale_fallback = Some(Texture2DArrayMDownscaleFallbackVariant::parse(r, ver)?);
             m_is_alpha_channel_optional = Some(r.read_bool()?);
             r.align(4)?;
             m_color_space = Some(r.read_i32()?);
             m_format = Some(r.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             m_forced_fallback_format = Some(r.read_i32()?);
-            m_downscale_fallback = Some(r.read_bool()?);
+            m_downscale_fallback = Some(Texture2DArrayMDownscaleFallbackVariant::parse(r, ver)?);
             m_color_space = Some(r.read_i32()?);
             m_format = Some(r.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
             m_forced_fallback_format = Some(r.read_i32()?);
-            m_downscale_fallback = Some(r.read_bool()?);
+            m_downscale_fallback = Some(Texture2DArrayMDownscaleFallbackVariant::parse(r, ver)?);
         } else {
         }
             m_width = Some(r.read_i32()?);
@@ -94,7 +140,7 @@ impl crate::Parse for Texture2DArray {
         } else {
             m_color_space = Some(r.read_i32()?);
         }
-            m_is_readable = Some(r.read_bool()?);
+            m_is_readable = Some(Texture2DArrayMIsReadableVariant::parse(r, ver)?);
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
             m_ignore_mipmap_limit = Some(r.read_bool()?);
             r.align(4)?;

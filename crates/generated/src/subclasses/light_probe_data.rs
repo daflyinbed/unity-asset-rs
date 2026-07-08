@@ -1,9 +1,9 @@
 //! 自动生成。请勿手动修改。
 
-use crate::classes::vector3f::Vector3f;
 use crate::subclasses::hash128::Hash128;
 use crate::subclasses::probe_set_index::ProbeSetIndex;
 use crate::subclasses::probe_set_tetrahedralization::ProbeSetTetrahedralization;
+use crate::subclasses::vector3f::Vector3f;
 
 #[derive(Debug, Clone)]
 pub struct LightProbeData {

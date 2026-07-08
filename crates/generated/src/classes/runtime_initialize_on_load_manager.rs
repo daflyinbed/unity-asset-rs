@@ -3,6 +3,75 @@
 use crate::subclasses::class_info::ClassInfo;
 use crate::subclasses::class_method_info::ClassMethodInfo;
 
+
+/// 版本枚举：RuntimeInitializeOnLoadManagerMBeforeUnityMethodExecutionOrdersVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum RuntimeInitializeOnLoadManagerMBeforeUnityMethodExecutionOrdersVariant {
+    Default(Vec<i32>),
+    V2017_1(Vec<i32>),
+}
+
+impl crate::Parse for RuntimeInitializeOnLoadManagerMBeforeUnityMethodExecutionOrdersVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：RuntimeInitializeOnLoadManagerMAfterUnityMethodExecutionOrdersVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum RuntimeInitializeOnLoadManagerMAfterUnityMethodExecutionOrdersVariant {
+    Default(Vec<i32>),
+    V2017_1(Vec<i32>),
+}
+
+impl crate::Parse for RuntimeInitializeOnLoadManagerMAfterUnityMethodExecutionOrdersVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：RuntimeInitializeOnLoadManagerMBeforeMethodExecutionOrdersVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum RuntimeInitializeOnLoadManagerMBeforeMethodExecutionOrdersVariant {
+    Default(Vec<i32>),
+    V2017_1(Vec<i32>),
+}
+
+impl crate::Parse for RuntimeInitializeOnLoadManagerMBeforeMethodExecutionOrdersVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct RuntimeInitializeOnLoadManager {
     pub m_assembly_names: Option<Vec<String>>,
@@ -10,10 +79,10 @@ pub struct RuntimeInitializeOnLoadManager {
     pub m_class_infos: Option<Vec<ClassInfo>>,
     pub m_class_method_infos: Option<Vec<ClassMethodInfo>>,
     pub m_unity_method_execution_orders: Option<Vec<i32>>,
-    pub m_before_unity_method_execution_orders: Option<Vec<i32>>,
+    pub m_before_unity_method_execution_orders: Option<RuntimeInitializeOnLoadManagerMBeforeUnityMethodExecutionOrdersVariant>,
     pub m_method_execution_orders: Option<Vec<i32>>,
-    pub m_after_unity_method_execution_orders: Option<Vec<i32>>,
-    pub m_before_method_execution_orders: Option<Vec<i32>>,
+    pub m_after_unity_method_execution_orders: Option<RuntimeInitializeOnLoadManagerMAfterUnityMethodExecutionOrdersVariant>,
+    pub m_before_method_execution_orders: Option<RuntimeInitializeOnLoadManagerMBeforeMethodExecutionOrdersVariant>,
     pub m_after_method_execution_orders: Option<Vec<i32>>,
     pub m_after_assemblies_loaded_unity_method_execution_orders: Option<Vec<i32>>,
     pub m_after_assemblies_loaded_method_execution_orders: Option<Vec<i32>>,
@@ -62,9 +131,7 @@ impl crate::Parse for RuntimeInitializeOnLoadManager {
             None
         };
         let m_before_unity_method_execution_orders = if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
-            Some(v)
+            Some(RuntimeInitializeOnLoadManagerMBeforeUnityMethodExecutionOrdersVariant::parse(r, ver)?)
         } else {
             None
         };
@@ -76,16 +143,12 @@ impl crate::Parse for RuntimeInitializeOnLoadManager {
             None
         };
         let m_after_unity_method_execution_orders = if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
-            Some(v)
+            Some(RuntimeInitializeOnLoadManagerMAfterUnityMethodExecutionOrdersVariant::parse(r, ver)?)
         } else {
             None
         };
         let m_before_method_execution_orders = if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
-            Some(v)
+            Some(RuntimeInitializeOnLoadManagerMBeforeMethodExecutionOrdersVariant::parse(r, ver)?)
         } else {
             None
         };

@@ -3,12 +3,35 @@
 use crate::PPtr;
 use crate::subclasses::guid::Guid;
 
+
+/// 版本枚举：AudioMixerGroupMChildrenVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum AudioMixerGroupMChildrenVariant {
+    Default(Vec<PPtr>),
+    V2017_1(Vec<PPtr>),
+}
+
+impl crate::Parse for AudioMixerGroupMChildrenVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct AudioMixerGroup {
     pub m_name: String,
     pub m_audio_mixer: PPtr,
     pub m_group_id: Guid,
-    pub m_children: Vec<PPtr>,
+    pub m_children: AudioMixerGroupMChildrenVariant,
 }
 
 impl crate::Parse for AudioMixerGroup {
@@ -20,8 +43,7 @@ impl crate::Parse for AudioMixerGroup {
         r.align(4)?;
         let m_audio_mixer = crate::PPtr::parse(r, ver)?;
         let m_group_id = Guid::parse(r, ver)?;
-        let m_children = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
+        let m_children = AudioMixerGroupMChildrenVariant::parse(r, ver)?;
 
         Ok(AudioMixerGroup {
             m_name,

@@ -30,66 +30,76 @@ impl crate::Parse for VideoClip_329 {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_original_path = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_proxy_width = r.read_u32()?;
-        let m_proxy_height = r.read_u32()?;
-        let width = r.read_u32()?;
-        let height = r.read_u32()?;
-        let m_frame_rate = r.read_f64()?;
-        let m_pixel_aspec_ratio_num = if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            Some(r.read_u32()?)
-        } else {
-            None
-        };
-        let m_frame_count = r.read_u64()?;
-        let m_pixel_aspec_ratio_den = if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            Some(r.read_u32()?)
-        } else {
-            None
-        };
-        let m_format = r.read_i32()?;
-        let m_audio_channel_count = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u16() }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_audio_sample_rate = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_audio_language = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_external_resources = StreamedResource::parse(r, ver)?;
-        r.align(4)?;
-        let m_has_split_alpha = r.read_bool()?;
-        let m_video_shaders = if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let mut m_name = None;
+        let mut m_original_path = None;
+        let mut m_proxy_width = None;
+        let mut m_proxy_height = None;
+        let mut width = None;
+        let mut height = None;
+        let mut m_frame_rate = None;
+        let mut m_pixel_aspec_ratio_num = None;
+        let mut m_frame_count = None;
+        let mut m_pixel_aspec_ratio_den = None;
+        let mut m_format = None;
+        let mut m_audio_channel_count = None;
+        let mut m_audio_sample_rate = None;
+        let mut m_audio_language = None;
+        let mut m_external_resources = None;
+        let mut m_has_split_alpha = None;
+        let mut m_video_shaders = None;
+        let mut m_s_rgb = None;
+            m_name = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
+            m_original_path = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_proxy_width = Some(r.read_u32()?);
+            m_proxy_height = Some(r.read_u32()?);
+            width = Some(r.read_u32()?);
+            height = Some(r.read_u32()?);
+        if *ver >= crate::UnityVersion::new(2017, 2, 0) {
+            m_pixel_aspec_ratio_num = Some(r.read_u32()?);
+            m_pixel_aspec_ratio_den = Some(r.read_u32()?);
         } else {
-            None
-        };
-        let m_s_rgb = if *ver >= crate::UnityVersion::new(2019, 2, 0) {
-            Some(r.read_bool()?)
+        }
+            m_frame_rate = Some(r.read_f64()?);
+            m_frame_count = Some(r.read_u64()?);
+            m_format = Some(r.read_i32()?);
+            m_audio_channel_count = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u16() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_audio_sample_rate = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+            m_audio_language = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
+        if *ver >= crate::UnityVersion::new(2020, 1, 0) {
+            m_video_shaders = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
         } else {
-            None
-        };
+        }
+            m_external_resources = Some(StreamedResource::parse(r, ver)?);
+            r.align(4)?;
+            m_has_split_alpha = Some(r.read_bool()?);
+        if *ver >= crate::UnityVersion::new(2019, 2, 0) {
+            m_s_rgb = Some(r.read_bool()?);
+        } else {
+        }
 
         Ok(VideoClip_329 {
-            m_name,
-            m_original_path,
-            m_proxy_width,
-            m_proxy_height,
-            width,
-            height,
-            m_frame_rate,
+            m_name: m_name.unwrap(),
+            m_original_path: m_original_path.unwrap(),
+            m_proxy_width: m_proxy_width.unwrap(),
+            m_proxy_height: m_proxy_height.unwrap(),
+            width: width.unwrap(),
+            height: height.unwrap(),
+            m_frame_rate: m_frame_rate.unwrap(),
             m_pixel_aspec_ratio_num,
-            m_frame_count,
+            m_frame_count: m_frame_count.unwrap(),
             m_pixel_aspec_ratio_den,
-            m_format,
-            m_audio_channel_count,
-            m_audio_sample_rate,
-            m_audio_language,
-            m_external_resources,
-            m_has_split_alpha,
+            m_format: m_format.unwrap(),
+            m_audio_channel_count: m_audio_channel_count.unwrap(),
+            m_audio_sample_rate: m_audio_sample_rate.unwrap(),
+            m_audio_language: m_audio_language.unwrap(),
+            m_external_resources: m_external_resources.unwrap(),
+            m_has_split_alpha: m_has_split_alpha.unwrap(),
             m_video_shaders,
             m_s_rgb,
         })

@@ -3,6 +3,52 @@
 use crate::PPtr;
 use crate::subclasses::character_info::CharacterInfo;
 
+
+/// 版本枚举：FontMTextureVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum FontMTextureVariant {
+    Default(PPtr),
+    V5_5(PPtr),
+}
+
+impl crate::Parse for FontMTextureVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 5, 0) {
+            let v = crate::PPtr::parse(r, ver)?;
+            r.align(4)?;
+            Ok(Self::V5_5(v))
+        } else {
+            let v = crate::PPtr::parse(r, ver)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：FontMCharacterRectsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum FontMCharacterRectsVariant {
+    Default(Vec<CharacterInfo>),
+    V4_0(Vec<CharacterInfo>),
+}
+
+impl crate::Parse for FontMCharacterRectsVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(4, 0, 0) {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { CharacterInfo::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            r.align(4)?;
+            Ok(Self::V4_0(v))
+        } else {
+            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { CharacterInfo::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct Font {
     pub m_name: String,
@@ -14,12 +60,12 @@ pub struct Font {
     pub m_tracking: Option<f32>,
     pub m_font_count_y: Option<i32>,
     pub m_font_size: f32,
-    pub m_texture: PPtr,
+    pub m_texture: FontMTextureVariant,
     pub m_character_spacing: Option<i32>,
     pub m_character_padding: Option<i32>,
     pub m_per_character_kerning: Option<Vec<(i32, f32)>>,
     pub m_convert_case: i32,
-    pub m_character_rects: Vec<CharacterInfo>,
+    pub m_character_rects: FontMCharacterRectsVariant,
     pub m_kerning_values: Vec<((u16, u16), f32)>,
     pub m_pixel_scale: Option<f32>,
     pub m_grid_font: Option<bool>,
@@ -95,19 +141,16 @@ impl crate::Parse for Font {
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
             m_font_size = Some(r.read_f32()?);
         } else {
-            m_character_rects = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { CharacterInfo::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_character_rects = Some(FontMCharacterRectsVariant::parse(r, ver)?);
         }
-            m_texture = Some(crate::PPtr::parse(r, ver)?);
-            r.align(4)?;
+            m_texture = Some(FontMTextureVariant::parse(r, ver)?);
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
             m_ascii_start_offset = Some(r.read_i32()?);
             m_tracking = Some(r.read_f32()?);
             m_character_spacing = Some(r.read_i32()?);
             m_character_padding = Some(r.read_i32()?);
             m_convert_case = Some(r.read_i32()?);
-            m_character_rects = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { CharacterInfo::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_character_rects = Some(FontMCharacterRectsVariant::parse(r, ver)?);
         } else {
         }
             m_kerning_values = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = ( { let a = r.read_u16()?; let b = r.read_u16()?; Ok((a, b)) } )?; let b = r.read_f32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
@@ -138,24 +181,6 @@ impl crate::Parse for Font {
             m_font_rendering_mode = Some(r.read_i32()?);
             m_use_legacy_bounds_calculation = Some(r.read_bool()?);
             m_should_round_advance_value = Some(r.read_bool()?);
-        } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            m_fallback_fonts = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_font_rendering_mode = Some(r.read_i32()?);
-            m_use_legacy_bounds_calculation = Some(r.read_bool()?);
-        } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            m_fallback_fonts = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_font_rendering_mode = Some(r.read_i32()?);
-        } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            m_fallback_fonts = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_font_rendering_mode = Some(r.read_i32()?);
-            m_use_legacy_bounds_calculation = Some(r.read_bool()?);
-        } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            m_fallback_fonts = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_font_rendering_mode = Some(r.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2017, 1, 2) {
             m_fallback_fonts = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;

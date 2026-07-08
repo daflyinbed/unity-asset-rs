@@ -63,7 +63,6 @@ fn typed_name(uo: &UnityObject) -> &'static str {
         UnityObject::Shader(_) => "Shader",
         UnityObject::GameObject(_) => "GameObject",
         UnityObject::Transform(_) => "Transform",
-        UnityObject::MonoBehaviour(_) => "MonoBehaviour",
         _ => "other",
     }
 }

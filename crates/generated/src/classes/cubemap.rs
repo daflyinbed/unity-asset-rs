@@ -4,6 +4,78 @@ use crate::PPtr;
 use crate::subclasses::gl_texture_settings::GlTextureSettings;
 use crate::subclasses::streaming_info::StreamingInfo;
 
+
+/// 版本枚举：CubemapMDownscaleFallbackVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum CubemapMDownscaleFallbackVariant {
+    Default(bool),
+    V2020_2(bool),
+}
+
+impl crate::Parse for CubemapMDownscaleFallbackVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2020, 2, 0) {
+            let v = r.read_bool()?;
+            Ok(Self::V2020_2(v))
+        } else {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：CubemapMCompleteImageSizeVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum CubemapMCompleteImageSizeVariant {
+    Default(i32),
+    V2020_1(u32),
+}
+
+impl crate::Parse for CubemapMCompleteImageSizeVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2020, 1, 0) {
+            let v = r.read_u32()?;
+            Ok(Self::V2020_1(v))
+        } else {
+            let v = r.read_i32()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：CubemapMIsReadableVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum CubemapMIsReadableVariant {
+    Default(bool),
+    V5_5(bool),
+    V2018_2(bool),
+}
+
+impl crate::Parse for CubemapMIsReadableVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2018, 2, 0) {
+            let v = r.read_bool()?;
+            Ok(Self::V2018_2(v))
+        } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
+            let v = r.read_bool()?;
+            r.align(4)?;
+            Ok(Self::V5_5(v))
+        } else {
+            let v = r.read_bool()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct Cubemap {
     pub m_name: String,
@@ -11,13 +83,13 @@ pub struct Cubemap {
     pub m_forced_fallback_format: Option<i32>,
     pub m_is_alpha_channel_optional: Option<bool>,
     pub m_height: i32,
-    pub m_downscale_fallback: Option<bool>,
-    pub m_complete_image_size: u32,
+    pub m_downscale_fallback: Option<CubemapMDownscaleFallbackVariant>,
+    pub m_complete_image_size: CubemapMCompleteImageSizeVariant,
     pub m_texture_format: i32,
     pub m_mip_map: Option<bool>,
     pub m_mip_count: Option<i32>,
     pub m_mips_stripped: Option<i32>,
-    pub m_is_readable: bool,
+    pub m_is_readable: CubemapMIsReadableVariant,
     pub m_read_allowed: Option<bool>,
     pub m_image_count: i32,
     pub m_texture_dimension: i32,
@@ -76,17 +148,17 @@ impl crate::Parse for Cubemap {
             r.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
             m_forced_fallback_format = Some(r.read_i32()?);
-            m_downscale_fallback = Some(r.read_bool()?);
+            m_downscale_fallback = Some(CubemapMDownscaleFallbackVariant::parse(r, ver)?);
             m_is_alpha_channel_optional = Some(r.read_bool()?);
             r.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
             m_forced_fallback_format = Some(r.read_i32()?);
-            m_downscale_fallback = Some(r.read_bool()?);
+            m_downscale_fallback = Some(CubemapMDownscaleFallbackVariant::parse(r, ver)?);
         } else {
         }
             m_width = Some(r.read_i32()?);
             m_height = Some(r.read_i32()?);
-            m_complete_image_size = Some(r.read_u32()?);
+            m_complete_image_size = Some(CubemapMCompleteImageSizeVariant::parse(r, ver)?);
         if *ver >= crate::UnityVersion::new(2020, 1, 0) {
             m_mips_stripped = Some(r.read_i32()?);
         } else {
@@ -97,25 +169,8 @@ impl crate::Parse for Cubemap {
         } else {
             m_mip_map = Some(r.read_bool()?);
         }
-            m_is_readable = Some(r.read_bool()?);
-        if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            m_is_pre_processed = Some(r.read_bool()?);
-            m_ignore_mipmap_limit = Some(r.read_bool()?);
-            r.align(4)?;
-            m_mipmap_limit_group_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_streaming_mipmaps = Some(r.read_bool()?);
-            r.align(4)?;
-            m_streaming_mipmaps_priority = Some(r.read_i32()?);
-            r.align(4)?;
-        } else if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            m_is_pre_processed = Some(r.read_bool()?);
-            m_ignore_master_texture_limit = Some(r.read_bool()?);
-            m_streaming_mipmaps = Some(r.read_bool()?);
-            r.align(4)?;
-            m_streaming_mipmaps_priority = Some(r.read_i32()?);
-            r.align(4)?;
-        } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            m_is_readable = Some(CubemapMIsReadableVariant::parse(r, ver)?);
+        if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             m_is_pre_processed = Some(r.read_bool()?);
             m_ignore_mipmap_limit = Some(r.read_bool()?);
             r.align(4)?;
@@ -128,17 +183,6 @@ impl crate::Parse for Cubemap {
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
             m_is_pre_processed = Some(r.read_bool()?);
             m_ignore_master_texture_limit = Some(r.read_bool()?);
-            m_streaming_mipmaps = Some(r.read_bool()?);
-            r.align(4)?;
-            m_streaming_mipmaps_priority = Some(r.read_i32()?);
-            r.align(4)?;
-        } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            m_is_pre_processed = Some(r.read_bool()?);
-            m_streaming_mipmaps = Some(r.read_bool()?);
-            r.align(4)?;
-            m_streaming_mipmaps_priority = Some(r.read_i32()?);
-            r.align(4)?;
-        } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
             m_streaming_mipmaps = Some(r.read_bool()?);
             r.align(4)?;
             m_streaming_mipmaps_priority = Some(r.read_i32()?);

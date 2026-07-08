@@ -47,256 +47,192 @@ impl crate::Parse for TagManager {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let tags = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let builtin_layer_0 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
+        let mut tags = None;
+        let mut builtin_layer_0 = None;
+        let mut layers = None;
+        let mut builtin_layer_1 = None;
+        let mut m_sorting_layers = None;
+        let mut builtin_layer_2 = None;
+        let mut m_rendering_layers = None;
+        let mut builtin_layer_3 = None;
+        let mut builtin_layer_4 = None;
+        let mut builtin_layer_5 = None;
+        let mut builtin_layer_6 = None;
+        let mut builtin_layer_7 = None;
+        let mut user_layer_8 = None;
+        let mut user_layer_9 = None;
+        let mut user_layer_10 = None;
+        let mut user_layer_11 = None;
+        let mut user_layer_12 = None;
+        let mut user_layer_13 = None;
+        let mut user_layer_14 = None;
+        let mut user_layer_15 = None;
+        let mut user_layer_16 = None;
+        let mut user_layer_17 = None;
+        let mut user_layer_18 = None;
+        let mut user_layer_19 = None;
+        let mut user_layer_20 = None;
+        let mut user_layer_21 = None;
+        let mut user_layer_22 = None;
+        let mut user_layer_23 = None;
+        let mut user_layer_24 = None;
+        let mut user_layer_25 = None;
+        let mut user_layer_26 = None;
+        let mut user_layer_27 = None;
+        let mut user_layer_28 = None;
+        let mut user_layer_29 = None;
+        let mut user_layer_30 = None;
+        let mut user_layer_31 = None;
+            tags = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let layers = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+        if *ver >= crate::UnityVersion::new(2023, 3, 0) {
+            layers = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let builtin_layer_1 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
+            m_sorting_layers = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { SortingLayerEntry::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_sorting_layers = if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { SortingLayerEntry::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            m_rendering_layers = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let builtin_layer_2 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
+        } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            layers = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_rendering_layers = if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            m_sorting_layers = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { SortingLayerEntry::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let builtin_layer_3 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
+        } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
+            builtin_layer_0 = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let builtin_layer_4 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
+            builtin_layer_1 = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let builtin_layer_5 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
+            builtin_layer_2 = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let builtin_layer_6 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
+            builtin_layer_3 = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let builtin_layer_7 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
+            builtin_layer_4 = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_8 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
+            builtin_layer_5 = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_9 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
+            builtin_layer_6 = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_10 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
+            builtin_layer_7 = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_11 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
+            user_layer_8 = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_12 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
+            user_layer_9 = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_13 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
+            user_layer_10 = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_14 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
+            user_layer_11 = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_15 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
+            user_layer_12 = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_16 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
+            user_layer_13 = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_17 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
+            user_layer_14 = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_18 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
+            user_layer_15 = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_19 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
+            user_layer_16 = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_20 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
+            user_layer_17 = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_21 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
+            user_layer_18 = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_22 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
+            user_layer_19 = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_23 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
+            user_layer_20 = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_24 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
+            user_layer_21 = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_25 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
+            user_layer_22 = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_26 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
+            user_layer_23 = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_27 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
+            user_layer_24 = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_28 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
+            user_layer_25 = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_29 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
+            user_layer_26 = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_30 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
+            user_layer_27 = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_31 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
+            user_layer_28 = Some(r.read_aligned_string()?);
             r.align(4)?;
-            Some(v)
+            user_layer_29 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            user_layer_30 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            user_layer_31 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            m_sorting_layers = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { SortingLayerEntry::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            r.align(4)?;
         } else {
-            None
-        };
+            builtin_layer_0 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            builtin_layer_1 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            builtin_layer_2 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            builtin_layer_3 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            builtin_layer_4 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            builtin_layer_5 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            builtin_layer_6 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            builtin_layer_7 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            user_layer_8 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            user_layer_9 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            user_layer_10 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            user_layer_11 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            user_layer_12 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            user_layer_13 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            user_layer_14 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            user_layer_15 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            user_layer_16 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            user_layer_17 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            user_layer_18 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            user_layer_19 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            user_layer_20 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            user_layer_21 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            user_layer_22 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            user_layer_23 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            user_layer_24 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            user_layer_25 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            user_layer_26 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            user_layer_27 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            user_layer_28 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            user_layer_29 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            user_layer_30 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+            user_layer_31 = Some(r.read_aligned_string()?);
+            r.align(4)?;
+        }
 
         Ok(TagManager {
-            tags,
+            tags: tags.unwrap(),
             builtin_layer_0,
             layers,
             builtin_layer_1,

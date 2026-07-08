@@ -2,11 +2,33 @@
 
 use crate::PPtr;
 
+
+/// 版本枚举：AudioEchoFilterMDelayVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum AudioEchoFilterMDelayVariant {
+    Default(u32),
+    V2022_2(f32),
+}
+
+impl crate::Parse for AudioEchoFilterMDelayVariant {
+    fn parse<R: crate::EndianReader>(
+        r: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            let v = r.read_f32()?;
+            Ok(Self::V2022_2(v))
+        } else {
+            let v = r.read_u32()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct AudioEchoFilter {
     pub m_game_object: PPtr,
     pub m_enabled: u8,
-    pub m_delay: f32,
+    pub m_delay: AudioEchoFilterMDelayVariant,
     pub m_decay_ratio: f32,
     pub m_wet_mix: f32,
     pub m_dry_mix: f32,
@@ -20,7 +42,7 @@ impl crate::Parse for AudioEchoFilter {
         let m_game_object = crate::PPtr::parse(r, ver)?;
         let m_enabled = r.read_u8()?;
         r.align(4)?;
-        let m_delay = r.read_f32()?;
+        let m_delay = AudioEchoFilterMDelayVariant::parse(r, ver)?;
         let m_decay_ratio = r.read_f32()?;
         let m_wet_mix = r.read_f32()?;
         let m_dry_mix = r.read_f32()?;

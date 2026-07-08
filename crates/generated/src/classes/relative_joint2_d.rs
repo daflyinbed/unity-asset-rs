@@ -25,41 +25,53 @@ impl crate::Parse for RelativeJoint2D {
         r: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_enabled = r.read_u8()?;
-        r.align(4)?;
-        let m_enable_collision = r.read_bool()?;
-        r.align(4)?;
-        let m_connected_rigid_body = crate::PPtr::parse(r, ver)?;
-        let m_break_force = r.read_f32()?;
-        let m_break_torque = r.read_f32()?;
-        let m_max_force = r.read_f32()?;
-        let m_break_action = if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            Some(r.read_i32()?)
+        let mut m_game_object = None;
+        let mut m_enabled = None;
+        let mut m_enable_collision = None;
+        let mut m_connected_rigid_body = None;
+        let mut m_break_force = None;
+        let mut m_break_torque = None;
+        let mut m_max_force = None;
+        let mut m_break_action = None;
+        let mut m_max_torque = None;
+        let mut m_correction_scale = None;
+        let mut m_auto_configure_offset = None;
+        let mut m_linear_offset = None;
+        let mut m_angular_offset = None;
+            m_game_object = Some(crate::PPtr::parse(r, ver)?);
+            m_enabled = Some(r.read_u8()?);
+            r.align(4)?;
+            m_enable_collision = Some(r.read_bool()?);
+            r.align(4)?;
+            m_connected_rigid_body = Some(crate::PPtr::parse(r, ver)?);
+            m_break_force = Some(r.read_f32()?);
+            m_break_torque = Some(r.read_f32()?);
+        if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            m_break_action = Some(r.read_i32()?);
         } else {
-            None
-        };
-        let m_max_torque = r.read_f32()?;
-        let m_correction_scale = r.read_f32()?;
-        let m_auto_configure_offset = r.read_bool()?;
-        r.align(4)?;
-        let m_linear_offset = Vector2f::parse(r, ver)?;
-        let m_angular_offset = r.read_f32()?;
+        }
+            m_max_force = Some(r.read_f32()?);
+            m_max_torque = Some(r.read_f32()?);
+            m_correction_scale = Some(r.read_f32()?);
+            m_auto_configure_offset = Some(r.read_bool()?);
+            r.align(4)?;
+            m_linear_offset = Some(Vector2f::parse(r, ver)?);
+            m_angular_offset = Some(r.read_f32()?);
 
         Ok(RelativeJoint2D {
-            m_game_object,
-            m_enabled,
-            m_enable_collision,
-            m_connected_rigid_body,
-            m_break_force,
-            m_break_torque,
-            m_max_force,
+            m_game_object: m_game_object.unwrap(),
+            m_enabled: m_enabled.unwrap(),
+            m_enable_collision: m_enable_collision.unwrap(),
+            m_connected_rigid_body: m_connected_rigid_body.unwrap(),
+            m_break_force: m_break_force.unwrap(),
+            m_break_torque: m_break_torque.unwrap(),
+            m_max_force: m_max_force.unwrap(),
             m_break_action,
-            m_max_torque,
-            m_correction_scale,
-            m_auto_configure_offset,
-            m_linear_offset,
-            m_angular_offset,
+            m_max_torque: m_max_torque.unwrap(),
+            m_correction_scale: m_correction_scale.unwrap(),
+            m_auto_configure_offset: m_auto_configure_offset.unwrap(),
+            m_linear_offset: m_linear_offset.unwrap(),
+            m_angular_offset: m_angular_offset.unwrap(),
         })
     }
 }
