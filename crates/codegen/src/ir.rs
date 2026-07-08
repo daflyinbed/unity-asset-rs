@@ -1,6 +1,6 @@
 //! 中间表示：从 TPK 解包到 EmitClass 集合的数据结构。
 //!
-//! 参考设计：`docs/codegen-design.md` §6.2。
+//! 参考设计：`docs/codegen.md` §6。
 
 use std::collections::BTreeMap;
 
@@ -119,7 +119,7 @@ pub enum RustType {
     /// 版本门控字段（外层包 Option）
     Option(Box<RustType>),
     /// 跨版本类型变化：生成版本枚举，按版本选择变体。
-    /// 参见 `docs/codegen-redesign-v2.md` §5.4。
+    /// 参见 `docs/codegen.md` §2.3 / §5.3。
     VersionedEnum {
         name: String,
         variants: Vec<EnumVariant>,

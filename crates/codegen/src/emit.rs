@@ -1,7 +1,7 @@
 //! p07：代码发射。
 //!
 //! 把 `Pipeline` 转成多个 Rust 源文件，写到指定目录。
-//! 输出布局（详见 `docs/codegen-design.md` §2.5）：
+//! 输出布局（详见 `docs/codegen.md` §9）：
 //!
 //! ```text
 //! <out_dir>/
@@ -198,7 +198,7 @@ fn collect_type_imports(
 }
 
 // ────────────────────────────────────────────────────────────────────
-// 版本枚举 emit（参见 docs/codegen-redesign-v2.md §5.4 / §6.3）
+// 版本枚举 emit（参见 docs/codegen.md §2.3 / §5.3）
 // ────────────────────────────────────────────────────────────────────
 
 /// 扫描 own_fields 中的 VersionedEnum 类型，emit 枚举定义 + impl Parse。
@@ -718,7 +718,7 @@ fn emit_mod_rs(classes: &[&EmitClass]) -> String {
 fn emit_lib_rs() -> String {
     r#"//! 自动生成的 Unity 类型与 parser。请勿手动修改。
 //!
-//! 由 `crates/codegen` 生成（详见 `docs/codegen-design.md`）。
+//! 由 `crates/codegen` 生成（详见 `docs/codegen.md`）。
 //! 共享原语（UnityVersion / EndianReader / Parse / PPtr）来自 `unity-core` crate。
 //!
 //! 本 crate 全部为机器生成代码，下列 lint 是 codegen 的已知副产物

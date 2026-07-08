@@ -414,7 +414,7 @@ pub struct VersionLayout {
 
 > **无 `ParentSpec` / 无 `is_mono_behaviour`**：`EmitClass` 没有 parent 字段；
 > MonoBehaviour 根本不会被加入 `classes`（p04 直接跳过 classID=114）。这是与早期
-> 设计（见 `codegen-design.md` 历史归档）最大的差异。
+> 设计（嵌套 parent 模型）最大的差异。
 
 ---
 
@@ -635,8 +635,6 @@ TPK 里 classID 100000-100011（`int`/`bool`/`float`/`Vector3f`/...）注册为 
 | **本文档** | codegen **现状权威**（扁平 struct + parser，已落地） |
 | [ADR-0001](adr/0001-codegen-from-typetree-dumps.md) | codegen 决策（含修订附录，记录与实现的偏差） |
 | [`object-layer.md`](object-layer.md) | 生成产物的运行时 dispatch（typed → fallback） |
-| [`codegen-design.md`](codegen-design.md) | **历史归档**——原始设计稿（嵌套 parent 模型），已废弃，仅供追溯 |
-| [`codegen-implementation.md`](codegen-implementation.md) | **历史归档**——旧 parent 实现记录，已废弃，仅供追溯 |
 
 冲突时以本文档为准。
 

@@ -31,12 +31,6 @@ Python 绑定（ADR-0002，未开始）。
 - [`docs/codegen.md`](docs/codegen.md) — codegen 单一权威（已落地）
 - [`docs/adr/`](docs/adr/) — ADR 正文记原始决策，文末「修订」附录记实现偏差
 
-> `docs/file-loading-layer.md`、`docs/object-parsing-design.md`、
-> `docs/serialized-file-and-typetree.md`、`docs/codegen-design.md`、
-> `docs/codegen-implementation.md`、`docs/codegen-target-design.md`、
-> `docs/codegen-redesign-v2.md` 是**历史归档设计稿**（部分内容未实现或已被取代），
-> 各自顶部有横幅标注，仅供追溯。
-
 ## Commands
 
 ```bash

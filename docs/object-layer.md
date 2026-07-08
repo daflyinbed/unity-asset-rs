@@ -513,7 +513,5 @@ MonoBehaviour 解析产出一个 `Value::Struct`，含基类字段 + 脚本字�
 | [ADR-0001](adr/0001-codegen-from-typetree-dumps.md) | typed struct 决策（含修订附录） |
 | [`io-layer.md`](io-layer.md) | 本层输入（`BundleFile.bytes`） |
 | [`codegen.md`](codegen.md) | typed struct 来源（generated crate） |
-| [`object-parsing-design.md`](object-parsing-design.md) | **历史归档**——dispatch 早期设计稿（"待实现⬜"已全部落地），仅供追溯 |
-| [`serialized-file-and-typetree.md`](serialized-file-and-typetree.md) | **历史归档**——SerializedFile/TypeTree 早期设计稿（其"纯 TypeTree 无 codegen/TPK/fallback"立场已被 dispatch 架构取代），仅供追溯 |
 
 冲突时以本文档为准。

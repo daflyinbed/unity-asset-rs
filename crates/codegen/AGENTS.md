@@ -94,7 +94,7 @@ color 少读 12 字节 → `data truncated`）。
 - `is_abstract == true` 的类在 `emit_all` 里被跳过（不生成文件、不进 mod.rs、
   不进 `UnityObject`/`ClassIDType` 分派）。它们在 TPK 里 `release_root` 为空。
 - 想加回 parent 链前，先读 `docs/codegen.md`（现状权威）——扁平化是有意决策，
-  `docs/codegen-design.md` 里的嵌套 parent 方案已废弃。
+  嵌套 parent 的旧方案已废弃。
 
 ### p00 过滤引擎内部类型 + p02 排除 main class 名字
 
@@ -245,7 +245,3 @@ crates/generated/src/
   冲突时以此为准。
 - `docs/object-layer.md` — 主 crate 的 dispatch + TypeTree 回退架构（typed parse 的
   运行时入口）。
-- `docs/codegen-design.md` / `docs/codegen-implementation.md` — **历史归档**（旧 parent
-  模型 + 旧实现记录），仅供追溯。
-- `docs/codegen-target-design.md` / `docs/codegen-redesign-v2.md` — **历史归档**（被
-  `codegen.md` 取代）。

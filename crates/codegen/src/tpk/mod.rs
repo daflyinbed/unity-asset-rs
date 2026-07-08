@@ -1,6 +1,6 @@
 //! TPK 二进制读取器（小端序）。
 //!
-//! 详见 `docs/codegen-design.md` §6.1 与 AssetRipper Tpk 仓库的字节级清单。
+//! 详见 `docs/codegen.md` §8 与 AssetRipper Tpk 仓库的字节级清单。
 //! 本模块**只读不写**。所有跨引用（字符串、节点）用 `u16` 索引，节点池扁平存储 + `sub_nodes` 递归表达树。
 //!
 //! # 文件布局

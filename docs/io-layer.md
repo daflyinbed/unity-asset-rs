@@ -276,6 +276,5 @@ io 层错误见 `src/error.rs`，遵循 `#[snafu(display(...))]` + `#[snafu(visi
 | **本文档** | io 层**现状权威**（UnityFS + Registry，已落地） |
 | [ADR-0003](adr/0003-file-loading-and-decompression-layer.md) | io 层决策（含修订附录：已落地 vs 未实现） |
 | [`object-layer.md`](object-layer.md) | 本层产出的 `BundleFile.bytes` 交给 SerializedFile / 对象解析 |
-| [`file-loading-layer.md`](file-loading-layer.md) | **历史归档**——早期完整设计稿（World/Loader/递归再派发/CN加密），大量内容未实现，仅供追溯 |
 
 冲突时以本文档为准。

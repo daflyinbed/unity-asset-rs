@@ -1,4 +1,4 @@
-//! 命名规范（详见 `docs/codegen-design.md` §2）。
+//! 命名规范（详见 `docs/codegen.md` §4）。
 //!
 //! - 字段名：保留 `m_`/`k_` 前缀，snake_case 化；关键字冲突用 `r#` 转义。
 //! - 类型名：PascalCase + 缩写规则化（`AABB → Aabb`、`ColorRGBA → ColorRgba`），`PPtr<X>` 例外保留。
