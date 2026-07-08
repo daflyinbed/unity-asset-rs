@@ -1,5 +1,10 @@
 # Codegen 当前实现状态
 
+> ⛔ **历史归档（2026-07-09）** —— 本文档记录的是**旧的 parent 实现**（嵌套 parent /
+> ParentSpec / is_mono_behaviour 字段等），这些在实现中已被扁平 struct 化取代。
+> 当前规模数字也已过时（实际 9.4 万行 / 940 文件，见 [`codegen.md`](codegen.md) §9）。
+> 权威现状见 [`codegen.md`](codegen.md)。本文保留仅供追溯。
+
 > 范围：记录 `crates/codegen` 当前**实际实现**了什么（D1-D5 已完成），与 [`codegen-design.md`](codegen-design.md) 描述的设计目标的偏差，以及已知限制。
 > 状态：实施记录（描述当前代码，非规划稿）
 > 上游：[ADR-0001](adr/0001-codegen-from-typetree-dumps.md)、[`codegen-design.md`](codegen-design.md)

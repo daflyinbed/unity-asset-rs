@@ -1,6 +1,6 @@
 //! 自动生成的 Unity 类型与 parser。请勿手动修改。
 //!
-//! 由 `crates/codegen` 生成（详见 `docs/codegen-design.md`）。
+//! 由 `crates/codegen` 生成（详见 `docs/codegen.md`）。
 //! 共享原语（UnityVersion / EndianReader / Parse / PPtr）来自 `unity-core` crate。
 //!
 //! 本 crate 全部为机器生成代码，下列 lint 是 codegen 的已知副产物

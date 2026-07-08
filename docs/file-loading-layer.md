@@ -1,5 +1,9 @@
 # 文件加载层设计
 
+> ⛔ **历史归档（2026-07-09）** —— 本文描述的 `World` / `Loader` / `Tree` / 递归再派发 /
+> CN 加密 / UnityWeb/UnityRaw/gzip/brotli 等**大部分未实现**；io 层实际只做了 UnityFS +
+> 解压 registry。权威现状见 [`io-layer.md`](io-layer.md)。本文保留仅供追溯。
+
 > 范围：从用户输入（路径 / 字节 / 流）到交付 `World`（对象 + 资源），覆盖 io（容器格式 + 解压）与 core（对象解析）两段管线。
 > 状态：设计稿（对应 ADR-0003 的实施细化）
 > 上游决策：[ADR-0001](adr/0001-codegen-from-typetree-dumps.md)（对象解析）、[ADR-0003](adr/0003-file-loading-and-decompression-layer.md)（io 层架构决策）

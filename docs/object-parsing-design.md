@@ -1,5 +1,9 @@
 # 对象解析设计：Typed Codegen + TypeTree 解释器
 
+> ⛔ **历史归档（2026-07-09）** —— 本文的 dispatch + fallback 设计**已全部落地**
+> （原「待实现 ⬜」清单已完成）。权威现状见 [`object-layer.md`](object-layer.md)。
+> 本文保留仅供追溯。
+
 > 范围：定义 SerializedFile 对象的解析架构——何时用 codegen'd typed parser，何时用
 > TypeTree 解释器，如何回退。
 > 状态：设计稿（替代 `codegen-design.md` §4-§7 的 parse 路径部分）

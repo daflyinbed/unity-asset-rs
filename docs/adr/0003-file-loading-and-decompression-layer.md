@@ -1,6 +1,6 @@
 # ADR-0003: 文件加载与解压层 —— 递归再派发 + 三轴差异化扩展
 
-> Status: Proposed
+> Status: Accepted（核心解压 registry 已落地；递归再派发 / 多容器格式 / CN 加密未实现，见文末「修订」附录）
 > Date: 2026-06-20
 > Deciders: unity-asset-rs 项目维护者
 
@@ -101,3 +101,36 @@ ADR-0001 解决了"给定 `SerializedFile` 字节如何解析对象"。本决策
 
 - **ADR-0001**：本层是其上游。`SerializedFileMeta.objects`（`ObjectInfo` 偏移表）+ `types`（类型表/内嵌 typetree）即 ADR-0001 parser 输入；`World::from_serialized_files` 消费本层 `Tree`。
 - **ADR-0002**：pyo3 绑定暴露的 `Environment.load()`（Python 侧入口）委托本层 `Loader`；版本断言用 `SerializedFileMeta.unity_version` 完成。
+
+---
+
+## 修订（2026-07-09，对齐实现）
+
+本决策的核心——**解压 codec 开集 + registry 覆盖任意 flag**——已落地（`src/decompress.rs` 的 `Registry` + `Decompressor` trait + 默认 LZMA/LZ4/LZ4HC/NONE）。但正文描述的完整「递归再派发 + 三轴差异化扩展」架构大部分**尚未实现**。权威现状见 [`docs/io-layer.md`](../io-layer.md)。
+
+### 已落地
+
+| 正文项 | 实际实现 |
+|---|---|
+| 解压开集 → `Decompressor` trait + registry | ✅ `Decompressor` trait + `Registry`（**命名以代码为准**，非正文的 `DecompressorRegistry`——已知命名漂移） |
+| `CompressionType(pub u16)` open 枚举，可覆盖任意 flag | ✅ `CompressionType(pub u16)`，`register()` 覆盖任意槽位 |
+| 默认 LZMA/LZ4/LZ4HC（`lzma-rs`/`lz4_flex`） | ✅ defaults() 注册 LZMA+LZ4+LZ4HC+NONE（flag 0-3） |
+| 字节运输 `bytes::Bytes` | ✅ `Bytes` 共享切片、`slice()` 共享分配 |
+| UnityFS 解析 | ✅ `src/bundle.rs::parse`，format 6/7/8，大端 Cursor |
+| Unity LZMA ≠ 标准 .lzma（UseProvided unpacked size） | ✅ 与 `crates/codegen/src/tpk/compression.rs` 同源 |
+| Arknights LZ4 变体接入扩展点 | ✅ 用户自行实现 + `register(CompressionType(4/5), ...)`，库不内置游戏代码 |
+
+### 未实现（范围收缩 / 推迟）
+
+| 正文项 | 状态 |
+|---|---|
+| 递归再派发（Container → 逐子条目重新 sniff + parse） | ⬜ 当前只硬判 `signature == "UnityFS"` |
+| `enum FileFormat` 闭集 + `sniff` if/else + `match parse` | ⬜ |
+| UnityWeb / UnityRaw / UnityWebData / gzip / brotli | ⬜ 仅 UnityFS |
+| CN 加密（concrete `ArchiveStorageDecryptor` + `CnKey`） | ⬜ |
+| `Loader` / `LoaderBuilder` 配置入口 | ⬜ 当前是 `load` / `load_with` 自由函数 |
+| `World` / `Tree` 聚合 + `.resS` 独立拷贝分离策略 | ⬜ 无聚合层；`Bundle` 只是解包后的文件名 + 字节 |
+| 错误隔离 `Failure` 叶节点 | ⬜ 错误直接向上传播 |
+| `SerializedFileMeta.reader() -> Cursor<&[u8]>` 交接 ADR-0001 | 实际交接方式不同：主 crate 直接对 `BundleFile.bytes` 调 `SerializedFile::parse`，见 `docs/object-layer.md` |
+
+正文关于「解压开集用 registry、覆盖任意 flag」的核心论证（Arknights 劫持 flag 4/5）与实现一致，仍然成立；其余「递归再派发 + 多容器 + CN 加密」是后续路线图。

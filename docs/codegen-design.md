@@ -1,5 +1,9 @@
 # Codegen 设计：从 TPK 生成类型化 Rust 结构与 Parser
 
+> ⛔ **历史归档（2026-07-09）** —— 本文档描述的**嵌套 `parent` 模型**（`tex.parent.parent.m_name`）
+> 在实现中已被**扁平 struct、无 parent 字段**取代（TPK release_root 已含全部继承链字段）。
+> 权威现状见 [`codegen.md`](codegen.md)。本文保留仅供追溯，**请勿据此实现**。
+
 > 范围：定义 `crates/codegen` 的内部架构、生成代码的最终形态、命名规范，以及 TPK → Rust 的端到端数据流。
 > 状态：设计稿（对应 ADR-0001 的实施细化）
 > 上游决策：[ADR-0001](adr/0001-codegen-from-typetree-dumps.md)（对象解析与代码生成决策）、[ADR-0003](adr/0003-file-loading-and-decompression-layer.md)（io 层架构，本层在其之上）

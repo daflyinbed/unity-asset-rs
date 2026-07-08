@@ -1,5 +1,9 @@
 # Codegen Redesign v2：扁平单 struct + 版本门控
 
+> ⛔ **历史归档（2026-07-09）** —— 本设计的扁平 struct / 无 parent / VersionedEnum / p05
+> 算法等**已全部落地**，内容已并入 [`codegen.md`](codegen.md)（权威现状）。本文保留
+> 仅供追溯。
+
 > 范围：`crates/codegen` 重新设计，明确约束下从 `type_tree.tpk` 生成 `crates/generated`。
 > 状态：设计稿（对 `codegen-target-design.md` 的收紧与简化）
 > 上游：`codegen-target-design.md`（目标设计）、`codegen-implementation.md`（当前实现）

@@ -1,7 +1,7 @@
 //! 对象解析 dispatch：非 MonoBehaviour → typed parse（失败回退到 TypeTree），
 //! MonoBehaviour → TypeTree 解释器。
 //!
-//! 参见 `docs/object-parsing-design.md` §6/§10。
+//! 参见 `docs/object-layer.md` §1/§5（dispatch + fallback）。
 
 use crate::cursor::Cursor;
 use crate::error::{Error, Result};

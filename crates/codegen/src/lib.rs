@@ -1,6 +1,6 @@
 //! unity-asset-codegen：从 TPK 生成类型化 Rust 结构与 Parser。
 //!
-//! 详见 `docs/codegen-design.md`。
+//! 详见 `docs/codegen.md`。
 
 pub mod emit;
 pub mod ir;

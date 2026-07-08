@@ -1,7 +1,7 @@
 //! SerializedFile 解析：从 `BundleFile.bytes` 读出 header / types（含内嵌 typetree）/
 //! objects，并按内嵌 typetree 把对象解码成 `Value`。
 //!
-//! 二进制布局见 `docs/serialized-file-and-typetree.md` §2。
+//! 二进制布局见 `docs/object-layer.md` §3。
 
 use bytes::Bytes;
 

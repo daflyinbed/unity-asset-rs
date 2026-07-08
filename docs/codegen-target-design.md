@@ -1,5 +1,9 @@
 # Codegen 设计：TPK → Rust 结构体与 Parser
 
+> ⛔ **历史归档（2026-07-09）** —— 本文已与 `codegen-redesign-v2.md` 合并并被取代。
+> 权威现状见 [`codegen.md`](codegen.md)（含已落地的扁平 struct + VersionedEnum）。
+> 本文保留仅供追溯。
+
 > 范围：`crates/codegen` 的内部架构、TPK → Rust 的数据流、生成代码的最终形态。
 > 状态：目标设计（反映当前实现 + 最新决策）
 > 上游：[`object-parsing-design.md`](object-parsing-design.md)（dispatch + fallback 架构）

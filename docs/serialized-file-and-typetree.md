@@ -1,5 +1,10 @@
 # SerializedFile 层 + 纯 AB TypeTree 解释器
 
+> ⛔ **历史归档（2026-07-09）** —— 本文立场是「纯 TypeTree 解释器，不做 codegen/TPK/
+> fallback」，但**实际实现已采用 typed codegen + TypeTree 解释器 + fallback 的双路径**
+> （见 `src/object_parser.rs`）。SerializedFile / TypeTree 格式描述部分仍准确。
+> 权威现状见 [`object-layer.md`](object-layer.md)。本文保留仅供追溯。
+
 > 范围：从 `BundleFile.bytes` 解析 SerializedFile（header/types[含内嵌
 > typetree]/objects），并用内嵌 typetree 把对象解码成动态 `Value`。
 > 路线：UnityPy 式纯解释器——**typetree 是布局唯一真相**，不做 codegen/TPK/

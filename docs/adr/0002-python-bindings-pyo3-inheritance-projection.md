@@ -88,3 +88,14 @@ ADR-0001 已确定 Rust core 采用 tpk 离线代码生成，用**组合式 `par
 6. **运行时版本断言**：`load()` 后 `assert_version(env, target)`；不匹配抛 `VersionMismatch`（精确 patch）。
 7. **MonoBehaviour 降级**：核心库 `parse` 检测 AB 的 `m_EnableTypeTree`——有则运行时解释该 Tree 填 `MonoFields::Dynamic`，无则 `MonoFields::Raw`；Python 侧 MonoBehaviour 暴露为动态字段容器（`__getattr__`），`.pyi` 标注为 `dict[str, Any]`。
 8. **验收基线**：用 `torappu/enemy_spine.py` 等样本重写——原生类路径 `cast` 全消除；MonoBehaviour 在 AB 有 typetree 时字段可点访问、无 typetree 时明确降级为 dict。
+
+---
+
+## 修订（2026-07-09，对齐实现）
+
+本决策尚未实施（Python 绑定 crate 不存在），状态仍为 **Proposed**。一点重要前提变化：
+
+- 本 ADR 背景（§背景第 1 段）假设 ADR-0001 的 Rust core 采用**组合式 `parent`**（`tex.parent.parent.m_Name`），并据此论证「Python 侧应做继承投影」。但 ADR-0001 的实现已改为**扁平 struct 无 parent 字段**（TPK release_root 已含全部继承链字段，用户直接 `tex.m_name`，见 [ADR-0001 修订附录](0001-codegen-from-typetree-dumps.md) + [`docs/codegen.md`](../codegen.md)）。
+- 因此本 ADR 第 1 条「pyo3 后端 getter 在 Rust 内穿透 `parent` 组合链」的前提**不再成立**——扁平 struct 已天然暴露扁平字段，pyo3 后端无需穿透。继承投影 codegen 的 Python 侧设想（第 2、3 条）对 Python `isinstance` 体验仍有价值，可保留；但实现时需重新评估其必要性与形态。
+
+其余（pyo3 + maturin 发布、版本特化 pyi、MonoBehaviour 降级、类型来源限定 tpk + AB typetree）作为未来方向保留。
