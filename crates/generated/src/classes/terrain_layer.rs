@@ -26,26 +26,26 @@ pub struct TerrainLayer {
 
 impl crate::Parse for TerrainLayer {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_diffuse_texture = crate::PPtr::parse(r, ver)?;
-        let m_normal_map_texture = crate::PPtr::parse(r, ver)?;
-        let m_mask_map_texture = crate::PPtr::parse(r, ver)?;
-        let m_tile_size = Vector2f::parse(r, ver)?;
-        let m_tile_offset = Vector2f::parse(r, ver)?;
-        let m_specular = ColorRgba::parse(r, ver)?;
-        let m_metallic = r.read_f32()?;
-        let m_smoothness = r.read_f32()?;
-        let m_normal_scale = r.read_f32()?;
-        let m_diffuse_remap_min = Vector4f::parse(r, ver)?;
-        let m_diffuse_remap_max = Vector4f::parse(r, ver)?;
-        let m_mask_map_remap_min = Vector4f::parse(r, ver)?;
-        let m_mask_map_remap_max = Vector4f::parse(r, ver)?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_diffuse_texture = crate::PPtr::parse(rdr, ver)?;
+        let m_normal_map_texture = crate::PPtr::parse(rdr, ver)?;
+        let m_mask_map_texture = crate::PPtr::parse(rdr, ver)?;
+        let m_tile_size = Vector2f::parse(rdr, ver)?;
+        let m_tile_offset = Vector2f::parse(rdr, ver)?;
+        let m_specular = ColorRgba::parse(rdr, ver)?;
+        let m_metallic = rdr.read_f32()?;
+        let m_smoothness = rdr.read_f32()?;
+        let m_normal_scale = rdr.read_f32()?;
+        let m_diffuse_remap_min = Vector4f::parse(rdr, ver)?;
+        let m_diffuse_remap_max = Vector4f::parse(rdr, ver)?;
+        let m_mask_map_remap_min = Vector4f::parse(rdr, ver)?;
+        let m_mask_map_remap_max = Vector4f::parse(rdr, ver)?;
         let m_smoothness_source = if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            Some(r.read_i32()?)
+            Some(rdr.read_i32()?)
         } else {
             None
         };

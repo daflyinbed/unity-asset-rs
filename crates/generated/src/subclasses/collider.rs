@@ -17,18 +17,18 @@ pub struct Collider {
 
 impl crate::Parse for Collider {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_x = xform::parse(r, ver)?;
-        let m_type = r.read_u32()?;
-        let m_x_motion_type = r.read_u32()?;
-        let m_y_motion_type = r.read_u32()?;
-        let m_z_motion_type = r.read_u32()?;
-        let m_min_limit_x = r.read_f32()?;
-        let m_max_limit_x = r.read_f32()?;
-        let m_max_limit_y = r.read_f32()?;
-        let m_max_limit_z = r.read_f32()?;
+        let m_x = xform::parse(rdr, ver)?;
+        let m_type = rdr.read_u32()?;
+        let m_x_motion_type = rdr.read_u32()?;
+        let m_y_motion_type = rdr.read_u32()?;
+        let m_z_motion_type = rdr.read_u32()?;
+        let m_min_limit_x = rdr.read_f32()?;
+        let m_max_limit_x = rdr.read_f32()?;
+        let m_max_limit_y = rdr.read_f32()?;
+        let m_max_limit_z = rdr.read_f32()?;
 
         Ok(Collider {
             m_x,

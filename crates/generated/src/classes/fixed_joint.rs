@@ -12,15 +12,15 @@ pub enum FixedJointMEnablePreprocessingVariant {
 
 impl crate::Parse for FixedJointMEnablePreprocessingVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::Default(v))
         }
     }
@@ -40,7 +40,7 @@ pub struct FixedJoint {
 
 impl crate::Parse for FixedJoint {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_game_object = None;
@@ -52,24 +52,24 @@ impl crate::Parse for FixedJoint {
         let mut m_enable_preprocessing = None;
         let mut m_mass_scale = None;
         let mut m_connected_mass_scale = None;
-            m_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_connected_body = Some(crate::PPtr::parse(r, ver)?);
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_connected_body = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            m_connected_articulation_body = Some(crate::PPtr::parse(r, ver)?);
+            m_connected_articulation_body = Some(crate::PPtr::parse(rdr, ver)?);
         } else {
         }
-            m_break_force = Some(r.read_f32()?);
-            m_break_torque = Some(r.read_f32()?);
+            m_break_force = Some(rdr.read_f32()?);
+            m_break_torque = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            m_enable_collision = Some(r.read_bool()?);
-            m_enable_preprocessing = Some(FixedJointMEnablePreprocessingVariant::parse(r, ver)?);
-            m_mass_scale = Some(r.read_f32()?);
-            m_connected_mass_scale = Some(r.read_f32()?);
+            m_enable_collision = Some(rdr.read_bool()?);
+            m_enable_preprocessing = Some(FixedJointMEnablePreprocessingVariant::parse(rdr, ver)?);
+            m_mass_scale = Some(rdr.read_f32()?);
+            m_connected_mass_scale = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_enable_collision = Some(r.read_bool()?);
-            m_enable_preprocessing = Some(FixedJointMEnablePreprocessingVariant::parse(r, ver)?);
+            m_enable_collision = Some(rdr.read_bool()?);
+            m_enable_preprocessing = Some(FixedJointMEnablePreprocessingVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            m_enable_collision = Some(r.read_bool()?);
+            m_enable_collision = Some(rdr.read_bool()?);
         } else {
         }
 

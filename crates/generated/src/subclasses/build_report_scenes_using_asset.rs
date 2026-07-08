@@ -8,13 +8,13 @@ pub struct BuildReportScenesUsingAsset {
 
 impl crate::Parse for BuildReportScenesUsingAsset {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let asset_path = r.read_aligned_string()?;
-        r.align(4)?;
-        let scene_paths = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
+        let asset_path = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let scene_paths = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
 
         Ok(BuildReportScenesUsingAsset {
             asset_path,

@@ -10,13 +10,13 @@ pub struct TestObjectWithSpecialLayoutOne {
 
 impl crate::Parse for TestObjectWithSpecialLayoutOne {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let different_layout = LayoutDataOne::parse(r, ver)?;
-        r.align(4)?;
-        let same_layout = LayoutDataOne::parse(r, ver)?;
-        r.align(4)?;
+        let different_layout = LayoutDataOne::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let same_layout = LayoutDataOne::parse(rdr, ver)?;
+        rdr.align(4)?;
 
         Ok(TestObjectWithSpecialLayoutOne {
             different_layout,

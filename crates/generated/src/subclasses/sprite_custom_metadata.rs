@@ -9,11 +9,11 @@ pub struct SpriteCustomMetadata {
 
 impl crate::Parse for SpriteCustomMetadata {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_entries = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { SpriteCustomDataEntry::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
+        let m_entries = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SpriteCustomDataEntry::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
 
         Ok(SpriteCustomMetadata {
             m_entries,

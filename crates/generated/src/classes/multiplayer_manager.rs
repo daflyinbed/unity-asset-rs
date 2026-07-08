@@ -8,16 +8,16 @@ pub struct MultiplayerManager {
 
 impl crate::Parse for MultiplayerManager {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_active_multiplayer_role = if *ver >= crate::UnityVersion::new(2023, 2, 0) {
-            Some(r.read_i32()?)
+            Some(rdr.read_i32()?)
         } else {
             None
         };
         let m_active_multiplayer_roles = if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            Some(r.read_i32()?)
+            Some(rdr.read_i32()?)
         } else {
             None
         };

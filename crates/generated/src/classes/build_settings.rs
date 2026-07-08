@@ -13,15 +13,15 @@ pub enum BuildSettingsIsDebugBuildVariant {
 
 impl crate::Parse for BuildSettingsIsDebugBuildVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V4_0(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -36,15 +36,15 @@ pub enum BuildSettingsUsesOnMouseEventsVariant {
 
 impl crate::Parse for BuildSettingsUsesOnMouseEventsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(4, 6, 2) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V4_6_2(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -59,14 +59,14 @@ pub enum BuildSettingsRuntimeClassHashesVariant {
 
 impl crate::Parse for BuildSettingsRuntimeClassHashesVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i32()?; let b = Hash128::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i32()?; let b = Hash128::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::V5_0(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i32()?; let b = r.read_u32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i32()?; let b = rdr.read_u32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -81,15 +81,15 @@ pub enum BuildSettingsMGraphicsApIsVariant {
 
 impl crate::Parse for BuildSettingsMGraphicsApIsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -130,7 +130,7 @@ pub struct BuildSettings {
 
 impl crate::Parse for BuildSettings {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut levels = None;
@@ -164,157 +164,157 @@ impl crate::Parse for BuildSettings {
         let mut script_hashes = None;
         let mut m_graphics_ap_is = None;
         if *ver >= crate::UnityVersion::new(2022, 2, 2) {
-            scenes = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            preloaded_plugins = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            enabled_vr_devices = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            build_tags = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            scenes = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            preloaded_plugins = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            enabled_vr_devices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            build_tags = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            scenes = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            preloaded_plugins = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            enabled_vr_devices = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            build_tags = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            build_guid = Some(Guid::parse(r, ver)?);
+            scenes = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            preloaded_plugins = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            enabled_vr_devices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            build_tags = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            build_guid = Some(Guid::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            scenes = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            preloaded_plugins = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            enabled_vr_devices = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            scenes = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            preloaded_plugins = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            enabled_vr_devices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            scenes = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            preloaded_plugins = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            scenes = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            preloaded_plugins = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 1, 0) {
-            scenes = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            preloaded_plugins = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            has_render_texture = Some(r.read_bool()?);
+            scenes = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            preloaded_plugins = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            has_render_texture = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            levels = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            preloaded_plugins = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            has_render_texture = Some(r.read_bool()?);
+            levels = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            preloaded_plugins = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            has_render_texture = Some(rdr.read_bool()?);
         } else {
-            levels = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            has_render_texture = Some(r.read_bool()?);
+            levels = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            has_render_texture = Some(rdr.read_bool()?);
         }
-            has_pro_version = Some(r.read_bool()?);
+            has_pro_version = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            is_no_watermark_build = Some(r.read_bool()?);
-            is_prototyping_build = Some(r.read_bool()?);
+            is_no_watermark_build = Some(rdr.read_bool()?);
+            is_prototyping_build = Some(rdr.read_bool()?);
         } else {
         }
-            is_educational_build = Some(r.read_bool()?);
+            is_educational_build = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            is_embedded = Some(r.read_bool()?);
-            is_trial = Some(r.read_bool()?);
+            is_embedded = Some(rdr.read_bool()?);
+            is_trial = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            is_embedded = Some(r.read_bool()?);
+            is_embedded = Some(rdr.read_bool()?);
         } else {
         }
-            has_publishing_rights = Some(r.read_bool()?);
-            has_shadows = Some(r.read_bool()?);
+            has_publishing_rights = Some(rdr.read_bool()?);
+            has_shadows = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(2018, 2, 9) {
-            has_soft_shadows = Some(r.read_bool()?);
-            has_local_light_shadows = Some(r.read_bool()?);
+            has_soft_shadows = Some(rdr.read_bool()?);
+            has_local_light_shadows = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2018, 2, 0) {
-            is_wsa_holographic_remoting_enabled = Some(r.read_bool()?);
-            has_soft_shadows = Some(r.read_bool()?);
-            has_local_light_shadows = Some(r.read_bool()?);
+            is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
+            has_soft_shadows = Some(rdr.read_bool()?);
+            has_local_light_shadows = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(4, 2, 0) {
-            has_soft_shadows = Some(r.read_bool()?);
-            has_local_light_shadows = Some(r.read_bool()?);
+            has_soft_shadows = Some(rdr.read_bool()?);
+            has_local_light_shadows = Some(rdr.read_bool()?);
         } else {
         }
-            has_advanced_version = Some(r.read_bool()?);
-            enable_dynamic_batching = Some(r.read_bool()?);
+            has_advanced_version = Some(rdr.read_bool()?);
+            enable_dynamic_batching = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(2022, 2, 2) {
-            uses_on_mouse_events = Some(BuildSettingsUsesOnMouseEventsVariant::parse(r, ver)?);
-            has_cluster_rendering = Some(r.read_bool()?);
-            r.align(4)?;
+            uses_on_mouse_events = Some(BuildSettingsUsesOnMouseEventsVariant::parse(rdr, ver)?);
+            has_cluster_rendering = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            is_debug_build = Some(BuildSettingsIsDebugBuildVariant::parse(r, ver)?);
-            uses_on_mouse_events = Some(BuildSettingsUsesOnMouseEventsVariant::parse(r, ver)?);
-            has_cluster_rendering = Some(r.read_bool()?);
-            r.align(4)?;
+            is_debug_build = Some(BuildSettingsIsDebugBuildVariant::parse(rdr, ver)?);
+            uses_on_mouse_events = Some(BuildSettingsUsesOnMouseEventsVariant::parse(rdr, ver)?);
+            has_cluster_rendering = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            is_debug_build = Some(BuildSettingsIsDebugBuildVariant::parse(r, ver)?);
-            uses_on_mouse_events = Some(BuildSettingsUsesOnMouseEventsVariant::parse(r, ver)?);
-            enable_multiple_displays = Some(r.read_bool()?);
-            has_cluster_rendering = Some(r.read_bool()?);
-            r.align(4)?;
+            is_debug_build = Some(BuildSettingsIsDebugBuildVariant::parse(rdr, ver)?);
+            uses_on_mouse_events = Some(BuildSettingsUsesOnMouseEventsVariant::parse(rdr, ver)?);
+            enable_multiple_displays = Some(rdr.read_bool()?);
+            has_cluster_rendering = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 6, 2) {
-            is_debug_build = Some(BuildSettingsIsDebugBuildVariant::parse(r, ver)?);
-            uses_on_mouse_events = Some(BuildSettingsUsesOnMouseEventsVariant::parse(r, ver)?);
-            has_oculus_plugin = Some(r.read_bool()?);
-            r.align(4)?;
+            is_debug_build = Some(BuildSettingsIsDebugBuildVariant::parse(rdr, ver)?);
+            uses_on_mouse_events = Some(BuildSettingsUsesOnMouseEventsVariant::parse(rdr, ver)?);
+            has_oculus_plugin = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            is_debug_build = Some(BuildSettingsIsDebugBuildVariant::parse(r, ver)?);
-            uses_on_mouse_events = Some(BuildSettingsUsesOnMouseEventsVariant::parse(r, ver)?);
+            is_debug_build = Some(BuildSettingsIsDebugBuildVariant::parse(rdr, ver)?);
+            uses_on_mouse_events = Some(BuildSettingsUsesOnMouseEventsVariant::parse(rdr, ver)?);
         } else {
-            is_debug_build = Some(BuildSettingsIsDebugBuildVariant::parse(r, ver)?);
+            is_debug_build = Some(BuildSettingsIsDebugBuildVariant::parse(rdr, ver)?);
         }
-            m_version = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_version = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            m_auth_token = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_graphics_ap_is = Some(BuildSettingsMGraphicsApIsVariant::parse(r, ver)?);
+            m_auth_token = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_graphics_ap_is = Some(BuildSettingsMGraphicsApIsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            m_graphics_ap_is = Some(BuildSettingsMGraphicsApIsVariant::parse(r, ver)?);
+            m_graphics_ap_is = Some(BuildSettingsMGraphicsApIsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2022, 3, 52) {
-            m_auth_token = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_graphics_ap_is = Some(BuildSettingsMGraphicsApIsVariant::parse(r, ver)?);
+            m_auth_token = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_graphics_ap_is = Some(BuildSettingsMGraphicsApIsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2022, 2, 1) {
-            m_graphics_ap_is = Some(BuildSettingsMGraphicsApIsVariant::parse(r, ver)?);
+            m_graphics_ap_is = Some(BuildSettingsMGraphicsApIsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2021, 3, 46) {
-            m_auth_token = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_graphics_ap_is = Some(BuildSettingsMGraphicsApIsVariant::parse(r, ver)?);
+            m_auth_token = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_graphics_ap_is = Some(BuildSettingsMGraphicsApIsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2021, 3, 15) {
-            m_graphics_ap_is = Some(BuildSettingsMGraphicsApIsVariant::parse(r, ver)?);
+            m_graphics_ap_is = Some(BuildSettingsMGraphicsApIsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2021, 1, 0) {
-            m_auth_token = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_graphics_ap_is = Some(BuildSettingsMGraphicsApIsVariant::parse(r, ver)?);
+            m_auth_token = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_graphics_ap_is = Some(BuildSettingsMGraphicsApIsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2020, 3, 43) {
-            m_graphics_ap_is = Some(BuildSettingsMGraphicsApIsVariant::parse(r, ver)?);
+            m_graphics_ap_is = Some(BuildSettingsMGraphicsApIsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            m_auth_token = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_graphics_ap_is = Some(BuildSettingsMGraphicsApIsVariant::parse(r, ver)?);
+            m_auth_token = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_graphics_ap_is = Some(BuildSettingsMGraphicsApIsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 1, 0) {
-            m_auth_token = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            runtime_class_hashes = Some(BuildSettingsRuntimeClassHashesVariant::parse(r, ver)?);
-            script_hashes = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = Hash128::parse(r, ver)?; let b = Hash128::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_graphics_ap_is = Some(BuildSettingsMGraphicsApIsVariant::parse(r, ver)?);
+            m_auth_token = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            runtime_class_hashes = Some(BuildSettingsRuntimeClassHashesVariant::parse(rdr, ver)?);
+            script_hashes = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = Hash128::parse(rdr, ver)?; let b = Hash128::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_graphics_ap_is = Some(BuildSettingsMGraphicsApIsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_auth_token = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            runtime_class_hashes = Some(BuildSettingsRuntimeClassHashesVariant::parse(r, ver)?);
-            script_hashes = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = Hash128::parse(r, ver)?; let b = Hash128::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_auth_token = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            runtime_class_hashes = Some(BuildSettingsRuntimeClassHashesVariant::parse(rdr, ver)?);
+            script_hashes = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = Hash128::parse(rdr, ver)?; let b = Hash128::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            m_auth_token = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            runtime_class_hashes = Some(BuildSettingsRuntimeClassHashesVariant::parse(r, ver)?);
+            m_auth_token = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            runtime_class_hashes = Some(BuildSettingsRuntimeClassHashesVariant::parse(rdr, ver)?);
         } else {
-            m_auth_token = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_auth_token = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         }
 
         Ok(BuildSettings {

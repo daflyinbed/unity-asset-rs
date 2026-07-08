@@ -9,15 +9,15 @@ pub struct BlockShaderSyntaxTree {
 
 impl crate::Parse for BlockShaderSyntaxTree {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let file_path = r.read_aligned_string()?;
-        r.align(4)?;
-        let source = r.read_aligned_string()?;
-        r.align(4)?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let file_path = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let source = rdr.read_aligned_string()?;
+        rdr.align(4)?;
 
         Ok(BlockShaderSyntaxTree {
             m_name,

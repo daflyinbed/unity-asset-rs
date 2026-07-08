@@ -9,10 +9,10 @@ pub struct ComponentPair {
 
 impl crate::Parse for ComponentPair {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let component = crate::PPtr::parse(r, ver)?;
+        let component = crate::PPtr::parse(rdr, ver)?;
 
         Ok(ComponentPair {
             component,

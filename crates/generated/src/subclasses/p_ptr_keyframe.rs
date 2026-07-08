@@ -10,11 +10,11 @@ pub struct PPtrKeyframe {
 
 impl crate::Parse for PPtrKeyframe {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let time = r.read_f32()?;
-        let value = crate::PPtr::parse(r, ver)?;
+        let time = rdr.read_f32()?;
+        let value = crate::PPtr::parse(rdr, ver)?;
 
         Ok(PPtrKeyframe {
             time,

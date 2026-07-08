@@ -12,13 +12,13 @@ pub struct AudioMixerSnapshot {
 
 impl crate::Parse for AudioMixerSnapshot {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_audio_mixer = crate::PPtr::parse(r, ver)?;
-        let m_snapshot_id = Guid::parse(r, ver)?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_audio_mixer = crate::PPtr::parse(rdr, ver)?;
+        let m_snapshot_id = Guid::parse(rdr, ver)?;
 
         Ok(AudioMixerSnapshot {
             m_name,

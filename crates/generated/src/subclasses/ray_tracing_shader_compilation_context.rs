@@ -24,29 +24,29 @@ pub struct RayTracingShaderCompilationContext {
 
 impl crate::Parse for RayTracingShaderCompilationContext {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let build_target = BuildTargetSelection::parse(r, ver)?;
-        let platform_group = r.read_i32()?;
-        let source_file_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let source = r.read_aligned_string()?;
-        r.align(4)?;
-        let source_file = r.read_aligned_string()?;
-        r.align(4)?;
-        let compilation_flags = r.read_u64()?;
-        let max_recursion_depth = r.read_u32()?;
-        let enable_ray_payload_size_checks = r.read_bool()?;
-        r.align(4)?;
-        let color_space = r.read_i32()?;
-        let shader_precision_model = r.read_i32()?;
-        let supported_ap_is = r.read_u32()?;
-        let include_hash0 = r.read_u32()?;
-        let include_hash1 = r.read_u32()?;
-        let include_hash2 = r.read_u32()?;
-        let include_hash3 = r.read_u32()?;
-        let build_target_api_mask = r.read_u32()?;
+        let build_target = BuildTargetSelection::parse(rdr, ver)?;
+        let platform_group = rdr.read_i32()?;
+        let source_file_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let source = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let source_file = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let compilation_flags = rdr.read_u64()?;
+        let max_recursion_depth = rdr.read_u32()?;
+        let enable_ray_payload_size_checks = rdr.read_bool()?;
+        rdr.align(4)?;
+        let color_space = rdr.read_i32()?;
+        let shader_precision_model = rdr.read_i32()?;
+        let supported_ap_is = rdr.read_u32()?;
+        let include_hash0 = rdr.read_u32()?;
+        let include_hash1 = rdr.read_u32()?;
+        let include_hash2 = rdr.read_u32()?;
+        let include_hash3 = rdr.read_u32()?;
+        let build_target_api_mask = rdr.read_u32()?;
 
         Ok(RayTracingShaderCompilationContext {
             build_target,

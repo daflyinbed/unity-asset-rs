@@ -12,14 +12,14 @@ pub struct SerializedSubShader {
 
 impl crate::Parse for SerializedSubShader {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_passes = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { SerializedPass::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_tags = SerializedTagMap::parse(r, ver)?;
-        r.align(4)?;
-        let m_lod = r.read_i32()?;
+        let m_passes = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SerializedPass::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let m_tags = SerializedTagMap::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let m_lod = rdr.read_i32()?;
 
         Ok(SerializedSubShader {
             m_passes,

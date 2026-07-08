@@ -11,18 +11,18 @@ pub enum AudioManagerMDisableAudioVariant {
 
 impl crate::Parse for AudioManagerMDisableAudioVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 3, 6) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V5_3_6(v))
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V5_0(v))
         } else {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::Default(v))
         }
     }
@@ -39,22 +39,22 @@ pub enum AudioManagerMRealVoiceCountVariant {
 
 impl crate::Parse for AudioManagerMRealVoiceCountVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2020, 2, 2) {
-            let v = r.read_i32()?;
-            r.align(4)?;
+            let v = rdr.read_i32()?;
+            rdr.align(4)?;
             Ok(Self::V2020_2_2(v))
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            let v = r.read_i32()?;
+            let v = rdr.read_i32()?;
             Ok(Self::V2020_1(v))
         } else if *ver >= crate::UnityVersion::new(2019, 4, 24) {
-            let v = r.read_i32()?;
-            r.align(4)?;
+            let v = rdr.read_i32()?;
+            rdr.align(4)?;
             Ok(Self::V2019_4_24(v))
         } else {
-            let v = r.read_i32()?;
+            let v = rdr.read_i32()?;
             Ok(Self::Default(v))
         }
     }
@@ -82,7 +82,7 @@ pub struct AudioManager {
 
 impl crate::Parse for AudioManager {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_volume = None;
@@ -102,100 +102,100 @@ impl crate::Parse for AudioManager {
         let mut m_audio_foundation = None;
         let mut m_output_channel_layout = None;
         let mut m_output_sampling_rate = None;
-            m_volume = Some(r.read_f32()?);
+            m_volume = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            rolloff_scale = Some(r.read_f32()?);
+            rolloff_scale = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            rolloff_scale = Some(r.read_f32()?);
-            m_speed_of_sound = Some(r.read_f32()?);
+            rolloff_scale = Some(rdr.read_f32()?);
+            m_speed_of_sound = Some(rdr.read_f32()?);
         } else {
-            m_speed_of_sound = Some(r.read_f32()?);
+            m_speed_of_sound = Some(rdr.read_f32()?);
         }
-            doppler_factor = Some(r.read_f32()?);
-            default_speaker_mode = Some(r.read_i32()?);
+            doppler_factor = Some(rdr.read_f32()?);
+            default_speaker_mode = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_sample_rate = Some(r.read_i32()?);
+            m_sample_rate = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
         } else {
-            rolloff_scale = Some(r.read_f32()?);
+            rolloff_scale = Some(rdr.read_f32()?);
         }
-            m_dsp_buffer_size = Some(r.read_i32()?);
+            m_dsp_buffer_size = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(6000, 3, 0) {
-            m_virtual_voice_count = Some(r.read_i32()?);
-            m_real_voice_count = Some(AudioManagerMRealVoiceCountVariant::parse(r, ver)?);
-            m_spatializer_plugin = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_ambisonic_decoder_plugin = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_disable_audio = Some(AudioManagerMDisableAudioVariant::parse(r, ver)?);
-            m_virtualize_effects = Some(r.read_bool()?);
-            r.align(4)?;
-            m_requested_dsp_buffer_size = Some(r.read_i32()?);
-            m_audio_foundation = Some(r.read_i32()?);
-            m_output_channel_layout = Some(r.read_i32()?);
-            m_output_sampling_rate = Some(r.read_i32()?);
+            m_virtual_voice_count = Some(rdr.read_i32()?);
+            m_real_voice_count = Some(AudioManagerMRealVoiceCountVariant::parse(rdr, ver)?);
+            m_spatializer_plugin = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_ambisonic_decoder_plugin = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_disable_audio = Some(AudioManagerMDisableAudioVariant::parse(rdr, ver)?);
+            m_virtualize_effects = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_requested_dsp_buffer_size = Some(rdr.read_i32()?);
+            m_audio_foundation = Some(rdr.read_i32()?);
+            m_output_channel_layout = Some(rdr.read_i32()?);
+            m_output_sampling_rate = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2019, 1, 1) {
-            m_virtual_voice_count = Some(r.read_i32()?);
-            m_real_voice_count = Some(AudioManagerMRealVoiceCountVariant::parse(r, ver)?);
-            m_spatializer_plugin = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_ambisonic_decoder_plugin = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_disable_audio = Some(AudioManagerMDisableAudioVariant::parse(r, ver)?);
-            m_virtualize_effects = Some(r.read_bool()?);
-            r.align(4)?;
-            m_requested_dsp_buffer_size = Some(r.read_i32()?);
+            m_virtual_voice_count = Some(rdr.read_i32()?);
+            m_real_voice_count = Some(AudioManagerMRealVoiceCountVariant::parse(rdr, ver)?);
+            m_spatializer_plugin = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_ambisonic_decoder_plugin = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_disable_audio = Some(AudioManagerMDisableAudioVariant::parse(rdr, ver)?);
+            m_virtualize_effects = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_requested_dsp_buffer_size = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_virtual_voice_count = Some(r.read_i32()?);
-            m_real_voice_count = Some(AudioManagerMRealVoiceCountVariant::parse(r, ver)?);
-            m_spatializer_plugin = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_ambisonic_decoder_plugin = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_disable_audio = Some(AudioManagerMDisableAudioVariant::parse(r, ver)?);
-            m_virtualize_effects = Some(r.read_bool()?);
-            r.align(4)?;
+            m_virtual_voice_count = Some(rdr.read_i32()?);
+            m_real_voice_count = Some(AudioManagerMRealVoiceCountVariant::parse(rdr, ver)?);
+            m_spatializer_plugin = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_ambisonic_decoder_plugin = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_disable_audio = Some(AudioManagerMDisableAudioVariant::parse(rdr, ver)?);
+            m_virtualize_effects = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 3, 14) {
-            m_virtual_voice_count = Some(r.read_i32()?);
-            m_real_voice_count = Some(AudioManagerMRealVoiceCountVariant::parse(r, ver)?);
-            m_spatializer_plugin = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_ambisonic_decoder_plugin = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_disable_audio = Some(AudioManagerMDisableAudioVariant::parse(r, ver)?);
-            m_virtualize_effects = Some(r.read_bool()?);
-            r.align(4)?;
-            m_requested_dsp_buffer_size = Some(r.read_i32()?);
+            m_virtual_voice_count = Some(rdr.read_i32()?);
+            m_real_voice_count = Some(AudioManagerMRealVoiceCountVariant::parse(rdr, ver)?);
+            m_spatializer_plugin = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_ambisonic_decoder_plugin = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_disable_audio = Some(AudioManagerMDisableAudioVariant::parse(rdr, ver)?);
+            m_virtualize_effects = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_requested_dsp_buffer_size = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            m_virtual_voice_count = Some(r.read_i32()?);
-            m_real_voice_count = Some(AudioManagerMRealVoiceCountVariant::parse(r, ver)?);
-            m_spatializer_plugin = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_ambisonic_decoder_plugin = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_disable_audio = Some(AudioManagerMDisableAudioVariant::parse(r, ver)?);
-            m_virtualize_effects = Some(r.read_bool()?);
-            r.align(4)?;
+            m_virtual_voice_count = Some(rdr.read_i32()?);
+            m_real_voice_count = Some(AudioManagerMRealVoiceCountVariant::parse(rdr, ver)?);
+            m_spatializer_plugin = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_ambisonic_decoder_plugin = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_disable_audio = Some(AudioManagerMDisableAudioVariant::parse(rdr, ver)?);
+            m_virtualize_effects = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 3, 6) {
-            m_virtual_voice_count = Some(r.read_i32()?);
-            m_real_voice_count = Some(AudioManagerMRealVoiceCountVariant::parse(r, ver)?);
-            m_spatializer_plugin = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_disable_audio = Some(AudioManagerMDisableAudioVariant::parse(r, ver)?);
-            m_virtualize_effects = Some(r.read_bool()?);
-            r.align(4)?;
+            m_virtual_voice_count = Some(rdr.read_i32()?);
+            m_real_voice_count = Some(AudioManagerMRealVoiceCountVariant::parse(rdr, ver)?);
+            m_spatializer_plugin = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_disable_audio = Some(AudioManagerMDisableAudioVariant::parse(rdr, ver)?);
+            m_virtualize_effects = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            m_virtual_voice_count = Some(r.read_i32()?);
-            m_real_voice_count = Some(AudioManagerMRealVoiceCountVariant::parse(r, ver)?);
-            m_spatializer_plugin = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_disable_audio = Some(AudioManagerMDisableAudioVariant::parse(r, ver)?);
+            m_virtual_voice_count = Some(rdr.read_i32()?);
+            m_real_voice_count = Some(AudioManagerMRealVoiceCountVariant::parse(rdr, ver)?);
+            m_spatializer_plugin = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_disable_audio = Some(AudioManagerMDisableAudioVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_virtual_voice_count = Some(r.read_i32()?);
-            m_real_voice_count = Some(AudioManagerMRealVoiceCountVariant::parse(r, ver)?);
-            m_disable_audio = Some(AudioManagerMDisableAudioVariant::parse(r, ver)?);
+            m_virtual_voice_count = Some(rdr.read_i32()?);
+            m_real_voice_count = Some(AudioManagerMRealVoiceCountVariant::parse(rdr, ver)?);
+            m_disable_audio = Some(AudioManagerMDisableAudioVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 2, 0) {
-            m_disable_audio = Some(AudioManagerMDisableAudioVariant::parse(r, ver)?);
+            m_disable_audio = Some(AudioManagerMDisableAudioVariant::parse(rdr, ver)?);
         } else {
         }
 

@@ -9,10 +9,10 @@ pub struct LodRenderer {
 
 impl crate::Parse for LodRenderer {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let renderer = crate::PPtr::parse(r, ver)?;
+        let renderer = crate::PPtr::parse(rdr, ver)?;
 
         Ok(LodRenderer {
             renderer,

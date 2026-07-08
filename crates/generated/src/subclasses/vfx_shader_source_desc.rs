@@ -9,15 +9,15 @@ pub struct VfxShaderSourceDesc {
 
 impl crate::Parse for VfxShaderSourceDesc {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let compute = r.read_bool()?;
-        r.align(4)?;
-        let name = r.read_aligned_string()?;
-        r.align(4)?;
-        let source = r.read_aligned_string()?;
-        r.align(4)?;
+        let compute = rdr.read_bool()?;
+        rdr.align(4)?;
+        let name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let source = rdr.read_aligned_string()?;
+        rdr.align(4)?;
 
         Ok(VfxShaderSourceDesc {
             compute,

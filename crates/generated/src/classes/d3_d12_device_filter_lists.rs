@@ -13,17 +13,17 @@ pub struct D3D12DeviceFilterLists {
 
 impl crate::Parse for D3D12DeviceFilterLists {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_allow_filter_list = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { D3D12DeviceFilterData::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_deny_filter_list = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { D3D12DeviceFilterData::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_graphics_jobs_filter_list = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { D3D12GraphicsJobsDeviceFilterData::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_allow_filter_list = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { D3D12DeviceFilterData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let m_deny_filter_list = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { D3D12DeviceFilterData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let m_graphics_jobs_filter_list = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { D3D12GraphicsJobsDeviceFilterData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
 
         Ok(D3D12DeviceFilterLists {
             m_name,

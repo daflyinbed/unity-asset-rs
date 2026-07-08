@@ -16,18 +16,18 @@ pub enum StateMachineMDefaultStateVariant {
 
 impl crate::Parse for StateMachineMDefaultStateVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(6000, 4, 0) {
-            let v = crate::PPtr::parse(r, ver)?;
-            r.align(4)?;
+            let v = crate::PPtr::parse(rdr, ver)?;
+            rdr.align(4)?;
             Ok(Self::V6000_4(v))
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = crate::PPtr::parse(r, ver)?;
+            let v = crate::PPtr::parse(rdr, ver)?;
             Ok(Self::V5_0(v))
         } else {
-            let v = crate::PPtr::parse(r, ver)?;
+            let v = crate::PPtr::parse(rdr, ver)?;
             Ok(Self::Default(v))
         }
     }
@@ -42,15 +42,15 @@ pub enum StateMachineMChildStatesVariant {
 
 impl crate::Parse for StateMachineMChildStatesVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ChildAnimatorState::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ChildAnimatorState::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ChildAnimatorState::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ChildAnimatorState::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -65,15 +65,15 @@ pub enum StateMachineMChildStateMachinesVariant {
 
 impl crate::Parse for StateMachineMChildStateMachinesVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ChildAnimatorStateMachine::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ChildAnimatorStateMachine::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ChildAnimatorStateMachine::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ChildAnimatorStateMachine::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -88,15 +88,15 @@ pub enum StateMachineMAnyStateTransitionsVariant {
 
 impl crate::Parse for StateMachineMAnyStateTransitionsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -111,15 +111,15 @@ pub enum StateMachineMEntryTransitionsVariant {
 
 impl crate::Parse for StateMachineMEntryTransitionsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -134,15 +134,15 @@ pub enum StateMachineMStateMachineTransitionsVariant {
 
 impl crate::Parse for StateMachineMStateMachineTransitionsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = crate::PPtr::parse(r, ver)?; let b = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = crate::PPtr::parse(rdr, ver)?; let b = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = crate::PPtr::parse(r, ver)?; let b = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = crate::PPtr::parse(rdr, ver)?; let b = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -157,15 +157,15 @@ pub enum StateMachineMStateMachineBehavioursVariant {
 
 impl crate::Parse for StateMachineMStateMachineBehavioursVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -194,7 +194,7 @@ pub struct StateMachine {
 
 impl crate::Parse for StateMachine {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_name = None;
@@ -215,40 +215,40 @@ impl crate::Parse for StateMachine {
         let mut m_parent_state_machine_position = None;
         let mut m_entry_position = None;
         let mut m_exit_position = None;
-            m_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_child_states = Some(StateMachineMChildStatesVariant::parse(r, ver)?);
-            m_child_state_machines = Some(StateMachineMChildStateMachinesVariant::parse(r, ver)?);
-            m_any_state_transitions = Some(StateMachineMAnyStateTransitionsVariant::parse(r, ver)?);
-            m_entry_transitions = Some(StateMachineMEntryTransitionsVariant::parse(r, ver)?);
-            m_state_machine_transitions = Some(StateMachineMStateMachineTransitionsVariant::parse(r, ver)?);
-            m_state_machine_behaviours = Some(StateMachineMStateMachineBehavioursVariant::parse(r, ver)?);
+            m_child_states = Some(StateMachineMChildStatesVariant::parse(rdr, ver)?);
+            m_child_state_machines = Some(StateMachineMChildStateMachinesVariant::parse(rdr, ver)?);
+            m_any_state_transitions = Some(StateMachineMAnyStateTransitionsVariant::parse(rdr, ver)?);
+            m_entry_transitions = Some(StateMachineMEntryTransitionsVariant::parse(rdr, ver)?);
+            m_state_machine_transitions = Some(StateMachineMStateMachineTransitionsVariant::parse(rdr, ver)?);
+            m_state_machine_behaviours = Some(StateMachineMStateMachineBehavioursVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 2, 0) {
-            m_default_state = Some(StateMachineMDefaultStateVariant::parse(r, ver)?);
-            m_states = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_child_state_machine = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_child_state_machine_position = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { Vector3f::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_ordered_transitions = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = crate::PPtr::parse(r, ver)?; let b = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_motion_set_count = Some(r.read_i32()?);
+            m_default_state = Some(StateMachineMDefaultStateVariant::parse(rdr, ver)?);
+            m_states = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_child_state_machine = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_child_state_machine_position = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector3f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_ordered_transitions = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = crate::PPtr::parse(rdr, ver)?; let b = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_motion_set_count = Some(rdr.read_i32()?);
         } else {
-            m_default_state = Some(StateMachineMDefaultStateVariant::parse(r, ver)?);
-            m_states = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_child_state_machine = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_child_state_machine_position = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { Vector3f::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_local_transitions = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = crate::PPtr::parse(r, ver)?; let b = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_ordered_transitions = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = crate::PPtr::parse(r, ver)?; let b = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_motion_set_count = Some(r.read_i32()?);
+            m_default_state = Some(StateMachineMDefaultStateVariant::parse(rdr, ver)?);
+            m_states = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_child_state_machine = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_child_state_machine_position = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector3f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_local_transitions = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = crate::PPtr::parse(rdr, ver)?; let b = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_ordered_transitions = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = crate::PPtr::parse(rdr, ver)?; let b = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_motion_set_count = Some(rdr.read_i32()?);
         }
-            m_any_state_position = Some(Vector3f::parse(r, ver)?);
+            m_any_state_position = Some(Vector3f::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_entry_position = Some(Vector3f::parse(r, ver)?);
-            m_exit_position = Some(Vector3f::parse(r, ver)?);
+            m_entry_position = Some(Vector3f::parse(rdr, ver)?);
+            m_exit_position = Some(Vector3f::parse(rdr, ver)?);
         } else {
         }
-            m_parent_state_machine_position = Some(Vector3f::parse(r, ver)?);
+            m_parent_state_machine_position = Some(Vector3f::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_default_state = Some(StateMachineMDefaultStateVariant::parse(r, ver)?);
+            m_default_state = Some(StateMachineMDefaultStateVariant::parse(rdr, ver)?);
         } else {
         }
 

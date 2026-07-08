@@ -14,14 +14,14 @@ pub enum CapsuleColliderMMaterialVariant {
 
 impl crate::Parse for CapsuleColliderMMaterialVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            let v = crate::PPtr::parse(r, ver)?;
+            let v = crate::PPtr::parse(rdr, ver)?;
             Ok(Self::V2023_3(v))
         } else {
-            let v = crate::PPtr::parse(r, ver)?;
+            let v = crate::PPtr::parse(rdr, ver)?;
             Ok(Self::Default(v))
         }
     }
@@ -44,7 +44,7 @@ pub struct CapsuleCollider {
 
 impl crate::Parse for CapsuleCollider {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_game_object = None;
@@ -59,26 +59,26 @@ impl crate::Parse for CapsuleCollider {
         let mut m_direction = None;
         let mut m_provides_contacts = None;
         let mut m_center = None;
-            m_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_material = Some(CapsuleColliderMMaterialVariant::parse(r, ver)?);
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_material = Some(CapsuleColliderMMaterialVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            m_include_layers = Some(BitField::parse(r, ver)?);
-            m_exclude_layers = Some(BitField::parse(r, ver)?);
-            m_layer_override_priority = Some(r.read_i32()?);
+            m_include_layers = Some(BitField::parse(rdr, ver)?);
+            m_exclude_layers = Some(BitField::parse(rdr, ver)?);
+            m_layer_override_priority = Some(rdr.read_i32()?);
         } else {
         }
-            m_is_trigger = Some(r.read_bool()?);
+            m_is_trigger = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            m_provides_contacts = Some(r.read_bool()?);
-            r.align(4)?;
+            m_provides_contacts = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else {
         }
-            m_enabled = Some(r.read_bool()?);
-            r.align(4)?;
-            m_radius = Some(r.read_f32()?);
-            m_height = Some(r.read_f32()?);
-            m_direction = Some(r.read_i32()?);
-            m_center = Some(Vector3f::parse(r, ver)?);
+            m_enabled = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_radius = Some(rdr.read_f32()?);
+            m_height = Some(rdr.read_f32()?);
+            m_direction = Some(rdr.read_i32()?);
+            m_center = Some(Vector3f::parse(rdr, ver)?);
 
         Ok(CapsuleCollider {
             m_game_object: m_game_object.unwrap(),

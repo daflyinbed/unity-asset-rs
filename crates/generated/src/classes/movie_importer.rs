@@ -14,15 +14,15 @@ pub enum MovieImporterMLinearTextureVariant {
 
 impl crate::Parse for MovieImporterMLinearTextureVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V4_0(v))
         } else {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::Default(v))
         }
     }
@@ -44,7 +44,7 @@ pub struct MovieImporter {
 
 impl crate::Parse for MovieImporter {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_name = None;
@@ -58,40 +58,40 @@ impl crate::Parse for MovieImporter {
         let mut m_user_data = None;
         let mut m_asset_bundle_name = None;
         let mut m_asset_bundle_variant = None;
-            m_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_external_objects = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(r, ver)?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_used_file_i_ds = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            m_external_objects = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(r, ver)?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
         } else {
-            m_file_id_to_recycle_name = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i32()?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_old_hash_identity = Some(MdFour::parse(r, ver)?);
-            r.align(4)?;
-            m_new_hash_identity = Some(MdFour::parse(r, ver)?);
-            r.align(4)?;
+            m_file_id_to_recycle_name = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i32()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_old_hash_identity = Some(MdFour::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_new_hash_identity = Some(MdFour::parse(rdr, ver)?);
+            rdr.align(4)?;
         }
-            m_quality = Some(r.read_f32()?);
+            m_quality = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_linear_texture = Some(MovieImporterMLinearTextureVariant::parse(r, ver)?);
-            m_user_data = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_variant = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_linear_texture = Some(MovieImporterMLinearTextureVariant::parse(rdr, ver)?);
+            m_user_data = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            m_linear_texture = Some(MovieImporterMLinearTextureVariant::parse(r, ver)?);
-            m_user_data = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_linear_texture = Some(MovieImporterMLinearTextureVariant::parse(rdr, ver)?);
+            m_user_data = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            m_linear_texture = Some(MovieImporterMLinearTextureVariant::parse(r, ver)?);
+            m_linear_texture = Some(MovieImporterMLinearTextureVariant::parse(rdr, ver)?);
         } else {
         }
 

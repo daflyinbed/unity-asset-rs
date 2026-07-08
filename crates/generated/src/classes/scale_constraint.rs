@@ -21,34 +21,34 @@ pub struct ScaleConstraint {
 
 impl crate::Parse for ScaleConstraint {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_enabled = r.read_u8()?;
-        r.align(4)?;
-        let m_weight = r.read_f32()?;
-        let m_scale_at_rest = Vector3f::parse(r, ver)?;
-        let m_scale_offset = Vector3f::parse(r, ver)?;
-        let m_affect_scaling_x = r.read_bool()?;
-        let m_affect_scaling_y = r.read_bool()?;
-        let m_affect_scaling_z = r.read_bool()?;
+        let m_game_object = crate::PPtr::parse(rdr, ver)?;
+        let m_enabled = rdr.read_u8()?;
+        rdr.align(4)?;
+        let m_weight = rdr.read_f32()?;
+        let m_scale_at_rest = Vector3f::parse(rdr, ver)?;
+        let m_scale_offset = Vector3f::parse(rdr, ver)?;
+        let m_affect_scaling_x = rdr.read_bool()?;
+        let m_affect_scaling_y = rdr.read_bool()?;
+        let m_affect_scaling_z = rdr.read_bool()?;
         let m_is_contraint_active = if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Some(v)
         } else {
             None
         };
         let m_active = if *ver >= crate::UnityVersion::new(2022, 1, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Some(v)
         } else {
             None
         };
-        let m_sources = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ConstraintSource::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
+        let m_sources = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ConstraintSource::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
 
         Ok(ScaleConstraint {
             m_game_object,

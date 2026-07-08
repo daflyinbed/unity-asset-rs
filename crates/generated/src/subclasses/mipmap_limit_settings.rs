@@ -8,11 +8,11 @@ pub struct MipmapLimitSettings {
 
 impl crate::Parse for MipmapLimitSettings {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let limit_bias_mode = r.read_i32()?;
-        let limit_bias = r.read_i32()?;
+        let limit_bias_mode = rdr.read_i32()?;
+        let limit_bias = rdr.read_i32()?;
 
         Ok(MipmapLimitSettings {
             limit_bias_mode,

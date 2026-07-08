@@ -14,15 +14,15 @@ pub struct ConstantForce2D {
 
 impl crate::Parse for ConstantForce2D {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_enabled = r.read_u8()?;
-        r.align(4)?;
-        let m_force = Vector2f::parse(r, ver)?;
-        let m_relative_force = Vector2f::parse(r, ver)?;
-        let m_torque = r.read_f32()?;
+        let m_game_object = crate::PPtr::parse(rdr, ver)?;
+        let m_enabled = rdr.read_u8()?;
+        rdr.align(4)?;
+        let m_force = Vector2f::parse(rdr, ver)?;
+        let m_relative_force = Vector2f::parse(rdr, ver)?;
+        let m_torque = rdr.read_f32()?;
 
         Ok(ConstantForce2D {
             m_game_object,

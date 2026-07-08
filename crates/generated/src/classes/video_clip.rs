@@ -22,29 +22,29 @@ pub struct VideoClip {
 
 impl crate::Parse for VideoClip {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_original_path = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_proxy_width = r.read_u32()?;
-        let m_proxy_height = r.read_u32()?;
-        let width = r.read_u32()?;
-        let height = r.read_u32()?;
-        let m_frame_rate = r.read_f64()?;
-        let m_frame_count = r.read_u64()?;
-        let m_format = r.read_i32()?;
-        let m_audio_channel_count = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u16() }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_audio_sample_rate = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_audio_language = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_external_resources = StreamedResource::parse(r, ver)?;
-        r.align(4)?;
-        let m_has_split_alpha = r.read_bool()?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_original_path = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_proxy_width = rdr.read_u32()?;
+        let m_proxy_height = rdr.read_u32()?;
+        let width = rdr.read_u32()?;
+        let height = rdr.read_u32()?;
+        let m_frame_rate = rdr.read_f64()?;
+        let m_frame_count = rdr.read_u64()?;
+        let m_format = rdr.read_i32()?;
+        let m_audio_channel_count = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u16() }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let m_audio_sample_rate = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let m_audio_language = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let m_external_resources = StreamedResource::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let m_has_split_alpha = rdr.read_bool()?;
 
         Ok(VideoClip {
             m_name,

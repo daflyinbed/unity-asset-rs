@@ -8,13 +8,13 @@ pub struct SerializedCustomEditorForRenderPipeline {
 
 impl crate::Parse for SerializedCustomEditorForRenderPipeline {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let custom_editor_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let render_pipeline_type = r.read_aligned_string()?;
-        r.align(4)?;
+        let custom_editor_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let render_pipeline_type = rdr.read_aligned_string()?;
+        rdr.align(4)?;
 
         Ok(SerializedCustomEditorForRenderPipeline {
             custom_editor_name,

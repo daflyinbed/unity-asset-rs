@@ -8,12 +8,12 @@ pub struct NavMeshAreaData {
 
 impl crate::Parse for NavMeshAreaData {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let name = r.read_aligned_string()?;
-        r.align(4)?;
-        let cost = r.read_f32()?;
+        let name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let cost = rdr.read_f32()?;
 
         Ok(NavMeshAreaData {
             name,

@@ -9,14 +9,14 @@ pub struct ClassMethodInfo {
 
 impl crate::Parse for ClassMethodInfo {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_class_index = r.read_i32()?;
-        let m_method_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_order_number = r.read_i32()?;
-        r.align(4)?;
+        let m_class_index = rdr.read_i32()?;
+        let m_method_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_order_number = rdr.read_i32()?;
+        rdr.align(4)?;
 
         Ok(ClassMethodInfo {
             m_class_index,

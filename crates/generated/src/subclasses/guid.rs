@@ -10,13 +10,13 @@ pub struct Guid {
 
 impl crate::Parse for Guid {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let data_0 = r.read_u32()?;
-        let data_1 = r.read_u32()?;
-        let data_2 = r.read_u32()?;
-        let data_3 = r.read_u32()?;
+        let data_0 = rdr.read_u32()?;
+        let data_1 = rdr.read_u32()?;
+        let data_2 = rdr.read_u32()?;
+        let data_3 = rdr.read_u32()?;
 
         Ok(Guid {
             data_0,

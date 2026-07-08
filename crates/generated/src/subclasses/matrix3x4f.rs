@@ -18,21 +18,21 @@ pub struct Matrix3x4f {
 
 impl crate::Parse for Matrix3x4f {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let e00 = r.read_f32()?;
-        let e01 = r.read_f32()?;
-        let e02 = r.read_f32()?;
-        let e03 = r.read_f32()?;
-        let e10 = r.read_f32()?;
-        let e11 = r.read_f32()?;
-        let e12 = r.read_f32()?;
-        let e13 = r.read_f32()?;
-        let e20 = r.read_f32()?;
-        let e21 = r.read_f32()?;
-        let e22 = r.read_f32()?;
-        let e23 = r.read_f32()?;
+        let e00 = rdr.read_f32()?;
+        let e01 = rdr.read_f32()?;
+        let e02 = rdr.read_f32()?;
+        let e03 = rdr.read_f32()?;
+        let e10 = rdr.read_f32()?;
+        let e11 = rdr.read_f32()?;
+        let e12 = rdr.read_f32()?;
+        let e13 = rdr.read_f32()?;
+        let e20 = rdr.read_f32()?;
+        let e21 = rdr.read_f32()?;
+        let e22 = rdr.read_f32()?;
+        let e23 = rdr.read_f32()?;
 
         Ok(Matrix3x4f {
             e00,

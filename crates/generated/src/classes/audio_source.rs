@@ -13,14 +13,14 @@ pub enum AudioSourceMResourceVariant {
 
 impl crate::Parse for AudioSourceMResourceVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(6000, 3, 0) {
-            let v = crate::PPtr::parse(r, ver)?;
+            let v = crate::PPtr::parse(rdr, ver)?;
             Ok(Self::V6000_3(v))
         } else {
-            let v = crate::PPtr::parse(r, ver)?;
+            let v = crate::PPtr::parse(rdr, ver)?;
             Ok(Self::Default(v))
         }
     }
@@ -35,15 +35,15 @@ pub enum AudioSourceMuteVariant {
 
 impl crate::Parse for AudioSourceMuteVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V5_2(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -58,15 +58,15 @@ pub enum AudioSourceSpatializeVariant {
 
 impl crate::Parse for AudioSourceSpatializeVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V5_5(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -81,15 +81,15 @@ pub enum AudioSourceBypassEffectsVariant {
 
 impl crate::Parse for AudioSourceBypassEffectsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(4, 2, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V4_2(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -98,21 +98,21 @@ impl crate::Parse for AudioSourceBypassEffectsVariant {
 /// 版本枚举：AudioSourceRolloffCustomCurveVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AudioSourceRolloffCustomCurveVariant {
-    Default(AnimationCurve),
-    V2017_1(AnimationCurve),
+    Default(Box<AnimationCurve>),
+    V2017_1(Box<AnimationCurve>),
 }
 
 impl crate::Parse for AudioSourceRolloffCustomCurveVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = AnimationCurve::parse(r, ver)?;
-            r.align(4)?;
+            let v = ( { Ok(Box::new(AnimationCurve::parse(rdr, ver)?)) } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = AnimationCurve::parse(r, ver)?;
+            let v = ( { Ok(Box::new(AnimationCurve::parse(rdr, ver)?)) } )?;
             Ok(Self::Default(v))
         }
     }
@@ -121,21 +121,21 @@ impl crate::Parse for AudioSourceRolloffCustomCurveVariant {
 /// 版本枚举：AudioSourcePanLevelCustomCurveVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AudioSourcePanLevelCustomCurveVariant {
-    Default(AnimationCurve),
-    V2017_1(AnimationCurve),
+    Default(Box<AnimationCurve>),
+    V2017_1(Box<AnimationCurve>),
 }
 
 impl crate::Parse for AudioSourcePanLevelCustomCurveVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = AnimationCurve::parse(r, ver)?;
-            r.align(4)?;
+            let v = ( { Ok(Box::new(AnimationCurve::parse(rdr, ver)?)) } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = AnimationCurve::parse(r, ver)?;
+            let v = ( { Ok(Box::new(AnimationCurve::parse(rdr, ver)?)) } )?;
             Ok(Self::Default(v))
         }
     }
@@ -144,21 +144,21 @@ impl crate::Parse for AudioSourcePanLevelCustomCurveVariant {
 /// 版本枚举：AudioSourceSpreadCustomCurveVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AudioSourceSpreadCustomCurveVariant {
-    Default(AnimationCurve),
-    V2017_1(AnimationCurve),
+    Default(Box<AnimationCurve>),
+    V2017_1(Box<AnimationCurve>),
 }
 
 impl crate::Parse for AudioSourceSpreadCustomCurveVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = AnimationCurve::parse(r, ver)?;
-            r.align(4)?;
+            let v = ( { Ok(Box::new(AnimationCurve::parse(rdr, ver)?)) } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = AnimationCurve::parse(r, ver)?;
+            let v = ( { Ok(Box::new(AnimationCurve::parse(rdr, ver)?)) } )?;
             Ok(Self::Default(v))
         }
     }
@@ -167,21 +167,21 @@ impl crate::Parse for AudioSourceSpreadCustomCurveVariant {
 /// 版本枚举：AudioSourceReverbZoneMixCustomCurveVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AudioSourceReverbZoneMixCustomCurveVariant {
-    Default(AnimationCurve),
-    V2017_1(AnimationCurve),
+    Default(Box<AnimationCurve>),
+    V2017_1(Box<AnimationCurve>),
 }
 
 impl crate::Parse for AudioSourceReverbZoneMixCustomCurveVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = AnimationCurve::parse(r, ver)?;
-            r.align(4)?;
+            let v = ( { Ok(Box::new(AnimationCurve::parse(rdr, ver)?)) } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = AnimationCurve::parse(r, ver)?;
+            let v = ( { Ok(Box::new(AnimationCurve::parse(rdr, ver)?)) } )?;
             Ok(Self::Default(v))
         }
     }
@@ -217,7 +217,7 @@ pub struct AudioSource {
 
 impl crate::Parse for AudioSource {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_game_object = None;
@@ -245,50 +245,50 @@ impl crate::Parse for AudioSource {
         let mut bypass_reverb_zones = None;
         let mut spread_custom_curve = None;
         let mut reverb_zone_mix_custom_curve = None;
-            m_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_enabled = Some(r.read_u8()?);
-            r.align(4)?;
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_enabled = Some(rdr.read_u8()?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            output_audio_mixer_group = Some(crate::PPtr::parse(r, ver)?);
+            output_audio_mixer_group = Some(crate::PPtr::parse(rdr, ver)?);
         } else {
         }
-            m_audio_clip = Some(crate::PPtr::parse(r, ver)?);
+            m_audio_clip = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
-            m_resource = Some(AudioSourceMResourceVariant::parse(r, ver)?);
+            m_resource = Some(AudioSourceMResourceVariant::parse(rdr, ver)?);
         } else {
         }
-            m_play_on_awake = Some(r.read_bool()?);
-            r.align(4)?;
-            m_volume = Some(r.read_f32()?);
-            m_pitch = Some(r.read_f32()?);
-            r#loop = Some(r.read_bool()?);
-            mute = Some(AudioSourceMuteVariant::parse(r, ver)?);
+            m_play_on_awake = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_volume = Some(rdr.read_f32()?);
+            m_pitch = Some(rdr.read_f32()?);
+            r#loop = Some(rdr.read_bool()?);
+            mute = Some(AudioSourceMuteVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            spatialize = Some(AudioSourceSpatializeVariant::parse(r, ver)?);
-            spatialize_post_effects = Some(r.read_bool()?);
-            r.align(4)?;
+            spatialize = Some(AudioSourceSpatializeVariant::parse(rdr, ver)?);
+            spatialize_post_effects = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            spatialize = Some(AudioSourceSpatializeVariant::parse(r, ver)?);
+            spatialize = Some(AudioSourceSpatializeVariant::parse(rdr, ver)?);
         } else {
         }
-            priority = Some(r.read_i32()?);
-            doppler_level = Some(r.read_f32()?);
-            min_distance = Some(r.read_f32()?);
-            max_distance = Some(r.read_f32()?);
-            pan2_d = Some(r.read_f32()?);
-            rolloff_mode = Some(r.read_i32()?);
-            bypass_effects = Some(AudioSourceBypassEffectsVariant::parse(r, ver)?);
+            priority = Some(rdr.read_i32()?);
+            doppler_level = Some(rdr.read_f32()?);
+            min_distance = Some(rdr.read_f32()?);
+            max_distance = Some(rdr.read_f32()?);
+            pan2_d = Some(rdr.read_f32()?);
+            rolloff_mode = Some(rdr.read_i32()?);
+            bypass_effects = Some(AudioSourceBypassEffectsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(4, 2, 0) {
-            bypass_listener_effects = Some(r.read_bool()?);
-            bypass_reverb_zones = Some(r.read_bool()?);
-            r.align(4)?;
+            bypass_listener_effects = Some(rdr.read_bool()?);
+            bypass_reverb_zones = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else {
         }
-            rolloff_custom_curve = Some(AudioSourceRolloffCustomCurveVariant::parse(r, ver)?);
-            pan_level_custom_curve = Some(AudioSourcePanLevelCustomCurveVariant::parse(r, ver)?);
-            spread_custom_curve = Some(AudioSourceSpreadCustomCurveVariant::parse(r, ver)?);
+            rolloff_custom_curve = Some(AudioSourceRolloffCustomCurveVariant::parse(rdr, ver)?);
+            pan_level_custom_curve = Some(AudioSourcePanLevelCustomCurveVariant::parse(rdr, ver)?);
+            spread_custom_curve = Some(AudioSourceSpreadCustomCurveVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            reverb_zone_mix_custom_curve = Some(AudioSourceReverbZoneMixCustomCurveVariant::parse(r, ver)?);
+            reverb_zone_mix_custom_curve = Some(AudioSourceReverbZoneMixCustomCurveVariant::parse(rdr, ver)?);
         } else {
         }
 

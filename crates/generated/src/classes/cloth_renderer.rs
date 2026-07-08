@@ -13,15 +13,15 @@ pub enum ClothRendererMLightProbeAnchorVariant {
 
 impl crate::Parse for ClothRendererMLightProbeAnchorVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            let v = crate::PPtr::parse(r, ver)?;
-            r.align(4)?;
+            let v = crate::PPtr::parse(rdr, ver)?;
+            rdr.align(4)?;
             Ok(Self::V4_3(v))
         } else {
-            let v = crate::PPtr::parse(r, ver)?;
+            let v = crate::PPtr::parse(rdr, ver)?;
             Ok(Self::Default(v))
         }
     }
@@ -36,15 +36,15 @@ pub enum ClothRendererMSortingOrderVariant {
 
 impl crate::Parse for ClothRendererMSortingOrderVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            let v = r.read_i16()?;
-            r.align(4)?;
+            let v = rdr.read_i16()?;
+            rdr.align(4)?;
             Ok(Self::V4_5(v))
         } else {
-            let v = r.read_i16()?;
+            let v = rdr.read_i16()?;
             Ok(Self::Default(v))
         }
     }
@@ -70,7 +70,7 @@ pub struct ClothRenderer {
 
 impl crate::Parse for ClothRenderer {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_game_object = None;
@@ -88,34 +88,34 @@ impl crate::Parse for ClothRenderer {
         let mut m_sorting_layer = None;
         let mut m_sorting_layer_id = None;
         let mut m_sorting_order = None;
-            m_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_enabled = Some(r.read_bool()?);
-            m_cast_shadows = Some(r.read_bool()?);
-            m_receive_shadows = Some(r.read_bool()?);
-            m_lightmap_index = Some(r.read_u8()?);
-            m_lightmap_tiling_offset = Some(Vector4f::parse(r, ver)?);
-            m_materials = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_subset_indices = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
-            m_static_batch_root = Some(crate::PPtr::parse(r, ver)?);
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_enabled = Some(rdr.read_bool()?);
+            m_cast_shadows = Some(rdr.read_bool()?);
+            m_receive_shadows = Some(rdr.read_bool()?);
+            m_lightmap_index = Some(rdr.read_u8()?);
+            m_lightmap_tiling_offset = Some(Vector4f::parse(rdr, ver)?);
+            m_materials = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_subset_indices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_static_batch_root = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            m_use_light_probes = Some(r.read_bool()?);
-            r.align(4)?;
-            m_light_probe_anchor = Some(ClothRendererMLightProbeAnchorVariant::parse(r, ver)?);
-            m_sorting_layer_id = Some(r.read_u32()?);
-            m_sorting_order = Some(ClothRendererMSortingOrderVariant::parse(r, ver)?);
+            m_use_light_probes = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_light_probe_anchor = Some(ClothRendererMLightProbeAnchorVariant::parse(rdr, ver)?);
+            m_sorting_layer_id = Some(rdr.read_u32()?);
+            m_sorting_order = Some(ClothRendererMSortingOrderVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            m_use_light_probes = Some(r.read_bool()?);
-            r.align(4)?;
-            m_light_probe_anchor = Some(ClothRendererMLightProbeAnchorVariant::parse(r, ver)?);
-            m_sorting_layer = Some(r.read_i16()?);
-            m_sorting_order = Some(ClothRendererMSortingOrderVariant::parse(r, ver)?);
+            m_use_light_probes = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_light_probe_anchor = Some(ClothRendererMLightProbeAnchorVariant::parse(rdr, ver)?);
+            m_sorting_layer = Some(rdr.read_i16()?);
+            m_sorting_order = Some(ClothRendererMSortingOrderVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            m_use_light_probes = Some(r.read_bool()?);
-            r.align(4)?;
-            m_light_probe_anchor = Some(ClothRendererMLightProbeAnchorVariant::parse(r, ver)?);
+            m_use_light_probes = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_light_probe_anchor = Some(ClothRendererMLightProbeAnchorVariant::parse(rdr, ver)?);
         } else {
         }
-            m_pause_when_not_visible = Some(r.read_bool()?);
+            m_pause_when_not_visible = Some(rdr.read_bool()?);
 
         Ok(ClothRenderer {
             m_game_object: m_game_object.unwrap(),

@@ -9,18 +9,26 @@ pub struct SubstanceValue {
     pub scalar_2: f32,
     pub scalar_3: f32,
     pub texture: PPtr,
+    pub stringvalue: Option<String>,
 }
 
 impl crate::Parse for SubstanceValue {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let scalar_0 = r.read_f32()?;
-        let scalar_1 = r.read_f32()?;
-        let scalar_2 = r.read_f32()?;
-        let scalar_3 = r.read_f32()?;
-        let texture = crate::PPtr::parse(r, ver)?;
+        let scalar_0 = rdr.read_f32()?;
+        let scalar_1 = rdr.read_f32()?;
+        let scalar_2 = rdr.read_f32()?;
+        let scalar_3 = rdr.read_f32()?;
+        let texture = crate::PPtr::parse(rdr, ver)?;
+        let stringvalue = if *ver >= crate::UnityVersion::new(2017, 2, 0) {
+            let v = rdr.read_aligned_string()?;
+            rdr.align(4)?;
+            Some(v)
+        } else {
+            None
+        };
 
         Ok(SubstanceValue {
             scalar_0,
@@ -28,6 +36,7 @@ impl crate::Parse for SubstanceValue {
             scalar_2,
             scalar_3,
             texture,
+            stringvalue,
         })
     }
 }

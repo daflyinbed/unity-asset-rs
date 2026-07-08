@@ -20,7 +20,7 @@ pub struct AssetDatabase {
 
 impl crate::Parse for AssetDatabase {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_assets = None;
@@ -31,30 +31,30 @@ impl crate::Parse for AssetDatabase {
         let mut m_asset_bundle_names = None;
         let mut m_metrics = None;
         if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            m_asset_time_stamps = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = AssetTimeStamp::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_asset_time_stamps = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = AssetTimeStamp::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else {
         }
-            m_assets = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = Guid::parse(r, ver)?; let b = Asset::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_assets = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = Guid::parse(rdr, ver)?; let b = Asset::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            m_unity_shaders_version = Some(r.read_i32()?);
-            m_last_valid_versions = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = AssetImporterHashKey::parse(r, ver)?; let b = r.read_u32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_asset_bundle_names = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i32()?; let b = AssetBundleFullName::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_metrics = Some(AssetDatabaseMetrics::parse(r, ver)?);
+            m_unity_shaders_version = Some(rdr.read_i32()?);
+            m_last_valid_versions = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = AssetImporterHashKey::parse(rdr, ver)?; let b = rdr.read_u32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_asset_bundle_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i32()?; let b = AssetBundleFullName::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_metrics = Some(AssetDatabaseMetrics::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_unity_shaders_version = Some(r.read_i32()?);
-            m_last_valid_version_hashes = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i32()?; let b = r.read_u32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_asset_bundle_names = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i32()?; let b = AssetBundleFullName::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_metrics = Some(AssetDatabaseMetrics::parse(r, ver)?);
+            m_unity_shaders_version = Some(rdr.read_i32()?);
+            m_last_valid_version_hashes = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i32()?; let b = rdr.read_u32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_asset_bundle_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i32()?; let b = AssetBundleFullName::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_metrics = Some(AssetDatabaseMetrics::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            m_unity_shaders_version = Some(r.read_i32()?);
-            m_last_valid_version_hashes = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i32()?; let b = r.read_u32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_unity_shaders_version = Some(rdr.read_i32()?);
+            m_last_valid_version_hashes = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i32()?; let b = rdr.read_u32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            m_unity_shaders_version = Some(r.read_i32()?);
+            m_unity_shaders_version = Some(rdr.read_i32()?);
         } else {
         }
 

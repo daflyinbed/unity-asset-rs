@@ -9,16 +9,16 @@ pub struct TextAsset {
 
 impl crate::Parse for TextAsset {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_script = r.read_aligned_string()?;
-        r.align(4)?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_script = rdr.read_aligned_string()?;
+        rdr.align(4)?;
         let m_path_name = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_aligned_string()?;
-            r.align(4)?;
+            let v = rdr.read_aligned_string()?;
+            rdr.align(4)?;
             Some(v)
         } else {
             None

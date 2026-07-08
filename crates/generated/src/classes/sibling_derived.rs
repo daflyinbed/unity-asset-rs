@@ -6,7 +6,7 @@ pub struct SiblingDerived {
 
 impl crate::Parse for SiblingDerived {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
 

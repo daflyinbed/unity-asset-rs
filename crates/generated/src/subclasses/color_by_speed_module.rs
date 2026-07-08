@@ -12,14 +12,14 @@ pub struct ColorBySpeedModule {
 
 impl crate::Parse for ColorBySpeedModule {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let enabled = r.read_bool()?;
-        r.align(4)?;
-        let gradient = MinMaxGradient::parse(r, ver)?;
-        r.align(4)?;
-        let range = Vector2f::parse(r, ver)?;
+        let enabled = rdr.read_bool()?;
+        rdr.align(4)?;
+        let gradient = MinMaxGradient::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let range = Vector2f::parse(rdr, ver)?;
 
         Ok(ColorBySpeedModule {
             enabled,

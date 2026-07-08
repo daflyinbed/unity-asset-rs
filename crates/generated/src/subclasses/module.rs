@@ -5,23 +5,30 @@ pub struct Module {
     pub name: String,
     pub dependencies: Vec<String>,
     pub strippable: bool,
+    pub controlled_by_builtin_package: Option<bool>,
 }
 
 impl crate::Parse for Module {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let name = r.read_aligned_string()?;
-        r.align(4)?;
-        let dependencies = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let strippable = r.read_bool()?;
+        let name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let dependencies = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let strippable = rdr.read_bool()?;
+        let controlled_by_builtin_package = if *ver >= crate::UnityVersion::new(2018, 2, 0) {
+            Some(rdr.read_bool()?)
+        } else {
+            None
+        };
 
         Ok(Module {
             name,
             dependencies,
             strippable,
+            controlled_by_builtin_package,
         })
     }
 }

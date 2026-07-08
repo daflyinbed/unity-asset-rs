@@ -13,14 +13,14 @@ pub enum TerrainColliderMMaterialVariant {
 
 impl crate::Parse for TerrainColliderMMaterialVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            let v = crate::PPtr::parse(r, ver)?;
+            let v = crate::PPtr::parse(rdr, ver)?;
             Ok(Self::V2023_3(v))
         } else {
-            let v = crate::PPtr::parse(r, ver)?;
+            let v = crate::PPtr::parse(rdr, ver)?;
             Ok(Self::Default(v))
         }
     }
@@ -42,7 +42,7 @@ pub struct TerrainCollider {
 
 impl crate::Parse for TerrainCollider {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_game_object = None;
@@ -56,29 +56,29 @@ impl crate::Parse for TerrainCollider {
         let mut m_enable_tree_colliders = None;
         let mut m_layer_override_priority = None;
         let mut m_provides_contacts = None;
-            m_game_object = Some(crate::PPtr::parse(r, ver)?);
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            m_material = Some(TerrainColliderMMaterialVariant::parse(r, ver)?);
-            m_include_layers = Some(BitField::parse(r, ver)?);
-            m_exclude_layers = Some(BitField::parse(r, ver)?);
-            m_layer_override_priority = Some(r.read_i32()?);
-            m_provides_contacts = Some(r.read_bool()?);
-            r.align(4)?;
+            m_material = Some(TerrainColliderMMaterialVariant::parse(rdr, ver)?);
+            m_include_layers = Some(BitField::parse(rdr, ver)?);
+            m_exclude_layers = Some(BitField::parse(rdr, ver)?);
+            m_layer_override_priority = Some(rdr.read_i32()?);
+            m_provides_contacts = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_material = Some(TerrainColliderMMaterialVariant::parse(r, ver)?);
+            m_material = Some(TerrainColliderMMaterialVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            m_is_trigger = Some(r.read_bool()?);
+            m_is_trigger = Some(rdr.read_bool()?);
         } else {
-            m_material = Some(TerrainColliderMMaterialVariant::parse(r, ver)?);
-            m_is_trigger = Some(r.read_bool()?);
+            m_material = Some(TerrainColliderMMaterialVariant::parse(rdr, ver)?);
+            m_is_trigger = Some(rdr.read_bool()?);
         }
-            m_enabled = Some(r.read_bool()?);
-            r.align(4)?;
-            m_terrain_data = Some(crate::PPtr::parse(r, ver)?);
+            m_enabled = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_terrain_data = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_enable_tree_colliders = Some(r.read_bool()?);
+            m_enable_tree_colliders = Some(rdr.read_bool()?);
         } else {
-            m_create_tree_colliders = Some(r.read_bool()?);
+            m_create_tree_colliders = Some(rdr.read_bool()?);
         }
 
         Ok(TerrainCollider {

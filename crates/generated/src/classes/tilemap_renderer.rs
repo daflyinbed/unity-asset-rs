@@ -16,15 +16,15 @@ pub enum TilemapRendererMReflectionProbeUsageVariant {
 
 impl crate::Parse for TilemapRendererMReflectionProbeUsageVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            let v = r.read_u8()?;
+            let v = rdr.read_u8()?;
             Ok(Self::V2019_3(v))
         } else {
-            let v = r.read_u8()?;
-            r.align(4)?;
+            let v = rdr.read_u8()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -39,15 +39,15 @@ pub enum TilemapRendererMRayTracingModeVariant {
 
 impl crate::Parse for TilemapRendererMRayTracingModeVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            let v = r.read_u8()?;
+            let v = rdr.read_u8()?;
             Ok(Self::V2020_1(v))
         } else {
-            let v = r.read_u8()?;
-            r.align(4)?;
+            let v = rdr.read_u8()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -62,15 +62,15 @@ pub enum TilemapRendererMRayTraceProceduralVariant {
 
 impl crate::Parse for TilemapRendererMRayTraceProceduralVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
-            let v = r.read_u8()?;
+            let v = rdr.read_u8()?;
             Ok(Self::V2023_2(v))
         } else {
-            let v = r.read_u8()?;
-            r.align(4)?;
+            let v = rdr.read_u8()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -85,15 +85,15 @@ pub enum TilemapRendererMRayTracingAccelStructBuildFlagsVariant {
 
 impl crate::Parse for TilemapRendererMRayTracingAccelStructBuildFlagsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            let v = r.read_u8()?;
+            let v = rdr.read_u8()?;
             Ok(Self::V2023_3(v))
         } else {
-            let v = r.read_u8()?;
-            r.align(4)?;
+            let v = rdr.read_u8()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -108,15 +108,15 @@ pub enum TilemapRendererMDetectChunkCullingBoundsVariant {
 
 impl crate::Parse for TilemapRendererMDetectChunkCullingBoundsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(6000, 3, 0) {
-            let v = r.read_i32()?;
-            r.align(4)?;
+            let v = rdr.read_i32()?;
+            rdr.align(4)?;
             Ok(Self::V6000_3(v))
         } else {
-            let v = r.read_i32()?;
+            let v = rdr.read_i32()?;
             Ok(Self::Default(v))
         }
     }
@@ -165,7 +165,7 @@ pub struct TilemapRenderer {
 
 impl crate::Parse for TilemapRenderer {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_game_object = None;
@@ -206,105 +206,105 @@ impl crate::Parse for TilemapRenderer {
         let mut m_mask_interaction = None;
         let mut m_detect_chunk_culling_bounds = None;
         let mut m_mode = None;
-            m_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_enabled = Some(r.read_bool()?);
-            m_cast_shadows = Some(r.read_u8()?);
-            m_receive_shadows = Some(r.read_u8()?);
-            m_dynamic_occludee = Some(r.read_u8()?);
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_enabled = Some(rdr.read_bool()?);
+            m_cast_shadows = Some(rdr.read_u8()?);
+            m_receive_shadows = Some(rdr.read_u8()?);
+            m_dynamic_occludee = Some(rdr.read_u8()?);
         if *ver >= crate::UnityVersion::new(2021, 1, 0) {
-            m_static_shadow_caster = Some(r.read_u8()?);
+            m_static_shadow_caster = Some(rdr.read_u8()?);
         } else {
         }
-            m_motion_vectors = Some(r.read_u8()?);
-            m_light_probe_usage = Some(r.read_u8()?);
-            m_reflection_probe_usage = Some(TilemapRendererMReflectionProbeUsageVariant::parse(r, ver)?);
+            m_motion_vectors = Some(rdr.read_u8()?);
+            m_light_probe_usage = Some(rdr.read_u8()?);
+            m_reflection_probe_usage = Some(TilemapRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 2, 0) {
-            m_ray_tracing_mode = Some(TilemapRendererMRayTracingModeVariant::parse(r, ver)?);
-            m_ray_trace_procedural = Some(TilemapRendererMRayTraceProceduralVariant::parse(r, ver)?);
-            m_ray_tracing_accel_struct_build_flags_override = Some(r.read_u8()?);
-            m_ray_tracing_accel_struct_build_flags = Some(TilemapRendererMRayTracingAccelStructBuildFlagsVariant::parse(r, ver)?);
-            m_small_mesh_culling = Some(r.read_u8()?);
-            r.align(4)?;
-            m_force_mesh_lod = Some(r.read_i16()?);
-            r.align(4)?;
-            m_mesh_lod_selection_bias = Some(r.read_f32()?);
-            m_rendering_layer_mask = Some(r.read_u32()?);
-            m_renderer_priority = Some(r.read_i32()?);
+            m_ray_tracing_mode = Some(TilemapRendererMRayTracingModeVariant::parse(rdr, ver)?);
+            m_ray_trace_procedural = Some(TilemapRendererMRayTraceProceduralVariant::parse(rdr, ver)?);
+            m_ray_tracing_accel_struct_build_flags_override = Some(rdr.read_u8()?);
+            m_ray_tracing_accel_struct_build_flags = Some(TilemapRendererMRayTracingAccelStructBuildFlagsVariant::parse(rdr, ver)?);
+            m_small_mesh_culling = Some(rdr.read_u8()?);
+            rdr.align(4)?;
+            m_force_mesh_lod = Some(rdr.read_i16()?);
+            rdr.align(4)?;
+            m_mesh_lod_selection_bias = Some(rdr.read_f32()?);
+            m_rendering_layer_mask = Some(rdr.read_u32()?);
+            m_renderer_priority = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            m_ray_tracing_mode = Some(TilemapRendererMRayTracingModeVariant::parse(r, ver)?);
-            m_ray_trace_procedural = Some(TilemapRendererMRayTraceProceduralVariant::parse(r, ver)?);
-            m_ray_tracing_accel_struct_build_flags_override = Some(r.read_u8()?);
-            m_ray_tracing_accel_struct_build_flags = Some(TilemapRendererMRayTracingAccelStructBuildFlagsVariant::parse(r, ver)?);
-            m_small_mesh_culling = Some(r.read_u8()?);
-            r.align(4)?;
-            m_rendering_layer_mask = Some(r.read_u32()?);
-            m_renderer_priority = Some(r.read_i32()?);
+            m_ray_tracing_mode = Some(TilemapRendererMRayTracingModeVariant::parse(rdr, ver)?);
+            m_ray_trace_procedural = Some(TilemapRendererMRayTraceProceduralVariant::parse(rdr, ver)?);
+            m_ray_tracing_accel_struct_build_flags_override = Some(rdr.read_u8()?);
+            m_ray_tracing_accel_struct_build_flags = Some(TilemapRendererMRayTracingAccelStructBuildFlagsVariant::parse(rdr, ver)?);
+            m_small_mesh_culling = Some(rdr.read_u8()?);
+            rdr.align(4)?;
+            m_rendering_layer_mask = Some(rdr.read_u32()?);
+            m_renderer_priority = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2023, 2, 0) {
-            m_ray_tracing_mode = Some(TilemapRendererMRayTracingModeVariant::parse(r, ver)?);
-            m_ray_trace_procedural = Some(TilemapRendererMRayTraceProceduralVariant::parse(r, ver)?);
-            m_ray_tracing_accel_struct_build_flags_override = Some(r.read_u8()?);
-            m_ray_tracing_accel_struct_build_flags = Some(TilemapRendererMRayTracingAccelStructBuildFlagsVariant::parse(r, ver)?);
-            m_rendering_layer_mask = Some(r.read_u32()?);
-            m_renderer_priority = Some(r.read_i32()?);
+            m_ray_tracing_mode = Some(TilemapRendererMRayTracingModeVariant::parse(rdr, ver)?);
+            m_ray_trace_procedural = Some(TilemapRendererMRayTraceProceduralVariant::parse(rdr, ver)?);
+            m_ray_tracing_accel_struct_build_flags_override = Some(rdr.read_u8()?);
+            m_ray_tracing_accel_struct_build_flags = Some(TilemapRendererMRayTracingAccelStructBuildFlagsVariant::parse(rdr, ver)?);
+            m_rendering_layer_mask = Some(rdr.read_u32()?);
+            m_renderer_priority = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            m_ray_tracing_mode = Some(TilemapRendererMRayTracingModeVariant::parse(r, ver)?);
-            m_ray_trace_procedural = Some(TilemapRendererMRayTraceProceduralVariant::parse(r, ver)?);
-            m_rendering_layer_mask = Some(r.read_u32()?);
-            m_renderer_priority = Some(r.read_i32()?);
+            m_ray_tracing_mode = Some(TilemapRendererMRayTracingModeVariant::parse(rdr, ver)?);
+            m_ray_trace_procedural = Some(TilemapRendererMRayTraceProceduralVariant::parse(rdr, ver)?);
+            m_rendering_layer_mask = Some(rdr.read_u32()?);
+            m_renderer_priority = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            m_ray_tracing_mode = Some(TilemapRendererMRayTracingModeVariant::parse(r, ver)?);
-            m_rendering_layer_mask = Some(r.read_u32()?);
-            m_renderer_priority = Some(r.read_i32()?);
+            m_ray_tracing_mode = Some(TilemapRendererMRayTracingModeVariant::parse(rdr, ver)?);
+            m_rendering_layer_mask = Some(rdr.read_u32()?);
+            m_renderer_priority = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            m_rendering_layer_mask = Some(r.read_u32()?);
-            m_renderer_priority = Some(r.read_i32()?);
+            m_rendering_layer_mask = Some(rdr.read_u32()?);
+            m_renderer_priority = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            m_rendering_layer_mask = Some(r.read_u32()?);
+            m_rendering_layer_mask = Some(rdr.read_u32()?);
         } else {
         }
-            m_lightmap_index = Some(r.read_u16()?);
-            m_lightmap_index_dynamic = Some(r.read_u16()?);
-            m_lightmap_tiling_offset = Some(Vector4f::parse(r, ver)?);
-            m_lightmap_tiling_offset_dynamic = Some(Vector4f::parse(r, ver)?);
-            m_materials = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_static_batch_info = Some(StaticBatchInfo::parse(r, ver)?);
-            m_static_batch_root = Some(crate::PPtr::parse(r, ver)?);
-            m_probe_anchor = Some(crate::PPtr::parse(r, ver)?);
-            m_light_probe_volume_override = Some(crate::PPtr::parse(r, ver)?);
-            r.align(4)?;
-            m_sorting_layer_id = Some(r.read_i32()?);
-            m_sorting_layer = Some(r.read_i16()?);
-            m_sorting_order = Some(r.read_i16()?);
-            r.align(4)?;
+            m_lightmap_index = Some(rdr.read_u16()?);
+            m_lightmap_index_dynamic = Some(rdr.read_u16()?);
+            m_lightmap_tiling_offset = Some(Vector4f::parse(rdr, ver)?);
+            m_lightmap_tiling_offset_dynamic = Some(Vector4f::parse(rdr, ver)?);
+            m_materials = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_static_batch_info = Some(StaticBatchInfo::parse(rdr, ver)?);
+            m_static_batch_root = Some(crate::PPtr::parse(rdr, ver)?);
+            m_probe_anchor = Some(crate::PPtr::parse(rdr, ver)?);
+            m_light_probe_volume_override = Some(crate::PPtr::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_sorting_layer_id = Some(rdr.read_i32()?);
+            m_sorting_layer = Some(rdr.read_i16()?);
+            m_sorting_order = Some(rdr.read_i16()?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(6000, 3, 0) {
-            m_mask_interaction = Some(r.read_i32()?);
-            r.align(4)?;
+            m_mask_interaction = Some(rdr.read_i32()?);
+            rdr.align(4)?;
         } else {
         }
-            m_chunk_size = Some(int3_storage::parse(r, ver)?);
+            m_chunk_size = Some(int3_storage::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2017, 4, 33) {
-            m_chunk_culling_bounds = Some(Vector3f::parse(r, ver)?);
+            m_chunk_culling_bounds = Some(Vector3f::parse(rdr, ver)?);
         } else {
         }
-            m_max_chunk_count = Some(r.read_u32()?);
-            m_max_frame_age = Some(r.read_u32()?);
-            m_sort_order = Some(r.read_i32()?);
+            m_max_chunk_count = Some(rdr.read_u32()?);
+            m_max_frame_age = Some(rdr.read_u32()?);
+            m_sort_order = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(6000, 3, 0) {
-            m_mode = Some(r.read_i32()?);
-            m_detect_chunk_culling_bounds = Some(TilemapRendererMDetectChunkCullingBoundsVariant::parse(r, ver)?);
+            m_mode = Some(rdr.read_i32()?);
+            m_detect_chunk_culling_bounds = Some(TilemapRendererMDetectChunkCullingBoundsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            m_mode = Some(r.read_i32()?);
-            m_detect_chunk_culling_bounds = Some(TilemapRendererMDetectChunkCullingBoundsVariant::parse(r, ver)?);
-            m_mask_interaction = Some(r.read_i32()?);
-            r.align(4)?;
+            m_mode = Some(rdr.read_i32()?);
+            m_detect_chunk_culling_bounds = Some(TilemapRendererMDetectChunkCullingBoundsVariant::parse(rdr, ver)?);
+            m_mask_interaction = Some(rdr.read_i32()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            m_detect_chunk_culling_bounds = Some(TilemapRendererMDetectChunkCullingBoundsVariant::parse(r, ver)?);
-            m_mask_interaction = Some(r.read_i32()?);
-            r.align(4)?;
+            m_detect_chunk_culling_bounds = Some(TilemapRendererMDetectChunkCullingBoundsVariant::parse(rdr, ver)?);
+            m_mask_interaction = Some(rdr.read_i32()?);
+            rdr.align(4)?;
         } else {
-            m_mask_interaction = Some(r.read_i32()?);
-            r.align(4)?;
+            m_mask_interaction = Some(rdr.read_i32()?);
+            rdr.align(4)?;
         }
 
         Ok(TilemapRenderer {

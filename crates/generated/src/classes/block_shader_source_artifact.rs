@@ -8,13 +8,13 @@ pub struct BlockShaderSourceArtifact {
 
 impl crate::Parse for BlockShaderSourceArtifact {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let shader_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let shader_source = r.read_aligned_string()?;
-        r.align(4)?;
+        let shader_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let shader_source = rdr.read_aligned_string()?;
+        rdr.align(4)?;
 
         Ok(BlockShaderSourceArtifact {
             shader_name,

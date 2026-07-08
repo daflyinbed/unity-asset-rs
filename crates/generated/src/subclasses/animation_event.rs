@@ -15,18 +15,18 @@ pub struct AnimationEvent {
 
 impl crate::Parse for AnimationEvent {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let time = r.read_f32()?;
-        let function_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let data = r.read_aligned_string()?;
-        r.align(4)?;
-        let object_reference_parameter = crate::PPtr::parse(r, ver)?;
-        let float_parameter = r.read_f32()?;
-        let int_parameter = r.read_i32()?;
-        let message_options = r.read_i32()?;
+        let time = rdr.read_f32()?;
+        let function_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let data = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let object_reference_parameter = crate::PPtr::parse(rdr, ver)?;
+        let float_parameter = rdr.read_f32()?;
+        let int_parameter = rdr.read_i32()?;
+        let message_options = rdr.read_i32()?;
 
         Ok(AnimationEvent {
             time,

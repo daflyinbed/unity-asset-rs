@@ -7,11 +7,11 @@ pub struct PerformanceReportingSettings {
 
 impl crate::Parse for PerformanceReportingSettings {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_enabled = r.read_bool()?;
-        r.align(4)?;
+        let m_enabled = rdr.read_bool()?;
+        rdr.align(4)?;
 
         Ok(PerformanceReportingSettings {
             m_enabled,

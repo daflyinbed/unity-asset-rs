@@ -15,23 +15,23 @@ pub struct SerializedShaderRtBlendState {
 
 impl crate::Parse for SerializedShaderRtBlendState {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let src_blend = SerializedShaderFloatValue::parse(r, ver)?;
-        r.align(4)?;
-        let dest_blend = SerializedShaderFloatValue::parse(r, ver)?;
-        r.align(4)?;
-        let src_blend_alpha = SerializedShaderFloatValue::parse(r, ver)?;
-        r.align(4)?;
-        let dest_blend_alpha = SerializedShaderFloatValue::parse(r, ver)?;
-        r.align(4)?;
-        let blend_op = SerializedShaderFloatValue::parse(r, ver)?;
-        r.align(4)?;
-        let blend_op_alpha = SerializedShaderFloatValue::parse(r, ver)?;
-        r.align(4)?;
-        let col_mask = SerializedShaderFloatValue::parse(r, ver)?;
-        r.align(4)?;
+        let src_blend = SerializedShaderFloatValue::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let dest_blend = SerializedShaderFloatValue::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let src_blend_alpha = SerializedShaderFloatValue::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let dest_blend_alpha = SerializedShaderFloatValue::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let blend_op = SerializedShaderFloatValue::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let blend_op_alpha = SerializedShaderFloatValue::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let col_mask = SerializedShaderFloatValue::parse(rdr, ver)?;
+        rdr.align(4)?;
 
         Ok(SerializedShaderRtBlendState {
             src_blend,

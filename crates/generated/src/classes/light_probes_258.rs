@@ -8,21 +8,21 @@ use crate::subclasses::spherical_harmonics_l2::SphericalHarmonicsL2;
 /// 版本枚举：LightProbes_258MDataVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum LightProbes_258MDataVariant {
-    Default(LightProbeData),
-    V2017_1(LightProbeData),
+    Default(Box<LightProbeData>),
+    V2017_1(Box<LightProbeData>),
 }
 
 impl crate::Parse for LightProbes_258MDataVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = LightProbeData::parse(r, ver)?;
-            r.align(4)?;
+            let v = ( { Ok(Box::new(LightProbeData::parse(rdr, ver)?)) } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = LightProbeData::parse(r, ver)?;
+            let v = ( { Ok(Box::new(LightProbeData::parse(rdr, ver)?)) } )?;
             Ok(Self::Default(v))
         }
     }
@@ -37,15 +37,15 @@ pub enum LightProbes_258MBakedCoefficientsVariant {
 
 impl crate::Parse for LightProbes_258MBakedCoefficientsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { SphericalHarmonicsL2::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SphericalHarmonicsL2::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { SphericalHarmonicsL2::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SphericalHarmonicsL2::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -60,15 +60,15 @@ pub enum LightProbes_258MBakedLightOcclusionVariant {
 
 impl crate::Parse for LightProbes_258MBakedLightOcclusionVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { LightProbeOcclusion::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { LightProbeOcclusion::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { LightProbeOcclusion::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { LightProbeOcclusion::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -84,20 +84,20 @@ pub struct LightProbes_258 {
 
 impl crate::Parse for LightProbes_258 {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_data = LightProbes_258MDataVariant::parse(r, ver)?;
-        let m_baked_coefficients = LightProbes_258MBakedCoefficientsVariant::parse(r, ver)?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_data = LightProbes_258MDataVariant::parse(rdr, ver)?;
+        let m_baked_coefficients = LightProbes_258MBakedCoefficientsVariant::parse(rdr, ver)?;
         let m_baked_light_occlusion = if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            Some(LightProbes_258MBakedLightOcclusionVariant::parse(r, ver)?)
+            Some(LightProbes_258MBakedLightOcclusionVariant::parse(rdr, ver)?)
         } else {
             None
         };
         let m_has_been_edited = if *ver >= crate::UnityVersion::new(2023, 2, 0) {
-            Some(r.read_bool()?)
+            Some(rdr.read_bool()?)
         } else {
             None
         };

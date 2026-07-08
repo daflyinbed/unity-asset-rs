@@ -10,13 +10,13 @@ pub struct ColorModule {
 
 impl crate::Parse for ColorModule {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let enabled = r.read_bool()?;
-        r.align(4)?;
-        let gradient = MinMaxGradient::parse(r, ver)?;
-        r.align(4)?;
+        let enabled = rdr.read_bool()?;
+        rdr.align(4)?;
+        let gradient = MinMaxGradient::parse(rdr, ver)?;
+        rdr.align(4)?;
 
         Ok(ColorModule {
             enabled,

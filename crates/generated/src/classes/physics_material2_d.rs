@@ -11,20 +11,20 @@ pub struct PhysicsMaterial2D {
 
 impl crate::Parse for PhysicsMaterial2D {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let friction = r.read_f32()?;
-        let bounciness = r.read_f32()?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let friction = rdr.read_f32()?;
+        let bounciness = rdr.read_f32()?;
         let m_friction_combine = if *ver >= crate::UnityVersion::new(6000, 0, 14) {
-            Some(r.read_i32()?)
+            Some(rdr.read_i32()?)
         } else {
             None
         };
         let m_bounce_combine = if *ver >= crate::UnityVersion::new(6000, 0, 14) {
-            Some(r.read_i32()?)
+            Some(rdr.read_i32()?)
         } else {
             None
         };

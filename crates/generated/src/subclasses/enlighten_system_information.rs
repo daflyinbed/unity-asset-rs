@@ -15,16 +15,16 @@ pub struct EnlightenSystemInformation {
 
 impl crate::Parse for EnlightenSystemInformation {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let renderer_index = r.read_u32()?;
-        let renderer_size = r.read_u32()?;
-        let atlas_index = r.read_i32()?;
-        let atlas_offset_x = r.read_i32()?;
-        let atlas_offset_y = r.read_i32()?;
-        let input_system_hash = Hash128::parse(r, ver)?;
-        let radiosity_system_hash = Hash128::parse(r, ver)?;
+        let renderer_index = rdr.read_u32()?;
+        let renderer_size = rdr.read_u32()?;
+        let atlas_index = rdr.read_i32()?;
+        let atlas_offset_x = rdr.read_i32()?;
+        let atlas_offset_y = rdr.read_i32()?;
+        let input_system_hash = Hash128::parse(rdr, ver)?;
+        let radiosity_system_hash = Hash128::parse(rdr, ver)?;
 
         Ok(EnlightenSystemInformation {
             renderer_index,

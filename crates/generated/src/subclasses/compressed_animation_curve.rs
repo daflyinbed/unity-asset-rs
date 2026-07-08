@@ -14,19 +14,19 @@ pub struct CompressedAnimationCurve {
 
 impl crate::Parse for CompressedAnimationCurve {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_path = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_times = PackedBitVector::parse(r, ver)?;
-        r.align(4)?;
-        let m_values = PackedBitVector::parse(r, ver)?;
-        r.align(4)?;
-        let m_slopes = PackedBitVector::parse(r, ver)?;
-        r.align(4)?;
-        let m_pre_infinity = r.read_i32()?;
-        let m_post_infinity = r.read_i32()?;
+        let m_path = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_times = PackedBitVector::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let m_values = PackedBitVector::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let m_slopes = PackedBitVector::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let m_pre_infinity = rdr.read_i32()?;
+        let m_post_infinity = rdr.read_i32()?;
 
         Ok(CompressedAnimationCurve {
             m_path,

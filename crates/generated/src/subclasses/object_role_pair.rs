@@ -10,11 +10,11 @@ pub struct ObjectRolePair {
 
 impl crate::Parse for ObjectRolePair {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_object = crate::PPtr::parse(r, ver)?;
-        let m_roles_mask = r.read_i32()?;
+        let m_object = crate::PPtr::parse(rdr, ver)?;
+        let m_roles_mask = rdr.read_i32()?;
 
         Ok(ObjectRolePair {
             m_object,

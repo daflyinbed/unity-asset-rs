@@ -14,15 +14,15 @@ pub struct AutoOffMeshLinkData {
 
 impl crate::Parse for AutoOffMeshLinkData {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_start = Vector3f::parse(r, ver)?;
-        let m_end = Vector3f::parse(r, ver)?;
-        let m_radius = r.read_f32()?;
-        let m_link_type = r.read_u16()?;
-        let m_area = r.read_u8()?;
-        let m_link_direction = r.read_u8()?;
+        let m_start = Vector3f::parse(rdr, ver)?;
+        let m_end = Vector3f::parse(rdr, ver)?;
+        let m_radius = rdr.read_f32()?;
+        let m_link_type = rdr.read_u16()?;
+        let m_area = rdr.read_u8()?;
+        let m_link_direction = rdr.read_u8()?;
 
         Ok(AutoOffMeshLinkData {
             m_start,

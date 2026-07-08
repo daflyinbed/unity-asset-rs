@@ -6,21 +6,48 @@ use crate::subclasses::min_max_curve::MinMaxCurve;
 pub struct SizeModule {
     pub enabled: bool,
     pub curve: MinMaxCurve,
+    pub y: Option<MinMaxCurve>,
+    pub z: Option<MinMaxCurve>,
+    pub separate_axes: Option<bool>,
 }
 
 impl crate::Parse for SizeModule {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let enabled = r.read_bool()?;
-        r.align(4)?;
-        let curve = MinMaxCurve::parse(r, ver)?;
-        r.align(4)?;
+        let enabled = rdr.read_bool()?;
+        rdr.align(4)?;
+        let curve = MinMaxCurve::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let y = if *ver >= crate::UnityVersion::new(5, 4, 0) {
+            let v = MinMaxCurve::parse(rdr, ver)?;
+            rdr.align(4)?;
+            Some(v)
+        } else {
+            None
+        };
+        let z = if *ver >= crate::UnityVersion::new(5, 4, 0) {
+            let v = MinMaxCurve::parse(rdr, ver)?;
+            rdr.align(4)?;
+            Some(v)
+        } else {
+            None
+        };
+        let separate_axes = if *ver >= crate::UnityVersion::new(5, 4, 0) {
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
+            Some(v)
+        } else {
+            None
+        };
 
         Ok(SizeModule {
             enabled,
             curve,
+            y,
+            z,
+            separate_axes,
         })
     }
 }

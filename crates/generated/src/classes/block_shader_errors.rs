@@ -11,15 +11,15 @@ pub struct BlockShaderErrors {
 
 impl crate::Parse for BlockShaderErrors {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let errors = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Error::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let file_path = r.read_aligned_string()?;
-        r.align(4)?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let errors = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Error::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let file_path = rdr.read_aligned_string()?;
+        rdr.align(4)?;
 
         Ok(BlockShaderErrors {
             m_name,

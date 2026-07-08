@@ -13,16 +13,16 @@ pub struct AssetImporter_ImportError {
 
 impl crate::Parse for AssetImporter_ImportError {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let error = r.read_aligned_string()?;
-        r.align(4)?;
-        let mode = r.read_i32()?;
-        let line = r.read_i32()?;
-        let file = r.read_aligned_string()?;
-        r.align(4)?;
-        let object = crate::PPtr::parse(r, ver)?;
+        let error = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let mode = rdr.read_i32()?;
+        let line = rdr.read_i32()?;
+        let file = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let object = crate::PPtr::parse(rdr, ver)?;
 
         Ok(AssetImporter_ImportError {
             error,

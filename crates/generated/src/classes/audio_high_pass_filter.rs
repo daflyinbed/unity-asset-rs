@@ -12,14 +12,14 @@ pub struct AudioHighPassFilter {
 
 impl crate::Parse for AudioHighPassFilter {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_enabled = r.read_u8()?;
-        r.align(4)?;
-        let m_cutoff_frequency = r.read_f32()?;
-        let m_highpass_resonance_q = r.read_f32()?;
+        let m_game_object = crate::PPtr::parse(rdr, ver)?;
+        let m_enabled = rdr.read_u8()?;
+        rdr.align(4)?;
+        let m_cutoff_frequency = rdr.read_f32()?;
+        let m_highpass_resonance_q = rdr.read_f32()?;
 
         Ok(AudioHighPassFilter {
             m_game_object,

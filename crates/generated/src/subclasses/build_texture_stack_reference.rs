@@ -8,13 +8,13 @@ pub struct BuildTextureStackReference {
 
 impl crate::Parse for BuildTextureStackReference {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let group_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let item_name = r.read_aligned_string()?;
-        r.align(4)?;
+        let group_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let item_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
 
         Ok(BuildTextureStackReference {
             group_name,

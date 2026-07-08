@@ -1,40 +1,109 @@
 //! 自动生成。请勿手动修改。
 
+use crate::subclasses::channel_info::ChannelInfo;
 use crate::subclasses::stream_info::StreamInfo;
 
+
+/// 版本枚举：VertexDataMCurrentChannelsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum VertexDataMCurrentChannelsVariant {
+    Default(u32),
+    V5_6(i32),
+}
+
+impl crate::Parse for VertexDataMCurrentChannelsVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            let v = rdr.read_i32()?;
+            Ok(Self::V5_6(v))
+        } else {
+            let v = rdr.read_u32()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：VertexDataMChannelsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum VertexDataMChannelsVariant {
+    Default(Vec<ChannelInfo>),
+    V2017_1(Vec<ChannelInfo>),
+}
+
+impl crate::Parse for VertexDataMChannelsVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ChannelInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ChannelInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct VertexData {
-    pub m_current_channels: u32,
+    pub m_current_channels: Option<VertexDataMCurrentChannelsVariant>,
     pub m_vertex_count: u32,
-    pub m_streams_0: StreamInfo,
-    pub m_streams_1: StreamInfo,
-    pub m_streams_2: StreamInfo,
-    pub m_streams_3: StreamInfo,
+    pub m_channels: Option<VertexDataMChannelsVariant>,
+    pub m_streams_0: Option<StreamInfo>,
     pub m_data_size: Vec<u8>,
+    pub m_streams_1: Option<StreamInfo>,
+    pub m_streams: Option<Vec<StreamInfo>>,
+    pub m_streams_2: Option<StreamInfo>,
+    pub m_streams_3: Option<StreamInfo>,
 }
 
 impl crate::Parse for VertexData {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_current_channels = r.read_u32()?;
-        let m_vertex_count = r.read_u32()?;
-        let m_streams_0 = StreamInfo::parse(r, ver)?;
-        let m_streams_1 = StreamInfo::parse(r, ver)?;
-        let m_streams_2 = StreamInfo::parse(r, ver)?;
-        let m_streams_3 = StreamInfo::parse(r, ver)?;
-        let m_data_size = ( { let n = r.read_i32()? as usize; r.read_bytes(n) } )?;
-        r.align(4)?;
+        let mut m_current_channels = None;
+        let mut m_vertex_count = None;
+        let mut m_channels = None;
+        let mut m_streams_0 = None;
+        let mut m_data_size = None;
+        let mut m_streams_1 = None;
+        let mut m_streams = None;
+        let mut m_streams_2 = None;
+        let mut m_streams_3 = None;
+        if *ver >= crate::UnityVersion::new(2018, 1, 0) {
+        } else {
+            m_current_channels = Some(VertexDataMCurrentChannelsVariant::parse(rdr, ver)?);
+        }
+            m_vertex_count = Some(rdr.read_u32()?);
+        if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            m_channels = Some(VertexDataMChannelsVariant::parse(rdr, ver)?);
+        } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
+            m_channels = Some(VertexDataMChannelsVariant::parse(rdr, ver)?);
+            m_streams = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { StreamInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+        } else {
+            m_streams_0 = Some(StreamInfo::parse(rdr, ver)?);
+            m_streams_1 = Some(StreamInfo::parse(rdr, ver)?);
+            m_streams_2 = Some(StreamInfo::parse(rdr, ver)?);
+            m_streams_3 = Some(StreamInfo::parse(rdr, ver)?);
+        }
+            m_data_size = Some(( { let n = rdr.read_i32()? as usize; rdr.read_bytes(n) } )?);
+            rdr.align(4)?;
 
         Ok(VertexData {
             m_current_channels,
-            m_vertex_count,
+            m_vertex_count: m_vertex_count.unwrap(),
+            m_channels,
             m_streams_0,
+            m_data_size: m_data_size.unwrap(),
             m_streams_1,
+            m_streams,
             m_streams_2,
             m_streams_3,
-            m_data_size,
         })
     }
 }

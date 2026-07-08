@@ -84,10 +84,13 @@ p05 后 `emit.rs` 的 `emit_all` 把每个 `EmitClass` 写成一个 `.rs` 文件
 `classes/` 和 `subclasses/` 各一份）。p00 已移除 100000-100011，所以排除逻辑只需
 `!is_abstract()`，不再需要 `release_root.is_some()` 检查。
 
-> **为什么不像 AssetRipper Pass007 那样走 release_root 字段树？** 因为 p05 的 subclass
-> 字段提取取「`node_pool` 首次出现」，可能拿到 editor 树节点，引用了 release 树里没有
-> 的 subclass（如 `PackingParameters` 只出现在 editor 树的 `SpriteAtlasEditorData` 里）。
-> 全面对齐 Pass007 需要同时重写 p05 的版本变体合并逻辑（`SubclassCandidate` 那一套）。
+> **p02 仍扫 `node_pool` 发现 subclass 名字**（创建 EmitClass 外壳），但 **p05 的字段
+> 提取改为递归走 release_root**（`collect_subclass_from_node`）：遍历所有 main class
+> 的所有版本变体的 `release_root` 子树，收集每个 subclass 的 `(version, fields)` 出现，
+> 再用 `merge_and_layout`（与 main class 共用）做跨版本合并 + version-gated 判定。
+> 仅在无 release_root 出现时（editor-only subclass，如 `PackingParameters`）回退到
+> `node_pool` 首次出现。VersionedEnum 变体里的 Subclass 自动包 `Box` 打破递归
+> （如 `Clip` → `OffsetPtr` → `OffsetPtrDataVariant` → `Clip`）。
 
 emit 侧 `collect_type_imports` 对 `RustType::Subclass(name)` 按同样规则选路径：
 是 main class → `crate::classes::X::X`，否则 → `crate::subclasses::X::X`。
@@ -98,7 +101,7 @@ emit 侧 `collect_type_imports` 对 `RustType::Subclass(name)` 按同样规则�
 
 1. **线性 parse + per-field `Option<T>` 门控**（默认）：所有版本字段可以用单一线性
    顺序读取，差异字段用 `Option` 门控。
-2. **version-gated 块**（~80 个类）：字段顺序跨版本真变了，必须按版本分支读。
+2. **version-gated 块**（~150 个类，含 main class + subclass）：字段顺序跨版本真变了，必须按版本分支读。
 
 判定线性 parse 安全需**两道检查都通过**：
 
@@ -176,13 +179,18 @@ crates/generated/src/
   `dedup_layouts` 漏检 + version-gated `align_after` 两个 bug 后）。其他 bundle
   如仍回退到 dynamic，说明有未覆盖的版本差异。
 - PPtr 非 generic：所有 `PPtr<X>` 生成同一 `PPtr` 类型，丢失目标类型信息。
-- subclass 无版本并集：取第一次出现的子树，跨版本变化的 subclass 会错。
+- subclass 跨版本合并走 release_root 递归收集（`collect_subclass_from_node`），
+  与 main class 共用 `merge_and_layout`。仅在无 release_root 出现时（editor-only
+  subclass）回退到 node_pool 首次出现。VersionedEnum 变体里的 Subclass 自动包
+  `Box` 以打破递归类型循环（如 Clip ↔ OffsetPtr）。
 - `VersionGate::Range` 变体存在且 emit 能处理，但 `merge_fields_across_versions`
   只产出 `Always`/`Since`，不产出 `Range`（消失后重现的罕见字段会误判为 `Since`）。
-- version-gated 块的 **rust_type** 统一取最新版本（`own_map`），老版本改类型的
-  字段（如 `Mesh.m_shapes` 从 `MeshBlendShape` 变为 `MeshBlendShapeVertex`）在
-  version-gated 分支里仍按新类型读，老版本数据会错。正确处理需要 per-version
-  类型 + 转换逻辑，目前不做。
+- version-gated 块的 **rust_type** 取 `own_map`（merged）。跨版本类型变化的字段
+  会生成 VersionedEnum，其 `parse` 按版本选变体，因此 type 层面正确。同名
+  Subclass 内部字段变化也由 subclass 自身的 version-gated parse 处理。剩余
+  限制：`set_field_none` 的 align_after 取 per-version `version_field_maps`，
+  但 VersionedEnum 变体内部的 align 由 `build_versioned_enum` 的 per-version
+  meta_flag 计算——两者口径一致，暂无已知问题。
 
 ## Conventions
 

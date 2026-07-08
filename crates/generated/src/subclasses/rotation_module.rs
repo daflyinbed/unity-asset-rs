@@ -6,21 +6,44 @@ use crate::subclasses::min_max_curve::MinMaxCurve;
 pub struct RotationModule {
     pub enabled: bool,
     pub curve: MinMaxCurve,
+    pub x: Option<MinMaxCurve>,
+    pub y: Option<MinMaxCurve>,
+    pub separate_axes: Option<bool>,
 }
 
 impl crate::Parse for RotationModule {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let enabled = r.read_bool()?;
-        r.align(4)?;
-        let curve = MinMaxCurve::parse(r, ver)?;
-        r.align(4)?;
+        let mut enabled = None;
+        let mut curve = None;
+        let mut x = None;
+        let mut y = None;
+        let mut separate_axes = None;
+            enabled = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+        if *ver >= crate::UnityVersion::new(5, 3, 0) {
+            x = Some(MinMaxCurve::parse(rdr, ver)?);
+            rdr.align(4)?;
+            y = Some(MinMaxCurve::parse(rdr, ver)?);
+            rdr.align(4)?;
+        } else {
+        }
+            curve = Some(MinMaxCurve::parse(rdr, ver)?);
+            rdr.align(4)?;
+        if *ver >= crate::UnityVersion::new(5, 3, 0) {
+            separate_axes = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+        } else {
+        }
 
         Ok(RotationModule {
-            enabled,
-            curve,
+            enabled: enabled.unwrap(),
+            curve: curve.unwrap(),
+            x,
+            y,
+            separate_axes,
         })
     }
 }

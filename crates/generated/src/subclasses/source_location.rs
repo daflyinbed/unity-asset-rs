@@ -8,12 +8,12 @@ pub struct SourceLocation {
 
 impl crate::Parse for SourceLocation {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_file = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_position = r.read_u32()?;
+        let m_file = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_position = rdr.read_u32()?;
 
         Ok(SourceLocation {
             m_file,

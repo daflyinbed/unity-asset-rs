@@ -23,24 +23,24 @@ pub struct SkinnedCloth {
 
 impl crate::Parse for SkinnedCloth {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_enabled = r.read_u8()?;
-        r.align(4)?;
-        let m_bending_stiffness = r.read_f32()?;
-        let m_stretching_stiffness = r.read_f32()?;
-        let m_damping = r.read_f32()?;
-        let m_thickness = r.read_f32()?;
-        let m_use_gravity = r.read_bool()?;
-        let m_self_collision = r.read_bool()?;
-        r.align(4)?;
-        let m_external_acceleration = Vector3f::parse(r, ver)?;
-        let m_random_acceleration = Vector3f::parse(r, ver)?;
-        let m_world_velocity_scale = r.read_f32()?;
-        let m_world_acceleration_scale = r.read_f32()?;
-        let m_coefficients = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ClothConstrainCoefficients::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_game_object = crate::PPtr::parse(rdr, ver)?;
+        let m_enabled = rdr.read_u8()?;
+        rdr.align(4)?;
+        let m_bending_stiffness = rdr.read_f32()?;
+        let m_stretching_stiffness = rdr.read_f32()?;
+        let m_damping = rdr.read_f32()?;
+        let m_thickness = rdr.read_f32()?;
+        let m_use_gravity = rdr.read_bool()?;
+        let m_self_collision = rdr.read_bool()?;
+        rdr.align(4)?;
+        let m_external_acceleration = Vector3f::parse(rdr, ver)?;
+        let m_random_acceleration = Vector3f::parse(rdr, ver)?;
+        let m_world_velocity_scale = rdr.read_f32()?;
+        let m_world_acceleration_scale = rdr.read_f32()?;
+        let m_coefficients = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ClothConstrainCoefficients::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
 
         Ok(SkinnedCloth {
             m_game_object,

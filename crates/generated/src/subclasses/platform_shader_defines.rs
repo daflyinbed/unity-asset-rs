@@ -12,16 +12,16 @@ pub struct PlatformShaderDefines {
 
 impl crate::Parse for PlatformShaderDefines {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let shader_platform = r.read_i32()?;
-        let defines_tier1 = fixed_bitset::parse(r, ver)?;
-        r.align(4)?;
-        let defines_tier2 = fixed_bitset::parse(r, ver)?;
-        r.align(4)?;
-        let defines_tier3 = fixed_bitset::parse(r, ver)?;
-        r.align(4)?;
+        let shader_platform = rdr.read_i32()?;
+        let defines_tier1 = fixed_bitset::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let defines_tier2 = fixed_bitset::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let defines_tier3 = fixed_bitset::parse(rdr, ver)?;
+        rdr.align(4)?;
 
         Ok(PlatformShaderDefines {
             shader_platform,

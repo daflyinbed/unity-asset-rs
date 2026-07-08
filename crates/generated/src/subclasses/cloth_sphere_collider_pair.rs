@@ -10,11 +10,11 @@ pub struct ClothSphereColliderPair {
 
 impl crate::Parse for ClothSphereColliderPair {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let first = crate::PPtr::parse(r, ver)?;
-        let second = crate::PPtr::parse(r, ver)?;
+        let first = crate::PPtr::parse(rdr, ver)?;
+        let second = crate::PPtr::parse(rdr, ver)?;
 
         Ok(ClothSphereColliderPair {
             first,

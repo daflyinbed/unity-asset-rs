@@ -14,15 +14,15 @@ pub enum CharacterControllerMGameObjectVariant {
 
 impl crate::Parse for CharacterControllerMGameObjectVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = crate::PPtr::parse(r, ver)?;
+            let v = crate::PPtr::parse(rdr, ver)?;
             Ok(Self::V3_5(v))
         } else {
-            let v = crate::PPtr::parse(r, ver)?;
-            r.align(4)?;
+            let v = crate::PPtr::parse(rdr, ver)?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -37,14 +37,14 @@ pub enum CharacterControllerMMaterialVariant {
 
 impl crate::Parse for CharacterControllerMMaterialVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            let v = crate::PPtr::parse(r, ver)?;
+            let v = crate::PPtr::parse(rdr, ver)?;
             Ok(Self::V2023_3(v))
         } else {
-            let v = crate::PPtr::parse(r, ver)?;
+            let v = crate::PPtr::parse(rdr, ver)?;
             Ok(Self::Default(v))
         }
     }
@@ -70,7 +70,7 @@ pub struct CharacterController {
 
 impl crate::Parse for CharacterController {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_game_object = None;
@@ -88,40 +88,40 @@ impl crate::Parse for CharacterController {
         let mut m_provides_contacts = None;
         let mut m_min_move_distance = None;
         let mut m_center = None;
-            m_game_object = Some(CharacterControllerMGameObjectVariant::parse(r, ver)?);
+            m_game_object = Some(CharacterControllerMGameObjectVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            m_material = Some(CharacterControllerMMaterialVariant::parse(r, ver)?);
-            m_include_layers = Some(BitField::parse(r, ver)?);
-            m_exclude_layers = Some(BitField::parse(r, ver)?);
-            m_layer_override_priority = Some(r.read_i32()?);
-            m_provides_contacts = Some(r.read_bool()?);
-            r.align(4)?;
-            m_enabled = Some(r.read_bool()?);
-            r.align(4)?;
+            m_material = Some(CharacterControllerMMaterialVariant::parse(rdr, ver)?);
+            m_include_layers = Some(BitField::parse(rdr, ver)?);
+            m_exclude_layers = Some(BitField::parse(rdr, ver)?);
+            m_layer_override_priority = Some(rdr.read_i32()?);
+            m_provides_contacts = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_enabled = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            m_material = Some(CharacterControllerMMaterialVariant::parse(r, ver)?);
-            m_include_layers = Some(BitField::parse(r, ver)?);
-            m_exclude_layers = Some(BitField::parse(r, ver)?);
-            m_layer_override_priority = Some(r.read_i32()?);
-            m_is_trigger = Some(r.read_bool()?);
-            m_provides_contacts = Some(r.read_bool()?);
-            r.align(4)?;
-            m_enabled = Some(r.read_bool()?);
-            r.align(4)?;
+            m_material = Some(CharacterControllerMMaterialVariant::parse(rdr, ver)?);
+            m_include_layers = Some(BitField::parse(rdr, ver)?);
+            m_exclude_layers = Some(BitField::parse(rdr, ver)?);
+            m_layer_override_priority = Some(rdr.read_i32()?);
+            m_is_trigger = Some(rdr.read_bool()?);
+            m_provides_contacts = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_enabled = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_material = Some(CharacterControllerMMaterialVariant::parse(r, ver)?);
-            m_is_trigger = Some(r.read_bool()?);
-            m_enabled = Some(r.read_bool()?);
-            r.align(4)?;
+            m_material = Some(CharacterControllerMMaterialVariant::parse(rdr, ver)?);
+            m_is_trigger = Some(rdr.read_bool()?);
+            m_enabled = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else {
         }
-            m_height = Some(r.read_f32()?);
-            m_radius = Some(r.read_f32()?);
-            m_slope_limit = Some(r.read_f32()?);
-            m_step_offset = Some(r.read_f32()?);
-            m_skin_width = Some(r.read_f32()?);
-            m_min_move_distance = Some(r.read_f32()?);
-            m_center = Some(Vector3f::parse(r, ver)?);
+            m_height = Some(rdr.read_f32()?);
+            m_radius = Some(rdr.read_f32()?);
+            m_slope_limit = Some(rdr.read_f32()?);
+            m_step_offset = Some(rdr.read_f32()?);
+            m_skin_width = Some(rdr.read_f32()?);
+            m_min_move_distance = Some(rdr.read_f32()?);
+            m_center = Some(Vector3f::parse(rdr, ver)?);
 
         Ok(CharacterController {
             m_game_object: m_game_object.unwrap(),

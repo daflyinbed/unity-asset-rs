@@ -8,12 +8,12 @@ pub struct BuildTargetGraphicsJobMode {
 
 impl crate::Parse for BuildTargetGraphicsJobMode {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_build_target = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_graphics_job_mode = r.read_i32()?;
+        let m_build_target = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_graphics_job_mode = rdr.read_i32()?;
 
         Ok(BuildTargetGraphicsJobMode {
             m_build_target,

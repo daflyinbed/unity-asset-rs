@@ -15,49 +15,49 @@ pub struct PvrImporter {
 
 impl crate::Parse for PvrImporter {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
         let m_file_id_to_recycle_name = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i32()?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i32()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Some(v)
         } else {
             None
         };
         let m_user_data = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            let v = r.read_aligned_string()?;
-            r.align(4)?;
+            let v = rdr.read_aligned_string()?;
+            rdr.align(4)?;
             Some(v)
         } else {
             None
         };
         let m_old_hash_identity = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = MdFour::parse(r, ver)?;
-            r.align(4)?;
+            let v = MdFour::parse(rdr, ver)?;
+            rdr.align(4)?;
             Some(v)
         } else {
             None
         };
         let m_asset_bundle_name = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_aligned_string()?;
-            r.align(4)?;
+            let v = rdr.read_aligned_string()?;
+            rdr.align(4)?;
             Some(v)
         } else {
             None
         };
         let m_new_hash_identity = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = MdFour::parse(r, ver)?;
-            r.align(4)?;
+            let v = MdFour::parse(rdr, ver)?;
+            rdr.align(4)?;
             Some(v)
         } else {
             None
         };
         let m_asset_bundle_variant = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_aligned_string()?;
-            r.align(4)?;
+            let v = rdr.read_aligned_string()?;
+            rdr.align(4)?;
             Some(v)
         } else {
             None

@@ -11,14 +11,14 @@ pub struct DenseClip {
 
 impl crate::Parse for DenseClip {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_frame_count = r.read_i32()?;
-        let m_curve_count = r.read_u32()?;
-        let m_sample_rate = r.read_f32()?;
-        let m_begin_time = r.read_f32()?;
-        let m_sample_array = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_f32() }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_frame_count = rdr.read_i32()?;
+        let m_curve_count = rdr.read_u32()?;
+        let m_sample_rate = rdr.read_f32()?;
+        let m_begin_time = rdr.read_f32()?;
+        let m_sample_array = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_f32() }).collect::<Result<Vec<_>, _>>() } )?;
 
         Ok(DenseClip {
             m_frame_count,

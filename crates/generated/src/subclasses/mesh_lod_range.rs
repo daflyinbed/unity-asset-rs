@@ -8,12 +8,12 @@ pub struct MeshLodRange {
 
 impl crate::Parse for MeshLodRange {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_index_start = r.read_u32()?;
-        let m_index_count = r.read_u32()?;
-        r.align(4)?;
+        let m_index_start = rdr.read_u32()?;
+        let m_index_count = rdr.read_u32()?;
+        rdr.align(4)?;
 
         Ok(MeshLodRange {
             m_index_start,

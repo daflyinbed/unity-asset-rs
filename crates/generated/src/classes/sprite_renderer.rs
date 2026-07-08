@@ -17,18 +17,18 @@ pub enum SpriteRendererMEnabledVariant {
 
 impl crate::Parse for SpriteRendererMEnabledVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V5_4(v))
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V5_0(v))
         } else {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::Default(v))
         }
     }
@@ -43,14 +43,14 @@ pub enum SpriteRendererMCastShadowsVariant {
 
 impl crate::Parse for SpriteRendererMCastShadowsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_u8()?;
+            let v = rdr.read_u8()?;
             Ok(Self::V5_0(v))
         } else {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::Default(v))
         }
     }
@@ -66,18 +66,18 @@ pub enum SpriteRendererMReceiveShadowsVariant {
 
 impl crate::Parse for SpriteRendererMReceiveShadowsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            let v = r.read_u8()?;
+            let v = rdr.read_u8()?;
             Ok(Self::V5_4(v))
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V5_0(v))
         } else {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::Default(v))
         }
     }
@@ -92,14 +92,14 @@ pub enum SpriteRendererMLightmapIndexVariant {
 
 impl crate::Parse for SpriteRendererMLightmapIndexVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_u16()?;
+            let v = rdr.read_u16()?;
             Ok(Self::V5_0(v))
         } else {
-            let v = r.read_u8()?;
+            let v = rdr.read_u8()?;
             Ok(Self::Default(v))
         }
     }
@@ -114,15 +114,15 @@ pub enum SpriteRendererMMaterialsVariant {
 
 impl crate::Parse for SpriteRendererMMaterialsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -138,18 +138,18 @@ pub enum SpriteRendererMReflectionProbeUsageVariant {
 
 impl crate::Parse for SpriteRendererMReflectionProbeUsageVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            let v = r.read_u8()?;
+            let v = rdr.read_u8()?;
             Ok(Self::V2019_3(v))
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            let v = r.read_u8()?;
-            r.align(4)?;
+            let v = rdr.read_u8()?;
+            rdr.align(4)?;
             Ok(Self::V5_4(v))
         } else {
-            let v = r.read_i32()?;
+            let v = rdr.read_i32()?;
             Ok(Self::Default(v))
         }
     }
@@ -164,15 +164,15 @@ pub enum SpriteRendererMRayTracingModeVariant {
 
 impl crate::Parse for SpriteRendererMRayTracingModeVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            let v = r.read_u8()?;
+            let v = rdr.read_u8()?;
             Ok(Self::V2020_1(v))
         } else {
-            let v = r.read_u8()?;
-            r.align(4)?;
+            let v = rdr.read_u8()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -187,15 +187,15 @@ pub enum SpriteRendererMRayTraceProceduralVariant {
 
 impl crate::Parse for SpriteRendererMRayTraceProceduralVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
-            let v = r.read_u8()?;
+            let v = rdr.read_u8()?;
             Ok(Self::V2023_2(v))
         } else {
-            let v = r.read_u8()?;
-            r.align(4)?;
+            let v = rdr.read_u8()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -210,14 +210,14 @@ pub enum SpriteRendererMSortingLayerIdVariant {
 
 impl crate::Parse for SpriteRendererMSortingLayerIdVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_i32()?;
+            let v = rdr.read_i32()?;
             Ok(Self::V5_0(v))
         } else {
-            let v = r.read_u32()?;
+            let v = rdr.read_u32()?;
             Ok(Self::Default(v))
         }
     }
@@ -232,15 +232,15 @@ pub enum SpriteRendererMSortingOrderVariant {
 
 impl crate::Parse for SpriteRendererMSortingOrderVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            let v = r.read_i16()?;
-            r.align(4)?;
+            let v = rdr.read_i16()?;
+            rdr.align(4)?;
             Ok(Self::V4_5(v))
         } else {
-            let v = r.read_i16()?;
+            let v = rdr.read_i16()?;
             Ok(Self::Default(v))
         }
     }
@@ -255,15 +255,15 @@ pub enum SpriteRendererMRayTracingAccelStructBuildFlagsVariant {
 
 impl crate::Parse for SpriteRendererMRayTracingAccelStructBuildFlagsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            let v = r.read_u8()?;
+            let v = rdr.read_u8()?;
             Ok(Self::V2023_3(v))
         } else {
-            let v = r.read_u8()?;
-            r.align(4)?;
+            let v = rdr.read_u8()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -278,15 +278,15 @@ pub enum SpriteRendererMProbeAnchorVariant {
 
 impl crate::Parse for SpriteRendererMProbeAnchorVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            let v = crate::PPtr::parse(r, ver)?;
+            let v = crate::PPtr::parse(rdr, ver)?;
             Ok(Self::V5_4(v))
         } else {
-            let v = crate::PPtr::parse(r, ver)?;
-            r.align(4)?;
+            let v = crate::PPtr::parse(rdr, ver)?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -295,21 +295,21 @@ impl crate::Parse for SpriteRendererMProbeAnchorVariant {
 /// 版本枚举：SpriteRendererMColorVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum SpriteRendererMColorVariant {
-    Default(ColorRgba),
-    V4_5(ColorRgba),
+    Default(Box<ColorRgba>),
+    V4_5(Box<ColorRgba>),
 }
 
 impl crate::Parse for SpriteRendererMColorVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            let v = ColorRgba::parse(r, ver)?;
-            r.align(4)?;
+            let v = ( { Ok(Box::new(ColorRgba::parse(rdr, ver)?)) } )?;
+            rdr.align(4)?;
             Ok(Self::V4_5(v))
         } else {
-            let v = ColorRgba::parse(r, ver)?;
+            let v = ( { Ok(Box::new(ColorRgba::parse(rdr, ver)?)) } )?;
             Ok(Self::Default(v))
         }
     }
@@ -324,15 +324,15 @@ pub enum SpriteRendererMFlipYVariant {
 
 impl crate::Parse for SpriteRendererMFlipYVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V5_4(v))
         } else {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::Default(v))
         }
     }
@@ -347,15 +347,15 @@ pub enum SpriteRendererMSpriteTileModeVariant {
 
 impl crate::Parse for SpriteRendererMSpriteTileModeVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 6, 2) {
-            let v = r.read_i32()?;
+            let v = rdr.read_i32()?;
             Ok(Self::V5_6_2(v))
         } else {
-            let v = r.read_i32()?;
-            r.align(4)?;
+            let v = rdr.read_i32()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -370,15 +370,15 @@ pub enum SpriteRendererMMaskInteractionVariant {
 
 impl crate::Parse for SpriteRendererMMaskInteractionVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(6000, 3, 0) {
-            let v = r.read_i32()?;
-            r.align(4)?;
+            let v = rdr.read_i32()?;
+            rdr.align(4)?;
             Ok(Self::V6000_3(v))
         } else {
-            let v = r.read_i32()?;
+            let v = rdr.read_i32()?;
             Ok(Self::Default(v))
         }
     }
@@ -434,7 +434,7 @@ pub struct SpriteRenderer {
 
 impl crate::Parse for SpriteRenderer {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_game_object = None;
@@ -482,220 +482,220 @@ impl crate::Parse for SpriteRenderer {
         let mut m_mask_interaction = None;
         let mut m_sprite_sort_point = None;
         let mut m_blend_shape_weights = None;
-            m_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_enabled = Some(SpriteRendererMEnabledVariant::parse(r, ver)?);
-            m_cast_shadows = Some(SpriteRendererMCastShadowsVariant::parse(r, ver)?);
-            m_receive_shadows = Some(SpriteRendererMReceiveShadowsVariant::parse(r, ver)?);
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_enabled = Some(SpriteRendererMEnabledVariant::parse(rdr, ver)?);
+            m_cast_shadows = Some(SpriteRendererMCastShadowsVariant::parse(rdr, ver)?);
+            m_receive_shadows = Some(SpriteRendererMReceiveShadowsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 2, 0) {
-            m_dynamic_occludee = Some(r.read_u8()?);
-            m_static_shadow_caster = Some(r.read_u8()?);
-            m_motion_vectors = Some(r.read_u8()?);
-            m_light_probe_usage = Some(r.read_u8()?);
-            m_reflection_probe_usage = Some(SpriteRendererMReflectionProbeUsageVariant::parse(r, ver)?);
-            m_ray_tracing_mode = Some(SpriteRendererMRayTracingModeVariant::parse(r, ver)?);
-            m_ray_trace_procedural = Some(SpriteRendererMRayTraceProceduralVariant::parse(r, ver)?);
-            m_ray_tracing_accel_struct_build_flags_override = Some(r.read_u8()?);
-            m_ray_tracing_accel_struct_build_flags = Some(SpriteRendererMRayTracingAccelStructBuildFlagsVariant::parse(r, ver)?);
-            m_small_mesh_culling = Some(r.read_u8()?);
-            r.align(4)?;
-            m_force_mesh_lod = Some(r.read_i16()?);
-            r.align(4)?;
-            m_mesh_lod_selection_bias = Some(r.read_f32()?);
-            m_rendering_layer_mask = Some(r.read_u32()?);
-            m_renderer_priority = Some(r.read_i32()?);
+            m_dynamic_occludee = Some(rdr.read_u8()?);
+            m_static_shadow_caster = Some(rdr.read_u8()?);
+            m_motion_vectors = Some(rdr.read_u8()?);
+            m_light_probe_usage = Some(rdr.read_u8()?);
+            m_reflection_probe_usage = Some(SpriteRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_ray_tracing_mode = Some(SpriteRendererMRayTracingModeVariant::parse(rdr, ver)?);
+            m_ray_trace_procedural = Some(SpriteRendererMRayTraceProceduralVariant::parse(rdr, ver)?);
+            m_ray_tracing_accel_struct_build_flags_override = Some(rdr.read_u8()?);
+            m_ray_tracing_accel_struct_build_flags = Some(SpriteRendererMRayTracingAccelStructBuildFlagsVariant::parse(rdr, ver)?);
+            m_small_mesh_culling = Some(rdr.read_u8()?);
+            rdr.align(4)?;
+            m_force_mesh_lod = Some(rdr.read_i16()?);
+            rdr.align(4)?;
+            m_mesh_lod_selection_bias = Some(rdr.read_f32()?);
+            m_rendering_layer_mask = Some(rdr.read_u32()?);
+            m_renderer_priority = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            m_dynamic_occludee = Some(r.read_u8()?);
-            m_static_shadow_caster = Some(r.read_u8()?);
-            m_motion_vectors = Some(r.read_u8()?);
-            m_light_probe_usage = Some(r.read_u8()?);
-            m_reflection_probe_usage = Some(SpriteRendererMReflectionProbeUsageVariant::parse(r, ver)?);
-            m_ray_tracing_mode = Some(SpriteRendererMRayTracingModeVariant::parse(r, ver)?);
-            m_ray_trace_procedural = Some(SpriteRendererMRayTraceProceduralVariant::parse(r, ver)?);
-            m_ray_tracing_accel_struct_build_flags_override = Some(r.read_u8()?);
-            m_ray_tracing_accel_struct_build_flags = Some(SpriteRendererMRayTracingAccelStructBuildFlagsVariant::parse(r, ver)?);
-            m_small_mesh_culling = Some(r.read_u8()?);
-            r.align(4)?;
-            m_rendering_layer_mask = Some(r.read_u32()?);
-            m_renderer_priority = Some(r.read_i32()?);
+            m_dynamic_occludee = Some(rdr.read_u8()?);
+            m_static_shadow_caster = Some(rdr.read_u8()?);
+            m_motion_vectors = Some(rdr.read_u8()?);
+            m_light_probe_usage = Some(rdr.read_u8()?);
+            m_reflection_probe_usage = Some(SpriteRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_ray_tracing_mode = Some(SpriteRendererMRayTracingModeVariant::parse(rdr, ver)?);
+            m_ray_trace_procedural = Some(SpriteRendererMRayTraceProceduralVariant::parse(rdr, ver)?);
+            m_ray_tracing_accel_struct_build_flags_override = Some(rdr.read_u8()?);
+            m_ray_tracing_accel_struct_build_flags = Some(SpriteRendererMRayTracingAccelStructBuildFlagsVariant::parse(rdr, ver)?);
+            m_small_mesh_culling = Some(rdr.read_u8()?);
+            rdr.align(4)?;
+            m_rendering_layer_mask = Some(rdr.read_u32()?);
+            m_renderer_priority = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2023, 2, 0) {
-            m_dynamic_occludee = Some(r.read_u8()?);
-            m_static_shadow_caster = Some(r.read_u8()?);
-            m_motion_vectors = Some(r.read_u8()?);
-            m_light_probe_usage = Some(r.read_u8()?);
-            m_reflection_probe_usage = Some(SpriteRendererMReflectionProbeUsageVariant::parse(r, ver)?);
-            m_ray_tracing_mode = Some(SpriteRendererMRayTracingModeVariant::parse(r, ver)?);
-            m_ray_trace_procedural = Some(SpriteRendererMRayTraceProceduralVariant::parse(r, ver)?);
-            m_ray_tracing_accel_struct_build_flags_override = Some(r.read_u8()?);
-            m_ray_tracing_accel_struct_build_flags = Some(SpriteRendererMRayTracingAccelStructBuildFlagsVariant::parse(r, ver)?);
-            m_rendering_layer_mask = Some(r.read_u32()?);
-            m_renderer_priority = Some(r.read_i32()?);
+            m_dynamic_occludee = Some(rdr.read_u8()?);
+            m_static_shadow_caster = Some(rdr.read_u8()?);
+            m_motion_vectors = Some(rdr.read_u8()?);
+            m_light_probe_usage = Some(rdr.read_u8()?);
+            m_reflection_probe_usage = Some(SpriteRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_ray_tracing_mode = Some(SpriteRendererMRayTracingModeVariant::parse(rdr, ver)?);
+            m_ray_trace_procedural = Some(SpriteRendererMRayTraceProceduralVariant::parse(rdr, ver)?);
+            m_ray_tracing_accel_struct_build_flags_override = Some(rdr.read_u8()?);
+            m_ray_tracing_accel_struct_build_flags = Some(SpriteRendererMRayTracingAccelStructBuildFlagsVariant::parse(rdr, ver)?);
+            m_rendering_layer_mask = Some(rdr.read_u32()?);
+            m_renderer_priority = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2021, 1, 0) {
-            m_dynamic_occludee = Some(r.read_u8()?);
-            m_static_shadow_caster = Some(r.read_u8()?);
-            m_motion_vectors = Some(r.read_u8()?);
-            m_light_probe_usage = Some(r.read_u8()?);
-            m_reflection_probe_usage = Some(SpriteRendererMReflectionProbeUsageVariant::parse(r, ver)?);
-            m_ray_tracing_mode = Some(SpriteRendererMRayTracingModeVariant::parse(r, ver)?);
-            m_ray_trace_procedural = Some(SpriteRendererMRayTraceProceduralVariant::parse(r, ver)?);
-            m_rendering_layer_mask = Some(r.read_u32()?);
-            m_renderer_priority = Some(r.read_i32()?);
+            m_dynamic_occludee = Some(rdr.read_u8()?);
+            m_static_shadow_caster = Some(rdr.read_u8()?);
+            m_motion_vectors = Some(rdr.read_u8()?);
+            m_light_probe_usage = Some(rdr.read_u8()?);
+            m_reflection_probe_usage = Some(SpriteRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_ray_tracing_mode = Some(SpriteRendererMRayTracingModeVariant::parse(rdr, ver)?);
+            m_ray_trace_procedural = Some(SpriteRendererMRayTraceProceduralVariant::parse(rdr, ver)?);
+            m_rendering_layer_mask = Some(rdr.read_u32()?);
+            m_renderer_priority = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            m_dynamic_occludee = Some(r.read_u8()?);
-            m_motion_vectors = Some(r.read_u8()?);
-            m_light_probe_usage = Some(r.read_u8()?);
-            m_reflection_probe_usage = Some(SpriteRendererMReflectionProbeUsageVariant::parse(r, ver)?);
-            m_ray_tracing_mode = Some(SpriteRendererMRayTracingModeVariant::parse(r, ver)?);
-            m_ray_trace_procedural = Some(SpriteRendererMRayTraceProceduralVariant::parse(r, ver)?);
-            m_rendering_layer_mask = Some(r.read_u32()?);
-            m_renderer_priority = Some(r.read_i32()?);
+            m_dynamic_occludee = Some(rdr.read_u8()?);
+            m_motion_vectors = Some(rdr.read_u8()?);
+            m_light_probe_usage = Some(rdr.read_u8()?);
+            m_reflection_probe_usage = Some(SpriteRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_ray_tracing_mode = Some(SpriteRendererMRayTracingModeVariant::parse(rdr, ver)?);
+            m_ray_trace_procedural = Some(SpriteRendererMRayTraceProceduralVariant::parse(rdr, ver)?);
+            m_rendering_layer_mask = Some(rdr.read_u32()?);
+            m_renderer_priority = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            m_dynamic_occludee = Some(r.read_u8()?);
-            m_motion_vectors = Some(r.read_u8()?);
-            m_light_probe_usage = Some(r.read_u8()?);
-            m_reflection_probe_usage = Some(SpriteRendererMReflectionProbeUsageVariant::parse(r, ver)?);
-            m_ray_tracing_mode = Some(SpriteRendererMRayTracingModeVariant::parse(r, ver)?);
-            m_rendering_layer_mask = Some(r.read_u32()?);
-            m_renderer_priority = Some(r.read_i32()?);
+            m_dynamic_occludee = Some(rdr.read_u8()?);
+            m_motion_vectors = Some(rdr.read_u8()?);
+            m_light_probe_usage = Some(rdr.read_u8()?);
+            m_reflection_probe_usage = Some(SpriteRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_ray_tracing_mode = Some(SpriteRendererMRayTracingModeVariant::parse(rdr, ver)?);
+            m_rendering_layer_mask = Some(rdr.read_u32()?);
+            m_renderer_priority = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            m_dynamic_occludee = Some(r.read_u8()?);
-            m_motion_vectors = Some(r.read_u8()?);
-            m_light_probe_usage = Some(r.read_u8()?);
-            m_reflection_probe_usage = Some(SpriteRendererMReflectionProbeUsageVariant::parse(r, ver)?);
-            m_rendering_layer_mask = Some(r.read_u32()?);
-            m_renderer_priority = Some(r.read_i32()?);
+            m_dynamic_occludee = Some(rdr.read_u8()?);
+            m_motion_vectors = Some(rdr.read_u8()?);
+            m_light_probe_usage = Some(rdr.read_u8()?);
+            m_reflection_probe_usage = Some(SpriteRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_rendering_layer_mask = Some(rdr.read_u32()?);
+            m_renderer_priority = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            m_dynamic_occludee = Some(r.read_u8()?);
-            m_motion_vectors = Some(r.read_u8()?);
-            m_light_probe_usage = Some(r.read_u8()?);
-            m_reflection_probe_usage = Some(SpriteRendererMReflectionProbeUsageVariant::parse(r, ver)?);
-            m_rendering_layer_mask = Some(r.read_u32()?);
+            m_dynamic_occludee = Some(rdr.read_u8()?);
+            m_motion_vectors = Some(rdr.read_u8()?);
+            m_light_probe_usage = Some(rdr.read_u8()?);
+            m_reflection_probe_usage = Some(SpriteRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_rendering_layer_mask = Some(rdr.read_u32()?);
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            m_dynamic_occludee = Some(r.read_u8()?);
-            m_motion_vectors = Some(r.read_u8()?);
-            m_light_probe_usage = Some(r.read_u8()?);
-            m_reflection_probe_usage = Some(SpriteRendererMReflectionProbeUsageVariant::parse(r, ver)?);
+            m_dynamic_occludee = Some(rdr.read_u8()?);
+            m_motion_vectors = Some(rdr.read_u8()?);
+            m_light_probe_usage = Some(rdr.read_u8()?);
+            m_reflection_probe_usage = Some(SpriteRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            m_motion_vectors = Some(r.read_u8()?);
-            m_light_probe_usage = Some(r.read_u8()?);
-            m_reflection_probe_usage = Some(SpriteRendererMReflectionProbeUsageVariant::parse(r, ver)?);
+            m_motion_vectors = Some(rdr.read_u8()?);
+            m_light_probe_usage = Some(rdr.read_u8()?);
+            m_reflection_probe_usage = Some(SpriteRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
         } else {
         }
-            m_lightmap_index = Some(SpriteRendererMLightmapIndexVariant::parse(r, ver)?);
+            m_lightmap_index = Some(SpriteRendererMLightmapIndexVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_lightmap_index_dynamic = Some(r.read_u16()?);
+            m_lightmap_index_dynamic = Some(rdr.read_u16()?);
         } else {
         }
-            m_lightmap_tiling_offset = Some(Vector4f::parse(r, ver)?);
+            m_lightmap_tiling_offset = Some(Vector4f::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_lightmap_tiling_offset_dynamic = Some(Vector4f::parse(r, ver)?);
+            m_lightmap_tiling_offset_dynamic = Some(Vector4f::parse(rdr, ver)?);
         } else {
         }
-            m_materials = Some(SpriteRendererMMaterialsVariant::parse(r, ver)?);
+            m_materials = Some(SpriteRendererMMaterialsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            m_static_batch_info = Some(StaticBatchInfo::parse(r, ver)?);
+            m_static_batch_info = Some(StaticBatchInfo::parse(rdr, ver)?);
         } else {
-            m_subset_indices = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_subset_indices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
         }
-            m_static_batch_root = Some(crate::PPtr::parse(r, ver)?);
+            m_static_batch_root = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            m_probe_anchor = Some(SpriteRendererMProbeAnchorVariant::parse(r, ver)?);
-            m_light_probe_volume_override = Some(crate::PPtr::parse(r, ver)?);
-            r.align(4)?;
-            m_sorting_layer_id = Some(SpriteRendererMSortingLayerIdVariant::parse(r, ver)?);
-            m_sorting_layer = Some(r.read_i16()?);
+            m_probe_anchor = Some(SpriteRendererMProbeAnchorVariant::parse(rdr, ver)?);
+            m_light_probe_volume_override = Some(crate::PPtr::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_sorting_layer_id = Some(SpriteRendererMSortingLayerIdVariant::parse(rdr, ver)?);
+            m_sorting_layer = Some(rdr.read_i16()?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            m_probe_anchor = Some(SpriteRendererMProbeAnchorVariant::parse(r, ver)?);
-            m_light_probe_volume_override = Some(crate::PPtr::parse(r, ver)?);
-            r.align(4)?;
-            m_sorting_layer_id = Some(SpriteRendererMSortingLayerIdVariant::parse(r, ver)?);
+            m_probe_anchor = Some(SpriteRendererMProbeAnchorVariant::parse(rdr, ver)?);
+            m_light_probe_volume_override = Some(crate::PPtr::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_sorting_layer_id = Some(SpriteRendererMSortingLayerIdVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_use_light_probes = Some(r.read_bool()?);
-            r.align(4)?;
-            m_reflection_probe_usage = Some(SpriteRendererMReflectionProbeUsageVariant::parse(r, ver)?);
-            m_probe_anchor = Some(SpriteRendererMProbeAnchorVariant::parse(r, ver)?);
-            m_sorting_layer_id = Some(SpriteRendererMSortingLayerIdVariant::parse(r, ver)?);
+            m_use_light_probes = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_reflection_probe_usage = Some(SpriteRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_probe_anchor = Some(SpriteRendererMProbeAnchorVariant::parse(rdr, ver)?);
+            m_sorting_layer_id = Some(SpriteRendererMSortingLayerIdVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            m_use_light_probes = Some(r.read_bool()?);
-            r.align(4)?;
-            m_light_probe_anchor = Some(crate::PPtr::parse(r, ver)?);
-            r.align(4)?;
-            m_sorting_layer_id = Some(SpriteRendererMSortingLayerIdVariant::parse(r, ver)?);
+            m_use_light_probes = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_light_probe_anchor = Some(crate::PPtr::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_sorting_layer_id = Some(SpriteRendererMSortingLayerIdVariant::parse(rdr, ver)?);
         } else {
-            m_use_light_probes = Some(r.read_bool()?);
-            r.align(4)?;
-            m_light_probe_anchor = Some(crate::PPtr::parse(r, ver)?);
-            r.align(4)?;
-            m_sorting_layer = Some(r.read_i16()?);
+            m_use_light_probes = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_light_probe_anchor = Some(crate::PPtr::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_sorting_layer = Some(rdr.read_i16()?);
         }
-            m_sorting_order = Some(SpriteRendererMSortingOrderVariant::parse(r, ver)?);
+            m_sorting_order = Some(SpriteRendererMSortingOrderVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 3, 0) {
-            m_mask_interaction = Some(SpriteRendererMMaskInteractionVariant::parse(r, ver)?);
+            m_mask_interaction = Some(SpriteRendererMMaskInteractionVariant::parse(rdr, ver)?);
         } else {
         }
-            m_sprite = Some(crate::PPtr::parse(r, ver)?);
-            m_color = Some(SpriteRendererMColorVariant::parse(r, ver)?);
+            m_sprite = Some(crate::PPtr::parse(rdr, ver)?);
+            m_color = Some(SpriteRendererMColorVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            m_flip_x = Some(r.read_bool()?);
-            m_flip_y = Some(SpriteRendererMFlipYVariant::parse(r, ver)?);
-            m_draw_mode = Some(r.read_i32()?);
-            m_size = Some(Vector2f::parse(r, ver)?);
-            m_adaptive_mode_threshold = Some(r.read_f32()?);
-            m_sprite_tile_mode = Some(SpriteRendererMSpriteTileModeVariant::parse(r, ver)?);
-            m_was_sprite_assigned = Some(r.read_bool()?);
-            r.align(4)?;
-            m_sprite_sort_point = Some(r.read_i32()?);
-            m_blend_shape_weights = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_f32() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_flip_x = Some(rdr.read_bool()?);
+            m_flip_y = Some(SpriteRendererMFlipYVariant::parse(rdr, ver)?);
+            m_draw_mode = Some(rdr.read_i32()?);
+            m_size = Some(Vector2f::parse(rdr, ver)?);
+            m_adaptive_mode_threshold = Some(rdr.read_f32()?);
+            m_sprite_tile_mode = Some(SpriteRendererMSpriteTileModeVariant::parse(rdr, ver)?);
+            m_was_sprite_assigned = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_sprite_sort_point = Some(rdr.read_i32()?);
+            m_blend_shape_weights = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_f32() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(6000, 3, 0) {
-            m_flip_x = Some(r.read_bool()?);
-            m_flip_y = Some(SpriteRendererMFlipYVariant::parse(r, ver)?);
-            m_draw_mode = Some(r.read_i32()?);
-            m_size = Some(Vector2f::parse(r, ver)?);
-            m_adaptive_mode_threshold = Some(r.read_f32()?);
-            m_sprite_tile_mode = Some(SpriteRendererMSpriteTileModeVariant::parse(r, ver)?);
-            m_was_sprite_assigned = Some(r.read_bool()?);
-            r.align(4)?;
-            m_sprite_sort_point = Some(r.read_i32()?);
+            m_flip_x = Some(rdr.read_bool()?);
+            m_flip_y = Some(SpriteRendererMFlipYVariant::parse(rdr, ver)?);
+            m_draw_mode = Some(rdr.read_i32()?);
+            m_size = Some(Vector2f::parse(rdr, ver)?);
+            m_adaptive_mode_threshold = Some(rdr.read_f32()?);
+            m_sprite_tile_mode = Some(SpriteRendererMSpriteTileModeVariant::parse(rdr, ver)?);
+            m_was_sprite_assigned = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_sprite_sort_point = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2018, 2, 0) {
-            m_flip_x = Some(r.read_bool()?);
-            m_flip_y = Some(SpriteRendererMFlipYVariant::parse(r, ver)?);
-            m_draw_mode = Some(r.read_i32()?);
-            m_size = Some(Vector2f::parse(r, ver)?);
-            m_adaptive_mode_threshold = Some(r.read_f32()?);
-            m_sprite_tile_mode = Some(SpriteRendererMSpriteTileModeVariant::parse(r, ver)?);
-            m_was_sprite_assigned = Some(r.read_bool()?);
-            r.align(4)?;
-            m_mask_interaction = Some(SpriteRendererMMaskInteractionVariant::parse(r, ver)?);
-            m_sprite_sort_point = Some(r.read_i32()?);
+            m_flip_x = Some(rdr.read_bool()?);
+            m_flip_y = Some(SpriteRendererMFlipYVariant::parse(rdr, ver)?);
+            m_draw_mode = Some(rdr.read_i32()?);
+            m_size = Some(Vector2f::parse(rdr, ver)?);
+            m_adaptive_mode_threshold = Some(rdr.read_f32()?);
+            m_sprite_tile_mode = Some(SpriteRendererMSpriteTileModeVariant::parse(rdr, ver)?);
+            m_was_sprite_assigned = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_mask_interaction = Some(SpriteRendererMMaskInteractionVariant::parse(rdr, ver)?);
+            m_sprite_sort_point = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            m_flip_x = Some(r.read_bool()?);
-            m_flip_y = Some(SpriteRendererMFlipYVariant::parse(r, ver)?);
-            m_draw_mode = Some(r.read_i32()?);
-            m_size = Some(Vector2f::parse(r, ver)?);
-            m_adaptive_mode_threshold = Some(r.read_f32()?);
-            m_sprite_tile_mode = Some(SpriteRendererMSpriteTileModeVariant::parse(r, ver)?);
-            m_was_sprite_assigned = Some(r.read_bool()?);
-            r.align(4)?;
-            m_mask_interaction = Some(SpriteRendererMMaskInteractionVariant::parse(r, ver)?);
+            m_flip_x = Some(rdr.read_bool()?);
+            m_flip_y = Some(SpriteRendererMFlipYVariant::parse(rdr, ver)?);
+            m_draw_mode = Some(rdr.read_i32()?);
+            m_size = Some(Vector2f::parse(rdr, ver)?);
+            m_adaptive_mode_threshold = Some(rdr.read_f32()?);
+            m_sprite_tile_mode = Some(SpriteRendererMSpriteTileModeVariant::parse(rdr, ver)?);
+            m_was_sprite_assigned = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_mask_interaction = Some(SpriteRendererMMaskInteractionVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 6, 2) {
-            m_flip_x = Some(r.read_bool()?);
-            m_flip_y = Some(SpriteRendererMFlipYVariant::parse(r, ver)?);
-            m_draw_mode = Some(r.read_i32()?);
-            m_size = Some(Vector2f::parse(r, ver)?);
-            m_adaptive_mode_threshold = Some(r.read_f32()?);
-            m_sprite_tile_mode = Some(SpriteRendererMSpriteTileModeVariant::parse(r, ver)?);
-            m_was_sprite_assigned = Some(r.read_bool()?);
-            r.align(4)?;
+            m_flip_x = Some(rdr.read_bool()?);
+            m_flip_y = Some(SpriteRendererMFlipYVariant::parse(rdr, ver)?);
+            m_draw_mode = Some(rdr.read_i32()?);
+            m_size = Some(Vector2f::parse(rdr, ver)?);
+            m_adaptive_mode_threshold = Some(rdr.read_f32()?);
+            m_sprite_tile_mode = Some(SpriteRendererMSpriteTileModeVariant::parse(rdr, ver)?);
+            m_was_sprite_assigned = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            m_flip_x = Some(r.read_bool()?);
-            m_flip_y = Some(SpriteRendererMFlipYVariant::parse(r, ver)?);
-            m_draw_mode = Some(r.read_i32()?);
-            m_size = Some(Vector2f::parse(r, ver)?);
-            m_adaptive_mode_threshold = Some(r.read_f32()?);
-            m_sprite_tile_mode = Some(SpriteRendererMSpriteTileModeVariant::parse(r, ver)?);
+            m_flip_x = Some(rdr.read_bool()?);
+            m_flip_y = Some(SpriteRendererMFlipYVariant::parse(rdr, ver)?);
+            m_draw_mode = Some(rdr.read_i32()?);
+            m_size = Some(Vector2f::parse(rdr, ver)?);
+            m_adaptive_mode_threshold = Some(rdr.read_f32()?);
+            m_sprite_tile_mode = Some(SpriteRendererMSpriteTileModeVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            m_flip_x = Some(r.read_bool()?);
-            m_flip_y = Some(SpriteRendererMFlipYVariant::parse(r, ver)?);
+            m_flip_x = Some(rdr.read_bool()?);
+            m_flip_y = Some(SpriteRendererMFlipYVariant::parse(rdr, ver)?);
         } else {
         }
 

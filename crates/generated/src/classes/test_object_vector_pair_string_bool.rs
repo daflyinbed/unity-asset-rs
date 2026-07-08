@@ -8,13 +8,13 @@ pub struct TestObjectVectorPairStringBool {
 
 impl crate::Parse for TestObjectVectorPairStringBool {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_map = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_bool()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_string = r.read_aligned_string()?;
-        r.align(4)?;
+        let m_map = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_bool()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let m_string = rdr.read_aligned_string()?;
+        rdr.align(4)?;
 
         Ok(TestObjectVectorPairStringBool {
             m_map,

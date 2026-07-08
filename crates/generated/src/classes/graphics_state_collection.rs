@@ -21,24 +21,24 @@ pub struct GraphicsStateCollection {
 
 impl crate::Parse for GraphicsStateCollection {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_version = r.read_i32()?;
-        let m_device_renderer = r.read_i32()?;
-        let m_runtime_platform = r.read_i32()?;
-        let m_quality_level_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_variant_info_map = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = Hash128::parse(r, ver)?; let b = VariantInfo::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_vertex_layout_info_map = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_u64()?; let b = VertexLayoutInfo::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_render_pass_info_map = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_u64()?; let b = RenderPassInfo::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_render_state_map = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_u64()?; let b = RenderStateInfo::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_version = rdr.read_i32()?;
+        let m_device_renderer = rdr.read_i32()?;
+        let m_runtime_platform = rdr.read_i32()?;
+        let m_quality_level_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_variant_info_map = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = Hash128::parse(rdr, ver)?; let b = VariantInfo::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let m_vertex_layout_info_map = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_u64()?; let b = VertexLayoutInfo::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let m_render_pass_info_map = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_u64()?; let b = RenderPassInfo::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let m_render_state_map = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_u64()?; let b = RenderStateInfo::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
 
         Ok(GraphicsStateCollection {
             m_name,

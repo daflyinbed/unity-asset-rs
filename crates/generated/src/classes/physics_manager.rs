@@ -14,14 +14,14 @@ pub enum PhysicsManagerMDefaultMaterialVariant {
 
 impl crate::Parse for PhysicsManagerMDefaultMaterialVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            let v = crate::PPtr::parse(r, ver)?;
+            let v = crate::PPtr::parse(rdr, ver)?;
             Ok(Self::V2023_3(v))
         } else {
-            let v = crate::PPtr::parse(r, ver)?;
+            let v = crate::PPtr::parse(rdr, ver)?;
             Ok(Self::Default(v))
         }
     }
@@ -36,15 +36,15 @@ pub enum PhysicsManagerMRaycastsHitTriggersVariant {
 
 impl crate::Parse for PhysicsManagerMRaycastsHitTriggersVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V5_0(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -60,19 +60,19 @@ pub enum PhysicsManagerMEnableAdaptiveForceVariant {
 
 impl crate::Parse for PhysicsManagerMEnableAdaptiveForceVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V2017_3(v))
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V5_5(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -87,15 +87,15 @@ pub enum PhysicsManagerMLayerCollisionMatrixVariant {
 
 impl crate::Parse for PhysicsManagerMLayerCollisionMatrixVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -110,15 +110,15 @@ pub enum PhysicsManagerMClothInterCollisionStiffnessVariant {
 
 impl crate::Parse for PhysicsManagerMClothInterCollisionStiffnessVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            let v = r.read_f32()?;
-            r.align(4)?;
+            let v = rdr.read_f32()?;
+            rdr.align(4)?;
             Ok(Self::V2023_1(v))
         } else {
-            let v = r.read_f32()?;
+            let v = rdr.read_f32()?;
             Ok(Self::Default(v))
         }
     }
@@ -136,25 +136,25 @@ pub enum PhysicsManagerMBroadphaseTypeVariant {
 
 impl crate::Parse for PhysicsManagerMBroadphaseTypeVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(6000, 2, 6) {
-            let v = r.read_i32()?;
+            let v = rdr.read_i32()?;
             Ok(Self::V6000_2_6(v))
         } else if *ver >= crate::UnityVersion::new(6000, 1, 0) {
-            let v = r.read_i32()?;
-            r.align(4)?;
+            let v = rdr.read_i32()?;
+            rdr.align(4)?;
             Ok(Self::V6000_1(v))
         } else if *ver >= crate::UnityVersion::new(6000, 0, 59) {
-            let v = r.read_i32()?;
+            let v = rdr.read_i32()?;
             Ok(Self::V6000_0_59(v))
         } else if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            let v = r.read_i32()?;
-            r.align(4)?;
+            let v = rdr.read_i32()?;
+            rdr.align(4)?;
             Ok(Self::V2023_1(v))
         } else {
-            let v = r.read_i32()?;
+            let v = rdr.read_i32()?;
             Ok(Self::Default(v))
         }
     }
@@ -169,15 +169,15 @@ pub enum PhysicsManagerMWorldSubdivisionsVariant {
 
 impl crate::Parse for PhysicsManagerMWorldSubdivisionsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(6000, 0, 59) {
-            let v = r.read_i32()?;
-            r.align(4)?;
+            let v = rdr.read_i32()?;
+            rdr.align(4)?;
             Ok(Self::V6000_0_59(v))
         } else {
-            let v = r.read_i32()?;
+            let v = rdr.read_i32()?;
             Ok(Self::Default(v))
         }
     }
@@ -193,18 +193,18 @@ pub enum PhysicsManagerMEnableUnifiedHeightmapsVariant {
 
 impl crate::Parse for PhysicsManagerMEnableUnifiedHeightmapsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V2021_2(v))
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V2019_1(v))
         } else {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::Default(v))
         }
     }
@@ -221,22 +221,22 @@ pub enum PhysicsManagerMImprovedPatchFrictionVariant {
 
 impl crate::Parse for PhysicsManagerMImprovedPatchFrictionVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(6000, 1, 4) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V6000_1_4(v))
         } else if *ver >= crate::UnityVersion::new(6000, 1, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V6000_1(v))
         } else if *ver >= crate::UnityVersion::new(6000, 0, 50) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V6000_0_50(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -295,7 +295,7 @@ pub struct PhysicsManager {
 
 impl crate::Parse for PhysicsManager {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_gravity = None;
@@ -346,536 +346,536 @@ impl crate::Parse for PhysicsManager {
         let mut m_release_scene_buffers = None;
         let mut m_log_verbosity = None;
         let mut m_incremental_static_broadphase = None;
-            m_gravity = Some(Vector3f::parse(r, ver)?);
-            m_default_material = Some(PhysicsManagerMDefaultMaterialVariant::parse(r, ver)?);
-            m_bounce_threshold = Some(r.read_f32()?);
+            m_gravity = Some(Vector3f::parse(rdr, ver)?);
+            m_default_material = Some(PhysicsManagerMDefaultMaterialVariant::parse(rdr, ver)?);
+            m_bounce_threshold = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            m_default_max_depenetration_velocity = Some(r.read_f32()?);
-            m_sleep_threshold = Some(r.read_f32()?);
-            m_default_contact_offset = Some(r.read_f32()?);
-            m_default_solver_iterations = Some(r.read_i32()?);
-            m_default_solver_velocity_iterations = Some(r.read_i32()?);
-            m_queries_hit_backfaces = Some(r.read_bool()?);
-            m_queries_hit_triggers = Some(r.read_bool()?);
-            m_enable_adaptive_force = Some(PhysicsManagerMEnableAdaptiveForceVariant::parse(r, ver)?);
-            m_cloth_inter_collision_distance = Some(r.read_f32()?);
-            m_cloth_inter_collision_stiffness = Some(PhysicsManagerMClothInterCollisionStiffnessVariant::parse(r, ver)?);
+            m_default_max_depenetration_velocity = Some(rdr.read_f32()?);
+            m_sleep_threshold = Some(rdr.read_f32()?);
+            m_default_contact_offset = Some(rdr.read_f32()?);
+            m_default_solver_iterations = Some(rdr.read_i32()?);
+            m_default_solver_velocity_iterations = Some(rdr.read_i32()?);
+            m_queries_hit_backfaces = Some(rdr.read_bool()?);
+            m_queries_hit_triggers = Some(rdr.read_bool()?);
+            m_enable_adaptive_force = Some(PhysicsManagerMEnableAdaptiveForceVariant::parse(rdr, ver)?);
+            m_cloth_inter_collision_distance = Some(rdr.read_f32()?);
+            m_cloth_inter_collision_stiffness = Some(PhysicsManagerMClothInterCollisionStiffnessVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            m_default_max_depenetration_velocity = Some(r.read_f32()?);
-            m_sleep_threshold = Some(r.read_f32()?);
-            m_default_contact_offset = Some(r.read_f32()?);
-            m_default_solver_iterations = Some(r.read_i32()?);
-            m_default_solver_velocity_iterations = Some(r.read_i32()?);
-            m_queries_hit_backfaces = Some(r.read_bool()?);
-            m_queries_hit_triggers = Some(r.read_bool()?);
-            m_enable_adaptive_force = Some(PhysicsManagerMEnableAdaptiveForceVariant::parse(r, ver)?);
-            m_cloth_inter_collision_distance = Some(r.read_f32()?);
-            m_cloth_inter_collision_stiffness = Some(PhysicsManagerMClothInterCollisionStiffnessVariant::parse(r, ver)?);
-            m_contacts_generation = Some(r.read_i32()?);
-            r.align(4)?;
+            m_default_max_depenetration_velocity = Some(rdr.read_f32()?);
+            m_sleep_threshold = Some(rdr.read_f32()?);
+            m_default_contact_offset = Some(rdr.read_f32()?);
+            m_default_solver_iterations = Some(rdr.read_i32()?);
+            m_default_solver_velocity_iterations = Some(rdr.read_i32()?);
+            m_queries_hit_backfaces = Some(rdr.read_bool()?);
+            m_queries_hit_triggers = Some(rdr.read_bool()?);
+            m_enable_adaptive_force = Some(PhysicsManagerMEnableAdaptiveForceVariant::parse(rdr, ver)?);
+            m_cloth_inter_collision_distance = Some(rdr.read_f32()?);
+            m_cloth_inter_collision_stiffness = Some(PhysicsManagerMClothInterCollisionStiffnessVariant::parse(rdr, ver)?);
+            m_contacts_generation = Some(rdr.read_i32()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            m_sleep_threshold = Some(r.read_f32()?);
-            m_default_contact_offset = Some(r.read_f32()?);
-            m_default_solver_iterations = Some(r.read_i32()?);
-            m_default_solver_velocity_iterations = Some(r.read_i32()?);
-            m_queries_hit_backfaces = Some(r.read_bool()?);
-            m_queries_hit_triggers = Some(r.read_bool()?);
-            m_enable_adaptive_force = Some(PhysicsManagerMEnableAdaptiveForceVariant::parse(r, ver)?);
-            m_cloth_inter_collision_distance = Some(r.read_f32()?);
-            m_cloth_inter_collision_stiffness = Some(PhysicsManagerMClothInterCollisionStiffnessVariant::parse(r, ver)?);
-            m_contacts_generation = Some(r.read_i32()?);
-            r.align(4)?;
+            m_sleep_threshold = Some(rdr.read_f32()?);
+            m_default_contact_offset = Some(rdr.read_f32()?);
+            m_default_solver_iterations = Some(rdr.read_i32()?);
+            m_default_solver_velocity_iterations = Some(rdr.read_i32()?);
+            m_queries_hit_backfaces = Some(rdr.read_bool()?);
+            m_queries_hit_triggers = Some(rdr.read_bool()?);
+            m_enable_adaptive_force = Some(PhysicsManagerMEnableAdaptiveForceVariant::parse(rdr, ver)?);
+            m_cloth_inter_collision_distance = Some(rdr.read_f32()?);
+            m_cloth_inter_collision_stiffness = Some(PhysicsManagerMClothInterCollisionStiffnessVariant::parse(rdr, ver)?);
+            m_contacts_generation = Some(rdr.read_i32()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            m_sleep_threshold = Some(r.read_f32()?);
-            m_default_contact_offset = Some(r.read_f32()?);
-            m_default_solver_iterations = Some(r.read_i32()?);
-            m_default_solver_velocity_iterations = Some(r.read_i32()?);
-            m_queries_hit_backfaces = Some(r.read_bool()?);
-            m_queries_hit_triggers = Some(r.read_bool()?);
-            m_enable_adaptive_force = Some(PhysicsManagerMEnableAdaptiveForceVariant::parse(r, ver)?);
-            m_enable_pcm = Some(r.read_bool()?);
-            r.align(4)?;
+            m_sleep_threshold = Some(rdr.read_f32()?);
+            m_default_contact_offset = Some(rdr.read_f32()?);
+            m_default_solver_iterations = Some(rdr.read_i32()?);
+            m_default_solver_velocity_iterations = Some(rdr.read_i32()?);
+            m_queries_hit_backfaces = Some(rdr.read_bool()?);
+            m_queries_hit_triggers = Some(rdr.read_bool()?);
+            m_enable_adaptive_force = Some(PhysicsManagerMEnableAdaptiveForceVariant::parse(rdr, ver)?);
+            m_enable_pcm = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            m_sleep_threshold = Some(r.read_f32()?);
-            m_default_contact_offset = Some(r.read_f32()?);
-            m_solver_iteration_count = Some(r.read_i32()?);
-            m_solver_velocity_iterations = Some(r.read_i32()?);
-            m_queries_hit_triggers = Some(r.read_bool()?);
-            m_enable_adaptive_force = Some(PhysicsManagerMEnableAdaptiveForceVariant::parse(r, ver)?);
+            m_sleep_threshold = Some(rdr.read_f32()?);
+            m_default_contact_offset = Some(rdr.read_f32()?);
+            m_solver_iteration_count = Some(rdr.read_i32()?);
+            m_solver_velocity_iterations = Some(rdr.read_i32()?);
+            m_queries_hit_triggers = Some(rdr.read_bool()?);
+            m_enable_adaptive_force = Some(PhysicsManagerMEnableAdaptiveForceVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            m_sleep_threshold = Some(r.read_f32()?);
-            m_default_contact_offset = Some(r.read_f32()?);
-            m_solver_iteration_count = Some(r.read_i32()?);
-            m_queries_hit_triggers = Some(r.read_bool()?);
-            m_enable_adaptive_force = Some(PhysicsManagerMEnableAdaptiveForceVariant::parse(r, ver)?);
+            m_sleep_threshold = Some(rdr.read_f32()?);
+            m_default_contact_offset = Some(rdr.read_f32()?);
+            m_solver_iteration_count = Some(rdr.read_i32()?);
+            m_queries_hit_triggers = Some(rdr.read_bool()?);
+            m_enable_adaptive_force = Some(PhysicsManagerMEnableAdaptiveForceVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_sleep_threshold = Some(r.read_f32()?);
-            m_default_contact_offset = Some(r.read_f32()?);
-            m_solver_iteration_count = Some(r.read_i32()?);
-            m_raycasts_hit_triggers = Some(PhysicsManagerMRaycastsHitTriggersVariant::parse(r, ver)?);
-            m_enable_adaptive_force = Some(PhysicsManagerMEnableAdaptiveForceVariant::parse(r, ver)?);
+            m_sleep_threshold = Some(rdr.read_f32()?);
+            m_default_contact_offset = Some(rdr.read_f32()?);
+            m_solver_iteration_count = Some(rdr.read_i32()?);
+            m_raycasts_hit_triggers = Some(PhysicsManagerMRaycastsHitTriggersVariant::parse(rdr, ver)?);
+            m_enable_adaptive_force = Some(PhysicsManagerMEnableAdaptiveForceVariant::parse(rdr, ver)?);
         } else {
-            m_sleep_velocity = Some(r.read_f32()?);
-            m_sleep_angular_velocity = Some(r.read_f32()?);
-            m_max_angular_velocity = Some(r.read_f32()?);
-            m_min_penetration_for_penalty = Some(r.read_f32()?);
-            m_solver_iteration_count = Some(r.read_i32()?);
-            m_raycasts_hit_triggers = Some(PhysicsManagerMRaycastsHitTriggersVariant::parse(r, ver)?);
+            m_sleep_velocity = Some(rdr.read_f32()?);
+            m_sleep_angular_velocity = Some(rdr.read_f32()?);
+            m_max_angular_velocity = Some(rdr.read_f32()?);
+            m_min_penetration_for_penalty = Some(rdr.read_f32()?);
+            m_solver_iteration_count = Some(rdr.read_i32()?);
+            m_raycasts_hit_triggers = Some(PhysicsManagerMRaycastsHitTriggersVariant::parse(rdr, ver)?);
         }
-            m_layer_collision_matrix = Some(PhysicsManagerMLayerCollisionMatrixVariant::parse(r, ver)?);
+            m_layer_collision_matrix = Some(PhysicsManagerMLayerCollisionMatrixVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 3, 7) {
-            m_simulation_mode = Some(r.read_i32()?);
-            r.align(4)?;
-            m_auto_sync_transforms = Some(r.read_bool()?);
-            m_reuse_collision_callbacks = Some(r.read_bool()?);
-            m_invoke_collision_callbacks = Some(r.read_bool()?);
-            m_cloth_inter_collision_settings_toggle = Some(r.read_bool()?);
-            r.align(4)?;
-            m_cloth_gravity = Some(Vector3f::parse(r, ver)?);
-            m_contact_pairs_mode = Some(r.read_i32()?);
-            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(r, ver)?);
-            m_world_bounds = Some(Aabb::parse(r, ver)?);
-            m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(r, ver)?);
-            m_friction_type = Some(r.read_i32()?);
-            m_enable_enhanced_determinism = Some(r.read_bool()?);
-            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(r, ver)?);
-            m_generate_on_trigger_stay_events = Some(r.read_bool()?);
-            r.align(4)?;
-            m_solver_type = Some(r.read_i32()?);
-            r.align(4)?;
-            m_default_max_angular_speed = Some(r.read_f32()?);
-            m_scratch_buffer_chunk_count = Some(r.read_u32()?);
-            m_current_backend_id = Some(r.read_u32()?);
-            m_fast_motion_threshold = Some(r.read_f32()?);
-            m_scene_buffers_release_interval = Some(r.read_u32()?);
-            m_release_scene_buffers = Some(r.read_bool()?);
-            r.align(4)?;
-            m_log_verbosity = Some(r.read_i32()?);
-            m_incremental_static_broadphase = Some(r.read_bool()?);
-            r.align(4)?;
+            m_simulation_mode = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_auto_sync_transforms = Some(rdr.read_bool()?);
+            m_reuse_collision_callbacks = Some(rdr.read_bool()?);
+            m_invoke_collision_callbacks = Some(rdr.read_bool()?);
+            m_cloth_inter_collision_settings_toggle = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_cloth_gravity = Some(Vector3f::parse(rdr, ver)?);
+            m_contact_pairs_mode = Some(rdr.read_i32()?);
+            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(rdr, ver)?);
+            m_world_bounds = Some(Aabb::parse(rdr, ver)?);
+            m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(rdr, ver)?);
+            m_friction_type = Some(rdr.read_i32()?);
+            m_enable_enhanced_determinism = Some(rdr.read_bool()?);
+            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(rdr, ver)?);
+            m_generate_on_trigger_stay_events = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_solver_type = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_default_max_angular_speed = Some(rdr.read_f32()?);
+            m_scratch_buffer_chunk_count = Some(rdr.read_u32()?);
+            m_current_backend_id = Some(rdr.read_u32()?);
+            m_fast_motion_threshold = Some(rdr.read_f32()?);
+            m_scene_buffers_release_interval = Some(rdr.read_u32()?);
+            m_release_scene_buffers = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_log_verbosity = Some(rdr.read_i32()?);
+            m_incremental_static_broadphase = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(6000, 3, 3) {
-            m_simulation_mode = Some(r.read_i32()?);
-            r.align(4)?;
-            m_auto_sync_transforms = Some(r.read_bool()?);
-            m_reuse_collision_callbacks = Some(r.read_bool()?);
-            m_invoke_collision_callbacks = Some(r.read_bool()?);
-            m_cloth_inter_collision_settings_toggle = Some(r.read_bool()?);
-            r.align(4)?;
-            m_cloth_gravity = Some(Vector3f::parse(r, ver)?);
-            m_contact_pairs_mode = Some(r.read_i32()?);
-            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(r, ver)?);
-            m_world_bounds = Some(Aabb::parse(r, ver)?);
-            m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(r, ver)?);
-            m_friction_type = Some(r.read_i32()?);
-            m_enable_enhanced_determinism = Some(r.read_bool()?);
-            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(r, ver)?);
-            m_generate_on_trigger_stay_events = Some(r.read_bool()?);
-            r.align(4)?;
-            m_solver_type = Some(r.read_i32()?);
-            r.align(4)?;
-            m_default_max_angular_speed = Some(r.read_f32()?);
-            m_scratch_buffer_chunk_count = Some(r.read_u32()?);
-            m_current_backend_id = Some(r.read_u32()?);
-            m_fast_motion_threshold = Some(r.read_f32()?);
-            m_scene_buffers_release_interval = Some(r.read_u32()?);
-            m_release_scene_buffers = Some(r.read_bool()?);
-            r.align(4)?;
-            m_log_verbosity = Some(r.read_i32()?);
+            m_simulation_mode = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_auto_sync_transforms = Some(rdr.read_bool()?);
+            m_reuse_collision_callbacks = Some(rdr.read_bool()?);
+            m_invoke_collision_callbacks = Some(rdr.read_bool()?);
+            m_cloth_inter_collision_settings_toggle = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_cloth_gravity = Some(Vector3f::parse(rdr, ver)?);
+            m_contact_pairs_mode = Some(rdr.read_i32()?);
+            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(rdr, ver)?);
+            m_world_bounds = Some(Aabb::parse(rdr, ver)?);
+            m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(rdr, ver)?);
+            m_friction_type = Some(rdr.read_i32()?);
+            m_enable_enhanced_determinism = Some(rdr.read_bool()?);
+            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(rdr, ver)?);
+            m_generate_on_trigger_stay_events = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_solver_type = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_default_max_angular_speed = Some(rdr.read_f32()?);
+            m_scratch_buffer_chunk_count = Some(rdr.read_u32()?);
+            m_current_backend_id = Some(rdr.read_u32()?);
+            m_fast_motion_threshold = Some(rdr.read_f32()?);
+            m_scene_buffers_release_interval = Some(rdr.read_u32()?);
+            m_release_scene_buffers = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_log_verbosity = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(6000, 3, 1) {
-            m_simulation_mode = Some(r.read_i32()?);
-            r.align(4)?;
-            m_auto_sync_transforms = Some(r.read_bool()?);
-            m_reuse_collision_callbacks = Some(r.read_bool()?);
-            m_invoke_collision_callbacks = Some(r.read_bool()?);
-            m_cloth_inter_collision_settings_toggle = Some(r.read_bool()?);
-            r.align(4)?;
-            m_cloth_gravity = Some(Vector3f::parse(r, ver)?);
-            m_contact_pairs_mode = Some(r.read_i32()?);
-            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(r, ver)?);
-            m_world_bounds = Some(Aabb::parse(r, ver)?);
-            m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(r, ver)?);
-            m_friction_type = Some(r.read_i32()?);
-            m_enable_enhanced_determinism = Some(r.read_bool()?);
-            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(r, ver)?);
-            m_generate_on_trigger_stay_events = Some(r.read_bool()?);
-            r.align(4)?;
-            m_solver_type = Some(r.read_i32()?);
-            r.align(4)?;
-            m_default_max_angular_speed = Some(r.read_f32()?);
-            m_scratch_buffer_chunk_count = Some(r.read_u32()?);
-            m_current_backend_id = Some(r.read_u32()?);
-            m_fast_motion_threshold = Some(r.read_f32()?);
-            m_scene_buffers_release_interval = Some(r.read_u32()?);
-            m_release_scene_buffers = Some(r.read_bool()?);
-            r.align(4)?;
+            m_simulation_mode = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_auto_sync_transforms = Some(rdr.read_bool()?);
+            m_reuse_collision_callbacks = Some(rdr.read_bool()?);
+            m_invoke_collision_callbacks = Some(rdr.read_bool()?);
+            m_cloth_inter_collision_settings_toggle = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_cloth_gravity = Some(Vector3f::parse(rdr, ver)?);
+            m_contact_pairs_mode = Some(rdr.read_i32()?);
+            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(rdr, ver)?);
+            m_world_bounds = Some(Aabb::parse(rdr, ver)?);
+            m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(rdr, ver)?);
+            m_friction_type = Some(rdr.read_i32()?);
+            m_enable_enhanced_determinism = Some(rdr.read_bool()?);
+            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(rdr, ver)?);
+            m_generate_on_trigger_stay_events = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_solver_type = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_default_max_angular_speed = Some(rdr.read_f32()?);
+            m_scratch_buffer_chunk_count = Some(rdr.read_u32()?);
+            m_current_backend_id = Some(rdr.read_u32()?);
+            m_fast_motion_threshold = Some(rdr.read_f32()?);
+            m_scene_buffers_release_interval = Some(rdr.read_u32()?);
+            m_release_scene_buffers = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(6000, 2, 6) {
-            m_simulation_mode = Some(r.read_i32()?);
-            r.align(4)?;
-            m_auto_sync_transforms = Some(r.read_bool()?);
-            m_reuse_collision_callbacks = Some(r.read_bool()?);
-            m_invoke_collision_callbacks = Some(r.read_bool()?);
-            m_cloth_inter_collision_settings_toggle = Some(r.read_bool()?);
-            r.align(4)?;
-            m_cloth_gravity = Some(Vector3f::parse(r, ver)?);
-            m_contact_pairs_mode = Some(r.read_i32()?);
-            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(r, ver)?);
-            m_world_bounds = Some(Aabb::parse(r, ver)?);
-            m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(r, ver)?);
-            m_friction_type = Some(r.read_i32()?);
-            m_enable_enhanced_determinism = Some(r.read_bool()?);
-            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(r, ver)?);
-            m_generate_on_trigger_stay_events = Some(r.read_bool()?);
-            r.align(4)?;
-            m_solver_type = Some(r.read_i32()?);
-            r.align(4)?;
-            m_default_max_angular_speed = Some(r.read_f32()?);
-            m_scratch_buffer_chunk_count = Some(r.read_u32()?);
-            m_current_backend_id = Some(r.read_u32()?);
-            m_fast_motion_threshold = Some(r.read_f32()?);
+            m_simulation_mode = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_auto_sync_transforms = Some(rdr.read_bool()?);
+            m_reuse_collision_callbacks = Some(rdr.read_bool()?);
+            m_invoke_collision_callbacks = Some(rdr.read_bool()?);
+            m_cloth_inter_collision_settings_toggle = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_cloth_gravity = Some(Vector3f::parse(rdr, ver)?);
+            m_contact_pairs_mode = Some(rdr.read_i32()?);
+            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(rdr, ver)?);
+            m_world_bounds = Some(Aabb::parse(rdr, ver)?);
+            m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(rdr, ver)?);
+            m_friction_type = Some(rdr.read_i32()?);
+            m_enable_enhanced_determinism = Some(rdr.read_bool()?);
+            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(rdr, ver)?);
+            m_generate_on_trigger_stay_events = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_solver_type = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_default_max_angular_speed = Some(rdr.read_f32()?);
+            m_scratch_buffer_chunk_count = Some(rdr.read_u32()?);
+            m_current_backend_id = Some(rdr.read_u32()?);
+            m_fast_motion_threshold = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(6000, 1, 4) {
-            m_simulation_mode = Some(r.read_i32()?);
-            r.align(4)?;
-            m_auto_sync_transforms = Some(r.read_bool()?);
-            m_reuse_collision_callbacks = Some(r.read_bool()?);
-            m_invoke_collision_callbacks = Some(r.read_bool()?);
-            m_cloth_inter_collision_settings_toggle = Some(r.read_bool()?);
-            r.align(4)?;
-            m_cloth_gravity = Some(Vector3f::parse(r, ver)?);
-            m_contact_pairs_mode = Some(r.read_i32()?);
-            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(r, ver)?);
-            m_friction_type = Some(r.read_i32()?);
-            m_enable_enhanced_determinism = Some(r.read_bool()?);
-            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(r, ver)?);
-            m_generate_on_trigger_stay_events = Some(r.read_bool()?);
-            r.align(4)?;
-            m_solver_type = Some(r.read_i32()?);
-            r.align(4)?;
-            m_default_max_angular_speed = Some(r.read_f32()?);
-            m_scratch_buffer_chunk_count = Some(r.read_u32()?);
-            m_current_backend_id = Some(r.read_u32()?);
-            m_fast_motion_threshold = Some(r.read_f32()?);
+            m_simulation_mode = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_auto_sync_transforms = Some(rdr.read_bool()?);
+            m_reuse_collision_callbacks = Some(rdr.read_bool()?);
+            m_invoke_collision_callbacks = Some(rdr.read_bool()?);
+            m_cloth_inter_collision_settings_toggle = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_cloth_gravity = Some(Vector3f::parse(rdr, ver)?);
+            m_contact_pairs_mode = Some(rdr.read_i32()?);
+            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(rdr, ver)?);
+            m_friction_type = Some(rdr.read_i32()?);
+            m_enable_enhanced_determinism = Some(rdr.read_bool()?);
+            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(rdr, ver)?);
+            m_generate_on_trigger_stay_events = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_solver_type = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_default_max_angular_speed = Some(rdr.read_f32()?);
+            m_scratch_buffer_chunk_count = Some(rdr.read_u32()?);
+            m_current_backend_id = Some(rdr.read_u32()?);
+            m_fast_motion_threshold = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(6000, 1, 0) {
-            m_simulation_mode = Some(r.read_i32()?);
-            r.align(4)?;
-            m_auto_sync_transforms = Some(r.read_bool()?);
-            m_reuse_collision_callbacks = Some(r.read_bool()?);
-            m_invoke_collision_callbacks = Some(r.read_bool()?);
-            m_cloth_inter_collision_settings_toggle = Some(r.read_bool()?);
-            r.align(4)?;
-            m_cloth_gravity = Some(Vector3f::parse(r, ver)?);
-            m_contact_pairs_mode = Some(r.read_i32()?);
-            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(r, ver)?);
-            m_friction_type = Some(r.read_i32()?);
-            m_enable_enhanced_determinism = Some(r.read_bool()?);
-            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(r, ver)?);
-            m_solver_type = Some(r.read_i32()?);
-            r.align(4)?;
-            m_default_max_angular_speed = Some(r.read_f32()?);
-            m_scratch_buffer_chunk_count = Some(r.read_u32()?);
-            m_current_backend_id = Some(r.read_u32()?);
-            m_fast_motion_threshold = Some(r.read_f32()?);
+            m_simulation_mode = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_auto_sync_transforms = Some(rdr.read_bool()?);
+            m_reuse_collision_callbacks = Some(rdr.read_bool()?);
+            m_invoke_collision_callbacks = Some(rdr.read_bool()?);
+            m_cloth_inter_collision_settings_toggle = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_cloth_gravity = Some(Vector3f::parse(rdr, ver)?);
+            m_contact_pairs_mode = Some(rdr.read_i32()?);
+            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(rdr, ver)?);
+            m_friction_type = Some(rdr.read_i32()?);
+            m_enable_enhanced_determinism = Some(rdr.read_bool()?);
+            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(rdr, ver)?);
+            m_solver_type = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_default_max_angular_speed = Some(rdr.read_f32()?);
+            m_scratch_buffer_chunk_count = Some(rdr.read_u32()?);
+            m_current_backend_id = Some(rdr.read_u32()?);
+            m_fast_motion_threshold = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(6000, 0, 67) {
-            m_simulation_mode = Some(r.read_i32()?);
-            r.align(4)?;
-            m_auto_sync_transforms = Some(r.read_bool()?);
-            m_reuse_collision_callbacks = Some(r.read_bool()?);
-            m_invoke_collision_callbacks = Some(r.read_bool()?);
-            m_cloth_inter_collision_settings_toggle = Some(r.read_bool()?);
-            r.align(4)?;
-            m_cloth_gravity = Some(Vector3f::parse(r, ver)?);
-            m_contact_pairs_mode = Some(r.read_i32()?);
-            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(r, ver)?);
-            m_world_bounds = Some(Aabb::parse(r, ver)?);
-            m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(r, ver)?);
-            m_friction_type = Some(r.read_i32()?);
-            m_enable_enhanced_determinism = Some(r.read_bool()?);
-            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(r, ver)?);
-            m_generate_on_trigger_stay_events = Some(r.read_bool()?);
-            r.align(4)?;
-            m_solver_type = Some(r.read_i32()?);
-            r.align(4)?;
-            m_default_max_angular_speed = Some(r.read_f32()?);
-            m_scratch_buffer_chunk_count = Some(r.read_u32()?);
-            m_current_backend_id = Some(r.read_u32()?);
-            m_fast_motion_threshold = Some(r.read_f32()?);
-            m_scene_buffers_release_interval = Some(r.read_u32()?);
-            m_release_scene_buffers = Some(r.read_bool()?);
-            r.align(4)?;
-            m_log_verbosity = Some(r.read_i32()?);
-            m_incremental_static_broadphase = Some(r.read_bool()?);
-            r.align(4)?;
+            m_simulation_mode = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_auto_sync_transforms = Some(rdr.read_bool()?);
+            m_reuse_collision_callbacks = Some(rdr.read_bool()?);
+            m_invoke_collision_callbacks = Some(rdr.read_bool()?);
+            m_cloth_inter_collision_settings_toggle = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_cloth_gravity = Some(Vector3f::parse(rdr, ver)?);
+            m_contact_pairs_mode = Some(rdr.read_i32()?);
+            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(rdr, ver)?);
+            m_world_bounds = Some(Aabb::parse(rdr, ver)?);
+            m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(rdr, ver)?);
+            m_friction_type = Some(rdr.read_i32()?);
+            m_enable_enhanced_determinism = Some(rdr.read_bool()?);
+            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(rdr, ver)?);
+            m_generate_on_trigger_stay_events = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_solver_type = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_default_max_angular_speed = Some(rdr.read_f32()?);
+            m_scratch_buffer_chunk_count = Some(rdr.read_u32()?);
+            m_current_backend_id = Some(rdr.read_u32()?);
+            m_fast_motion_threshold = Some(rdr.read_f32()?);
+            m_scene_buffers_release_interval = Some(rdr.read_u32()?);
+            m_release_scene_buffers = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_log_verbosity = Some(rdr.read_i32()?);
+            m_incremental_static_broadphase = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(6000, 0, 65) {
-            m_simulation_mode = Some(r.read_i32()?);
-            r.align(4)?;
-            m_auto_sync_transforms = Some(r.read_bool()?);
-            m_reuse_collision_callbacks = Some(r.read_bool()?);
-            m_invoke_collision_callbacks = Some(r.read_bool()?);
-            m_cloth_inter_collision_settings_toggle = Some(r.read_bool()?);
-            r.align(4)?;
-            m_cloth_gravity = Some(Vector3f::parse(r, ver)?);
-            m_contact_pairs_mode = Some(r.read_i32()?);
-            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(r, ver)?);
-            m_world_bounds = Some(Aabb::parse(r, ver)?);
-            m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(r, ver)?);
-            m_friction_type = Some(r.read_i32()?);
-            m_enable_enhanced_determinism = Some(r.read_bool()?);
-            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(r, ver)?);
-            m_generate_on_trigger_stay_events = Some(r.read_bool()?);
-            r.align(4)?;
-            m_solver_type = Some(r.read_i32()?);
-            r.align(4)?;
-            m_default_max_angular_speed = Some(r.read_f32()?);
-            m_scratch_buffer_chunk_count = Some(r.read_u32()?);
-            m_current_backend_id = Some(r.read_u32()?);
-            m_fast_motion_threshold = Some(r.read_f32()?);
-            m_scene_buffers_release_interval = Some(r.read_u32()?);
-            m_release_scene_buffers = Some(r.read_bool()?);
-            r.align(4)?;
-            m_log_verbosity = Some(r.read_i32()?);
+            m_simulation_mode = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_auto_sync_transforms = Some(rdr.read_bool()?);
+            m_reuse_collision_callbacks = Some(rdr.read_bool()?);
+            m_invoke_collision_callbacks = Some(rdr.read_bool()?);
+            m_cloth_inter_collision_settings_toggle = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_cloth_gravity = Some(Vector3f::parse(rdr, ver)?);
+            m_contact_pairs_mode = Some(rdr.read_i32()?);
+            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(rdr, ver)?);
+            m_world_bounds = Some(Aabb::parse(rdr, ver)?);
+            m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(rdr, ver)?);
+            m_friction_type = Some(rdr.read_i32()?);
+            m_enable_enhanced_determinism = Some(rdr.read_bool()?);
+            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(rdr, ver)?);
+            m_generate_on_trigger_stay_events = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_solver_type = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_default_max_angular_speed = Some(rdr.read_f32()?);
+            m_scratch_buffer_chunk_count = Some(rdr.read_u32()?);
+            m_current_backend_id = Some(rdr.read_u32()?);
+            m_fast_motion_threshold = Some(rdr.read_f32()?);
+            m_scene_buffers_release_interval = Some(rdr.read_u32()?);
+            m_release_scene_buffers = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_log_verbosity = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(6000, 0, 59) {
-            m_simulation_mode = Some(r.read_i32()?);
-            r.align(4)?;
-            m_auto_sync_transforms = Some(r.read_bool()?);
-            m_reuse_collision_callbacks = Some(r.read_bool()?);
-            m_invoke_collision_callbacks = Some(r.read_bool()?);
-            m_cloth_inter_collision_settings_toggle = Some(r.read_bool()?);
-            r.align(4)?;
-            m_cloth_gravity = Some(Vector3f::parse(r, ver)?);
-            m_contact_pairs_mode = Some(r.read_i32()?);
-            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(r, ver)?);
-            m_world_bounds = Some(Aabb::parse(r, ver)?);
-            m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(r, ver)?);
-            m_friction_type = Some(r.read_i32()?);
-            m_enable_enhanced_determinism = Some(r.read_bool()?);
-            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(r, ver)?);
-            m_generate_on_trigger_stay_events = Some(r.read_bool()?);
-            r.align(4)?;
-            m_solver_type = Some(r.read_i32()?);
-            r.align(4)?;
-            m_default_max_angular_speed = Some(r.read_f32()?);
-            m_scratch_buffer_chunk_count = Some(r.read_u32()?);
-            m_current_backend_id = Some(r.read_u32()?);
-            m_fast_motion_threshold = Some(r.read_f32()?);
+            m_simulation_mode = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_auto_sync_transforms = Some(rdr.read_bool()?);
+            m_reuse_collision_callbacks = Some(rdr.read_bool()?);
+            m_invoke_collision_callbacks = Some(rdr.read_bool()?);
+            m_cloth_inter_collision_settings_toggle = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_cloth_gravity = Some(Vector3f::parse(rdr, ver)?);
+            m_contact_pairs_mode = Some(rdr.read_i32()?);
+            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(rdr, ver)?);
+            m_world_bounds = Some(Aabb::parse(rdr, ver)?);
+            m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(rdr, ver)?);
+            m_friction_type = Some(rdr.read_i32()?);
+            m_enable_enhanced_determinism = Some(rdr.read_bool()?);
+            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(rdr, ver)?);
+            m_generate_on_trigger_stay_events = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_solver_type = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_default_max_angular_speed = Some(rdr.read_f32()?);
+            m_scratch_buffer_chunk_count = Some(rdr.read_u32()?);
+            m_current_backend_id = Some(rdr.read_u32()?);
+            m_fast_motion_threshold = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(6000, 0, 50) {
-            m_simulation_mode = Some(r.read_i32()?);
-            r.align(4)?;
-            m_auto_sync_transforms = Some(r.read_bool()?);
-            m_reuse_collision_callbacks = Some(r.read_bool()?);
-            m_invoke_collision_callbacks = Some(r.read_bool()?);
-            m_cloth_inter_collision_settings_toggle = Some(r.read_bool()?);
-            r.align(4)?;
-            m_cloth_gravity = Some(Vector3f::parse(r, ver)?);
-            m_contact_pairs_mode = Some(r.read_i32()?);
-            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(r, ver)?);
-            m_friction_type = Some(r.read_i32()?);
-            m_enable_enhanced_determinism = Some(r.read_bool()?);
-            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(r, ver)?);
-            m_generate_on_trigger_stay_events = Some(r.read_bool()?);
-            r.align(4)?;
-            m_solver_type = Some(r.read_i32()?);
-            r.align(4)?;
-            m_default_max_angular_speed = Some(r.read_f32()?);
-            m_scratch_buffer_chunk_count = Some(r.read_u32()?);
-            m_current_backend_id = Some(r.read_u32()?);
-            m_fast_motion_threshold = Some(r.read_f32()?);
+            m_simulation_mode = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_auto_sync_transforms = Some(rdr.read_bool()?);
+            m_reuse_collision_callbacks = Some(rdr.read_bool()?);
+            m_invoke_collision_callbacks = Some(rdr.read_bool()?);
+            m_cloth_inter_collision_settings_toggle = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_cloth_gravity = Some(Vector3f::parse(rdr, ver)?);
+            m_contact_pairs_mode = Some(rdr.read_i32()?);
+            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(rdr, ver)?);
+            m_friction_type = Some(rdr.read_i32()?);
+            m_enable_enhanced_determinism = Some(rdr.read_bool()?);
+            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(rdr, ver)?);
+            m_generate_on_trigger_stay_events = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_solver_type = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_default_max_angular_speed = Some(rdr.read_f32()?);
+            m_scratch_buffer_chunk_count = Some(rdr.read_u32()?);
+            m_current_backend_id = Some(rdr.read_u32()?);
+            m_fast_motion_threshold = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(6000, 0, 26) {
-            m_simulation_mode = Some(r.read_i32()?);
-            r.align(4)?;
-            m_auto_sync_transforms = Some(r.read_bool()?);
-            m_reuse_collision_callbacks = Some(r.read_bool()?);
-            m_invoke_collision_callbacks = Some(r.read_bool()?);
-            m_cloth_inter_collision_settings_toggle = Some(r.read_bool()?);
-            r.align(4)?;
-            m_cloth_gravity = Some(Vector3f::parse(r, ver)?);
-            m_contact_pairs_mode = Some(r.read_i32()?);
-            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(r, ver)?);
-            m_friction_type = Some(r.read_i32()?);
-            m_enable_enhanced_determinism = Some(r.read_bool()?);
-            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(r, ver)?);
-            m_solver_type = Some(r.read_i32()?);
-            r.align(4)?;
-            m_default_max_angular_speed = Some(r.read_f32()?);
-            m_scratch_buffer_chunk_count = Some(r.read_u32()?);
-            m_current_backend_id = Some(r.read_u32()?);
-            m_fast_motion_threshold = Some(r.read_f32()?);
+            m_simulation_mode = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_auto_sync_transforms = Some(rdr.read_bool()?);
+            m_reuse_collision_callbacks = Some(rdr.read_bool()?);
+            m_invoke_collision_callbacks = Some(rdr.read_bool()?);
+            m_cloth_inter_collision_settings_toggle = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_cloth_gravity = Some(Vector3f::parse(rdr, ver)?);
+            m_contact_pairs_mode = Some(rdr.read_i32()?);
+            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(rdr, ver)?);
+            m_friction_type = Some(rdr.read_i32()?);
+            m_enable_enhanced_determinism = Some(rdr.read_bool()?);
+            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(rdr, ver)?);
+            m_solver_type = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_default_max_angular_speed = Some(rdr.read_f32()?);
+            m_scratch_buffer_chunk_count = Some(rdr.read_u32()?);
+            m_current_backend_id = Some(rdr.read_u32()?);
+            m_fast_motion_threshold = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            m_simulation_mode = Some(r.read_i32()?);
-            r.align(4)?;
-            m_auto_sync_transforms = Some(r.read_bool()?);
-            m_reuse_collision_callbacks = Some(r.read_bool()?);
-            m_invoke_collision_callbacks = Some(r.read_bool()?);
-            m_cloth_inter_collision_settings_toggle = Some(r.read_bool()?);
-            r.align(4)?;
-            m_cloth_gravity = Some(Vector3f::parse(r, ver)?);
-            m_contact_pairs_mode = Some(r.read_i32()?);
-            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(r, ver)?);
-            m_friction_type = Some(r.read_i32()?);
-            m_enable_enhanced_determinism = Some(r.read_bool()?);
-            m_enable_unified_heightmaps = Some(PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(r, ver)?);
-            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(r, ver)?);
-            m_solver_type = Some(r.read_i32()?);
-            r.align(4)?;
-            m_default_max_angular_speed = Some(r.read_f32()?);
-            m_scratch_buffer_chunk_count = Some(r.read_u32()?);
-            m_current_backend_id = Some(r.read_u32()?);
-            m_fast_motion_threshold = Some(r.read_f32()?);
+            m_simulation_mode = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_auto_sync_transforms = Some(rdr.read_bool()?);
+            m_reuse_collision_callbacks = Some(rdr.read_bool()?);
+            m_invoke_collision_callbacks = Some(rdr.read_bool()?);
+            m_cloth_inter_collision_settings_toggle = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_cloth_gravity = Some(Vector3f::parse(rdr, ver)?);
+            m_contact_pairs_mode = Some(rdr.read_i32()?);
+            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(rdr, ver)?);
+            m_friction_type = Some(rdr.read_i32()?);
+            m_enable_enhanced_determinism = Some(rdr.read_bool()?);
+            m_enable_unified_heightmaps = Some(PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(rdr, ver)?);
+            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(rdr, ver)?);
+            m_solver_type = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_default_max_angular_speed = Some(rdr.read_f32()?);
+            m_scratch_buffer_chunk_count = Some(rdr.read_u32()?);
+            m_current_backend_id = Some(rdr.read_u32()?);
+            m_fast_motion_threshold = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(2023, 2, 12) {
-            m_simulation_mode = Some(r.read_i32()?);
-            r.align(4)?;
-            m_auto_sync_transforms = Some(r.read_bool()?);
-            m_reuse_collision_callbacks = Some(r.read_bool()?);
-            m_invoke_collision_callbacks = Some(r.read_bool()?);
-            m_cloth_inter_collision_settings_toggle = Some(r.read_bool()?);
-            r.align(4)?;
-            m_cloth_gravity = Some(Vector3f::parse(r, ver)?);
-            m_contact_pairs_mode = Some(r.read_i32()?);
-            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(r, ver)?);
-            m_friction_type = Some(r.read_i32()?);
-            m_enable_enhanced_determinism = Some(r.read_bool()?);
-            m_enable_unified_heightmaps = Some(PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(r, ver)?);
-            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(r, ver)?);
-            m_solver_type = Some(r.read_i32()?);
-            r.align(4)?;
-            m_default_max_angular_speed = Some(r.read_f32()?);
-            m_scratch_buffer_chunk_count = Some(r.read_u32()?);
-            m_fast_motion_threshold = Some(r.read_f32()?);
+            m_simulation_mode = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_auto_sync_transforms = Some(rdr.read_bool()?);
+            m_reuse_collision_callbacks = Some(rdr.read_bool()?);
+            m_invoke_collision_callbacks = Some(rdr.read_bool()?);
+            m_cloth_inter_collision_settings_toggle = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_cloth_gravity = Some(Vector3f::parse(rdr, ver)?);
+            m_contact_pairs_mode = Some(rdr.read_i32()?);
+            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(rdr, ver)?);
+            m_friction_type = Some(rdr.read_i32()?);
+            m_enable_enhanced_determinism = Some(rdr.read_bool()?);
+            m_enable_unified_heightmaps = Some(PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(rdr, ver)?);
+            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(rdr, ver)?);
+            m_solver_type = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_default_max_angular_speed = Some(rdr.read_f32()?);
+            m_scratch_buffer_chunk_count = Some(rdr.read_u32()?);
+            m_fast_motion_threshold = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            m_simulation_mode = Some(r.read_i32()?);
-            r.align(4)?;
-            m_auto_sync_transforms = Some(r.read_bool()?);
-            m_reuse_collision_callbacks = Some(r.read_bool()?);
-            m_invoke_collision_callbacks = Some(r.read_bool()?);
-            m_cloth_inter_collision_settings_toggle = Some(r.read_bool()?);
-            r.align(4)?;
-            m_cloth_gravity = Some(Vector3f::parse(r, ver)?);
-            m_contact_pairs_mode = Some(r.read_i32()?);
-            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(r, ver)?);
-            m_friction_type = Some(r.read_i32()?);
-            m_enable_enhanced_determinism = Some(r.read_bool()?);
-            m_enable_unified_heightmaps = Some(PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(r, ver)?);
-            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(r, ver)?);
-            m_solver_type = Some(r.read_i32()?);
-            r.align(4)?;
-            m_default_max_angular_speed = Some(r.read_f32()?);
-            m_scratch_buffer_chunk_count = Some(r.read_u32()?);
+            m_simulation_mode = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_auto_sync_transforms = Some(rdr.read_bool()?);
+            m_reuse_collision_callbacks = Some(rdr.read_bool()?);
+            m_invoke_collision_callbacks = Some(rdr.read_bool()?);
+            m_cloth_inter_collision_settings_toggle = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_cloth_gravity = Some(Vector3f::parse(rdr, ver)?);
+            m_contact_pairs_mode = Some(rdr.read_i32()?);
+            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(rdr, ver)?);
+            m_friction_type = Some(rdr.read_i32()?);
+            m_enable_enhanced_determinism = Some(rdr.read_bool()?);
+            m_enable_unified_heightmaps = Some(PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(rdr, ver)?);
+            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(rdr, ver)?);
+            m_solver_type = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_default_max_angular_speed = Some(rdr.read_f32()?);
+            m_scratch_buffer_chunk_count = Some(rdr.read_u32()?);
         } else if *ver >= crate::UnityVersion::new(2022, 3, 21) {
-            m_simulation_mode = Some(r.read_i32()?);
-            r.align(4)?;
-            m_auto_sync_transforms = Some(r.read_bool()?);
-            m_reuse_collision_callbacks = Some(r.read_bool()?);
-            m_invoke_collision_callbacks = Some(r.read_bool()?);
-            m_cloth_inter_collision_settings_toggle = Some(r.read_bool()?);
-            r.align(4)?;
-            m_cloth_gravity = Some(Vector3f::parse(r, ver)?);
-            m_contact_pairs_mode = Some(r.read_i32()?);
-            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(r, ver)?);
-            m_world_bounds = Some(Aabb::parse(r, ver)?);
-            m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(r, ver)?);
-            m_friction_type = Some(r.read_i32()?);
-            m_enable_enhanced_determinism = Some(r.read_bool()?);
-            m_enable_unified_heightmaps = Some(PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(r, ver)?);
-            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(r, ver)?);
-            m_solver_type = Some(r.read_i32()?);
-            r.align(4)?;
-            m_default_max_angular_speed = Some(r.read_f32()?);
-            m_fast_motion_threshold = Some(r.read_f32()?);
+            m_simulation_mode = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_auto_sync_transforms = Some(rdr.read_bool()?);
+            m_reuse_collision_callbacks = Some(rdr.read_bool()?);
+            m_invoke_collision_callbacks = Some(rdr.read_bool()?);
+            m_cloth_inter_collision_settings_toggle = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_cloth_gravity = Some(Vector3f::parse(rdr, ver)?);
+            m_contact_pairs_mode = Some(rdr.read_i32()?);
+            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(rdr, ver)?);
+            m_world_bounds = Some(Aabb::parse(rdr, ver)?);
+            m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(rdr, ver)?);
+            m_friction_type = Some(rdr.read_i32()?);
+            m_enable_enhanced_determinism = Some(rdr.read_bool()?);
+            m_enable_unified_heightmaps = Some(PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(rdr, ver)?);
+            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(rdr, ver)?);
+            m_solver_type = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_default_max_angular_speed = Some(rdr.read_f32()?);
+            m_fast_motion_threshold = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            m_simulation_mode = Some(r.read_i32()?);
-            r.align(4)?;
-            m_auto_sync_transforms = Some(r.read_bool()?);
-            m_reuse_collision_callbacks = Some(r.read_bool()?);
-            m_invoke_collision_callbacks = Some(r.read_bool()?);
-            m_cloth_inter_collision_settings_toggle = Some(r.read_bool()?);
-            r.align(4)?;
-            m_cloth_gravity = Some(Vector3f::parse(r, ver)?);
-            m_contact_pairs_mode = Some(r.read_i32()?);
-            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(r, ver)?);
-            m_world_bounds = Some(Aabb::parse(r, ver)?);
-            m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(r, ver)?);
-            m_friction_type = Some(r.read_i32()?);
-            m_enable_enhanced_determinism = Some(r.read_bool()?);
-            m_enable_unified_heightmaps = Some(PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(r, ver)?);
-            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(r, ver)?);
-            m_solver_type = Some(r.read_i32()?);
-            r.align(4)?;
-            m_default_max_angular_speed = Some(r.read_f32()?);
+            m_simulation_mode = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_auto_sync_transforms = Some(rdr.read_bool()?);
+            m_reuse_collision_callbacks = Some(rdr.read_bool()?);
+            m_invoke_collision_callbacks = Some(rdr.read_bool()?);
+            m_cloth_inter_collision_settings_toggle = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_cloth_gravity = Some(Vector3f::parse(rdr, ver)?);
+            m_contact_pairs_mode = Some(rdr.read_i32()?);
+            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(rdr, ver)?);
+            m_world_bounds = Some(Aabb::parse(rdr, ver)?);
+            m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(rdr, ver)?);
+            m_friction_type = Some(rdr.read_i32()?);
+            m_enable_enhanced_determinism = Some(rdr.read_bool()?);
+            m_enable_unified_heightmaps = Some(PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(rdr, ver)?);
+            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(rdr, ver)?);
+            m_solver_type = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_default_max_angular_speed = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            m_auto_simulation = Some(r.read_bool()?);
-            m_auto_sync_transforms = Some(r.read_bool()?);
-            m_reuse_collision_callbacks = Some(r.read_bool()?);
-            m_cloth_inter_collision_settings_toggle = Some(r.read_bool()?);
-            r.align(4)?;
-            m_cloth_gravity = Some(Vector3f::parse(r, ver)?);
-            m_contact_pairs_mode = Some(r.read_i32()?);
-            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(r, ver)?);
-            m_world_bounds = Some(Aabb::parse(r, ver)?);
-            m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(r, ver)?);
-            m_friction_type = Some(r.read_i32()?);
-            m_enable_enhanced_determinism = Some(r.read_bool()?);
-            m_enable_unified_heightmaps = Some(PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(r, ver)?);
-            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(r, ver)?);
-            m_solver_type = Some(r.read_i32()?);
-            r.align(4)?;
-            m_default_max_angular_speed = Some(r.read_f32()?);
+            m_auto_simulation = Some(rdr.read_bool()?);
+            m_auto_sync_transforms = Some(rdr.read_bool()?);
+            m_reuse_collision_callbacks = Some(rdr.read_bool()?);
+            m_cloth_inter_collision_settings_toggle = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_cloth_gravity = Some(Vector3f::parse(rdr, ver)?);
+            m_contact_pairs_mode = Some(rdr.read_i32()?);
+            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(rdr, ver)?);
+            m_world_bounds = Some(Aabb::parse(rdr, ver)?);
+            m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(rdr, ver)?);
+            m_friction_type = Some(rdr.read_i32()?);
+            m_enable_enhanced_determinism = Some(rdr.read_bool()?);
+            m_enable_unified_heightmaps = Some(PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(rdr, ver)?);
+            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(rdr, ver)?);
+            m_solver_type = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_default_max_angular_speed = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            m_auto_simulation = Some(r.read_bool()?);
-            m_auto_sync_transforms = Some(r.read_bool()?);
-            m_reuse_collision_callbacks = Some(r.read_bool()?);
-            m_cloth_inter_collision_settings_toggle = Some(r.read_bool()?);
-            r.align(4)?;
-            m_cloth_gravity = Some(Vector3f::parse(r, ver)?);
-            m_contact_pairs_mode = Some(r.read_i32()?);
-            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(r, ver)?);
-            m_world_bounds = Some(Aabb::parse(r, ver)?);
-            m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(r, ver)?);
-            m_friction_type = Some(r.read_i32()?);
-            m_enable_enhanced_determinism = Some(r.read_bool()?);
-            m_enable_unified_heightmaps = Some(PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(r, ver)?);
-            m_solver_type = Some(r.read_i32()?);
-            r.align(4)?;
-            m_default_max_angular_speed = Some(r.read_f32()?);
+            m_auto_simulation = Some(rdr.read_bool()?);
+            m_auto_sync_transforms = Some(rdr.read_bool()?);
+            m_reuse_collision_callbacks = Some(rdr.read_bool()?);
+            m_cloth_inter_collision_settings_toggle = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_cloth_gravity = Some(Vector3f::parse(rdr, ver)?);
+            m_contact_pairs_mode = Some(rdr.read_i32()?);
+            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(rdr, ver)?);
+            m_world_bounds = Some(Aabb::parse(rdr, ver)?);
+            m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(rdr, ver)?);
+            m_friction_type = Some(rdr.read_i32()?);
+            m_enable_enhanced_determinism = Some(rdr.read_bool()?);
+            m_enable_unified_heightmaps = Some(PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(rdr, ver)?);
+            m_solver_type = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_default_max_angular_speed = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_auto_simulation = Some(r.read_bool()?);
-            m_auto_sync_transforms = Some(r.read_bool()?);
-            m_reuse_collision_callbacks = Some(r.read_bool()?);
-            m_cloth_inter_collision_settings_toggle = Some(r.read_bool()?);
-            r.align(4)?;
-            m_cloth_gravity = Some(Vector3f::parse(r, ver)?);
-            m_contact_pairs_mode = Some(r.read_i32()?);
-            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(r, ver)?);
-            m_world_bounds = Some(Aabb::parse(r, ver)?);
-            m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(r, ver)?);
-            m_friction_type = Some(r.read_i32()?);
-            m_enable_enhanced_determinism = Some(r.read_bool()?);
-            m_enable_unified_heightmaps = Some(PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(r, ver)?);
-            m_default_max_angular_speed = Some(r.read_f32()?);
+            m_auto_simulation = Some(rdr.read_bool()?);
+            m_auto_sync_transforms = Some(rdr.read_bool()?);
+            m_reuse_collision_callbacks = Some(rdr.read_bool()?);
+            m_cloth_inter_collision_settings_toggle = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_cloth_gravity = Some(Vector3f::parse(rdr, ver)?);
+            m_contact_pairs_mode = Some(rdr.read_i32()?);
+            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(rdr, ver)?);
+            m_world_bounds = Some(Aabb::parse(rdr, ver)?);
+            m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(rdr, ver)?);
+            m_friction_type = Some(rdr.read_i32()?);
+            m_enable_enhanced_determinism = Some(rdr.read_bool()?);
+            m_enable_unified_heightmaps = Some(PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(rdr, ver)?);
+            m_default_max_angular_speed = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            m_auto_simulation = Some(r.read_bool()?);
-            m_auto_sync_transforms = Some(r.read_bool()?);
-            m_reuse_collision_callbacks = Some(r.read_bool()?);
-            m_cloth_inter_collision_settings_toggle = Some(r.read_bool()?);
-            r.align(4)?;
-            m_contact_pairs_mode = Some(r.read_i32()?);
-            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(r, ver)?);
-            m_world_bounds = Some(Aabb::parse(r, ver)?);
-            m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(r, ver)?);
-            m_friction_type = Some(r.read_i32()?);
-            m_enable_enhanced_determinism = Some(r.read_bool()?);
-            m_enable_unified_heightmaps = Some(PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(r, ver)?);
+            m_auto_simulation = Some(rdr.read_bool()?);
+            m_auto_sync_transforms = Some(rdr.read_bool()?);
+            m_reuse_collision_callbacks = Some(rdr.read_bool()?);
+            m_cloth_inter_collision_settings_toggle = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_contact_pairs_mode = Some(rdr.read_i32()?);
+            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(rdr, ver)?);
+            m_world_bounds = Some(Aabb::parse(rdr, ver)?);
+            m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(rdr, ver)?);
+            m_friction_type = Some(rdr.read_i32()?);
+            m_enable_enhanced_determinism = Some(rdr.read_bool()?);
+            m_enable_unified_heightmaps = Some(PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            m_auto_simulation = Some(r.read_bool()?);
-            m_auto_sync_transforms = Some(r.read_bool()?);
-            m_cloth_inter_collision_settings_toggle = Some(r.read_bool()?);
-            r.align(4)?;
-            m_contact_pairs_mode = Some(r.read_i32()?);
-            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(r, ver)?);
-            m_world_bounds = Some(Aabb::parse(r, ver)?);
-            m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(r, ver)?);
+            m_auto_simulation = Some(rdr.read_bool()?);
+            m_auto_sync_transforms = Some(rdr.read_bool()?);
+            m_cloth_inter_collision_settings_toggle = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_contact_pairs_mode = Some(rdr.read_i32()?);
+            m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(rdr, ver)?);
+            m_world_bounds = Some(Aabb::parse(rdr, ver)?);
+            m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            m_auto_simulation = Some(r.read_bool()?);
-            m_auto_sync_transforms = Some(r.read_bool()?);
+            m_auto_simulation = Some(rdr.read_bool()?);
+            m_auto_sync_transforms = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            m_auto_simulation = Some(r.read_bool()?);
+            m_auto_simulation = Some(rdr.read_bool()?);
         } else {
         }
 

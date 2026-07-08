@@ -3,7 +3,8 @@
 #[derive(Debug, Clone)]
 pub struct VectorParameter {
     pub m_name_index: i32,
-    pub m_index: i32,
+    pub m_index: Option<i32>,
+    pub m_offset_in_constant_buffer: Option<i32>,
     pub m_array_size: i32,
     pub m_type: i8,
     pub m_dim: i8,
@@ -11,19 +12,29 @@ pub struct VectorParameter {
 
 impl crate::Parse for VectorParameter {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name_index = r.read_i32()?;
-        let m_index = r.read_i32()?;
-        let m_array_size = r.read_i32()?;
-        let m_type = r.read_i8()?;
-        let m_dim = r.read_i8()?;
-        r.align(4)?;
+        let m_name_index = rdr.read_i32()?;
+        let m_index = if *ver >= crate::UnityVersion::new(5, 5, 0) {
+            Some(rdr.read_i32()?)
+        } else {
+            None
+        };
+        let m_offset_in_constant_buffer = if *ver >= crate::UnityVersion::new(6000, 6, 0) {
+            Some(rdr.read_i32()?)
+        } else {
+            None
+        };
+        let m_array_size = rdr.read_i32()?;
+        let m_type = rdr.read_i8()?;
+        let m_dim = rdr.read_i8()?;
+        rdr.align(4)?;
 
         Ok(VectorParameter {
             m_name_index,
             m_index,
+            m_offset_in_constant_buffer,
             m_array_size,
             m_type,
             m_dim,

@@ -9,11 +9,11 @@ pub struct SerializedProperties {
 
 impl crate::Parse for SerializedProperties {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_props = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { SerializedProperty::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
+        let m_props = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SerializedProperty::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
 
         Ok(SerializedProperties {
             m_props,

@@ -9,20 +9,20 @@ pub struct DefaultAsset {
 
 impl crate::Parse for DefaultAsset {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
         let m_message = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_aligned_string()?;
-            r.align(4)?;
+            let v = rdr.read_aligned_string()?;
+            rdr.align(4)?;
             Some(v)
         } else {
             None
         };
         let m_is_warning = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_bool()?)
+            Some(rdr.read_bool()?)
         } else {
             None
         };

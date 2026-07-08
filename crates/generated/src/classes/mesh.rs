@@ -29,15 +29,15 @@ pub enum MeshMSubMeshesVariant {
 
 impl crate::Parse for MeshMSubMeshesVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { SubMesh::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SubMesh::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { SubMesh::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SubMesh::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -52,15 +52,15 @@ pub enum MeshMMeshCompressionVariant {
 
 impl crate::Parse for MeshMMeshCompressionVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            let v = r.read_u8()?;
+            let v = rdr.read_u8()?;
             Ok(Self::V4_0(v))
         } else {
-            let v = r.read_u8()?;
-            r.align(4)?;
+            let v = rdr.read_u8()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -70,21 +70,21 @@ impl crate::Parse for MeshMMeshCompressionVariant {
 #[derive(Debug, Clone)]
 pub enum MeshMShapesVariant {
     Default(Vec<MeshBlendShape>),
-    V4_3(BlendShapeData),
+    V4_3(Box<BlendShapeData>),
 }
 
 impl crate::Parse for MeshMShapesVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            let v = BlendShapeData::parse(r, ver)?;
-            r.align(4)?;
+            let v = ( { Ok(Box::new(BlendShapeData::parse(rdr, ver)?)) } )?;
+            rdr.align(4)?;
             Ok(Self::V4_3(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { MeshBlendShape::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MeshBlendShape::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -99,15 +99,15 @@ pub enum MeshMBindPoseVariant {
 
 impl crate::Parse for MeshMBindPoseVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Matrix4x4f::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Matrix4x4f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Matrix4x4f::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Matrix4x4f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -122,15 +122,15 @@ pub enum MeshMSkinVariant {
 
 impl crate::Parse for MeshMSkinVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { BoneWeights4::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { BoneWeights4::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { BoneInfluence::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { BoneInfluence::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -145,15 +145,15 @@ pub enum MeshMBoneNameHashesVariant {
 
 impl crate::Parse for MeshMBoneNameHashesVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -168,15 +168,15 @@ pub enum MeshMMeshMetrics1Variant {
 
 impl crate::Parse for MeshMMeshMetrics1Variant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            let v = r.read_f32()?;
-            r.align(4)?;
+            let v = rdr.read_f32()?;
+            rdr.align(4)?;
             Ok(Self::V2018_3(v))
         } else {
-            let v = r.read_f32()?;
+            let v = rdr.read_f32()?;
             Ok(Self::Default(v))
         }
     }
@@ -224,7 +224,7 @@ pub struct Mesh {
 
 impl crate::Parse for Mesh {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_name = None;
@@ -264,129 +264,129 @@ impl crate::Parse for Mesh {
         let mut m_mesh_metrics_1 = None;
         let mut m_stream_data = None;
         let mut m_mesh_lod_info = None;
-            m_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(3, 5, 0) {
         } else {
-            m_use16_bit_indices = Some(r.read_i32()?);
+            m_use16_bit_indices = Some(rdr.read_i32()?);
         }
-            m_sub_meshes = Some(MeshMSubMeshesVariant::parse(r, ver)?);
+            m_sub_meshes = Some(MeshMSubMeshesVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_shapes = Some(MeshMShapesVariant::parse(r, ver)?);
-            m_bind_pose = Some(MeshMBindPoseVariant::parse(r, ver)?);
-            m_bone_name_hashes = Some(MeshMBoneNameHashesVariant::parse(r, ver)?);
-            m_root_bone_name_hash = Some(r.read_u32()?);
-            m_bones_aabb = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { MinMaxAabb::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_variable_bone_count_weights = Some(VariableBoneCountWeights::parse(r, ver)?);
-            r.align(4)?;
+            m_shapes = Some(MeshMShapesVariant::parse(rdr, ver)?);
+            m_bind_pose = Some(MeshMBindPoseVariant::parse(rdr, ver)?);
+            m_bone_name_hashes = Some(MeshMBoneNameHashesVariant::parse(rdr, ver)?);
+            m_root_bone_name_hash = Some(rdr.read_u32()?);
+            m_bones_aabb = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MinMaxAabb::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_variable_bone_count_weights = Some(VariableBoneCountWeights::parse(rdr, ver)?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            m_shapes = Some(MeshMShapesVariant::parse(r, ver)?);
-            m_bind_pose = Some(MeshMBindPoseVariant::parse(r, ver)?);
-            m_bone_name_hashes = Some(MeshMBoneNameHashesVariant::parse(r, ver)?);
-            m_root_bone_name_hash = Some(r.read_u32()?);
+            m_shapes = Some(MeshMShapesVariant::parse(rdr, ver)?);
+            m_bind_pose = Some(MeshMBindPoseVariant::parse(rdr, ver)?);
+            m_bone_name_hashes = Some(MeshMBoneNameHashesVariant::parse(rdr, ver)?);
+            m_root_bone_name_hash = Some(rdr.read_u32()?);
         } else if *ver >= crate::UnityVersion::new(4, 1, 0) {
-            m_shapes = Some(MeshMShapesVariant::parse(r, ver)?);
-            m_shape_vertices = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { MeshBlendShapeVertex::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_shapes = Some(MeshMShapesVariant::parse(rdr, ver)?);
+            m_shape_vertices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MeshBlendShapeVertex::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
         } else {
         }
-            m_mesh_compression = Some(MeshMMeshCompressionVariant::parse(r, ver)?);
+            m_mesh_compression = Some(MeshMMeshCompressionVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            m_is_readable = Some(r.read_bool()?);
-            m_keep_vertices = Some(r.read_bool()?);
-            m_keep_indices = Some(r.read_bool()?);
-            r.align(4)?;
-            m_index_format = Some(r.read_i32()?);
+            m_is_readable = Some(rdr.read_bool()?);
+            m_keep_vertices = Some(rdr.read_bool()?);
+            m_keep_indices = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_index_format = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_is_readable = Some(r.read_bool()?);
-            m_keep_vertices = Some(r.read_bool()?);
-            m_keep_indices = Some(r.read_bool()?);
-            r.align(4)?;
+            m_is_readable = Some(rdr.read_bool()?);
+            m_keep_vertices = Some(rdr.read_bool()?);
+            m_keep_indices = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            m_stream_compression = Some(r.read_u8()?);
-            m_is_readable = Some(r.read_bool()?);
-            m_keep_vertices = Some(r.read_bool()?);
-            m_keep_indices = Some(r.read_bool()?);
-            r.align(4)?;
+            m_stream_compression = Some(rdr.read_u8()?);
+            m_is_readable = Some(rdr.read_bool()?);
+            m_keep_vertices = Some(rdr.read_bool()?);
+            m_keep_indices = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else {
         }
-            m_index_buffer = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_index_buffer = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2018, 2, 0) {
-            m_vertex_data = Some(VertexData::parse(r, ver)?);
-            r.align(4)?;
+            m_vertex_data = Some(VertexData::parse(rdr, ver)?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            m_skin = Some(MeshMSkinVariant::parse(r, ver)?);
-            m_vertex_data = Some(VertexData::parse(r, ver)?);
-            r.align(4)?;
+            m_skin = Some(MeshMSkinVariant::parse(rdr, ver)?);
+            m_vertex_data = Some(VertexData::parse(rdr, ver)?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            m_skin = Some(MeshMSkinVariant::parse(r, ver)?);
-            m_bind_pose = Some(MeshMBindPoseVariant::parse(r, ver)?);
-            m_vertex_data = Some(VertexData::parse(r, ver)?);
-            r.align(4)?;
+            m_skin = Some(MeshMSkinVariant::parse(rdr, ver)?);
+            m_bind_pose = Some(MeshMBindPoseVariant::parse(rdr, ver)?);
+            m_vertex_data = Some(VertexData::parse(rdr, ver)?);
+            rdr.align(4)?;
         } else {
-            m_vertices = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { Vector3f::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_skin = Some(MeshMSkinVariant::parse(r, ver)?);
-            m_bind_pose = Some(MeshMBindPoseVariant::parse(r, ver)?);
-            m_uv = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_uv1 = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_tangents = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { Vector4f::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_normals = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { Vector3f::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_vertices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector3f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_skin = Some(MeshMSkinVariant::parse(rdr, ver)?);
+            m_bind_pose = Some(MeshMBindPoseVariant::parse(rdr, ver)?);
+            m_uv = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_uv1 = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_tangents = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector4f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_normals = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector3f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         }
-            m_compressed_mesh = Some(CompressedMesh::parse(r, ver)?);
-            r.align(4)?;
-            m_local_aabb = Some(Aabb::parse(r, ver)?);
+            m_compressed_mesh = Some(CompressedMesh::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_local_aabb = Some(Aabb::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(3, 5, 0) {
         } else {
-            m_colors = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ColorRgba::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_collision_triangles = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
-            m_collision_vertex_count = Some(r.read_i32()?);
+            m_colors = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ColorRgba::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_collision_triangles = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_collision_vertex_count = Some(rdr.read_i32()?);
         }
-            m_mesh_usage_flags = Some(r.read_i32()?);
+            m_mesh_usage_flags = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(6000, 2, 0) {
-            m_cooking_options = Some(r.read_i32()?);
-            m_baked_convex_collision_mesh = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_baked_triangle_collision_mesh = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_mesh_metrics_0 = Some(r.read_f32()?);
-            m_mesh_metrics_1 = Some(MeshMMeshMetrics1Variant::parse(r, ver)?);
-            m_stream_data = Some(StreamingInfo::parse(r, ver)?);
-            r.align(4)?;
-            m_mesh_lod_info = Some(MeshLodInfo::parse(r, ver)?);
-            r.align(4)?;
+            m_cooking_options = Some(rdr.read_i32()?);
+            m_baked_convex_collision_mesh = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_baked_triangle_collision_mesh = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_mesh_metrics_0 = Some(rdr.read_f32()?);
+            m_mesh_metrics_1 = Some(MeshMMeshMetrics1Variant::parse(rdr, ver)?);
+            m_stream_data = Some(StreamingInfo::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_mesh_lod_info = Some(MeshLodInfo::parse(rdr, ver)?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
-            m_cooking_options = Some(r.read_i32()?);
-            m_baked_convex_collision_mesh = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_baked_triangle_collision_mesh = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_mesh_metrics_0 = Some(r.read_f32()?);
-            m_mesh_metrics_1 = Some(MeshMMeshMetrics1Variant::parse(r, ver)?);
-            m_stream_data = Some(StreamingInfo::parse(r, ver)?);
-            r.align(4)?;
+            m_cooking_options = Some(rdr.read_i32()?);
+            m_baked_convex_collision_mesh = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_baked_triangle_collision_mesh = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_mesh_metrics_0 = Some(rdr.read_f32()?);
+            m_mesh_metrics_1 = Some(MeshMMeshMetrics1Variant::parse(rdr, ver)?);
+            m_stream_data = Some(StreamingInfo::parse(rdr, ver)?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            m_baked_convex_collision_mesh = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_baked_triangle_collision_mesh = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_mesh_metrics_0 = Some(r.read_f32()?);
-            m_mesh_metrics_1 = Some(MeshMMeshMetrics1Variant::parse(r, ver)?);
-            m_stream_data = Some(StreamingInfo::parse(r, ver)?);
-            r.align(4)?;
+            m_baked_convex_collision_mesh = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_baked_triangle_collision_mesh = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_mesh_metrics_0 = Some(rdr.read_f32()?);
+            m_mesh_metrics_1 = Some(MeshMMeshMetrics1Variant::parse(rdr, ver)?);
+            m_stream_data = Some(StreamingInfo::parse(rdr, ver)?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 2, 0) {
-            m_baked_convex_collision_mesh = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_baked_triangle_collision_mesh = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_mesh_metrics_0 = Some(r.read_f32()?);
-            m_mesh_metrics_1 = Some(MeshMMeshMetrics1Variant::parse(r, ver)?);
+            m_baked_convex_collision_mesh = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_baked_triangle_collision_mesh = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_mesh_metrics_0 = Some(rdr.read_f32()?);
+            m_mesh_metrics_1 = Some(MeshMMeshMetrics1Variant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_baked_convex_collision_mesh = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_baked_triangle_collision_mesh = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_baked_convex_collision_mesh = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_baked_triangle_collision_mesh = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else {
         }
 

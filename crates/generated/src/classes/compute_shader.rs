@@ -15,16 +15,16 @@ pub enum ComputeShaderVariantsVariant {
 
 impl crate::Parse for ComputeShaderVariantsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ComputeShaderPlatformVariant::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderPlatformVariant::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2020_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ComputeShaderVariant::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderVariant::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -39,26 +39,26 @@ pub struct ComputeShader {
 
 impl crate::Parse for ComputeShader {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
         let kernels = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ComputeShaderKernel::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderKernel::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Some(v)
         } else {
             None
         };
         let variants = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(ComputeShaderVariantsVariant::parse(r, ver)?)
+            Some(ComputeShaderVariantsVariant::parse(rdr, ver)?)
         } else {
             None
         };
         let constant_buffers = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ComputeShaderCb::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderCb::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Some(v)
         } else {
             None

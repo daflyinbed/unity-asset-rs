@@ -13,15 +13,15 @@ pub enum OcclusionAreaMIsViewVolumeVariant {
 
 impl crate::Parse for OcclusionAreaMIsViewVolumeVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V4_3(v))
         } else {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::Default(v))
         }
     }
@@ -38,22 +38,22 @@ pub struct OcclusionArea {
 
 impl crate::Parse for OcclusionArea {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_size = Vector3f::parse(r, ver)?;
-        let m_center = Vector3f::parse(r, ver)?;
-        let m_is_view_volume = OcclusionAreaMIsViewVolumeVariant::parse(r, ver)?;
+        let m_game_object = crate::PPtr::parse(rdr, ver)?;
+        let m_size = Vector3f::parse(rdr, ver)?;
+        let m_center = Vector3f::parse(rdr, ver)?;
+        let m_is_view_volume = OcclusionAreaMIsViewVolumeVariant::parse(rdr, ver)?;
         let m_is_target_volume = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Some(v)
         } else {
             None
         };
         let m_target_resolution = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_i32()?)
+            Some(rdr.read_i32()?)
         } else {
             None
         };

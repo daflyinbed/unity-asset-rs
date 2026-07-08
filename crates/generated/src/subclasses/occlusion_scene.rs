@@ -13,14 +13,14 @@ pub struct OcclusionScene {
 
 impl crate::Parse for OcclusionScene {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let index_renderers = r.read_i32()?;
-        let size_renderers = r.read_i32()?;
-        let index_portals = r.read_i32()?;
-        let size_portals = r.read_i32()?;
-        let scene = Guid::parse(r, ver)?;
+        let index_renderers = rdr.read_i32()?;
+        let size_renderers = rdr.read_i32()?;
+        let index_portals = rdr.read_i32()?;
+        let size_portals = rdr.read_i32()?;
+        let scene = Guid::parse(rdr, ver)?;
 
         Ok(OcclusionScene {
             index_renderers,

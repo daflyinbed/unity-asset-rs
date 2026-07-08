@@ -11,36 +11,36 @@ pub struct UnityAnalyticsManager {
 
 impl crate::Parse for UnityAnalyticsManager {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_enabled = if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            Some(r.read_bool()?)
+            Some(rdr.read_bool()?)
         } else {
             None
         };
         let m_initialize_on_startup = if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            Some(r.read_bool()?)
+            Some(rdr.read_bool()?)
         } else {
             None
         };
         let m_test_mode = if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Some(v)
         } else {
             None
         };
         let m_test_event_url = if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            let v = r.read_aligned_string()?;
-            r.align(4)?;
+            let v = rdr.read_aligned_string()?;
+            rdr.align(4)?;
             Some(v)
         } else {
             None
         };
         let m_test_config_url = if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            let v = r.read_aligned_string()?;
-            r.align(4)?;
+            let v = rdr.read_aligned_string()?;
+            rdr.align(4)?;
             Some(v)
         } else {
             None

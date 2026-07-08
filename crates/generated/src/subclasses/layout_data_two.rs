@@ -8,11 +8,11 @@ pub struct LayoutDataTwo {
 
 impl crate::Parse for LayoutDataTwo {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_integer_value = r.read_i32()?;
-        let m_float_value = r.read_f32()?;
+        let m_integer_value = rdr.read_i32()?;
+        let m_float_value = rdr.read_f32()?;
 
         Ok(LayoutDataTwo {
             m_integer_value,

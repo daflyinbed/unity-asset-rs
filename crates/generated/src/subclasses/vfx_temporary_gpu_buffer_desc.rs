@@ -10,12 +10,12 @@ pub struct VfxTemporaryGpuBufferDesc {
 
 impl crate::Parse for VfxTemporaryGpuBufferDesc {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let desc = VfxgpuBufferDesc::parse(r, ver)?;
-        r.align(4)?;
-        let frame_count = r.read_u32()?;
+        let desc = VfxgpuBufferDesc::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let frame_count = rdr.read_u32()?;
 
         Ok(VfxTemporaryGpuBufferDesc {
             desc,

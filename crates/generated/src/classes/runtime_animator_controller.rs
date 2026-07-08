@@ -14,17 +14,17 @@ pub struct RuntimeAnimatorController {
 
 impl crate::Parse for RuntimeAnimatorController {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_controller_size = r.read_u32()?;
-        let m_controller = ControllerConstant::parse(r, ver)?;
-        r.align(4)?;
-        let m_tos = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_u32()?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_animation_clips = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_controller_size = rdr.read_u32()?;
+        let m_controller = ControllerConstant::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let m_tos = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_u32()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let m_animation_clips = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
 
         Ok(RuntimeAnimatorController {
             m_name,

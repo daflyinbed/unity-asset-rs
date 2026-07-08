@@ -10,11 +10,11 @@ pub struct StateBehavioursPair {
 
 impl crate::Parse for StateBehavioursPair {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_state = crate::PPtr::parse(r, ver)?;
-        let m_state_machine_behaviours = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_state = crate::PPtr::parse(rdr, ver)?;
+        let m_state_machine_behaviours = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
 
         Ok(StateBehavioursPair {
             m_state,

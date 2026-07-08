@@ -11,14 +11,14 @@ pub struct NavMeshParams {
 
 impl crate::Parse for NavMeshParams {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let tile_size = r.read_f32()?;
-        let walkable_height = r.read_f32()?;
-        let walkable_radius = r.read_f32()?;
-        let walkable_climb = r.read_f32()?;
-        let cell_size = r.read_f32()?;
+        let tile_size = rdr.read_f32()?;
+        let walkable_height = rdr.read_f32()?;
+        let walkable_radius = rdr.read_f32()?;
+        let walkable_climb = rdr.read_f32()?;
+        let cell_size = rdr.read_f32()?;
 
         Ok(NavMeshParams {
             tile_size,

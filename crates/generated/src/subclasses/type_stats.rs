@@ -10,13 +10,13 @@ pub struct TypeStats {
 
 impl crate::Parse for TypeStats {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let class_id = r.read_i32()?;
-        let size = r.read_u64()?;
-        let object_count = r.read_i32()?;
-        let resource_count = r.read_i32()?;
+        let class_id = rdr.read_i32()?;
+        let size = rdr.read_u64()?;
+        let object_count = rdr.read_i32()?;
+        let resource_count = rdr.read_i32()?;
 
         Ok(TypeStats {
             class_id,

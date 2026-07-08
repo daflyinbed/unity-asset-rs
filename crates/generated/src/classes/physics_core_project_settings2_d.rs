@@ -9,10 +9,10 @@ pub struct PhysicsCoreProjectSettings2D {
 
 impl crate::Parse for PhysicsCoreProjectSettings2D {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_physics_core_settings = crate::PPtr::parse(r, ver)?;
+        let m_physics_core_settings = crate::PPtr::parse(rdr, ver)?;
 
         Ok(PhysicsCoreProjectSettings2D {
             m_physics_core_settings,

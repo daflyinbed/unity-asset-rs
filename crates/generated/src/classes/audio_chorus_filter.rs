@@ -18,21 +18,21 @@ pub struct AudioChorusFilter {
 
 impl crate::Parse for AudioChorusFilter {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_enabled = r.read_u8()?;
-        r.align(4)?;
-        let m_dry_mix = r.read_f32()?;
-        let m_wet_mix1 = r.read_f32()?;
-        let m_wet_mix2 = r.read_f32()?;
-        let m_wet_mix3 = r.read_f32()?;
-        let m_delay = r.read_f32()?;
-        let m_rate = r.read_f32()?;
-        let m_depth = r.read_f32()?;
+        let m_game_object = crate::PPtr::parse(rdr, ver)?;
+        let m_enabled = rdr.read_u8()?;
+        rdr.align(4)?;
+        let m_dry_mix = rdr.read_f32()?;
+        let m_wet_mix1 = rdr.read_f32()?;
+        let m_wet_mix2 = rdr.read_f32()?;
+        let m_wet_mix3 = rdr.read_f32()?;
+        let m_delay = rdr.read_f32()?;
+        let m_rate = rdr.read_f32()?;
+        let m_depth = rdr.read_f32()?;
         let m_feed_back = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_f32()?)
+            Some(rdr.read_f32()?)
         } else {
             None
         };

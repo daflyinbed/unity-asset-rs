@@ -26,32 +26,32 @@ pub struct AudioReverbFilter {
 
 impl crate::Parse for AudioReverbFilter {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_enabled = r.read_u8()?;
-        r.align(4)?;
-        let m_dry_level = r.read_f32()?;
-        let m_room = r.read_f32()?;
-        let m_room_hf = r.read_f32()?;
+        let m_game_object = crate::PPtr::parse(rdr, ver)?;
+        let m_enabled = rdr.read_u8()?;
+        rdr.align(4)?;
+        let m_dry_level = rdr.read_f32()?;
+        let m_room = rdr.read_f32()?;
+        let m_room_hf = rdr.read_f32()?;
         let m_room_rolloff = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_f32()?)
+            Some(rdr.read_f32()?)
         } else {
             None
         };
-        let m_decay_time = r.read_f32()?;
-        let m_decay_hf_ratio = r.read_f32()?;
-        let m_reflections_level = r.read_f32()?;
-        let m_reverb_level = r.read_f32()?;
-        let m_reverb_delay = r.read_f32()?;
-        let m_diffusion = r.read_f32()?;
-        let m_density = r.read_f32()?;
-        let m_hf_reference = r.read_f32()?;
-        let m_room_lf = r.read_f32()?;
-        let m_lf_reference = r.read_f32()?;
-        let m_reflections_delay = r.read_f32()?;
-        let m_reverb_preset = r.read_i32()?;
+        let m_decay_time = rdr.read_f32()?;
+        let m_decay_hf_ratio = rdr.read_f32()?;
+        let m_reflections_level = rdr.read_f32()?;
+        let m_reverb_level = rdr.read_f32()?;
+        let m_reverb_delay = rdr.read_f32()?;
+        let m_diffusion = rdr.read_f32()?;
+        let m_density = rdr.read_f32()?;
+        let m_hf_reference = rdr.read_f32()?;
+        let m_room_lf = rdr.read_f32()?;
+        let m_lf_reference = rdr.read_f32()?;
+        let m_reflections_delay = rdr.read_f32()?;
+        let m_reverb_preset = rdr.read_i32()?;
 
         Ok(AudioReverbFilter {
             m_game_object,

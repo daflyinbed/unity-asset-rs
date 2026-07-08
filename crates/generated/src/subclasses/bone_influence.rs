@@ -14,17 +14,17 @@ pub struct BoneInfluence {
 
 impl crate::Parse for BoneInfluence {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let weight_0 = r.read_f32()?;
-        let weight_1 = r.read_f32()?;
-        let weight_2 = r.read_f32()?;
-        let weight_3 = r.read_f32()?;
-        let bone_index_0 = r.read_i32()?;
-        let bone_index_1 = r.read_i32()?;
-        let bone_index_2 = r.read_i32()?;
-        let bone_index_3 = r.read_i32()?;
+        let weight_0 = rdr.read_f32()?;
+        let weight_1 = rdr.read_f32()?;
+        let weight_2 = rdr.read_f32()?;
+        let weight_3 = rdr.read_f32()?;
+        let bone_index_0 = rdr.read_i32()?;
+        let bone_index_1 = rdr.read_i32()?;
+        let bone_index_2 = rdr.read_i32()?;
+        let bone_index_3 = rdr.read_i32()?;
 
         Ok(BoneInfluence {
             weight_0,

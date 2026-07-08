@@ -10,16 +10,16 @@ pub struct ExpandedData {
 
 impl crate::Parse for ExpandedData {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_inspector_expanded = r.read_bool()?;
-        r.align(4)?;
-        let m_class_id = r.read_i32()?;
-        let m_script_class = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_expanded_properties = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
+        let m_inspector_expanded = rdr.read_bool()?;
+        rdr.align(4)?;
+        let m_class_id = rdr.read_i32()?;
+        let m_script_class = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_expanded_properties = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
 
         Ok(ExpandedData {
             m_inspector_expanded,

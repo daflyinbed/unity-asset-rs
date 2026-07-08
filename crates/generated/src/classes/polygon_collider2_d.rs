@@ -16,15 +16,15 @@ pub enum PolygonCollider2DMIsTriggerVariant {
 
 impl crate::Parse for PolygonCollider2DMIsTriggerVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V5_0(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -40,19 +40,19 @@ pub enum PolygonCollider2DMUsedByEffectorVariant {
 
 impl crate::Parse for PolygonCollider2DMUsedByEffectorVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V2023_1(v))
         } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V5_6(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -61,21 +61,21 @@ impl crate::Parse for PolygonCollider2DMUsedByEffectorVariant {
 /// 版本枚举：PolygonCollider2DMPointsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum PolygonCollider2DMPointsVariant {
-    Default(Polygon2D),
-    V2017_1(Polygon2D),
+    Default(Box<Polygon2D>),
+    V2017_1(Box<Polygon2D>),
 }
 
 impl crate::Parse for PolygonCollider2DMPointsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = Polygon2D::parse(r, ver)?;
-            r.align(4)?;
+            let v = ( { Ok(Box::new(Polygon2D::parse(rdr, ver)?)) } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = Polygon2D::parse(r, ver)?;
+            let v = ( { Ok(Box::new(Polygon2D::parse(rdr, ver)?)) } )?;
             Ok(Self::Default(v))
         }
     }
@@ -108,7 +108,7 @@ pub struct PolygonCollider2D {
 
 impl crate::Parse for PolygonCollider2D {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_game_object = None;
@@ -133,65 +133,65 @@ impl crate::Parse for PolygonCollider2D {
         let mut m_use_delaunay_mesh = None;
         let mut m_composite_operation = None;
         let mut m_composite_order = None;
-            m_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_enabled = Some(r.read_u8()?);
-            r.align(4)?;
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_enabled = Some(rdr.read_u8()?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            m_density = Some(r.read_f32()?);
+            m_density = Some(rdr.read_f32()?);
         } else {
         }
-            m_material = Some(crate::PPtr::parse(r, ver)?);
+            m_material = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            m_include_layers = Some(BitField::parse(r, ver)?);
-            m_exclude_layers = Some(BitField::parse(r, ver)?);
-            m_layer_override_priority = Some(r.read_i32()?);
-            m_force_send_layers = Some(BitField::parse(r, ver)?);
-            m_force_receive_layers = Some(BitField::parse(r, ver)?);
-            m_contact_capture_layers = Some(BitField::parse(r, ver)?);
-            m_callback_layers = Some(BitField::parse(r, ver)?);
+            m_include_layers = Some(BitField::parse(rdr, ver)?);
+            m_exclude_layers = Some(BitField::parse(rdr, ver)?);
+            m_layer_override_priority = Some(rdr.read_i32()?);
+            m_force_send_layers = Some(BitField::parse(rdr, ver)?);
+            m_force_receive_layers = Some(BitField::parse(rdr, ver)?);
+            m_contact_capture_layers = Some(BitField::parse(rdr, ver)?);
+            m_callback_layers = Some(BitField::parse(rdr, ver)?);
         } else {
         }
-            m_is_trigger = Some(PolygonCollider2DMIsTriggerVariant::parse(r, ver)?);
+            m_is_trigger = Some(PolygonCollider2DMIsTriggerVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            m_used_by_effector = Some(PolygonCollider2DMUsedByEffectorVariant::parse(r, ver)?);
-            m_composite_operation = Some(r.read_i32()?);
-            m_composite_order = Some(r.read_i32()?);
-            m_offset = Some(Vector2f::parse(r, ver)?);
-            m_sprite_tiling_property = Some(SpriteTilingProperty::parse(r, ver)?);
-            r.align(4)?;
-            m_auto_tiling = Some(r.read_bool()?);
-            r.align(4)?;
-            m_points = Some(PolygonCollider2DMPointsVariant::parse(r, ver)?);
-            m_use_delaunay_mesh = Some(r.read_bool()?);
-            r.align(4)?;
+            m_used_by_effector = Some(PolygonCollider2DMUsedByEffectorVariant::parse(rdr, ver)?);
+            m_composite_operation = Some(rdr.read_i32()?);
+            m_composite_order = Some(rdr.read_i32()?);
+            m_offset = Some(Vector2f::parse(rdr, ver)?);
+            m_sprite_tiling_property = Some(SpriteTilingProperty::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_auto_tiling = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_points = Some(PolygonCollider2DMPointsVariant::parse(rdr, ver)?);
+            m_use_delaunay_mesh = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
-            m_used_by_effector = Some(PolygonCollider2DMUsedByEffectorVariant::parse(r, ver)?);
-            m_used_by_composite = Some(r.read_bool()?);
-            r.align(4)?;
-            m_offset = Some(Vector2f::parse(r, ver)?);
-            m_sprite_tiling_property = Some(SpriteTilingProperty::parse(r, ver)?);
-            r.align(4)?;
-            m_auto_tiling = Some(r.read_bool()?);
-            r.align(4)?;
-            m_points = Some(PolygonCollider2DMPointsVariant::parse(r, ver)?);
-            m_use_delaunay_mesh = Some(r.read_bool()?);
-            r.align(4)?;
+            m_used_by_effector = Some(PolygonCollider2DMUsedByEffectorVariant::parse(rdr, ver)?);
+            m_used_by_composite = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_offset = Some(Vector2f::parse(rdr, ver)?);
+            m_sprite_tiling_property = Some(SpriteTilingProperty::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_auto_tiling = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_points = Some(PolygonCollider2DMPointsVariant::parse(rdr, ver)?);
+            m_use_delaunay_mesh = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            m_used_by_effector = Some(PolygonCollider2DMUsedByEffectorVariant::parse(r, ver)?);
-            m_used_by_composite = Some(r.read_bool()?);
-            r.align(4)?;
-            m_offset = Some(Vector2f::parse(r, ver)?);
-            m_sprite_tiling_property = Some(SpriteTilingProperty::parse(r, ver)?);
-            r.align(4)?;
-            m_auto_tiling = Some(r.read_bool()?);
-            r.align(4)?;
-            m_points = Some(PolygonCollider2DMPointsVariant::parse(r, ver)?);
+            m_used_by_effector = Some(PolygonCollider2DMUsedByEffectorVariant::parse(rdr, ver)?);
+            m_used_by_composite = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_offset = Some(Vector2f::parse(rdr, ver)?);
+            m_sprite_tiling_property = Some(SpriteTilingProperty::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_auto_tiling = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_points = Some(PolygonCollider2DMPointsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_used_by_effector = Some(PolygonCollider2DMUsedByEffectorVariant::parse(r, ver)?);
-            m_offset = Some(Vector2f::parse(r, ver)?);
-            m_points = Some(PolygonCollider2DMPointsVariant::parse(r, ver)?);
+            m_used_by_effector = Some(PolygonCollider2DMUsedByEffectorVariant::parse(rdr, ver)?);
+            m_offset = Some(Vector2f::parse(rdr, ver)?);
+            m_points = Some(PolygonCollider2DMPointsVariant::parse(rdr, ver)?);
         } else {
-            m_poly = Some(Polygon2D::parse(r, ver)?);
+            m_poly = Some(Polygon2D::parse(rdr, ver)?);
         }
 
         Ok(PolygonCollider2D {

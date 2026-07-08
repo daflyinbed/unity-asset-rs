@@ -17,19 +17,19 @@ pub struct AnimatorControllerLayer {
 
 impl crate::Parse for AnimatorControllerLayer {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_type = r.read_i32()?;
-        let m_state_machine = crate::PPtr::parse(r, ver)?;
-        let m_human_mask = crate::PPtr::parse(r, ver)?;
-        let m_skeleton_mask = crate::PPtr::parse(r, ver)?;
-        let m_blending_mode = r.read_i32()?;
-        let m_synced_layer_index = r.read_i32()?;
-        let m_state_machine_motion_set_index = r.read_i32()?;
-        let m_ik_pass = r.read_bool()?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_type = rdr.read_i32()?;
+        let m_state_machine = crate::PPtr::parse(rdr, ver)?;
+        let m_human_mask = crate::PPtr::parse(rdr, ver)?;
+        let m_skeleton_mask = crate::PPtr::parse(rdr, ver)?;
+        let m_blending_mode = rdr.read_i32()?;
+        let m_synced_layer_index = rdr.read_i32()?;
+        let m_state_machine_motion_set_index = rdr.read_i32()?;
+        let m_ik_pass = rdr.read_bool()?;
 
         Ok(AnimatorControllerLayer {
             m_name,

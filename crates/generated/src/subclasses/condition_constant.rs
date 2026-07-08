@@ -10,13 +10,13 @@ pub struct ConditionConstant {
 
 impl crate::Parse for ConditionConstant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_condition_mode = r.read_u32()?;
-        let m_event_id = r.read_u32()?;
-        let m_event_threshold = r.read_f32()?;
-        let m_exit_time = r.read_f32()?;
+        let m_condition_mode = rdr.read_u32()?;
+        let m_event_id = rdr.read_u32()?;
+        let m_event_threshold = rdr.read_f32()?;
+        let m_exit_time = rdr.read_f32()?;
 
         Ok(ConditionConstant {
             m_condition_mode,

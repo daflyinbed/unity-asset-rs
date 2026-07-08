@@ -23,29 +23,29 @@ pub struct LightProbeProxyVolume {
 
 impl crate::Parse for LightProbeProxyVolume {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_enabled = r.read_u8()?;
-        r.align(4)?;
-        let m_bounding_box_mode = r.read_i32()?;
-        let m_resolution_x = r.read_u32()?;
-        let m_resolution_y = r.read_u32()?;
-        let m_resolution_z = r.read_u32()?;
-        let m_resolution_probes_per_unit = r.read_f32()?;
-        let m_bounding_box_size = Vector3f::parse(r, ver)?;
-        let m_bounding_box_origin = Vector3f::parse(r, ver)?;
-        let m_resolution_mode = r.read_i32()?;
-        let m_probe_position_mode = r.read_i32()?;
-        let m_refresh_mode = r.read_i32()?;
+        let m_game_object = crate::PPtr::parse(rdr, ver)?;
+        let m_enabled = rdr.read_u8()?;
+        rdr.align(4)?;
+        let m_bounding_box_mode = rdr.read_i32()?;
+        let m_resolution_x = rdr.read_u32()?;
+        let m_resolution_y = rdr.read_u32()?;
+        let m_resolution_z = rdr.read_u32()?;
+        let m_resolution_probes_per_unit = rdr.read_f32()?;
+        let m_bounding_box_size = Vector3f::parse(rdr, ver)?;
+        let m_bounding_box_origin = Vector3f::parse(rdr, ver)?;
+        let m_resolution_mode = rdr.read_i32()?;
+        let m_probe_position_mode = rdr.read_i32()?;
+        let m_refresh_mode = rdr.read_i32()?;
         let m_quality_mode = if *ver >= crate::UnityVersion::new(2018, 2, 0) {
-            Some(r.read_i32()?)
+            Some(rdr.read_i32()?)
         } else {
             None
         };
         let m_data_format = if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            Some(r.read_i32()?)
+            Some(rdr.read_i32()?)
         } else {
             None
         };

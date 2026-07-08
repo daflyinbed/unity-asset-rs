@@ -10,11 +10,11 @@ pub struct BuiltinShaderSettings {
 
 impl crate::Parse for BuiltinShaderSettings {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_mode = r.read_i32()?;
-        let m_shader = crate::PPtr::parse(r, ver)?;
+        let m_mode = rdr.read_i32()?;
+        let m_shader = crate::PPtr::parse(rdr, ver)?;
 
         Ok(BuiltinShaderSettings {
             m_mode,

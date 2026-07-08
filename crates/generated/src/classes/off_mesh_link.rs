@@ -20,7 +20,7 @@ pub struct OffMeshLink {
 
 impl crate::Parse for OffMeshLink {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_game_object = None;
@@ -35,36 +35,36 @@ impl crate::Parse for OffMeshLink {
         let mut m_bi_directional = None;
         let mut m_activated = None;
         let mut m_auto_update_positions = None;
-            m_game_object = Some(crate::PPtr::parse(r, ver)?);
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            m_enabled = Some(r.read_u8()?);
-            r.align(4)?;
-            m_area_index = Some(r.read_u32()?);
-            m_agent_type_id = Some(r.read_i32()?);
+            m_enabled = Some(rdr.read_u8()?);
+            rdr.align(4)?;
+            m_area_index = Some(rdr.read_u32()?);
+            m_agent_type_id = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_enabled = Some(r.read_u8()?);
-            r.align(4)?;
-            m_area_index = Some(r.read_u32()?);
+            m_enabled = Some(rdr.read_u8()?);
+            rdr.align(4)?;
+            m_area_index = Some(rdr.read_u32()?);
         } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            m_enabled = Some(r.read_u8()?);
-            r.align(4)?;
-            m_nav_mesh_layer = Some(r.read_u32()?);
+            m_enabled = Some(rdr.read_u8()?);
+            rdr.align(4)?;
+            m_nav_mesh_layer = Some(rdr.read_u32()?);
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            m_nav_mesh_layer = Some(r.read_u32()?);
+            m_nav_mesh_layer = Some(rdr.read_u32()?);
         } else {
         }
-            m_start = Some(crate::PPtr::parse(r, ver)?);
-            m_end = Some(crate::PPtr::parse(r, ver)?);
+            m_start = Some(crate::PPtr::parse(rdr, ver)?);
+            m_end = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
         } else {
-            m_dt_poly_ref = Some(r.read_u32()?);
+            m_dt_poly_ref = Some(rdr.read_u32()?);
         }
-            m_cost_override = Some(r.read_f32()?);
-            r.align(4)?;
-            m_bi_directional = Some(r.read_bool()?);
-            m_activated = Some(r.read_bool()?);
+            m_cost_override = Some(rdr.read_f32()?);
+            rdr.align(4)?;
+            m_bi_directional = Some(rdr.read_bool()?);
+            m_activated = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            m_auto_update_positions = Some(r.read_bool()?);
+            m_auto_update_positions = Some(rdr.read_bool()?);
         } else {
         }
 

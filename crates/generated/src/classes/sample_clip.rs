@@ -7,11 +7,11 @@ pub struct SampleClip {
 
 impl crate::Parse for SampleClip {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
 
         Ok(SampleClip {
             m_name,

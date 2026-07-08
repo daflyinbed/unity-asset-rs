@@ -16,18 +16,18 @@ pub struct ChildMotion {
 
 impl crate::Parse for ChildMotion {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_motion = crate::PPtr::parse(r, ver)?;
-        let m_threshold = r.read_f32()?;
-        let m_position = Vector2f::parse(r, ver)?;
-        let m_time_scale = r.read_f32()?;
-        let m_cycle_offset = r.read_f32()?;
-        let m_direct_blend_parameter = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_mirror = r.read_bool()?;
-        r.align(4)?;
+        let m_motion = crate::PPtr::parse(rdr, ver)?;
+        let m_threshold = rdr.read_f32()?;
+        let m_position = Vector2f::parse(rdr, ver)?;
+        let m_time_scale = rdr.read_f32()?;
+        let m_cycle_offset = rdr.read_f32()?;
+        let m_direct_blend_parameter = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_mirror = rdr.read_bool()?;
+        rdr.align(4)?;
 
         Ok(ChildMotion {
             m_motion,

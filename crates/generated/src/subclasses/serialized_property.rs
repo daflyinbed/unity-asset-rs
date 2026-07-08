@@ -18,23 +18,23 @@ pub struct SerializedProperty {
 
 impl crate::Parse for SerializedProperty {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_description = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_attributes = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_type = r.read_i32()?;
-        let m_flags = r.read_u32()?;
-        let m_def_value_0 = r.read_f32()?;
-        let m_def_value_1 = r.read_f32()?;
-        let m_def_value_2 = r.read_f32()?;
-        let m_def_value_3 = r.read_f32()?;
-        let m_def_texture = SerializedTextureProperty::parse(r, ver)?;
-        r.align(4)?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_description = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_attributes = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let m_type = rdr.read_i32()?;
+        let m_flags = rdr.read_u32()?;
+        let m_def_value_0 = rdr.read_f32()?;
+        let m_def_value_1 = rdr.read_f32()?;
+        let m_def_value_2 = rdr.read_f32()?;
+        let m_def_value_3 = rdr.read_f32()?;
+        let m_def_texture = SerializedTextureProperty::parse(rdr, ver)?;
+        rdr.align(4)?;
 
         Ok(SerializedProperty {
             m_name,

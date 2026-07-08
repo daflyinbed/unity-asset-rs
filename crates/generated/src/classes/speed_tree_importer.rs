@@ -15,15 +15,15 @@ pub enum SpeedTreeImporterMEnableSmoothLodTransitionVariant {
 
 impl crate::Parse for SpeedTreeImporterMEnableSmoothLodTransitionVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 1, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V5_1(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -38,15 +38,15 @@ pub enum SpeedTreeImporterMScaleFactorVariant {
 
 impl crate::Parse for SpeedTreeImporterMScaleFactorVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            let v = r.read_f32()?;
+            let v = rdr.read_f32()?;
             Ok(Self::V5_2(v))
         } else {
-            let v = r.read_f32()?;
-            r.align(4)?;
+            let v = rdr.read_f32()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -61,15 +61,15 @@ pub enum SpeedTreeImporterMMaterialVersionVariant {
 
 impl crate::Parse for SpeedTreeImporterMMaterialVersionVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            let v = r.read_i32()?;
+            let v = rdr.read_i32()?;
             Ok(Self::V2018_3(v))
         } else {
-            let v = r.read_i32()?;
-            r.align(4)?;
+            let v = rdr.read_i32()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -116,7 +116,7 @@ pub struct SpeedTreeImporter {
 
 impl crate::Parse for SpeedTreeImporter {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_name = None;
@@ -155,141 +155,141 @@ impl crate::Parse for SpeedTreeImporter {
         let mut m_unit_conversion_enum_value = None;
         let mut m_generate_colliders = None;
         let mut m_generate_rigidbody = None;
-            m_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_external_objects = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(r, ver)?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_used_file_i_ds = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            m_external_objects = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(r, ver)?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else {
         }
-            m_main_color = Some(ColorRgba::parse(r, ver)?);
+            m_main_color = Some(ColorRgba::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
         } else {
-            m_spec_color = Some(ColorRgba::parse(r, ver)?);
+            m_spec_color = Some(ColorRgba::parse(rdr, ver)?);
         }
-            m_hue_variation = Some(ColorRgba::parse(r, ver)?);
+            m_hue_variation = Some(ColorRgba::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
         } else {
-            m_shininess = Some(r.read_f32()?);
+            m_shininess = Some(rdr.read_f32()?);
         }
-            m_alpha_test_ref = Some(r.read_f32()?);
+            m_alpha_test_ref = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2022, 3, 12) {
-            m_enable_hue_variation = Some(r.read_bool()?);
-            m_enable_bump_mapping = Some(r.read_bool()?);
-            m_enable_subsurface_scattering = Some(r.read_bool()?);
-            r.align(4)?;
+            m_enable_hue_variation = Some(rdr.read_bool()?);
+            m_enable_bump_mapping = Some(rdr.read_bool()?);
+            m_enable_subsurface_scattering = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else {
         }
-            m_best_wind_quality = Some(r.read_i32()?);
+            m_best_wind_quality = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2022, 3, 12) {
-            m_selected_wind_quality = Some(r.read_i32()?);
-            m_enable_shadow_casting = Some(r.read_bool()?);
-            m_enable_shadow_receiving = Some(r.read_bool()?);
-            m_enable_light_probes = Some(r.read_bool()?);
-            r.align(4)?;
-            m_reflection_probe_enum_value = Some(r.read_i32()?);
+            m_selected_wind_quality = Some(rdr.read_i32()?);
+            m_enable_shadow_casting = Some(rdr.read_bool()?);
+            m_enable_shadow_receiving = Some(rdr.read_bool()?);
+            m_enable_light_probes = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_reflection_probe_enum_value = Some(rdr.read_i32()?);
         } else {
         }
-            m_has_billboard = Some(r.read_bool()?);
-            r.align(4)?;
-            m_lod_settings = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { PerLodSettings::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_enable_smooth_lod_transition = Some(SpeedTreeImporterMEnableSmoothLodTransitionVariant::parse(r, ver)?);
+            m_has_billboard = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_lod_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { PerLodSettings::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_enable_smooth_lod_transition = Some(SpeedTreeImporterMEnableSmoothLodTransitionVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 1, 0) {
-            m_animate_cross_fading = Some(r.read_bool()?);
-            r.align(4)?;
+            m_animate_cross_fading = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else {
         }
-            m_billboard_transition_cross_fade_width = Some(r.read_f32()?);
-            m_fade_out_width = Some(r.read_f32()?);
-            m_scale_factor = Some(SpeedTreeImporterMScaleFactorVariant::parse(r, ver)?);
+            m_billboard_transition_cross_fade_width = Some(rdr.read_f32()?);
+            m_fade_out_width = Some(rdr.read_f32()?);
+            m_scale_factor = Some(SpeedTreeImporterMScaleFactorVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            m_unit_conversion_enum_value = Some(r.read_i32()?);
-            m_motion_vector_mode_enum_value = Some(r.read_i32()?);
-            m_generate_colliders = Some(r.read_bool()?);
-            m_generate_rigidbody = Some(r.read_bool()?);
-            r.align(4)?;
-            m_material_version = Some(SpeedTreeImporterMMaterialVersionVariant::parse(r, ver)?);
-            m_material_location = Some(r.read_i32()?);
-            m_materials = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_supports_embedded_materials = Some(r.read_bool()?);
-            r.align(4)?;
-            m_file_id_type = Some(r.read_i32()?);
-            r.align(4)?;
+            m_unit_conversion_enum_value = Some(rdr.read_i32()?);
+            m_motion_vector_mode_enum_value = Some(rdr.read_i32()?);
+            m_generate_colliders = Some(rdr.read_bool()?);
+            m_generate_rigidbody = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_material_version = Some(SpeedTreeImporterMMaterialVersionVariant::parse(rdr, ver)?);
+            m_material_location = Some(rdr.read_i32()?);
+            m_materials = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_supports_embedded_materials = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_file_id_type = Some(rdr.read_i32()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2023, 1, 2) {
-            m_unit_conversion_enum_value = Some(r.read_i32()?);
-            m_motion_vector_mode_enum_value = Some(r.read_i32()?);
-            m_material_version = Some(SpeedTreeImporterMMaterialVersionVariant::parse(r, ver)?);
-            m_material_location = Some(r.read_i32()?);
-            m_materials = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_supports_embedded_materials = Some(r.read_bool()?);
-            r.align(4)?;
-            m_file_id_type = Some(r.read_i32()?);
-            r.align(4)?;
+            m_unit_conversion_enum_value = Some(rdr.read_i32()?);
+            m_motion_vector_mode_enum_value = Some(rdr.read_i32()?);
+            m_material_version = Some(SpeedTreeImporterMMaterialVersionVariant::parse(rdr, ver)?);
+            m_material_location = Some(rdr.read_i32()?);
+            m_materials = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_supports_embedded_materials = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_file_id_type = Some(rdr.read_i32()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            m_unit_conversion_enum_value = Some(r.read_i32()?);
-            m_material_version = Some(SpeedTreeImporterMMaterialVersionVariant::parse(r, ver)?);
-            m_material_location = Some(r.read_i32()?);
-            m_materials = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_supports_embedded_materials = Some(r.read_bool()?);
-            r.align(4)?;
-            m_file_id_type = Some(r.read_i32()?);
-            r.align(4)?;
+            m_unit_conversion_enum_value = Some(rdr.read_i32()?);
+            m_material_version = Some(SpeedTreeImporterMMaterialVersionVariant::parse(rdr, ver)?);
+            m_material_location = Some(rdr.read_i32()?);
+            m_materials = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_supports_embedded_materials = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_file_id_type = Some(rdr.read_i32()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2022, 3, 12) {
-            m_unit_conversion_enum_value = Some(r.read_i32()?);
-            m_motion_vector_mode_enum_value = Some(r.read_i32()?);
-            m_material_version = Some(SpeedTreeImporterMMaterialVersionVariant::parse(r, ver)?);
-            m_material_location = Some(r.read_i32()?);
-            m_materials = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_supports_embedded_materials = Some(r.read_bool()?);
-            r.align(4)?;
-            m_file_id_type = Some(r.read_i32()?);
-            r.align(4)?;
+            m_unit_conversion_enum_value = Some(rdr.read_i32()?);
+            m_motion_vector_mode_enum_value = Some(rdr.read_i32()?);
+            m_material_version = Some(SpeedTreeImporterMMaterialVersionVariant::parse(rdr, ver)?);
+            m_material_location = Some(rdr.read_i32()?);
+            m_materials = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_supports_embedded_materials = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_file_id_type = Some(rdr.read_i32()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2022, 3, 3) {
-            m_motion_vector_mode_enum_value = Some(r.read_i32()?);
-            m_material_version = Some(SpeedTreeImporterMMaterialVersionVariant::parse(r, ver)?);
-            m_material_location = Some(r.read_i32()?);
-            m_materials = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_supports_embedded_materials = Some(r.read_bool()?);
-            r.align(4)?;
-            m_file_id_type = Some(r.read_i32()?);
-            r.align(4)?;
+            m_motion_vector_mode_enum_value = Some(rdr.read_i32()?);
+            m_material_version = Some(SpeedTreeImporterMMaterialVersionVariant::parse(rdr, ver)?);
+            m_material_location = Some(rdr.read_i32()?);
+            m_materials = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_supports_embedded_materials = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_file_id_type = Some(rdr.read_i32()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_material_version = Some(SpeedTreeImporterMMaterialVersionVariant::parse(r, ver)?);
-            m_material_location = Some(r.read_i32()?);
-            m_materials = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_supports_embedded_materials = Some(r.read_bool()?);
-            r.align(4)?;
-            m_file_id_type = Some(r.read_i32()?);
-            r.align(4)?;
+            m_material_version = Some(SpeedTreeImporterMMaterialVersionVariant::parse(rdr, ver)?);
+            m_material_location = Some(rdr.read_i32()?);
+            m_materials = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_supports_embedded_materials = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_file_id_type = Some(rdr.read_i32()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            m_material_version = Some(SpeedTreeImporterMMaterialVersionVariant::parse(r, ver)?);
-            m_material_location = Some(r.read_i32()?);
-            m_materials = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_supports_embedded_materials = Some(r.read_bool()?);
-            r.align(4)?;
+            m_material_version = Some(SpeedTreeImporterMMaterialVersionVariant::parse(rdr, ver)?);
+            m_material_location = Some(rdr.read_i32()?);
+            m_materials = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_supports_embedded_materials = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            m_material_version = Some(SpeedTreeImporterMMaterialVersionVariant::parse(r, ver)?);
+            m_material_version = Some(SpeedTreeImporterMMaterialVersionVariant::parse(rdr, ver)?);
         } else {
         }
-            m_user_data = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_variant = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_user_data = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
 
         Ok(SpeedTreeImporter {
             m_name: m_name.unwrap(),

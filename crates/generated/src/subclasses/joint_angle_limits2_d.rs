@@ -8,11 +8,11 @@ pub struct JointAngleLimits2D {
 
 impl crate::Parse for JointAngleLimits2D {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_lower_angle = r.read_f32()?;
-        let m_upper_angle = r.read_f32()?;
+        let m_lower_angle = rdr.read_f32()?;
+        let m_upper_angle = rdr.read_f32()?;
 
         Ok(JointAngleLimits2D {
             m_lower_angle,

@@ -11,14 +11,14 @@ pub struct SerializedPackageRequirements {
 
 impl crate::Parse for SerializedPackageRequirements {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_requirements = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { SerializedPackageRequirement::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_status_message = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_combined_status = r.read_i8()?;
+        let m_requirements = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SerializedPackageRequirement::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let m_status_message = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_combined_status = rdr.read_i8()?;
 
         Ok(SerializedPackageRequirements {
             m_requirements,

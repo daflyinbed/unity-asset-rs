@@ -14,19 +14,19 @@ pub enum VisualEffectMResetSeedOnPlayVariant {
 
 impl crate::Parse for VisualEffectMResetSeedOnPlayVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            let v = r.read_u8()?;
+            let v = rdr.read_u8()?;
             Ok(Self::V2022_2(v))
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            let v = r.read_u8()?;
-            r.align(4)?;
+            let v = rdr.read_u8()?;
+            rdr.align(4)?;
             Ok(Self::V2019_3(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -41,15 +41,15 @@ pub enum VisualEffectMAllowInstancingVariant {
 
 impl crate::Parse for VisualEffectMAllowInstancingVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            let v = r.read_u8()?;
+            let v = rdr.read_u8()?;
             Ok(Self::V6000_5(v))
         } else {
-            let v = r.read_u8()?;
-            r.align(4)?;
+            let v = rdr.read_u8()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -70,7 +70,7 @@ pub struct VisualEffect {
 
 impl crate::Parse for VisualEffect {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_game_object = None;
@@ -83,29 +83,29 @@ impl crate::Parse for VisualEffect {
         let mut m_property_sheet = None;
         let mut m_allow_instancing = None;
         let mut m_release_instance_on_disable = None;
-            m_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_enabled = Some(r.read_u8()?);
-            r.align(4)?;
-            m_asset = Some(crate::PPtr::parse(r, ver)?);
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_enabled = Some(rdr.read_u8()?);
+            rdr.align(4)?;
+            m_asset = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            m_initial_event_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_initial_event_name_overriden = Some(r.read_u8()?);
-            r.align(4)?;
+            m_initial_event_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_initial_event_name_overriden = Some(rdr.read_u8()?);
+            rdr.align(4)?;
         } else {
         }
-            m_start_seed = Some(r.read_u32()?);
-            m_reset_seed_on_play = Some(VisualEffectMResetSeedOnPlayVariant::parse(r, ver)?);
+            m_start_seed = Some(rdr.read_u32()?);
+            m_reset_seed_on_play = Some(VisualEffectMResetSeedOnPlayVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            m_allow_instancing = Some(VisualEffectMAllowInstancingVariant::parse(r, ver)?);
-            m_release_instance_on_disable = Some(r.read_u8()?);
-            r.align(4)?;
+            m_allow_instancing = Some(VisualEffectMAllowInstancingVariant::parse(rdr, ver)?);
+            m_release_instance_on_disable = Some(rdr.read_u8()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            m_allow_instancing = Some(VisualEffectMAllowInstancingVariant::parse(r, ver)?);
+            m_allow_instancing = Some(VisualEffectMAllowInstancingVariant::parse(rdr, ver)?);
         } else {
         }
-            m_property_sheet = Some(VfxPropertySheetSerializedBase::parse(r, ver)?);
-            r.align(4)?;
+            m_property_sheet = Some(VfxPropertySheetSerializedBase::parse(rdr, ver)?);
+            rdr.align(4)?;
 
         Ok(VisualEffect {
             m_game_object: m_game_object.unwrap(),

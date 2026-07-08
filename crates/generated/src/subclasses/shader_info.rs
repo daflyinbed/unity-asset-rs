@@ -9,11 +9,11 @@ pub struct ShaderInfo {
 
 impl crate::Parse for ShaderInfo {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let variants = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { VariantInfo::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
+        let variants = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VariantInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
 
         Ok(ShaderInfo {
             variants,

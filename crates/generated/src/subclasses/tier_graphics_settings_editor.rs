@@ -11,15 +11,15 @@ pub struct TierGraphicsSettingsEditor {
 
 impl crate::Parse for TierGraphicsSettingsEditor {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let standard_shader_quality = r.read_i32()?;
-        let rendering_path = r.read_i32()?;
-        let use_cascaded_shadow_maps = r.read_bool()?;
-        let use_reflection_probe_box_projection = r.read_bool()?;
-        let use_reflection_probe_blending = r.read_bool()?;
-        r.align(4)?;
+        let standard_shader_quality = rdr.read_i32()?;
+        let rendering_path = rdr.read_i32()?;
+        let use_cascaded_shadow_maps = rdr.read_bool()?;
+        let use_reflection_probe_box_projection = rdr.read_bool()?;
+        let use_reflection_probe_blending = rdr.read_bool()?;
+        rdr.align(4)?;
 
         Ok(TierGraphicsSettingsEditor {
             standard_shader_quality,

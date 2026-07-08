@@ -8,12 +8,12 @@ pub struct BuildStepMessage {
 
 impl crate::Parse for BuildStepMessage {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let r#type = r.read_i32()?;
-        let content = r.read_aligned_string()?;
-        r.align(4)?;
+        let r#type = rdr.read_i32()?;
+        let content = rdr.read_aligned_string()?;
+        rdr.align(4)?;
 
         Ok(BuildStepMessage {
             r#type,

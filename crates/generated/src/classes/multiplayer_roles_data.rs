@@ -12,13 +12,13 @@ pub struct MultiplayerRolesData {
 
 impl crate::Parse for MultiplayerRolesData {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_game_object_roles_mask = r.read_i32()?;
-        let m_components_roles_masks = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ObjectRolePair::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
+        let m_game_object = crate::PPtr::parse(rdr, ver)?;
+        let m_game_object_roles_mask = rdr.read_i32()?;
+        let m_components_roles_masks = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ObjectRolePair::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
 
         Ok(MultiplayerRolesData {
             m_game_object,

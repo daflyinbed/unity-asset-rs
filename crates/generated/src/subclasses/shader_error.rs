@@ -10,15 +10,15 @@ pub struct ShaderError {
 
 impl crate::Parse for ShaderError {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let message = r.read_aligned_string()?;
-        r.align(4)?;
-        let line = r.read_i32()?;
-        let warning = r.read_bool()?;
-        let program_error = r.read_bool()?;
-        r.align(4)?;
+        let message = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let line = rdr.read_i32()?;
+        let warning = rdr.read_bool()?;
+        let program_error = rdr.read_bool()?;
+        rdr.align(4)?;
 
         Ok(ShaderError {
             message,

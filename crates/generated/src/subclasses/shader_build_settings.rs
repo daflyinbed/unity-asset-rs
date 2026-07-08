@@ -9,11 +9,11 @@ pub struct ShaderBuildSettings {
 
 impl crate::Parse for ShaderBuildSettings {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let keyword_declaration_overrides = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { KeywordDeclarationOverride::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
+        let keyword_declaration_overrides = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { KeywordDeclarationOverride::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
 
         Ok(ShaderBuildSettings {
             keyword_declaration_overrides,

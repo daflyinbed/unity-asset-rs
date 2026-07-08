@@ -9,12 +9,12 @@ pub struct int3_storage {
 
 impl crate::Parse for int3_storage {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let x = r.read_i32()?;
-        let y = r.read_i32()?;
-        let z = r.read_i32()?;
+        let x = rdr.read_i32()?;
+        let y = rdr.read_i32()?;
+        let z = rdr.read_i32()?;
 
         Ok(int3_storage {
             x,

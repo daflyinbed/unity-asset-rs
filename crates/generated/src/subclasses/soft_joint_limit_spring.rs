@@ -8,11 +8,11 @@ pub struct SoftJointLimitSpring {
 
 impl crate::Parse for SoftJointLimitSpring {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let spring = r.read_f32()?;
-        let damper = r.read_f32()?;
+        let spring = rdr.read_f32()?;
+        let damper = rdr.read_f32()?;
 
         Ok(SoftJointLimitSpring {
             spring,

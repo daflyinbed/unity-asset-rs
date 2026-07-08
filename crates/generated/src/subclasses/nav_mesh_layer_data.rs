@@ -9,13 +9,13 @@ pub struct NavMeshLayerData {
 
 impl crate::Parse for NavMeshLayerData {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let name = r.read_aligned_string()?;
-        r.align(4)?;
-        let cost = r.read_f32()?;
-        let edit_type = r.read_i32()?;
+        let name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let cost = rdr.read_f32()?;
+        let edit_type = rdr.read_i32()?;
 
         Ok(NavMeshLayerData {
             name,

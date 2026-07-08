@@ -16,15 +16,15 @@ pub enum MonoAssemblyImporterMIsPreloadedVariant {
 
 impl crate::Parse for MonoAssemblyImporterMIsPreloadedVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V5_5(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -40,20 +40,20 @@ pub enum MonoAssemblyImporterMPlatformDataVariant {
 
 impl crate::Parse for MonoAssemblyImporterMPlatformDataVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2023_3(v))
         } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = ( { let a = r.read_aligned_string()?; let b = r.read_aligned_string()?; Ok((a, b)) } )?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = ( { let a = rdr.read_aligned_string()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } )?; let b = PlatformSettingsData::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V5_6(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = PlatformSettingsData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -68,15 +68,15 @@ pub enum MonoAssemblyImporterMIsOverridableVariant {
 
 impl crate::Parse for MonoAssemblyImporterMIsOverridableVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V2018_3(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -91,15 +91,15 @@ pub enum MonoAssemblyImporterMIsExplicitlyReferencedVariant {
 
 impl crate::Parse for MonoAssemblyImporterMIsExplicitlyReferencedVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2018, 3, 10) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V2018_3_10(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -128,7 +128,7 @@ pub struct MonoAssemblyImporter {
 
 impl crate::Parse for MonoAssemblyImporter {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_name = None;
@@ -149,100 +149,100 @@ impl crate::Parse for MonoAssemblyImporter {
         let mut m_is_explicitly_referenced = None;
         let mut m_asset_bundle_variant = None;
         let mut m_validate_references = None;
-            m_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_external_objects = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(r, ver)?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_used_file_i_ds = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            m_external_objects = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(r, ver)?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
         } else {
-            m_file_id_to_recycle_name = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i32()?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_old_hash_identity = Some(MdFour::parse(r, ver)?);
-            r.align(4)?;
-            m_new_hash_identity = Some(MdFour::parse(r, ver)?);
-            r.align(4)?;
-            m_execution_order = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_file_id_to_recycle_name = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i32()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_old_hash_identity = Some(MdFour::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_new_hash_identity = Some(MdFour::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_execution_order = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         }
-            m_icon_map = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_icon_map = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2018, 3, 10) {
-            m_execution_order = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_define_constraints = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_is_preloaded = Some(MonoAssemblyImporterMIsPreloadedVariant::parse(r, ver)?);
-            m_is_overridable = Some(MonoAssemblyImporterMIsOverridableVariant::parse(r, ver)?);
-            m_is_explicitly_referenced = Some(MonoAssemblyImporterMIsExplicitlyReferencedVariant::parse(r, ver)?);
-            m_validate_references = Some(r.read_bool()?);
-            r.align(4)?;
-            m_platform_data = Some(MonoAssemblyImporterMPlatformDataVariant::parse(r, ver)?);
-            m_output = Some(PluginImportOutput::parse(r, ver)?);
-            r.align(4)?;
-            m_user_data = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_variant = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_execution_order = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_define_constraints = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_is_preloaded = Some(MonoAssemblyImporterMIsPreloadedVariant::parse(rdr, ver)?);
+            m_is_overridable = Some(MonoAssemblyImporterMIsOverridableVariant::parse(rdr, ver)?);
+            m_is_explicitly_referenced = Some(MonoAssemblyImporterMIsExplicitlyReferencedVariant::parse(rdr, ver)?);
+            m_validate_references = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_platform_data = Some(MonoAssemblyImporterMPlatformDataVariant::parse(rdr, ver)?);
+            m_output = Some(PluginImportOutput::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_user_data = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            m_execution_order = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_define_constraints = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_is_preloaded = Some(MonoAssemblyImporterMIsPreloadedVariant::parse(r, ver)?);
-            m_is_overridable = Some(MonoAssemblyImporterMIsOverridableVariant::parse(r, ver)?);
-            m_is_explicitly_referenced = Some(MonoAssemblyImporterMIsExplicitlyReferencedVariant::parse(r, ver)?);
-            m_platform_data = Some(MonoAssemblyImporterMPlatformDataVariant::parse(r, ver)?);
-            m_output = Some(PluginImportOutput::parse(r, ver)?);
-            r.align(4)?;
-            m_user_data = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_variant = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_execution_order = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_define_constraints = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_is_preloaded = Some(MonoAssemblyImporterMIsPreloadedVariant::parse(rdr, ver)?);
+            m_is_overridable = Some(MonoAssemblyImporterMIsOverridableVariant::parse(rdr, ver)?);
+            m_is_explicitly_referenced = Some(MonoAssemblyImporterMIsExplicitlyReferencedVariant::parse(rdr, ver)?);
+            m_platform_data = Some(MonoAssemblyImporterMPlatformDataVariant::parse(rdr, ver)?);
+            m_output = Some(PluginImportOutput::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_user_data = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            m_execution_order = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_is_preloaded = Some(MonoAssemblyImporterMIsPreloadedVariant::parse(r, ver)?);
-            m_is_overridable = Some(MonoAssemblyImporterMIsOverridableVariant::parse(r, ver)?);
-            m_platform_data = Some(MonoAssemblyImporterMPlatformDataVariant::parse(r, ver)?);
-            m_output = Some(PluginImportOutput::parse(r, ver)?);
-            r.align(4)?;
-            m_user_data = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_variant = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_execution_order = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_is_preloaded = Some(MonoAssemblyImporterMIsPreloadedVariant::parse(rdr, ver)?);
+            m_is_overridable = Some(MonoAssemblyImporterMIsOverridableVariant::parse(rdr, ver)?);
+            m_platform_data = Some(MonoAssemblyImporterMPlatformDataVariant::parse(rdr, ver)?);
+            m_output = Some(PluginImportOutput::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_user_data = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_execution_order = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_is_preloaded = Some(MonoAssemblyImporterMIsPreloadedVariant::parse(r, ver)?);
-            m_platform_data = Some(MonoAssemblyImporterMPlatformDataVariant::parse(r, ver)?);
-            m_output = Some(PluginImportOutput::parse(r, ver)?);
-            r.align(4)?;
-            m_user_data = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_variant = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_execution_order = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_is_preloaded = Some(MonoAssemblyImporterMIsPreloadedVariant::parse(rdr, ver)?);
+            m_platform_data = Some(MonoAssemblyImporterMPlatformDataVariant::parse(rdr, ver)?);
+            m_output = Some(PluginImportOutput::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_user_data = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            m_execution_order = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_user_data = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_execution_order = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_user_data = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            m_execution_order = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_execution_order = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else {
         }
 

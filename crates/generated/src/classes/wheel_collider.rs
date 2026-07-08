@@ -16,15 +16,15 @@ pub enum WheelColliderMEnabledVariant {
 
 impl crate::Parse for WheelColliderMEnabledVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V2022_2(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -50,7 +50,7 @@ pub struct WheelCollider {
 
 impl crate::Parse for WheelCollider {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_game_object = None;
@@ -68,35 +68,35 @@ impl crate::Parse for WheelCollider {
         let mut m_exclude_layers = None;
         let mut m_layer_override_priority = None;
         let mut m_provides_contacts = None;
-            m_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_center = Some(Vector3f::parse(r, ver)?);
-            m_radius = Some(r.read_f32()?);
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_center = Some(Vector3f::parse(rdr, ver)?);
+            m_radius = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
         } else {
-            m_suspension_distance = Some(r.read_f32()?);
+            m_suspension_distance = Some(rdr.read_f32()?);
         }
-            m_suspension_spring = Some(JointSpring::parse(r, ver)?);
+            m_suspension_spring = Some(JointSpring::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_suspension_distance = Some(r.read_f32()?);
-            m_force_app_point_distance = Some(r.read_f32()?);
+            m_suspension_distance = Some(rdr.read_f32()?);
+            m_force_app_point_distance = Some(rdr.read_f32()?);
         } else {
         }
-            m_mass = Some(r.read_f32()?);
+            m_mass = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_wheel_damping_rate = Some(r.read_f32()?);
+            m_wheel_damping_rate = Some(rdr.read_f32()?);
         } else {
         }
-            m_forward_friction = Some(WheelFrictionCurve::parse(r, ver)?);
-            m_sideways_friction = Some(WheelFrictionCurve::parse(r, ver)?);
+            m_forward_friction = Some(WheelFrictionCurve::parse(rdr, ver)?);
+            m_sideways_friction = Some(WheelFrictionCurve::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            m_include_layers = Some(BitField::parse(r, ver)?);
-            m_exclude_layers = Some(BitField::parse(r, ver)?);
-            m_layer_override_priority = Some(r.read_i32()?);
-            m_enabled = Some(WheelColliderMEnabledVariant::parse(r, ver)?);
-            m_provides_contacts = Some(r.read_bool()?);
-            r.align(4)?;
+            m_include_layers = Some(BitField::parse(rdr, ver)?);
+            m_exclude_layers = Some(BitField::parse(rdr, ver)?);
+            m_layer_override_priority = Some(rdr.read_i32()?);
+            m_enabled = Some(WheelColliderMEnabledVariant::parse(rdr, ver)?);
+            m_provides_contacts = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            m_enabled = Some(WheelColliderMEnabledVariant::parse(r, ver)?);
+            m_enabled = Some(WheelColliderMEnabledVariant::parse(rdr, ver)?);
         } else {
         }
 

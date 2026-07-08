@@ -11,13 +11,13 @@ pub struct GfxBlendState {
 
 impl crate::Parse for GfxBlendState {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let rt = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { GfxRenderTargetBlendState::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        let separate_mrt_blend = r.read_u8()?;
-        let alpha_to_mask = r.read_u8()?;
-        r.align(4)?;
+        let rt = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { GfxRenderTargetBlendState::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let separate_mrt_blend = rdr.read_u8()?;
+        let alpha_to_mask = rdr.read_u8()?;
+        rdr.align(4)?;
 
         Ok(GfxBlendState {
             rt,

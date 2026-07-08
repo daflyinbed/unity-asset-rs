@@ -1,35 +1,66 @@
 //! 自动生成。请勿手动修改。
 
-use crate::PPtr;
-use crate::subclasses::hash128::Hash128;
 
+/// 版本枚举：TextureMDownscaleFallbackVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum TextureMDownscaleFallbackVariant {
+    Default(bool),
+    V2020_2(bool),
+}
+
+impl crate::Parse for TextureMDownscaleFallbackVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2020, 2, 0) {
+            let v = rdr.read_bool()?;
+            Ok(Self::V2020_2(v))
+        } else {
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct Texture {
-    pub m_object_hide_flags: u32,
-    pub m_prefab_parent_object: PPtr,
-    pub m_prefab_internal: PPtr,
     pub m_name: String,
-    pub m_image_contents_hash: Hash128,
+    pub m_forced_fallback_format: Option<i32>,
+    pub m_is_alpha_channel_optional: Option<bool>,
+    pub m_downscale_fallback: Option<TextureMDownscaleFallbackVariant>,
 }
 
 impl crate::Parse for Texture {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_object_hide_flags = r.read_u32()?;
-        let m_prefab_parent_object = crate::PPtr::parse(r, ver)?;
-        let m_prefab_internal = crate::PPtr::parse(r, ver)?;
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_image_contents_hash = Hash128::parse(r, ver)?;
+        let mut m_name = None;
+        let mut m_forced_fallback_format = None;
+        let mut m_is_alpha_channel_optional = None;
+        let mut m_downscale_fallback = None;
+            m_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+        if *ver >= crate::UnityVersion::new(2023, 2, 0) {
+            m_is_alpha_channel_optional = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
+            m_forced_fallback_format = Some(rdr.read_i32()?);
+            m_downscale_fallback = Some(TextureMDownscaleFallbackVariant::parse(rdr, ver)?);
+            m_is_alpha_channel_optional = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
+            m_forced_fallback_format = Some(rdr.read_i32()?);
+            m_downscale_fallback = Some(TextureMDownscaleFallbackVariant::parse(rdr, ver)?);
+        } else {
+        }
 
         Ok(Texture {
-            m_object_hide_flags,
-            m_prefab_parent_object,
-            m_prefab_internal,
-            m_name,
-            m_image_contents_hash,
+            m_name: m_name.unwrap(),
+            m_forced_fallback_format,
+            m_is_alpha_channel_optional,
+            m_downscale_fallback,
         })
     }
 }

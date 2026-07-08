@@ -12,15 +12,15 @@ pub enum SortingGroupMSortingOrderVariant {
 
 impl crate::Parse for SortingGroupMSortingOrderVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2022, 1, 0) {
-            let v = r.read_i16()?;
+            let v = rdr.read_i16()?;
             Ok(Self::V2022_1(v))
         } else {
-            let v = r.read_i16()?;
-            r.align(4)?;
+            let v = rdr.read_i16()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -35,15 +35,15 @@ pub enum SortingGroupMSortAtRootVariant {
 
 impl crate::Parse for SortingGroupMSortAtRootVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(6000, 3, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V6000_3(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -61,23 +61,23 @@ pub struct SortingGroup {
 
 impl crate::Parse for SortingGroup {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_enabled = r.read_u8()?;
-        r.align(4)?;
-        let m_sorting_layer_id = r.read_i32()?;
-        let m_sorting_layer = r.read_i16()?;
-        let m_sorting_order = SortingGroupMSortingOrderVariant::parse(r, ver)?;
+        let m_game_object = crate::PPtr::parse(rdr, ver)?;
+        let m_enabled = rdr.read_u8()?;
+        rdr.align(4)?;
+        let m_sorting_layer_id = rdr.read_i32()?;
+        let m_sorting_layer = rdr.read_i16()?;
+        let m_sorting_order = SortingGroupMSortingOrderVariant::parse(rdr, ver)?;
         let m_sort_at_root = if *ver >= crate::UnityVersion::new(2022, 1, 0) {
-            Some(SortingGroupMSortAtRootVariant::parse(r, ver)?)
+            Some(SortingGroupMSortAtRootVariant::parse(rdr, ver)?)
         } else {
             None
         };
         let m_sort3_d_as2_d = if *ver >= crate::UnityVersion::new(6000, 3, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Some(v)
         } else {
             None

@@ -14,21 +14,21 @@ use crate::subclasses::vector3f::Vector3f;
 /// 版本枚举：NavMeshDataMNavMeshBuildSettingsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum NavMeshDataMNavMeshBuildSettingsVariant {
-    Default(NavMeshBuildSettings),
-    V2017_2(NavMeshBuildSettings),
+    Default(Box<NavMeshBuildSettings>),
+    V2017_2(Box<NavMeshBuildSettings>),
 }
 
 impl crate::Parse for NavMeshDataMNavMeshBuildSettingsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            let v = NavMeshBuildSettings::parse(r, ver)?;
-            r.align(4)?;
+            let v = ( { Ok(Box::new(NavMeshBuildSettings::parse(rdr, ver)?)) } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_2(v))
         } else {
-            let v = NavMeshBuildSettings::parse(r, ver)?;
+            let v = ( { Ok(Box::new(NavMeshBuildSettings::parse(rdr, ver)?)) } )?;
             Ok(Self::Default(v))
         }
     }
@@ -43,15 +43,15 @@ pub enum NavMeshDataMHeightmapsVariant {
 
 impl crate::Parse for NavMeshDataMHeightmapsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { HeightmapData::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { HeightmapData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { HeightmapData::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { HeightmapData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -66,15 +66,15 @@ pub enum NavMeshDataMHeightMeshesVariant {
 
 impl crate::Parse for NavMeshDataMHeightMeshesVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { HeightMeshData::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { HeightMeshData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { HeightMeshData::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { HeightMeshData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -89,15 +89,15 @@ pub enum NavMeshDataMOffMeshLinksVariant {
 
 impl crate::Parse for NavMeshDataMOffMeshLinksVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { AutoOffMeshLinkData::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AutoOffMeshLinkData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { AutoOffMeshLinkData::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AutoOffMeshLinkData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -119,43 +119,43 @@ pub struct NavMeshData {
 
 impl crate::Parse for NavMeshData {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_nav_mesh_tiles = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { NavMeshTileData::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_nav_mesh_tiles = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { NavMeshTileData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
         let m_nav_mesh_params = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(NavMeshParams::parse(r, ver)?)
+            Some(NavMeshParams::parse(rdr, ver)?)
         } else {
             None
         };
         let m_nav_mesh_build_settings = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            Some(NavMeshDataMNavMeshBuildSettingsVariant::parse(r, ver)?)
+            Some(NavMeshDataMNavMeshBuildSettingsVariant::parse(rdr, ver)?)
         } else {
             None
         };
-        let m_heightmaps = NavMeshDataMHeightmapsVariant::parse(r, ver)?;
-        let m_height_meshes = NavMeshDataMHeightMeshesVariant::parse(r, ver)?;
-        let m_off_mesh_links = NavMeshDataMOffMeshLinksVariant::parse(r, ver)?;
+        let m_heightmaps = NavMeshDataMHeightmapsVariant::parse(rdr, ver)?;
+        let m_height_meshes = NavMeshDataMHeightMeshesVariant::parse(rdr, ver)?;
+        let m_off_mesh_links = NavMeshDataMOffMeshLinksVariant::parse(rdr, ver)?;
         let m_source_bounds = if *ver >= crate::UnityVersion::new(5, 6, 1) {
-            Some(Aabb::parse(r, ver)?)
+            Some(Aabb::parse(rdr, ver)?)
         } else {
             None
         };
         let m_rotation = if *ver >= crate::UnityVersion::new(5, 6, 1) {
-            Some(Quaternionf::parse(r, ver)?)
+            Some(Quaternionf::parse(rdr, ver)?)
         } else {
             None
         };
         let m_position = if *ver >= crate::UnityVersion::new(5, 6, 1) {
-            Some(Vector3f::parse(r, ver)?)
+            Some(Vector3f::parse(rdr, ver)?)
         } else {
             None
         };
         let m_agent_type_id = if *ver >= crate::UnityVersion::new(5, 6, 1) {
-            Some(r.read_i32()?)
+            Some(rdr.read_i32()?)
         } else {
             None
         };

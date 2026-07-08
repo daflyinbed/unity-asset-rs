@@ -30,32 +30,32 @@ pub struct EllipsoidParticleEmitter {
 
 impl crate::Parse for EllipsoidParticleEmitter {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_enabled = r.read_bool()?;
-        let m_emit = r.read_bool()?;
-        r.align(4)?;
-        let min_size = r.read_f32()?;
-        let max_size = r.read_f32()?;
-        let min_energy = r.read_f32()?;
-        let max_energy = r.read_f32()?;
-        let min_emission = r.read_f32()?;
-        let max_emission = r.read_f32()?;
-        let world_velocity = Vector3f::parse(r, ver)?;
-        let local_velocity = Vector3f::parse(r, ver)?;
-        let rnd_velocity = Vector3f::parse(r, ver)?;
-        let emitter_velocity_scale = r.read_f32()?;
-        let tangent_velocity = Vector3f::parse(r, ver)?;
-        let angular_velocity = r.read_f32()?;
-        let rnd_angular_velocity = r.read_f32()?;
-        let rnd_rotation = r.read_bool()?;
-        let simulate_in_worldspace = r.read_bool()?;
-        let m_one_shot = r.read_bool()?;
-        r.align(4)?;
-        let m_ellipsoid = Vector3f::parse(r, ver)?;
-        let m_min_emitter_range = r.read_f32()?;
+        let m_game_object = crate::PPtr::parse(rdr, ver)?;
+        let m_enabled = rdr.read_bool()?;
+        let m_emit = rdr.read_bool()?;
+        rdr.align(4)?;
+        let min_size = rdr.read_f32()?;
+        let max_size = rdr.read_f32()?;
+        let min_energy = rdr.read_f32()?;
+        let max_energy = rdr.read_f32()?;
+        let min_emission = rdr.read_f32()?;
+        let max_emission = rdr.read_f32()?;
+        let world_velocity = Vector3f::parse(rdr, ver)?;
+        let local_velocity = Vector3f::parse(rdr, ver)?;
+        let rnd_velocity = Vector3f::parse(rdr, ver)?;
+        let emitter_velocity_scale = rdr.read_f32()?;
+        let tangent_velocity = Vector3f::parse(rdr, ver)?;
+        let angular_velocity = rdr.read_f32()?;
+        let rnd_angular_velocity = rdr.read_f32()?;
+        let rnd_rotation = rdr.read_bool()?;
+        let simulate_in_worldspace = rdr.read_bool()?;
+        let m_one_shot = rdr.read_bool()?;
+        rdr.align(4)?;
+        let m_ellipsoid = Vector3f::parse(rdr, ver)?;
+        let m_min_emitter_range = rdr.read_f32()?;
 
         Ok(EllipsoidParticleEmitter {
             m_game_object,

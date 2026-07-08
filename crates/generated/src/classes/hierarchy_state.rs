@@ -12,13 +12,13 @@ pub struct HierarchyState {
 
 impl crate::Parse for HierarchyState {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let expanded = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        let selection = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        let scrollposition_x = r.read_f32()?;
-        let scrollposition_y = r.read_f32()?;
+        let expanded = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let selection = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let scrollposition_x = rdr.read_f32()?;
+        let scrollposition_y = rdr.read_f32()?;
 
         Ok(HierarchyState {
             expanded,

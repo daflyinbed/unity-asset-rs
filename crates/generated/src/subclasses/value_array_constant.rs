@@ -9,10 +9,10 @@ pub struct ValueArrayConstant {
 
 impl crate::Parse for ValueArrayConstant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_value_array = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ValueConstant::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_value_array = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ValueConstant::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
 
         Ok(ValueArrayConstant {
             m_value_array,

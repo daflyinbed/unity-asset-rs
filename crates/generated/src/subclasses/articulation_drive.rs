@@ -9,20 +9,26 @@ pub struct ArticulationDrive {
     pub force_limit: f32,
     pub target: f32,
     pub target_velocity: f32,
+    pub drive_type: Option<i32>,
 }
 
 impl crate::Parse for ArticulationDrive {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let lower_limit = r.read_f32()?;
-        let upper_limit = r.read_f32()?;
-        let stiffness = r.read_f32()?;
-        let damping = r.read_f32()?;
-        let force_limit = r.read_f32()?;
-        let target = r.read_f32()?;
-        let target_velocity = r.read_f32()?;
+        let lower_limit = rdr.read_f32()?;
+        let upper_limit = rdr.read_f32()?;
+        let stiffness = rdr.read_f32()?;
+        let damping = rdr.read_f32()?;
+        let force_limit = rdr.read_f32()?;
+        let target = rdr.read_f32()?;
+        let target_velocity = rdr.read_f32()?;
+        let drive_type = if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            Some(rdr.read_i32()?)
+        } else {
+            None
+        };
 
         Ok(ArticulationDrive {
             lower_limit,
@@ -32,6 +38,7 @@ impl crate::Parse for ArticulationDrive {
             force_limit,
             target,
             target_velocity,
+            drive_type,
         })
     }
 }

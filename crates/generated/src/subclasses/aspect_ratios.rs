@@ -11,15 +11,15 @@ pub struct AspectRatios {
 
 impl crate::Parse for AspectRatios {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let f_4_3 = r.read_bool()?;
-        let f_5_4 = r.read_bool()?;
-        let f_16_10 = r.read_bool()?;
-        let f_16_9 = r.read_bool()?;
-        let others = r.read_bool()?;
-        r.align(4)?;
+        let f_4_3 = rdr.read_bool()?;
+        let f_5_4 = rdr.read_bool()?;
+        let f_16_10 = rdr.read_bool()?;
+        let f_16_9 = rdr.read_bool()?;
+        let others = rdr.read_bool()?;
+        rdr.align(4)?;
 
         Ok(AspectRatios {
             f_4_3,

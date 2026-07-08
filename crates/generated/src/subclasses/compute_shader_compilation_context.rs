@@ -22,29 +22,29 @@ pub struct ComputeShaderCompilationContext {
 
 impl crate::Parse for ComputeShaderCompilationContext {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let build_target = BuildTargetSelection::parse(r, ver)?;
-        let source_file_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let source = r.read_aligned_string()?;
-        r.align(4)?;
-        let source_file = r.read_aligned_string()?;
-        r.align(4)?;
-        let kernels = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let kernel_macros = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let compilation_flags = r.read_i32()?;
-        let api_mask = r.read_u32()?;
-        let supported_ap_is = r.read_u32()?;
-        let include_hash0 = r.read_u32()?;
-        let include_hash1 = r.read_u32()?;
-        let include_hash2 = r.read_u32()?;
-        let include_hash3 = r.read_u32()?;
-        let include_files = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
+        let build_target = BuildTargetSelection::parse(rdr, ver)?;
+        let source_file_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let source = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let source_file = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let kernels = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let kernel_macros = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let compilation_flags = rdr.read_i32()?;
+        let api_mask = rdr.read_u32()?;
+        let supported_ap_is = rdr.read_u32()?;
+        let include_hash0 = rdr.read_u32()?;
+        let include_hash1 = rdr.read_u32()?;
+        let include_hash2 = rdr.read_u32()?;
+        let include_hash3 = rdr.read_u32()?;
+        let include_files = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
 
         Ok(ComputeShaderCompilationContext {
             build_target,

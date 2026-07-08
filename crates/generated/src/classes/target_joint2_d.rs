@@ -22,7 +22,7 @@ pub struct TargetJoint2D {
 
 impl crate::Parse for TargetJoint2D {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_game_object = None;
@@ -38,25 +38,25 @@ impl crate::Parse for TargetJoint2D {
         let mut m_max_force = None;
         let mut m_damping_ratio = None;
         let mut m_frequency = None;
-            m_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_enabled = Some(r.read_u8()?);
-            r.align(4)?;
-            m_enable_collision = Some(r.read_bool()?);
-            r.align(4)?;
-            m_connected_rigid_body = Some(crate::PPtr::parse(r, ver)?);
-            m_break_force = Some(r.read_f32()?);
-            m_break_torque = Some(r.read_f32()?);
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_enabled = Some(rdr.read_u8()?);
+            rdr.align(4)?;
+            m_enable_collision = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_connected_rigid_body = Some(crate::PPtr::parse(rdr, ver)?);
+            m_break_force = Some(rdr.read_f32()?);
+            m_break_torque = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            m_break_action = Some(r.read_i32()?);
+            m_break_action = Some(rdr.read_i32()?);
         } else {
         }
-            m_anchor = Some(Vector2f::parse(r, ver)?);
-            m_target = Some(Vector2f::parse(r, ver)?);
-            m_auto_configure_target = Some(r.read_bool()?);
-            r.align(4)?;
-            m_max_force = Some(r.read_f32()?);
-            m_damping_ratio = Some(r.read_f32()?);
-            m_frequency = Some(r.read_f32()?);
+            m_anchor = Some(Vector2f::parse(rdr, ver)?);
+            m_target = Some(Vector2f::parse(rdr, ver)?);
+            m_auto_configure_target = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_max_force = Some(rdr.read_f32()?);
+            m_damping_ratio = Some(rdr.read_f32()?);
+            m_frequency = Some(rdr.read_f32()?);
 
         Ok(TargetJoint2D {
             m_game_object: m_game_object.unwrap(),

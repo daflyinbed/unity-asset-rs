@@ -8,22 +8,22 @@ use crate::subclasses::sprite_atlas_editor_data::SpriteAtlasEditorData;
 /// 版本枚举：SpriteAtlasAssetMImporterDataVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum SpriteAtlasAssetMImporterDataVariant {
-    Default(SpriteAtlasEditorData),
-    V2022_1(SpriteAtlasAssetData),
+    Default(Box<SpriteAtlasEditorData>),
+    V2022_1(Box<SpriteAtlasAssetData>),
 }
 
 impl crate::Parse for SpriteAtlasAssetMImporterDataVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2022, 1, 0) {
-            let v = SpriteAtlasAssetData::parse(r, ver)?;
-            r.align(4)?;
+            let v = ( { Ok(Box::new(SpriteAtlasAssetData::parse(rdr, ver)?)) } )?;
+            rdr.align(4)?;
             Ok(Self::V2022_1(v))
         } else {
-            let v = SpriteAtlasEditorData::parse(r, ver)?;
-            r.align(4)?;
+            let v = ( { Ok(Box::new(SpriteAtlasEditorData::parse(rdr, ver)?)) } )?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -39,18 +39,18 @@ pub struct SpriteAtlasAsset {
 
 impl crate::Parse for SpriteAtlasAsset {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_master_atlas = crate::PPtr::parse(r, ver)?;
-        let m_importer_data = SpriteAtlasAssetMImporterDataVariant::parse(r, ver)?;
-        let m_is_variant = r.read_bool()?;
-        r.align(4)?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_master_atlas = crate::PPtr::parse(rdr, ver)?;
+        let m_importer_data = SpriteAtlasAssetMImporterDataVariant::parse(rdr, ver)?;
+        let m_is_variant = rdr.read_bool()?;
+        rdr.align(4)?;
         let m_scriptable_packer = if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            let v = crate::PPtr::parse(r, ver)?;
-            r.align(4)?;
+            let v = crate::PPtr::parse(rdr, ver)?;
+            rdr.align(4)?;
             Some(v)
         } else {
             None

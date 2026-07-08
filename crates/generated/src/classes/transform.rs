@@ -8,21 +8,21 @@ use crate::subclasses::vector3f::Vector3f;
 /// 版本枚举：TransformMLocalScaleVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TransformMLocalScaleVariant {
-    Default(Vector3f),
-    V2021_2(Vector3f),
+    Default(Box<Vector3f>),
+    V2021_2(Box<Vector3f>),
 }
 
 impl crate::Parse for TransformMLocalScaleVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            let v = Vector3f::parse(r, ver)?;
-            r.align(4)?;
+            let v = ( { Ok(Box::new(Vector3f::parse(rdr, ver)?)) } )?;
+            rdr.align(4)?;
             Ok(Self::V2021_2(v))
         } else {
-            let v = Vector3f::parse(r, ver)?;
+            let v = ( { Ok(Box::new(Vector3f::parse(rdr, ver)?)) } )?;
             Ok(Self::Default(v))
         }
     }
@@ -37,15 +37,15 @@ pub enum TransformMChildrenVariant {
 
 impl crate::Parse for TransformMChildrenVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -62,15 +62,15 @@ pub struct Transform {
 
 impl crate::Parse for Transform {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_local_rotation = Quaternionf::parse(r, ver)?;
-        let m_local_position = Vector3f::parse(r, ver)?;
-        let m_local_scale = TransformMLocalScaleVariant::parse(r, ver)?;
-        let m_children = TransformMChildrenVariant::parse(r, ver)?;
-        let m_father = crate::PPtr::parse(r, ver)?;
+        let m_game_object = crate::PPtr::parse(rdr, ver)?;
+        let m_local_rotation = Quaternionf::parse(rdr, ver)?;
+        let m_local_position = Vector3f::parse(rdr, ver)?;
+        let m_local_scale = TransformMLocalScaleVariant::parse(rdr, ver)?;
+        let m_children = TransformMChildrenVariant::parse(rdr, ver)?;
+        let m_father = crate::PPtr::parse(rdr, ver)?;
 
         Ok(Transform {
             m_game_object,

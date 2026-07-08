@@ -18,21 +18,21 @@ pub struct GfxStencilState {
 
 impl crate::Parse for GfxStencilState {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let stencil_enable = r.read_u8()?;
-        let read_mask = r.read_u8()?;
-        let write_mask = r.read_u8()?;
-        let padding = r.read_u8()?;
-        let stencil_func_front = r.read_u8()?;
-        let stencil_pass_op_front = r.read_u8()?;
-        let stencil_fail_op_front = r.read_u8()?;
-        let stencil_z_fail_op_front = r.read_u8()?;
-        let stencil_func_back = r.read_u8()?;
-        let stencil_pass_op_back = r.read_u8()?;
-        let stencil_fail_op_back = r.read_u8()?;
-        let stencil_z_fail_op_back = r.read_u8()?;
+        let stencil_enable = rdr.read_u8()?;
+        let read_mask = rdr.read_u8()?;
+        let write_mask = rdr.read_u8()?;
+        let padding = rdr.read_u8()?;
+        let stencil_func_front = rdr.read_u8()?;
+        let stencil_pass_op_front = rdr.read_u8()?;
+        let stencil_fail_op_front = rdr.read_u8()?;
+        let stencil_z_fail_op_front = rdr.read_u8()?;
+        let stencil_func_back = rdr.read_u8()?;
+        let stencil_pass_op_back = rdr.read_u8()?;
+        let stencil_fail_op_back = rdr.read_u8()?;
+        let stencil_z_fail_op_back = rdr.read_u8()?;
 
         Ok(GfxStencilState {
             stencil_enable,

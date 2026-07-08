@@ -9,10 +9,10 @@ pub struct SpriteData {
 
 impl crate::Parse for SpriteData {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let sprite = crate::PPtr::parse(r, ver)?;
+        let sprite = crate::PPtr::parse(rdr, ver)?;
 
         Ok(SpriteData {
             sprite,

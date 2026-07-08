@@ -15,16 +15,16 @@ pub struct RaycastCollider {
 
 impl crate::Parse for RaycastCollider {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_material = crate::PPtr::parse(r, ver)?;
-        let m_is_trigger = r.read_bool()?;
-        let m_enabled = r.read_bool()?;
-        r.align(4)?;
-        let m_center = Vector3f::parse(r, ver)?;
-        let m_length = r.read_f32()?;
+        let m_game_object = crate::PPtr::parse(rdr, ver)?;
+        let m_material = crate::PPtr::parse(rdr, ver)?;
+        let m_is_trigger = rdr.read_bool()?;
+        let m_enabled = rdr.read_bool()?;
+        rdr.align(4)?;
+        let m_center = Vector3f::parse(rdr, ver)?;
+        let m_length = rdr.read_f32()?;
 
         Ok(RaycastCollider {
             m_game_object,

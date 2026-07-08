@@ -8,13 +8,13 @@ pub struct SerializedShaderDependency {
 
 impl crate::Parse for SerializedShaderDependency {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let from = r.read_aligned_string()?;
-        r.align(4)?;
-        let to = r.read_aligned_string()?;
-        r.align(4)?;
+        let from = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let to = rdr.read_aligned_string()?;
+        rdr.align(4)?;
 
         Ok(SerializedShaderDependency {
             from,

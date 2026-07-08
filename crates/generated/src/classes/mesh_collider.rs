@@ -13,14 +13,14 @@ pub enum MeshColliderMMaterialVariant {
 
 impl crate::Parse for MeshColliderMMaterialVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            let v = crate::PPtr::parse(r, ver)?;
+            let v = crate::PPtr::parse(rdr, ver)?;
             Ok(Self::V2023_3(v))
         } else {
-            let v = crate::PPtr::parse(r, ver)?;
+            let v = crate::PPtr::parse(rdr, ver)?;
             Ok(Self::Default(v))
         }
     }
@@ -36,19 +36,19 @@ pub enum MeshColliderMConvexVariant {
 
 impl crate::Parse for MeshColliderMConvexVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V2017_3(v))
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V5_5(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -73,7 +73,7 @@ pub struct MeshCollider {
 
 impl crate::Parse for MeshCollider {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_game_object = None;
@@ -90,41 +90,41 @@ impl crate::Parse for MeshCollider {
         let mut m_cooking_options = None;
         let mut m_skin_width = None;
         let mut m_provides_contacts = None;
-            m_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_material = Some(MeshColliderMMaterialVariant::parse(r, ver)?);
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_material = Some(MeshColliderMMaterialVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            m_include_layers = Some(BitField::parse(r, ver)?);
-            m_exclude_layers = Some(BitField::parse(r, ver)?);
-            m_layer_override_priority = Some(r.read_i32()?);
+            m_include_layers = Some(BitField::parse(rdr, ver)?);
+            m_exclude_layers = Some(BitField::parse(rdr, ver)?);
+            m_layer_override_priority = Some(rdr.read_i32()?);
         } else {
         }
-            m_is_trigger = Some(r.read_bool()?);
+            m_is_trigger = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            m_provides_contacts = Some(r.read_bool()?);
-            r.align(4)?;
+            m_provides_contacts = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else {
         }
-            m_enabled = Some(r.read_bool()?);
-            r.align(4)?;
+            m_enabled = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
         } else {
-            m_smooth_sphere_collisions = Some(r.read_bool()?);
+            m_smooth_sphere_collisions = Some(rdr.read_bool()?);
         }
-            m_convex = Some(MeshColliderMConvexVariant::parse(r, ver)?);
+            m_convex = Some(MeshColliderMConvexVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            m_cooking_options = Some(r.read_i32()?);
-            r.align(4)?;
+            m_cooking_options = Some(rdr.read_i32()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            m_cooking_options = Some(r.read_i32()?);
-            r.align(4)?;
-            m_skin_width = Some(r.read_f32()?);
+            m_cooking_options = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_skin_width = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            m_inflate_mesh = Some(r.read_bool()?);
-            r.align(4)?;
-            m_skin_width = Some(r.read_f32()?);
+            m_inflate_mesh = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_skin_width = Some(rdr.read_f32()?);
         } else {
         }
-            m_mesh = Some(crate::PPtr::parse(r, ver)?);
+            m_mesh = Some(crate::PPtr::parse(rdr, ver)?);
 
         Ok(MeshCollider {
             m_game_object: m_game_object.unwrap(),

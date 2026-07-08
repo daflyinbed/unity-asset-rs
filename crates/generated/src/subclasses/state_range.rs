@@ -8,11 +8,11 @@ pub struct StateRange {
 
 impl crate::Parse for StateRange {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_start_index = r.read_u32()?;
-        let m_count = r.read_u32()?;
+        let m_start_index = rdr.read_u32()?;
+        let m_count = rdr.read_u32()?;
 
         Ok(StateRange {
             m_start_index,

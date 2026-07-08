@@ -14,20 +14,20 @@ pub struct ForceModule {
 
 impl crate::Parse for ForceModule {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let enabled = r.read_bool()?;
-        r.align(4)?;
-        let x = MinMaxCurve::parse(r, ver)?;
-        r.align(4)?;
-        let y = MinMaxCurve::parse(r, ver)?;
-        r.align(4)?;
-        let z = MinMaxCurve::parse(r, ver)?;
-        r.align(4)?;
-        let in_world_space = r.read_bool()?;
-        let randomize_per_frame = r.read_bool()?;
-        r.align(4)?;
+        let enabled = rdr.read_bool()?;
+        rdr.align(4)?;
+        let x = MinMaxCurve::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let y = MinMaxCurve::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let z = MinMaxCurve::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let in_world_space = rdr.read_bool()?;
+        let randomize_per_frame = rdr.read_bool()?;
+        rdr.align(4)?;
 
         Ok(ForceModule {
             enabled,

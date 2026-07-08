@@ -10,12 +10,12 @@ pub struct BuildTargetIcons {
 
 impl crate::Parse for BuildTargetIcons {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_build_target = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_icons = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { IconWithSize::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_build_target = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_icons = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { IconWithSize::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
 
         Ok(BuildTargetIcons {
             m_build_target,

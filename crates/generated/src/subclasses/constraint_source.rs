@@ -10,11 +10,11 @@ pub struct ConstraintSource {
 
 impl crate::Parse for ConstraintSource {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let source_transform = crate::PPtr::parse(r, ver)?;
-        let weight = r.read_f32()?;
+        let source_transform = crate::PPtr::parse(rdr, ver)?;
+        let weight = rdr.read_f32()?;
 
         Ok(ConstraintSource {
             source_transform,

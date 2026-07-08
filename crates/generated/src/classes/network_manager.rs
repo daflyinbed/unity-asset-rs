@@ -12,12 +12,12 @@ pub struct NetworkManager {
 
 impl crate::Parse for NetworkManager {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_debug_level = r.read_i32()?;
-        let m_sendrate = r.read_f32()?;
-        let m_asset_to_prefab = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = Guid::parse(r, ver)?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_debug_level = rdr.read_i32()?;
+        let m_sendrate = rdr.read_f32()?;
+        let m_asset_to_prefab = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = Guid::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
 
         Ok(NetworkManager {
             m_debug_level,

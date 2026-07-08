@@ -11,16 +11,16 @@ pub struct Error {
 
 impl crate::Parse for Error {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let message = r.read_aligned_string()?;
-        r.align(4)?;
-        let file_path = r.read_aligned_string()?;
-        r.align(4)?;
-        let start_line = r.read_u32()?;
-        let start_char = r.read_u32()?;
-        let severity = r.read_i32()?;
+        let message = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let file_path = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let start_line = rdr.read_u32()?;
+        let start_char = rdr.read_u32()?;
+        let severity = rdr.read_i32()?;
 
         Ok(Error {
             message,

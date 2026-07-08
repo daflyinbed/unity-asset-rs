@@ -10,11 +10,11 @@ pub struct MinMaxAabb {
 
 impl crate::Parse for MinMaxAabb {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_min = Vector3f::parse(r, ver)?;
-        let m_max = Vector3f::parse(r, ver)?;
+        let m_min = Vector3f::parse(rdr, ver)?;
+        let m_max = Vector3f::parse(rdr, ver)?;
 
         Ok(MinMaxAabb {
             m_min,

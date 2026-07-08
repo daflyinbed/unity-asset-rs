@@ -11,14 +11,14 @@ pub struct PackingParameters {
 
 impl crate::Parse for PackingParameters {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let padding_power = r.read_u32()?;
-        let block_offset = r.read_u32()?;
-        let allow_alpha_splitting = r.read_i32()?;
-        let enable_rotation = r.read_i32()?;
-        let enable_tight_packing = r.read_i32()?;
+        let padding_power = rdr.read_u32()?;
+        let block_offset = rdr.read_u32()?;
+        let allow_alpha_splitting = rdr.read_i32()?;
+        let enable_rotation = rdr.read_i32()?;
+        let enable_tight_packing = rdr.read_i32()?;
 
         Ok(PackingParameters {
             padding_power,

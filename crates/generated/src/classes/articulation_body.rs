@@ -16,15 +16,15 @@ pub enum ArticulationBodyMUseGravityVariant {
 
 impl crate::Parse for ArticulationBodyMUseGravityVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2020, 3, 5) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V2020_3_5(v))
         } else {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::Default(v))
         }
     }
@@ -67,7 +67,7 @@ pub struct ArticulationBody {
 
 impl crate::Parse for ArticulationBody {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_game_object = None;
@@ -102,48 +102,48 @@ impl crate::Parse for ArticulationBody {
         let mut m_exclude_layers = None;
         let mut m_implicit_com = None;
         let mut m_implicit_tensor = None;
-            m_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_enabled = Some(r.read_u8()?);
-            r.align(4)?;
-            m_mass = Some(r.read_f32()?);
-            m_parent_anchor_position = Some(Vector3f::parse(r, ver)?);
-            m_parent_anchor_rotation = Some(Quaternionf::parse(r, ver)?);
-            m_anchor_position = Some(Vector3f::parse(r, ver)?);
-            m_anchor_rotation = Some(Quaternionf::parse(r, ver)?);
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_enabled = Some(rdr.read_u8()?);
+            rdr.align(4)?;
+            m_mass = Some(rdr.read_f32()?);
+            m_parent_anchor_position = Some(Vector3f::parse(rdr, ver)?);
+            m_parent_anchor_rotation = Some(Quaternionf::parse(rdr, ver)?);
+            m_anchor_position = Some(Vector3f::parse(rdr, ver)?);
+            m_anchor_rotation = Some(Quaternionf::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            m_match_anchors = Some(r.read_bool()?);
-            r.align(4)?;
+            m_match_anchors = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else {
-            m_compute_parent_anchor = Some(r.read_bool()?);
-            r.align(4)?;
+            m_compute_parent_anchor = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         }
-            m_articulation_joint_type = Some(r.read_i32()?);
-            m_linear_x = Some(r.read_i32()?);
-            m_linear_y = Some(r.read_i32()?);
-            m_linear_z = Some(r.read_i32()?);
-            m_swing_y = Some(r.read_i32()?);
-            m_swing_z = Some(r.read_i32()?);
-            m_twist = Some(r.read_i32()?);
-            m_x_drive = Some(ArticulationDrive::parse(r, ver)?);
-            m_y_drive = Some(ArticulationDrive::parse(r, ver)?);
-            m_z_drive = Some(ArticulationDrive::parse(r, ver)?);
-            m_linear_damping = Some(r.read_f32()?);
-            m_angular_damping = Some(r.read_f32()?);
-            m_joint_friction = Some(r.read_f32()?);
+            m_articulation_joint_type = Some(rdr.read_i32()?);
+            m_linear_x = Some(rdr.read_i32()?);
+            m_linear_y = Some(rdr.read_i32()?);
+            m_linear_z = Some(rdr.read_i32()?);
+            m_swing_y = Some(rdr.read_i32()?);
+            m_swing_z = Some(rdr.read_i32()?);
+            m_twist = Some(rdr.read_i32()?);
+            m_x_drive = Some(ArticulationDrive::parse(rdr, ver)?);
+            m_y_drive = Some(ArticulationDrive::parse(rdr, ver)?);
+            m_z_drive = Some(ArticulationDrive::parse(rdr, ver)?);
+            m_linear_damping = Some(rdr.read_f32()?);
+            m_angular_damping = Some(rdr.read_f32()?);
+            m_joint_friction = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            m_center_of_mass = Some(Vector3f::parse(r, ver)?);
-            m_inertia_tensor = Some(Vector3f::parse(r, ver)?);
-            m_inertia_rotation = Some(Quaternionf::parse(r, ver)?);
-            m_include_layers = Some(BitField::parse(r, ver)?);
-            m_exclude_layers = Some(BitField::parse(r, ver)?);
-            m_implicit_com = Some(r.read_bool()?);
-            m_implicit_tensor = Some(r.read_bool()?);
+            m_center_of_mass = Some(Vector3f::parse(rdr, ver)?);
+            m_inertia_tensor = Some(Vector3f::parse(rdr, ver)?);
+            m_inertia_rotation = Some(Quaternionf::parse(rdr, ver)?);
+            m_include_layers = Some(BitField::parse(rdr, ver)?);
+            m_exclude_layers = Some(BitField::parse(rdr, ver)?);
+            m_implicit_com = Some(rdr.read_bool()?);
+            m_implicit_tensor = Some(rdr.read_bool()?);
         } else {
         }
-            m_immovable = Some(r.read_bool()?);
-            m_use_gravity = Some(ArticulationBodyMUseGravityVariant::parse(r, ver)?);
+            m_immovable = Some(rdr.read_bool()?);
+            m_use_gravity = Some(ArticulationBodyMUseGravityVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2020, 3, 5) {
-            m_collision_detection_mode = Some(r.read_i32()?);
+            m_collision_detection_mode = Some(rdr.read_i32()?);
         } else {
         }
 

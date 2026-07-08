@@ -14,15 +14,15 @@ pub enum ProceduralTextureMDownscaleFallbackVariant {
 
 impl crate::Parse for ProceduralTextureMDownscaleFallbackVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V2020_2(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -37,15 +37,15 @@ pub enum ProceduralTextureAlphaSourceIsGrayscaleVariant {
 
 impl crate::Parse for ProceduralTextureAlphaSourceIsGrayscaleVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V5_2(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -75,7 +75,7 @@ pub struct ProceduralTexture {
 
 impl crate::Parse for ProceduralTexture {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_name = None;
@@ -97,148 +97,148 @@ impl crate::Parse for ProceduralTexture {
         let mut m_baked_parameters = None;
         let mut m_lightmap_format = None;
         let mut m_color_space = None;
-            m_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
-            m_is_alpha_channel_optional = Some(r.read_bool()?);
-            r.align(4)?;
+            m_is_alpha_channel_optional = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            m_forced_fallback_format = Some(r.read_i32()?);
-            m_downscale_fallback = Some(ProceduralTextureMDownscaleFallbackVariant::parse(r, ver)?);
-            m_is_alpha_channel_optional = Some(r.read_bool()?);
-            r.align(4)?;
+            m_forced_fallback_format = Some(rdr.read_i32()?);
+            m_downscale_fallback = Some(ProceduralTextureMDownscaleFallbackVariant::parse(rdr, ver)?);
+            m_is_alpha_channel_optional = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            m_forced_fallback_format = Some(r.read_i32()?);
-            m_downscale_fallback = Some(ProceduralTextureMDownscaleFallbackVariant::parse(r, ver)?);
+            m_forced_fallback_format = Some(rdr.read_i32()?);
+            m_downscale_fallback = Some(ProceduralTextureMDownscaleFallbackVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            m_forced_fallback_format = Some(r.read_i32()?);
-            m_downscale_fallback = Some(ProceduralTextureMDownscaleFallbackVariant::parse(r, ver)?);
-            m_substance_material = Some(crate::PPtr::parse(r, ver)?);
-            m_substance_texture_uid = Some(r.read_u64()?);
-            r#type = Some(r.read_i32()?);
-            alpha_source = Some(r.read_i32()?);
-            m_alpha_source_uid = Some(r.read_u64()?);
-            alpha_source_is_grayscale = Some(ProceduralTextureAlphaSourceIsGrayscaleVariant::parse(r, ver)?);
-            m_alpha_source_is_inverted = Some(r.read_bool()?);
-            r.align(4)?;
-            m_mipmaps = Some(r.read_i32()?);
-            format = Some(r.read_i32()?);
-            m_texture_settings = Some(GlTextureSettings::parse(r, ver)?);
-            m_baked_data = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_baked_parameters = Some(TextureParameters::parse(r, ver)?);
-            m_texture_parameters = Some(TextureParameters::parse(r, ver)?);
-            m_lightmap_format = Some(r.read_i32()?);
-            m_color_space = Some(r.read_i32()?);
+            m_forced_fallback_format = Some(rdr.read_i32()?);
+            m_downscale_fallback = Some(ProceduralTextureMDownscaleFallbackVariant::parse(rdr, ver)?);
+            m_substance_material = Some(crate::PPtr::parse(rdr, ver)?);
+            m_substance_texture_uid = Some(rdr.read_u64()?);
+            r#type = Some(rdr.read_i32()?);
+            alpha_source = Some(rdr.read_i32()?);
+            m_alpha_source_uid = Some(rdr.read_u64()?);
+            alpha_source_is_grayscale = Some(ProceduralTextureAlphaSourceIsGrayscaleVariant::parse(rdr, ver)?);
+            m_alpha_source_is_inverted = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_mipmaps = Some(rdr.read_i32()?);
+            format = Some(rdr.read_i32()?);
+            m_texture_settings = Some(GlTextureSettings::parse(rdr, ver)?);
+            m_baked_data = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_baked_parameters = Some(TextureParameters::parse(rdr, ver)?);
+            m_texture_parameters = Some(TextureParameters::parse(rdr, ver)?);
+            m_lightmap_format = Some(rdr.read_i32()?);
+            m_color_space = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(5, 5, 1) {
-            m_substance_material = Some(crate::PPtr::parse(r, ver)?);
-            m_substance_texture_uid = Some(r.read_u64()?);
-            r#type = Some(r.read_i32()?);
-            alpha_source = Some(r.read_i32()?);
-            m_alpha_source_uid = Some(r.read_u64()?);
-            alpha_source_is_grayscale = Some(ProceduralTextureAlphaSourceIsGrayscaleVariant::parse(r, ver)?);
-            m_alpha_source_is_inverted = Some(r.read_bool()?);
-            r.align(4)?;
-            m_mipmaps = Some(r.read_i32()?);
-            format = Some(r.read_i32()?);
-            m_texture_settings = Some(GlTextureSettings::parse(r, ver)?);
-            m_baked_data = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_baked_parameters = Some(TextureParameters::parse(r, ver)?);
-            m_texture_parameters = Some(TextureParameters::parse(r, ver)?);
-            m_lightmap_format = Some(r.read_i32()?);
-            m_color_space = Some(r.read_i32()?);
+            m_substance_material = Some(crate::PPtr::parse(rdr, ver)?);
+            m_substance_texture_uid = Some(rdr.read_u64()?);
+            r#type = Some(rdr.read_i32()?);
+            alpha_source = Some(rdr.read_i32()?);
+            m_alpha_source_uid = Some(rdr.read_u64()?);
+            alpha_source_is_grayscale = Some(ProceduralTextureAlphaSourceIsGrayscaleVariant::parse(rdr, ver)?);
+            m_alpha_source_is_inverted = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_mipmaps = Some(rdr.read_i32()?);
+            format = Some(rdr.read_i32()?);
+            m_texture_settings = Some(GlTextureSettings::parse(rdr, ver)?);
+            m_baked_data = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_baked_parameters = Some(TextureParameters::parse(rdr, ver)?);
+            m_texture_parameters = Some(TextureParameters::parse(rdr, ver)?);
+            m_lightmap_format = Some(rdr.read_i32()?);
+            m_color_space = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            m_substance_material = Some(crate::PPtr::parse(r, ver)?);
-            m_substance_texture_uid = Some(r.read_u64()?);
-            r#type = Some(r.read_i32()?);
-            alpha_source = Some(r.read_i32()?);
-            m_alpha_source_uid = Some(r.read_u64()?);
-            alpha_source_is_grayscale = Some(ProceduralTextureAlphaSourceIsGrayscaleVariant::parse(r, ver)?);
-            m_alpha_source_is_inverted = Some(r.read_bool()?);
-            r.align(4)?;
-            m_mipmaps = Some(r.read_i32()?);
-            format = Some(r.read_i32()?);
-            m_texture_settings = Some(GlTextureSettings::parse(r, ver)?);
-            m_baked_data = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_baked_parameters = Some(TextureParameters::parse(r, ver)?);
-            m_lightmap_format = Some(r.read_i32()?);
-            m_color_space = Some(r.read_i32()?);
+            m_substance_material = Some(crate::PPtr::parse(rdr, ver)?);
+            m_substance_texture_uid = Some(rdr.read_u64()?);
+            r#type = Some(rdr.read_i32()?);
+            alpha_source = Some(rdr.read_i32()?);
+            m_alpha_source_uid = Some(rdr.read_u64()?);
+            alpha_source_is_grayscale = Some(ProceduralTextureAlphaSourceIsGrayscaleVariant::parse(rdr, ver)?);
+            m_alpha_source_is_inverted = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_mipmaps = Some(rdr.read_i32()?);
+            format = Some(rdr.read_i32()?);
+            m_texture_settings = Some(GlTextureSettings::parse(rdr, ver)?);
+            m_baked_data = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_baked_parameters = Some(TextureParameters::parse(rdr, ver)?);
+            m_lightmap_format = Some(rdr.read_i32()?);
+            m_color_space = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 4) {
-            m_substance_material = Some(crate::PPtr::parse(r, ver)?);
-            m_substance_texture_uid = Some(r.read_u64()?);
-            r#type = Some(r.read_i32()?);
-            alpha_source = Some(r.read_i32()?);
-            m_alpha_source_uid = Some(r.read_u64()?);
-            alpha_source_is_grayscale = Some(ProceduralTextureAlphaSourceIsGrayscaleVariant::parse(r, ver)?);
-            m_alpha_source_is_inverted = Some(r.read_bool()?);
-            r.align(4)?;
-            m_mipmaps = Some(r.read_i32()?);
-            format = Some(r.read_i32()?);
-            m_texture_settings = Some(GlTextureSettings::parse(r, ver)?);
-            m_baked_data = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_baked_parameters = Some(TextureParameters::parse(r, ver)?);
-            m_texture_parameters = Some(TextureParameters::parse(r, ver)?);
-            m_lightmap_format = Some(r.read_i32()?);
-            m_color_space = Some(r.read_i32()?);
+            m_substance_material = Some(crate::PPtr::parse(rdr, ver)?);
+            m_substance_texture_uid = Some(rdr.read_u64()?);
+            r#type = Some(rdr.read_i32()?);
+            alpha_source = Some(rdr.read_i32()?);
+            m_alpha_source_uid = Some(rdr.read_u64()?);
+            alpha_source_is_grayscale = Some(ProceduralTextureAlphaSourceIsGrayscaleVariant::parse(rdr, ver)?);
+            m_alpha_source_is_inverted = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_mipmaps = Some(rdr.read_i32()?);
+            format = Some(rdr.read_i32()?);
+            m_texture_settings = Some(GlTextureSettings::parse(rdr, ver)?);
+            m_baked_data = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_baked_parameters = Some(TextureParameters::parse(rdr, ver)?);
+            m_texture_parameters = Some(TextureParameters::parse(rdr, ver)?);
+            m_lightmap_format = Some(rdr.read_i32()?);
+            m_color_space = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_substance_material = Some(crate::PPtr::parse(r, ver)?);
-            m_substance_texture_uid = Some(r.read_u64()?);
-            r#type = Some(r.read_i32()?);
-            alpha_source = Some(r.read_i32()?);
-            m_alpha_source_uid = Some(r.read_u64()?);
-            alpha_source_is_grayscale = Some(ProceduralTextureAlphaSourceIsGrayscaleVariant::parse(r, ver)?);
-            m_alpha_source_is_inverted = Some(r.read_bool()?);
-            r.align(4)?;
-            m_mipmaps = Some(r.read_i32()?);
-            format = Some(r.read_i32()?);
-            m_texture_settings = Some(GlTextureSettings::parse(r, ver)?);
-            m_baked_data = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_baked_parameters = Some(TextureParameters::parse(r, ver)?);
-            m_lightmap_format = Some(r.read_i32()?);
-            m_color_space = Some(r.read_i32()?);
+            m_substance_material = Some(crate::PPtr::parse(rdr, ver)?);
+            m_substance_texture_uid = Some(rdr.read_u64()?);
+            r#type = Some(rdr.read_i32()?);
+            alpha_source = Some(rdr.read_i32()?);
+            m_alpha_source_uid = Some(rdr.read_u64()?);
+            alpha_source_is_grayscale = Some(ProceduralTextureAlphaSourceIsGrayscaleVariant::parse(rdr, ver)?);
+            m_alpha_source_is_inverted = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_mipmaps = Some(rdr.read_i32()?);
+            format = Some(rdr.read_i32()?);
+            m_texture_settings = Some(GlTextureSettings::parse(rdr, ver)?);
+            m_baked_data = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_baked_parameters = Some(TextureParameters::parse(rdr, ver)?);
+            m_lightmap_format = Some(rdr.read_i32()?);
+            m_color_space = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            m_substance_material = Some(crate::PPtr::parse(r, ver)?);
-            m_substance_texture_uid = Some(r.read_u64()?);
-            r#type = Some(r.read_i32()?);
-            alpha_source = Some(r.read_i32()?);
-            m_alpha_source_uid = Some(r.read_u64()?);
-            alpha_source_is_grayscale = Some(ProceduralTextureAlphaSourceIsGrayscaleVariant::parse(r, ver)?);
-            m_mipmaps = Some(r.read_i32()?);
-            format = Some(r.read_i32()?);
-            m_texture_settings = Some(GlTextureSettings::parse(r, ver)?);
-            m_baked_data = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_baked_parameters = Some(TextureParameters::parse(r, ver)?);
-            m_lightmap_format = Some(r.read_i32()?);
-            m_color_space = Some(r.read_i32()?);
+            m_substance_material = Some(crate::PPtr::parse(rdr, ver)?);
+            m_substance_texture_uid = Some(rdr.read_u64()?);
+            r#type = Some(rdr.read_i32()?);
+            alpha_source = Some(rdr.read_i32()?);
+            m_alpha_source_uid = Some(rdr.read_u64()?);
+            alpha_source_is_grayscale = Some(ProceduralTextureAlphaSourceIsGrayscaleVariant::parse(rdr, ver)?);
+            m_mipmaps = Some(rdr.read_i32()?);
+            format = Some(rdr.read_i32()?);
+            m_texture_settings = Some(GlTextureSettings::parse(rdr, ver)?);
+            m_baked_data = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_baked_parameters = Some(TextureParameters::parse(rdr, ver)?);
+            m_lightmap_format = Some(rdr.read_i32()?);
+            m_color_space = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            m_substance_material = Some(crate::PPtr::parse(r, ver)?);
-            m_substance_texture_uid = Some(r.read_u64()?);
-            r#type = Some(r.read_i32()?);
-            alpha_source = Some(r.read_i32()?);
-            format = Some(r.read_i32()?);
-            m_texture_settings = Some(GlTextureSettings::parse(r, ver)?);
-            m_baked_data = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_baked_parameters = Some(TextureParameters::parse(r, ver)?);
-            m_lightmap_format = Some(r.read_i32()?);
-            m_color_space = Some(r.read_i32()?);
+            m_substance_material = Some(crate::PPtr::parse(rdr, ver)?);
+            m_substance_texture_uid = Some(rdr.read_u64()?);
+            r#type = Some(rdr.read_i32()?);
+            alpha_source = Some(rdr.read_i32()?);
+            format = Some(rdr.read_i32()?);
+            m_texture_settings = Some(GlTextureSettings::parse(rdr, ver)?);
+            m_baked_data = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_baked_parameters = Some(TextureParameters::parse(rdr, ver)?);
+            m_lightmap_format = Some(rdr.read_i32()?);
+            m_color_space = Some(rdr.read_i32()?);
         } else {
-            m_substance_material = Some(crate::PPtr::parse(r, ver)?);
-            m_substance_texture_uid = Some(r.read_u64()?);
-            r#type = Some(r.read_i32()?);
-            alpha_source = Some(r.read_i32()?);
-            format = Some(r.read_i32()?);
-            m_texture_parameters = Some(TextureParameters::parse(r, ver)?);
-            m_texture_settings = Some(GlTextureSettings::parse(r, ver)?);
-            m_baked_data = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_baked_parameters = Some(TextureParameters::parse(r, ver)?);
-            m_lightmap_format = Some(r.read_i32()?);
+            m_substance_material = Some(crate::PPtr::parse(rdr, ver)?);
+            m_substance_texture_uid = Some(rdr.read_u64()?);
+            r#type = Some(rdr.read_i32()?);
+            alpha_source = Some(rdr.read_i32()?);
+            format = Some(rdr.read_i32()?);
+            m_texture_parameters = Some(TextureParameters::parse(rdr, ver)?);
+            m_texture_settings = Some(GlTextureSettings::parse(rdr, ver)?);
+            m_baked_data = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_baked_parameters = Some(TextureParameters::parse(rdr, ver)?);
+            m_lightmap_format = Some(rdr.read_i32()?);
         }
 
         Ok(ProceduralTexture {

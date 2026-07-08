@@ -16,17 +16,17 @@ pub struct PhysicsShape {
 
 impl crate::Parse for PhysicsShape {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_shape_type = r.read_i32()?;
-        let m_radius = r.read_f32()?;
-        let m_vertex_start_index = r.read_i32()?;
-        let m_vertex_count = r.read_i32()?;
-        let m_use_adjacent_start = r.read_i32()?;
-        let m_use_adjacent_end = r.read_i32()?;
-        let m_adjacent_start = Vector2f::parse(r, ver)?;
-        let m_adjacent_end = Vector2f::parse(r, ver)?;
+        let m_shape_type = rdr.read_i32()?;
+        let m_radius = rdr.read_f32()?;
+        let m_vertex_start_index = rdr.read_i32()?;
+        let m_vertex_count = rdr.read_i32()?;
+        let m_use_adjacent_start = rdr.read_i32()?;
+        let m_use_adjacent_end = rdr.read_i32()?;
+        let m_adjacent_start = Vector2f::parse(rdr, ver)?;
+        let m_adjacent_end = Vector2f::parse(rdr, ver)?;
 
         Ok(PhysicsShape {
             m_shape_type,

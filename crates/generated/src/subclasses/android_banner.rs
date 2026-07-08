@@ -11,12 +11,12 @@ pub struct AndroidBanner {
 
 impl crate::Parse for AndroidBanner {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let width = r.read_i32()?;
-        let height = r.read_i32()?;
-        let banner = crate::PPtr::parse(r, ver)?;
+        let width = rdr.read_i32()?;
+        let height = rdr.read_i32()?;
+        let banner = crate::PPtr::parse(rdr, ver)?;
 
         Ok(AndroidBanner {
             width,

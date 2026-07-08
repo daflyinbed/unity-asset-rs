@@ -11,14 +11,14 @@ pub struct VertexLayoutInfo {
 
 impl crate::Parse for VertexLayoutInfo {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let vertex_channels_info = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ChannelInfo::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let vertex_strides = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let vertex_stream_count = r.read_i32()?;
+        let vertex_channels_info = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ChannelInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let vertex_strides = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let vertex_stream_count = rdr.read_i32()?;
 
         Ok(VertexLayoutInfo {
             vertex_channels_info,

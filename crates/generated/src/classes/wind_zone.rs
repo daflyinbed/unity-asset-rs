@@ -16,18 +16,18 @@ pub struct WindZone {
 
 impl crate::Parse for WindZone {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_enabled = r.read_u8()?;
-        r.align(4)?;
-        let m_mode = r.read_i32()?;
-        let m_radius = r.read_f32()?;
-        let m_wind_main = r.read_f32()?;
-        let m_wind_turbulence = r.read_f32()?;
-        let m_wind_pulse_magnitude = r.read_f32()?;
-        let m_wind_pulse_frequency = r.read_f32()?;
+        let m_game_object = crate::PPtr::parse(rdr, ver)?;
+        let m_enabled = rdr.read_u8()?;
+        rdr.align(4)?;
+        let m_mode = rdr.read_i32()?;
+        let m_radius = rdr.read_f32()?;
+        let m_wind_main = rdr.read_f32()?;
+        let m_wind_turbulence = rdr.read_f32()?;
+        let m_wind_pulse_magnitude = rdr.read_f32()?;
+        let m_wind_pulse_frequency = rdr.read_f32()?;
 
         Ok(WindZone {
             m_game_object,

@@ -16,15 +16,15 @@ pub enum CompositeCollider2DMUsedByEffectorVariant {
 
 impl crate::Parse for CompositeCollider2DMUsedByEffectorVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V2023_1(v))
         } else {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::Default(v))
         }
     }
@@ -39,15 +39,15 @@ pub enum CompositeCollider2DMColliderPathsVariant {
 
 impl crate::Parse for CompositeCollider2DMColliderPathsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { SubCollider::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SubCollider::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { SubCollider::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SubCollider::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -56,21 +56,21 @@ impl crate::Parse for CompositeCollider2DMColliderPathsVariant {
 /// 版本枚举：CompositeCollider2DMCompositePathsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum CompositeCollider2DMCompositePathsVariant {
-    Default(Polygon2D),
-    V2017_1(Polygon2D),
+    Default(Box<Polygon2D>),
+    V2017_1(Box<Polygon2D>),
 }
 
 impl crate::Parse for CompositeCollider2DMCompositePathsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = Polygon2D::parse(r, ver)?;
-            r.align(4)?;
+            let v = ( { Ok(Box::new(Polygon2D::parse(rdr, ver)?)) } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = Polygon2D::parse(r, ver)?;
+            let v = ( { Ok(Box::new(Polygon2D::parse(rdr, ver)?)) } )?;
             Ok(Self::Default(v))
         }
     }
@@ -107,7 +107,7 @@ pub struct CompositeCollider2D {
 
 impl crate::Parse for CompositeCollider2D {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_game_object = None;
@@ -136,48 +136,48 @@ impl crate::Parse for CompositeCollider2D {
         let mut m_composite_order = None;
         let mut m_use_delaunay_mesh = None;
         let mut m_composite_game_object = None;
-            m_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_enabled = Some(r.read_u8()?);
-            r.align(4)?;
-            m_density = Some(r.read_f32()?);
-            m_material = Some(crate::PPtr::parse(r, ver)?);
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_enabled = Some(rdr.read_u8()?);
+            rdr.align(4)?;
+            m_density = Some(rdr.read_f32()?);
+            m_material = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            m_include_layers = Some(BitField::parse(r, ver)?);
-            m_exclude_layers = Some(BitField::parse(r, ver)?);
-            m_layer_override_priority = Some(r.read_i32()?);
-            m_force_send_layers = Some(BitField::parse(r, ver)?);
-            m_force_receive_layers = Some(BitField::parse(r, ver)?);
-            m_contact_capture_layers = Some(BitField::parse(r, ver)?);
-            m_callback_layers = Some(BitField::parse(r, ver)?);
+            m_include_layers = Some(BitField::parse(rdr, ver)?);
+            m_exclude_layers = Some(BitField::parse(rdr, ver)?);
+            m_layer_override_priority = Some(rdr.read_i32()?);
+            m_force_send_layers = Some(BitField::parse(rdr, ver)?);
+            m_force_receive_layers = Some(BitField::parse(rdr, ver)?);
+            m_contact_capture_layers = Some(BitField::parse(rdr, ver)?);
+            m_callback_layers = Some(BitField::parse(rdr, ver)?);
         } else {
         }
-            m_is_trigger = Some(r.read_bool()?);
-            m_used_by_effector = Some(CompositeCollider2DMUsedByEffectorVariant::parse(r, ver)?);
+            m_is_trigger = Some(rdr.read_bool()?);
+            m_used_by_effector = Some(CompositeCollider2DMUsedByEffectorVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            m_composite_operation = Some(r.read_i32()?);
-            m_composite_order = Some(r.read_i32()?);
+            m_composite_operation = Some(rdr.read_i32()?);
+            m_composite_order = Some(rdr.read_i32()?);
         } else {
-            m_used_by_composite = Some(r.read_bool()?);
-            r.align(4)?;
+            m_used_by_composite = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         }
-            m_offset = Some(Vector2f::parse(r, ver)?);
-            m_geometry_type = Some(r.read_i32()?);
-            m_generation_type = Some(r.read_i32()?);
-            m_edge_radius = Some(r.read_f32()?);
-            m_collider_paths = Some(CompositeCollider2DMColliderPathsVariant::parse(r, ver)?);
-            m_composite_paths = Some(CompositeCollider2DMCompositePathsVariant::parse(r, ver)?);
-            m_vertex_distance = Some(r.read_f32()?);
+            m_offset = Some(Vector2f::parse(rdr, ver)?);
+            m_geometry_type = Some(rdr.read_i32()?);
+            m_generation_type = Some(rdr.read_i32()?);
+            m_edge_radius = Some(rdr.read_f32()?);
+            m_collider_paths = Some(CompositeCollider2DMColliderPathsVariant::parse(rdr, ver)?);
+            m_composite_paths = Some(CompositeCollider2DMCompositePathsVariant::parse(rdr, ver)?);
+            m_vertex_distance = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2022, 1, 18) {
-            m_offset_distance = Some(r.read_f32()?);
-            m_use_delaunay_mesh = Some(r.read_bool()?);
-            r.align(4)?;
-            m_composite_game_object = Some(crate::PPtr::parse(r, ver)?);
+            m_offset_distance = Some(rdr.read_f32()?);
+            m_use_delaunay_mesh = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_composite_game_object = Some(crate::PPtr::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
-            m_offset_distance = Some(r.read_f32()?);
-            m_use_delaunay_mesh = Some(r.read_bool()?);
-            r.align(4)?;
+            m_offset_distance = Some(rdr.read_f32()?);
+            m_use_delaunay_mesh = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2019, 1, 3) {
-            m_offset_distance = Some(r.read_f32()?);
+            m_offset_distance = Some(rdr.read_f32()?);
         } else {
         }
 

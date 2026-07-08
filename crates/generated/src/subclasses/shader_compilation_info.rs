@@ -11,13 +11,13 @@ pub struct ShaderCompilationInfo {
 
 impl crate::Parse for ShaderCompilationInfo {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_snippets = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i32()?; let b = ShaderSnippet::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_mesh_components_from_snippets = r.read_u32()?;
-        let m_has_surface_shaders = r.read_bool()?;
+        let m_snippets = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i32()?; let b = ShaderSnippet::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let m_mesh_components_from_snippets = rdr.read_u32()?;
+        let m_has_surface_shaders = rdr.read_bool()?;
 
         Ok(ShaderCompilationInfo {
             m_snippets,

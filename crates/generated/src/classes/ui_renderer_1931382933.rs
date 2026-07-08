@@ -14,15 +14,15 @@ pub enum UiRenderer_1931382933MRayTracingAccelStructBuildFlagsVariant {
 
 impl crate::Parse for UiRenderer_1931382933MRayTracingAccelStructBuildFlagsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            let v = r.read_u8()?;
+            let v = rdr.read_u8()?;
             Ok(Self::V2023_3(v))
         } else {
-            let v = r.read_u8()?;
-            r.align(4)?;
+            let v = rdr.read_u8()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -64,7 +64,7 @@ pub struct UiRenderer_1931382933 {
 
 impl crate::Parse for UiRenderer_1931382933 {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_game_object = None;
@@ -98,50 +98,50 @@ impl crate::Parse for UiRenderer_1931382933 {
         let mut m_sorting_layer = None;
         let mut m_sorting_order = None;
         let mut m_mask_interaction = None;
-            m_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_enabled = Some(r.read_bool()?);
-            m_cast_shadows = Some(r.read_u8()?);
-            m_receive_shadows = Some(r.read_u8()?);
-            m_dynamic_occludee = Some(r.read_u8()?);
-            m_static_shadow_caster = Some(r.read_u8()?);
-            m_motion_vectors = Some(r.read_u8()?);
-            m_light_probe_usage = Some(r.read_u8()?);
-            m_reflection_probe_usage = Some(r.read_u8()?);
-            m_ray_tracing_mode = Some(r.read_u8()?);
-            m_ray_trace_procedural = Some(r.read_u8()?);
-            m_ray_tracing_accel_struct_build_flags_override = Some(r.read_u8()?);
-            m_ray_tracing_accel_struct_build_flags = Some(UiRenderer_1931382933MRayTracingAccelStructBuildFlagsVariant::parse(r, ver)?);
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_enabled = Some(rdr.read_bool()?);
+            m_cast_shadows = Some(rdr.read_u8()?);
+            m_receive_shadows = Some(rdr.read_u8()?);
+            m_dynamic_occludee = Some(rdr.read_u8()?);
+            m_static_shadow_caster = Some(rdr.read_u8()?);
+            m_motion_vectors = Some(rdr.read_u8()?);
+            m_light_probe_usage = Some(rdr.read_u8()?);
+            m_reflection_probe_usage = Some(rdr.read_u8()?);
+            m_ray_tracing_mode = Some(rdr.read_u8()?);
+            m_ray_trace_procedural = Some(rdr.read_u8()?);
+            m_ray_tracing_accel_struct_build_flags_override = Some(rdr.read_u8()?);
+            m_ray_tracing_accel_struct_build_flags = Some(UiRenderer_1931382933MRayTracingAccelStructBuildFlagsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 2, 0) {
-            m_small_mesh_culling = Some(r.read_u8()?);
-            r.align(4)?;
-            m_force_mesh_lod = Some(r.read_i16()?);
-            r.align(4)?;
-            m_mesh_lod_selection_bias = Some(r.read_f32()?);
+            m_small_mesh_culling = Some(rdr.read_u8()?);
+            rdr.align(4)?;
+            m_force_mesh_lod = Some(rdr.read_i16()?);
+            rdr.align(4)?;
+            m_mesh_lod_selection_bias = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            m_small_mesh_culling = Some(r.read_u8()?);
-            r.align(4)?;
+            m_small_mesh_culling = Some(rdr.read_u8()?);
+            rdr.align(4)?;
         } else {
         }
-            m_rendering_layer_mask = Some(r.read_u32()?);
-            m_renderer_priority = Some(r.read_i32()?);
-            m_lightmap_index = Some(r.read_u16()?);
-            m_lightmap_index_dynamic = Some(r.read_u16()?);
-            m_lightmap_tiling_offset = Some(Vector4f::parse(r, ver)?);
-            m_lightmap_tiling_offset_dynamic = Some(Vector4f::parse(r, ver)?);
-            m_materials = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_static_batch_info = Some(StaticBatchInfo::parse(r, ver)?);
-            m_static_batch_root = Some(crate::PPtr::parse(r, ver)?);
-            m_probe_anchor = Some(crate::PPtr::parse(r, ver)?);
-            m_light_probe_volume_override = Some(crate::PPtr::parse(r, ver)?);
-            r.align(4)?;
-            m_sorting_layer_id = Some(r.read_i32()?);
-            m_sorting_layer = Some(r.read_i16()?);
-            m_sorting_order = Some(r.read_i16()?);
-            r.align(4)?;
+            m_rendering_layer_mask = Some(rdr.read_u32()?);
+            m_renderer_priority = Some(rdr.read_i32()?);
+            m_lightmap_index = Some(rdr.read_u16()?);
+            m_lightmap_index_dynamic = Some(rdr.read_u16()?);
+            m_lightmap_tiling_offset = Some(Vector4f::parse(rdr, ver)?);
+            m_lightmap_tiling_offset_dynamic = Some(Vector4f::parse(rdr, ver)?);
+            m_materials = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_static_batch_info = Some(StaticBatchInfo::parse(rdr, ver)?);
+            m_static_batch_root = Some(crate::PPtr::parse(rdr, ver)?);
+            m_probe_anchor = Some(crate::PPtr::parse(rdr, ver)?);
+            m_light_probe_volume_override = Some(crate::PPtr::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_sorting_layer_id = Some(rdr.read_i32()?);
+            m_sorting_layer = Some(rdr.read_i16()?);
+            m_sorting_order = Some(rdr.read_i16()?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(6000, 3, 0) {
-            m_mask_interaction = Some(r.read_i32()?);
-            r.align(4)?;
+            m_mask_interaction = Some(rdr.read_i32()?);
+            rdr.align(4)?;
         } else {
         }
 

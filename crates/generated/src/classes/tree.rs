@@ -10,12 +10,12 @@ pub struct Tree {
 
 impl crate::Parse for Tree {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
+        let m_game_object = crate::PPtr::parse(rdr, ver)?;
         let m_speed_tree_wind_asset = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(crate::PPtr::parse(r, ver)?)
+            Some(crate::PPtr::parse(rdr, ver)?)
         } else {
             None
         };

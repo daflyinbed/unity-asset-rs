@@ -2,40 +2,44 @@
 
 #[derive(Debug, Clone)]
 pub struct TextureSettings {
-    pub aniso_level: u32,
-    pub compression_quality: u32,
-    pub max_texture_size: u32,
+    pub aniso_level: i32,
+    pub compression_quality: i32,
+    pub max_texture_size: i32,
     pub texture_compression: i32,
-    pub color_space: i32,
     pub filter_mode: i32,
-    pub generate_mip_maps: i32,
-    pub readable: i32,
+    pub generate_mip_maps: bool,
+    pub readable: bool,
+    pub crunched_compression: bool,
+    pub s_rgb: bool,
 }
 
 impl crate::Parse for TextureSettings {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let aniso_level = r.read_u32()?;
-        let compression_quality = r.read_u32()?;
-        let max_texture_size = r.read_u32()?;
-        let texture_compression = r.read_i32()?;
-        let color_space = r.read_i32()?;
-        let filter_mode = r.read_i32()?;
-        let generate_mip_maps = r.read_i32()?;
-        let readable = r.read_i32()?;
-        r.align(4)?;
+        let aniso_level = rdr.read_i32()?;
+        let compression_quality = rdr.read_i32()?;
+        let max_texture_size = rdr.read_i32()?;
+        let texture_compression = rdr.read_i32()?;
+        let filter_mode = rdr.read_i32()?;
+        let generate_mip_maps = rdr.read_bool()?;
+        let readable = rdr.read_bool()?;
+        let crunched_compression = rdr.read_bool()?;
+        rdr.align(4)?;
+        let s_rgb = rdr.read_bool()?;
+        rdr.align(4)?;
 
         Ok(TextureSettings {
             aniso_level,
             compression_quality,
             max_texture_size,
             texture_compression,
-            color_space,
             filter_mode,
             generate_mip_maps,
             readable,
+            crunched_compression,
+            s_rgb,
         })
     }
 }

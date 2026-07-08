@@ -9,11 +9,11 @@ pub struct BuiltAssetBundleInfoSet_668709126 {
 
 impl crate::Parse for BuiltAssetBundleInfoSet_668709126 {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let bundle_infos = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { BuiltAssetBundleInfo::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
+        let bundle_infos = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { BuiltAssetBundleInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
 
         Ok(BuiltAssetBundleInfoSet_668709126 {
             bundle_infos,

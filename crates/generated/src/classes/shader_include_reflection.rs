@@ -11,13 +11,13 @@ pub struct ShaderIncludeReflection {
 
 impl crate::Parse for ShaderIncludeReflection {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_functions = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ReflectedFunction::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_reflection_log = ErrorLog::parse(r, ver)?;
-        r.align(4)?;
+        let m_functions = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ReflectedFunction::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let m_reflection_log = ErrorLog::parse(rdr, ver)?;
+        rdr.align(4)?;
 
         Ok(ShaderIncludeReflection {
             m_functions,

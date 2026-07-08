@@ -10,13 +10,13 @@ pub struct ScriptMapper {
 
 impl crate::Parse for ScriptMapper {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_shaders = NameToObjectMap::parse(r, ver)?;
-        r.align(4)?;
+        let m_shaders = NameToObjectMap::parse(rdr, ver)?;
+        rdr.align(4)?;
         let m_preload_shaders = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_bool()?)
+            Some(rdr.read_bool()?)
         } else {
             None
         };

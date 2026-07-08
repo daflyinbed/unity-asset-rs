@@ -8,19 +8,27 @@ pub struct SampleSettings {
     pub compression_format: i32,
     pub quality: f32,
     pub conversion_mode: i32,
+    pub preload_audio_data: Option<bool>,
 }
 
 impl crate::Parse for SampleSettings {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let load_type = r.read_i32()?;
-        let sample_rate_setting = r.read_i32()?;
-        let sample_rate_override = r.read_u32()?;
-        let compression_format = r.read_i32()?;
-        let quality = r.read_f32()?;
-        let conversion_mode = r.read_i32()?;
+        let load_type = rdr.read_i32()?;
+        let sample_rate_setting = rdr.read_i32()?;
+        let sample_rate_override = rdr.read_u32()?;
+        let compression_format = rdr.read_i32()?;
+        let quality = rdr.read_f32()?;
+        let conversion_mode = rdr.read_i32()?;
+        let preload_audio_data = if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
+            Some(v)
+        } else {
+            None
+        };
 
         Ok(SampleSettings {
             load_type,
@@ -29,6 +37,7 @@ impl crate::Parse for SampleSettings {
             compression_format,
             quality,
             conversion_mode,
+            preload_audio_data,
         })
     }
 }

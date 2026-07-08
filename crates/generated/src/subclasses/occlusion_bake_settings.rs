@@ -9,12 +9,12 @@ pub struct OcclusionBakeSettings {
 
 impl crate::Parse for OcclusionBakeSettings {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let view_cell_size = r.read_f32()?;
-        let bake_mode = r.read_u32()?;
-        let memory_usage = r.read_u32()?;
+        let view_cell_size = rdr.read_f32()?;
+        let bake_mode = rdr.read_u32()?;
+        let memory_usage = rdr.read_u32()?;
 
         Ok(OcclusionBakeSettings {
             view_cell_size,

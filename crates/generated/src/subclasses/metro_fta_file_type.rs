@@ -8,13 +8,13 @@ pub struct MetroFtaFileType {
 
 impl crate::Parse for MetroFtaFileType {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let content_type = r.read_aligned_string()?;
-        r.align(4)?;
-        let file_type = r.read_aligned_string()?;
-        r.align(4)?;
+        let content_type = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let file_type = rdr.read_aligned_string()?;
+        rdr.align(4)?;
 
         Ok(MetroFtaFileType {
             content_type,

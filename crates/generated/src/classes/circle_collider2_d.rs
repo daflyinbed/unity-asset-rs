@@ -14,15 +14,15 @@ pub enum CircleCollider2DMIsTriggerVariant {
 
 impl crate::Parse for CircleCollider2DMIsTriggerVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V5_0(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -38,19 +38,19 @@ pub enum CircleCollider2DMUsedByEffectorVariant {
 
 impl crate::Parse for CircleCollider2DMUsedByEffectorVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V2023_1(v))
         } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V5_6(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -80,7 +80,7 @@ pub struct CircleCollider2D {
 
 impl crate::Parse for CircleCollider2D {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_game_object = None;
@@ -102,44 +102,44 @@ impl crate::Parse for CircleCollider2D {
         let mut m_callback_layers = None;
         let mut m_composite_operation = None;
         let mut m_composite_order = None;
-            m_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_enabled = Some(r.read_u8()?);
-            r.align(4)?;
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_enabled = Some(rdr.read_u8()?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            m_density = Some(r.read_f32()?);
+            m_density = Some(rdr.read_f32()?);
         } else {
         }
-            m_material = Some(crate::PPtr::parse(r, ver)?);
+            m_material = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            m_include_layers = Some(BitField::parse(r, ver)?);
-            m_exclude_layers = Some(BitField::parse(r, ver)?);
-            m_layer_override_priority = Some(r.read_i32()?);
-            m_force_send_layers = Some(BitField::parse(r, ver)?);
-            m_force_receive_layers = Some(BitField::parse(r, ver)?);
-            m_contact_capture_layers = Some(BitField::parse(r, ver)?);
-            m_callback_layers = Some(BitField::parse(r, ver)?);
+            m_include_layers = Some(BitField::parse(rdr, ver)?);
+            m_exclude_layers = Some(BitField::parse(rdr, ver)?);
+            m_layer_override_priority = Some(rdr.read_i32()?);
+            m_force_send_layers = Some(BitField::parse(rdr, ver)?);
+            m_force_receive_layers = Some(BitField::parse(rdr, ver)?);
+            m_contact_capture_layers = Some(BitField::parse(rdr, ver)?);
+            m_callback_layers = Some(BitField::parse(rdr, ver)?);
         } else {
         }
-            m_is_trigger = Some(CircleCollider2DMIsTriggerVariant::parse(r, ver)?);
+            m_is_trigger = Some(CircleCollider2DMIsTriggerVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            m_used_by_effector = Some(CircleCollider2DMUsedByEffectorVariant::parse(r, ver)?);
-            m_composite_operation = Some(r.read_i32()?);
-            m_composite_order = Some(r.read_i32()?);
-            m_offset = Some(Vector2f::parse(r, ver)?);
+            m_used_by_effector = Some(CircleCollider2DMUsedByEffectorVariant::parse(rdr, ver)?);
+            m_composite_operation = Some(rdr.read_i32()?);
+            m_composite_order = Some(rdr.read_i32()?);
+            m_offset = Some(Vector2f::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            m_used_by_effector = Some(CircleCollider2DMUsedByEffectorVariant::parse(r, ver)?);
-            m_used_by_composite = Some(r.read_bool()?);
-            r.align(4)?;
-            m_offset = Some(Vector2f::parse(r, ver)?);
+            m_used_by_effector = Some(CircleCollider2DMUsedByEffectorVariant::parse(rdr, ver)?);
+            m_used_by_composite = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_offset = Some(Vector2f::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_used_by_effector = Some(CircleCollider2DMUsedByEffectorVariant::parse(r, ver)?);
-            m_offset = Some(Vector2f::parse(r, ver)?);
+            m_used_by_effector = Some(CircleCollider2DMUsedByEffectorVariant::parse(rdr, ver)?);
+            m_offset = Some(Vector2f::parse(rdr, ver)?);
         } else {
         }
-            m_radius = Some(r.read_f32()?);
+            m_radius = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
         } else {
-            m_center = Some(Vector2f::parse(r, ver)?);
+            m_center = Some(Vector2f::parse(rdr, ver)?);
         }
 
         Ok(CircleCollider2D {

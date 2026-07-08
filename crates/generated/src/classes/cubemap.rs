@@ -14,15 +14,15 @@ pub enum CubemapMDownscaleFallbackVariant {
 
 impl crate::Parse for CubemapMDownscaleFallbackVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V2020_2(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -37,14 +37,14 @@ pub enum CubemapMCompleteImageSizeVariant {
 
 impl crate::Parse for CubemapMCompleteImageSizeVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            let v = r.read_u32()?;
+            let v = rdr.read_u32()?;
             Ok(Self::V2020_1(v))
         } else {
-            let v = r.read_i32()?;
+            let v = rdr.read_i32()?;
             Ok(Self::Default(v))
         }
     }
@@ -60,18 +60,18 @@ pub enum CubemapMIsReadableVariant {
 
 impl crate::Parse for CubemapMIsReadableVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2018, 2, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V2018_2(v))
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V5_5(v))
         } else {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::Default(v))
         }
     }
@@ -110,7 +110,7 @@ pub struct Cubemap {
 
 impl crate::Parse for Cubemap {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_name = None;
@@ -141,97 +141,97 @@ impl crate::Parse for Cubemap {
         let mut m_stream_data = None;
         let mut m_source_textures = None;
         let mut m_platform_blob = None;
-            m_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
-            m_is_alpha_channel_optional = Some(r.read_bool()?);
-            r.align(4)?;
+            m_is_alpha_channel_optional = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            m_forced_fallback_format = Some(r.read_i32()?);
-            m_downscale_fallback = Some(CubemapMDownscaleFallbackVariant::parse(r, ver)?);
-            m_is_alpha_channel_optional = Some(r.read_bool()?);
-            r.align(4)?;
+            m_forced_fallback_format = Some(rdr.read_i32()?);
+            m_downscale_fallback = Some(CubemapMDownscaleFallbackVariant::parse(rdr, ver)?);
+            m_is_alpha_channel_optional = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            m_forced_fallback_format = Some(r.read_i32()?);
-            m_downscale_fallback = Some(CubemapMDownscaleFallbackVariant::parse(r, ver)?);
+            m_forced_fallback_format = Some(rdr.read_i32()?);
+            m_downscale_fallback = Some(CubemapMDownscaleFallbackVariant::parse(rdr, ver)?);
         } else {
         }
-            m_width = Some(r.read_i32()?);
-            m_height = Some(r.read_i32()?);
-            m_complete_image_size = Some(CubemapMCompleteImageSizeVariant::parse(r, ver)?);
+            m_width = Some(rdr.read_i32()?);
+            m_height = Some(rdr.read_i32()?);
+            m_complete_image_size = Some(CubemapMCompleteImageSizeVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            m_mips_stripped = Some(r.read_i32()?);
+            m_mips_stripped = Some(rdr.read_i32()?);
         } else {
         }
-            m_texture_format = Some(r.read_i32()?);
+            m_texture_format = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            m_mip_count = Some(r.read_i32()?);
+            m_mip_count = Some(rdr.read_i32()?);
         } else {
-            m_mip_map = Some(r.read_bool()?);
+            m_mip_map = Some(rdr.read_bool()?);
         }
-            m_is_readable = Some(CubemapMIsReadableVariant::parse(r, ver)?);
+            m_is_readable = Some(CubemapMIsReadableVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            m_is_pre_processed = Some(r.read_bool()?);
-            m_ignore_mipmap_limit = Some(r.read_bool()?);
-            r.align(4)?;
-            m_mipmap_limit_group_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_streaming_mipmaps = Some(r.read_bool()?);
-            r.align(4)?;
-            m_streaming_mipmaps_priority = Some(r.read_i32()?);
-            r.align(4)?;
+            m_is_pre_processed = Some(rdr.read_bool()?);
+            m_ignore_mipmap_limit = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_mipmap_limit_group_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_streaming_mipmaps = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_streaming_mipmaps_priority = Some(rdr.read_i32()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            m_is_pre_processed = Some(r.read_bool()?);
-            m_ignore_master_texture_limit = Some(r.read_bool()?);
-            m_streaming_mipmaps = Some(r.read_bool()?);
-            r.align(4)?;
-            m_streaming_mipmaps_priority = Some(r.read_i32()?);
-            r.align(4)?;
+            m_is_pre_processed = Some(rdr.read_bool()?);
+            m_ignore_master_texture_limit = Some(rdr.read_bool()?);
+            m_streaming_mipmaps = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_streaming_mipmaps_priority = Some(rdr.read_i32()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2019, 4, 9) {
-            m_ignore_master_texture_limit = Some(r.read_bool()?);
-            m_is_pre_processed = Some(r.read_bool()?);
-            m_streaming_mipmaps = Some(r.read_bool()?);
-            r.align(4)?;
-            m_streaming_mipmaps_priority = Some(r.read_i32()?);
-            r.align(4)?;
+            m_ignore_master_texture_limit = Some(rdr.read_bool()?);
+            m_is_pre_processed = Some(rdr.read_bool()?);
+            m_streaming_mipmaps = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_streaming_mipmaps_priority = Some(rdr.read_i32()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            m_ignore_master_texture_limit = Some(r.read_bool()?);
-            m_streaming_mipmaps = Some(r.read_bool()?);
-            r.align(4)?;
-            m_streaming_mipmaps_priority = Some(r.read_i32()?);
-            r.align(4)?;
+            m_ignore_master_texture_limit = Some(rdr.read_bool()?);
+            m_streaming_mipmaps = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_streaming_mipmaps_priority = Some(rdr.read_i32()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 2, 0) {
-            m_streaming_mipmaps = Some(r.read_bool()?);
-            r.align(4)?;
-            m_streaming_mipmaps_priority = Some(r.read_i32()?);
-            r.align(4)?;
+            m_streaming_mipmaps = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_streaming_mipmaps_priority = Some(rdr.read_i32()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
         } else {
-            m_read_allowed = Some(r.read_bool()?);
-            r.align(4)?;
+            m_read_allowed = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         }
-            m_image_count = Some(r.read_i32()?);
-            m_texture_dimension = Some(r.read_i32()?);
-            m_texture_settings = Some(GlTextureSettings::parse(r, ver)?);
-            m_lightmap_format = Some(r.read_i32()?);
+            m_image_count = Some(rdr.read_i32()?);
+            m_texture_dimension = Some(rdr.read_i32()?);
+            m_texture_settings = Some(GlTextureSettings::parse(rdr, ver)?);
+            m_lightmap_format = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            m_color_space = Some(r.read_i32()?);
-            m_platform_blob = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_color_space = Some(rdr.read_i32()?);
+            m_platform_blob = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            m_color_space = Some(r.read_i32()?);
+            m_color_space = Some(rdr.read_i32()?);
         } else {
         }
-            image_data = Some(( { let n = r.read_i32()? as usize; r.read_bytes(n) } )?);
-            r.align(4)?;
+            image_data = Some(( { let n = rdr.read_i32()? as usize; rdr.read_bytes(n) } )?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            m_stream_data = Some(StreamingInfo::parse(r, ver)?);
-            r.align(4)?;
-            m_source_textures = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_stream_data = Some(StreamingInfo::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_source_textures = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            m_source_textures = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_source_textures = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else {
         }
 

@@ -17,41 +17,41 @@ pub struct SceneVisibilityState {
 
 impl crate::Parse for SceneVisibilityState {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_scene_data = if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = SceneIdentifier::parse(r, ver)?; let b = SceneVisibilityData::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?)
+            Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SceneIdentifier::parse(rdr, ver)?; let b = SceneVisibilityData::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?)
         } else {
             None
         };
         let m_scene_visibility_data = if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            Some(SceneDataContainer::parse(r, ver)?)
+            Some(SceneDataContainer::parse(rdr, ver)?)
         } else {
             None
         };
         let m_main_stage_isolated = if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            Some(r.read_bool()?)
+            Some(rdr.read_bool()?)
         } else {
             None
         };
         let m_scene_visibility_data_isolated = if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            Some(SceneDataContainer::parse(r, ver)?)
+            Some(SceneDataContainer::parse(rdr, ver)?)
         } else {
             None
         };
         let m_prefab_stage_isolated = if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            Some(r.read_bool()?)
+            Some(rdr.read_bool()?)
         } else {
             None
         };
         let m_scene_picking_data = if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            Some(SceneDataContainer::parse(r, ver)?)
+            Some(SceneDataContainer::parse(rdr, ver)?)
         } else {
             None
         };
         let m_isolation_mode = if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            Some(r.read_bool()?)
+            Some(rdr.read_bool()?)
         } else {
             None
         };

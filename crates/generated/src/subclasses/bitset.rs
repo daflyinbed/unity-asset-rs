@@ -8,12 +8,12 @@ pub struct bitset {
 
 impl crate::Parse for bitset {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let bit_count = r.read_i32()?;
-        let bitblocks = ( { let n = r.read_i32()? as usize; r.read_bytes(n) } )?;
-        r.align(4)?;
+        let bit_count = rdr.read_i32()?;
+        let bitblocks = ( { let n = rdr.read_i32()? as usize; rdr.read_bytes(n) } )?;
+        rdr.align(4)?;
 
         Ok(bitset {
             bit_count,

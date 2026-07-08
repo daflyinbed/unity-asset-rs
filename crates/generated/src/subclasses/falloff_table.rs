@@ -19,22 +19,22 @@ pub struct FalloffTable {
 
 impl crate::Parse for FalloffTable {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_table_0 = r.read_f32()?;
-        let m_table_1 = r.read_f32()?;
-        let m_table_2 = r.read_f32()?;
-        let m_table_3 = r.read_f32()?;
-        let m_table_4 = r.read_f32()?;
-        let m_table_5 = r.read_f32()?;
-        let m_table_6 = r.read_f32()?;
-        let m_table_7 = r.read_f32()?;
-        let m_table_8 = r.read_f32()?;
-        let m_table_9 = r.read_f32()?;
-        let m_table_10 = r.read_f32()?;
-        let m_table_11 = r.read_f32()?;
-        let m_table_12 = r.read_f32()?;
+        let m_table_0 = rdr.read_f32()?;
+        let m_table_1 = rdr.read_f32()?;
+        let m_table_2 = rdr.read_f32()?;
+        let m_table_3 = rdr.read_f32()?;
+        let m_table_4 = rdr.read_f32()?;
+        let m_table_5 = rdr.read_f32()?;
+        let m_table_6 = rdr.read_f32()?;
+        let m_table_7 = rdr.read_f32()?;
+        let m_table_8 = rdr.read_f32()?;
+        let m_table_9 = rdr.read_f32()?;
+        let m_table_10 = rdr.read_f32()?;
+        let m_table_11 = rdr.read_f32()?;
+        let m_table_12 = rdr.read_f32()?;
 
         Ok(FalloffTable {
             m_table_0,

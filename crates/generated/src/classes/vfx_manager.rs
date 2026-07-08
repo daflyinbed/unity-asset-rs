@@ -23,7 +23,7 @@ pub struct VfxManager {
 
 impl crate::Parse for VfxManager {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_indirect_shader = None;
@@ -41,59 +41,59 @@ impl crate::Parse for VfxManager {
         let mut m_max_capacity = None;
         let mut m_runtime_resources = None;
         let mut m_batch_empty_lifetime = None;
-            m_indirect_shader = Some(crate::PPtr::parse(r, ver)?);
-            m_copy_buffer_shader = Some(crate::PPtr::parse(r, ver)?);
+            m_indirect_shader = Some(crate::PPtr::parse(rdr, ver)?);
+            m_copy_buffer_shader = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 1, 0) {
-            m_prefix_sum_shader = Some(crate::PPtr::parse(r, ver)?);
+            m_prefix_sum_shader = Some(crate::PPtr::parse(rdr, ver)?);
         } else {
         }
-            m_sort_shader = Some(crate::PPtr::parse(r, ver)?);
+            m_sort_shader = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2023, 1, 17) {
-            m_strip_update_shader = Some(crate::PPtr::parse(r, ver)?);
-            m_empty_shader = Some(crate::PPtr::parse(r, ver)?);
+            m_strip_update_shader = Some(crate::PPtr::parse(rdr, ver)?);
+            m_empty_shader = Some(crate::PPtr::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            m_strip_update_shader = Some(crate::PPtr::parse(r, ver)?);
+            m_strip_update_shader = Some(crate::PPtr::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2022, 3, 12) {
-            m_strip_update_shader = Some(crate::PPtr::parse(r, ver)?);
-            m_empty_shader = Some(crate::PPtr::parse(r, ver)?);
+            m_strip_update_shader = Some(crate::PPtr::parse(rdr, ver)?);
+            m_empty_shader = Some(crate::PPtr::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
-            m_strip_update_shader = Some(crate::PPtr::parse(r, ver)?);
+            m_strip_update_shader = Some(crate::PPtr::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2021, 3, 32) {
-            m_strip_update_shader = Some(crate::PPtr::parse(r, ver)?);
-            m_empty_shader = Some(crate::PPtr::parse(r, ver)?);
+            m_strip_update_shader = Some(crate::PPtr::parse(rdr, ver)?);
+            m_empty_shader = Some(crate::PPtr::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            m_strip_update_shader = Some(crate::PPtr::parse(r, ver)?);
+            m_strip_update_shader = Some(crate::PPtr::parse(rdr, ver)?);
         } else {
         }
-            m_render_pipe_settings_path = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_fixed_time_step = Some(r.read_f32()?);
-            m_max_delta_time = Some(r.read_f32()?);
+            m_render_pipe_settings_path = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_fixed_time_step = Some(rdr.read_f32()?);
+            m_max_delta_time = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            m_max_scrub_time = Some(r.read_f32()?);
-            m_max_capacity = Some(r.read_u32()?);
-            m_compiled_version = Some(r.read_u32()?);
-            m_runtime_version = Some(r.read_u32()?);
-            m_runtime_resources = Some(crate::PPtr::parse(r, ver)?);
-            m_batch_empty_lifetime = Some(r.read_u32()?);
+            m_max_scrub_time = Some(rdr.read_f32()?);
+            m_max_capacity = Some(rdr.read_u32()?);
+            m_compiled_version = Some(rdr.read_u32()?);
+            m_runtime_version = Some(rdr.read_u32()?);
+            m_runtime_resources = Some(crate::PPtr::parse(rdr, ver)?);
+            m_batch_empty_lifetime = Some(rdr.read_u32()?);
         } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            m_max_scrub_time = Some(r.read_f32()?);
-            m_compiled_version = Some(r.read_u32()?);
-            m_runtime_version = Some(r.read_u32()?);
-            m_runtime_resources = Some(crate::PPtr::parse(r, ver)?);
-            m_batch_empty_lifetime = Some(r.read_u32()?);
+            m_max_scrub_time = Some(rdr.read_f32()?);
+            m_compiled_version = Some(rdr.read_u32()?);
+            m_runtime_version = Some(rdr.read_u32()?);
+            m_runtime_resources = Some(crate::PPtr::parse(rdr, ver)?);
+            m_batch_empty_lifetime = Some(rdr.read_u32()?);
         } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
-            m_max_scrub_time = Some(r.read_f32()?);
-            m_compiled_version = Some(r.read_u32()?);
-            m_runtime_version = Some(r.read_u32()?);
-            m_runtime_resources = Some(crate::PPtr::parse(r, ver)?);
+            m_max_scrub_time = Some(rdr.read_f32()?);
+            m_compiled_version = Some(rdr.read_u32()?);
+            m_runtime_version = Some(rdr.read_u32()?);
+            m_runtime_resources = Some(crate::PPtr::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            m_compiled_version = Some(r.read_u32()?);
-            m_runtime_version = Some(r.read_u32()?);
-            m_runtime_resources = Some(crate::PPtr::parse(r, ver)?);
+            m_compiled_version = Some(rdr.read_u32()?);
+            m_runtime_version = Some(rdr.read_u32()?);
+            m_runtime_resources = Some(crate::PPtr::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            m_compiled_version = Some(r.read_u32()?);
-            m_runtime_version = Some(r.read_u32()?);
+            m_compiled_version = Some(rdr.read_u32()?);
+            m_runtime_version = Some(rdr.read_u32()?);
         } else {
         }
 

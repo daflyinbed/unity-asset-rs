@@ -14,13 +14,13 @@ pub struct EnlightenRendererInformation {
 
 impl crate::Parse for EnlightenRendererInformation {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let renderer = crate::PPtr::parse(r, ver)?;
-        let dynamic_lightmap_st_in_system = Vector4f::parse(r, ver)?;
-        let system_id = r.read_i32()?;
-        let instance_hash = Hash128::parse(r, ver)?;
+        let renderer = crate::PPtr::parse(rdr, ver)?;
+        let dynamic_lightmap_st_in_system = Vector4f::parse(rdr, ver)?;
+        let system_id = rdr.read_i32()?;
+        let instance_hash = Hash128::parse(rdr, ver)?;
 
         Ok(EnlightenRendererInformation {
             renderer,

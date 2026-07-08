@@ -10,17 +10,17 @@ pub struct KtxImporter {
 
 impl crate::Parse for KtxImporter {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_user_data = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_asset_bundle_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_asset_bundle_variant = r.read_aligned_string()?;
-        r.align(4)?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_user_data = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_asset_bundle_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_asset_bundle_variant = rdr.read_aligned_string()?;
+        rdr.align(4)?;
 
         Ok(KtxImporter {
             m_name,

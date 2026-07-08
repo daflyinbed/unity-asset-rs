@@ -26,39 +26,39 @@ pub struct AimConstraint {
 
 impl crate::Parse for AimConstraint {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_enabled = r.read_u8()?;
-        r.align(4)?;
-        let m_weight = r.read_f32()?;
-        let m_rotation_at_rest = Vector3f::parse(r, ver)?;
-        let m_rotation_offset = Vector3f::parse(r, ver)?;
-        let m_aim_vector = Vector3f::parse(r, ver)?;
-        let m_up_vector = Vector3f::parse(r, ver)?;
-        let m_world_up_vector = Vector3f::parse(r, ver)?;
-        let m_world_up_object = crate::PPtr::parse(r, ver)?;
-        let m_up_type = r.read_i32()?;
-        let m_affect_rotation_x = r.read_bool()?;
-        let m_affect_rotation_y = r.read_bool()?;
-        let m_affect_rotation_z = r.read_bool()?;
+        let m_game_object = crate::PPtr::parse(rdr, ver)?;
+        let m_enabled = rdr.read_u8()?;
+        rdr.align(4)?;
+        let m_weight = rdr.read_f32()?;
+        let m_rotation_at_rest = Vector3f::parse(rdr, ver)?;
+        let m_rotation_offset = Vector3f::parse(rdr, ver)?;
+        let m_aim_vector = Vector3f::parse(rdr, ver)?;
+        let m_up_vector = Vector3f::parse(rdr, ver)?;
+        let m_world_up_vector = Vector3f::parse(rdr, ver)?;
+        let m_world_up_object = crate::PPtr::parse(rdr, ver)?;
+        let m_up_type = rdr.read_i32()?;
+        let m_affect_rotation_x = rdr.read_bool()?;
+        let m_affect_rotation_y = rdr.read_bool()?;
+        let m_affect_rotation_z = rdr.read_bool()?;
         let m_is_contraint_active = if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Some(v)
         } else {
             None
         };
         let m_active = if *ver >= crate::UnityVersion::new(2022, 1, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Some(v)
         } else {
             None
         };
-        let m_sources = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ConstraintSource::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
+        let m_sources = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ConstraintSource::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
 
         Ok(AimConstraint {
             m_game_object,

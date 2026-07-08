@@ -12,15 +12,15 @@ pub enum AnnotationManagerMUse3dGizmosVariant {
 
 impl crate::Parse for AnnotationManagerMUse3dGizmosVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V5_5(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -35,15 +35,15 @@ pub enum AnnotationManagerMShowGridVariant {
 
 impl crate::Parse for AnnotationManagerMShowGridVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V5_5(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -58,15 +58,15 @@ pub enum AnnotationManagerMShowSelectionWireVariant {
 
 impl crate::Parse for AnnotationManagerMShowSelectionWireVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(6000, 4, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V6000_4(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -88,7 +88,7 @@ pub struct AnnotationManager {
 
 impl crate::Parse for AnnotationManager {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_current_preset_m_annotation_list = None;
@@ -102,43 +102,43 @@ impl crate::Parse for AnnotationManager {
         let mut m_show_selection_outline = None;
         let mut m_show_selection_wire = None;
         let mut m_show_lod_labels = None;
-            m_current_preset_m_annotation_list = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { Annotation::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_recently_changed = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { Annotation::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_current_preset_m_annotation_list = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Annotation::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_recently_changed = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Annotation::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(6000, 4, 0) {
-            m_world_icon_size = Some(r.read_f32()?);
-            m_fade_gizmo_size = Some(r.read_f32()?);
-            m_fade_gizmos = Some(r.read_bool()?);
-            m_use3d_gizmos = Some(AnnotationManagerMUse3dGizmosVariant::parse(r, ver)?);
-            m_show_grid = Some(AnnotationManagerMShowGridVariant::parse(r, ver)?);
-            m_show_selection_outline = Some(r.read_bool()?);
-            m_show_selection_wire = Some(AnnotationManagerMShowSelectionWireVariant::parse(r, ver)?);
-            m_show_lod_labels = Some(r.read_bool()?);
-            r.align(4)?;
+            m_world_icon_size = Some(rdr.read_f32()?);
+            m_fade_gizmo_size = Some(rdr.read_f32()?);
+            m_fade_gizmos = Some(rdr.read_bool()?);
+            m_use3d_gizmos = Some(AnnotationManagerMUse3dGizmosVariant::parse(rdr, ver)?);
+            m_show_grid = Some(AnnotationManagerMShowGridVariant::parse(rdr, ver)?);
+            m_show_selection_outline = Some(rdr.read_bool()?);
+            m_show_selection_wire = Some(AnnotationManagerMShowSelectionWireVariant::parse(rdr, ver)?);
+            m_show_lod_labels = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2021, 1, 0) {
-            m_world_icon_size = Some(r.read_f32()?);
-            m_fade_gizmo_size = Some(r.read_f32()?);
-            m_fade_gizmos = Some(r.read_bool()?);
-            m_use3d_gizmos = Some(AnnotationManagerMUse3dGizmosVariant::parse(r, ver)?);
-            m_show_grid = Some(AnnotationManagerMShowGridVariant::parse(r, ver)?);
-            m_show_selection_outline = Some(r.read_bool()?);
-            m_show_selection_wire = Some(AnnotationManagerMShowSelectionWireVariant::parse(r, ver)?);
+            m_world_icon_size = Some(rdr.read_f32()?);
+            m_fade_gizmo_size = Some(rdr.read_f32()?);
+            m_fade_gizmos = Some(rdr.read_bool()?);
+            m_use3d_gizmos = Some(AnnotationManagerMUse3dGizmosVariant::parse(rdr, ver)?);
+            m_show_grid = Some(AnnotationManagerMShowGridVariant::parse(rdr, ver)?);
+            m_show_selection_outline = Some(rdr.read_bool()?);
+            m_show_selection_wire = Some(AnnotationManagerMShowSelectionWireVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            m_world_icon_size = Some(r.read_f32()?);
-            m_use3d_gizmos = Some(AnnotationManagerMUse3dGizmosVariant::parse(r, ver)?);
-            m_show_grid = Some(AnnotationManagerMShowGridVariant::parse(r, ver)?);
-            m_show_selection_outline = Some(r.read_bool()?);
-            m_show_selection_wire = Some(AnnotationManagerMShowSelectionWireVariant::parse(r, ver)?);
+            m_world_icon_size = Some(rdr.read_f32()?);
+            m_use3d_gizmos = Some(AnnotationManagerMUse3dGizmosVariant::parse(rdr, ver)?);
+            m_show_grid = Some(AnnotationManagerMShowGridVariant::parse(rdr, ver)?);
+            m_show_selection_outline = Some(rdr.read_bool()?);
+            m_show_selection_wire = Some(AnnotationManagerMShowSelectionWireVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            m_world_icon_size = Some(r.read_f32()?);
-            m_use3d_gizmos = Some(AnnotationManagerMUse3dGizmosVariant::parse(r, ver)?);
-            m_show_grid = Some(AnnotationManagerMShowGridVariant::parse(r, ver)?);
+            m_world_icon_size = Some(rdr.read_f32()?);
+            m_use3d_gizmos = Some(AnnotationManagerMUse3dGizmosVariant::parse(rdr, ver)?);
+            m_show_grid = Some(AnnotationManagerMShowGridVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            m_world_icon_size = Some(r.read_f32()?);
-            m_use3d_gizmos = Some(AnnotationManagerMUse3dGizmosVariant::parse(r, ver)?);
+            m_world_icon_size = Some(rdr.read_f32()?);
+            m_use3d_gizmos = Some(AnnotationManagerMUse3dGizmosVariant::parse(rdr, ver)?);
         } else {
-            m_icon_size = Some(r.read_f32()?);
+            m_icon_size = Some(rdr.read_f32()?);
         }
 
         Ok(AnnotationManager {

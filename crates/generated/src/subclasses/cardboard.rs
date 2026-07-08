@@ -6,7 +6,7 @@ pub struct Cardboard {
 
 impl crate::Parse for Cardboard {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
 

@@ -11,14 +11,14 @@ pub struct InheritVelocityModule {
 
 impl crate::Parse for InheritVelocityModule {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let enabled = r.read_bool()?;
-        r.align(4)?;
-        let m_mode = r.read_i32()?;
-        let m_curve = MinMaxCurve::parse(r, ver)?;
-        r.align(4)?;
+        let enabled = rdr.read_bool()?;
+        rdr.align(4)?;
+        let m_mode = rdr.read_i32()?;
+        let m_curve = MinMaxCurve::parse(rdr, ver)?;
+        rdr.align(4)?;
 
         Ok(InheritVelocityModule {
             enabled,

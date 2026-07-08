@@ -15,15 +15,15 @@ pub enum ReflectionProbeMImportanceVariant {
 
 impl crate::Parse for ReflectionProbeMImportanceVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            let v = r.read_i16()?;
-            r.align(4)?;
+            let v = rdr.read_i16()?;
+            rdr.align(4)?;
             Ok(Self::V5_4(v))
         } else {
-            let v = r.read_i32()?;
+            let v = rdr.read_i32()?;
             Ok(Self::Default(v))
         }
     }
@@ -38,15 +38,15 @@ pub enum ReflectionProbeMUseOcclusionCullingVariant {
 
 impl crate::Parse for ReflectionProbeMUseOcclusionCullingVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V5_4(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -82,7 +82,7 @@ pub struct ReflectionProbe {
 
 impl crate::Parse for ReflectionProbe {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_game_object = None;
@@ -110,42 +110,42 @@ impl crate::Parse for ReflectionProbe {
         let mut m_use_occlusion_culling = None;
         let mut m_custom_baked_texture = None;
         let mut m_baked_texture = None;
-            m_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_enabled = Some(r.read_u8()?);
-            r.align(4)?;
-            m_type = Some(r.read_i32()?);
-            m_mode = Some(r.read_i32()?);
-            m_refresh_mode = Some(r.read_i32()?);
-            m_time_slicing_mode = Some(r.read_i32()?);
-            m_resolution = Some(r.read_i32()?);
-            m_update_frequency = Some(r.read_i32()?);
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_enabled = Some(rdr.read_u8()?);
+            rdr.align(4)?;
+            m_type = Some(rdr.read_i32()?);
+            m_mode = Some(rdr.read_i32()?);
+            m_refresh_mode = Some(rdr.read_i32()?);
+            m_time_slicing_mode = Some(rdr.read_i32()?);
+            m_resolution = Some(rdr.read_i32()?);
+            m_update_frequency = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
         } else {
-            m_importance = Some(ReflectionProbeMImportanceVariant::parse(r, ver)?);
+            m_importance = Some(ReflectionProbeMImportanceVariant::parse(rdr, ver)?);
         }
-            m_box_size = Some(Vector3f::parse(r, ver)?);
-            m_box_offset = Some(Vector3f::parse(r, ver)?);
-            m_near_clip = Some(r.read_f32()?);
-            m_far_clip = Some(r.read_f32()?);
-            m_shadow_distance = Some(r.read_f32()?);
-            m_clear_flags = Some(r.read_u32()?);
-            m_back_ground_color = Some(ColorRgba::parse(r, ver)?);
-            m_culling_mask = Some(BitField::parse(r, ver)?);
-            m_intensity_multiplier = Some(r.read_f32()?);
+            m_box_size = Some(Vector3f::parse(rdr, ver)?);
+            m_box_offset = Some(Vector3f::parse(rdr, ver)?);
+            m_near_clip = Some(rdr.read_f32()?);
+            m_far_clip = Some(rdr.read_f32()?);
+            m_shadow_distance = Some(rdr.read_f32()?);
+            m_clear_flags = Some(rdr.read_u32()?);
+            m_back_ground_color = Some(ColorRgba::parse(rdr, ver)?);
+            m_culling_mask = Some(BitField::parse(rdr, ver)?);
+            m_intensity_multiplier = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            m_blend_distance = Some(r.read_f32()?);
+            m_blend_distance = Some(rdr.read_f32()?);
         } else {
         }
-            m_hdr = Some(r.read_bool()?);
-            m_box_projection = Some(r.read_bool()?);
-            m_render_dynamic_objects = Some(r.read_bool()?);
-            m_use_occlusion_culling = Some(ReflectionProbeMUseOcclusionCullingVariant::parse(r, ver)?);
+            m_hdr = Some(rdr.read_bool()?);
+            m_box_projection = Some(rdr.read_bool()?);
+            m_render_dynamic_objects = Some(rdr.read_bool()?);
+            m_use_occlusion_culling = Some(ReflectionProbeMUseOcclusionCullingVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            m_importance = Some(ReflectionProbeMImportanceVariant::parse(r, ver)?);
+            m_importance = Some(ReflectionProbeMImportanceVariant::parse(rdr, ver)?);
         } else {
         }
-            m_custom_baked_texture = Some(crate::PPtr::parse(r, ver)?);
-            m_baked_texture = Some(crate::PPtr::parse(r, ver)?);
+            m_custom_baked_texture = Some(crate::PPtr::parse(rdr, ver)?);
+            m_baked_texture = Some(crate::PPtr::parse(rdr, ver)?);
 
         Ok(ReflectionProbe {
             m_game_object: m_game_object.unwrap(),

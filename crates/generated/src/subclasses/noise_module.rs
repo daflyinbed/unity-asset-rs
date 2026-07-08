@@ -2,6 +2,29 @@
 
 use crate::subclasses::min_max_curve::MinMaxCurve;
 
+
+/// 版本枚举：NoiseModuleRemapEnabledVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum NoiseModuleRemapEnabledVariant {
+    Default(bool),
+    V2017_1(bool),
+}
+
+impl crate::Parse for NoiseModuleRemapEnabledVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = rdr.read_bool()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct NoiseModule {
     pub enabled: bool,
@@ -19,40 +42,64 @@ pub struct NoiseModule {
     pub remap: MinMaxCurve,
     pub remap_y: MinMaxCurve,
     pub remap_z: MinMaxCurve,
-    pub remap_enabled: bool,
+    pub remap_enabled: NoiseModuleRemapEnabledVariant,
+    pub position_amount: Option<MinMaxCurve>,
+    pub rotation_amount: Option<MinMaxCurve>,
+    pub size_amount: Option<MinMaxCurve>,
 }
 
 impl crate::Parse for NoiseModule {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let enabled = r.read_bool()?;
-        r.align(4)?;
-        let strength = MinMaxCurve::parse(r, ver)?;
-        r.align(4)?;
-        let strength_y = MinMaxCurve::parse(r, ver)?;
-        r.align(4)?;
-        let strength_z = MinMaxCurve::parse(r, ver)?;
-        r.align(4)?;
-        let separate_axes = r.read_bool()?;
-        r.align(4)?;
-        let frequency = r.read_f32()?;
-        let damping = r.read_bool()?;
-        r.align(4)?;
-        let octaves = r.read_i32()?;
-        let octave_multiplier = r.read_f32()?;
-        let octave_scale = r.read_f32()?;
-        let quality = r.read_i32()?;
-        let scroll_speed = MinMaxCurve::parse(r, ver)?;
-        r.align(4)?;
-        let remap = MinMaxCurve::parse(r, ver)?;
-        r.align(4)?;
-        let remap_y = MinMaxCurve::parse(r, ver)?;
-        r.align(4)?;
-        let remap_z = MinMaxCurve::parse(r, ver)?;
-        r.align(4)?;
-        let remap_enabled = r.read_bool()?;
+        let enabled = rdr.read_bool()?;
+        rdr.align(4)?;
+        let strength = MinMaxCurve::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let strength_y = MinMaxCurve::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let strength_z = MinMaxCurve::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let separate_axes = rdr.read_bool()?;
+        rdr.align(4)?;
+        let frequency = rdr.read_f32()?;
+        let damping = rdr.read_bool()?;
+        rdr.align(4)?;
+        let octaves = rdr.read_i32()?;
+        let octave_multiplier = rdr.read_f32()?;
+        let octave_scale = rdr.read_f32()?;
+        let quality = rdr.read_i32()?;
+        let scroll_speed = MinMaxCurve::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let remap = MinMaxCurve::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let remap_y = MinMaxCurve::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let remap_z = MinMaxCurve::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let remap_enabled = NoiseModuleRemapEnabledVariant::parse(rdr, ver)?;
+        let position_amount = if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = MinMaxCurve::parse(rdr, ver)?;
+            rdr.align(4)?;
+            Some(v)
+        } else {
+            None
+        };
+        let rotation_amount = if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = MinMaxCurve::parse(rdr, ver)?;
+            rdr.align(4)?;
+            Some(v)
+        } else {
+            None
+        };
+        let size_amount = if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = MinMaxCurve::parse(rdr, ver)?;
+            rdr.align(4)?;
+            Some(v)
+        } else {
+            None
+        };
 
         Ok(NoiseModule {
             enabled,
@@ -71,6 +118,9 @@ impl crate::Parse for NoiseModule {
             remap_y,
             remap_z,
             remap_enabled,
+            position_amount,
+            rotation_amount,
+            size_amount,
         })
     }
 }

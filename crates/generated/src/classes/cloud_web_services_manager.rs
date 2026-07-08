@@ -6,7 +6,7 @@ pub struct CloudWebServicesManager {
 
 impl crate::Parse for CloudWebServicesManager {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
 

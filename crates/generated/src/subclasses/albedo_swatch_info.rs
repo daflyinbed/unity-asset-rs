@@ -12,15 +12,15 @@ pub struct AlbedoSwatchInfo {
 
 impl crate::Parse for AlbedoSwatchInfo {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let name = r.read_aligned_string()?;
-        r.align(4)?;
-        let color = ColorRgba::parse(r, ver)?;
-        let min_luminance = r.read_f32()?;
-        let max_luminance = r.read_f32()?;
-        r.align(4)?;
+        let name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let color = ColorRgba::parse(rdr, ver)?;
+        let min_luminance = rdr.read_f32()?;
+        let max_luminance = rdr.read_f32()?;
+        rdr.align(4)?;
 
         Ok(AlbedoSwatchInfo {
             name,

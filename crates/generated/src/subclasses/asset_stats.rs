@@ -13,15 +13,15 @@ pub struct AssetStats {
 
 impl crate::Parse for AssetStats {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let source_asset_guid = Guid::parse(r, ver)?;
-        let source_asset_path = r.read_aligned_string()?;
-        r.align(4)?;
-        let size = r.read_u64()?;
-        let object_count = r.read_i32()?;
-        let resource_count = r.read_i32()?;
+        let source_asset_guid = Guid::parse(rdr, ver)?;
+        let source_asset_path = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let size = rdr.read_u64()?;
+        let object_count = rdr.read_i32()?;
+        let resource_count = rdr.read_i32()?;
 
         Ok(AssetStats {
             source_asset_guid,

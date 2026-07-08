@@ -12,12 +12,12 @@ pub struct Skeleton {
 
 impl crate::Parse for Skeleton {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_node = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Node::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        let m_id = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
-        let m_axes_array = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Axes::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_node = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Node::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_id = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_axes_array = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Axes::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
 
         Ok(Skeleton {
             m_node,

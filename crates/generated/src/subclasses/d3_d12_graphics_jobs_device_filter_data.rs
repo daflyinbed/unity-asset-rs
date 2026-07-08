@@ -10,12 +10,12 @@ pub struct D3D12GraphicsJobsDeviceFilterData {
 
 impl crate::Parse for D3D12GraphicsJobsDeviceFilterData {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let preferred_mode = r.read_u32()?;
-        let filter = D3D12DeviceFilterData::parse(r, ver)?;
-        r.align(4)?;
+        let preferred_mode = rdr.read_u32()?;
+        let filter = D3D12DeviceFilterData::parse(rdr, ver)?;
+        rdr.align(4)?;
 
         Ok(D3D12GraphicsJobsDeviceFilterData {
             preferred_mode,

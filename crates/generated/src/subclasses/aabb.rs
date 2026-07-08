@@ -10,11 +10,11 @@ pub struct Aabb {
 
 impl crate::Parse for Aabb {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_center = Vector3f::parse(r, ver)?;
-        let m_extent = Vector3f::parse(r, ver)?;
+        let m_center = Vector3f::parse(rdr, ver)?;
+        let m_extent = Vector3f::parse(rdr, ver)?;
 
         Ok(Aabb {
             m_center,

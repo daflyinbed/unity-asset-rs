@@ -10,13 +10,13 @@ pub struct ChannelInfo {
 
 impl crate::Parse for ChannelInfo {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let stream = r.read_u8()?;
-        let offset = r.read_u8()?;
-        let format = r.read_u8()?;
-        let dimension = r.read_u8()?;
+        let stream = rdr.read_u8()?;
+        let offset = rdr.read_u8()?;
+        let format = rdr.read_u8()?;
+        let dimension = rdr.read_u8()?;
 
         Ok(ChannelInfo {
             stream,

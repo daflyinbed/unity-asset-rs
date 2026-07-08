@@ -11,14 +11,14 @@ pub struct VfxMappingTemporary {
 
 impl crate::Parse for VfxMappingTemporary {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let mapping = VfxMapping::parse(r, ver)?;
-        r.align(4)?;
-        let past_frame_index = r.read_u32()?;
-        let per_camera_buffer = r.read_bool()?;
-        r.align(4)?;
+        let mapping = VfxMapping::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let past_frame_index = rdr.read_u32()?;
+        let per_camera_buffer = rdr.read_bool()?;
+        rdr.align(4)?;
 
         Ok(VfxMappingTemporary {
             mapping,

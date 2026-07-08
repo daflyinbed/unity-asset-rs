@@ -12,15 +12,15 @@ pub struct VisualEffectAsset {
 
 impl crate::Parse for VisualEffectAsset {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_infos = VisualEffectInfo::parse(r, ver)?;
-        r.align(4)?;
-        let m_systems = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { VfxSystemDesc::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_infos = VisualEffectInfo::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let m_systems = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VfxSystemDesc::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
 
         Ok(VisualEffectAsset {
             m_name,

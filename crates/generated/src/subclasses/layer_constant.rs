@@ -6,7 +6,8 @@ use crate::subclasses::offset_ptr::OffsetPtr;
 #[derive(Debug, Clone)]
 pub struct LayerConstant {
     pub m_state_machine_index: u32,
-    pub m_state_machine_motion_set_index: u32,
+    pub m_state_machine_motion_set_index: Option<u32>,
+    pub m_state_machine_synchronized_layer_index: Option<u32>,
     pub m_body_mask: HumanPoseMask,
     pub m_skeleton_mask: OffsetPtr,
     pub m_binding: u32,
@@ -18,23 +19,33 @@ pub struct LayerConstant {
 
 impl crate::Parse for LayerConstant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_state_machine_index = r.read_u32()?;
-        let m_state_machine_motion_set_index = r.read_u32()?;
-        let m_body_mask = HumanPoseMask::parse(r, ver)?;
-        let m_skeleton_mask = OffsetPtr::parse(r, ver)?;
-        let m_binding = r.read_u32()?;
-        let int_m_layer_blending_mode = r.read_i32()?;
-        let m_default_weight = r.read_f32()?;
-        let m_ik_pass = r.read_bool()?;
-        let m_synced_layer_affects_timing = r.read_bool()?;
-        r.align(4)?;
+        let m_state_machine_index = rdr.read_u32()?;
+        let m_state_machine_motion_set_index = if *ver >= crate::UnityVersion::new(4, 3, 0) {
+            Some(rdr.read_u32()?)
+        } else {
+            None
+        };
+        let m_state_machine_synchronized_layer_index = if *ver >= crate::UnityVersion::new(2018, 2, 0) {
+            Some(rdr.read_u32()?)
+        } else {
+            None
+        };
+        let m_body_mask = HumanPoseMask::parse(rdr, ver)?;
+        let m_skeleton_mask = OffsetPtr::parse(rdr, ver)?;
+        let m_binding = rdr.read_u32()?;
+        let int_m_layer_blending_mode = rdr.read_i32()?;
+        let m_default_weight = rdr.read_f32()?;
+        let m_ik_pass = rdr.read_bool()?;
+        let m_synced_layer_affects_timing = rdr.read_bool()?;
+        rdr.align(4)?;
 
         Ok(LayerConstant {
             m_state_machine_index,
             m_state_machine_motion_set_index,
+            m_state_machine_synchronized_layer_index,
             m_body_mask,
             m_skeleton_mask,
             m_binding,

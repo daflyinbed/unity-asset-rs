@@ -13,16 +13,16 @@ pub struct GfxRenderTargetBlendState {
 
 impl crate::Parse for GfxRenderTargetBlendState {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let write_mask = r.read_u8()?;
-        let src_blend = r.read_u8()?;
-        let dst_blend = r.read_u8()?;
-        let src_blend_alpha = r.read_u8()?;
-        let dst_blend_alpha = r.read_u8()?;
-        let blend_op = r.read_u8()?;
-        let blend_op_alpha = r.read_u8()?;
+        let write_mask = rdr.read_u8()?;
+        let src_blend = rdr.read_u8()?;
+        let dst_blend = rdr.read_u8()?;
+        let src_blend_alpha = rdr.read_u8()?;
+        let dst_blend_alpha = rdr.read_u8()?;
+        let blend_op = rdr.read_u8()?;
+        let blend_op_alpha = rdr.read_u8()?;
 
         Ok(GfxRenderTargetBlendState {
             write_mask,

@@ -12,15 +12,15 @@ pub enum RenderTextureMDownscaleFallbackVariant {
 
 impl crate::Parse for RenderTextureMDownscaleFallbackVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V2020_2(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -35,15 +35,15 @@ pub enum RenderTextureMMipMapVariant {
 
 impl crate::Parse for RenderTextureMMipMapVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V3_5(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -58,15 +58,15 @@ pub enum RenderTextureMSrgbVariant {
 
 impl crate::Parse for RenderTextureMSrgbVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V2017_3(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -81,15 +81,15 @@ pub enum RenderTextureMBindMsVariant {
 
 impl crate::Parse for RenderTextureMBindMsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V2019_1(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -108,29 +108,29 @@ pub enum RenderTextureMEnableCompatibleFormatVariant {
 
 impl crate::Parse for RenderTextureMEnableCompatibleFormatVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2023, 1, 5) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V2023_1_5(v))
         } else if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V2023_1(v))
         } else if *ver >= crate::UnityVersion::new(2022, 3, 6) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V2022_3_6(v))
         } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V2022_1(v))
         } else if *ver >= crate::UnityVersion::new(2021, 3, 29) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V2021_3_29(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -166,7 +166,7 @@ pub struct RenderTexture {
 
 impl crate::Parse for RenderTexture {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_name = None;
@@ -194,117 +194,117 @@ impl crate::Parse for RenderTexture {
         let mut m_enable_compatible_format = None;
         let mut m_enable_random_write = None;
         let mut m_shadow_sampling_mode = None;
-            m_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
-            m_is_alpha_channel_optional = Some(r.read_bool()?);
-            r.align(4)?;
+            m_is_alpha_channel_optional = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            m_forced_fallback_format = Some(r.read_i32()?);
-            m_downscale_fallback = Some(RenderTextureMDownscaleFallbackVariant::parse(r, ver)?);
-            m_is_alpha_channel_optional = Some(r.read_bool()?);
-            r.align(4)?;
+            m_forced_fallback_format = Some(rdr.read_i32()?);
+            m_downscale_fallback = Some(RenderTextureMDownscaleFallbackVariant::parse(rdr, ver)?);
+            m_is_alpha_channel_optional = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            m_forced_fallback_format = Some(r.read_i32()?);
-            m_downscale_fallback = Some(RenderTextureMDownscaleFallbackVariant::parse(r, ver)?);
+            m_forced_fallback_format = Some(rdr.read_i32()?);
+            m_downscale_fallback = Some(RenderTextureMDownscaleFallbackVariant::parse(rdr, ver)?);
         } else {
         }
-            m_width = Some(r.read_i32()?);
-            m_height = Some(r.read_i32()?);
+            m_width = Some(rdr.read_i32()?);
+            m_height = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            m_anti_aliasing = Some(r.read_i32()?);
-            m_mip_count = Some(r.read_i32()?);
-            m_depth_stencil_format = Some(r.read_i32()?);
+            m_anti_aliasing = Some(rdr.read_i32()?);
+            m_mip_count = Some(rdr.read_i32()?);
+            m_depth_stencil_format = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2019, 2, 0) {
-            m_anti_aliasing = Some(r.read_i32()?);
-            m_mip_count = Some(r.read_i32()?);
-            m_depth_format = Some(r.read_i32()?);
+            m_anti_aliasing = Some(rdr.read_i32()?);
+            m_mip_count = Some(rdr.read_i32()?);
+            m_depth_format = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(4, 2, 0) {
-            m_anti_aliasing = Some(r.read_i32()?);
-            m_depth_format = Some(r.read_i32()?);
+            m_anti_aliasing = Some(rdr.read_i32()?);
+            m_depth_format = Some(rdr.read_i32()?);
         } else {
-            m_depth_format = Some(r.read_i32()?);
+            m_depth_format = Some(rdr.read_i32()?);
         }
-            m_color_format = Some(r.read_i32()?);
+            m_color_format = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(4, 0, 0) {
         } else if *ver >= crate::UnityVersion::new(3, 4, 1) {
-            m_is_cubemap = Some(r.read_bool()?);
+            m_is_cubemap = Some(rdr.read_bool()?);
         } else {
-            m_is_power_of_two = Some(r.read_bool()?);
-            m_is_cubemap = Some(r.read_bool()?);
+            m_is_power_of_two = Some(rdr.read_bool()?);
+            m_is_cubemap = Some(rdr.read_bool()?);
         }
-            m_mip_map = Some(RenderTextureMMipMapVariant::parse(r, ver)?);
+            m_mip_map = Some(RenderTextureMMipMapVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
-            m_generate_mips = Some(r.read_bool()?);
-            m_srgb = Some(RenderTextureMSrgbVariant::parse(r, ver)?);
-            m_use_dynamic_scale = Some(r.read_bool()?);
-            m_use_dynamic_scale_explicit = Some(r.read_bool()?);
-            m_bind_ms = Some(RenderTextureMBindMsVariant::parse(r, ver)?);
-            m_enable_compatible_format = Some(RenderTextureMEnableCompatibleFormatVariant::parse(r, ver)?);
-            m_enable_random_write = Some(r.read_bool()?);
-            r.align(4)?;
+            m_generate_mips = Some(rdr.read_bool()?);
+            m_srgb = Some(RenderTextureMSrgbVariant::parse(rdr, ver)?);
+            m_use_dynamic_scale = Some(rdr.read_bool()?);
+            m_use_dynamic_scale_explicit = Some(rdr.read_bool()?);
+            m_bind_ms = Some(RenderTextureMBindMsVariant::parse(rdr, ver)?);
+            m_enable_compatible_format = Some(RenderTextureMEnableCompatibleFormatVariant::parse(rdr, ver)?);
+            m_enable_random_write = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2023, 1, 5) {
-            m_generate_mips = Some(r.read_bool()?);
-            m_srgb = Some(RenderTextureMSrgbVariant::parse(r, ver)?);
-            m_use_dynamic_scale = Some(r.read_bool()?);
-            m_bind_ms = Some(RenderTextureMBindMsVariant::parse(r, ver)?);
-            m_enable_compatible_format = Some(RenderTextureMEnableCompatibleFormatVariant::parse(r, ver)?);
-            m_enable_random_write = Some(r.read_bool()?);
-            r.align(4)?;
+            m_generate_mips = Some(rdr.read_bool()?);
+            m_srgb = Some(RenderTextureMSrgbVariant::parse(rdr, ver)?);
+            m_use_dynamic_scale = Some(rdr.read_bool()?);
+            m_bind_ms = Some(RenderTextureMBindMsVariant::parse(rdr, ver)?);
+            m_enable_compatible_format = Some(RenderTextureMEnableCompatibleFormatVariant::parse(rdr, ver)?);
+            m_enable_random_write = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            m_generate_mips = Some(r.read_bool()?);
-            m_srgb = Some(RenderTextureMSrgbVariant::parse(r, ver)?);
-            m_use_dynamic_scale = Some(r.read_bool()?);
-            m_bind_ms = Some(RenderTextureMBindMsVariant::parse(r, ver)?);
-            m_enable_compatible_format = Some(RenderTextureMEnableCompatibleFormatVariant::parse(r, ver)?);
+            m_generate_mips = Some(rdr.read_bool()?);
+            m_srgb = Some(RenderTextureMSrgbVariant::parse(rdr, ver)?);
+            m_use_dynamic_scale = Some(rdr.read_bool()?);
+            m_bind_ms = Some(RenderTextureMBindMsVariant::parse(rdr, ver)?);
+            m_enable_compatible_format = Some(RenderTextureMEnableCompatibleFormatVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2022, 3, 6) {
-            m_generate_mips = Some(r.read_bool()?);
-            m_srgb = Some(RenderTextureMSrgbVariant::parse(r, ver)?);
-            m_use_dynamic_scale = Some(r.read_bool()?);
-            m_bind_ms = Some(RenderTextureMBindMsVariant::parse(r, ver)?);
-            m_enable_compatible_format = Some(RenderTextureMEnableCompatibleFormatVariant::parse(r, ver)?);
-            m_enable_random_write = Some(r.read_bool()?);
-            r.align(4)?;
+            m_generate_mips = Some(rdr.read_bool()?);
+            m_srgb = Some(RenderTextureMSrgbVariant::parse(rdr, ver)?);
+            m_use_dynamic_scale = Some(rdr.read_bool()?);
+            m_bind_ms = Some(RenderTextureMBindMsVariant::parse(rdr, ver)?);
+            m_enable_compatible_format = Some(RenderTextureMEnableCompatibleFormatVariant::parse(rdr, ver)?);
+            m_enable_random_write = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
-            m_generate_mips = Some(r.read_bool()?);
-            m_srgb = Some(RenderTextureMSrgbVariant::parse(r, ver)?);
-            m_use_dynamic_scale = Some(r.read_bool()?);
-            m_bind_ms = Some(RenderTextureMBindMsVariant::parse(r, ver)?);
-            m_enable_compatible_format = Some(RenderTextureMEnableCompatibleFormatVariant::parse(r, ver)?);
+            m_generate_mips = Some(rdr.read_bool()?);
+            m_srgb = Some(RenderTextureMSrgbVariant::parse(rdr, ver)?);
+            m_use_dynamic_scale = Some(rdr.read_bool()?);
+            m_bind_ms = Some(RenderTextureMBindMsVariant::parse(rdr, ver)?);
+            m_enable_compatible_format = Some(RenderTextureMEnableCompatibleFormatVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2021, 3, 29) {
-            m_generate_mips = Some(r.read_bool()?);
-            m_srgb = Some(RenderTextureMSrgbVariant::parse(r, ver)?);
-            m_use_dynamic_scale = Some(r.read_bool()?);
-            m_bind_ms = Some(RenderTextureMBindMsVariant::parse(r, ver)?);
-            m_enable_compatible_format = Some(RenderTextureMEnableCompatibleFormatVariant::parse(r, ver)?);
-            m_enable_random_write = Some(r.read_bool()?);
-            r.align(4)?;
+            m_generate_mips = Some(rdr.read_bool()?);
+            m_srgb = Some(RenderTextureMSrgbVariant::parse(rdr, ver)?);
+            m_use_dynamic_scale = Some(rdr.read_bool()?);
+            m_bind_ms = Some(RenderTextureMBindMsVariant::parse(rdr, ver)?);
+            m_enable_compatible_format = Some(RenderTextureMEnableCompatibleFormatVariant::parse(rdr, ver)?);
+            m_enable_random_write = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_generate_mips = Some(r.read_bool()?);
-            m_srgb = Some(RenderTextureMSrgbVariant::parse(r, ver)?);
-            m_use_dynamic_scale = Some(r.read_bool()?);
-            m_bind_ms = Some(RenderTextureMBindMsVariant::parse(r, ver)?);
-            m_enable_compatible_format = Some(RenderTextureMEnableCompatibleFormatVariant::parse(r, ver)?);
+            m_generate_mips = Some(rdr.read_bool()?);
+            m_srgb = Some(RenderTextureMSrgbVariant::parse(rdr, ver)?);
+            m_use_dynamic_scale = Some(rdr.read_bool()?);
+            m_bind_ms = Some(RenderTextureMBindMsVariant::parse(rdr, ver)?);
+            m_enable_compatible_format = Some(RenderTextureMEnableCompatibleFormatVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            m_generate_mips = Some(r.read_bool()?);
-            m_srgb = Some(RenderTextureMSrgbVariant::parse(r, ver)?);
-            m_use_dynamic_scale = Some(r.read_bool()?);
-            m_bind_ms = Some(RenderTextureMBindMsVariant::parse(r, ver)?);
+            m_generate_mips = Some(rdr.read_bool()?);
+            m_srgb = Some(RenderTextureMSrgbVariant::parse(rdr, ver)?);
+            m_use_dynamic_scale = Some(rdr.read_bool()?);
+            m_bind_ms = Some(RenderTextureMBindMsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            m_generate_mips = Some(r.read_bool()?);
-            m_srgb = Some(RenderTextureMSrgbVariant::parse(r, ver)?);
+            m_generate_mips = Some(rdr.read_bool()?);
+            m_srgb = Some(RenderTextureMSrgbVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            m_srgb = Some(RenderTextureMSrgbVariant::parse(r, ver)?);
+            m_srgb = Some(RenderTextureMSrgbVariant::parse(rdr, ver)?);
         } else {
         }
-            m_texture_settings = Some(GlTextureSettings::parse(r, ver)?);
+            m_texture_settings = Some(GlTextureSettings::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            m_dimension = Some(r.read_i32()?);
-            m_volume_depth = Some(r.read_i32()?);
-            m_shadow_sampling_mode = Some(r.read_i32()?);
+            m_dimension = Some(rdr.read_i32()?);
+            m_volume_depth = Some(rdr.read_i32()?);
+            m_shadow_sampling_mode = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            m_dimension = Some(r.read_i32()?);
-            m_volume_depth = Some(r.read_i32()?);
+            m_dimension = Some(rdr.read_i32()?);
+            m_volume_depth = Some(rdr.read_i32()?);
         } else {
         }
 

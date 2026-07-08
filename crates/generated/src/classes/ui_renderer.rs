@@ -10,12 +10,12 @@ pub struct UiRenderer {
 
 impl crate::Parse for UiRenderer {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
+        let m_game_object = crate::PPtr::parse(rdr, ver)?;
         let m_cull_transparent_mesh = if *ver >= crate::UnityVersion::new(2018, 2, 0) {
-            Some(r.read_bool()?)
+            Some(rdr.read_bool()?)
         } else {
             None
         };

@@ -8,12 +8,12 @@ pub struct ConfigSetting {
 
 impl crate::Parse for ConfigSetting {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let value = r.read_aligned_string()?;
-        r.align(4)?;
-        let flags = r.read_u32()?;
+        let value = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let flags = rdr.read_u32()?;
 
         Ok(ConfigSetting {
             value,

@@ -10,13 +10,13 @@ pub struct TextureParameters {
 
 impl crate::Parse for TextureParameters {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let width = r.read_i32()?;
-        let height = r.read_i32()?;
-        let mip_levels = r.read_i32()?;
-        let texture_format = r.read_i32()?;
+        let width = rdr.read_i32()?;
+        let height = rdr.read_i32()?;
+        let mip_levels = rdr.read_i32()?;
+        let texture_format = rdr.read_i32()?;
 
         Ok(TextureParameters {
             width,

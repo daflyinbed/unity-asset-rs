@@ -28,37 +28,37 @@ pub struct ParticleSystemForceFieldParameters {
 
 impl crate::Parse for ParticleSystemForceFieldParameters {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_shape = r.read_i32()?;
-        let m_start_range = r.read_f32()?;
-        let m_end_range = r.read_f32()?;
-        let m_length = r.read_f32()?;
-        let m_gravity_focus = r.read_f32()?;
-        let m_rotation_randomness = Vector2f::parse(r, ver)?;
-        let m_direction_curve_x = MinMaxCurve::parse(r, ver)?;
-        r.align(4)?;
-        let m_direction_curve_y = MinMaxCurve::parse(r, ver)?;
-        r.align(4)?;
-        let m_direction_curve_z = MinMaxCurve::parse(r, ver)?;
-        r.align(4)?;
-        let m_gravity_curve = MinMaxCurve::parse(r, ver)?;
-        r.align(4)?;
-        let m_rotation_speed_curve = MinMaxCurve::parse(r, ver)?;
-        r.align(4)?;
-        let m_rotation_attraction_curve = MinMaxCurve::parse(r, ver)?;
-        r.align(4)?;
-        let m_drag_curve = MinMaxCurve::parse(r, ver)?;
-        r.align(4)?;
-        let m_vector_field = crate::PPtr::parse(r, ver)?;
-        let m_vector_field_speed_curve = MinMaxCurve::parse(r, ver)?;
-        r.align(4)?;
-        let m_vector_field_attraction_curve = MinMaxCurve::parse(r, ver)?;
-        r.align(4)?;
-        let m_multiply_drag_by_particle_size = r.read_bool()?;
-        let m_multiply_drag_by_particle_velocity = r.read_bool()?;
-        r.align(4)?;
+        let m_shape = rdr.read_i32()?;
+        let m_start_range = rdr.read_f32()?;
+        let m_end_range = rdr.read_f32()?;
+        let m_length = rdr.read_f32()?;
+        let m_gravity_focus = rdr.read_f32()?;
+        let m_rotation_randomness = Vector2f::parse(rdr, ver)?;
+        let m_direction_curve_x = MinMaxCurve::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let m_direction_curve_y = MinMaxCurve::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let m_direction_curve_z = MinMaxCurve::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let m_gravity_curve = MinMaxCurve::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let m_rotation_speed_curve = MinMaxCurve::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let m_rotation_attraction_curve = MinMaxCurve::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let m_drag_curve = MinMaxCurve::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let m_vector_field = crate::PPtr::parse(rdr, ver)?;
+        let m_vector_field_speed_curve = MinMaxCurve::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let m_vector_field_attraction_curve = MinMaxCurve::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let m_multiply_drag_by_particle_size = rdr.read_bool()?;
+        let m_multiply_drag_by_particle_velocity = rdr.read_bool()?;
+        rdr.align(4)?;
 
         Ok(ParticleSystemForceFieldParameters {
             m_shape,

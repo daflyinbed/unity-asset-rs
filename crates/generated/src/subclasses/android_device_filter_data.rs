@@ -13,23 +13,23 @@ pub struct AndroidDeviceFilterData {
 
 impl crate::Parse for AndroidDeviceFilterData {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let vendor_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let device_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let brand_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let product_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let android_os_version_string = r.read_aligned_string()?;
-        r.align(4)?;
-        let vulkan_api_version_string = r.read_aligned_string()?;
-        r.align(4)?;
-        let driver_version_string = r.read_aligned_string()?;
-        r.align(4)?;
+        let vendor_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let device_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let brand_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let product_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let android_os_version_string = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let vulkan_api_version_string = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let driver_version_string = rdr.read_aligned_string()?;
+        rdr.align(4)?;
 
         Ok(AndroidDeviceFilterData {
             vendor_name,

@@ -8,11 +8,11 @@ pub struct RayTracingShaderBuiltinSampler {
 
 impl crate::Parse for RayTracingShaderBuiltinSampler {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let sampler = r.read_u32()?;
-        let bind_point = r.read_i32()?;
+        let sampler = rdr.read_u32()?;
+        let bind_point = rdr.read_i32()?;
 
         Ok(RayTracingShaderBuiltinSampler {
             sampler,

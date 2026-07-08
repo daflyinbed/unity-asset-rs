@@ -19,19 +19,19 @@ pub struct GuiTexture {
 
 impl crate::Parse for GuiTexture {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_enabled = r.read_u8()?;
-        r.align(4)?;
-        let m_texture = crate::PPtr::parse(r, ver)?;
-        let m_color = ColorRgba::parse(r, ver)?;
-        let m_pixel_inset = Rectf::parse(r, ver)?;
-        let m_left_border = r.read_i32()?;
-        let m_right_border = r.read_i32()?;
-        let m_top_border = r.read_i32()?;
-        let m_bottom_border = r.read_i32()?;
+        let m_game_object = crate::PPtr::parse(rdr, ver)?;
+        let m_enabled = rdr.read_u8()?;
+        rdr.align(4)?;
+        let m_texture = crate::PPtr::parse(rdr, ver)?;
+        let m_color = ColorRgba::parse(rdr, ver)?;
+        let m_pixel_inset = Rectf::parse(rdr, ver)?;
+        let m_left_border = rdr.read_i32()?;
+        let m_right_border = rdr.read_i32()?;
+        let m_top_border = rdr.read_i32()?;
+        let m_bottom_border = rdr.read_i32()?;
 
         Ok(GuiTexture {
             m_game_object,

@@ -10,11 +10,11 @@ pub struct AnimationClipOverride {
 
 impl crate::Parse for AnimationClipOverride {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_original_clip = crate::PPtr::parse(r, ver)?;
-        let m_override_clip = crate::PPtr::parse(r, ver)?;
+        let m_original_clip = crate::PPtr::parse(rdr, ver)?;
+        let m_override_clip = crate::PPtr::parse(rdr, ver)?;
 
         Ok(AnimationClipOverride {
             m_original_clip,

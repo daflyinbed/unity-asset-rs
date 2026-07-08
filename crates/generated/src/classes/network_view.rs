@@ -14,15 +14,15 @@ pub struct NetworkView {
 
 impl crate::Parse for NetworkView {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_enabled = r.read_u8()?;
-        r.align(4)?;
-        let m_state_synchronization = r.read_i32()?;
-        let m_observed = crate::PPtr::parse(r, ver)?;
-        let m_view_id = NetworkViewId::parse(r, ver)?;
+        let m_game_object = crate::PPtr::parse(rdr, ver)?;
+        let m_enabled = rdr.read_u8()?;
+        rdr.align(4)?;
+        let m_state_synchronization = rdr.read_i32()?;
+        let m_observed = crate::PPtr::parse(rdr, ver)?;
+        let m_view_id = NetworkViewId::parse(rdr, ver)?;
 
         Ok(NetworkView {
             m_game_object,

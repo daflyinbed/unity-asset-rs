@@ -10,11 +10,11 @@ pub struct DirectorGenericBinding {
 
 impl crate::Parse for DirectorGenericBinding {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let key = crate::PPtr::parse(r, ver)?;
-        let value = crate::PPtr::parse(r, ver)?;
+        let key = crate::PPtr::parse(rdr, ver)?;
+        let value = crate::PPtr::parse(rdr, ver)?;
 
         Ok(DirectorGenericBinding {
             key,

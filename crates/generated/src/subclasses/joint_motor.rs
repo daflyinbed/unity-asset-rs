@@ -9,12 +9,12 @@ pub struct JointMotor {
 
 impl crate::Parse for JointMotor {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let target_velocity = r.read_f32()?;
-        let force = r.read_f32()?;
-        let free_spin = r.read_i32()?;
+        let target_velocity = rdr.read_f32()?;
+        let force = rdr.read_f32()?;
+        let free_spin = rdr.read_i32()?;
 
         Ok(JointMotor {
             target_velocity,

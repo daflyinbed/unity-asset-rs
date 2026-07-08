@@ -8,11 +8,11 @@ pub struct ComputeBufferCounter {
 
 impl crate::Parse for ComputeBufferCounter {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let bindpoint = r.read_i32()?;
-        let offset = r.read_i32()?;
+        let bindpoint = rdr.read_i32()?;
+        let offset = rdr.read_i32()?;
 
         Ok(ComputeBufferCounter {
             bindpoint,

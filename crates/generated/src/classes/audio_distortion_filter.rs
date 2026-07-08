@@ -11,13 +11,13 @@ pub struct AudioDistortionFilter {
 
 impl crate::Parse for AudioDistortionFilter {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_enabled = r.read_u8()?;
-        r.align(4)?;
-        let m_distortion_level = r.read_f32()?;
+        let m_game_object = crate::PPtr::parse(rdr, ver)?;
+        let m_enabled = rdr.read_u8()?;
+        rdr.align(4)?;
+        let m_distortion_level = rdr.read_f32()?;
 
         Ok(AudioDistortionFilter {
             m_game_object,

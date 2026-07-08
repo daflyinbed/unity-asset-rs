@@ -9,14 +9,14 @@ pub struct SerializedPackageRequirement {
 
 impl crate::Parse for SerializedPackageRequirement {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let name = r.read_aligned_string()?;
-        r.align(4)?;
-        let version = r.read_aligned_string()?;
-        r.align(4)?;
-        let status = r.read_i8()?;
+        let name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let version = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let status = rdr.read_i8()?;
 
         Ok(SerializedPackageRequirement {
             name,

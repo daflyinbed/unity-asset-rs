@@ -9,15 +9,15 @@ pub struct SourceAssetIdentifier {
 
 impl crate::Parse for SourceAssetIdentifier {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let r#type = r.read_aligned_string()?;
-        r.align(4)?;
-        let assembly = r.read_aligned_string()?;
-        r.align(4)?;
-        let name = r.read_aligned_string()?;
-        r.align(4)?;
+        let r#type = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let assembly = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
 
         Ok(SourceAssetIdentifier {
             r#type,

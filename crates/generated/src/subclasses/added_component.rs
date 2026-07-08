@@ -11,12 +11,12 @@ pub struct AddedComponent {
 
 impl crate::Parse for AddedComponent {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let target_corresponding_source_object = crate::PPtr::parse(r, ver)?;
-        let insert_index = r.read_i32()?;
-        let added_object = crate::PPtr::parse(r, ver)?;
+        let target_corresponding_source_object = crate::PPtr::parse(rdr, ver)?;
+        let insert_index = rdr.read_i32()?;
+        let added_object = crate::PPtr::parse(rdr, ver)?;
 
         Ok(AddedComponent {
             target_corresponding_source_object,

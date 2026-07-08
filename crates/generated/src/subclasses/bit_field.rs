@@ -7,10 +7,10 @@ pub struct BitField {
 
 impl crate::Parse for BitField {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_bits = r.read_u32()?;
+        let m_bits = rdr.read_u32()?;
 
         Ok(BitField {
             m_bits,

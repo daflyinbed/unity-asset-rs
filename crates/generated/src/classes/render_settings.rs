@@ -14,14 +14,14 @@ pub enum RenderSettingsMCustomReflectionVariant {
 
 impl crate::Parse for RenderSettingsMCustomReflectionVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            let v = crate::PPtr::parse(r, ver)?;
+            let v = crate::PPtr::parse(rdr, ver)?;
             Ok(Self::V2021_2(v))
         } else {
-            let v = crate::PPtr::parse(r, ver)?;
+            let v = crate::PPtr::parse(rdr, ver)?;
             Ok(Self::Default(v))
         }
     }
@@ -62,7 +62,7 @@ pub struct RenderSettings {
 
 impl crate::Parse for RenderSettings {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_fog = None;
@@ -95,80 +95,80 @@ impl crate::Parse for RenderSettings {
         let mut m_sun = None;
         let mut m_indirect_specular_color = None;
         let mut m_use_radiance_ambient_probe = None;
-            m_fog = Some(r.read_bool()?);
-            r.align(4)?;
-            m_fog_color = Some(ColorRgba::parse(r, ver)?);
-            m_fog_mode = Some(r.read_i32()?);
-            m_fog_density = Some(r.read_f32()?);
-            m_linear_fog_start = Some(r.read_f32()?);
-            m_linear_fog_end = Some(r.read_f32()?);
+            m_fog = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_fog_color = Some(ColorRgba::parse(rdr, ver)?);
+            m_fog_mode = Some(rdr.read_i32()?);
+            m_fog_density = Some(rdr.read_f32()?);
+            m_linear_fog_start = Some(rdr.read_f32()?);
+            m_linear_fog_end = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            m_ambient_sky_color = Some(ColorRgba::parse(r, ver)?);
-            m_ambient_equator_color = Some(ColorRgba::parse(r, ver)?);
-            m_ambient_ground_color = Some(ColorRgba::parse(r, ver)?);
-            m_ambient_intensity = Some(r.read_f32()?);
-            m_ambient_mode = Some(r.read_i32()?);
-            r.align(4)?;
-            m_subtractive_shadow_color = Some(ColorRgba::parse(r, ver)?);
+            m_ambient_sky_color = Some(ColorRgba::parse(rdr, ver)?);
+            m_ambient_equator_color = Some(ColorRgba::parse(rdr, ver)?);
+            m_ambient_ground_color = Some(ColorRgba::parse(rdr, ver)?);
+            m_ambient_intensity = Some(rdr.read_f32()?);
+            m_ambient_mode = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_subtractive_shadow_color = Some(ColorRgba::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_ambient_sky_color = Some(ColorRgba::parse(r, ver)?);
-            m_ambient_equator_color = Some(ColorRgba::parse(r, ver)?);
-            m_ambient_ground_color = Some(ColorRgba::parse(r, ver)?);
-            m_ambient_intensity = Some(r.read_f32()?);
-            m_ambient_mode = Some(r.read_i32()?);
-            r.align(4)?;
+            m_ambient_sky_color = Some(ColorRgba::parse(rdr, ver)?);
+            m_ambient_equator_color = Some(ColorRgba::parse(rdr, ver)?);
+            m_ambient_ground_color = Some(ColorRgba::parse(rdr, ver)?);
+            m_ambient_intensity = Some(rdr.read_f32()?);
+            m_ambient_mode = Some(rdr.read_i32()?);
+            rdr.align(4)?;
         } else {
-            m_ambient_light = Some(ColorRgba::parse(r, ver)?);
+            m_ambient_light = Some(ColorRgba::parse(rdr, ver)?);
         }
-            m_skybox_material = Some(crate::PPtr::parse(r, ver)?);
-            m_halo_strength = Some(r.read_f32()?);
-            m_flare_strength = Some(r.read_f32()?);
+            m_skybox_material = Some(crate::PPtr::parse(rdr, ver)?);
+            m_halo_strength = Some(rdr.read_f32()?);
+            m_flare_strength = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            m_flare_fade_speed = Some(r.read_f32()?);
+            m_flare_fade_speed = Some(rdr.read_f32()?);
         } else {
         }
-            m_halo_texture = Some(crate::PPtr::parse(r, ver)?);
-            m_spot_cookie = Some(crate::PPtr::parse(r, ver)?);
+            m_halo_texture = Some(crate::PPtr::parse(rdr, ver)?);
+            m_spot_cookie = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            m_default_reflection_mode = Some(r.read_i32()?);
-            m_default_reflection_resolution = Some(r.read_i32()?);
-            m_reflection_bounces = Some(r.read_i32()?);
-            m_reflection_intensity = Some(r.read_f32()?);
-            m_custom_reflection = Some(RenderSettingsMCustomReflectionVariant::parse(r, ver)?);
-            m_ambient_probe = Some(SphericalHarmonicsL2::parse(r, ver)?);
-            m_generated_skybox_reflection = Some(crate::PPtr::parse(r, ver)?);
-            m_sun = Some(crate::PPtr::parse(r, ver)?);
-            m_indirect_specular_color = Some(ColorRgba::parse(r, ver)?);
-            m_use_radiance_ambient_probe = Some(r.read_bool()?);
+            m_default_reflection_mode = Some(rdr.read_i32()?);
+            m_default_reflection_resolution = Some(rdr.read_i32()?);
+            m_reflection_bounces = Some(rdr.read_i32()?);
+            m_reflection_intensity = Some(rdr.read_f32()?);
+            m_custom_reflection = Some(RenderSettingsMCustomReflectionVariant::parse(rdr, ver)?);
+            m_ambient_probe = Some(SphericalHarmonicsL2::parse(rdr, ver)?);
+            m_generated_skybox_reflection = Some(crate::PPtr::parse(rdr, ver)?);
+            m_sun = Some(crate::PPtr::parse(rdr, ver)?);
+            m_indirect_specular_color = Some(ColorRgba::parse(rdr, ver)?);
+            m_use_radiance_ambient_probe = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            m_default_reflection_mode = Some(r.read_i32()?);
-            m_default_reflection_resolution = Some(r.read_i32()?);
-            m_reflection_bounces = Some(r.read_i32()?);
-            m_reflection_intensity = Some(r.read_f32()?);
-            m_custom_reflection = Some(RenderSettingsMCustomReflectionVariant::parse(r, ver)?);
-            m_ambient_probe = Some(SphericalHarmonicsL2::parse(r, ver)?);
-            m_generated_skybox_reflection = Some(crate::PPtr::parse(r, ver)?);
-            m_sun = Some(crate::PPtr::parse(r, ver)?);
-            m_indirect_specular_color = Some(ColorRgba::parse(r, ver)?);
+            m_default_reflection_mode = Some(rdr.read_i32()?);
+            m_default_reflection_resolution = Some(rdr.read_i32()?);
+            m_reflection_bounces = Some(rdr.read_i32()?);
+            m_reflection_intensity = Some(rdr.read_f32()?);
+            m_custom_reflection = Some(RenderSettingsMCustomReflectionVariant::parse(rdr, ver)?);
+            m_ambient_probe = Some(SphericalHarmonicsL2::parse(rdr, ver)?);
+            m_generated_skybox_reflection = Some(crate::PPtr::parse(rdr, ver)?);
+            m_sun = Some(crate::PPtr::parse(rdr, ver)?);
+            m_indirect_specular_color = Some(ColorRgba::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            m_default_reflection_mode = Some(r.read_i32()?);
-            m_default_reflection_resolution = Some(r.read_i32()?);
-            m_reflection_bounces = Some(r.read_i32()?);
-            m_reflection_intensity = Some(r.read_f32()?);
-            m_custom_reflection = Some(RenderSettingsMCustomReflectionVariant::parse(r, ver)?);
-            m_ambient_probe = Some(SphericalHarmonicsL2::parse(r, ver)?);
-            m_generated_skybox_reflection = Some(crate::PPtr::parse(r, ver)?);
-            m_sun = Some(crate::PPtr::parse(r, ver)?);
+            m_default_reflection_mode = Some(rdr.read_i32()?);
+            m_default_reflection_resolution = Some(rdr.read_i32()?);
+            m_reflection_bounces = Some(rdr.read_i32()?);
+            m_reflection_intensity = Some(rdr.read_f32()?);
+            m_custom_reflection = Some(RenderSettingsMCustomReflectionVariant::parse(rdr, ver)?);
+            m_ambient_probe = Some(SphericalHarmonicsL2::parse(rdr, ver)?);
+            m_generated_skybox_reflection = Some(crate::PPtr::parse(rdr, ver)?);
+            m_sun = Some(crate::PPtr::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_default_reflection_mode = Some(r.read_i32()?);
-            m_default_reflection_resolution = Some(r.read_i32()?);
-            m_reflection_bounces = Some(r.read_i32()?);
-            m_reflection_intensity = Some(r.read_f32()?);
-            m_custom_reflection = Some(RenderSettingsMCustomReflectionVariant::parse(r, ver)?);
-            m_ambient_probe = Some(SphericalHarmonicsL2::parse(r, ver)?);
-            m_ambient_probe_in_gamma = Some(SphericalHarmonicsL2::parse(r, ver)?);
-            m_generated_skybox_reflection = Some(crate::PPtr::parse(r, ver)?);
-            m_sun = Some(crate::PPtr::parse(r, ver)?);
+            m_default_reflection_mode = Some(rdr.read_i32()?);
+            m_default_reflection_resolution = Some(rdr.read_i32()?);
+            m_reflection_bounces = Some(rdr.read_i32()?);
+            m_reflection_intensity = Some(rdr.read_f32()?);
+            m_custom_reflection = Some(RenderSettingsMCustomReflectionVariant::parse(rdr, ver)?);
+            m_ambient_probe = Some(SphericalHarmonicsL2::parse(rdr, ver)?);
+            m_ambient_probe_in_gamma = Some(SphericalHarmonicsL2::parse(rdr, ver)?);
+            m_generated_skybox_reflection = Some(crate::PPtr::parse(rdr, ver)?);
+            m_sun = Some(crate::PPtr::parse(rdr, ver)?);
         } else {
         }
 

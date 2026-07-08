@@ -9,12 +9,12 @@ pub struct BuildTargetSelection {
 
 impl crate::Parse for BuildTargetSelection {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let platform = r.read_i32()?;
-        let sub_target = r.read_i32()?;
-        let extended_platform = r.read_i32()?;
+        let platform = rdr.read_i32()?;
+        let sub_target = rdr.read_i32()?;
+        let extended_platform = rdr.read_i32()?;
 
         Ok(BuildTargetSelection {
             platform,

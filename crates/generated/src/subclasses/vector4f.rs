@@ -10,13 +10,13 @@ pub struct Vector4f {
 
 impl crate::Parse for Vector4f {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let x = r.read_f32()?;
-        let y = r.read_f32()?;
-        let z = r.read_f32()?;
-        let w = r.read_f32()?;
+        let x = rdr.read_f32()?;
+        let y = rdr.read_f32()?;
+        let z = rdr.read_f32()?;
+        let w = rdr.read_f32()?;
 
         Ok(Vector4f {
             x,

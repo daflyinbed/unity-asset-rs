@@ -24,35 +24,35 @@ pub struct CustomDataModule {
 
 impl crate::Parse for CustomDataModule {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let enabled = r.read_bool()?;
-        r.align(4)?;
-        let mode0 = r.read_i32()?;
-        let vector_component_count0 = r.read_i32()?;
-        let color0 = MinMaxGradient::parse(r, ver)?;
-        r.align(4)?;
-        let vector0_0 = MinMaxCurve::parse(r, ver)?;
-        r.align(4)?;
-        let vector0_1 = MinMaxCurve::parse(r, ver)?;
-        r.align(4)?;
-        let vector0_2 = MinMaxCurve::parse(r, ver)?;
-        r.align(4)?;
-        let vector0_3 = MinMaxCurve::parse(r, ver)?;
-        r.align(4)?;
-        let mode1 = r.read_i32()?;
-        let vector_component_count1 = r.read_i32()?;
-        let color1 = MinMaxGradient::parse(r, ver)?;
-        r.align(4)?;
-        let vector1_0 = MinMaxCurve::parse(r, ver)?;
-        r.align(4)?;
-        let vector1_1 = MinMaxCurve::parse(r, ver)?;
-        r.align(4)?;
-        let vector1_2 = MinMaxCurve::parse(r, ver)?;
-        r.align(4)?;
-        let vector1_3 = MinMaxCurve::parse(r, ver)?;
-        r.align(4)?;
+        let enabled = rdr.read_bool()?;
+        rdr.align(4)?;
+        let mode0 = rdr.read_i32()?;
+        let vector_component_count0 = rdr.read_i32()?;
+        let color0 = MinMaxGradient::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let vector0_0 = MinMaxCurve::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let vector0_1 = MinMaxCurve::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let vector0_2 = MinMaxCurve::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let vector0_3 = MinMaxCurve::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let mode1 = rdr.read_i32()?;
+        let vector_component_count1 = rdr.read_i32()?;
+        let color1 = MinMaxGradient::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let vector1_0 = MinMaxCurve::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let vector1_1 = MinMaxCurve::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let vector1_2 = MinMaxCurve::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let vector1_3 = MinMaxCurve::parse(rdr, ver)?;
+        rdr.align(4)?;
 
         Ok(CustomDataModule {
             enabled,

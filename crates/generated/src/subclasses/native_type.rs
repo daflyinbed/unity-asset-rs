@@ -11,13 +11,13 @@ pub struct NativeType {
 
 impl crate::Parse for NativeType {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let a = r.read_i32()?;
-        let b = r.read_f32()?;
-        let embedded = EmbeddedNativeType::parse(r, ver)?;
-        r.align(4)?;
+        let a = rdr.read_i32()?;
+        let b = rdr.read_f32()?;
+        let embedded = EmbeddedNativeType::parse(rdr, ver)?;
+        rdr.align(4)?;
 
         Ok(NativeType {
             a,

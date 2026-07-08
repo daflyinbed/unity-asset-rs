@@ -16,15 +16,15 @@ pub enum CameraMProjectionMatrixModeVariant {
 
 impl crate::Parse for CameraMProjectionMatrixModeVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            let v = r.read_i32()?;
+            let v = rdr.read_i32()?;
             Ok(Self::V2019_1(v))
         } else {
-            let v = r.read_i32()?;
-            r.align(4)?;
+            let v = rdr.read_i32()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -39,15 +39,15 @@ pub enum CameraMGateFitModeVariant {
 
 impl crate::Parse for CameraMGateFitModeVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            let v = r.read_i32()?;
-            r.align(4)?;
+            let v = rdr.read_i32()?;
+            rdr.align(4)?;
             Ok(Self::V2019_1(v))
         } else {
-            let v = r.read_i32()?;
+            let v = rdr.read_i32()?;
             Ok(Self::Default(v))
         }
     }
@@ -62,14 +62,14 @@ pub enum CameraMTargetDisplayVariant {
 
 impl crate::Parse for CameraMTargetDisplayVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            let v = r.read_i32()?;
+            let v = rdr.read_i32()?;
             Ok(Self::V5_3(v))
         } else {
-            let v = r.read_u32()?;
+            let v = rdr.read_u32()?;
             Ok(Self::Default(v))
         }
     }
@@ -84,15 +84,15 @@ pub enum CameraMOcclusionCullingVariant {
 
 impl crate::Parse for CameraMOcclusionCullingVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V4_5(v))
         } else {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::Default(v))
         }
     }
@@ -140,7 +140,7 @@ pub struct Camera {
 
 impl crate::Parse for Camera {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_game_object = None;
@@ -180,110 +180,110 @@ impl crate::Parse for Camera {
         let mut m_force_into_rt = None;
         let mut m_allow_dynamic_resolution = None;
         let mut m_stereo_mirror_mode = None;
-            m_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_enabled = Some(r.read_u8()?);
-            r.align(4)?;
-            m_clear_flags = Some(r.read_u32()?);
-            m_back_ground_color = Some(ColorRgba::parse(r, ver)?);
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_enabled = Some(rdr.read_u8()?);
+            rdr.align(4)?;
+            m_clear_flags = Some(rdr.read_u32()?);
+            m_back_ground_color = Some(ColorRgba::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            m_projection_matrix_mode = Some(CameraMProjectionMatrixModeVariant::parse(r, ver)?);
-            m_gate_fit_mode = Some(CameraMGateFitModeVariant::parse(r, ver)?);
-            m_iso = Some(r.read_i32()?);
-            m_shutter_speed = Some(r.read_f32()?);
-            m_aperture = Some(r.read_f32()?);
-            m_focus_distance = Some(r.read_f32()?);
-            m_focal_length = Some(r.read_f32()?);
-            m_blade_count = Some(r.read_i32()?);
-            m_curvature = Some(Vector2f::parse(r, ver)?);
-            m_barrel_clipping = Some(r.read_f32()?);
-            m_anamorphism = Some(r.read_f32()?);
-            m_sensor_size = Some(Vector2f::parse(r, ver)?);
-            m_lens_shift = Some(Vector2f::parse(r, ver)?);
+            m_projection_matrix_mode = Some(CameraMProjectionMatrixModeVariant::parse(rdr, ver)?);
+            m_gate_fit_mode = Some(CameraMGateFitModeVariant::parse(rdr, ver)?);
+            m_iso = Some(rdr.read_i32()?);
+            m_shutter_speed = Some(rdr.read_f32()?);
+            m_aperture = Some(rdr.read_f32()?);
+            m_focus_distance = Some(rdr.read_f32()?);
+            m_focal_length = Some(rdr.read_f32()?);
+            m_blade_count = Some(rdr.read_i32()?);
+            m_curvature = Some(Vector2f::parse(rdr, ver)?);
+            m_barrel_clipping = Some(rdr.read_f32()?);
+            m_anamorphism = Some(rdr.read_f32()?);
+            m_sensor_size = Some(Vector2f::parse(rdr, ver)?);
+            m_lens_shift = Some(Vector2f::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_projection_matrix_mode = Some(CameraMProjectionMatrixModeVariant::parse(r, ver)?);
-            m_gate_fit_mode = Some(CameraMGateFitModeVariant::parse(r, ver)?);
-            m_sensor_size = Some(Vector2f::parse(r, ver)?);
-            m_lens_shift = Some(Vector2f::parse(r, ver)?);
-            m_focal_length = Some(r.read_f32()?);
+            m_projection_matrix_mode = Some(CameraMProjectionMatrixModeVariant::parse(rdr, ver)?);
+            m_gate_fit_mode = Some(CameraMGateFitModeVariant::parse(rdr, ver)?);
+            m_sensor_size = Some(Vector2f::parse(rdr, ver)?);
+            m_lens_shift = Some(Vector2f::parse(rdr, ver)?);
+            m_focal_length = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            m_projection_matrix_mode = Some(CameraMProjectionMatrixModeVariant::parse(r, ver)?);
-            m_sensor_size = Some(Vector2f::parse(r, ver)?);
-            m_lens_shift = Some(Vector2f::parse(r, ver)?);
-            m_gate_fit_mode = Some(CameraMGateFitModeVariant::parse(r, ver)?);
-            m_focal_length = Some(r.read_f32()?);
+            m_projection_matrix_mode = Some(CameraMProjectionMatrixModeVariant::parse(rdr, ver)?);
+            m_sensor_size = Some(Vector2f::parse(rdr, ver)?);
+            m_lens_shift = Some(Vector2f::parse(rdr, ver)?);
+            m_gate_fit_mode = Some(CameraMGateFitModeVariant::parse(rdr, ver)?);
+            m_focal_length = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(2018, 2, 0) {
-            m_projection_matrix_mode = Some(CameraMProjectionMatrixModeVariant::parse(r, ver)?);
-            m_sensor_size = Some(Vector2f::parse(r, ver)?);
-            m_lens_shift = Some(Vector2f::parse(r, ver)?);
-            m_focal_length = Some(r.read_f32()?);
+            m_projection_matrix_mode = Some(CameraMProjectionMatrixModeVariant::parse(rdr, ver)?);
+            m_sensor_size = Some(Vector2f::parse(rdr, ver)?);
+            m_lens_shift = Some(Vector2f::parse(rdr, ver)?);
+            m_focal_length = Some(rdr.read_f32()?);
         } else {
         }
-            m_normalized_view_port_rect = Some(Rectf::parse(r, ver)?);
-            near_clip_plane = Some(r.read_f32()?);
-            far_clip_plane = Some(r.read_f32()?);
-            field_of_view = Some(r.read_f32()?);
-            orthographic = Some(r.read_bool()?);
-            r.align(4)?;
-            orthographic_size = Some(r.read_f32()?);
-            m_depth = Some(r.read_f32()?);
-            m_culling_mask = Some(BitField::parse(r, ver)?);
-            m_rendering_path = Some(r.read_i32()?);
-            m_target_texture = Some(crate::PPtr::parse(r, ver)?);
+            m_normalized_view_port_rect = Some(Rectf::parse(rdr, ver)?);
+            near_clip_plane = Some(rdr.read_f32()?);
+            far_clip_plane = Some(rdr.read_f32()?);
+            field_of_view = Some(rdr.read_f32()?);
+            orthographic = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            orthographic_size = Some(rdr.read_f32()?);
+            m_depth = Some(rdr.read_f32()?);
+            m_culling_mask = Some(BitField::parse(rdr, ver)?);
+            m_rendering_path = Some(rdr.read_i32()?);
+            m_target_texture = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            m_target_display = Some(CameraMTargetDisplayVariant::parse(r, ver)?);
-            m_target_eye = Some(r.read_i32()?);
-            m_hdr = Some(r.read_bool()?);
-            m_allow_msaa = Some(r.read_bool()?);
-            m_allow_dynamic_resolution = Some(r.read_bool()?);
-            m_force_into_rt = Some(r.read_bool()?);
-            m_occlusion_culling = Some(CameraMOcclusionCullingVariant::parse(r, ver)?);
-            m_stereo_convergence = Some(r.read_f32()?);
-            m_stereo_separation = Some(r.read_f32()?);
+            m_target_display = Some(CameraMTargetDisplayVariant::parse(rdr, ver)?);
+            m_target_eye = Some(rdr.read_i32()?);
+            m_hdr = Some(rdr.read_bool()?);
+            m_allow_msaa = Some(rdr.read_bool()?);
+            m_allow_dynamic_resolution = Some(rdr.read_bool()?);
+            m_force_into_rt = Some(rdr.read_bool()?);
+            m_occlusion_culling = Some(CameraMOcclusionCullingVariant::parse(rdr, ver)?);
+            m_stereo_convergence = Some(rdr.read_f32()?);
+            m_stereo_separation = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            m_target_display = Some(CameraMTargetDisplayVariant::parse(r, ver)?);
-            m_target_eye = Some(r.read_i32()?);
-            m_hdr = Some(r.read_bool()?);
-            m_allow_msaa = Some(r.read_bool()?);
-            m_force_into_rt = Some(r.read_bool()?);
-            m_occlusion_culling = Some(CameraMOcclusionCullingVariant::parse(r, ver)?);
-            m_stereo_convergence = Some(r.read_f32()?);
-            m_stereo_separation = Some(r.read_f32()?);
+            m_target_display = Some(CameraMTargetDisplayVariant::parse(rdr, ver)?);
+            m_target_eye = Some(rdr.read_i32()?);
+            m_hdr = Some(rdr.read_bool()?);
+            m_allow_msaa = Some(rdr.read_bool()?);
+            m_force_into_rt = Some(rdr.read_bool()?);
+            m_occlusion_culling = Some(CameraMOcclusionCullingVariant::parse(rdr, ver)?);
+            m_stereo_convergence = Some(rdr.read_f32()?);
+            m_stereo_separation = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            m_target_display = Some(CameraMTargetDisplayVariant::parse(r, ver)?);
-            m_target_eye = Some(r.read_i32()?);
-            m_hdr = Some(r.read_bool()?);
-            m_allow_msaa = Some(r.read_bool()?);
-            m_force_into_rt = Some(r.read_bool()?);
-            m_occlusion_culling = Some(CameraMOcclusionCullingVariant::parse(r, ver)?);
-            m_stereo_convergence = Some(r.read_f32()?);
-            m_stereo_separation = Some(r.read_f32()?);
-            m_stereo_mirror_mode = Some(r.read_bool()?);
+            m_target_display = Some(CameraMTargetDisplayVariant::parse(rdr, ver)?);
+            m_target_eye = Some(rdr.read_i32()?);
+            m_hdr = Some(rdr.read_bool()?);
+            m_allow_msaa = Some(rdr.read_bool()?);
+            m_force_into_rt = Some(rdr.read_bool()?);
+            m_occlusion_culling = Some(CameraMOcclusionCullingVariant::parse(rdr, ver)?);
+            m_stereo_convergence = Some(rdr.read_f32()?);
+            m_stereo_separation = Some(rdr.read_f32()?);
+            m_stereo_mirror_mode = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(5, 1, 3) {
-            m_target_display = Some(CameraMTargetDisplayVariant::parse(r, ver)?);
-            m_target_eye = Some(r.read_i32()?);
-            m_hdr = Some(r.read_bool()?);
-            m_occlusion_culling = Some(CameraMOcclusionCullingVariant::parse(r, ver)?);
-            m_stereo_convergence = Some(r.read_f32()?);
-            m_stereo_separation = Some(r.read_f32()?);
-            m_stereo_mirror_mode = Some(r.read_bool()?);
+            m_target_display = Some(CameraMTargetDisplayVariant::parse(rdr, ver)?);
+            m_target_eye = Some(rdr.read_i32()?);
+            m_hdr = Some(rdr.read_bool()?);
+            m_occlusion_culling = Some(CameraMOcclusionCullingVariant::parse(rdr, ver)?);
+            m_stereo_convergence = Some(rdr.read_f32()?);
+            m_stereo_separation = Some(rdr.read_f32()?);
+            m_stereo_mirror_mode = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(5, 1, 0) {
-            m_target_display = Some(CameraMTargetDisplayVariant::parse(r, ver)?);
-            m_hdr = Some(r.read_bool()?);
-            m_occlusion_culling = Some(CameraMOcclusionCullingVariant::parse(r, ver)?);
-            m_stereo_convergence = Some(r.read_f32()?);
-            m_stereo_separation = Some(r.read_f32()?);
-            m_stereo_mirror_mode = Some(r.read_bool()?);
+            m_target_display = Some(CameraMTargetDisplayVariant::parse(rdr, ver)?);
+            m_hdr = Some(rdr.read_bool()?);
+            m_occlusion_culling = Some(CameraMOcclusionCullingVariant::parse(rdr, ver)?);
+            m_stereo_convergence = Some(rdr.read_f32()?);
+            m_stereo_separation = Some(rdr.read_f32()?);
+            m_stereo_mirror_mode = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            m_target_display = Some(CameraMTargetDisplayVariant::parse(r, ver)?);
-            m_hdr = Some(r.read_bool()?);
-            m_occlusion_culling = Some(CameraMOcclusionCullingVariant::parse(r, ver)?);
-            m_stereo_convergence = Some(r.read_f32()?);
-            m_stereo_separation = Some(r.read_f32()?);
+            m_target_display = Some(CameraMTargetDisplayVariant::parse(rdr, ver)?);
+            m_hdr = Some(rdr.read_bool()?);
+            m_occlusion_culling = Some(CameraMOcclusionCullingVariant::parse(rdr, ver)?);
+            m_stereo_convergence = Some(rdr.read_f32()?);
+            m_stereo_separation = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            m_hdr = Some(r.read_bool()?);
-            m_occlusion_culling = Some(CameraMOcclusionCullingVariant::parse(r, ver)?);
+            m_hdr = Some(rdr.read_bool()?);
+            m_occlusion_culling = Some(CameraMOcclusionCullingVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            m_hdr = Some(r.read_bool()?);
+            m_hdr = Some(rdr.read_bool()?);
         } else {
         }
 

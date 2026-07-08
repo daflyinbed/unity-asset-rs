@@ -10,15 +10,15 @@ pub struct SerializedPlayerSubProgram {
 
 impl crate::Parse for SerializedPlayerSubProgram {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_blob_index = r.read_u32()?;
-        let m_keyword_indices = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u16() }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_shader_requirements = r.read_i64()?;
-        let m_gpu_program_type = r.read_i8()?;
-        r.align(4)?;
+        let m_blob_index = rdr.read_u32()?;
+        let m_keyword_indices = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u16() }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let m_shader_requirements = rdr.read_i64()?;
+        let m_gpu_program_type = rdr.read_i8()?;
+        rdr.align(4)?;
 
         Ok(SerializedPlayerSubProgram {
             m_blob_index,

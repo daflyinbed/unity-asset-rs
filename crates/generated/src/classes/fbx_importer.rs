@@ -18,16 +18,16 @@ pub enum FbxImporterMFileIdToRecycleNameVariant {
 
 impl crate::Parse for FbxImporterMFileIdToRecycleNameVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i64()?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i64()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V5_0(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i32()?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i32()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -42,15 +42,15 @@ pub enum FbxImporterMImportMaterialsVariant {
 
 impl crate::Parse for FbxImporterMImportMaterialsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V2017_2(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -66,18 +66,18 @@ pub enum FbxImporterMBakeSimulationVariant {
 
 impl crate::Parse for FbxImporterMBakeSimulationVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V4_3(v))
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V4_0(v))
         } else {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::Default(v))
         }
     }
@@ -92,15 +92,15 @@ pub enum FbxImporterMSplitAnimationsVariant {
 
 impl crate::Parse for FbxImporterMSplitAnimationsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V3_5(v))
         } else {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::Default(v))
         }
     }
@@ -115,15 +115,15 @@ pub enum FbxImporterMOptimizeGameObjectsVariant {
 
 impl crate::Parse for FbxImporterMOptimizeGameObjectsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V2021_2(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -138,15 +138,15 @@ pub enum FbxImporterMUseFileUnitsVariant {
 
 impl crate::Parse for FbxImporterMUseFileUnitsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V3_5(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -161,15 +161,15 @@ pub enum FbxImporterMAnimationDoRetargetingWarningsVariant {
 
 impl crate::Parse for FbxImporterMAnimationDoRetargetingWarningsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V2017_2(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -184,15 +184,15 @@ pub enum FbxImporterMLodScreenPercentagesVariant {
 
 impl crate::Parse for FbxImporterMLodScreenPercentagesVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_f32() }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_f32() }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_f32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_f32() }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -207,15 +207,15 @@ pub enum FbxImporterMImportAnimatedCustomPropertiesVariant {
 
 impl crate::Parse for FbxImporterMImportAnimatedCustomPropertiesVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V2018_1(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -230,15 +230,15 @@ pub enum FbxImporterOptimizeMeshForGpuVariant {
 
 impl crate::Parse for FbxImporterOptimizeMeshForGpuVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(4, 1, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V4_1(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -253,15 +253,15 @@ pub enum FbxImporterWeldVerticesVariant {
 
 impl crate::Parse for FbxImporterWeldVerticesVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V2017_3(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -276,15 +276,15 @@ pub enum FbxImporterNormalSmoothAngleVariant {
 
 impl crate::Parse for FbxImporterNormalSmoothAngleVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            let v = r.read_f32()?;
-            r.align(4)?;
+            let v = rdr.read_f32()?;
+            rdr.align(4)?;
             Ok(Self::V5_3(v))
         } else {
-            let v = r.read_f32()?;
+            let v = rdr.read_f32()?;
             Ok(Self::Default(v))
         }
     }
@@ -299,15 +299,15 @@ pub enum FbxImporterMImportedRootsVariant {
 
 impl crate::Parse for FbxImporterMImportedRootsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -322,15 +322,15 @@ pub enum FbxImporterTangentImportModeVariant {
 
 impl crate::Parse for FbxImporterTangentImportModeVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = r.read_i32()?;
+            let v = rdr.read_i32()?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = r.read_i32()?;
-            r.align(4)?;
+            let v = rdr.read_i32()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -346,18 +346,18 @@ pub enum FbxImporterMHasExtraRootVariant {
 
 impl crate::Parse for FbxImporterMHasExtraRootVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V2017_2(v))
         } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V4_3(v))
         } else {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::Default(v))
         }
     }
@@ -373,18 +373,18 @@ pub enum FbxImporterMReferencedClipsVariant {
 
 impl crate::Parse for FbxImporterMReferencedClipsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(6000, 0, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Guid::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Guid::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::V6000_0(v))
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Guid::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Guid::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Guid::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Guid::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -399,15 +399,15 @@ pub enum FbxImporterMFileScaleVariant {
 
 impl crate::Parse for FbxImporterMFileScaleVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            let v = r.read_f32()?;
+            let v = rdr.read_f32()?;
             Ok(Self::V2018_3(v))
         } else {
-            let v = r.read_f32()?;
-            r.align(4)?;
+            let v = rdr.read_f32()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -422,15 +422,15 @@ pub enum FbxImporterMImportAnimationVariant {
 
 impl crate::Parse for FbxImporterMImportAnimationVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V2019_3(v))
         } else {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::Default(v))
         }
     }
@@ -445,15 +445,15 @@ pub enum FbxImporterMAnimationTypeVariant {
 
 impl crate::Parse for FbxImporterMAnimationTypeVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(4, 3, 3) {
-            let v = r.read_i32()?;
+            let v = rdr.read_i32()?;
             Ok(Self::V4_3_3(v))
         } else {
-            let v = r.read_i32()?;
-            r.align(4)?;
+            let v = rdr.read_i32()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -468,15 +468,15 @@ pub enum FbxImporterNormalCalculationModeVariant {
 
 impl crate::Parse for FbxImporterNormalCalculationModeVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            let v = r.read_i32()?;
+            let v = rdr.read_i32()?;
             Ok(Self::V2018_3(v))
         } else {
-            let v = r.read_i32()?;
-            r.align(4)?;
+            let v = rdr.read_i32()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -491,15 +491,15 @@ pub enum FbxImporterOptimizeBonesVariant {
 
 impl crate::Parse for FbxImporterOptimizeBonesVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(6000, 2, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V6000_2(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -514,15 +514,15 @@ pub enum FbxImporterMHasEmbeddedTexturesVariant {
 
 impl crate::Parse for FbxImporterMHasEmbeddedTexturesVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V2023_1(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -537,15 +537,15 @@ pub enum FbxImporterNormalSmoothingSourceVariant {
 
 impl crate::Parse for FbxImporterNormalSmoothingSourceVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            let v = r.read_i32()?;
+            let v = rdr.read_i32()?;
             Ok(Self::V6000_5(v))
         } else {
-            let v = r.read_i32()?;
-            r.align(4)?;
+            let v = rdr.read_i32()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -562,22 +562,22 @@ pub enum FbxImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant {
 
 impl crate::Parse for FbxImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2021, 3, 5) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V2021_3_5(v))
         } else if *ver >= crate::UnityVersion::new(2021, 1, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V2021_1(v))
         } else if *ver >= crate::UnityVersion::new(2020, 3, 37) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V2020_3_37(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -592,15 +592,15 @@ pub enum FbxImporterMImportBlendShapeDeformPercentVariant {
 
 impl crate::Parse for FbxImporterMImportBlendShapeDeformPercentVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2022, 1, 5) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V2022_1_5(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -739,7 +739,7 @@ pub struct FbxImporter {
 
 impl crate::Parse for FbxImporter {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_name = None;
@@ -870,1215 +870,1215 @@ impl crate::Parse for FbxImporter {
         let mut m_add_humanoid_extra_root_only_when_using_avatar = None;
         let mut m_remap_materials_if_material_import_mode_is_none = None;
         let mut m_import_blend_shape_deform_percent = None;
-            m_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(6000, 6, 0) {
-            m_internal_id_to_name_table = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = ( { let a = r.read_i32()?; let b = r.read_i64()?; Ok((a, b)) } )?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_external_objects = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(r, ver)?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_used_file_i_ds = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_supports_embedded_materials = Some(r.read_bool()?);
-            r.align(4)?;
-            m_material_import_mode = Some(r.read_i32()?);
-            m_material_name = Some(r.read_i32()?);
-            m_material_search = Some(r.read_i32()?);
-            m_material_location = Some(r.read_i32()?);
-            m_materials = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_legacy_generate_animations = Some(r.read_i32()?);
+            m_internal_id_to_name_table = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = ( { let a = rdr.read_i32()?; let b = rdr.read_i64()?; Ok((a, b)) } )?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_supports_embedded_materials = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_material_import_mode = Some(rdr.read_i32()?);
+            m_material_name = Some(rdr.read_i32()?);
+            m_material_search = Some(rdr.read_i32()?);
+            m_material_location = Some(rdr.read_i32()?);
+            m_materials = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_legacy_generate_animations = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            m_internal_id_to_name_table = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = ( { let a = r.read_i32()?; let b = r.read_i64()?; Ok((a, b)) } )?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_external_objects = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(r, ver)?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_used_file_i_ds = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_supports_embedded_materials = Some(r.read_bool()?);
-            r.align(4)?;
-            m_material_import_mode = Some(r.read_i32()?);
-            m_material_name = Some(r.read_i32()?);
-            m_material_search = Some(r.read_i32()?);
-            m_material_location = Some(r.read_i32()?);
-            m_search_textures_globally = Some(r.read_bool()?);
-            r.align(4)?;
-            m_materials = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_legacy_generate_animations = Some(r.read_i32()?);
+            m_internal_id_to_name_table = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = ( { let a = rdr.read_i32()?; let b = rdr.read_i64()?; Ok((a, b)) } )?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_supports_embedded_materials = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_material_import_mode = Some(rdr.read_i32()?);
+            m_material_name = Some(rdr.read_i32()?);
+            m_material_search = Some(rdr.read_i32()?);
+            m_material_location = Some(rdr.read_i32()?);
+            m_search_textures_globally = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_materials = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_legacy_generate_animations = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            m_internal_id_to_name_table = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = ( { let a = r.read_i32()?; let b = r.read_i64()?; Ok((a, b)) } )?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_external_objects = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(r, ver)?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_used_file_i_ds = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_supports_embedded_materials = Some(r.read_bool()?);
-            r.align(4)?;
-            m_material_import_mode = Some(r.read_i32()?);
-            m_material_name = Some(r.read_i32()?);
-            m_material_search = Some(r.read_i32()?);
-            m_material_location = Some(r.read_i32()?);
-            m_materials = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_legacy_generate_animations = Some(r.read_i32()?);
+            m_internal_id_to_name_table = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = ( { let a = rdr.read_i32()?; let b = rdr.read_i64()?; Ok((a, b)) } )?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_supports_embedded_materials = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_material_import_mode = Some(rdr.read_i32()?);
+            m_material_name = Some(rdr.read_i32()?);
+            m_material_search = Some(rdr.read_i32()?);
+            m_material_location = Some(rdr.read_i32()?);
+            m_materials = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_legacy_generate_animations = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_internal_id_to_name_table = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = ( { let a = r.read_i32()?; let b = r.read_i64()?; Ok((a, b)) } )?; let b = r.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_external_objects = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(r, ver)?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_used_file_i_ds = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_import_materials = Some(FbxImporterMImportMaterialsVariant::parse(r, ver)?);
-            m_supports_embedded_materials = Some(r.read_bool()?);
-            r.align(4)?;
-            m_material_name = Some(r.read_i32()?);
-            m_material_search = Some(r.read_i32()?);
-            m_material_location = Some(r.read_i32()?);
-            m_materials = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_legacy_generate_animations = Some(r.read_i32()?);
+            m_internal_id_to_name_table = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = ( { let a = rdr.read_i32()?; let b = rdr.read_i64()?; Ok((a, b)) } )?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_import_materials = Some(FbxImporterMImportMaterialsVariant::parse(rdr, ver)?);
+            m_supports_embedded_materials = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_material_name = Some(rdr.read_i32()?);
+            m_material_search = Some(rdr.read_i32()?);
+            m_material_location = Some(rdr.read_i32()?);
+            m_materials = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_legacy_generate_animations = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            m_file_id_to_recycle_name = Some(FbxImporterMFileIdToRecycleNameVariant::parse(r, ver)?);
-            m_external_objects = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(r, ver)?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_import_materials = Some(FbxImporterMImportMaterialsVariant::parse(r, ver)?);
-            m_supports_embedded_materials = Some(r.read_bool()?);
-            r.align(4)?;
-            m_material_name = Some(r.read_i32()?);
-            m_material_search = Some(r.read_i32()?);
-            m_material_location = Some(r.read_i32()?);
-            m_materials = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_legacy_generate_animations = Some(r.read_i32()?);
+            m_file_id_to_recycle_name = Some(FbxImporterMFileIdToRecycleNameVariant::parse(rdr, ver)?);
+            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_import_materials = Some(FbxImporterMImportMaterialsVariant::parse(rdr, ver)?);
+            m_supports_embedded_materials = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_material_name = Some(rdr.read_i32()?);
+            m_material_search = Some(rdr.read_i32()?);
+            m_material_location = Some(rdr.read_i32()?);
+            m_materials = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_legacy_generate_animations = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            m_file_id_to_recycle_name = Some(FbxImporterMFileIdToRecycleNameVariant::parse(r, ver)?);
-            m_import_materials = Some(FbxImporterMImportMaterialsVariant::parse(r, ver)?);
-            m_material_name = Some(r.read_i32()?);
-            m_material_search = Some(r.read_i32()?);
-            m_legacy_generate_animations = Some(r.read_i32()?);
+            m_file_id_to_recycle_name = Some(FbxImporterMFileIdToRecycleNameVariant::parse(rdr, ver)?);
+            m_import_materials = Some(FbxImporterMImportMaterialsVariant::parse(rdr, ver)?);
+            m_material_name = Some(rdr.read_i32()?);
+            m_material_search = Some(rdr.read_i32()?);
+            m_legacy_generate_animations = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            m_file_id_to_recycle_name = Some(FbxImporterMFileIdToRecycleNameVariant::parse(r, ver)?);
-            m_import_materials = Some(FbxImporterMImportMaterialsVariant::parse(r, ver)?);
-            m_material_name = Some(r.read_i32()?);
-            m_material_search = Some(r.read_i32()?);
-            m_generate_animations = Some(r.read_i32()?);
+            m_file_id_to_recycle_name = Some(FbxImporterMFileIdToRecycleNameVariant::parse(rdr, ver)?);
+            m_import_materials = Some(FbxImporterMImportMaterialsVariant::parse(rdr, ver)?);
+            m_material_name = Some(rdr.read_i32()?);
+            m_material_search = Some(rdr.read_i32()?);
+            m_generate_animations = Some(rdr.read_i32()?);
         } else {
-            m_file_id_to_recycle_name = Some(FbxImporterMFileIdToRecycleNameVariant::parse(r, ver)?);
-            m_old_hash_identity = Some(MdFour::parse(r, ver)?);
-            r.align(4)?;
-            m_new_hash_identity = Some(MdFour::parse(r, ver)?);
-            r.align(4)?;
-            m_generate_materials = Some(r.read_i32()?);
-            m_generate_animations = Some(r.read_i32()?);
-            m_global_scale = Some(r.read_f32()?);
+            m_file_id_to_recycle_name = Some(FbxImporterMFileIdToRecycleNameVariant::parse(rdr, ver)?);
+            m_old_hash_identity = Some(MdFour::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_new_hash_identity = Some(MdFour::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_generate_materials = Some(rdr.read_i32()?);
+            m_generate_animations = Some(rdr.read_i32()?);
+            m_global_scale = Some(rdr.read_f32()?);
         }
-            m_bake_simulation = Some(FbxImporterMBakeSimulationVariant::parse(r, ver)?);
+            m_bake_simulation = Some(FbxImporterMBakeSimulationVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            m_resample_curves = Some(r.read_bool()?);
-            m_optimize_game_objects = Some(FbxImporterMOptimizeGameObjectsVariant::parse(r, ver)?);
-            m_remove_constant_scale_curves = Some(r.read_bool()?);
-            r.align(4)?;
-            m_motion_node_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_animation_import_errors = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_animation_import_warnings = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_animation_retargeting_warnings = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_animation_do_retargeting_warnings = Some(FbxImporterMAnimationDoRetargetingWarningsVariant::parse(r, ver)?);
-            m_import_animated_custom_properties = Some(FbxImporterMImportAnimatedCustomPropertiesVariant::parse(r, ver)?);
-            m_import_constraints = Some(r.read_bool()?);
-            r.align(4)?;
+            m_resample_curves = Some(rdr.read_bool()?);
+            m_optimize_game_objects = Some(FbxImporterMOptimizeGameObjectsVariant::parse(rdr, ver)?);
+            m_remove_constant_scale_curves = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_motion_node_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_animation_import_errors = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_animation_import_warnings = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_animation_retargeting_warnings = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_animation_do_retargeting_warnings = Some(FbxImporterMAnimationDoRetargetingWarningsVariant::parse(rdr, ver)?);
+            m_import_animated_custom_properties = Some(FbxImporterMImportAnimatedCustomPropertiesVariant::parse(rdr, ver)?);
+            m_import_constraints = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            m_resample_curves = Some(r.read_bool()?);
-            m_optimize_game_objects = Some(FbxImporterMOptimizeGameObjectsVariant::parse(r, ver)?);
-            m_remove_constant_scale_curves = Some(r.read_bool()?);
-            r.align(4)?;
-            m_motion_node_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_rig_import_errors = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_rig_import_warnings = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_animation_import_errors = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_animation_import_warnings = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_animation_retargeting_warnings = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_animation_do_retargeting_warnings = Some(FbxImporterMAnimationDoRetargetingWarningsVariant::parse(r, ver)?);
-            m_import_animated_custom_properties = Some(FbxImporterMImportAnimatedCustomPropertiesVariant::parse(r, ver)?);
-            m_import_constraints = Some(r.read_bool()?);
-            r.align(4)?;
+            m_resample_curves = Some(rdr.read_bool()?);
+            m_optimize_game_objects = Some(FbxImporterMOptimizeGameObjectsVariant::parse(rdr, ver)?);
+            m_remove_constant_scale_curves = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_motion_node_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_rig_import_errors = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_rig_import_warnings = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_animation_import_errors = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_animation_import_warnings = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_animation_retargeting_warnings = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_animation_do_retargeting_warnings = Some(FbxImporterMAnimationDoRetargetingWarningsVariant::parse(rdr, ver)?);
+            m_import_animated_custom_properties = Some(FbxImporterMImportAnimatedCustomPropertiesVariant::parse(rdr, ver)?);
+            m_import_constraints = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            m_resample_curves = Some(r.read_bool()?);
-            m_optimize_game_objects = Some(FbxImporterMOptimizeGameObjectsVariant::parse(r, ver)?);
-            m_motion_node_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_rig_import_errors = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_rig_import_warnings = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_animation_import_errors = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_animation_import_warnings = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_animation_retargeting_warnings = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_animation_do_retargeting_warnings = Some(FbxImporterMAnimationDoRetargetingWarningsVariant::parse(r, ver)?);
-            m_import_animated_custom_properties = Some(FbxImporterMImportAnimatedCustomPropertiesVariant::parse(r, ver)?);
-            m_import_constraints = Some(r.read_bool()?);
-            r.align(4)?;
+            m_resample_curves = Some(rdr.read_bool()?);
+            m_optimize_game_objects = Some(FbxImporterMOptimizeGameObjectsVariant::parse(rdr, ver)?);
+            m_motion_node_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_rig_import_errors = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_rig_import_warnings = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_animation_import_errors = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_animation_import_warnings = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_animation_retargeting_warnings = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_animation_do_retargeting_warnings = Some(FbxImporterMAnimationDoRetargetingWarningsVariant::parse(rdr, ver)?);
+            m_import_animated_custom_properties = Some(FbxImporterMImportAnimatedCustomPropertiesVariant::parse(rdr, ver)?);
+            m_import_constraints = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            m_resample_curves = Some(r.read_bool()?);
-            m_optimize_game_objects = Some(FbxImporterMOptimizeGameObjectsVariant::parse(r, ver)?);
-            m_motion_node_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_rig_import_errors = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_rig_import_warnings = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_animation_import_errors = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_animation_import_warnings = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_animation_retargeting_warnings = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_animation_do_retargeting_warnings = Some(FbxImporterMAnimationDoRetargetingWarningsVariant::parse(r, ver)?);
-            m_import_animated_custom_properties = Some(FbxImporterMImportAnimatedCustomPropertiesVariant::parse(r, ver)?);
+            m_resample_curves = Some(rdr.read_bool()?);
+            m_optimize_game_objects = Some(FbxImporterMOptimizeGameObjectsVariant::parse(rdr, ver)?);
+            m_motion_node_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_rig_import_errors = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_rig_import_warnings = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_animation_import_errors = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_animation_import_warnings = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_animation_retargeting_warnings = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_animation_do_retargeting_warnings = Some(FbxImporterMAnimationDoRetargetingWarningsVariant::parse(rdr, ver)?);
+            m_import_animated_custom_properties = Some(FbxImporterMImportAnimatedCustomPropertiesVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            m_resample_curves = Some(r.read_bool()?);
-            m_optimize_game_objects = Some(FbxImporterMOptimizeGameObjectsVariant::parse(r, ver)?);
-            m_motion_node_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_rig_import_errors = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_rig_import_warnings = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_animation_import_errors = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_animation_import_warnings = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_animation_retargeting_warnings = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_animation_do_retargeting_warnings = Some(FbxImporterMAnimationDoRetargetingWarningsVariant::parse(r, ver)?);
+            m_resample_curves = Some(rdr.read_bool()?);
+            m_optimize_game_objects = Some(FbxImporterMOptimizeGameObjectsVariant::parse(rdr, ver)?);
+            m_motion_node_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_rig_import_errors = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_rig_import_warnings = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_animation_import_errors = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_animation_import_warnings = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_animation_retargeting_warnings = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_animation_do_retargeting_warnings = Some(FbxImporterMAnimationDoRetargetingWarningsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            m_resample_curves = Some(r.read_bool()?);
-            m_optimize_game_objects = Some(FbxImporterMOptimizeGameObjectsVariant::parse(r, ver)?);
-            m_motion_node_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_animation_import_errors = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_animation_import_warnings = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_animation_retargeting_warnings = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_animation_do_retargeting_warnings = Some(FbxImporterMAnimationDoRetargetingWarningsVariant::parse(r, ver)?);
+            m_resample_curves = Some(rdr.read_bool()?);
+            m_optimize_game_objects = Some(FbxImporterMOptimizeGameObjectsVariant::parse(rdr, ver)?);
+            m_motion_node_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_animation_import_errors = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_animation_import_warnings = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_animation_retargeting_warnings = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_animation_do_retargeting_warnings = Some(FbxImporterMAnimationDoRetargetingWarningsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            m_resample_rotations = Some(r.read_bool()?);
-            m_optimize_game_objects = Some(FbxImporterMOptimizeGameObjectsVariant::parse(r, ver)?);
-            m_motion_node_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_animation_import_errors = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_animation_import_warnings = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_animation_retargeting_warnings = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_animation_do_retargeting_warnings = Some(FbxImporterMAnimationDoRetargetingWarningsVariant::parse(r, ver)?);
+            m_resample_rotations = Some(rdr.read_bool()?);
+            m_optimize_game_objects = Some(FbxImporterMOptimizeGameObjectsVariant::parse(rdr, ver)?);
+            m_motion_node_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_animation_import_errors = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_animation_import_warnings = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_animation_retargeting_warnings = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_animation_do_retargeting_warnings = Some(FbxImporterMAnimationDoRetargetingWarningsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 1, 0) {
-            m_optimize_game_objects = Some(FbxImporterMOptimizeGameObjectsVariant::parse(r, ver)?);
-            m_motion_node_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_animation_import_errors = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_animation_import_warnings = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_animation_retargeting_warnings = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_animation_do_retargeting_warnings = Some(FbxImporterMAnimationDoRetargetingWarningsVariant::parse(r, ver)?);
+            m_optimize_game_objects = Some(FbxImporterMOptimizeGameObjectsVariant::parse(rdr, ver)?);
+            m_motion_node_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_animation_import_errors = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_animation_import_warnings = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_animation_retargeting_warnings = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_animation_do_retargeting_warnings = Some(FbxImporterMAnimationDoRetargetingWarningsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            m_optimize_game_objects = Some(FbxImporterMOptimizeGameObjectsVariant::parse(r, ver)?);
-            m_motion_node_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_optimize_game_objects = Some(FbxImporterMOptimizeGameObjectsVariant::parse(rdr, ver)?);
+            m_motion_node_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            m_optimize_game_objects = Some(FbxImporterMOptimizeGameObjectsVariant::parse(r, ver)?);
+            m_optimize_game_objects = Some(FbxImporterMOptimizeGameObjectsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            m_split_animations = Some(FbxImporterMSplitAnimationsVariant::parse(r, ver)?);
+            m_split_animations = Some(FbxImporterMSplitAnimationsVariant::parse(rdr, ver)?);
         } else {
-            m_split_animations = Some(FbxImporterMSplitAnimationsVariant::parse(r, ver)?);
-            m_add_colliders = Some(r.read_bool()?);
-            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(r, ver)?);
+            m_split_animations = Some(FbxImporterMSplitAnimationsVariant::parse(rdr, ver)?);
+            m_add_colliders = Some(rdr.read_bool()?);
+            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(rdr, ver)?);
         }
-            m_animation_compression = Some(r.read_i32()?);
-            m_animation_rotation_error = Some(r.read_f32()?);
-            m_animation_position_error = Some(r.read_f32()?);
-            m_animation_scale_error = Some(r.read_f32()?);
+            m_animation_compression = Some(rdr.read_i32()?);
+            m_animation_rotation_error = Some(rdr.read_f32()?);
+            m_animation_position_error = Some(rdr.read_f32()?);
+            m_animation_scale_error = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(3, 5, 0) {
         } else {
-            m_mesh_compression = Some(r.read_i32()?);
-            m_mesh_settings_swap_uv_channels = Some(r.read_bool()?);
-            m_mesh_settings_generate_secondary_uv = Some(r.read_bool()?);
-            r.align(4)?;
-            m_mesh_settings_secondary_uv_angle_distortion = Some(r.read_f32()?);
-            m_mesh_settings_secondary_uv_area_distortion = Some(r.read_f32()?);
-            m_mesh_settings_secondary_uv_hard_angle = Some(r.read_f32()?);
-            m_mesh_settings_secondary_uv_pack_margin = Some(r.read_f32()?);
-            r.align(4)?;
-            m_mesh_settings_normal_import_mode = Some(r.read_i32()?);
-            m_mesh_settings_tangent_import_mode = Some(r.read_i32()?);
+            m_mesh_compression = Some(rdr.read_i32()?);
+            m_mesh_settings_swap_uv_channels = Some(rdr.read_bool()?);
+            m_mesh_settings_generate_secondary_uv = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_mesh_settings_secondary_uv_angle_distortion = Some(rdr.read_f32()?);
+            m_mesh_settings_secondary_uv_area_distortion = Some(rdr.read_f32()?);
+            m_mesh_settings_secondary_uv_hard_angle = Some(rdr.read_f32()?);
+            m_mesh_settings_secondary_uv_pack_margin = Some(rdr.read_f32()?);
+            rdr.align(4)?;
+            m_mesh_settings_normal_import_mode = Some(rdr.read_i32()?);
+            m_mesh_settings_tangent_import_mode = Some(rdr.read_i32()?);
         }
-            m_animation_wrap_mode = Some(r.read_i32()?);
+            m_animation_wrap_mode = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            m_extra_exposed_transform_paths = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_extra_user_properties = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_extra_exposed_transform_paths = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_extra_user_properties = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            m_extra_exposed_transform_paths = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_extra_exposed_transform_paths = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else {
         }
-            m_clip_animations = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ClipAnimationInfo::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_clip_animations = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ClipAnimationInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            m_is_readable = Some(r.read_bool()?);
-            r.align(4)?;
-            m_lod_screen_percentages = Some(FbxImporterMLodScreenPercentagesVariant::parse(r, ver)?);
-            m_global_scale = Some(r.read_f32()?);
-            m_mesh_compression = Some(r.read_i32()?);
-            m_add_colliders = Some(r.read_bool()?);
-            m_use_srgb_material_color = Some(r.read_bool()?);
-            m_sort_hierarchy_by_name = Some(r.read_bool()?);
-            m_import_physical_cameras = Some(r.read_bool()?);
-            m_import_visibility = Some(r.read_bool()?);
-            m_import_blend_shapes = Some(r.read_bool()?);
-            m_import_cameras = Some(r.read_bool()?);
-            m_import_lights = Some(r.read_bool()?);
-            r.align(4)?;
-            m_node_name_collision_strategy = Some(r.read_i32()?);
-            m_file_ids_generation = Some(r.read_i32()?);
-            swap_uv_channels = Some(r.read_bool()?);
-            generate_secondary_uv = Some(r.read_bool()?);
-            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(r, ver)?);
-            keep_quads = Some(r.read_bool()?);
-            weld_vertices = Some(FbxImporterWeldVerticesVariant::parse(r, ver)?);
-            bake_axis_conversion = Some(r.read_bool()?);
-            m_preserve_hierarchy = Some(r.read_bool()?);
-            r.align(4)?;
-            skin_weights_mode = Some(r.read_i32()?);
-            max_bones_per_vertex = Some(r.read_i32()?);
-            min_bone_weight = Some(r.read_f32()?);
-            optimize_bones = Some(FbxImporterOptimizeBonesVariant::parse(r, ver)?);
-            generate_mesh_lods = Some(r.read_bool()?);
-            r.align(4)?;
-            mesh_lod_generation_flags = Some(r.read_i32()?);
-            maximum_mesh_lod = Some(r.read_i32()?);
-            import_u_vs = Some(r.read_i32()?);
-            import_vertex_colors = Some(r.read_bool()?);
-            r.align(4)?;
-            mesh_optimization_flags = Some(r.read_i32()?);
-            index_format = Some(r.read_i32()?);
-            secondary_uv_angle_distortion = Some(r.read_f32()?);
-            secondary_uv_area_distortion = Some(r.read_f32()?);
-            secondary_uv_hard_angle = Some(r.read_f32()?);
-            secondary_uv_margin_method = Some(r.read_i32()?);
-            secondary_uv_min_lightmap_resolution = Some(r.read_f32()?);
-            secondary_uv_min_object_scale = Some(r.read_f32()?);
-            secondary_uv_pack_margin = Some(r.read_f32()?);
-            m_use_file_scale = Some(r.read_bool()?);
-            r.align(4)?;
-            m_file_scale = Some(FbxImporterMFileScaleVariant::parse(r, ver)?);
-            m_file_scale_unit = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_file_scale_factor = Some(r.read_f32()?);
-            r.align(4)?;
-            m_strict_vertex_data_checks = Some(r.read_bool()?);
-            r.align(4)?;
+            m_is_readable = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_lod_screen_percentages = Some(FbxImporterMLodScreenPercentagesVariant::parse(rdr, ver)?);
+            m_global_scale = Some(rdr.read_f32()?);
+            m_mesh_compression = Some(rdr.read_i32()?);
+            m_add_colliders = Some(rdr.read_bool()?);
+            m_use_srgb_material_color = Some(rdr.read_bool()?);
+            m_sort_hierarchy_by_name = Some(rdr.read_bool()?);
+            m_import_physical_cameras = Some(rdr.read_bool()?);
+            m_import_visibility = Some(rdr.read_bool()?);
+            m_import_blend_shapes = Some(rdr.read_bool()?);
+            m_import_cameras = Some(rdr.read_bool()?);
+            m_import_lights = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_node_name_collision_strategy = Some(rdr.read_i32()?);
+            m_file_ids_generation = Some(rdr.read_i32()?);
+            swap_uv_channels = Some(rdr.read_bool()?);
+            generate_secondary_uv = Some(rdr.read_bool()?);
+            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(rdr, ver)?);
+            keep_quads = Some(rdr.read_bool()?);
+            weld_vertices = Some(FbxImporterWeldVerticesVariant::parse(rdr, ver)?);
+            bake_axis_conversion = Some(rdr.read_bool()?);
+            m_preserve_hierarchy = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            skin_weights_mode = Some(rdr.read_i32()?);
+            max_bones_per_vertex = Some(rdr.read_i32()?);
+            min_bone_weight = Some(rdr.read_f32()?);
+            optimize_bones = Some(FbxImporterOptimizeBonesVariant::parse(rdr, ver)?);
+            generate_mesh_lods = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            mesh_lod_generation_flags = Some(rdr.read_i32()?);
+            maximum_mesh_lod = Some(rdr.read_i32()?);
+            import_u_vs = Some(rdr.read_i32()?);
+            import_vertex_colors = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            mesh_optimization_flags = Some(rdr.read_i32()?);
+            index_format = Some(rdr.read_i32()?);
+            secondary_uv_angle_distortion = Some(rdr.read_f32()?);
+            secondary_uv_area_distortion = Some(rdr.read_f32()?);
+            secondary_uv_hard_angle = Some(rdr.read_f32()?);
+            secondary_uv_margin_method = Some(rdr.read_i32()?);
+            secondary_uv_min_lightmap_resolution = Some(rdr.read_f32()?);
+            secondary_uv_min_object_scale = Some(rdr.read_f32()?);
+            secondary_uv_pack_margin = Some(rdr.read_f32()?);
+            m_use_file_scale = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_file_scale = Some(FbxImporterMFileScaleVariant::parse(rdr, ver)?);
+            m_file_scale_unit = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_file_scale_factor = Some(rdr.read_f32()?);
+            rdr.align(4)?;
+            m_strict_vertex_data_checks = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(6000, 2, 0) {
-            m_is_readable = Some(r.read_bool()?);
-            r.align(4)?;
-            m_lod_screen_percentages = Some(FbxImporterMLodScreenPercentagesVariant::parse(r, ver)?);
-            m_global_scale = Some(r.read_f32()?);
-            m_mesh_compression = Some(r.read_i32()?);
-            m_add_colliders = Some(r.read_bool()?);
-            m_use_srgb_material_color = Some(r.read_bool()?);
-            m_sort_hierarchy_by_name = Some(r.read_bool()?);
-            m_import_physical_cameras = Some(r.read_bool()?);
-            m_import_visibility = Some(r.read_bool()?);
-            m_import_blend_shapes = Some(r.read_bool()?);
-            m_import_cameras = Some(r.read_bool()?);
-            m_import_lights = Some(r.read_bool()?);
-            r.align(4)?;
-            m_node_name_collision_strategy = Some(r.read_i32()?);
-            m_file_ids_generation = Some(r.read_i32()?);
-            swap_uv_channels = Some(r.read_bool()?);
-            generate_secondary_uv = Some(r.read_bool()?);
-            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(r, ver)?);
-            keep_quads = Some(r.read_bool()?);
-            weld_vertices = Some(FbxImporterWeldVerticesVariant::parse(r, ver)?);
-            bake_axis_conversion = Some(r.read_bool()?);
-            m_preserve_hierarchy = Some(r.read_bool()?);
-            r.align(4)?;
-            skin_weights_mode = Some(r.read_i32()?);
-            max_bones_per_vertex = Some(r.read_i32()?);
-            min_bone_weight = Some(r.read_f32()?);
-            optimize_bones = Some(FbxImporterOptimizeBonesVariant::parse(r, ver)?);
-            generate_mesh_lods = Some(r.read_bool()?);
-            r.align(4)?;
-            mesh_lod_generation_flags = Some(r.read_i32()?);
-            maximum_mesh_lod = Some(r.read_i32()?);
-            mesh_optimization_flags = Some(r.read_i32()?);
-            index_format = Some(r.read_i32()?);
-            secondary_uv_angle_distortion = Some(r.read_f32()?);
-            secondary_uv_area_distortion = Some(r.read_f32()?);
-            secondary_uv_hard_angle = Some(r.read_f32()?);
-            secondary_uv_margin_method = Some(r.read_i32()?);
-            secondary_uv_min_lightmap_resolution = Some(r.read_f32()?);
-            secondary_uv_min_object_scale = Some(r.read_f32()?);
-            secondary_uv_pack_margin = Some(r.read_f32()?);
-            m_use_file_scale = Some(r.read_bool()?);
-            r.align(4)?;
-            m_file_scale = Some(FbxImporterMFileScaleVariant::parse(r, ver)?);
-            m_file_scale_unit = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_file_scale_factor = Some(r.read_f32()?);
-            r.align(4)?;
-            m_strict_vertex_data_checks = Some(r.read_bool()?);
-            r.align(4)?;
+            m_is_readable = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_lod_screen_percentages = Some(FbxImporterMLodScreenPercentagesVariant::parse(rdr, ver)?);
+            m_global_scale = Some(rdr.read_f32()?);
+            m_mesh_compression = Some(rdr.read_i32()?);
+            m_add_colliders = Some(rdr.read_bool()?);
+            m_use_srgb_material_color = Some(rdr.read_bool()?);
+            m_sort_hierarchy_by_name = Some(rdr.read_bool()?);
+            m_import_physical_cameras = Some(rdr.read_bool()?);
+            m_import_visibility = Some(rdr.read_bool()?);
+            m_import_blend_shapes = Some(rdr.read_bool()?);
+            m_import_cameras = Some(rdr.read_bool()?);
+            m_import_lights = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_node_name_collision_strategy = Some(rdr.read_i32()?);
+            m_file_ids_generation = Some(rdr.read_i32()?);
+            swap_uv_channels = Some(rdr.read_bool()?);
+            generate_secondary_uv = Some(rdr.read_bool()?);
+            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(rdr, ver)?);
+            keep_quads = Some(rdr.read_bool()?);
+            weld_vertices = Some(FbxImporterWeldVerticesVariant::parse(rdr, ver)?);
+            bake_axis_conversion = Some(rdr.read_bool()?);
+            m_preserve_hierarchy = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            skin_weights_mode = Some(rdr.read_i32()?);
+            max_bones_per_vertex = Some(rdr.read_i32()?);
+            min_bone_weight = Some(rdr.read_f32()?);
+            optimize_bones = Some(FbxImporterOptimizeBonesVariant::parse(rdr, ver)?);
+            generate_mesh_lods = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            mesh_lod_generation_flags = Some(rdr.read_i32()?);
+            maximum_mesh_lod = Some(rdr.read_i32()?);
+            mesh_optimization_flags = Some(rdr.read_i32()?);
+            index_format = Some(rdr.read_i32()?);
+            secondary_uv_angle_distortion = Some(rdr.read_f32()?);
+            secondary_uv_area_distortion = Some(rdr.read_f32()?);
+            secondary_uv_hard_angle = Some(rdr.read_f32()?);
+            secondary_uv_margin_method = Some(rdr.read_i32()?);
+            secondary_uv_min_lightmap_resolution = Some(rdr.read_f32()?);
+            secondary_uv_min_object_scale = Some(rdr.read_f32()?);
+            secondary_uv_pack_margin = Some(rdr.read_f32()?);
+            m_use_file_scale = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_file_scale = Some(FbxImporterMFileScaleVariant::parse(rdr, ver)?);
+            m_file_scale_unit = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_file_scale_factor = Some(rdr.read_f32()?);
+            rdr.align(4)?;
+            m_strict_vertex_data_checks = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2022, 2, 19) {
-            m_is_readable = Some(r.read_bool()?);
-            r.align(4)?;
-            m_lod_screen_percentages = Some(FbxImporterMLodScreenPercentagesVariant::parse(r, ver)?);
-            m_global_scale = Some(r.read_f32()?);
-            m_mesh_compression = Some(r.read_i32()?);
-            m_add_colliders = Some(r.read_bool()?);
-            m_use_srgb_material_color = Some(r.read_bool()?);
-            m_sort_hierarchy_by_name = Some(r.read_bool()?);
-            m_import_physical_cameras = Some(r.read_bool()?);
-            m_import_visibility = Some(r.read_bool()?);
-            m_import_blend_shapes = Some(r.read_bool()?);
-            m_import_cameras = Some(r.read_bool()?);
-            m_import_lights = Some(r.read_bool()?);
-            r.align(4)?;
-            m_node_name_collision_strategy = Some(r.read_i32()?);
-            m_file_ids_generation = Some(r.read_i32()?);
-            swap_uv_channels = Some(r.read_bool()?);
-            generate_secondary_uv = Some(r.read_bool()?);
-            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(r, ver)?);
-            keep_quads = Some(r.read_bool()?);
-            weld_vertices = Some(FbxImporterWeldVerticesVariant::parse(r, ver)?);
-            bake_axis_conversion = Some(r.read_bool()?);
-            m_preserve_hierarchy = Some(r.read_bool()?);
-            r.align(4)?;
-            skin_weights_mode = Some(r.read_i32()?);
-            max_bones_per_vertex = Some(r.read_i32()?);
-            min_bone_weight = Some(r.read_f32()?);
-            optimize_bones = Some(FbxImporterOptimizeBonesVariant::parse(r, ver)?);
-            mesh_optimization_flags = Some(r.read_i32()?);
-            index_format = Some(r.read_i32()?);
-            secondary_uv_angle_distortion = Some(r.read_f32()?);
-            secondary_uv_area_distortion = Some(r.read_f32()?);
-            secondary_uv_hard_angle = Some(r.read_f32()?);
-            secondary_uv_margin_method = Some(r.read_i32()?);
-            secondary_uv_min_lightmap_resolution = Some(r.read_f32()?);
-            secondary_uv_min_object_scale = Some(r.read_f32()?);
-            secondary_uv_pack_margin = Some(r.read_f32()?);
-            m_use_file_scale = Some(r.read_bool()?);
-            r.align(4)?;
-            m_file_scale = Some(FbxImporterMFileScaleVariant::parse(r, ver)?);
-            m_file_scale_unit = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_file_scale_factor = Some(r.read_f32()?);
-            r.align(4)?;
-            m_strict_vertex_data_checks = Some(r.read_bool()?);
-            r.align(4)?;
+            m_is_readable = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_lod_screen_percentages = Some(FbxImporterMLodScreenPercentagesVariant::parse(rdr, ver)?);
+            m_global_scale = Some(rdr.read_f32()?);
+            m_mesh_compression = Some(rdr.read_i32()?);
+            m_add_colliders = Some(rdr.read_bool()?);
+            m_use_srgb_material_color = Some(rdr.read_bool()?);
+            m_sort_hierarchy_by_name = Some(rdr.read_bool()?);
+            m_import_physical_cameras = Some(rdr.read_bool()?);
+            m_import_visibility = Some(rdr.read_bool()?);
+            m_import_blend_shapes = Some(rdr.read_bool()?);
+            m_import_cameras = Some(rdr.read_bool()?);
+            m_import_lights = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_node_name_collision_strategy = Some(rdr.read_i32()?);
+            m_file_ids_generation = Some(rdr.read_i32()?);
+            swap_uv_channels = Some(rdr.read_bool()?);
+            generate_secondary_uv = Some(rdr.read_bool()?);
+            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(rdr, ver)?);
+            keep_quads = Some(rdr.read_bool()?);
+            weld_vertices = Some(FbxImporterWeldVerticesVariant::parse(rdr, ver)?);
+            bake_axis_conversion = Some(rdr.read_bool()?);
+            m_preserve_hierarchy = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            skin_weights_mode = Some(rdr.read_i32()?);
+            max_bones_per_vertex = Some(rdr.read_i32()?);
+            min_bone_weight = Some(rdr.read_f32()?);
+            optimize_bones = Some(FbxImporterOptimizeBonesVariant::parse(rdr, ver)?);
+            mesh_optimization_flags = Some(rdr.read_i32()?);
+            index_format = Some(rdr.read_i32()?);
+            secondary_uv_angle_distortion = Some(rdr.read_f32()?);
+            secondary_uv_area_distortion = Some(rdr.read_f32()?);
+            secondary_uv_hard_angle = Some(rdr.read_f32()?);
+            secondary_uv_margin_method = Some(rdr.read_i32()?);
+            secondary_uv_min_lightmap_resolution = Some(rdr.read_f32()?);
+            secondary_uv_min_object_scale = Some(rdr.read_f32()?);
+            secondary_uv_pack_margin = Some(rdr.read_f32()?);
+            m_use_file_scale = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_file_scale = Some(FbxImporterMFileScaleVariant::parse(rdr, ver)?);
+            m_file_scale_unit = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_file_scale_factor = Some(rdr.read_f32()?);
+            rdr.align(4)?;
+            m_strict_vertex_data_checks = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2021, 3, 36) {
-            m_is_readable = Some(r.read_bool()?);
-            r.align(4)?;
-            m_lod_screen_percentages = Some(FbxImporterMLodScreenPercentagesVariant::parse(r, ver)?);
-            m_global_scale = Some(r.read_f32()?);
-            m_mesh_compression = Some(r.read_i32()?);
-            m_add_colliders = Some(r.read_bool()?);
-            m_use_srgb_material_color = Some(r.read_bool()?);
-            m_sort_hierarchy_by_name = Some(r.read_bool()?);
-            m_import_visibility = Some(r.read_bool()?);
-            m_import_blend_shapes = Some(r.read_bool()?);
-            m_import_cameras = Some(r.read_bool()?);
-            m_import_lights = Some(r.read_bool()?);
-            r.align(4)?;
-            m_node_name_collision_strategy = Some(r.read_i32()?);
-            m_file_ids_generation = Some(r.read_i32()?);
-            swap_uv_channels = Some(r.read_bool()?);
-            generate_secondary_uv = Some(r.read_bool()?);
-            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(r, ver)?);
-            keep_quads = Some(r.read_bool()?);
-            weld_vertices = Some(FbxImporterWeldVerticesVariant::parse(r, ver)?);
-            bake_axis_conversion = Some(r.read_bool()?);
-            m_preserve_hierarchy = Some(r.read_bool()?);
-            r.align(4)?;
-            skin_weights_mode = Some(r.read_i32()?);
-            max_bones_per_vertex = Some(r.read_i32()?);
-            min_bone_weight = Some(r.read_f32()?);
-            optimize_bones = Some(FbxImporterOptimizeBonesVariant::parse(r, ver)?);
-            mesh_optimization_flags = Some(r.read_i32()?);
-            index_format = Some(r.read_i32()?);
-            secondary_uv_angle_distortion = Some(r.read_f32()?);
-            secondary_uv_area_distortion = Some(r.read_f32()?);
-            secondary_uv_hard_angle = Some(r.read_f32()?);
-            secondary_uv_margin_method = Some(r.read_i32()?);
-            secondary_uv_min_lightmap_resolution = Some(r.read_f32()?);
-            secondary_uv_min_object_scale = Some(r.read_f32()?);
-            secondary_uv_pack_margin = Some(r.read_f32()?);
-            m_use_file_scale = Some(r.read_bool()?);
-            r.align(4)?;
-            m_file_scale = Some(FbxImporterMFileScaleVariant::parse(r, ver)?);
-            m_file_scale_unit = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_file_scale_factor = Some(r.read_f32()?);
-            r.align(4)?;
-            m_strict_vertex_data_checks = Some(r.read_bool()?);
-            r.align(4)?;
+            m_is_readable = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_lod_screen_percentages = Some(FbxImporterMLodScreenPercentagesVariant::parse(rdr, ver)?);
+            m_global_scale = Some(rdr.read_f32()?);
+            m_mesh_compression = Some(rdr.read_i32()?);
+            m_add_colliders = Some(rdr.read_bool()?);
+            m_use_srgb_material_color = Some(rdr.read_bool()?);
+            m_sort_hierarchy_by_name = Some(rdr.read_bool()?);
+            m_import_visibility = Some(rdr.read_bool()?);
+            m_import_blend_shapes = Some(rdr.read_bool()?);
+            m_import_cameras = Some(rdr.read_bool()?);
+            m_import_lights = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_node_name_collision_strategy = Some(rdr.read_i32()?);
+            m_file_ids_generation = Some(rdr.read_i32()?);
+            swap_uv_channels = Some(rdr.read_bool()?);
+            generate_secondary_uv = Some(rdr.read_bool()?);
+            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(rdr, ver)?);
+            keep_quads = Some(rdr.read_bool()?);
+            weld_vertices = Some(FbxImporterWeldVerticesVariant::parse(rdr, ver)?);
+            bake_axis_conversion = Some(rdr.read_bool()?);
+            m_preserve_hierarchy = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            skin_weights_mode = Some(rdr.read_i32()?);
+            max_bones_per_vertex = Some(rdr.read_i32()?);
+            min_bone_weight = Some(rdr.read_f32()?);
+            optimize_bones = Some(FbxImporterOptimizeBonesVariant::parse(rdr, ver)?);
+            mesh_optimization_flags = Some(rdr.read_i32()?);
+            index_format = Some(rdr.read_i32()?);
+            secondary_uv_angle_distortion = Some(rdr.read_f32()?);
+            secondary_uv_area_distortion = Some(rdr.read_f32()?);
+            secondary_uv_hard_angle = Some(rdr.read_f32()?);
+            secondary_uv_margin_method = Some(rdr.read_i32()?);
+            secondary_uv_min_lightmap_resolution = Some(rdr.read_f32()?);
+            secondary_uv_min_object_scale = Some(rdr.read_f32()?);
+            secondary_uv_pack_margin = Some(rdr.read_f32()?);
+            m_use_file_scale = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_file_scale = Some(FbxImporterMFileScaleVariant::parse(rdr, ver)?);
+            m_file_scale_unit = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_file_scale_factor = Some(rdr.read_f32()?);
+            rdr.align(4)?;
+            m_strict_vertex_data_checks = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            m_is_readable = Some(r.read_bool()?);
-            r.align(4)?;
-            m_lod_screen_percentages = Some(FbxImporterMLodScreenPercentagesVariant::parse(r, ver)?);
-            m_global_scale = Some(r.read_f32()?);
-            m_mesh_compression = Some(r.read_i32()?);
-            m_add_colliders = Some(r.read_bool()?);
-            m_use_srgb_material_color = Some(r.read_bool()?);
-            m_sort_hierarchy_by_name = Some(r.read_bool()?);
-            m_import_visibility = Some(r.read_bool()?);
-            m_import_blend_shapes = Some(r.read_bool()?);
-            m_import_cameras = Some(r.read_bool()?);
-            m_import_lights = Some(r.read_bool()?);
-            r.align(4)?;
-            m_node_name_collision_strategy = Some(r.read_i32()?);
-            m_file_ids_generation = Some(r.read_i32()?);
-            swap_uv_channels = Some(r.read_bool()?);
-            generate_secondary_uv = Some(r.read_bool()?);
-            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(r, ver)?);
-            keep_quads = Some(r.read_bool()?);
-            weld_vertices = Some(FbxImporterWeldVerticesVariant::parse(r, ver)?);
-            bake_axis_conversion = Some(r.read_bool()?);
-            m_preserve_hierarchy = Some(r.read_bool()?);
-            r.align(4)?;
-            skin_weights_mode = Some(r.read_i32()?);
-            max_bones_per_vertex = Some(r.read_i32()?);
-            min_bone_weight = Some(r.read_f32()?);
-            optimize_bones = Some(FbxImporterOptimizeBonesVariant::parse(r, ver)?);
-            mesh_optimization_flags = Some(r.read_i32()?);
-            index_format = Some(r.read_i32()?);
-            secondary_uv_angle_distortion = Some(r.read_f32()?);
-            secondary_uv_area_distortion = Some(r.read_f32()?);
-            secondary_uv_hard_angle = Some(r.read_f32()?);
-            secondary_uv_margin_method = Some(r.read_i32()?);
-            secondary_uv_min_lightmap_resolution = Some(r.read_f32()?);
-            secondary_uv_min_object_scale = Some(r.read_f32()?);
-            secondary_uv_pack_margin = Some(r.read_f32()?);
-            m_use_file_scale = Some(r.read_bool()?);
-            r.align(4)?;
-            m_file_scale = Some(FbxImporterMFileScaleVariant::parse(r, ver)?);
-            m_file_scale_unit = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_file_scale_factor = Some(r.read_f32()?);
-            r.align(4)?;
+            m_is_readable = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_lod_screen_percentages = Some(FbxImporterMLodScreenPercentagesVariant::parse(rdr, ver)?);
+            m_global_scale = Some(rdr.read_f32()?);
+            m_mesh_compression = Some(rdr.read_i32()?);
+            m_add_colliders = Some(rdr.read_bool()?);
+            m_use_srgb_material_color = Some(rdr.read_bool()?);
+            m_sort_hierarchy_by_name = Some(rdr.read_bool()?);
+            m_import_visibility = Some(rdr.read_bool()?);
+            m_import_blend_shapes = Some(rdr.read_bool()?);
+            m_import_cameras = Some(rdr.read_bool()?);
+            m_import_lights = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_node_name_collision_strategy = Some(rdr.read_i32()?);
+            m_file_ids_generation = Some(rdr.read_i32()?);
+            swap_uv_channels = Some(rdr.read_bool()?);
+            generate_secondary_uv = Some(rdr.read_bool()?);
+            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(rdr, ver)?);
+            keep_quads = Some(rdr.read_bool()?);
+            weld_vertices = Some(FbxImporterWeldVerticesVariant::parse(rdr, ver)?);
+            bake_axis_conversion = Some(rdr.read_bool()?);
+            m_preserve_hierarchy = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            skin_weights_mode = Some(rdr.read_i32()?);
+            max_bones_per_vertex = Some(rdr.read_i32()?);
+            min_bone_weight = Some(rdr.read_f32()?);
+            optimize_bones = Some(FbxImporterOptimizeBonesVariant::parse(rdr, ver)?);
+            mesh_optimization_flags = Some(rdr.read_i32()?);
+            index_format = Some(rdr.read_i32()?);
+            secondary_uv_angle_distortion = Some(rdr.read_f32()?);
+            secondary_uv_area_distortion = Some(rdr.read_f32()?);
+            secondary_uv_hard_angle = Some(rdr.read_f32()?);
+            secondary_uv_margin_method = Some(rdr.read_i32()?);
+            secondary_uv_min_lightmap_resolution = Some(rdr.read_f32()?);
+            secondary_uv_min_object_scale = Some(rdr.read_f32()?);
+            secondary_uv_pack_margin = Some(rdr.read_f32()?);
+            m_use_file_scale = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_file_scale = Some(FbxImporterMFileScaleVariant::parse(rdr, ver)?);
+            m_file_scale_unit = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_file_scale_factor = Some(rdr.read_f32()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            m_is_readable = Some(r.read_bool()?);
-            r.align(4)?;
-            m_lod_screen_percentages = Some(FbxImporterMLodScreenPercentagesVariant::parse(r, ver)?);
-            m_global_scale = Some(r.read_f32()?);
-            m_mesh_compression = Some(r.read_i32()?);
-            m_add_colliders = Some(r.read_bool()?);
-            m_use_srgb_material_color = Some(r.read_bool()?);
-            m_sort_hierarchy_by_name = Some(r.read_bool()?);
-            m_import_visibility = Some(r.read_bool()?);
-            m_import_blend_shapes = Some(r.read_bool()?);
-            m_import_cameras = Some(r.read_bool()?);
-            m_import_lights = Some(r.read_bool()?);
-            r.align(4)?;
-            m_file_ids_generation = Some(r.read_i32()?);
-            swap_uv_channels = Some(r.read_bool()?);
-            generate_secondary_uv = Some(r.read_bool()?);
-            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(r, ver)?);
-            keep_quads = Some(r.read_bool()?);
-            weld_vertices = Some(FbxImporterWeldVerticesVariant::parse(r, ver)?);
-            bake_axis_conversion = Some(r.read_bool()?);
-            m_preserve_hierarchy = Some(r.read_bool()?);
-            r.align(4)?;
-            skin_weights_mode = Some(r.read_i32()?);
-            max_bones_per_vertex = Some(r.read_i32()?);
-            min_bone_weight = Some(r.read_f32()?);
-            mesh_optimization_flags = Some(r.read_i32()?);
-            index_format = Some(r.read_i32()?);
-            secondary_uv_angle_distortion = Some(r.read_f32()?);
-            secondary_uv_area_distortion = Some(r.read_f32()?);
-            secondary_uv_hard_angle = Some(r.read_f32()?);
-            secondary_uv_margin_method = Some(r.read_i32()?);
-            secondary_uv_min_lightmap_resolution = Some(r.read_f32()?);
-            secondary_uv_min_object_scale = Some(r.read_f32()?);
-            secondary_uv_pack_margin = Some(r.read_f32()?);
-            m_use_file_scale = Some(r.read_bool()?);
-            r.align(4)?;
-            m_file_scale = Some(FbxImporterMFileScaleVariant::parse(r, ver)?);
-            m_file_scale_unit = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_file_scale_factor = Some(r.read_f32()?);
-            r.align(4)?;
+            m_is_readable = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_lod_screen_percentages = Some(FbxImporterMLodScreenPercentagesVariant::parse(rdr, ver)?);
+            m_global_scale = Some(rdr.read_f32()?);
+            m_mesh_compression = Some(rdr.read_i32()?);
+            m_add_colliders = Some(rdr.read_bool()?);
+            m_use_srgb_material_color = Some(rdr.read_bool()?);
+            m_sort_hierarchy_by_name = Some(rdr.read_bool()?);
+            m_import_visibility = Some(rdr.read_bool()?);
+            m_import_blend_shapes = Some(rdr.read_bool()?);
+            m_import_cameras = Some(rdr.read_bool()?);
+            m_import_lights = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_file_ids_generation = Some(rdr.read_i32()?);
+            swap_uv_channels = Some(rdr.read_bool()?);
+            generate_secondary_uv = Some(rdr.read_bool()?);
+            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(rdr, ver)?);
+            keep_quads = Some(rdr.read_bool()?);
+            weld_vertices = Some(FbxImporterWeldVerticesVariant::parse(rdr, ver)?);
+            bake_axis_conversion = Some(rdr.read_bool()?);
+            m_preserve_hierarchy = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            skin_weights_mode = Some(rdr.read_i32()?);
+            max_bones_per_vertex = Some(rdr.read_i32()?);
+            min_bone_weight = Some(rdr.read_f32()?);
+            mesh_optimization_flags = Some(rdr.read_i32()?);
+            index_format = Some(rdr.read_i32()?);
+            secondary_uv_angle_distortion = Some(rdr.read_f32()?);
+            secondary_uv_area_distortion = Some(rdr.read_f32()?);
+            secondary_uv_hard_angle = Some(rdr.read_f32()?);
+            secondary_uv_margin_method = Some(rdr.read_i32()?);
+            secondary_uv_min_lightmap_resolution = Some(rdr.read_f32()?);
+            secondary_uv_min_object_scale = Some(rdr.read_f32()?);
+            secondary_uv_pack_margin = Some(rdr.read_f32()?);
+            m_use_file_scale = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_file_scale = Some(FbxImporterMFileScaleVariant::parse(rdr, ver)?);
+            m_file_scale_unit = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_file_scale_factor = Some(rdr.read_f32()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2019, 3, 17) {
-            m_is_readable = Some(r.read_bool()?);
-            r.align(4)?;
-            m_lod_screen_percentages = Some(FbxImporterMLodScreenPercentagesVariant::parse(r, ver)?);
-            m_global_scale = Some(r.read_f32()?);
-            m_mesh_compression = Some(r.read_i32()?);
-            m_add_colliders = Some(r.read_bool()?);
-            m_use_srgb_material_color = Some(r.read_bool()?);
-            m_sort_hierarchy_by_name = Some(r.read_bool()?);
-            m_import_visibility = Some(r.read_bool()?);
-            m_import_blend_shapes = Some(r.read_bool()?);
-            m_import_cameras = Some(r.read_bool()?);
-            m_import_lights = Some(r.read_bool()?);
-            r.align(4)?;
-            m_file_ids_generation = Some(r.read_i32()?);
-            swap_uv_channels = Some(r.read_bool()?);
-            generate_secondary_uv = Some(r.read_bool()?);
-            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(r, ver)?);
-            keep_quads = Some(r.read_bool()?);
-            weld_vertices = Some(FbxImporterWeldVerticesVariant::parse(r, ver)?);
-            m_preserve_hierarchy = Some(r.read_bool()?);
-            r.align(4)?;
-            skin_weights_mode = Some(r.read_i32()?);
-            max_bones_per_vertex = Some(r.read_i32()?);
-            min_bone_weight = Some(r.read_f32()?);
-            mesh_optimization_flags = Some(r.read_i32()?);
-            index_format = Some(r.read_i32()?);
-            secondary_uv_angle_distortion = Some(r.read_f32()?);
-            secondary_uv_area_distortion = Some(r.read_f32()?);
-            secondary_uv_hard_angle = Some(r.read_f32()?);
-            secondary_uv_pack_margin = Some(r.read_f32()?);
-            m_use_file_scale = Some(r.read_bool()?);
-            r.align(4)?;
-            m_file_scale = Some(FbxImporterMFileScaleVariant::parse(r, ver)?);
-            m_file_scale_unit = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_file_scale_factor = Some(r.read_f32()?);
-            r.align(4)?;
+            m_is_readable = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_lod_screen_percentages = Some(FbxImporterMLodScreenPercentagesVariant::parse(rdr, ver)?);
+            m_global_scale = Some(rdr.read_f32()?);
+            m_mesh_compression = Some(rdr.read_i32()?);
+            m_add_colliders = Some(rdr.read_bool()?);
+            m_use_srgb_material_color = Some(rdr.read_bool()?);
+            m_sort_hierarchy_by_name = Some(rdr.read_bool()?);
+            m_import_visibility = Some(rdr.read_bool()?);
+            m_import_blend_shapes = Some(rdr.read_bool()?);
+            m_import_cameras = Some(rdr.read_bool()?);
+            m_import_lights = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_file_ids_generation = Some(rdr.read_i32()?);
+            swap_uv_channels = Some(rdr.read_bool()?);
+            generate_secondary_uv = Some(rdr.read_bool()?);
+            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(rdr, ver)?);
+            keep_quads = Some(rdr.read_bool()?);
+            weld_vertices = Some(FbxImporterWeldVerticesVariant::parse(rdr, ver)?);
+            m_preserve_hierarchy = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            skin_weights_mode = Some(rdr.read_i32()?);
+            max_bones_per_vertex = Some(rdr.read_i32()?);
+            min_bone_weight = Some(rdr.read_f32()?);
+            mesh_optimization_flags = Some(rdr.read_i32()?);
+            index_format = Some(rdr.read_i32()?);
+            secondary_uv_angle_distortion = Some(rdr.read_f32()?);
+            secondary_uv_area_distortion = Some(rdr.read_f32()?);
+            secondary_uv_hard_angle = Some(rdr.read_f32()?);
+            secondary_uv_pack_margin = Some(rdr.read_f32()?);
+            m_use_file_scale = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_file_scale = Some(FbxImporterMFileScaleVariant::parse(rdr, ver)?);
+            m_file_scale_unit = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_file_scale_factor = Some(rdr.read_f32()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2019, 2, 0) {
-            m_is_readable = Some(r.read_bool()?);
-            r.align(4)?;
-            m_lod_screen_percentages = Some(FbxImporterMLodScreenPercentagesVariant::parse(r, ver)?);
-            m_global_scale = Some(r.read_f32()?);
-            m_mesh_compression = Some(r.read_i32()?);
-            m_add_colliders = Some(r.read_bool()?);
-            m_use_srgb_material_color = Some(r.read_bool()?);
-            m_sort_hierarchy_by_name = Some(r.read_bool()?);
-            m_import_visibility = Some(r.read_bool()?);
-            m_import_blend_shapes = Some(r.read_bool()?);
-            m_import_cameras = Some(r.read_bool()?);
-            m_import_lights = Some(r.read_bool()?);
-            r.align(4)?;
-            swap_uv_channels = Some(r.read_bool()?);
-            generate_secondary_uv = Some(r.read_bool()?);
-            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(r, ver)?);
-            keep_quads = Some(r.read_bool()?);
-            weld_vertices = Some(FbxImporterWeldVerticesVariant::parse(r, ver)?);
-            m_preserve_hierarchy = Some(r.read_bool()?);
-            r.align(4)?;
-            skin_weights_mode = Some(r.read_i32()?);
-            max_bones_per_vertex = Some(r.read_i32()?);
-            min_bone_weight = Some(r.read_f32()?);
-            mesh_optimization_flags = Some(r.read_i32()?);
-            index_format = Some(r.read_i32()?);
-            secondary_uv_angle_distortion = Some(r.read_f32()?);
-            secondary_uv_area_distortion = Some(r.read_f32()?);
-            secondary_uv_hard_angle = Some(r.read_f32()?);
-            secondary_uv_pack_margin = Some(r.read_f32()?);
-            m_use_file_scale = Some(r.read_bool()?);
-            r.align(4)?;
-            m_file_scale = Some(FbxImporterMFileScaleVariant::parse(r, ver)?);
-            m_file_scale_unit = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_file_scale_factor = Some(r.read_f32()?);
-            r.align(4)?;
+            m_is_readable = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_lod_screen_percentages = Some(FbxImporterMLodScreenPercentagesVariant::parse(rdr, ver)?);
+            m_global_scale = Some(rdr.read_f32()?);
+            m_mesh_compression = Some(rdr.read_i32()?);
+            m_add_colliders = Some(rdr.read_bool()?);
+            m_use_srgb_material_color = Some(rdr.read_bool()?);
+            m_sort_hierarchy_by_name = Some(rdr.read_bool()?);
+            m_import_visibility = Some(rdr.read_bool()?);
+            m_import_blend_shapes = Some(rdr.read_bool()?);
+            m_import_cameras = Some(rdr.read_bool()?);
+            m_import_lights = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            swap_uv_channels = Some(rdr.read_bool()?);
+            generate_secondary_uv = Some(rdr.read_bool()?);
+            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(rdr, ver)?);
+            keep_quads = Some(rdr.read_bool()?);
+            weld_vertices = Some(FbxImporterWeldVerticesVariant::parse(rdr, ver)?);
+            m_preserve_hierarchy = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            skin_weights_mode = Some(rdr.read_i32()?);
+            max_bones_per_vertex = Some(rdr.read_i32()?);
+            min_bone_weight = Some(rdr.read_f32()?);
+            mesh_optimization_flags = Some(rdr.read_i32()?);
+            index_format = Some(rdr.read_i32()?);
+            secondary_uv_angle_distortion = Some(rdr.read_f32()?);
+            secondary_uv_area_distortion = Some(rdr.read_f32()?);
+            secondary_uv_hard_angle = Some(rdr.read_f32()?);
+            secondary_uv_pack_margin = Some(rdr.read_f32()?);
+            m_use_file_scale = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_file_scale = Some(FbxImporterMFileScaleVariant::parse(rdr, ver)?);
+            m_file_scale_unit = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_file_scale_factor = Some(rdr.read_f32()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_is_readable = Some(r.read_bool()?);
-            r.align(4)?;
-            m_lod_screen_percentages = Some(FbxImporterMLodScreenPercentagesVariant::parse(r, ver)?);
-            m_global_scale = Some(r.read_f32()?);
-            m_mesh_compression = Some(r.read_i32()?);
-            m_add_colliders = Some(r.read_bool()?);
-            m_use_srgb_material_color = Some(r.read_bool()?);
-            m_import_visibility = Some(r.read_bool()?);
-            m_import_blend_shapes = Some(r.read_bool()?);
-            m_import_cameras = Some(r.read_bool()?);
-            m_import_lights = Some(r.read_bool()?);
-            r.align(4)?;
-            swap_uv_channels = Some(r.read_bool()?);
-            generate_secondary_uv = Some(r.read_bool()?);
-            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(r, ver)?);
-            keep_quads = Some(r.read_bool()?);
-            weld_vertices = Some(FbxImporterWeldVerticesVariant::parse(r, ver)?);
-            m_preserve_hierarchy = Some(r.read_bool()?);
-            r.align(4)?;
-            skin_weights_mode = Some(r.read_i32()?);
-            max_bones_per_vertex = Some(r.read_i32()?);
-            min_bone_weight = Some(r.read_f32()?);
-            mesh_optimization_flags = Some(r.read_i32()?);
-            index_format = Some(r.read_i32()?);
-            secondary_uv_angle_distortion = Some(r.read_f32()?);
-            secondary_uv_area_distortion = Some(r.read_f32()?);
-            secondary_uv_hard_angle = Some(r.read_f32()?);
-            secondary_uv_pack_margin = Some(r.read_f32()?);
-            m_use_file_scale = Some(r.read_bool()?);
-            r.align(4)?;
-            m_file_scale = Some(FbxImporterMFileScaleVariant::parse(r, ver)?);
-            m_file_scale_unit = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_file_scale_factor = Some(r.read_f32()?);
-            r.align(4)?;
+            m_is_readable = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_lod_screen_percentages = Some(FbxImporterMLodScreenPercentagesVariant::parse(rdr, ver)?);
+            m_global_scale = Some(rdr.read_f32()?);
+            m_mesh_compression = Some(rdr.read_i32()?);
+            m_add_colliders = Some(rdr.read_bool()?);
+            m_use_srgb_material_color = Some(rdr.read_bool()?);
+            m_import_visibility = Some(rdr.read_bool()?);
+            m_import_blend_shapes = Some(rdr.read_bool()?);
+            m_import_cameras = Some(rdr.read_bool()?);
+            m_import_lights = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            swap_uv_channels = Some(rdr.read_bool()?);
+            generate_secondary_uv = Some(rdr.read_bool()?);
+            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(rdr, ver)?);
+            keep_quads = Some(rdr.read_bool()?);
+            weld_vertices = Some(FbxImporterWeldVerticesVariant::parse(rdr, ver)?);
+            m_preserve_hierarchy = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            skin_weights_mode = Some(rdr.read_i32()?);
+            max_bones_per_vertex = Some(rdr.read_i32()?);
+            min_bone_weight = Some(rdr.read_f32()?);
+            mesh_optimization_flags = Some(rdr.read_i32()?);
+            index_format = Some(rdr.read_i32()?);
+            secondary_uv_angle_distortion = Some(rdr.read_f32()?);
+            secondary_uv_area_distortion = Some(rdr.read_f32()?);
+            secondary_uv_hard_angle = Some(rdr.read_f32()?);
+            secondary_uv_pack_margin = Some(rdr.read_f32()?);
+            m_use_file_scale = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_file_scale = Some(FbxImporterMFileScaleVariant::parse(rdr, ver)?);
+            m_file_scale_unit = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_file_scale_factor = Some(rdr.read_f32()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            m_is_readable = Some(r.read_bool()?);
-            r.align(4)?;
-            m_lod_screen_percentages = Some(FbxImporterMLodScreenPercentagesVariant::parse(r, ver)?);
-            m_global_scale = Some(r.read_f32()?);
-            m_mesh_compression = Some(r.read_i32()?);
-            m_add_colliders = Some(r.read_bool()?);
-            m_use_srgb_material_color = Some(r.read_bool()?);
-            m_import_visibility = Some(r.read_bool()?);
-            m_import_blend_shapes = Some(r.read_bool()?);
-            m_import_cameras = Some(r.read_bool()?);
-            m_import_lights = Some(r.read_bool()?);
-            r.align(4)?;
-            swap_uv_channels = Some(r.read_bool()?);
-            generate_secondary_uv = Some(r.read_bool()?);
-            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(r, ver)?);
-            optimize_mesh_for_gpu = Some(FbxImporterOptimizeMeshForGpuVariant::parse(r, ver)?);
-            keep_quads = Some(r.read_bool()?);
-            weld_vertices = Some(FbxImporterWeldVerticesVariant::parse(r, ver)?);
-            m_preserve_hierarchy = Some(r.read_bool()?);
-            r.align(4)?;
-            index_format = Some(r.read_i32()?);
-            secondary_uv_angle_distortion = Some(r.read_f32()?);
-            secondary_uv_area_distortion = Some(r.read_f32()?);
-            secondary_uv_hard_angle = Some(r.read_f32()?);
-            secondary_uv_pack_margin = Some(r.read_f32()?);
-            m_use_file_scale = Some(r.read_bool()?);
-            r.align(4)?;
-            m_file_scale = Some(FbxImporterMFileScaleVariant::parse(r, ver)?);
-            m_file_scale_unit = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_file_scale_factor = Some(r.read_f32()?);
-            r.align(4)?;
-            m_previous_calculated_global_scale = Some(r.read_f32()?);
-            m_has_previous_calculated_global_scale = Some(r.read_bool()?);
-            r.align(4)?;
+            m_is_readable = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_lod_screen_percentages = Some(FbxImporterMLodScreenPercentagesVariant::parse(rdr, ver)?);
+            m_global_scale = Some(rdr.read_f32()?);
+            m_mesh_compression = Some(rdr.read_i32()?);
+            m_add_colliders = Some(rdr.read_bool()?);
+            m_use_srgb_material_color = Some(rdr.read_bool()?);
+            m_import_visibility = Some(rdr.read_bool()?);
+            m_import_blend_shapes = Some(rdr.read_bool()?);
+            m_import_cameras = Some(rdr.read_bool()?);
+            m_import_lights = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            swap_uv_channels = Some(rdr.read_bool()?);
+            generate_secondary_uv = Some(rdr.read_bool()?);
+            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(rdr, ver)?);
+            optimize_mesh_for_gpu = Some(FbxImporterOptimizeMeshForGpuVariant::parse(rdr, ver)?);
+            keep_quads = Some(rdr.read_bool()?);
+            weld_vertices = Some(FbxImporterWeldVerticesVariant::parse(rdr, ver)?);
+            m_preserve_hierarchy = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            index_format = Some(rdr.read_i32()?);
+            secondary_uv_angle_distortion = Some(rdr.read_f32()?);
+            secondary_uv_area_distortion = Some(rdr.read_f32()?);
+            secondary_uv_hard_angle = Some(rdr.read_f32()?);
+            secondary_uv_pack_margin = Some(rdr.read_f32()?);
+            m_use_file_scale = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_file_scale = Some(FbxImporterMFileScaleVariant::parse(rdr, ver)?);
+            m_file_scale_unit = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_file_scale_factor = Some(rdr.read_f32()?);
+            rdr.align(4)?;
+            m_previous_calculated_global_scale = Some(rdr.read_f32()?);
+            m_has_previous_calculated_global_scale = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 2, 0) {
-            m_is_readable = Some(r.read_bool()?);
-            r.align(4)?;
-            m_lod_screen_percentages = Some(FbxImporterMLodScreenPercentagesVariant::parse(r, ver)?);
-            m_global_scale = Some(r.read_f32()?);
-            m_mesh_compression = Some(r.read_i32()?);
-            m_add_colliders = Some(r.read_bool()?);
-            m_import_visibility = Some(r.read_bool()?);
-            m_import_blend_shapes = Some(r.read_bool()?);
-            m_import_cameras = Some(r.read_bool()?);
-            m_import_lights = Some(r.read_bool()?);
-            r.align(4)?;
-            swap_uv_channels = Some(r.read_bool()?);
-            generate_secondary_uv = Some(r.read_bool()?);
-            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(r, ver)?);
-            optimize_mesh_for_gpu = Some(FbxImporterOptimizeMeshForGpuVariant::parse(r, ver)?);
-            keep_quads = Some(r.read_bool()?);
-            weld_vertices = Some(FbxImporterWeldVerticesVariant::parse(r, ver)?);
-            m_preserve_hierarchy = Some(r.read_bool()?);
-            r.align(4)?;
-            index_format = Some(r.read_i32()?);
-            secondary_uv_angle_distortion = Some(r.read_f32()?);
-            secondary_uv_area_distortion = Some(r.read_f32()?);
-            secondary_uv_hard_angle = Some(r.read_f32()?);
-            secondary_uv_pack_margin = Some(r.read_f32()?);
-            m_use_file_scale = Some(r.read_bool()?);
-            r.align(4)?;
-            m_file_scale = Some(FbxImporterMFileScaleVariant::parse(r, ver)?);
-            m_previous_calculated_global_scale = Some(r.read_f32()?);
-            m_has_previous_calculated_global_scale = Some(r.read_bool()?);
-            r.align(4)?;
+            m_is_readable = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_lod_screen_percentages = Some(FbxImporterMLodScreenPercentagesVariant::parse(rdr, ver)?);
+            m_global_scale = Some(rdr.read_f32()?);
+            m_mesh_compression = Some(rdr.read_i32()?);
+            m_add_colliders = Some(rdr.read_bool()?);
+            m_import_visibility = Some(rdr.read_bool()?);
+            m_import_blend_shapes = Some(rdr.read_bool()?);
+            m_import_cameras = Some(rdr.read_bool()?);
+            m_import_lights = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            swap_uv_channels = Some(rdr.read_bool()?);
+            generate_secondary_uv = Some(rdr.read_bool()?);
+            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(rdr, ver)?);
+            optimize_mesh_for_gpu = Some(FbxImporterOptimizeMeshForGpuVariant::parse(rdr, ver)?);
+            keep_quads = Some(rdr.read_bool()?);
+            weld_vertices = Some(FbxImporterWeldVerticesVariant::parse(rdr, ver)?);
+            m_preserve_hierarchy = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            index_format = Some(rdr.read_i32()?);
+            secondary_uv_angle_distortion = Some(rdr.read_f32()?);
+            secondary_uv_area_distortion = Some(rdr.read_f32()?);
+            secondary_uv_hard_angle = Some(rdr.read_f32()?);
+            secondary_uv_pack_margin = Some(rdr.read_f32()?);
+            m_use_file_scale = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_file_scale = Some(FbxImporterMFileScaleVariant::parse(rdr, ver)?);
+            m_previous_calculated_global_scale = Some(rdr.read_f32()?);
+            m_has_previous_calculated_global_scale = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            m_is_readable = Some(r.read_bool()?);
-            r.align(4)?;
-            m_lod_screen_percentages = Some(FbxImporterMLodScreenPercentagesVariant::parse(r, ver)?);
-            m_global_scale = Some(r.read_f32()?);
-            m_mesh_compression = Some(r.read_i32()?);
-            m_add_colliders = Some(r.read_bool()?);
-            m_import_visibility = Some(r.read_bool()?);
-            m_import_blend_shapes = Some(r.read_bool()?);
-            m_import_cameras = Some(r.read_bool()?);
-            m_import_lights = Some(r.read_bool()?);
-            r.align(4)?;
-            swap_uv_channels = Some(r.read_bool()?);
-            generate_secondary_uv = Some(r.read_bool()?);
-            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(r, ver)?);
-            optimize_mesh_for_gpu = Some(FbxImporterOptimizeMeshForGpuVariant::parse(r, ver)?);
-            keep_quads = Some(r.read_bool()?);
-            weld_vertices = Some(FbxImporterWeldVerticesVariant::parse(r, ver)?);
-            m_preserve_hierarchy = Some(r.read_bool()?);
-            r.align(4)?;
-            index_format = Some(r.read_i32()?);
-            secondary_uv_angle_distortion = Some(r.read_f32()?);
-            secondary_uv_area_distortion = Some(r.read_f32()?);
-            secondary_uv_hard_angle = Some(r.read_f32()?);
-            secondary_uv_pack_margin = Some(r.read_f32()?);
-            m_use_file_scale = Some(r.read_bool()?);
-            r.align(4)?;
-            m_file_scale = Some(FbxImporterMFileScaleVariant::parse(r, ver)?);
+            m_is_readable = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_lod_screen_percentages = Some(FbxImporterMLodScreenPercentagesVariant::parse(rdr, ver)?);
+            m_global_scale = Some(rdr.read_f32()?);
+            m_mesh_compression = Some(rdr.read_i32()?);
+            m_add_colliders = Some(rdr.read_bool()?);
+            m_import_visibility = Some(rdr.read_bool()?);
+            m_import_blend_shapes = Some(rdr.read_bool()?);
+            m_import_cameras = Some(rdr.read_bool()?);
+            m_import_lights = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            swap_uv_channels = Some(rdr.read_bool()?);
+            generate_secondary_uv = Some(rdr.read_bool()?);
+            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(rdr, ver)?);
+            optimize_mesh_for_gpu = Some(FbxImporterOptimizeMeshForGpuVariant::parse(rdr, ver)?);
+            keep_quads = Some(rdr.read_bool()?);
+            weld_vertices = Some(FbxImporterWeldVerticesVariant::parse(rdr, ver)?);
+            m_preserve_hierarchy = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            index_format = Some(rdr.read_i32()?);
+            secondary_uv_angle_distortion = Some(rdr.read_f32()?);
+            secondary_uv_area_distortion = Some(rdr.read_f32()?);
+            secondary_uv_hard_angle = Some(rdr.read_f32()?);
+            secondary_uv_pack_margin = Some(rdr.read_f32()?);
+            m_use_file_scale = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_file_scale = Some(FbxImporterMFileScaleVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            m_is_readable = Some(r.read_bool()?);
-            r.align(4)?;
-            m_lod_screen_percentages = Some(FbxImporterMLodScreenPercentagesVariant::parse(r, ver)?);
-            m_global_scale = Some(r.read_f32()?);
-            m_mesh_compression = Some(r.read_i32()?);
-            m_add_colliders = Some(r.read_bool()?);
-            m_import_visibility = Some(r.read_bool()?);
-            m_import_blend_shapes = Some(r.read_bool()?);
-            m_import_cameras = Some(r.read_bool()?);
-            m_import_lights = Some(r.read_bool()?);
-            r.align(4)?;
-            swap_uv_channels = Some(r.read_bool()?);
-            generate_secondary_uv = Some(r.read_bool()?);
-            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(r, ver)?);
-            optimize_mesh_for_gpu = Some(FbxImporterOptimizeMeshForGpuVariant::parse(r, ver)?);
-            keep_quads = Some(r.read_bool()?);
-            weld_vertices = Some(FbxImporterWeldVerticesVariant::parse(r, ver)?);
-            secondary_uv_angle_distortion = Some(r.read_f32()?);
-            secondary_uv_area_distortion = Some(r.read_f32()?);
-            secondary_uv_hard_angle = Some(r.read_f32()?);
-            secondary_uv_pack_margin = Some(r.read_f32()?);
-            m_use_file_scale = Some(r.read_bool()?);
-            r.align(4)?;
-            m_file_scale = Some(FbxImporterMFileScaleVariant::parse(r, ver)?);
+            m_is_readable = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_lod_screen_percentages = Some(FbxImporterMLodScreenPercentagesVariant::parse(rdr, ver)?);
+            m_global_scale = Some(rdr.read_f32()?);
+            m_mesh_compression = Some(rdr.read_i32()?);
+            m_add_colliders = Some(rdr.read_bool()?);
+            m_import_visibility = Some(rdr.read_bool()?);
+            m_import_blend_shapes = Some(rdr.read_bool()?);
+            m_import_cameras = Some(rdr.read_bool()?);
+            m_import_lights = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            swap_uv_channels = Some(rdr.read_bool()?);
+            generate_secondary_uv = Some(rdr.read_bool()?);
+            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(rdr, ver)?);
+            optimize_mesh_for_gpu = Some(FbxImporterOptimizeMeshForGpuVariant::parse(rdr, ver)?);
+            keep_quads = Some(rdr.read_bool()?);
+            weld_vertices = Some(FbxImporterWeldVerticesVariant::parse(rdr, ver)?);
+            secondary_uv_angle_distortion = Some(rdr.read_f32()?);
+            secondary_uv_area_distortion = Some(rdr.read_f32()?);
+            secondary_uv_hard_angle = Some(rdr.read_f32()?);
+            secondary_uv_pack_margin = Some(rdr.read_f32()?);
+            m_use_file_scale = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_file_scale = Some(FbxImporterMFileScaleVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_is_readable = Some(r.read_bool()?);
-            r.align(4)?;
-            m_lod_screen_percentages = Some(FbxImporterMLodScreenPercentagesVariant::parse(r, ver)?);
-            m_global_scale = Some(r.read_f32()?);
-            m_mesh_compression = Some(r.read_i32()?);
-            m_add_colliders = Some(r.read_bool()?);
-            m_import_blend_shapes = Some(r.read_bool()?);
-            swap_uv_channels = Some(r.read_bool()?);
-            generate_secondary_uv = Some(r.read_bool()?);
-            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(r, ver)?);
-            optimize_mesh_for_gpu = Some(FbxImporterOptimizeMeshForGpuVariant::parse(r, ver)?);
-            keep_quads = Some(r.read_bool()?);
-            weld_vertices = Some(FbxImporterWeldVerticesVariant::parse(r, ver)?);
-            secondary_uv_angle_distortion = Some(r.read_f32()?);
-            secondary_uv_area_distortion = Some(r.read_f32()?);
-            secondary_uv_hard_angle = Some(r.read_f32()?);
-            secondary_uv_pack_margin = Some(r.read_f32()?);
-            m_use_file_scale = Some(r.read_bool()?);
-            r.align(4)?;
-            m_file_scale = Some(FbxImporterMFileScaleVariant::parse(r, ver)?);
+            m_is_readable = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_lod_screen_percentages = Some(FbxImporterMLodScreenPercentagesVariant::parse(rdr, ver)?);
+            m_global_scale = Some(rdr.read_f32()?);
+            m_mesh_compression = Some(rdr.read_i32()?);
+            m_add_colliders = Some(rdr.read_bool()?);
+            m_import_blend_shapes = Some(rdr.read_bool()?);
+            swap_uv_channels = Some(rdr.read_bool()?);
+            generate_secondary_uv = Some(rdr.read_bool()?);
+            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(rdr, ver)?);
+            optimize_mesh_for_gpu = Some(FbxImporterOptimizeMeshForGpuVariant::parse(rdr, ver)?);
+            keep_quads = Some(rdr.read_bool()?);
+            weld_vertices = Some(FbxImporterWeldVerticesVariant::parse(rdr, ver)?);
+            secondary_uv_angle_distortion = Some(rdr.read_f32()?);
+            secondary_uv_area_distortion = Some(rdr.read_f32()?);
+            secondary_uv_hard_angle = Some(rdr.read_f32()?);
+            secondary_uv_pack_margin = Some(rdr.read_f32()?);
+            m_use_file_scale = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_file_scale = Some(FbxImporterMFileScaleVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 1, 0) {
-            m_is_readable = Some(r.read_bool()?);
-            r.align(4)?;
-            m_lod_screen_percentages = Some(FbxImporterMLodScreenPercentagesVariant::parse(r, ver)?);
-            m_global_scale = Some(r.read_f32()?);
-            m_mesh_compression = Some(r.read_i32()?);
-            m_add_colliders = Some(r.read_bool()?);
-            m_import_blend_shapes = Some(r.read_bool()?);
-            swap_uv_channels = Some(r.read_bool()?);
-            generate_secondary_uv = Some(r.read_bool()?);
-            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(r, ver)?);
-            optimize_mesh_for_gpu = Some(FbxImporterOptimizeMeshForGpuVariant::parse(r, ver)?);
-            weld_vertices = Some(FbxImporterWeldVerticesVariant::parse(r, ver)?);
-            secondary_uv_angle_distortion = Some(r.read_f32()?);
-            secondary_uv_area_distortion = Some(r.read_f32()?);
-            secondary_uv_hard_angle = Some(r.read_f32()?);
-            secondary_uv_pack_margin = Some(r.read_f32()?);
+            m_is_readable = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_lod_screen_percentages = Some(FbxImporterMLodScreenPercentagesVariant::parse(rdr, ver)?);
+            m_global_scale = Some(rdr.read_f32()?);
+            m_mesh_compression = Some(rdr.read_i32()?);
+            m_add_colliders = Some(rdr.read_bool()?);
+            m_import_blend_shapes = Some(rdr.read_bool()?);
+            swap_uv_channels = Some(rdr.read_bool()?);
+            generate_secondary_uv = Some(rdr.read_bool()?);
+            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(rdr, ver)?);
+            optimize_mesh_for_gpu = Some(FbxImporterOptimizeMeshForGpuVariant::parse(rdr, ver)?);
+            weld_vertices = Some(FbxImporterWeldVerticesVariant::parse(rdr, ver)?);
+            secondary_uv_angle_distortion = Some(rdr.read_f32()?);
+            secondary_uv_area_distortion = Some(rdr.read_f32()?);
+            secondary_uv_hard_angle = Some(rdr.read_f32()?);
+            secondary_uv_pack_margin = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            m_is_readable = Some(r.read_bool()?);
-            r.align(4)?;
-            m_lod_screen_percentages = Some(FbxImporterMLodScreenPercentagesVariant::parse(r, ver)?);
-            m_global_scale = Some(r.read_f32()?);
-            m_mesh_compression = Some(r.read_i32()?);
-            m_add_colliders = Some(r.read_bool()?);
-            swap_uv_channels = Some(r.read_bool()?);
-            generate_secondary_uv = Some(r.read_bool()?);
-            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(r, ver)?);
-            optimize_mesh_for_gpu = Some(FbxImporterOptimizeMeshForGpuVariant::parse(r, ver)?);
-            secondary_uv_angle_distortion = Some(r.read_f32()?);
-            secondary_uv_area_distortion = Some(r.read_f32()?);
-            secondary_uv_hard_angle = Some(r.read_f32()?);
-            secondary_uv_pack_margin = Some(r.read_f32()?);
+            m_is_readable = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_lod_screen_percentages = Some(FbxImporterMLodScreenPercentagesVariant::parse(rdr, ver)?);
+            m_global_scale = Some(rdr.read_f32()?);
+            m_mesh_compression = Some(rdr.read_i32()?);
+            m_add_colliders = Some(rdr.read_bool()?);
+            swap_uv_channels = Some(rdr.read_bool()?);
+            generate_secondary_uv = Some(rdr.read_bool()?);
+            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(rdr, ver)?);
+            optimize_mesh_for_gpu = Some(FbxImporterOptimizeMeshForGpuVariant::parse(rdr, ver)?);
+            secondary_uv_angle_distortion = Some(rdr.read_f32()?);
+            secondary_uv_area_distortion = Some(rdr.read_f32()?);
+            secondary_uv_hard_angle = Some(rdr.read_f32()?);
+            secondary_uv_pack_margin = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            m_lod_screen_percentages = Some(FbxImporterMLodScreenPercentagesVariant::parse(r, ver)?);
-            m_global_scale = Some(r.read_f32()?);
-            m_mesh_compression = Some(r.read_i32()?);
-            m_add_colliders = Some(r.read_bool()?);
-            swap_uv_channels = Some(r.read_bool()?);
-            generate_secondary_uv = Some(r.read_bool()?);
-            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(r, ver)?);
-            optimize_mesh = Some(r.read_bool()?);
-            r.align(4)?;
-            secondary_uv_angle_distortion = Some(r.read_f32()?);
-            secondary_uv_area_distortion = Some(r.read_f32()?);
-            secondary_uv_hard_angle = Some(r.read_f32()?);
-            secondary_uv_pack_margin = Some(r.read_f32()?);
+            m_lod_screen_percentages = Some(FbxImporterMLodScreenPercentagesVariant::parse(rdr, ver)?);
+            m_global_scale = Some(rdr.read_f32()?);
+            m_mesh_compression = Some(rdr.read_i32()?);
+            m_add_colliders = Some(rdr.read_bool()?);
+            swap_uv_channels = Some(rdr.read_bool()?);
+            generate_secondary_uv = Some(rdr.read_bool()?);
+            m_use_file_units = Some(FbxImporterMUseFileUnitsVariant::parse(rdr, ver)?);
+            optimize_mesh = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            secondary_uv_angle_distortion = Some(rdr.read_f32()?);
+            secondary_uv_area_distortion = Some(rdr.read_f32()?);
+            secondary_uv_hard_angle = Some(rdr.read_f32()?);
+            secondary_uv_pack_margin = Some(rdr.read_f32()?);
         } else {
-            m_first_import_version = Some(r.read_i32()?);
+            m_first_import_version = Some(rdr.read_i32()?);
         }
-            normal_smooth_angle = Some(FbxImporterNormalSmoothAngleVariant::parse(r, ver)?);
+            normal_smooth_angle = Some(FbxImporterNormalSmoothAngleVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            normal_import_mode = Some(r.read_i32()?);
-            tangent_import_mode = Some(FbxImporterTangentImportModeVariant::parse(r, ver)?);
-            normal_calculation_mode = Some(FbxImporterNormalCalculationModeVariant::parse(r, ver)?);
-            legacy_compute_all_normals_from_smoothing_groups_when_mesh_has_blend_shapes = Some(r.read_bool()?);
-            r.align(4)?;
-            blend_shape_normal_import_mode = Some(r.read_i32()?);
-            normal_smoothing_source = Some(FbxImporterNormalSmoothingSourceVariant::parse(r, ver)?);
-            calculate_blendshape_normals_delta_from_imported_normals = Some(r.read_bool()?);
-            r.align(4)?;
-            m_imported_take_infos = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { TakeInfo::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            normal_import_mode = Some(rdr.read_i32()?);
+            tangent_import_mode = Some(FbxImporterTangentImportModeVariant::parse(rdr, ver)?);
+            normal_calculation_mode = Some(FbxImporterNormalCalculationModeVariant::parse(rdr, ver)?);
+            legacy_compute_all_normals_from_smoothing_groups_when_mesh_has_blend_shapes = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            blend_shape_normal_import_mode = Some(rdr.read_i32()?);
+            normal_smoothing_source = Some(FbxImporterNormalSmoothingSourceVariant::parse(rdr, ver)?);
+            calculate_blendshape_normals_delta_from_imported_normals = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_imported_take_infos = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TakeInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            normal_import_mode = Some(r.read_i32()?);
-            tangent_import_mode = Some(FbxImporterTangentImportModeVariant::parse(r, ver)?);
-            normal_calculation_mode = Some(FbxImporterNormalCalculationModeVariant::parse(r, ver)?);
-            legacy_compute_all_normals_from_smoothing_groups_when_mesh_has_blend_shapes = Some(r.read_bool()?);
-            r.align(4)?;
-            blend_shape_normal_import_mode = Some(r.read_i32()?);
-            normal_smoothing_source = Some(FbxImporterNormalSmoothingSourceVariant::parse(r, ver)?);
-            m_imported_take_infos = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { TakeInfo::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            normal_import_mode = Some(rdr.read_i32()?);
+            tangent_import_mode = Some(FbxImporterTangentImportModeVariant::parse(rdr, ver)?);
+            normal_calculation_mode = Some(FbxImporterNormalCalculationModeVariant::parse(rdr, ver)?);
+            legacy_compute_all_normals_from_smoothing_groups_when_mesh_has_blend_shapes = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            blend_shape_normal_import_mode = Some(rdr.read_i32()?);
+            normal_smoothing_source = Some(FbxImporterNormalSmoothingSourceVariant::parse(rdr, ver)?);
+            m_imported_take_infos = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TakeInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            normal_import_mode = Some(r.read_i32()?);
-            tangent_import_mode = Some(FbxImporterTangentImportModeVariant::parse(r, ver)?);
-            normal_calculation_mode = Some(FbxImporterNormalCalculationModeVariant::parse(r, ver)?);
-            legacy_compute_all_normals_from_smoothing_groups_when_mesh_has_blend_shapes = Some(r.read_bool()?);
-            r.align(4)?;
-            blend_shape_normal_import_mode = Some(r.read_i32()?);
-            normal_smoothing_source = Some(FbxImporterNormalSmoothingSourceVariant::parse(r, ver)?);
-            m_imported_take_infos = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { TakeInfo::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_referenced_clips = Some(FbxImporterMReferencedClipsVariant::parse(r, ver)?);
+            normal_import_mode = Some(rdr.read_i32()?);
+            tangent_import_mode = Some(FbxImporterTangentImportModeVariant::parse(rdr, ver)?);
+            normal_calculation_mode = Some(FbxImporterNormalCalculationModeVariant::parse(rdr, ver)?);
+            legacy_compute_all_normals_from_smoothing_groups_when_mesh_has_blend_shapes = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            blend_shape_normal_import_mode = Some(rdr.read_i32()?);
+            normal_smoothing_source = Some(FbxImporterNormalSmoothingSourceVariant::parse(rdr, ver)?);
+            m_imported_take_infos = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TakeInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_referenced_clips = Some(FbxImporterMReferencedClipsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            normal_import_mode = Some(r.read_i32()?);
-            tangent_import_mode = Some(FbxImporterTangentImportModeVariant::parse(r, ver)?);
-            normal_calculation_mode = Some(FbxImporterNormalCalculationModeVariant::parse(r, ver)?);
-            m_imported_take_infos = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { TakeInfo::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_referenced_clips = Some(FbxImporterMReferencedClipsVariant::parse(r, ver)?);
+            normal_import_mode = Some(rdr.read_i32()?);
+            tangent_import_mode = Some(FbxImporterTangentImportModeVariant::parse(rdr, ver)?);
+            normal_calculation_mode = Some(FbxImporterNormalCalculationModeVariant::parse(rdr, ver)?);
+            m_imported_take_infos = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TakeInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_referenced_clips = Some(FbxImporterMReferencedClipsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            normal_import_mode = Some(r.read_i32()?);
-            tangent_import_mode = Some(FbxImporterTangentImportModeVariant::parse(r, ver)?);
-            m_imported_take_infos = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { TakeInfo::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_referenced_clips = Some(FbxImporterMReferencedClipsVariant::parse(r, ver)?);
+            normal_import_mode = Some(rdr.read_i32()?);
+            tangent_import_mode = Some(FbxImporterTangentImportModeVariant::parse(rdr, ver)?);
+            m_imported_take_infos = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TakeInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_referenced_clips = Some(FbxImporterMReferencedClipsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            split_tangents_across_uv = Some(r.read_bool()?);
-            r.align(4)?;
-            normal_import_mode = Some(r.read_i32()?);
-            tangent_import_mode = Some(FbxImporterTangentImportModeVariant::parse(r, ver)?);
-            m_imported_take_infos = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { TakeInfo::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_referenced_clips = Some(FbxImporterMReferencedClipsVariant::parse(r, ver)?);
+            split_tangents_across_uv = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            normal_import_mode = Some(rdr.read_i32()?);
+            tangent_import_mode = Some(FbxImporterTangentImportModeVariant::parse(rdr, ver)?);
+            m_imported_take_infos = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TakeInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_referenced_clips = Some(FbxImporterMReferencedClipsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            split_tangents_across_uv = Some(r.read_bool()?);
-            r.align(4)?;
-            normal_import_mode = Some(r.read_i32()?);
-            tangent_import_mode = Some(FbxImporterTangentImportModeVariant::parse(r, ver)?);
+            split_tangents_across_uv = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            normal_import_mode = Some(rdr.read_i32()?);
+            tangent_import_mode = Some(FbxImporterTangentImportModeVariant::parse(rdr, ver)?);
         } else {
-            split_tangents_across_uv = Some(r.read_bool()?);
-            r.align(4)?;
+            split_tangents_across_uv = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         }
-            m_imported_roots = Some(FbxImporterMImportedRootsVariant::parse(r, ver)?);
-            m_has_extra_root = Some(FbxImporterMHasExtraRootVariant::parse(r, ver)?);
+            m_imported_roots = Some(FbxImporterMImportedRootsVariant::parse(rdr, ver)?);
+            m_has_extra_root = Some(FbxImporterMHasExtraRootVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            m_has_embedded_textures = Some(FbxImporterMHasEmbeddedTexturesVariant::parse(r, ver)?);
-            m_contains_animation = Some(r.read_bool()?);
-            r.align(4)?;
-            m_referenced_clips = Some(FbxImporterMReferencedClipsVariant::parse(r, ver)?);
-            m_import_animation = Some(FbxImporterMImportAnimationVariant::parse(r, ver)?);
-            m_human_description = Some(HumanDescription::parse(r, ver)?);
-            r.align(4)?;
-            m_last_human_description_avatar_source = Some(crate::PPtr::parse(r, ver)?);
-            m_auto_generate_avatar_mapping_if_unspecified = Some(r.read_bool()?);
-            r.align(4)?;
-            m_animation_type = Some(FbxImporterMAnimationTypeVariant::parse(r, ver)?);
-            m_humanoid_oversampling = Some(r.read_i32()?);
-            m_avatar_setup = Some(r.read_i32()?);
-            m_add_humanoid_extra_root_only_when_using_avatar = Some(FbxImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant::parse(r, ver)?);
-            m_import_blend_shape_deform_percent = Some(FbxImporterMImportBlendShapeDeformPercentVariant::parse(r, ver)?);
-            m_remap_materials_if_material_import_mode_is_none = Some(r.read_bool()?);
-            r.align(4)?;
-            m_additional_bone = Some(r.read_bool()?);
-            r.align(4)?;
-            m_user_data = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_variant = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_has_embedded_textures = Some(FbxImporterMHasEmbeddedTexturesVariant::parse(rdr, ver)?);
+            m_contains_animation = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_referenced_clips = Some(FbxImporterMReferencedClipsVariant::parse(rdr, ver)?);
+            m_import_animation = Some(FbxImporterMImportAnimationVariant::parse(rdr, ver)?);
+            m_human_description = Some(HumanDescription::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_last_human_description_avatar_source = Some(crate::PPtr::parse(rdr, ver)?);
+            m_auto_generate_avatar_mapping_if_unspecified = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_animation_type = Some(FbxImporterMAnimationTypeVariant::parse(rdr, ver)?);
+            m_humanoid_oversampling = Some(rdr.read_i32()?);
+            m_avatar_setup = Some(rdr.read_i32()?);
+            m_add_humanoid_extra_root_only_when_using_avatar = Some(FbxImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant::parse(rdr, ver)?);
+            m_import_blend_shape_deform_percent = Some(FbxImporterMImportBlendShapeDeformPercentVariant::parse(rdr, ver)?);
+            m_remap_materials_if_material_import_mode_is_none = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_additional_bone = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_user_data = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2022, 1, 5) {
-            m_has_embedded_textures = Some(FbxImporterMHasEmbeddedTexturesVariant::parse(r, ver)?);
-            m_referenced_clips = Some(FbxImporterMReferencedClipsVariant::parse(r, ver)?);
-            m_import_animation = Some(FbxImporterMImportAnimationVariant::parse(r, ver)?);
-            m_human_description = Some(HumanDescription::parse(r, ver)?);
-            r.align(4)?;
-            m_last_human_description_avatar_source = Some(crate::PPtr::parse(r, ver)?);
-            m_auto_generate_avatar_mapping_if_unspecified = Some(r.read_bool()?);
-            r.align(4)?;
-            m_animation_type = Some(FbxImporterMAnimationTypeVariant::parse(r, ver)?);
-            m_humanoid_oversampling = Some(r.read_i32()?);
-            m_avatar_setup = Some(r.read_i32()?);
-            m_add_humanoid_extra_root_only_when_using_avatar = Some(FbxImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant::parse(r, ver)?);
-            m_import_blend_shape_deform_percent = Some(FbxImporterMImportBlendShapeDeformPercentVariant::parse(r, ver)?);
-            m_remap_materials_if_material_import_mode_is_none = Some(r.read_bool()?);
-            r.align(4)?;
-            m_additional_bone = Some(r.read_bool()?);
-            r.align(4)?;
-            m_user_data = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_variant = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_has_embedded_textures = Some(FbxImporterMHasEmbeddedTexturesVariant::parse(rdr, ver)?);
+            m_referenced_clips = Some(FbxImporterMReferencedClipsVariant::parse(rdr, ver)?);
+            m_import_animation = Some(FbxImporterMImportAnimationVariant::parse(rdr, ver)?);
+            m_human_description = Some(HumanDescription::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_last_human_description_avatar_source = Some(crate::PPtr::parse(rdr, ver)?);
+            m_auto_generate_avatar_mapping_if_unspecified = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_animation_type = Some(FbxImporterMAnimationTypeVariant::parse(rdr, ver)?);
+            m_humanoid_oversampling = Some(rdr.read_i32()?);
+            m_avatar_setup = Some(rdr.read_i32()?);
+            m_add_humanoid_extra_root_only_when_using_avatar = Some(FbxImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant::parse(rdr, ver)?);
+            m_import_blend_shape_deform_percent = Some(FbxImporterMImportBlendShapeDeformPercentVariant::parse(rdr, ver)?);
+            m_remap_materials_if_material_import_mode_is_none = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_additional_bone = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_user_data = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
-            m_has_embedded_textures = Some(FbxImporterMHasEmbeddedTexturesVariant::parse(r, ver)?);
-            m_referenced_clips = Some(FbxImporterMReferencedClipsVariant::parse(r, ver)?);
-            m_import_animation = Some(FbxImporterMImportAnimationVariant::parse(r, ver)?);
-            m_human_description = Some(HumanDescription::parse(r, ver)?);
-            r.align(4)?;
-            m_last_human_description_avatar_source = Some(crate::PPtr::parse(r, ver)?);
-            m_auto_generate_avatar_mapping_if_unspecified = Some(r.read_bool()?);
-            r.align(4)?;
-            m_animation_type = Some(FbxImporterMAnimationTypeVariant::parse(r, ver)?);
-            m_humanoid_oversampling = Some(r.read_i32()?);
-            m_avatar_setup = Some(r.read_i32()?);
-            m_add_humanoid_extra_root_only_when_using_avatar = Some(FbxImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant::parse(r, ver)?);
-            m_import_blend_shape_deform_percent = Some(FbxImporterMImportBlendShapeDeformPercentVariant::parse(r, ver)?);
-            m_additional_bone = Some(r.read_bool()?);
-            r.align(4)?;
-            m_user_data = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_variant = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_has_embedded_textures = Some(FbxImporterMHasEmbeddedTexturesVariant::parse(rdr, ver)?);
+            m_referenced_clips = Some(FbxImporterMReferencedClipsVariant::parse(rdr, ver)?);
+            m_import_animation = Some(FbxImporterMImportAnimationVariant::parse(rdr, ver)?);
+            m_human_description = Some(HumanDescription::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_last_human_description_avatar_source = Some(crate::PPtr::parse(rdr, ver)?);
+            m_auto_generate_avatar_mapping_if_unspecified = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_animation_type = Some(FbxImporterMAnimationTypeVariant::parse(rdr, ver)?);
+            m_humanoid_oversampling = Some(rdr.read_i32()?);
+            m_avatar_setup = Some(rdr.read_i32()?);
+            m_add_humanoid_extra_root_only_when_using_avatar = Some(FbxImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant::parse(rdr, ver)?);
+            m_import_blend_shape_deform_percent = Some(FbxImporterMImportBlendShapeDeformPercentVariant::parse(rdr, ver)?);
+            m_additional_bone = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_user_data = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2021, 3, 5) {
-            m_has_embedded_textures = Some(FbxImporterMHasEmbeddedTexturesVariant::parse(r, ver)?);
-            m_referenced_clips = Some(FbxImporterMReferencedClipsVariant::parse(r, ver)?);
-            m_import_animation = Some(FbxImporterMImportAnimationVariant::parse(r, ver)?);
-            m_human_description = Some(HumanDescription::parse(r, ver)?);
-            r.align(4)?;
-            m_last_human_description_avatar_source = Some(crate::PPtr::parse(r, ver)?);
-            m_auto_generate_avatar_mapping_if_unspecified = Some(r.read_bool()?);
-            r.align(4)?;
-            m_animation_type = Some(FbxImporterMAnimationTypeVariant::parse(r, ver)?);
-            m_humanoid_oversampling = Some(r.read_i32()?);
-            m_avatar_setup = Some(r.read_i32()?);
-            m_add_humanoid_extra_root_only_when_using_avatar = Some(FbxImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant::parse(r, ver)?);
-            m_remap_materials_if_material_import_mode_is_none = Some(r.read_bool()?);
-            r.align(4)?;
-            m_additional_bone = Some(r.read_bool()?);
-            r.align(4)?;
-            m_user_data = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_variant = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_has_embedded_textures = Some(FbxImporterMHasEmbeddedTexturesVariant::parse(rdr, ver)?);
+            m_referenced_clips = Some(FbxImporterMReferencedClipsVariant::parse(rdr, ver)?);
+            m_import_animation = Some(FbxImporterMImportAnimationVariant::parse(rdr, ver)?);
+            m_human_description = Some(HumanDescription::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_last_human_description_avatar_source = Some(crate::PPtr::parse(rdr, ver)?);
+            m_auto_generate_avatar_mapping_if_unspecified = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_animation_type = Some(FbxImporterMAnimationTypeVariant::parse(rdr, ver)?);
+            m_humanoid_oversampling = Some(rdr.read_i32()?);
+            m_avatar_setup = Some(rdr.read_i32()?);
+            m_add_humanoid_extra_root_only_when_using_avatar = Some(FbxImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant::parse(rdr, ver)?);
+            m_remap_materials_if_material_import_mode_is_none = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_additional_bone = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_user_data = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2021, 1, 0) {
-            m_has_embedded_textures = Some(FbxImporterMHasEmbeddedTexturesVariant::parse(r, ver)?);
-            m_referenced_clips = Some(FbxImporterMReferencedClipsVariant::parse(r, ver)?);
-            m_import_animation = Some(FbxImporterMImportAnimationVariant::parse(r, ver)?);
-            m_human_description = Some(HumanDescription::parse(r, ver)?);
-            r.align(4)?;
-            m_last_human_description_avatar_source = Some(crate::PPtr::parse(r, ver)?);
-            m_auto_generate_avatar_mapping_if_unspecified = Some(r.read_bool()?);
-            r.align(4)?;
-            m_animation_type = Some(FbxImporterMAnimationTypeVariant::parse(r, ver)?);
-            m_humanoid_oversampling = Some(r.read_i32()?);
-            m_avatar_setup = Some(r.read_i32()?);
-            m_add_humanoid_extra_root_only_when_using_avatar = Some(FbxImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant::parse(r, ver)?);
-            m_additional_bone = Some(r.read_bool()?);
-            r.align(4)?;
-            m_user_data = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_variant = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_has_embedded_textures = Some(FbxImporterMHasEmbeddedTexturesVariant::parse(rdr, ver)?);
+            m_referenced_clips = Some(FbxImporterMReferencedClipsVariant::parse(rdr, ver)?);
+            m_import_animation = Some(FbxImporterMImportAnimationVariant::parse(rdr, ver)?);
+            m_human_description = Some(HumanDescription::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_last_human_description_avatar_source = Some(crate::PPtr::parse(rdr, ver)?);
+            m_auto_generate_avatar_mapping_if_unspecified = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_animation_type = Some(FbxImporterMAnimationTypeVariant::parse(rdr, ver)?);
+            m_humanoid_oversampling = Some(rdr.read_i32()?);
+            m_avatar_setup = Some(rdr.read_i32()?);
+            m_add_humanoid_extra_root_only_when_using_avatar = Some(FbxImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant::parse(rdr, ver)?);
+            m_additional_bone = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_user_data = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2020, 3, 37) {
-            m_has_embedded_textures = Some(FbxImporterMHasEmbeddedTexturesVariant::parse(r, ver)?);
-            m_referenced_clips = Some(FbxImporterMReferencedClipsVariant::parse(r, ver)?);
-            m_import_animation = Some(FbxImporterMImportAnimationVariant::parse(r, ver)?);
-            m_human_description = Some(HumanDescription::parse(r, ver)?);
-            r.align(4)?;
-            m_last_human_description_avatar_source = Some(crate::PPtr::parse(r, ver)?);
-            m_auto_generate_avatar_mapping_if_unspecified = Some(r.read_bool()?);
-            r.align(4)?;
-            m_animation_type = Some(FbxImporterMAnimationTypeVariant::parse(r, ver)?);
-            m_humanoid_oversampling = Some(r.read_i32()?);
-            m_avatar_setup = Some(r.read_i32()?);
-            m_add_humanoid_extra_root_only_when_using_avatar = Some(FbxImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant::parse(r, ver)?);
-            m_remap_materials_if_material_import_mode_is_none = Some(r.read_bool()?);
-            r.align(4)?;
-            m_additional_bone = Some(r.read_bool()?);
-            r.align(4)?;
-            m_user_data = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_variant = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_has_embedded_textures = Some(FbxImporterMHasEmbeddedTexturesVariant::parse(rdr, ver)?);
+            m_referenced_clips = Some(FbxImporterMReferencedClipsVariant::parse(rdr, ver)?);
+            m_import_animation = Some(FbxImporterMImportAnimationVariant::parse(rdr, ver)?);
+            m_human_description = Some(HumanDescription::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_last_human_description_avatar_source = Some(crate::PPtr::parse(rdr, ver)?);
+            m_auto_generate_avatar_mapping_if_unspecified = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_animation_type = Some(FbxImporterMAnimationTypeVariant::parse(rdr, ver)?);
+            m_humanoid_oversampling = Some(rdr.read_i32()?);
+            m_avatar_setup = Some(rdr.read_i32()?);
+            m_add_humanoid_extra_root_only_when_using_avatar = Some(FbxImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant::parse(rdr, ver)?);
+            m_remap_materials_if_material_import_mode_is_none = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_additional_bone = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_user_data = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            m_has_embedded_textures = Some(FbxImporterMHasEmbeddedTexturesVariant::parse(r, ver)?);
-            m_referenced_clips = Some(FbxImporterMReferencedClipsVariant::parse(r, ver)?);
-            m_import_animation = Some(FbxImporterMImportAnimationVariant::parse(r, ver)?);
-            m_human_description = Some(HumanDescription::parse(r, ver)?);
-            r.align(4)?;
-            m_last_human_description_avatar_source = Some(crate::PPtr::parse(r, ver)?);
-            m_auto_generate_avatar_mapping_if_unspecified = Some(r.read_bool()?);
-            r.align(4)?;
-            m_animation_type = Some(FbxImporterMAnimationTypeVariant::parse(r, ver)?);
-            m_humanoid_oversampling = Some(r.read_i32()?);
-            m_avatar_setup = Some(r.read_i32()?);
-            m_add_humanoid_extra_root_only_when_using_avatar = Some(FbxImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant::parse(r, ver)?);
-            m_additional_bone = Some(r.read_bool()?);
-            r.align(4)?;
-            m_user_data = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_variant = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_has_embedded_textures = Some(FbxImporterMHasEmbeddedTexturesVariant::parse(rdr, ver)?);
+            m_referenced_clips = Some(FbxImporterMReferencedClipsVariant::parse(rdr, ver)?);
+            m_import_animation = Some(FbxImporterMImportAnimationVariant::parse(rdr, ver)?);
+            m_human_description = Some(HumanDescription::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_last_human_description_avatar_source = Some(crate::PPtr::parse(rdr, ver)?);
+            m_auto_generate_avatar_mapping_if_unspecified = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_animation_type = Some(FbxImporterMAnimationTypeVariant::parse(rdr, ver)?);
+            m_humanoid_oversampling = Some(rdr.read_i32()?);
+            m_avatar_setup = Some(rdr.read_i32()?);
+            m_add_humanoid_extra_root_only_when_using_avatar = Some(FbxImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant::parse(rdr, ver)?);
+            m_additional_bone = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_user_data = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            m_has_embedded_textures = Some(FbxImporterMHasEmbeddedTexturesVariant::parse(r, ver)?);
-            m_referenced_clips = Some(FbxImporterMReferencedClipsVariant::parse(r, ver)?);
-            m_import_animation = Some(FbxImporterMImportAnimationVariant::parse(r, ver)?);
-            m_human_description = Some(HumanDescription::parse(r, ver)?);
-            r.align(4)?;
-            m_last_human_description_avatar_source = Some(crate::PPtr::parse(r, ver)?);
-            m_auto_generate_avatar_mapping_if_unspecified = Some(r.read_bool()?);
-            r.align(4)?;
-            m_animation_type = Some(FbxImporterMAnimationTypeVariant::parse(r, ver)?);
-            m_humanoid_oversampling = Some(r.read_i32()?);
-            m_avatar_setup = Some(r.read_i32()?);
-            m_additional_bone = Some(r.read_bool()?);
-            r.align(4)?;
-            m_user_data = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_variant = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_has_embedded_textures = Some(FbxImporterMHasEmbeddedTexturesVariant::parse(rdr, ver)?);
+            m_referenced_clips = Some(FbxImporterMReferencedClipsVariant::parse(rdr, ver)?);
+            m_import_animation = Some(FbxImporterMImportAnimationVariant::parse(rdr, ver)?);
+            m_human_description = Some(HumanDescription::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_last_human_description_avatar_source = Some(crate::PPtr::parse(rdr, ver)?);
+            m_auto_generate_avatar_mapping_if_unspecified = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_animation_type = Some(FbxImporterMAnimationTypeVariant::parse(rdr, ver)?);
+            m_humanoid_oversampling = Some(rdr.read_i32()?);
+            m_avatar_setup = Some(rdr.read_i32()?);
+            m_additional_bone = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_user_data = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_has_embedded_textures = Some(FbxImporterMHasEmbeddedTexturesVariant::parse(r, ver)?);
-            m_referenced_clips = Some(FbxImporterMReferencedClipsVariant::parse(r, ver)?);
-            m_import_animation = Some(FbxImporterMImportAnimationVariant::parse(r, ver)?);
-            m_copy_avatar = Some(r.read_bool()?);
-            r.align(4)?;
-            m_human_description = Some(HumanDescription::parse(r, ver)?);
-            r.align(4)?;
-            m_last_human_description_avatar_source = Some(crate::PPtr::parse(r, ver)?);
-            m_animation_type = Some(FbxImporterMAnimationTypeVariant::parse(r, ver)?);
-            m_humanoid_oversampling = Some(r.read_i32()?);
-            m_additional_bone = Some(r.read_bool()?);
-            r.align(4)?;
-            m_user_data = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_variant = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_has_embedded_textures = Some(FbxImporterMHasEmbeddedTexturesVariant::parse(rdr, ver)?);
+            m_referenced_clips = Some(FbxImporterMReferencedClipsVariant::parse(rdr, ver)?);
+            m_import_animation = Some(FbxImporterMImportAnimationVariant::parse(rdr, ver)?);
+            m_copy_avatar = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_human_description = Some(HumanDescription::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_last_human_description_avatar_source = Some(crate::PPtr::parse(rdr, ver)?);
+            m_animation_type = Some(FbxImporterMAnimationTypeVariant::parse(rdr, ver)?);
+            m_humanoid_oversampling = Some(rdr.read_i32()?);
+            m_additional_bone = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_user_data = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            m_has_embedded_textures = Some(FbxImporterMHasEmbeddedTexturesVariant::parse(r, ver)?);
-            m_import_animation = Some(FbxImporterMImportAnimationVariant::parse(r, ver)?);
-            m_copy_avatar = Some(r.read_bool()?);
-            r.align(4)?;
-            m_human_description = Some(HumanDescription::parse(r, ver)?);
-            r.align(4)?;
-            m_last_human_description_avatar_source = Some(crate::PPtr::parse(r, ver)?);
-            m_animation_type = Some(FbxImporterMAnimationTypeVariant::parse(r, ver)?);
-            m_humanoid_oversampling = Some(r.read_i32()?);
-            m_additional_bone = Some(r.read_bool()?);
-            r.align(4)?;
-            m_user_data = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_variant = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_has_embedded_textures = Some(FbxImporterMHasEmbeddedTexturesVariant::parse(rdr, ver)?);
+            m_import_animation = Some(FbxImporterMImportAnimationVariant::parse(rdr, ver)?);
+            m_copy_avatar = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_human_description = Some(HumanDescription::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_last_human_description_avatar_source = Some(crate::PPtr::parse(rdr, ver)?);
+            m_animation_type = Some(FbxImporterMAnimationTypeVariant::parse(rdr, ver)?);
+            m_humanoid_oversampling = Some(rdr.read_i32()?);
+            m_additional_bone = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_user_data = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            m_import_animation = Some(FbxImporterMImportAnimationVariant::parse(r, ver)?);
-            m_copy_avatar = Some(r.read_bool()?);
-            r.align(4)?;
-            m_human_description = Some(HumanDescription::parse(r, ver)?);
-            r.align(4)?;
-            m_last_human_description_avatar_source = Some(crate::PPtr::parse(r, ver)?);
-            m_animation_type = Some(FbxImporterMAnimationTypeVariant::parse(r, ver)?);
-            m_humanoid_oversampling = Some(r.read_i32()?);
-            m_additional_bone = Some(r.read_bool()?);
-            r.align(4)?;
-            m_user_data = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_variant = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_import_animation = Some(FbxImporterMImportAnimationVariant::parse(rdr, ver)?);
+            m_copy_avatar = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_human_description = Some(HumanDescription::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_last_human_description_avatar_source = Some(crate::PPtr::parse(rdr, ver)?);
+            m_animation_type = Some(FbxImporterMAnimationTypeVariant::parse(rdr, ver)?);
+            m_humanoid_oversampling = Some(rdr.read_i32()?);
+            m_additional_bone = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_user_data = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_import_animation = Some(FbxImporterMImportAnimationVariant::parse(r, ver)?);
-            m_copy_avatar = Some(r.read_bool()?);
-            r.align(4)?;
-            m_human_description = Some(HumanDescription::parse(r, ver)?);
-            r.align(4)?;
-            m_last_human_description_avatar_source = Some(crate::PPtr::parse(r, ver)?);
-            m_animation_type = Some(FbxImporterMAnimationTypeVariant::parse(r, ver)?);
-            m_additional_bone = Some(r.read_bool()?);
-            r.align(4)?;
-            m_user_data = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_variant = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_import_animation = Some(FbxImporterMImportAnimationVariant::parse(rdr, ver)?);
+            m_copy_avatar = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_human_description = Some(HumanDescription::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_last_human_description_avatar_source = Some(crate::PPtr::parse(rdr, ver)?);
+            m_animation_type = Some(FbxImporterMAnimationTypeVariant::parse(rdr, ver)?);
+            m_additional_bone = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_user_data = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 3, 3) {
-            m_import_animation = Some(FbxImporterMImportAnimationVariant::parse(r, ver)?);
-            m_copy_avatar = Some(r.read_bool()?);
-            r.align(4)?;
-            m_human_description = Some(HumanDescription::parse(r, ver)?);
-            r.align(4)?;
-            m_last_human_description_avatar_source = Some(crate::PPtr::parse(r, ver)?);
-            m_animation_type = Some(FbxImporterMAnimationTypeVariant::parse(r, ver)?);
-            m_additional_bone = Some(r.read_bool()?);
-            r.align(4)?;
-            m_user_data = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_import_animation = Some(FbxImporterMImportAnimationVariant::parse(rdr, ver)?);
+            m_copy_avatar = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_human_description = Some(HumanDescription::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_last_human_description_avatar_source = Some(crate::PPtr::parse(rdr, ver)?);
+            m_animation_type = Some(FbxImporterMAnimationTypeVariant::parse(rdr, ver)?);
+            m_additional_bone = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_user_data = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            m_import_animation = Some(FbxImporterMImportAnimationVariant::parse(r, ver)?);
-            m_copy_avatar = Some(r.read_bool()?);
-            r.align(4)?;
-            m_human_description = Some(HumanDescription::parse(r, ver)?);
-            r.align(4)?;
-            m_last_human_description_avatar_source = Some(crate::PPtr::parse(r, ver)?);
-            m_animation_type = Some(FbxImporterMAnimationTypeVariant::parse(r, ver)?);
-            m_user_data = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_import_animation = Some(FbxImporterMImportAnimationVariant::parse(rdr, ver)?);
+            m_copy_avatar = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_human_description = Some(HumanDescription::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_last_human_description_avatar_source = Some(crate::PPtr::parse(rdr, ver)?);
+            m_animation_type = Some(FbxImporterMAnimationTypeVariant::parse(rdr, ver)?);
+            m_user_data = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            m_import_animation = Some(FbxImporterMImportAnimationVariant::parse(r, ver)?);
-            m_copy_avatar = Some(r.read_bool()?);
-            r.align(4)?;
-            m_human_description = Some(HumanDescription::parse(r, ver)?);
-            r.align(4)?;
-            m_last_human_description_avatar_source = Some(crate::PPtr::parse(r, ver)?);
-            m_additional_bone = Some(r.read_bool()?);
-            r.align(4)?;
-            m_animation_type = Some(FbxImporterMAnimationTypeVariant::parse(r, ver)?);
-            m_user_data = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_import_animation = Some(FbxImporterMImportAnimationVariant::parse(rdr, ver)?);
+            m_copy_avatar = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_human_description = Some(HumanDescription::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_last_human_description_avatar_source = Some(crate::PPtr::parse(rdr, ver)?);
+            m_additional_bone = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_animation_type = Some(FbxImporterMAnimationTypeVariant::parse(rdr, ver)?);
+            m_user_data = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         } else {
         }
 

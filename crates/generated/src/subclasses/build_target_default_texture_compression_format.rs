@@ -8,12 +8,12 @@ pub struct BuildTargetDefaultTextureCompressionFormat {
 
 impl crate::Parse for BuildTargetDefaultTextureCompressionFormat {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_build_target = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_format = r.read_i32()?;
+        let m_build_target = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_format = rdr.read_i32()?;
 
         Ok(BuildTargetDefaultTextureCompressionFormat {
             m_build_target,

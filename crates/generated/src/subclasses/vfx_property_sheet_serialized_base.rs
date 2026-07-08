@@ -19,31 +19,31 @@ pub struct VfxPropertySheetSerializedBase {
 
 impl crate::Parse for VfxPropertySheetSerializedBase {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_float = VfxField::parse(r, ver)?;
-        r.align(4)?;
-        let m_vector2f = VfxField::parse(r, ver)?;
-        r.align(4)?;
-        let m_vector3f = VfxField::parse(r, ver)?;
-        r.align(4)?;
-        let m_vector4f = VfxField::parse(r, ver)?;
-        r.align(4)?;
-        let m_uint = VfxField::parse(r, ver)?;
-        r.align(4)?;
-        let m_int = VfxField::parse(r, ver)?;
-        r.align(4)?;
-        let m_matrix4x4f = VfxField::parse(r, ver)?;
-        r.align(4)?;
-        let m_animation_curve = VfxField::parse(r, ver)?;
-        r.align(4)?;
-        let m_gradient = VfxField::parse(r, ver)?;
-        r.align(4)?;
-        let m_named_object = VfxField::parse(r, ver)?;
-        r.align(4)?;
-        let m_bool = VfxField::parse(r, ver)?;
-        r.align(4)?;
+        let m_float = VfxField::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let m_vector2f = VfxField::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let m_vector3f = VfxField::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let m_vector4f = VfxField::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let m_uint = VfxField::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let m_int = VfxField::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let m_matrix4x4f = VfxField::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let m_animation_curve = VfxField::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let m_gradient = VfxField::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let m_named_object = VfxField::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let m_bool = VfxField::parse(rdr, ver)?;
+        rdr.align(4)?;
 
         Ok(VfxPropertySheetSerializedBase {
             m_float,

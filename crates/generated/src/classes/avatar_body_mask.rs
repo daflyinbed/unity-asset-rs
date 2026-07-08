@@ -11,15 +11,15 @@ pub struct AvatarBodyMask {
 
 impl crate::Parse for AvatarBodyMask {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_mask = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_mask = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
         let m_elements = if *ver >= crate::UnityVersion::new(4, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { TransformMaskElement::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TransformMaskElement::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Some(v)
         } else {
             None

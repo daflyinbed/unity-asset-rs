@@ -7,11 +7,11 @@ pub struct CollabEditorSettings {
 
 impl crate::Parse for CollabEditorSettings {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let in_progress_enabled = r.read_bool()?;
-        r.align(4)?;
+        let in_progress_enabled = rdr.read_bool()?;
+        rdr.align(4)?;
 
         Ok(CollabEditorSettings {
             in_progress_enabled,

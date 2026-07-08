@@ -17,19 +17,19 @@ pub enum BuiltAssetBundleInfoSetMFlipHorizontalVariant {
 
 impl crate::Parse for BuiltAssetBundleInfoSetMFlipHorizontalVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 2, 1) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V2017_2_1(v))
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V2017_2(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -44,16 +44,16 @@ pub enum BuiltAssetBundleInfoSetMTargetSettingsVariant {
 
 impl crate::Parse for BuiltAssetBundleInfoSetMTargetSettingsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = VideoClipImporterTargetSettings::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = VideoClipImporterTargetSettings::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2023_3(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i32()?; let b = VideoClipImporterTargetSettings::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i32()?; let b = VideoClipImporterTargetSettings::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -95,7 +95,7 @@ pub struct BuiltAssetBundleInfoSet {
 
 impl crate::Parse for BuiltAssetBundleInfoSet {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut bundle_infos = None;
@@ -130,200 +130,200 @@ impl crate::Parse for BuiltAssetBundleInfoSet {
         let mut m_source_audio_sample_rate = None;
         let mut m_pixel_aspect_ratio_denominator = None;
         if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            m_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_external_objects = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(r, ver)?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_used_file_i_ds = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_frame_range = Some(r.read_i32()?);
-            m_start_frame = Some(r.read_i32()?);
-            m_end_frame = Some(r.read_i32()?);
-            m_color_space = Some(r.read_i32()?);
-            m_deinterlace = Some(r.read_i32()?);
-            m_encode_alpha = Some(r.read_bool()?);
-            m_flip_vertical = Some(r.read_bool()?);
-            m_flip_horizontal = Some(BuiltAssetBundleInfoSetMFlipHorizontalVariant::parse(r, ver)?);
-            m_import_audio = Some(r.read_bool()?);
-            r.align(4)?;
-            m_target_settings = Some(BuiltAssetBundleInfoSetMTargetSettingsVariant::parse(r, ver)?);
-            m_output = Some(VideoClipImporterOutput::parse(r, ver)?);
-            r.align(4)?;
-            m_user_data = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_variant = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_frame_range = Some(rdr.read_i32()?);
+            m_start_frame = Some(rdr.read_i32()?);
+            m_end_frame = Some(rdr.read_i32()?);
+            m_color_space = Some(rdr.read_i32()?);
+            m_deinterlace = Some(rdr.read_i32()?);
+            m_encode_alpha = Some(rdr.read_bool()?);
+            m_flip_vertical = Some(rdr.read_bool()?);
+            m_flip_horizontal = Some(BuiltAssetBundleInfoSetMFlipHorizontalVariant::parse(rdr, ver)?);
+            m_import_audio = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_target_settings = Some(BuiltAssetBundleInfoSetMTargetSettingsVariant::parse(rdr, ver)?);
+            m_output = Some(VideoClipImporterOutput::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_user_data = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_external_objects = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(r, ver)?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_used_file_i_ds = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_use_legacy_importer = Some(r.read_bool()?);
-            r.align(4)?;
-            m_quality = Some(r.read_f32()?);
-            m_is_color_linear = Some(r.read_bool()?);
-            r.align(4)?;
-            m_frame_range = Some(r.read_i32()?);
-            m_start_frame = Some(r.read_i32()?);
-            m_end_frame = Some(r.read_i32()?);
-            m_color_space = Some(r.read_i32()?);
-            m_deinterlace = Some(r.read_i32()?);
-            m_encode_alpha = Some(r.read_bool()?);
-            m_flip_vertical = Some(r.read_bool()?);
-            m_flip_horizontal = Some(BuiltAssetBundleInfoSetMFlipHorizontalVariant::parse(r, ver)?);
-            m_import_audio = Some(r.read_bool()?);
-            r.align(4)?;
-            m_target_settings = Some(BuiltAssetBundleInfoSetMTargetSettingsVariant::parse(r, ver)?);
-            m_output = Some(VideoClipImporterOutput::parse(r, ver)?);
-            r.align(4)?;
-            m_user_data = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_variant = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_use_legacy_importer = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_quality = Some(rdr.read_f32()?);
+            m_is_color_linear = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_frame_range = Some(rdr.read_i32()?);
+            m_start_frame = Some(rdr.read_i32()?);
+            m_end_frame = Some(rdr.read_i32()?);
+            m_color_space = Some(rdr.read_i32()?);
+            m_deinterlace = Some(rdr.read_i32()?);
+            m_encode_alpha = Some(rdr.read_bool()?);
+            m_flip_vertical = Some(rdr.read_bool()?);
+            m_flip_horizontal = Some(BuiltAssetBundleInfoSetMFlipHorizontalVariant::parse(rdr, ver)?);
+            m_import_audio = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_target_settings = Some(BuiltAssetBundleInfoSetMTargetSettingsVariant::parse(rdr, ver)?);
+            m_output = Some(VideoClipImporterOutput::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_user_data = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 2, 1) {
-            m_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_external_objects = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(r, ver)?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_use_legacy_importer = Some(r.read_bool()?);
-            r.align(4)?;
-            m_quality = Some(r.read_f32()?);
-            m_is_color_linear = Some(r.read_bool()?);
-            r.align(4)?;
-            m_frame_range = Some(r.read_i32()?);
-            m_start_frame = Some(r.read_i32()?);
-            m_end_frame = Some(r.read_i32()?);
-            m_color_space = Some(r.read_i32()?);
-            m_deinterlace = Some(r.read_i32()?);
-            m_encode_alpha = Some(r.read_bool()?);
-            m_flip_vertical = Some(r.read_bool()?);
-            m_flip_horizontal = Some(BuiltAssetBundleInfoSetMFlipHorizontalVariant::parse(r, ver)?);
-            m_import_audio = Some(r.read_bool()?);
-            r.align(4)?;
-            m_target_settings = Some(BuiltAssetBundleInfoSetMTargetSettingsVariant::parse(r, ver)?);
-            m_output = Some(VideoClipImporterOutput::parse(r, ver)?);
-            r.align(4)?;
-            m_user_data = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_variant = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_use_legacy_importer = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_quality = Some(rdr.read_f32()?);
+            m_is_color_linear = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_frame_range = Some(rdr.read_i32()?);
+            m_start_frame = Some(rdr.read_i32()?);
+            m_end_frame = Some(rdr.read_i32()?);
+            m_color_space = Some(rdr.read_i32()?);
+            m_deinterlace = Some(rdr.read_i32()?);
+            m_encode_alpha = Some(rdr.read_bool()?);
+            m_flip_vertical = Some(rdr.read_bool()?);
+            m_flip_horizontal = Some(BuiltAssetBundleInfoSetMFlipHorizontalVariant::parse(rdr, ver)?);
+            m_import_audio = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_target_settings = Some(BuiltAssetBundleInfoSetMTargetSettingsVariant::parse(rdr, ver)?);
+            m_output = Some(VideoClipImporterOutput::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_user_data = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            m_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_external_objects = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(r, ver)?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_use_legacy_importer = Some(r.read_bool()?);
-            r.align(4)?;
-            m_quality = Some(r.read_f32()?);
-            m_is_color_linear = Some(r.read_bool()?);
-            r.align(4)?;
-            m_original_width = Some(r.read_i32()?);
-            m_original_height = Some(r.read_i32()?);
-            m_frame_range = Some(r.read_i32()?);
-            m_start_frame = Some(r.read_i32()?);
-            m_end_frame = Some(r.read_i32()?);
-            m_frame_count = Some(r.read_i32()?);
-            m_frame_rate = Some(r.read_f64()?);
-            m_color_space = Some(r.read_i32()?);
-            m_deinterlace = Some(r.read_i32()?);
-            m_source_file_size = Some(r.read_u64()?);
-            m_encode_alpha = Some(r.read_bool()?);
-            m_source_has_alpha = Some(r.read_bool()?);
-            m_flip_vertical = Some(r.read_bool()?);
-            m_flip_horizontal = Some(BuiltAssetBundleInfoSetMFlipHorizontalVariant::parse(r, ver)?);
-            m_pixel_aspect_ratio_numerator = Some(r.read_u32()?);
-            m_pixel_aspect_ratio_denominator = Some(r.read_u32()?);
-            r.align(4)?;
-            m_import_audio = Some(r.read_bool()?);
-            r.align(4)?;
-            m_source_audio_channel_count = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u16() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_source_audio_sample_rate = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_target_settings = Some(BuiltAssetBundleInfoSetMTargetSettingsVariant::parse(r, ver)?);
-            m_output = Some(VideoClipImporterOutput::parse(r, ver)?);
-            r.align(4)?;
-            m_user_data = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_variant = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_use_legacy_importer = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_quality = Some(rdr.read_f32()?);
+            m_is_color_linear = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_original_width = Some(rdr.read_i32()?);
+            m_original_height = Some(rdr.read_i32()?);
+            m_frame_range = Some(rdr.read_i32()?);
+            m_start_frame = Some(rdr.read_i32()?);
+            m_end_frame = Some(rdr.read_i32()?);
+            m_frame_count = Some(rdr.read_i32()?);
+            m_frame_rate = Some(rdr.read_f64()?);
+            m_color_space = Some(rdr.read_i32()?);
+            m_deinterlace = Some(rdr.read_i32()?);
+            m_source_file_size = Some(rdr.read_u64()?);
+            m_encode_alpha = Some(rdr.read_bool()?);
+            m_source_has_alpha = Some(rdr.read_bool()?);
+            m_flip_vertical = Some(rdr.read_bool()?);
+            m_flip_horizontal = Some(BuiltAssetBundleInfoSetMFlipHorizontalVariant::parse(rdr, ver)?);
+            m_pixel_aspect_ratio_numerator = Some(rdr.read_u32()?);
+            m_pixel_aspect_ratio_denominator = Some(rdr.read_u32()?);
+            rdr.align(4)?;
+            m_import_audio = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_source_audio_channel_count = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u16() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_source_audio_sample_rate = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_target_settings = Some(BuiltAssetBundleInfoSetMTargetSettingsVariant::parse(rdr, ver)?);
+            m_output = Some(VideoClipImporterOutput::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_user_data = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 1, 3) {
-            m_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_use_legacy_importer = Some(r.read_bool()?);
-            r.align(4)?;
-            m_quality = Some(r.read_f32()?);
-            m_is_color_linear = Some(r.read_bool()?);
-            r.align(4)?;
-            m_frame_range = Some(r.read_i32()?);
-            m_start_frame = Some(r.read_i32()?);
-            m_end_frame = Some(r.read_i32()?);
-            m_color_space = Some(r.read_i32()?);
-            m_deinterlace = Some(r.read_i32()?);
-            m_encode_alpha = Some(r.read_bool()?);
-            m_flip_vertical = Some(r.read_bool()?);
-            m_flip_horizontal = Some(BuiltAssetBundleInfoSetMFlipHorizontalVariant::parse(r, ver)?);
-            m_import_audio = Some(r.read_bool()?);
-            r.align(4)?;
-            m_target_settings = Some(BuiltAssetBundleInfoSetMTargetSettingsVariant::parse(r, ver)?);
-            m_output = Some(VideoClipImporterOutput::parse(r, ver)?);
-            r.align(4)?;
-            m_user_data = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_variant = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_use_legacy_importer = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_quality = Some(rdr.read_f32()?);
+            m_is_color_linear = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_frame_range = Some(rdr.read_i32()?);
+            m_start_frame = Some(rdr.read_i32()?);
+            m_end_frame = Some(rdr.read_i32()?);
+            m_color_space = Some(rdr.read_i32()?);
+            m_deinterlace = Some(rdr.read_i32()?);
+            m_encode_alpha = Some(rdr.read_bool()?);
+            m_flip_vertical = Some(rdr.read_bool()?);
+            m_flip_horizontal = Some(BuiltAssetBundleInfoSetMFlipHorizontalVariant::parse(rdr, ver)?);
+            m_import_audio = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_target_settings = Some(BuiltAssetBundleInfoSetMTargetSettingsVariant::parse(rdr, ver)?);
+            m_output = Some(VideoClipImporterOutput::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_user_data = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            m_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_use_legacy_importer = Some(r.read_bool()?);
-            r.align(4)?;
-            m_quality = Some(r.read_f32()?);
-            m_is_color_linear = Some(r.read_bool()?);
-            r.align(4)?;
-            m_original_width = Some(r.read_i32()?);
-            m_original_height = Some(r.read_i32()?);
-            m_frame_range = Some(r.read_i32()?);
-            m_start_frame = Some(r.read_i32()?);
-            m_end_frame = Some(r.read_i32()?);
-            m_frame_count = Some(r.read_i32()?);
-            m_frame_rate = Some(r.read_f64()?);
-            m_color_space = Some(r.read_i32()?);
-            m_deinterlace = Some(r.read_i32()?);
-            m_source_file_size = Some(r.read_u64()?);
-            m_encode_alpha = Some(r.read_bool()?);
-            m_source_has_alpha = Some(r.read_bool()?);
-            m_flip_vertical = Some(r.read_bool()?);
-            m_flip_horizontal = Some(BuiltAssetBundleInfoSetMFlipHorizontalVariant::parse(r, ver)?);
-            m_import_audio = Some(r.read_bool()?);
-            r.align(4)?;
-            m_source_audio_channel_count = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u16() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_source_audio_sample_rate = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_target_settings = Some(BuiltAssetBundleInfoSetMTargetSettingsVariant::parse(r, ver)?);
-            m_output = Some(VideoClipImporterOutput::parse(r, ver)?);
-            r.align(4)?;
-            m_user_data = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_variant = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_use_legacy_importer = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_quality = Some(rdr.read_f32()?);
+            m_is_color_linear = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_original_width = Some(rdr.read_i32()?);
+            m_original_height = Some(rdr.read_i32()?);
+            m_frame_range = Some(rdr.read_i32()?);
+            m_start_frame = Some(rdr.read_i32()?);
+            m_end_frame = Some(rdr.read_i32()?);
+            m_frame_count = Some(rdr.read_i32()?);
+            m_frame_rate = Some(rdr.read_f64()?);
+            m_color_space = Some(rdr.read_i32()?);
+            m_deinterlace = Some(rdr.read_i32()?);
+            m_source_file_size = Some(rdr.read_u64()?);
+            m_encode_alpha = Some(rdr.read_bool()?);
+            m_source_has_alpha = Some(rdr.read_bool()?);
+            m_flip_vertical = Some(rdr.read_bool()?);
+            m_flip_horizontal = Some(BuiltAssetBundleInfoSetMFlipHorizontalVariant::parse(rdr, ver)?);
+            m_import_audio = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_source_audio_channel_count = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u16() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_source_audio_sample_rate = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_target_settings = Some(BuiltAssetBundleInfoSetMTargetSettingsVariant::parse(rdr, ver)?);
+            m_output = Some(VideoClipImporterOutput::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_user_data = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         } else {
-            bundle_infos = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { BuiltAssetBundleInfo::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            bundle_infos = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { BuiltAssetBundleInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         }
 
         Ok(BuiltAssetBundleInfoSet {

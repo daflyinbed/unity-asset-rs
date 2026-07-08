@@ -25,7 +25,7 @@ pub struct GuiText {
 
 impl crate::Parse for GuiText {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_game_object = None;
@@ -43,27 +43,27 @@ impl crate::Parse for GuiText {
         let mut m_pixel_correct = None;
         let mut m_color = None;
         let mut m_rich_text = None;
-            m_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_enabled = Some(r.read_u8()?);
-            r.align(4)?;
-            m_text = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_anchor = Some(r.read_i16()?);
-            m_alignment = Some(r.read_i16()?);
-            m_pixel_offset = Some(Vector2f::parse(r, ver)?);
-            m_line_spacing = Some(r.read_f32()?);
-            m_tab_size = Some(r.read_f32()?);
-            m_font = Some(crate::PPtr::parse(r, ver)?);
-            m_material = Some(crate::PPtr::parse(r, ver)?);
-            m_font_size = Some(r.read_i32()?);
-            m_font_style = Some(r.read_i32()?);
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_enabled = Some(rdr.read_u8()?);
+            rdr.align(4)?;
+            m_text = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_anchor = Some(rdr.read_i16()?);
+            m_alignment = Some(rdr.read_i16()?);
+            m_pixel_offset = Some(Vector2f::parse(rdr, ver)?);
+            m_line_spacing = Some(rdr.read_f32()?);
+            m_tab_size = Some(rdr.read_f32()?);
+            m_font = Some(crate::PPtr::parse(rdr, ver)?);
+            m_material = Some(crate::PPtr::parse(rdr, ver)?);
+            m_font_size = Some(rdr.read_i32()?);
+            m_font_style = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(4, 2, 0) {
-            m_color = Some(ColorRgba::parse(r, ver)?);
+            m_color = Some(ColorRgba::parse(rdr, ver)?);
         } else {
         }
-            m_pixel_correct = Some(r.read_bool()?);
+            m_pixel_correct = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            m_rich_text = Some(r.read_bool()?);
+            m_rich_text = Some(rdr.read_bool()?);
         } else {
         }
 

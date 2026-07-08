@@ -13,15 +13,15 @@ pub enum Texture3DMDownscaleFallbackVariant {
 
 impl crate::Parse for Texture3DMDownscaleFallbackVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V2020_2(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -36,14 +36,14 @@ pub enum Texture3DMFormatVariant {
 
 impl crate::Parse for Texture3DMFormatVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_i32()?;
+            let v = rdr.read_i32()?;
             Ok(Self::V5_0(v))
         } else {
-            let v = r.read_u32()?;
+            let v = rdr.read_u32()?;
             Ok(Self::Default(v))
         }
     }
@@ -58,15 +58,15 @@ pub enum Texture3DMMipMapVariant {
 
 impl crate::Parse for Texture3DMMipMapVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V4_0(v))
         } else {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::Default(v))
         }
     }
@@ -81,15 +81,15 @@ pub enum Texture3DMIsReadableVariant {
 
 impl crate::Parse for Texture3DMIsReadableVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V5_4(v))
         } else {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::Default(v))
         }
     }
@@ -123,7 +123,7 @@ pub struct Texture3D {
 
 impl crate::Parse for Texture3D {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_name = None;
@@ -149,76 +149,76 @@ impl crate::Parse for Texture3D {
         let mut m_stream_data = None;
         let mut m_usage_mode = None;
         let mut m_lightmap_format = None;
-            m_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
-            m_is_alpha_channel_optional = Some(r.read_bool()?);
-            r.align(4)?;
-            m_color_space = Some(r.read_i32()?);
-            m_format = Some(Texture3DMFormatVariant::parse(r, ver)?);
+            m_is_alpha_channel_optional = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_color_space = Some(rdr.read_i32()?);
+            m_format = Some(Texture3DMFormatVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            m_forced_fallback_format = Some(r.read_i32()?);
-            m_downscale_fallback = Some(Texture3DMDownscaleFallbackVariant::parse(r, ver)?);
-            m_is_alpha_channel_optional = Some(r.read_bool()?);
-            r.align(4)?;
-            m_color_space = Some(r.read_i32()?);
-            m_format = Some(Texture3DMFormatVariant::parse(r, ver)?);
+            m_forced_fallback_format = Some(rdr.read_i32()?);
+            m_downscale_fallback = Some(Texture3DMDownscaleFallbackVariant::parse(rdr, ver)?);
+            m_is_alpha_channel_optional = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_color_space = Some(rdr.read_i32()?);
+            m_format = Some(Texture3DMFormatVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_forced_fallback_format = Some(r.read_i32()?);
-            m_downscale_fallback = Some(Texture3DMDownscaleFallbackVariant::parse(r, ver)?);
-            m_color_space = Some(r.read_i32()?);
-            m_format = Some(Texture3DMFormatVariant::parse(r, ver)?);
+            m_forced_fallback_format = Some(rdr.read_i32()?);
+            m_downscale_fallback = Some(Texture3DMDownscaleFallbackVariant::parse(rdr, ver)?);
+            m_color_space = Some(rdr.read_i32()?);
+            m_format = Some(Texture3DMFormatVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            m_forced_fallback_format = Some(r.read_i32()?);
-            m_downscale_fallback = Some(Texture3DMDownscaleFallbackVariant::parse(r, ver)?);
+            m_forced_fallback_format = Some(rdr.read_i32()?);
+            m_downscale_fallback = Some(Texture3DMDownscaleFallbackVariant::parse(rdr, ver)?);
         } else {
         }
-            m_width = Some(r.read_i32()?);
-            m_height = Some(r.read_i32()?);
+            m_width = Some(rdr.read_i32()?);
+            m_height = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_depth = Some(r.read_i32()?);
-            m_mip_count = Some(r.read_i32()?);
-            r.align(4)?;
-            m_data_size = Some(r.read_u32()?);
+            m_depth = Some(rdr.read_i32()?);
+            m_mip_count = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_data_size = Some(rdr.read_u32()?);
         } else if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            m_depth = Some(r.read_i32()?);
-            m_format = Some(Texture3DMFormatVariant::parse(r, ver)?);
-            m_mip_count = Some(r.read_i32()?);
-            r.align(4)?;
-            m_data_size = Some(r.read_u32()?);
+            m_depth = Some(rdr.read_i32()?);
+            m_format = Some(Texture3DMFormatVariant::parse(rdr, ver)?);
+            m_mip_count = Some(rdr.read_i32()?);
+            rdr.align(4)?;
+            m_data_size = Some(rdr.read_u32()?);
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            m_depth = Some(r.read_i32()?);
-            m_format = Some(Texture3DMFormatVariant::parse(r, ver)?);
-            m_mip_map = Some(Texture3DMMipMapVariant::parse(r, ver)?);
-            m_data_size = Some(r.read_u32()?);
+            m_depth = Some(rdr.read_i32()?);
+            m_format = Some(Texture3DMFormatVariant::parse(rdr, ver)?);
+            m_mip_map = Some(Texture3DMMipMapVariant::parse(rdr, ver)?);
+            m_data_size = Some(rdr.read_u32()?);
         } else {
-            m_complete_image_size = Some(r.read_i32()?);
-            m_texture_format = Some(r.read_i32()?);
-            m_mip_map = Some(Texture3DMMipMapVariant::parse(r, ver)?);
-            m_is_readable = Some(Texture3DMIsReadableVariant::parse(r, ver)?);
-            m_read_allowed = Some(r.read_bool()?);
-            r.align(4)?;
-            m_image_count = Some(r.read_i32()?);
-            m_texture_dimension = Some(r.read_i32()?);
+            m_complete_image_size = Some(rdr.read_i32()?);
+            m_texture_format = Some(rdr.read_i32()?);
+            m_mip_map = Some(Texture3DMMipMapVariant::parse(rdr, ver)?);
+            m_is_readable = Some(Texture3DMIsReadableVariant::parse(rdr, ver)?);
+            m_read_allowed = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_image_count = Some(rdr.read_i32()?);
+            m_texture_dimension = Some(rdr.read_i32()?);
         }
-            m_texture_settings = Some(GlTextureSettings::parse(r, ver)?);
+            m_texture_settings = Some(GlTextureSettings::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            m_usage_mode = Some(r.read_i32()?);
-            m_is_readable = Some(Texture3DMIsReadableVariant::parse(r, ver)?);
+            m_usage_mode = Some(rdr.read_i32()?);
+            m_is_readable = Some(Texture3DMIsReadableVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            m_is_readable = Some(Texture3DMIsReadableVariant::parse(r, ver)?);
+            m_is_readable = Some(Texture3DMIsReadableVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            m_lightmap_format = Some(r.read_i32()?);
-            m_color_space = Some(r.read_i32()?);
+            m_lightmap_format = Some(rdr.read_i32()?);
+            m_color_space = Some(rdr.read_i32()?);
         } else {
-            m_lightmap_format = Some(r.read_i32()?);
+            m_lightmap_format = Some(rdr.read_i32()?);
         }
-            image_data = Some(( { let n = r.read_i32()? as usize; r.read_bytes(n) } )?);
-            r.align(4)?;
+            image_data = Some(( { let n = rdr.read_i32()? as usize; rdr.read_bytes(n) } )?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            m_stream_data = Some(StreamingInfo::parse(r, ver)?);
-            r.align(4)?;
+            m_stream_data = Some(StreamingInfo::parse(rdr, ver)?);
+            rdr.align(4)?;
         } else {
         }
 

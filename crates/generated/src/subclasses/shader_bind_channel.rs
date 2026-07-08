@@ -8,11 +8,11 @@ pub struct ShaderBindChannel {
 
 impl crate::Parse for ShaderBindChannel {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let source = r.read_i8()?;
-        let target = r.read_i8()?;
+        let source = rdr.read_i8()?;
+        let target = rdr.read_i8()?;
 
         Ok(ShaderBindChannel {
             source,

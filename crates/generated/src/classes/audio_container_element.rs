@@ -12,14 +12,14 @@ pub struct AudioContainerElement {
 
 impl crate::Parse for AudioContainerElement {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_audio_clip = crate::PPtr::parse(r, ver)?;
-        let m_volume = r.read_f32()?;
-        let m_enabled = r.read_bool()?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_audio_clip = crate::PPtr::parse(rdr, ver)?;
+        let m_volume = rdr.read_f32()?;
+        let m_enabled = rdr.read_bool()?;
 
         Ok(AudioContainerElement {
             m_name,

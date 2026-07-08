@@ -34,37 +34,37 @@ pub struct PlatformMemorySettings {
 
 impl crate::Parse for PlatformMemorySettings {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_main_allocator_block_size = r.read_i64()?;
-        let m_thread_allocator_block_size = r.read_i64()?;
-        let m_main_gfx_block_size = r.read_i64()?;
-        let m_thread_gfx_block_size = r.read_i64()?;
-        let m_cache_block_size = r.read_i64()?;
-        let m_typetree_block_size = r.read_i64()?;
-        let m_profiler_block_size = r.read_i64()?;
-        let m_profiler_editor_block_size = r.read_i64()?;
-        let m_bucket_allocator_granularity = r.read_i64()?;
-        let m_bucket_allocator_buckets_count = r.read_i64()?;
-        let m_bucket_allocator_block_size = r.read_i64()?;
-        let m_bucket_allocator_block_count = r.read_i64()?;
-        let m_profiler_bucket_allocator_granularity = r.read_i64()?;
-        let m_profiler_bucket_allocator_buckets_count = r.read_i64()?;
-        let m_profiler_bucket_allocator_block_size = r.read_i64()?;
-        let m_profiler_bucket_allocator_block_count = r.read_i64()?;
-        let m_temp_allocator_size_main = r.read_i64()?;
-        let m_job_temp_allocator_block_size = r.read_i64()?;
-        let m_background_job_temp_allocator_block_size = r.read_i64()?;
-        let m_job_temp_allocator_reduced_block_size = r.read_i64()?;
-        let m_temp_allocator_size_gi_baking_worker = r.read_i64()?;
-        let m_temp_allocator_size_nav_mesh_worker = r.read_i64()?;
-        let m_temp_allocator_size_audio_worker = r.read_i64()?;
-        let m_temp_allocator_size_cloud_worker = r.read_i64()?;
-        let m_temp_allocator_size_gfx = r.read_i64()?;
-        let m_temp_allocator_size_job_worker = r.read_i64()?;
-        let m_temp_allocator_size_background_worker = r.read_i64()?;
-        let m_temp_allocator_size_preload_manager = r.read_i64()?;
+        let m_main_allocator_block_size = rdr.read_i64()?;
+        let m_thread_allocator_block_size = rdr.read_i64()?;
+        let m_main_gfx_block_size = rdr.read_i64()?;
+        let m_thread_gfx_block_size = rdr.read_i64()?;
+        let m_cache_block_size = rdr.read_i64()?;
+        let m_typetree_block_size = rdr.read_i64()?;
+        let m_profiler_block_size = rdr.read_i64()?;
+        let m_profiler_editor_block_size = rdr.read_i64()?;
+        let m_bucket_allocator_granularity = rdr.read_i64()?;
+        let m_bucket_allocator_buckets_count = rdr.read_i64()?;
+        let m_bucket_allocator_block_size = rdr.read_i64()?;
+        let m_bucket_allocator_block_count = rdr.read_i64()?;
+        let m_profiler_bucket_allocator_granularity = rdr.read_i64()?;
+        let m_profiler_bucket_allocator_buckets_count = rdr.read_i64()?;
+        let m_profiler_bucket_allocator_block_size = rdr.read_i64()?;
+        let m_profiler_bucket_allocator_block_count = rdr.read_i64()?;
+        let m_temp_allocator_size_main = rdr.read_i64()?;
+        let m_job_temp_allocator_block_size = rdr.read_i64()?;
+        let m_background_job_temp_allocator_block_size = rdr.read_i64()?;
+        let m_job_temp_allocator_reduced_block_size = rdr.read_i64()?;
+        let m_temp_allocator_size_gi_baking_worker = rdr.read_i64()?;
+        let m_temp_allocator_size_nav_mesh_worker = rdr.read_i64()?;
+        let m_temp_allocator_size_audio_worker = rdr.read_i64()?;
+        let m_temp_allocator_size_cloud_worker = rdr.read_i64()?;
+        let m_temp_allocator_size_gfx = rdr.read_i64()?;
+        let m_temp_allocator_size_job_worker = rdr.read_i64()?;
+        let m_temp_allocator_size_background_worker = rdr.read_i64()?;
+        let m_temp_allocator_size_preload_manager = rdr.read_i64()?;
 
         Ok(PlatformMemorySettings {
             m_main_allocator_block_size,

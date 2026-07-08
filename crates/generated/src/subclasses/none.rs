@@ -6,7 +6,7 @@ pub struct None {
 
 impl crate::Parse for None {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
 

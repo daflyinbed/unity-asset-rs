@@ -16,18 +16,18 @@ pub struct AnimatorEvent {
 
 impl crate::Parse for AnimatorEvent {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_type = r.read_i32()?;
-        let m_min = r.read_f32()?;
-        let m_max = r.read_f32()?;
-        let m_default_vector = Vector3f::parse(r, ver)?;
-        let m_default_float = r.read_f32()?;
-        let m_default_int = r.read_i32()?;
-        let m_default_bool = r.read_bool()?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_type = rdr.read_i32()?;
+        let m_min = rdr.read_f32()?;
+        let m_max = rdr.read_f32()?;
+        let m_default_vector = Vector3f::parse(rdr, ver)?;
+        let m_default_float = rdr.read_f32()?;
+        let m_default_int = rdr.read_i32()?;
+        let m_default_bool = rdr.read_bool()?;
 
         Ok(AnimatorEvent {
             m_name,

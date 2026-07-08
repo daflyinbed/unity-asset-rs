@@ -14,34 +14,34 @@ pub struct EditorExtensionImpl {
 
 impl crate::Parse for EditorExtensionImpl {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_object = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(crate::PPtr::parse(r, ver)?)
+            Some(crate::PPtr::parse(rdr, ver)?)
         } else {
             None
         };
         let m_template_father = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(crate::PPtr::parse(r, ver)?)
+            Some(crate::PPtr::parse(rdr, ver)?)
         } else {
             None
         };
         let m_data_template = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(crate::PPtr::parse(r, ver)?)
+            Some(crate::PPtr::parse(rdr, ver)?)
         } else {
             None
         };
         let m_override_variable = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = bitset::parse(r, ver)?;
-            r.align(4)?;
+            let v = bitset::parse(rdr, ver)?;
+            rdr.align(4)?;
             Some(v)
         } else {
             None
         };
         let g_flattened_type_tree = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Some(v)
         } else {
             None

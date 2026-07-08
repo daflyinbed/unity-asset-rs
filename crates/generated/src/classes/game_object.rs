@@ -14,18 +14,18 @@ pub enum GameObjectMComponentVariant {
 
 impl crate::Parse for GameObjectMComponentVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ComponentPair::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComponentPair::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ComponentPair::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComponentPair::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::V5_5(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i32()?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i32()?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -40,14 +40,14 @@ pub enum GameObjectMIsActiveVariant {
 
 impl crate::Parse for GameObjectMIsActiveVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V4_0(v))
         } else {
-            let v = r.read_u8()?;
+            let v = rdr.read_u8()?;
             Ok(Self::Default(v))
         }
     }
@@ -63,15 +63,15 @@ pub struct GameObject {
 
 impl crate::Parse for GameObject {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_component = GameObjectMComponentVariant::parse(r, ver)?;
-        let m_layer = r.read_u32()?;
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_tag = r.read_u16()?;
-        let m_is_active = GameObjectMIsActiveVariant::parse(r, ver)?;
+        let m_component = GameObjectMComponentVariant::parse(rdr, ver)?;
+        let m_layer = rdr.read_u32()?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_tag = rdr.read_u16()?;
+        let m_is_active = GameObjectMIsActiveVariant::parse(rdr, ver)?;
 
         Ok(GameObject {
             m_component,

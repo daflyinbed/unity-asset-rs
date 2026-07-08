@@ -19,15 +19,15 @@ pub enum LightmapSnapshotMLightmapsVariant {
 
 impl crate::Parse for LightmapSnapshotMLightmapsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { LightmapData::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { LightmapData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { LightmapData::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { LightmapData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -42,15 +42,15 @@ pub enum LightmapSnapshotMLightmappedRendererDataVariant {
 
 impl crate::Parse for LightmapSnapshotMLightmappedRendererDataVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { RendererData::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { RendererData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { RendererData::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { RendererData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -65,15 +65,15 @@ pub enum LightmapSnapshotMLightmappedRendererDataIDsVariant {
 
 impl crate::Parse for LightmapSnapshotMLightmappedRendererDataIDsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { SceneObjectIdentifier::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SceneObjectIdentifier::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { SceneObjectIdentifier::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SceneObjectIdentifier::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -82,21 +82,21 @@ impl crate::Parse for LightmapSnapshotMLightmappedRendererDataIDsVariant {
 /// 版本枚举：LightmapSnapshotMEnlightenSceneMappingVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum LightmapSnapshotMEnlightenSceneMappingVariant {
-    Default(EnlightenSceneMapping),
-    V2017_1(EnlightenSceneMapping),
+    Default(Box<EnlightenSceneMapping>),
+    V2017_1(Box<EnlightenSceneMapping>),
 }
 
 impl crate::Parse for LightmapSnapshotMEnlightenSceneMappingVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = EnlightenSceneMapping::parse(r, ver)?;
-            r.align(4)?;
+            let v = ( { Ok(Box::new(EnlightenSceneMapping::parse(rdr, ver)?)) } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = EnlightenSceneMapping::parse(r, ver)?;
+            let v = ( { Ok(Box::new(EnlightenSceneMapping::parse(rdr, ver)?)) } )?;
             Ok(Self::Default(v))
         }
     }
@@ -111,15 +111,15 @@ pub enum LightmapSnapshotMEnlightenSceneMappingRendererIDsVariant {
 
 impl crate::Parse for LightmapSnapshotMEnlightenSceneMappingRendererIDsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { SceneObjectIdentifier::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SceneObjectIdentifier::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { SceneObjectIdentifier::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SceneObjectIdentifier::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -134,15 +134,15 @@ pub enum LightmapSnapshotMLightsVariant {
 
 impl crate::Parse for LightmapSnapshotMLightsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { SceneObjectIdentifier::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SceneObjectIdentifier::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { SceneObjectIdentifier::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SceneObjectIdentifier::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -157,15 +157,15 @@ pub enum LightmapSnapshotMBakedReflectionProbeCubemapsVariant {
 
 impl crate::Parse for LightmapSnapshotMBakedReflectionProbeCubemapsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -180,15 +180,15 @@ pub enum LightmapSnapshotMBakedReflectionProbesVariant {
 
 impl crate::Parse for LightmapSnapshotMBakedReflectionProbesVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { SceneObjectIdentifier::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SceneObjectIdentifier::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { SceneObjectIdentifier::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SceneObjectIdentifier::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -203,15 +203,15 @@ pub enum LightmapSnapshotMLightBakingOutputsVariant {
 
 impl crate::Parse for LightmapSnapshotMLightBakingOutputsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { LightBakingOutput::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { LightBakingOutput::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { LightBakingOutput::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { LightBakingOutput::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -247,7 +247,7 @@ pub struct LightmapSnapshot {
 
 impl crate::Parse for LightmapSnapshot {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_name = None;
@@ -275,69 +275,69 @@ impl crate::Parse for LightmapSnapshot {
         let mut m_enlighten_data = None;
         let mut m_enlighten_data_version = None;
         let mut m_baked_reflection_probe_cubemap_cache_files = None;
-            m_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            m_scene = Some(crate::PPtr::parse(r, ver)?);
+            m_scene = Some(crate::PPtr::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
         } else if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            m_scene_guid = Some(Guid::parse(r, ver)?);
+            m_scene_guid = Some(Guid::parse(rdr, ver)?);
         } else {
         }
-            m_lightmaps = Some(LightmapSnapshotMLightmapsVariant::parse(r, ver)?);
+            m_lightmaps = Some(LightmapSnapshotMLightmapsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
-            m_ao_textures = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_ao_textures = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_ao_textures = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_lightmaps_cache_files = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_ao_textures = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_lightmaps_cache_files = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 2, 0) {
-            m_lightmaps_cache_files = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_lightmaps_cache_files = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else {
         }
-            m_light_probes = Some(crate::PPtr::parse(r, ver)?);
+            m_light_probes = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            m_lightmaps_mode = Some(r.read_i32()?);
-            m_baked_ambient_probe_in_linear = Some(SphericalHarmonicsL2::parse(r, ver)?);
+            m_lightmaps_mode = Some(rdr.read_i32()?);
+            m_baked_ambient_probe_in_linear = Some(SphericalHarmonicsL2::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            m_baked_ambient_probe_in_linear = Some(SphericalHarmonicsL2::parse(r, ver)?);
+            m_baked_ambient_probe_in_linear = Some(SphericalHarmonicsL2::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            m_baked_ambient_probe_in_linear = Some(SphericalHarmonicsL2::parse(r, ver)?);
-            m_baked_ambient_probe_in_gamma = Some(SphericalHarmonicsL2::parse(r, ver)?);
+            m_baked_ambient_probe_in_linear = Some(SphericalHarmonicsL2::parse(rdr, ver)?);
+            m_baked_ambient_probe_in_gamma = Some(SphericalHarmonicsL2::parse(rdr, ver)?);
         } else {
-            m_baked_ambient_probes_in_linear = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { SphericalHarmonicsL2::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_baked_ambient_probes_in_gamma = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { SphericalHarmonicsL2::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_baked_ambient_probes_in_linear = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SphericalHarmonicsL2::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_baked_ambient_probes_in_gamma = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SphericalHarmonicsL2::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
         }
-            m_lightmapped_renderer_data = Some(LightmapSnapshotMLightmappedRendererDataVariant::parse(r, ver)?);
-            m_lightmapped_renderer_data_i_ds = Some(LightmapSnapshotMLightmappedRendererDataIDsVariant::parse(r, ver)?);
-            m_enlighten_scene_mapping = Some(LightmapSnapshotMEnlightenSceneMappingVariant::parse(r, ver)?);
-            m_enlighten_scene_mapping_renderer_i_ds = Some(LightmapSnapshotMEnlightenSceneMappingRendererIDsVariant::parse(r, ver)?);
-            m_lights = Some(LightmapSnapshotMLightsVariant::parse(r, ver)?);
+            m_lightmapped_renderer_data = Some(LightmapSnapshotMLightmappedRendererDataVariant::parse(rdr, ver)?);
+            m_lightmapped_renderer_data_i_ds = Some(LightmapSnapshotMLightmappedRendererDataIDsVariant::parse(rdr, ver)?);
+            m_enlighten_scene_mapping = Some(LightmapSnapshotMEnlightenSceneMappingVariant::parse(rdr, ver)?);
+            m_enlighten_scene_mapping_renderer_i_ds = Some(LightmapSnapshotMEnlightenSceneMappingRendererIDsVariant::parse(rdr, ver)?);
+            m_lights = Some(LightmapSnapshotMLightsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
-            m_light_baking_outputs = Some(LightmapSnapshotMLightBakingOutputsVariant::parse(r, ver)?);
+            m_light_baking_outputs = Some(LightmapSnapshotMLightBakingOutputsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2018, 2, 0) {
-            m_light_baking_outputs = Some(LightmapSnapshotMLightBakingOutputsVariant::parse(r, ver)?);
-            m_baked_reflection_probe_cubemap_cache_files = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_light_baking_outputs = Some(LightmapSnapshotMLightBakingOutputsVariant::parse(rdr, ver)?);
+            m_baked_reflection_probe_cubemap_cache_files = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            m_light_baking_outputs = Some(LightmapSnapshotMLightBakingOutputsVariant::parse(r, ver)?);
+            m_light_baking_outputs = Some(LightmapSnapshotMLightBakingOutputsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            m_baked_light_indices = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_baked_light_indices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
         } else {
         }
-            m_baked_reflection_probe_cubemaps = Some(LightmapSnapshotMBakedReflectionProbeCubemapsVariant::parse(r, ver)?);
+            m_baked_reflection_probe_cubemaps = Some(LightmapSnapshotMBakedReflectionProbeCubemapsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 2, 0) {
         } else {
-            m_baked_skybox_probe_cubemaps = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_baked_skybox_probe_cubemaps = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
         }
-            m_baked_reflection_probes = Some(LightmapSnapshotMBakedReflectionProbesVariant::parse(r, ver)?);
-            m_enlighten_data = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_baked_reflection_probes = Some(LightmapSnapshotMBakedReflectionProbesVariant::parse(rdr, ver)?);
+            m_enlighten_data = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 3, 6) {
-            m_enlighten_data_version = Some(r.read_i32()?);
+            m_enlighten_data_version = Some(rdr.read_i32()?);
         } else {
         }
 

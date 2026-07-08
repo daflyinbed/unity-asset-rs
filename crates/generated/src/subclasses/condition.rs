@@ -10,14 +10,14 @@ pub struct Condition {
 
 impl crate::Parse for Condition {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_condition_mode = r.read_i32()?;
-        let m_condition_event = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_event_treshold = r.read_f32()?;
-        let m_exit_time = r.read_f32()?;
+        let m_condition_mode = rdr.read_i32()?;
+        let m_condition_event = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_event_treshold = rdr.read_f32()?;
+        let m_exit_time = rdr.read_f32()?;
 
         Ok(Condition {
             m_condition_mode,

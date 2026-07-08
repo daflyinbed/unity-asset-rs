@@ -8,13 +8,13 @@ pub struct Hint {
 
 impl crate::Parse for Hint {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_key = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_value = r.read_aligned_string()?;
-        r.align(4)?;
+        let m_key = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_value = rdr.read_aligned_string()?;
+        rdr.align(4)?;
 
         Ok(Hint {
             m_key,

@@ -15,15 +15,15 @@ pub enum CharacterJointMEnablePreprocessingVariant {
 
 impl crate::Parse for CharacterJointMEnablePreprocessingVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::Default(v))
         }
     }
@@ -57,7 +57,7 @@ pub struct CharacterJoint {
 
 impl crate::Parse for CharacterJoint {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_game_object = None;
@@ -83,52 +83,52 @@ impl crate::Parse for CharacterJoint {
         let mut m_enable_preprocessing = None;
         let mut m_mass_scale = None;
         let mut m_connected_mass_scale = None;
-            m_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_connected_body = Some(crate::PPtr::parse(r, ver)?);
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_connected_body = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            m_connected_articulation_body = Some(crate::PPtr::parse(r, ver)?);
+            m_connected_articulation_body = Some(crate::PPtr::parse(rdr, ver)?);
         } else {
         }
-            m_anchor = Some(Vector3f::parse(r, ver)?);
-            m_axis = Some(Vector3f::parse(r, ver)?);
+            m_anchor = Some(Vector3f::parse(rdr, ver)?);
+            m_axis = Some(Vector3f::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            m_auto_configure_connected_anchor = Some(r.read_bool()?);
-            r.align(4)?;
-            m_connected_anchor = Some(Vector3f::parse(r, ver)?);
+            m_auto_configure_connected_anchor = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_connected_anchor = Some(Vector3f::parse(rdr, ver)?);
         } else {
         }
-            m_swing_axis = Some(Vector3f::parse(r, ver)?);
+            m_swing_axis = Some(Vector3f::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_twist_limit_spring = Some(SoftJointLimitSpring::parse(r, ver)?);
+            m_twist_limit_spring = Some(SoftJointLimitSpring::parse(rdr, ver)?);
         } else {
         }
-            m_low_twist_limit = Some(SoftJointLimit::parse(r, ver)?);
-            m_high_twist_limit = Some(SoftJointLimit::parse(r, ver)?);
+            m_low_twist_limit = Some(SoftJointLimit::parse(rdr, ver)?);
+            m_high_twist_limit = Some(SoftJointLimit::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_swing_limit_spring = Some(SoftJointLimitSpring::parse(r, ver)?);
+            m_swing_limit_spring = Some(SoftJointLimitSpring::parse(rdr, ver)?);
         } else {
         }
-            m_swing1_limit = Some(SoftJointLimit::parse(r, ver)?);
-            m_swing2_limit = Some(SoftJointLimit::parse(r, ver)?);
+            m_swing1_limit = Some(SoftJointLimit::parse(rdr, ver)?);
+            m_swing2_limit = Some(SoftJointLimit::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_enable_projection = Some(r.read_bool()?);
-            r.align(4)?;
-            m_projection_distance = Some(r.read_f32()?);
-            m_projection_angle = Some(r.read_f32()?);
+            m_enable_projection = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_projection_distance = Some(rdr.read_f32()?);
+            m_projection_angle = Some(rdr.read_f32()?);
         } else {
         }
-            m_break_force = Some(r.read_f32()?);
-            m_break_torque = Some(r.read_f32()?);
+            m_break_force = Some(rdr.read_f32()?);
+            m_break_torque = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            m_enable_collision = Some(r.read_bool()?);
-            m_enable_preprocessing = Some(CharacterJointMEnablePreprocessingVariant::parse(r, ver)?);
-            m_mass_scale = Some(r.read_f32()?);
-            m_connected_mass_scale = Some(r.read_f32()?);
+            m_enable_collision = Some(rdr.read_bool()?);
+            m_enable_preprocessing = Some(CharacterJointMEnablePreprocessingVariant::parse(rdr, ver)?);
+            m_mass_scale = Some(rdr.read_f32()?);
+            m_connected_mass_scale = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_enable_collision = Some(r.read_bool()?);
-            m_enable_preprocessing = Some(CharacterJointMEnablePreprocessingVariant::parse(r, ver)?);
+            m_enable_collision = Some(rdr.read_bool()?);
+            m_enable_preprocessing = Some(CharacterJointMEnablePreprocessingVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            m_enable_collision = Some(r.read_bool()?);
+            m_enable_collision = Some(rdr.read_bool()?);
         } else {
         }
 

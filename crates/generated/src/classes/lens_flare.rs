@@ -18,7 +18,7 @@ pub struct LensFlare {
 
 impl crate::Parse for LensFlare {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_game_object = None;
@@ -29,18 +29,18 @@ impl crate::Parse for LensFlare {
         let mut m_ignore_layers = None;
         let mut m_fade_speed = None;
         let mut m_directional = None;
-            m_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_enabled = Some(r.read_u8()?);
-            r.align(4)?;
-            m_flare = Some(crate::PPtr::parse(r, ver)?);
-            m_color = Some(ColorRgba::parse(r, ver)?);
-            m_brightness = Some(r.read_f32()?);
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_enabled = Some(rdr.read_u8()?);
+            rdr.align(4)?;
+            m_flare = Some(crate::PPtr::parse(rdr, ver)?);
+            m_color = Some(ColorRgba::parse(rdr, ver)?);
+            m_brightness = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            m_fade_speed = Some(r.read_f32()?);
+            m_fade_speed = Some(rdr.read_f32()?);
         } else {
         }
-            m_ignore_layers = Some(BitField::parse(r, ver)?);
-            m_directional = Some(r.read_bool()?);
+            m_ignore_layers = Some(BitField::parse(rdr, ver)?);
+            m_directional = Some(rdr.read_bool()?);
 
         Ok(LensFlare {
             m_game_object: m_game_object.unwrap(),

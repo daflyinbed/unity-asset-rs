@@ -10,12 +10,12 @@ pub struct SecondarySpriteTexture {
 
 impl crate::Parse for SecondarySpriteTexture {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let texture = crate::PPtr::parse(r, ver)?;
-        let name = r.read_aligned_string()?;
-        r.align(4)?;
+        let texture = crate::PPtr::parse(rdr, ver)?;
+        let name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
 
         Ok(SecondarySpriteTexture {
             texture,

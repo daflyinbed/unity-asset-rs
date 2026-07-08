@@ -25,7 +25,7 @@ pub struct LightmapParameters {
 
 impl crate::Parse for LightmapParameters {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_name = None;
@@ -47,36 +47,36 @@ impl crate::Parse for LightmapParameters {
         let mut ao_anti_aliasing_samples = None;
         let mut limit_lightmap_count = None;
         let mut max_lightmap_count = None;
-            m_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            resolution = Some(r.read_f32()?);
-            cluster_resolution = Some(r.read_f32()?);
-            irradiance_budget = Some(r.read_i32()?);
-            irradiance_quality = Some(r.read_i32()?);
-            back_face_tolerance = Some(r.read_f32()?);
-            is_transparent = Some(r.read_i32()?);
-            modelling_tolerance = Some(r.read_f32()?);
-            system_tag = Some(r.read_i32()?);
-            edge_stitching = Some(r.read_i32()?);
-            blur_radius = Some(r.read_i32()?);
-            direct_light_quality = Some(r.read_i32()?);
-            anti_aliasing_samples = Some(r.read_i32()?);
+            m_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            resolution = Some(rdr.read_f32()?);
+            cluster_resolution = Some(rdr.read_f32()?);
+            irradiance_budget = Some(rdr.read_i32()?);
+            irradiance_quality = Some(rdr.read_i32()?);
+            back_face_tolerance = Some(rdr.read_f32()?);
+            is_transparent = Some(rdr.read_i32()?);
+            modelling_tolerance = Some(rdr.read_f32()?);
+            system_tag = Some(rdr.read_i32()?);
+            edge_stitching = Some(rdr.read_i32()?);
+            blur_radius = Some(rdr.read_i32()?);
+            direct_light_quality = Some(rdr.read_i32()?);
+            anti_aliasing_samples = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            pushoff = Some(r.read_f32()?);
-            baked_lightmap_tag = Some(r.read_i32()?);
-            limit_lightmap_count = Some(r.read_bool()?);
-            r.align(4)?;
-            max_lightmap_count = Some(r.read_i32()?);
+            pushoff = Some(rdr.read_f32()?);
+            baked_lightmap_tag = Some(rdr.read_i32()?);
+            limit_lightmap_count = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            max_lightmap_count = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 1) {
-            baked_lightmap_tag = Some(r.read_i32()?);
-            pushoff = Some(r.read_f32()?);
+            baked_lightmap_tag = Some(rdr.read_i32()?);
+            pushoff = Some(rdr.read_f32()?);
         } else {
         }
-            ao_quality = Some(r.read_i32()?);
-            ao_anti_aliasing_samples = Some(r.read_i32()?);
+            ao_quality = Some(rdr.read_i32()?);
+            ao_anti_aliasing_samples = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(5, 0, 1) {
         } else {
-            baked_lightmap_tag = Some(r.read_i32()?);
+            baked_lightmap_tag = Some(rdr.read_i32()?);
         }
 
         Ok(LightmapParameters {

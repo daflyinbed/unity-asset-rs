@@ -11,17 +11,17 @@ pub struct ClusterInput {
 
 impl crate::Parse for ClusterInput {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_device_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_server_url = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_index = r.read_i32()?;
-        let m_type = r.read_i32()?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_device_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_server_url = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_index = rdr.read_i32()?;
+        let m_type = rdr.read_i32()?;
 
         Ok(ClusterInput {
             m_name,

@@ -7,19 +7,19 @@ use crate::subclasses::hash128::Hash128;
 #[derive(Debug, Clone)]
 pub enum MonoScriptMPropertiesHashVariant {
     Default(u32),
-    V5_0(Hash128),
+    V5_0(Box<Hash128>),
 }
 
 impl crate::Parse for MonoScriptMPropertiesHashVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = Hash128::parse(r, ver)?;
+            let v = ( { Ok(Box::new(Hash128::parse(rdr, ver)?)) } )?;
             Ok(Self::V5_0(v))
         } else {
-            let v = r.read_u32()?;
+            let v = rdr.read_u32()?;
             Ok(Self::Default(v))
         }
     }
@@ -37,21 +37,21 @@ pub struct MonoScript {
 
 impl crate::Parse for MonoScript {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_execution_order = r.read_i32()?;
-        let m_properties_hash = MonoScriptMPropertiesHashVariant::parse(r, ver)?;
-        let m_class_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_namespace = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_assembly_name = r.read_aligned_string()?;
-        r.align(4)?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_execution_order = rdr.read_i32()?;
+        let m_properties_hash = MonoScriptMPropertiesHashVariant::parse(rdr, ver)?;
+        let m_class_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_namespace = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_assembly_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
         let m_is_editor_script = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_bool()?)
+            Some(rdr.read_bool()?)
         } else {
             None
         };

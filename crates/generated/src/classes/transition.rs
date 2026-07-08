@@ -14,16 +14,16 @@ pub enum TransitionMConditionsVariant {
 
 impl crate::Parse for TransitionMConditionsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { AnimatorCondition::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AnimatorCondition::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V5_0(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Condition::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Condition::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -38,14 +38,14 @@ pub enum TransitionMDstStateVariant {
 
 impl crate::Parse for TransitionMDstStateVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = crate::PPtr::parse(r, ver)?;
+            let v = crate::PPtr::parse(rdr, ver)?;
             Ok(Self::V5_0(v))
         } else {
-            let v = crate::PPtr::parse(r, ver)?;
+            let v = crate::PPtr::parse(rdr, ver)?;
             Ok(Self::Default(v))
         }
     }
@@ -60,15 +60,15 @@ pub enum TransitionMHasExitTimeVariant {
 
 impl crate::Parse for TransitionMHasExitTimeVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 1, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V5_1(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -96,7 +96,7 @@ pub struct Transition {
 
 impl crate::Parse for Transition {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_name = None;
@@ -116,48 +116,48 @@ impl crate::Parse for Transition {
         let mut m_interruption_source = None;
         let mut m_has_fixed_duration = None;
         let mut m_ordered_interruption = None;
-            m_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
         } else {
-            m_src_state = Some(crate::PPtr::parse(r, ver)?);
-            m_dst_state = Some(TransitionMDstStateVariant::parse(r, ver)?);
-            m_transition_duration = Some(r.read_f32()?);
-            m_transition_offset = Some(r.read_f32()?);
+            m_src_state = Some(crate::PPtr::parse(rdr, ver)?);
+            m_dst_state = Some(TransitionMDstStateVariant::parse(rdr, ver)?);
+            m_transition_duration = Some(rdr.read_f32()?);
+            m_transition_offset = Some(rdr.read_f32()?);
         }
-            m_conditions = Some(TransitionMConditionsVariant::parse(r, ver)?);
+            m_conditions = Some(TransitionMConditionsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_dst_state_machine = Some(crate::PPtr::parse(r, ver)?);
-            m_dst_state = Some(TransitionMDstStateVariant::parse(r, ver)?);
+            m_dst_state_machine = Some(crate::PPtr::parse(rdr, ver)?);
+            m_dst_state = Some(TransitionMDstStateVariant::parse(rdr, ver)?);
         } else {
-            m_atomic = Some(r.read_bool()?);
+            m_atomic = Some(rdr.read_bool()?);
         }
-            m_solo = Some(r.read_bool()?);
-            m_mute = Some(r.read_bool()?);
+            m_solo = Some(rdr.read_bool()?);
+            m_mute = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(5, 1, 0) {
-            m_is_exit = Some(r.read_bool()?);
-            r.align(4)?;
-            m_transition_duration = Some(r.read_f32()?);
-            m_transition_offset = Some(r.read_f32()?);
-            m_exit_time = Some(r.read_f32()?);
-            m_has_exit_time = Some(TransitionMHasExitTimeVariant::parse(r, ver)?);
-            m_has_fixed_duration = Some(r.read_bool()?);
-            r.align(4)?;
-            m_interruption_source = Some(r.read_i32()?);
-            m_ordered_interruption = Some(r.read_bool()?);
-            m_can_transition_to_self = Some(r.read_bool()?);
+            m_is_exit = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_transition_duration = Some(rdr.read_f32()?);
+            m_transition_offset = Some(rdr.read_f32()?);
+            m_exit_time = Some(rdr.read_f32()?);
+            m_has_exit_time = Some(TransitionMHasExitTimeVariant::parse(rdr, ver)?);
+            m_has_fixed_duration = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_interruption_source = Some(rdr.read_i32()?);
+            m_ordered_interruption = Some(rdr.read_bool()?);
+            m_can_transition_to_self = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_is_exit = Some(r.read_bool()?);
-            r.align(4)?;
-            m_transition_duration = Some(r.read_f32()?);
-            m_transition_offset = Some(r.read_f32()?);
-            m_exit_time = Some(r.read_f32()?);
-            m_has_exit_time = Some(TransitionMHasExitTimeVariant::parse(r, ver)?);
-            m_interruption_source = Some(r.read_i32()?);
-            m_ordered_interruption = Some(r.read_bool()?);
-            m_can_transition_to_self = Some(r.read_bool()?);
+            m_is_exit = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_transition_duration = Some(rdr.read_f32()?);
+            m_transition_offset = Some(rdr.read_f32()?);
+            m_exit_time = Some(rdr.read_f32()?);
+            m_has_exit_time = Some(TransitionMHasExitTimeVariant::parse(rdr, ver)?);
+            m_interruption_source = Some(rdr.read_i32()?);
+            m_ordered_interruption = Some(rdr.read_bool()?);
+            m_can_transition_to_self = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            m_can_transition_to_self = Some(r.read_bool()?);
+            m_can_transition_to_self = Some(rdr.read_bool()?);
         } else {
         }
 

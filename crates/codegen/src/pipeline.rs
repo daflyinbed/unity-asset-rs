@@ -257,9 +257,18 @@ fn p04_resolve_inheritance(blob: &TpkTypeTree, state: &mut Pipeline) {
 fn p05_merge_fields(blob: &TpkTypeTree, state: &mut Pipeline) {
     log::info!("p05: 字段并集 + 版本门控");
 
+    // main class 名字集合（排除 main class Type 节点，避免被误当 subclass）
+    let main_names: BTreeSet<String> = blob
+        .classes
+        .values()
+        .flat_map(|info| info.classes.iter())
+        .filter_map(|e| e.class.as_ref())
+        .filter(|c| !c.flags.is_abstract())
+        .filter_map(|c| blob.string_pool.get(c.name_index as usize).cloned())
+        .collect();
+
     // 1. 对每个 main class 计算字段（扁平，含继承链；TPK 已把继承链平铺到 release_root）
-    let mut self_cache: BTreeMap<i32, Vec<EmitField>> = BTreeMap::new();
-    let mut layouts_cache: BTreeMap<i32, Vec<VersionLayout>> = BTreeMap::new();
+    let mut main_cache: BTreeMap<i32, (Vec<EmitField>, Vec<VersionLayout>)> = BTreeMap::new();
     let main_ids: Vec<i32> = blob.classes.keys().copied().collect();
     for class_id in &main_ids {
         let class_name = state
@@ -267,29 +276,39 @@ fn p05_merge_fields(blob: &TpkTypeTree, state: &mut Pipeline) {
             .get(&ClassKey::Main(*class_id))
             .map(|c| c.name.as_str())
             .unwrap_or("Unknown");
-        compute_main_fields(
-            *class_id,
-            class_name,
-            blob,
-            &mut self_cache,
-            &mut layouts_cache,
-        );
+        compute_main_fields(*class_id, class_name, blob, &mut main_cache);
     }
 
     // 写回 state
-    for (class_id, own) in &self_cache {
+    for (class_id, (own, layouts)) in &main_cache {
         if let Some(class) = state.classes.get_mut(&ClassKey::Main(*class_id)) {
             class.own_fields = own.clone();
-        }
-    }
-    for (class_id, layouts) in &layouts_cache {
-        if let Some(class) = state.classes.get_mut(&ClassKey::Main(*class_id)) {
-            // 只在版本间顺序不同时才存 layouts；顺序一致则留空（用 own_fields 即可）
-            class.version_layouts = dedup_layouts(layouts);
+            class.version_layouts = layouts.clone();
         }
     }
 
-    // 2. 处理 subclass（无继承，直接取第一次出现的子树）
+    // 2. 收集每个 subclass 在所有 release_root 中的 (version, fields) 出现。
+    //    与 main class 同逻辑做跨版本合并 —— 修前 subclass 取 node_pool 首次出现，
+    //    无版本门控，同名 subclass 内部字段跨版本变化时会读错字节。
+    let mut sub_occurrences: BTreeMap<String, Vec<(UnityVersion, Vec<FlatField>)>> =
+        BTreeMap::new();
+    for info in blob.classes.values() {
+        for entry in &info.classes {
+            if let Some(cls) = entry.class.as_ref()
+                && let Some(root_idx) = cls.release_root
+            {
+                collect_subclass_from_node(
+                    root_idx as usize,
+                    entry.version,
+                    blob,
+                    &main_names,
+                    &mut sub_occurrences,
+                );
+            }
+        }
+    }
+
+    // 3. 对每个 subclass 跨版本合并字段
     let sub_keys: Vec<ClassKey> = state
         .classes
         .keys()
@@ -297,7 +316,25 @@ fn p05_merge_fields(blob: &TpkTypeTree, state: &mut Pipeline) {
         .cloned()
         .collect();
     for key in &sub_keys {
-        if let ClassKey::Subclass(unity_name) = key {
+        let ClassKey::Subclass(unity_name) = key else {
+            continue;
+        };
+        let class_name = state
+            .classes
+            .get(key)
+            .map(|c| c.name.as_str())
+            .unwrap_or("Unknown");
+
+        if let Some(occurrences) = sub_occurrences.get(unity_name) {
+            // 有 release_root 出现：跨版本合并
+            let (own_fields, version_layouts) =
+                merge_and_layout(occurrences.clone(), class_name);
+            if let Some(class) = state.classes.get_mut(key) {
+                class.own_fields = own_fields;
+                class.version_layouts = version_layouts;
+            }
+        } else {
+            // 回退：取 node_pool 首次出现（editor-only subclass 等，无 release 引用）
             let first_idx = blob.node_pool.iter().enumerate().find(|(_, n)| {
                 let tn = blob
                     .string_pool
@@ -339,56 +376,41 @@ fn compute_main_fields(
     class_id: i32,
     class_name: &str,
     blob: &TpkTypeTree,
-    self_cache: &mut BTreeMap<i32, Vec<EmitField>>,
-    layouts_cache: &mut BTreeMap<i32, Vec<VersionLayout>>,
+    cache: &mut BTreeMap<i32, (Vec<EmitField>, Vec<VersionLayout>)>,
 ) {
-    if self_cache.contains_key(&class_id) {
+    if cache.contains_key(&class_id) {
         return;
     }
-    let self_fields = compute_main_self_fields(class_id, class_name, blob, self_cache);
-    self_cache.insert(class_id, self_fields.clone());
 
-    // Per-version layouts：每个版本变体按 release_root 真实顺序（扁平，含继承链字段）
     let info = match blob.classes.get(&class_id) {
         Some(i) => i,
         None => {
-            layouts_cache.insert(class_id, Vec::new());
+            cache.insert(class_id, (Vec::new(), Vec::new()));
             return;
         }
     };
-    let mut layouts: Vec<VersionLayout> = Vec::new();
+
+    let mut version_fields: Vec<(UnityVersion, Vec<FlatField>)> = Vec::new();
     for entry in &info.classes {
         if let Some(cls) = entry.class.as_ref()
             && let Some(root_idx) = cls.release_root
         {
-            let flat = flatten_root(root_idx as usize, blob);
-            let fields: Vec<EmitField> = flat
-                .into_iter()
-                .map(|f| {
-                    let align_after = meta_to_align(f.meta_flag);
-                    EmitField {
-                        rust_name: f.rust_name,
-                        unity_name: f.unity_name,
-                        rust_type: f.rust_type,
-                        version_gate: Some(VersionGate::Always),
-                        align_after,
-                        unity_meta_flag: f.meta_flag,
-                    }
-                })
-                .collect();
-            let new_layout = VersionLayout {
-                since: entry.version.major_minor_build(),
-                fields,
-            };
-            // 去重：同 (major, minor, build) 的版本取最后一个
-            if layouts.last().is_some_and(|l| l.since == new_layout.since) {
-                *layouts.last_mut().unwrap() = new_layout;
+            let fields = flatten_root(root_idx as usize, blob);
+            // 去重：TPK 可能含同 (major, minor, build) 但不同 type 后缀的版本
+            // （如 2021.1.0b1 和 2021.1.0f1）。取最后一个（更接近 final）。
+            if version_fields
+                .last()
+                .is_some_and(|(v, _)| v.major_minor_build() == entry.version.major_minor_build())
+            {
+                *version_fields.last_mut().unwrap() = (entry.version, fields);
             } else {
-                layouts.push(new_layout);
+                version_fields.push((entry.version, fields));
             }
         }
     }
-    layouts_cache.insert(class_id, layouts);
+
+    let result = merge_and_layout(version_fields, class_name);
+    cache.insert(class_id, result);
 }
 
 /// 判定是否需要 version-gated parse 块，需要时返回按版本去重后的 layouts。
@@ -509,45 +531,8 @@ fn merged_order_compatible(merged: &[&str], version_fields: &[&str]) -> bool {
     positions.windows(2).all(|w| w[0] < w[1])
 }
 
-/// class 的 self_fields（含祖先字段，因为 TPK 把继承链平铺到 release_root）。
-fn compute_main_self_fields(
-    class_id: i32,
-    class_name: &str,
-    blob: &TpkTypeTree,
-    cache: &mut BTreeMap<i32, Vec<EmitField>>,
-) -> Vec<EmitField> {
-    if let Some(v) = cache.get(&class_id) {
-        return v.clone();
-    }
-    let info = match blob.classes.get(&class_id) {
-        Some(i) => i,
-        None => return Vec::new(),
-    };
-
-    let mut version_fields: Vec<(UnityVersion, Vec<FlatField>)> = Vec::new();
-    for entry in &info.classes {
-        if let Some(cls) = entry.class.as_ref()
-            && let Some(root_idx) = cls.release_root
-        {
-            let fields = flatten_root(root_idx as usize, blob);
-            // 去重：TPK 可能含同 (major, minor, build) 但不同 type 后缀的版本
-            // （如 2021.1.0b1 和 2021.1.0f1）。取最后一个（更接近 final）。
-            if version_fields
-                .last()
-                .is_some_and(|(v, _)| v.major_minor_build() == entry.version.major_minor_build())
-            {
-                *version_fields.last_mut().unwrap() = (entry.version, fields);
-            } else {
-                version_fields.push((entry.version, fields));
-            }
-        }
-    }
-    let self_fields = merge_fields_across_versions(&version_fields, class_name);
-    cache.insert(class_id, self_fields.clone());
-    self_fields
-}
-
 /// 展平字段（root 的直接子节点 = 字段列表）。
+#[derive(Clone)]
 struct FlatField {
     unity_name: String,
     rust_name: String,
@@ -576,6 +561,40 @@ fn flatten_root(root_idx: usize, blob: &TpkTypeTree) -> Vec<FlatField> {
             }
         })
         .collect()
+}
+
+/// 递归遍历节点子树，收集所有 `NodeType::Type` 节点（subclass）的出现。
+///
+/// 每次出现记录 `(version, 展平字段)`，version 来自父 main class 的版本。
+/// 递归进入所有子节点（包括 vector/map/pair 容器），以发现嵌套 subclass。
+/// 排除 `main_names` 中的 main class 名字（它们的 release_root 节点本身也是
+/// `NodeType::Type`，不应被当作 subclass）。
+fn collect_subclass_from_node(
+    node_idx: usize,
+    version: UnityVersion,
+    blob: &TpkTypeTree,
+    main_names: &BTreeSet<String>,
+    out: &mut BTreeMap<String, Vec<(UnityVersion, Vec<FlatField>)>>,
+) {
+    let node = &blob.node_pool[node_idx];
+    let type_name = blob
+        .string_pool
+        .get(node.type_name_index as usize)
+        .map(String::as_str)
+        .unwrap_or("");
+    let nt = NodeType::classify(type_name, &node.sub_nodes);
+
+    if nt == NodeType::Type && !main_names.contains(type_name) && !type_name.is_empty() {
+        let fields = flatten_root(node_idx, blob);
+        out.entry(type_name.to_string())
+            .or_default()
+            .push((version, fields));
+    }
+
+    // 递归子节点（所有类型，以发现嵌套 subclass）
+    for &child_idx in &node.sub_nodes {
+        collect_subclass_from_node(child_idx as usize, version, blob, main_names, out);
+    }
 }
 
 /// 递归地把 TpkUnityNode 转成 RustType。
@@ -828,9 +847,16 @@ fn build_versioned_enum(
         } else {
             VersionGate::Since(ver.major, ver.minor, ver.build)
         };
+        // Subclass 在 enum 变体里按值存储，若存在递归引用（如 Clip → OffsetPtr →
+        // OffsetPtrDataVariant → Clip）会导致无限大小。Box 打断循环。
+        let boxed = if matches!(ty, RustType::Subclass(_)) {
+            RustType::Box(Box::new(ty.clone()))
+        } else {
+            ty.clone()
+        };
         variants.push(EnumVariant {
             gate: vgate,
-            rust_type: ty.clone(),
+            rust_type: boxed,
             align_after: *align,
         });
     }
@@ -844,6 +870,55 @@ fn build_versioned_enum(
 /// meta_flag → align_after：AlignBytes (0x4000) 或 AnyChildUsesAlignBytes (0x8000)。
 fn meta_to_align(meta: u32) -> bool {
     (meta & 0x4000) != 0 || (meta & 0x8000) != 0
+}
+
+/// 从跨版本字段列表计算 merged `own_fields` + deduped `version_layouts`。
+///
+/// 供 main class 和 subclass 共用，确保两者用完全相同的合并逻辑：
+/// 1. 排序 + 按 `major_minor_build` 去重（取最后一个，同 main class 逻辑）
+/// 2. `merge_fields_across_versions` → merged own_fields（含 VersionGate / VersionedEnum）
+/// 3. 每个 version 变体 → `VersionLayout`（按 release_root 真实顺序）
+/// 4. `dedup_layouts` 判定线性 vs version-gated
+fn merge_and_layout(
+    version_fields: Vec<(UnityVersion, Vec<FlatField>)>,
+    class_name: &str,
+) -> (Vec<EmitField>, Vec<VersionLayout>) {
+    // 排序 + 按 major_minor_build 去重（取最后一个）
+    let mut sorted = version_fields;
+    sorted.sort_by_key(|(v, _)| v.major_minor_build());
+    let mut deduped: Vec<(UnityVersion, Vec<FlatField>)> = Vec::new();
+    for (ver, fields) in sorted {
+        if deduped
+            .last()
+            .is_some_and(|(v, _)| v.major_minor_build() == ver.major_minor_build())
+        {
+            *deduped.last_mut().unwrap() = (ver, fields);
+        } else {
+            deduped.push((ver, fields));
+        }
+    }
+
+    let own_fields = merge_fields_across_versions(&deduped, class_name);
+
+    let layouts: Vec<VersionLayout> = deduped
+        .iter()
+        .map(|(ver, fields)| VersionLayout {
+            since: ver.major_minor_build(),
+            fields: fields
+                .iter()
+                .map(|f| EmitField {
+                    rust_name: f.rust_name.clone(),
+                    unity_name: f.unity_name.clone(),
+                    rust_type: f.rust_type.clone(),
+                    version_gate: Some(VersionGate::Always),
+                    align_after: meta_to_align(f.meta_flag),
+                    unity_meta_flag: f.meta_flag,
+                })
+                .collect(),
+        })
+        .collect();
+    let version_layouts = dedup_layouts(&layouts);
+    (own_fields, version_layouts)
 }
 
 // ────────────────────────────────────────────────────────────────────

@@ -12,15 +12,15 @@ pub struct TierSettings {
 
 impl crate::Parse for TierSettings {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_build_target = r.read_i32()?;
-        let m_tier = r.read_i32()?;
-        let m_settings = TierGraphicsSettingsEditor::parse(r, ver)?;
-        r.align(4)?;
-        let m_automatic = r.read_bool()?;
-        r.align(4)?;
+        let m_build_target = rdr.read_i32()?;
+        let m_tier = rdr.read_i32()?;
+        let m_settings = TierGraphicsSettingsEditor::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let m_automatic = rdr.read_bool()?;
+        rdr.align(4)?;
 
         Ok(TierSettings {
             m_build_target,

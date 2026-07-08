@@ -30,39 +30,49 @@ pub struct SpeedTreeWindConfig9 {
     pub m_b_do_ripple: i32,
     pub m_b_do_shimmer: i32,
     pub m_b_lod_fade: i32,
-    pub pad: i32,
+    pub pad: Option<i32>,
+    pub m_f_import_scaling: Option<f32>,
 }
 
 impl crate::Parse for SpeedTreeWindConfig9 {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_f_strength_response = r.read_f32()?;
-        let m_f_direction_response = r.read_f32()?;
-        let m_f_gust_frequency = r.read_f32()?;
-        let m_f_gust_strength_min = r.read_f32()?;
-        let m_f_gust_strength_max = r.read_f32()?;
-        let m_f_gust_duration_min = r.read_f32()?;
-        let m_f_gust_duration_max = r.read_f32()?;
-        let m_f_gust_rise_scalar = r.read_f32()?;
-        let m_f_gust_fall_scalar = r.read_f32()?;
-        let m_f_branch1_stretch_limit = r.read_f32()?;
-        let m_f_branch2_stretch_limit = r.read_f32()?;
-        let m_f_shared_height_start = r.read_f32()?;
-        let m_s_shared = BranchWindLevel::parse(r, ver)?;
-        let m_s_branch1 = BranchWindLevel::parse(r, ver)?;
-        let m_s_branch2 = BranchWindLevel::parse(r, ver)?;
-        let m_s_ripple = RippleGroup::parse(r, ver)?;
-        let m_v_tree_extents = Vector3f::parse(r, ver)?;
-        let m_f_wind_independence = r.read_f32()?;
-        let m_b_do_shared = r.read_i32()?;
-        let m_b_do_branch1 = r.read_i32()?;
-        let m_b_do_branch2 = r.read_i32()?;
-        let m_b_do_ripple = r.read_i32()?;
-        let m_b_do_shimmer = r.read_i32()?;
-        let m_b_lod_fade = r.read_i32()?;
-        let pad = r.read_i32()?;
+        let m_f_strength_response = rdr.read_f32()?;
+        let m_f_direction_response = rdr.read_f32()?;
+        let m_f_gust_frequency = rdr.read_f32()?;
+        let m_f_gust_strength_min = rdr.read_f32()?;
+        let m_f_gust_strength_max = rdr.read_f32()?;
+        let m_f_gust_duration_min = rdr.read_f32()?;
+        let m_f_gust_duration_max = rdr.read_f32()?;
+        let m_f_gust_rise_scalar = rdr.read_f32()?;
+        let m_f_gust_fall_scalar = rdr.read_f32()?;
+        let m_f_branch1_stretch_limit = rdr.read_f32()?;
+        let m_f_branch2_stretch_limit = rdr.read_f32()?;
+        let m_f_shared_height_start = rdr.read_f32()?;
+        let m_s_shared = BranchWindLevel::parse(rdr, ver)?;
+        let m_s_branch1 = BranchWindLevel::parse(rdr, ver)?;
+        let m_s_branch2 = BranchWindLevel::parse(rdr, ver)?;
+        let m_s_ripple = RippleGroup::parse(rdr, ver)?;
+        let m_v_tree_extents = Vector3f::parse(rdr, ver)?;
+        let m_f_wind_independence = rdr.read_f32()?;
+        let m_b_do_shared = rdr.read_i32()?;
+        let m_b_do_branch1 = rdr.read_i32()?;
+        let m_b_do_branch2 = rdr.read_i32()?;
+        let m_b_do_ripple = rdr.read_i32()?;
+        let m_b_do_shimmer = rdr.read_i32()?;
+        let m_b_lod_fade = rdr.read_i32()?;
+        let pad = if *ver >= crate::UnityVersion::new(2023, 3, 0) {
+            Some(rdr.read_i32()?)
+        } else {
+            None
+        };
+        let m_f_import_scaling = if *ver >= crate::UnityVersion::new(6000, 0, 8) {
+            Some(rdr.read_f32()?)
+        } else {
+            None
+        };
 
         Ok(SpeedTreeWindConfig9 {
             m_f_strength_response,
@@ -90,6 +100,7 @@ impl crate::Parse for SpeedTreeWindConfig9 {
             m_b_do_shimmer,
             m_b_lod_fade,
             pad,
+            m_f_import_scaling,
         })
     }
 }

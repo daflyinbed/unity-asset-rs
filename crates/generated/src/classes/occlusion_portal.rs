@@ -13,14 +13,14 @@ pub struct OcclusionPortal {
 
 impl crate::Parse for OcclusionPortal {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_open = r.read_bool()?;
-        r.align(4)?;
-        let m_center = Vector3f::parse(r, ver)?;
-        let m_size = Vector3f::parse(r, ver)?;
+        let m_game_object = crate::PPtr::parse(rdr, ver)?;
+        let m_open = rdr.read_bool()?;
+        rdr.align(4)?;
+        let m_center = Vector3f::parse(rdr, ver)?;
+        let m_size = Vector3f::parse(rdr, ver)?;
 
         Ok(OcclusionPortal {
             m_game_object,

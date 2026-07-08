@@ -11,13 +11,13 @@ pub struct RayTracingShaderFunctionDesc {
 
 impl crate::Parse for RayTracingShaderFunctionDesc {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let identifier = RayTracingShaderId::parse(r, ver)?;
-        r.align(4)?;
-        let payload_size_in_bytes = r.read_u32()?;
-        let attribute_size_in_bytes = r.read_u32()?;
+        let identifier = RayTracingShaderId::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let payload_size_in_bytes = rdr.read_u32()?;
+        let attribute_size_in_bytes = rdr.read_u32()?;
 
         Ok(RayTracingShaderFunctionDesc {
             identifier,

@@ -9,12 +9,12 @@ pub struct UvAnimation {
 
 impl crate::Parse for UvAnimation {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let x_tile = r.read_i32()?;
-        let y_tile = r.read_i32()?;
-        let cycles = r.read_f32()?;
+        let x_tile = rdr.read_i32()?;
+        let y_tile = rdr.read_i32()?;
+        let cycles = rdr.read_f32()?;
 
         Ok(UvAnimation {
             x_tile,

@@ -27,28 +27,28 @@ pub struct LightmapEditorSettings {
 
 impl crate::Parse for LightmapEditorSettings {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_resolution = r.read_f32()?;
-        let m_last_used_resolution = r.read_f32()?;
-        let m_texture_width = r.read_i32()?;
-        let m_texture_height = r.read_i32()?;
-        let m_bounce_boost = r.read_f32()?;
-        let m_bounce_intensity = r.read_f32()?;
-        let m_sky_light_color = ColorRgba::parse(r, ver)?;
-        let m_sky_light_intensity = r.read_f32()?;
-        let m_quality = r.read_i32()?;
-        let m_bounces = r.read_i32()?;
-        let m_final_gather_rays = r.read_i32()?;
-        let m_final_gather_contrast_threshold = r.read_f32()?;
-        let m_final_gather_gradient_threshold = r.read_f32()?;
-        let m_final_gather_interpolation_points = r.read_i32()?;
-        let m_ao_amount = r.read_f32()?;
-        let m_ao_max_distance = r.read_f32()?;
-        let m_ao_contrast = r.read_f32()?;
-        let m_texture_compression = r.read_bool()?;
-        let m_lock_atlas = r.read_bool()?;
+        let m_resolution = rdr.read_f32()?;
+        let m_last_used_resolution = rdr.read_f32()?;
+        let m_texture_width = rdr.read_i32()?;
+        let m_texture_height = rdr.read_i32()?;
+        let m_bounce_boost = rdr.read_f32()?;
+        let m_bounce_intensity = rdr.read_f32()?;
+        let m_sky_light_color = ColorRgba::parse(rdr, ver)?;
+        let m_sky_light_intensity = rdr.read_f32()?;
+        let m_quality = rdr.read_i32()?;
+        let m_bounces = rdr.read_i32()?;
+        let m_final_gather_rays = rdr.read_i32()?;
+        let m_final_gather_contrast_threshold = rdr.read_f32()?;
+        let m_final_gather_gradient_threshold = rdr.read_f32()?;
+        let m_final_gather_interpolation_points = rdr.read_i32()?;
+        let m_ao_amount = rdr.read_f32()?;
+        let m_ao_max_distance = rdr.read_f32()?;
+        let m_ao_contrast = rdr.read_f32()?;
+        let m_texture_compression = rdr.read_bool()?;
+        let m_lock_atlas = rdr.read_bool()?;
 
         Ok(LightmapEditorSettings {
             m_resolution,

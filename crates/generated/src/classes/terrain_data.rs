@@ -9,21 +9,21 @@ use crate::subclasses::splat_database::SplatDatabase;
 /// 版本枚举：TerrainDataMSplatDatabaseVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TerrainDataMSplatDatabaseVariant {
-    Default(SplatDatabase),
-    V5_0_1(SplatDatabase),
+    Default(Box<SplatDatabase>),
+    V5_0_1(Box<SplatDatabase>),
 }
 
 impl crate::Parse for TerrainDataMSplatDatabaseVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 0, 1) {
-            let v = SplatDatabase::parse(r, ver)?;
-            r.align(4)?;
+            let v = ( { Ok(Box::new(SplatDatabase::parse(rdr, ver)?)) } )?;
+            rdr.align(4)?;
             Ok(Self::V5_0_1(v))
         } else {
-            let v = SplatDatabase::parse(r, ver)?;
+            let v = ( { Ok(Box::new(SplatDatabase::parse(rdr, ver)?)) } )?;
             Ok(Self::Default(v))
         }
     }
@@ -39,19 +39,19 @@ pub struct TerrainData {
 
 impl crate::Parse for TerrainData {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_splat_database = TerrainDataMSplatDatabaseVariant::parse(r, ver)?;
-        let m_detail_database = DetailDatabase::parse(r, ver)?;
-        r.align(4)?;
-        let m_heightmap = Heightmap::parse(r, ver)?;
-        r.align(4)?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_splat_database = TerrainDataMSplatDatabaseVariant::parse(rdr, ver)?;
+        let m_detail_database = DetailDatabase::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let m_heightmap = Heightmap::parse(rdr, ver)?;
+        rdr.align(4)?;
         let m_preload_shaders = if *ver >= crate::UnityVersion::new(2018, 4, 14) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Some(v)
         } else {
             None

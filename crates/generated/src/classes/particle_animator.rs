@@ -25,25 +25,25 @@ pub struct ParticleAnimator {
 
 impl crate::Parse for ParticleAnimator {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let does_animate_color = r.read_bool()?;
-        r.align(4)?;
-        let color_animation_0 = ColorRgba::parse(r, ver)?;
-        let color_animation_1 = ColorRgba::parse(r, ver)?;
-        let color_animation_2 = ColorRgba::parse(r, ver)?;
-        let color_animation_3 = ColorRgba::parse(r, ver)?;
-        let color_animation_4 = ColorRgba::parse(r, ver)?;
-        let world_rotation_axis = Vector3f::parse(r, ver)?;
-        let local_rotation_axis = Vector3f::parse(r, ver)?;
-        let size_grow = r.read_f32()?;
-        let rnd_force = Vector3f::parse(r, ver)?;
-        let force = Vector3f::parse(r, ver)?;
-        let damping = r.read_f32()?;
-        let stop_simulation = r.read_bool()?;
-        let autodestruct = r.read_bool()?;
+        let m_game_object = crate::PPtr::parse(rdr, ver)?;
+        let does_animate_color = rdr.read_bool()?;
+        rdr.align(4)?;
+        let color_animation_0 = ColorRgba::parse(rdr, ver)?;
+        let color_animation_1 = ColorRgba::parse(rdr, ver)?;
+        let color_animation_2 = ColorRgba::parse(rdr, ver)?;
+        let color_animation_3 = ColorRgba::parse(rdr, ver)?;
+        let color_animation_4 = ColorRgba::parse(rdr, ver)?;
+        let world_rotation_axis = Vector3f::parse(rdr, ver)?;
+        let local_rotation_axis = Vector3f::parse(rdr, ver)?;
+        let size_grow = rdr.read_f32()?;
+        let rnd_force = Vector3f::parse(rdr, ver)?;
+        let force = Vector3f::parse(rdr, ver)?;
+        let damping = rdr.read_f32()?;
+        let stop_simulation = rdr.read_bool()?;
+        let autodestruct = rdr.read_bool()?;
 
         Ok(ParticleAnimator {
             m_game_object,

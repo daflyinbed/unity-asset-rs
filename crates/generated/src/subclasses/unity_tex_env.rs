@@ -12,12 +12,12 @@ pub struct UnityTexEnv {
 
 impl crate::Parse for UnityTexEnv {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_texture = crate::PPtr::parse(r, ver)?;
-        let m_scale = Vector2f::parse(r, ver)?;
-        let m_offset = Vector2f::parse(r, ver)?;
+        let m_texture = crate::PPtr::parse(rdr, ver)?;
+        let m_scale = Vector2f::parse(rdr, ver)?;
+        let m_offset = Vector2f::parse(rdr, ver)?;
 
         Ok(UnityTexEnv {
             m_texture,

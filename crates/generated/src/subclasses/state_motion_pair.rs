@@ -10,11 +10,11 @@ pub struct StateMotionPair {
 
 impl crate::Parse for StateMotionPair {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_state = crate::PPtr::parse(r, ver)?;
-        let m_motion = crate::PPtr::parse(r, ver)?;
+        let m_state = crate::PPtr::parse(rdr, ver)?;
+        let m_motion = crate::PPtr::parse(rdr, ver)?;
 
         Ok(StateMotionPair {
             m_state,

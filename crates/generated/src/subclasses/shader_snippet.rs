@@ -22,32 +22,32 @@ pub struct ShaderSnippet {
 
 impl crate::Parse for ShaderSnippet {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_code = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_asset_path = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_platform_mask = r.read_u32()?;
-        let m_types_mask = r.read_u32()?;
-        let m_includes_hash = Hash128::parse(r, ver)?;
-        let m_target = r.read_i32()?;
-        let m_is_glsl = r.read_bool()?;
-        let m_from_other = r.read_bool()?;
-        r.align(4)?;
-        let m_keyword_combinations_0 = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_keyword_combinations_1 = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_keyword_combinations_2 = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_keyword_combinations_3 = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_keyword_combinations_4 = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_keyword_combinations_5 = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
+        let m_code = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_asset_path = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_platform_mask = rdr.read_u32()?;
+        let m_types_mask = rdr.read_u32()?;
+        let m_includes_hash = Hash128::parse(rdr, ver)?;
+        let m_target = rdr.read_i32()?;
+        let m_is_glsl = rdr.read_bool()?;
+        let m_from_other = rdr.read_bool()?;
+        rdr.align(4)?;
+        let m_keyword_combinations_0 = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let m_keyword_combinations_1 = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let m_keyword_combinations_2 = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let m_keyword_combinations_3 = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let m_keyword_combinations_4 = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let m_keyword_combinations_5 = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
 
         Ok(ShaderSnippet {
             m_code,

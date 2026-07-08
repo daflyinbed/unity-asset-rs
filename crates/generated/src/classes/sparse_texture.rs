@@ -12,15 +12,15 @@ pub enum SparseTextureMDownscaleFallbackVariant {
 
 impl crate::Parse for SparseTextureMDownscaleFallbackVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V2020_2(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -35,14 +35,14 @@ pub enum SparseTextureMFormatVariant {
 
 impl crate::Parse for SparseTextureMFormatVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_i32()?;
+            let v = rdr.read_i32()?;
             Ok(Self::V5_0(v))
         } else {
-            let v = r.read_u32()?;
+            let v = rdr.read_u32()?;
             Ok(Self::Default(v))
         }
     }
@@ -63,7 +63,7 @@ pub struct SparseTexture {
 
 impl crate::Parse for SparseTexture {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_name = None;
@@ -76,39 +76,39 @@ impl crate::Parse for SparseTexture {
         let mut m_mip_count = None;
         let mut m_format = None;
         let mut m_texture_settings = None;
-            m_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
-            m_is_alpha_channel_optional = Some(r.read_bool()?);
-            r.align(4)?;
-            m_color_space = Some(r.read_i32()?);
-            m_format = Some(SparseTextureMFormatVariant::parse(r, ver)?);
+            m_is_alpha_channel_optional = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_color_space = Some(rdr.read_i32()?);
+            m_format = Some(SparseTextureMFormatVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            m_forced_fallback_format = Some(r.read_i32()?);
-            m_downscale_fallback = Some(SparseTextureMDownscaleFallbackVariant::parse(r, ver)?);
-            m_is_alpha_channel_optional = Some(r.read_bool()?);
-            r.align(4)?;
-            m_color_space = Some(r.read_i32()?);
-            m_format = Some(SparseTextureMFormatVariant::parse(r, ver)?);
+            m_forced_fallback_format = Some(rdr.read_i32()?);
+            m_downscale_fallback = Some(SparseTextureMDownscaleFallbackVariant::parse(rdr, ver)?);
+            m_is_alpha_channel_optional = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_color_space = Some(rdr.read_i32()?);
+            m_format = Some(SparseTextureMFormatVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_forced_fallback_format = Some(r.read_i32()?);
-            m_downscale_fallback = Some(SparseTextureMDownscaleFallbackVariant::parse(r, ver)?);
-            m_color_space = Some(r.read_i32()?);
-            m_format = Some(SparseTextureMFormatVariant::parse(r, ver)?);
+            m_forced_fallback_format = Some(rdr.read_i32()?);
+            m_downscale_fallback = Some(SparseTextureMDownscaleFallbackVariant::parse(rdr, ver)?);
+            m_color_space = Some(rdr.read_i32()?);
+            m_format = Some(SparseTextureMFormatVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            m_forced_fallback_format = Some(r.read_i32()?);
-            m_downscale_fallback = Some(SparseTextureMDownscaleFallbackVariant::parse(r, ver)?);
+            m_forced_fallback_format = Some(rdr.read_i32()?);
+            m_downscale_fallback = Some(SparseTextureMDownscaleFallbackVariant::parse(rdr, ver)?);
         } else {
         }
-            m_width = Some(r.read_i32()?);
-            m_height = Some(r.read_i32()?);
-            m_mip_count = Some(r.read_i32()?);
+            m_width = Some(rdr.read_i32()?);
+            m_height = Some(rdr.read_i32()?);
+            m_mip_count = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
         } else {
-            m_format = Some(SparseTextureMFormatVariant::parse(r, ver)?);
-            m_color_space = Some(r.read_i32()?);
+            m_format = Some(SparseTextureMFormatVariant::parse(rdr, ver)?);
+            m_color_space = Some(rdr.read_i32()?);
         }
-            m_texture_settings = Some(GlTextureSettings::parse(r, ver)?);
+            m_texture_settings = Some(GlTextureSettings::parse(rdr, ver)?);
 
         Ok(SparseTexture {
             m_name: m_name.unwrap(),

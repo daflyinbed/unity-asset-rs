@@ -9,10 +9,10 @@ pub struct HierarchicalSceneData {
 
 impl crate::Parse for HierarchicalSceneData {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_scene_guid = Guid::parse(r, ver)?;
+        let m_scene_guid = Guid::parse(rdr, ver)?;
 
         Ok(HierarchicalSceneData {
             m_scene_guid,

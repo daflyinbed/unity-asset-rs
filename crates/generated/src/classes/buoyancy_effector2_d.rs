@@ -22,40 +22,40 @@ pub struct BuoyancyEffector2D {
 
 impl crate::Parse for BuoyancyEffector2D {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_enabled = r.read_u8()?;
-        r.align(4)?;
-        let m_use_collider_mask = r.read_bool()?;
-        r.align(4)?;
-        let m_collider_mask = BitField::parse(r, ver)?;
-        let m_surface_level = r.read_f32()?;
-        let m_density = r.read_f32()?;
+        let m_game_object = crate::PPtr::parse(rdr, ver)?;
+        let m_enabled = rdr.read_u8()?;
+        rdr.align(4)?;
+        let m_use_collider_mask = rdr.read_bool()?;
+        rdr.align(4)?;
+        let m_collider_mask = BitField::parse(rdr, ver)?;
+        let m_surface_level = rdr.read_f32()?;
+        let m_density = rdr.read_f32()?;
         let m_linear_drag = if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            Some(r.read_f32()?)
+            Some(rdr.read_f32()?)
         } else {
             None
         };
         let m_linear_damping = if *ver >= crate::UnityVersion::new(6000, 1, 0) {
-            Some(r.read_f32()?)
+            Some(rdr.read_f32()?)
         } else {
             None
         };
         let m_angular_drag = if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            Some(r.read_f32()?)
+            Some(rdr.read_f32()?)
         } else {
             None
         };
         let m_angular_damping = if *ver >= crate::UnityVersion::new(6000, 1, 0) {
-            Some(r.read_f32()?)
+            Some(rdr.read_f32()?)
         } else {
             None
         };
-        let m_flow_angle = r.read_f32()?;
-        let m_flow_magnitude = r.read_f32()?;
-        let m_flow_variation = r.read_f32()?;
+        let m_flow_angle = rdr.read_f32()?;
+        let m_flow_magnitude = rdr.read_f32()?;
+        let m_flow_variation = rdr.read_f32()?;
 
         Ok(BuoyancyEffector2D {
             m_game_object,

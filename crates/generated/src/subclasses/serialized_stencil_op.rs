@@ -12,17 +12,17 @@ pub struct SerializedStencilOp {
 
 impl crate::Parse for SerializedStencilOp {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let pass = SerializedShaderFloatValue::parse(r, ver)?;
-        r.align(4)?;
-        let fail = SerializedShaderFloatValue::parse(r, ver)?;
-        r.align(4)?;
-        let z_fail = SerializedShaderFloatValue::parse(r, ver)?;
-        r.align(4)?;
-        let comp = SerializedShaderFloatValue::parse(r, ver)?;
-        r.align(4)?;
+        let pass = SerializedShaderFloatValue::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let fail = SerializedShaderFloatValue::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let z_fail = SerializedShaderFloatValue::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let comp = SerializedShaderFloatValue::parse(rdr, ver)?;
+        rdr.align(4)?;
 
         Ok(SerializedStencilOp {
             pass,

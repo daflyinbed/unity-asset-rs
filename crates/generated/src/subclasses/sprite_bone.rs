@@ -1,5 +1,6 @@
 //! 自动生成。请勿手动修改。
 
+use crate::subclasses::color_rgba::ColorRgba;
 use crate::subclasses::quaternionf::Quaternionf;
 use crate::subclasses::vector3f::Vector3f;
 
@@ -7,29 +8,49 @@ use crate::subclasses::vector3f::Vector3f;
 pub struct SpriteBone {
     pub name: String,
     pub position: Vector3f,
+    pub guid: Option<String>,
     pub rotation: Quaternionf,
     pub length: f32,
     pub parent_id: i32,
+    pub color: Option<ColorRgba>,
 }
 
 impl crate::Parse for SpriteBone {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let name = r.read_aligned_string()?;
-        r.align(4)?;
-        let position = Vector3f::parse(r, ver)?;
-        let rotation = Quaternionf::parse(r, ver)?;
-        let length = r.read_f32()?;
-        let parent_id = r.read_i32()?;
+        let mut name = None;
+        let mut position = None;
+        let mut guid = None;
+        let mut rotation = None;
+        let mut length = None;
+        let mut parent_id = None;
+        let mut color = None;
+            name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+        if *ver >= crate::UnityVersion::new(2021, 1, 0) {
+            guid = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+        } else {
+        }
+            position = Some(Vector3f::parse(rdr, ver)?);
+            rotation = Some(Quaternionf::parse(rdr, ver)?);
+            length = Some(rdr.read_f32()?);
+            parent_id = Some(rdr.read_i32()?);
+        if *ver >= crate::UnityVersion::new(2021, 1, 0) {
+            color = Some(ColorRgba::parse(rdr, ver)?);
+        } else {
+        }
 
         Ok(SpriteBone {
-            name,
-            position,
-            rotation,
-            length,
-            parent_id,
+            name: name.unwrap(),
+            position: position.unwrap(),
+            guid,
+            rotation: rotation.unwrap(),
+            length: length.unwrap(),
+            parent_id: parent_id.unwrap(),
+            color,
         })
     }
 }

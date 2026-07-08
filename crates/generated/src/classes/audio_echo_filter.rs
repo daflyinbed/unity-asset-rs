@@ -12,14 +12,14 @@ pub enum AudioEchoFilterMDelayVariant {
 
 impl crate::Parse for AudioEchoFilterMDelayVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            let v = r.read_f32()?;
+            let v = rdr.read_f32()?;
             Ok(Self::V2022_2(v))
         } else {
-            let v = r.read_u32()?;
+            let v = rdr.read_u32()?;
             Ok(Self::Default(v))
         }
     }
@@ -36,16 +36,16 @@ pub struct AudioEchoFilter {
 
 impl crate::Parse for AudioEchoFilter {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_enabled = r.read_u8()?;
-        r.align(4)?;
-        let m_delay = AudioEchoFilterMDelayVariant::parse(r, ver)?;
-        let m_decay_ratio = r.read_f32()?;
-        let m_wet_mix = r.read_f32()?;
-        let m_dry_mix = r.read_f32()?;
+        let m_game_object = crate::PPtr::parse(rdr, ver)?;
+        let m_enabled = rdr.read_u8()?;
+        rdr.align(4)?;
+        let m_delay = AudioEchoFilterMDelayVariant::parse(rdr, ver)?;
+        let m_decay_ratio = rdr.read_f32()?;
+        let m_wet_mix = rdr.read_f32()?;
+        let m_dry_mix = rdr.read_f32()?;
 
         Ok(AudioEchoFilter {
             m_game_object,

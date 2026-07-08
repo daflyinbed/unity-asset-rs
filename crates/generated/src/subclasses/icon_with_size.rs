@@ -10,11 +10,11 @@ pub struct IconWithSize {
 
 impl crate::Parse for IconWithSize {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_icon = crate::PPtr::parse(r, ver)?;
-        let m_size = r.read_i32()?;
+        let m_icon = crate::PPtr::parse(rdr, ver)?;
+        let m_size = rdr.read_i32()?;
 
         Ok(IconWithSize {
             m_icon,

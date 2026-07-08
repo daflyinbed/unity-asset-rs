@@ -13,14 +13,14 @@ pub enum PointEffector2DMForceSourceVariant {
 
 impl crate::Parse for PointEffector2DMForceSourceVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = r.read_i32()?;
+            let v = rdr.read_i32()?;
             Ok(Self::V5_5(v))
         } else {
-            let v = r.read_u8()?;
+            let v = rdr.read_u8()?;
             Ok(Self::Default(v))
         }
     }
@@ -35,14 +35,14 @@ pub enum PointEffector2DMForceTargetVariant {
 
 impl crate::Parse for PointEffector2DMForceTargetVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = r.read_i32()?;
+            let v = rdr.read_i32()?;
             Ok(Self::V5_5(v))
         } else {
-            let v = r.read_u8()?;
+            let v = rdr.read_u8()?;
             Ok(Self::Default(v))
         }
     }
@@ -57,15 +57,15 @@ pub enum PointEffector2DMForceModeVariant {
 
 impl crate::Parse for PointEffector2DMForceModeVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = r.read_i32()?;
+            let v = rdr.read_i32()?;
             Ok(Self::V5_5(v))
         } else {
-            let v = r.read_u8()?;
-            r.align(4)?;
+            let v = rdr.read_u8()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -90,7 +90,7 @@ pub struct PointEffector2D {
 
 impl crate::Parse for PointEffector2D {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_game_object = None;
@@ -107,32 +107,32 @@ impl crate::Parse for PointEffector2D {
         let mut m_force_mode = None;
         let mut m_linear_damping = None;
         let mut m_angular_damping = None;
-            m_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_enabled = Some(r.read_u8()?);
-            r.align(4)?;
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_enabled = Some(rdr.read_u8()?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 0, 2) {
-            m_use_collider_mask = Some(r.read_bool()?);
-            r.align(4)?;
+            m_use_collider_mask = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else {
         }
-            m_collider_mask = Some(BitField::parse(r, ver)?);
-            m_force_magnitude = Some(r.read_f32()?);
-            m_force_variation = Some(r.read_f32()?);
-            m_distance_scale = Some(r.read_f32()?);
+            m_collider_mask = Some(BitField::parse(rdr, ver)?);
+            m_force_magnitude = Some(rdr.read_f32()?);
+            m_force_variation = Some(rdr.read_f32()?);
+            m_distance_scale = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
         } else {
-            m_drag = Some(r.read_f32()?);
-            m_angular_drag = Some(r.read_f32()?);
+            m_drag = Some(rdr.read_f32()?);
+            m_angular_drag = Some(rdr.read_f32()?);
         }
-            m_force_source = Some(PointEffector2DMForceSourceVariant::parse(r, ver)?);
-            m_force_target = Some(PointEffector2DMForceTargetVariant::parse(r, ver)?);
-            m_force_mode = Some(PointEffector2DMForceModeVariant::parse(r, ver)?);
+            m_force_source = Some(PointEffector2DMForceSourceVariant::parse(rdr, ver)?);
+            m_force_target = Some(PointEffector2DMForceTargetVariant::parse(rdr, ver)?);
+            m_force_mode = Some(PointEffector2DMForceModeVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 1, 0) {
-            m_linear_damping = Some(r.read_f32()?);
-            m_angular_damping = Some(r.read_f32()?);
+            m_linear_damping = Some(rdr.read_f32()?);
+            m_angular_damping = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            m_drag = Some(r.read_f32()?);
-            m_angular_drag = Some(r.read_f32()?);
+            m_drag = Some(rdr.read_f32()?);
+            m_angular_drag = Some(rdr.read_f32()?);
         } else {
         }
 

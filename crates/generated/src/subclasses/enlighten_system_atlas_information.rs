@@ -11,12 +11,12 @@ pub struct EnlightenSystemAtlasInformation {
 
 impl crate::Parse for EnlightenSystemAtlasInformation {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let atlas_size = r.read_i32()?;
-        let atlas_hash = Hash128::parse(r, ver)?;
-        let first_system_id = r.read_i32()?;
+        let atlas_size = rdr.read_i32()?;
+        let atlas_hash = Hash128::parse(rdr, ver)?;
+        let first_system_id = rdr.read_i32()?;
 
         Ok(EnlightenSystemAtlasInformation {
             atlas_size,

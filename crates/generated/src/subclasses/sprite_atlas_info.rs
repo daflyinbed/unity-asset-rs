@@ -11,11 +11,11 @@ pub struct SpriteAtlasInfo {
 
 impl crate::Parse for SpriteAtlasInfo {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let guid = Guid::parse(r, ver)?;
-        let atlas = crate::PPtr::parse(r, ver)?;
+        let guid = Guid::parse(rdr, ver)?;
+        let atlas = crate::PPtr::parse(rdr, ver)?;
 
         Ok(SpriteAtlasInfo {
             guid,

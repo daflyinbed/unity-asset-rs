@@ -11,12 +11,12 @@ pub struct TestObjectWithSpecialLayoutTwo {
 
 impl crate::Parse for TestObjectWithSpecialLayoutTwo {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let different_layout = LayoutDataTwo::parse(r, ver)?;
-        let same_layout = LayoutDataThree::parse(r, ver)?;
-        r.align(4)?;
+        let different_layout = LayoutDataTwo::parse(rdr, ver)?;
+        let same_layout = LayoutDataThree::parse(rdr, ver)?;
+        rdr.align(4)?;
 
         Ok(TestObjectWithSpecialLayoutTwo {
             different_layout,

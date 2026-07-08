@@ -8,11 +8,11 @@ pub struct TicksPerSecond {
 
 impl crate::Parse for TicksPerSecond {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_denominator = r.read_u32()?;
-        let m_numerator = r.read_u32()?;
+        let m_denominator = rdr.read_u32()?;
+        let m_numerator = rdr.read_u32()?;
 
         Ok(TicksPerSecond {
             m_denominator,

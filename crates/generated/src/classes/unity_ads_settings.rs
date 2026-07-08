@@ -12,41 +12,41 @@ pub struct UnityAdsSettings {
 
 impl crate::Parse for UnityAdsSettings {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_enabled = if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            Some(r.read_bool()?)
+            Some(rdr.read_bool()?)
         } else {
             None
         };
         let m_initialize_on_startup = if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            Some(r.read_bool()?)
+            Some(rdr.read_bool()?)
         } else {
             None
         };
         let m_test_mode = if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Some(v)
         } else {
             None
         };
         let m_enabled_platforms = if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            Some(r.read_u32()?)
+            Some(rdr.read_u32()?)
         } else {
             None
         };
         let m_ios_game_id = if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            let v = r.read_aligned_string()?;
-            r.align(4)?;
+            let v = rdr.read_aligned_string()?;
+            rdr.align(4)?;
             Some(v)
         } else {
             None
         };
         let m_android_game_id = if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            let v = r.read_aligned_string()?;
-            r.align(4)?;
+            let v = rdr.read_aligned_string()?;
+            rdr.align(4)?;
             Some(v)
         } else {
             None

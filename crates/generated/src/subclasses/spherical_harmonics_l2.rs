@@ -33,36 +33,36 @@ pub struct SphericalHarmonicsL2 {
 
 impl crate::Parse for SphericalHarmonicsL2 {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let sh_0 = r.read_f32()?;
-        let sh_1 = r.read_f32()?;
-        let sh_2 = r.read_f32()?;
-        let sh_3 = r.read_f32()?;
-        let sh_4 = r.read_f32()?;
-        let sh_5 = r.read_f32()?;
-        let sh_6 = r.read_f32()?;
-        let sh_7 = r.read_f32()?;
-        let sh_8 = r.read_f32()?;
-        let sh_9 = r.read_f32()?;
-        let sh_10 = r.read_f32()?;
-        let sh_11 = r.read_f32()?;
-        let sh_12 = r.read_f32()?;
-        let sh_13 = r.read_f32()?;
-        let sh_14 = r.read_f32()?;
-        let sh_15 = r.read_f32()?;
-        let sh_16 = r.read_f32()?;
-        let sh_17 = r.read_f32()?;
-        let sh_18 = r.read_f32()?;
-        let sh_19 = r.read_f32()?;
-        let sh_20 = r.read_f32()?;
-        let sh_21 = r.read_f32()?;
-        let sh_22 = r.read_f32()?;
-        let sh_23 = r.read_f32()?;
-        let sh_24 = r.read_f32()?;
-        let sh_25 = r.read_f32()?;
-        let sh_26 = r.read_f32()?;
+        let sh_0 = rdr.read_f32()?;
+        let sh_1 = rdr.read_f32()?;
+        let sh_2 = rdr.read_f32()?;
+        let sh_3 = rdr.read_f32()?;
+        let sh_4 = rdr.read_f32()?;
+        let sh_5 = rdr.read_f32()?;
+        let sh_6 = rdr.read_f32()?;
+        let sh_7 = rdr.read_f32()?;
+        let sh_8 = rdr.read_f32()?;
+        let sh_9 = rdr.read_f32()?;
+        let sh_10 = rdr.read_f32()?;
+        let sh_11 = rdr.read_f32()?;
+        let sh_12 = rdr.read_f32()?;
+        let sh_13 = rdr.read_f32()?;
+        let sh_14 = rdr.read_f32()?;
+        let sh_15 = rdr.read_f32()?;
+        let sh_16 = rdr.read_f32()?;
+        let sh_17 = rdr.read_f32()?;
+        let sh_18 = rdr.read_f32()?;
+        let sh_19 = rdr.read_f32()?;
+        let sh_20 = rdr.read_f32()?;
+        let sh_21 = rdr.read_f32()?;
+        let sh_22 = rdr.read_f32()?;
+        let sh_23 = rdr.read_f32()?;
+        let sh_24 = rdr.read_f32()?;
+        let sh_25 = rdr.read_f32()?;
+        let sh_26 = rdr.read_f32()?;
 
         Ok(SphericalHarmonicsL2 {
             sh_0,

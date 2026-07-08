@@ -9,14 +9,14 @@ pub struct BuildTargetGraphicsApIs {
 
 impl crate::Parse for BuildTargetGraphicsApIs {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_build_target = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_ap_is = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
-        let m_automatic = r.read_bool()?;
-        r.align(4)?;
+        let m_build_target = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_ap_is = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_automatic = rdr.read_bool()?;
+        rdr.align(4)?;
 
         Ok(BuildTargetGraphicsApIs {
             m_build_target,

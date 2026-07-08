@@ -2,22 +2,22 @@
 
 #[derive(Debug, Clone)]
 pub struct VfxEntryExposed {
-    pub m_value: f32,
+    pub m_value: bool,
     pub m_name: String,
     pub m_overridden: bool,
 }
 
 impl crate::Parse for VfxEntryExposed {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_value = r.read_f32()?;
-        r.align(4)?;
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_overridden = r.read_bool()?;
-        r.align(4)?;
+        let m_value = rdr.read_bool()?;
+        rdr.align(4)?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_overridden = rdr.read_bool()?;
+        rdr.align(4)?;
 
         Ok(VfxEntryExposed {
             m_value,

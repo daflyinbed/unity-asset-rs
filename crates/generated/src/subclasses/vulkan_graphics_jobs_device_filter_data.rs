@@ -10,12 +10,12 @@ pub struct VulkanGraphicsJobsDeviceFilterData {
 
 impl crate::Parse for VulkanGraphicsJobsDeviceFilterData {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let preferred_mode = r.read_u32()?;
-        let filter = AndroidDeviceFilterData::parse(r, ver)?;
-        r.align(4)?;
+        let preferred_mode = rdr.read_u32()?;
+        let filter = AndroidDeviceFilterData::parse(rdr, ver)?;
+        rdr.align(4)?;
 
         Ok(VulkanGraphicsJobsDeviceFilterData {
             preferred_mode,

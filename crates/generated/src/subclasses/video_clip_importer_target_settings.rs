@@ -14,19 +14,19 @@ pub struct VideoClipImporterTargetSettings {
 
 impl crate::Parse for VideoClipImporterTargetSettings {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let enable_transcoding = r.read_bool()?;
-        r.align(4)?;
-        let codec = r.read_i32()?;
-        let resize_format = r.read_i32()?;
-        let aspect_ratio = r.read_i32()?;
-        r.align(4)?;
-        let custom_width = r.read_i32()?;
-        let custom_height = r.read_i32()?;
-        let bitrate_mode = r.read_i32()?;
-        let spatial_quality = r.read_i32()?;
+        let enable_transcoding = rdr.read_bool()?;
+        rdr.align(4)?;
+        let codec = rdr.read_i32()?;
+        let resize_format = rdr.read_i32()?;
+        let aspect_ratio = rdr.read_i32()?;
+        rdr.align(4)?;
+        let custom_width = rdr.read_i32()?;
+        let custom_height = rdr.read_i32()?;
+        let bitrate_mode = rdr.read_i32()?;
+        let spatial_quality = rdr.read_i32()?;
 
         Ok(VideoClipImporterTargetSettings {
             enable_transcoding,

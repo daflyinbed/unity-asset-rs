@@ -10,12 +10,12 @@ pub struct Parameter {
 
 impl crate::Parse for Parameter {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_parameter_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_guid = Guid::parse(r, ver)?;
+        let m_parameter_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_guid = Guid::parse(rdr, ver)?;
 
         Ok(Parameter {
             m_parameter_name,

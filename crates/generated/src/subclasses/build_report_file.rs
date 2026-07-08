@@ -6,25 +6,32 @@ pub struct BuildReportFile {
     pub role: String,
     pub id: u32,
     pub total_size: u64,
+    pub flags: Option<i32>,
 }
 
 impl crate::Parse for BuildReportFile {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let path = r.read_aligned_string()?;
-        r.align(4)?;
-        let role = r.read_aligned_string()?;
-        r.align(4)?;
-        let id = r.read_u32()?;
-        let total_size = r.read_u64()?;
+        let path = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let role = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let id = rdr.read_u32()?;
+        let total_size = rdr.read_u64()?;
+        let flags = if *ver >= crate::UnityVersion::new(6000, 5, 0) {
+            Some(rdr.read_i32()?)
+        } else {
+            None
+        };
 
         Ok(BuildReportFile {
             path,
             role,
             id,
             total_size,
+            flags,
         })
     }
 }

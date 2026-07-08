@@ -11,11 +11,11 @@ pub struct ChildAnimatorStateMachine {
 
 impl crate::Parse for ChildAnimatorStateMachine {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_state_machine = crate::PPtr::parse(r, ver)?;
-        let m_position = Vector3f::parse(r, ver)?;
+        let m_state_machine = crate::PPtr::parse(rdr, ver)?;
+        let m_position = Vector3f::parse(rdr, ver)?;
 
         Ok(ChildAnimatorStateMachine {
             m_state_machine,

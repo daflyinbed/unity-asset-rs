@@ -29,30 +29,30 @@ pub struct InteractiveCloth {
 
 impl crate::Parse for InteractiveCloth {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_enabled = r.read_u8()?;
-        r.align(4)?;
-        let m_bending_stiffness = r.read_f32()?;
-        let m_stretching_stiffness = r.read_f32()?;
-        let m_damping = r.read_f32()?;
-        let m_thickness = r.read_f32()?;
-        let m_use_gravity = r.read_bool()?;
-        let m_self_collision = r.read_bool()?;
-        r.align(4)?;
-        let m_external_acceleration = Vector3f::parse(r, ver)?;
-        let m_random_acceleration = Vector3f::parse(r, ver)?;
-        let m_mesh = crate::PPtr::parse(r, ver)?;
-        let m_friction = r.read_f32()?;
-        let m_density = r.read_f32()?;
-        let m_pressure = r.read_f32()?;
-        let m_collision_response = r.read_f32()?;
-        let m_attachment_tear_factor = r.read_f32()?;
-        let m_attachment_response = r.read_f32()?;
-        let m_tear_factor = r.read_f32()?;
-        let m_attached_colliders = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ClothAttachment::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_game_object = crate::PPtr::parse(rdr, ver)?;
+        let m_enabled = rdr.read_u8()?;
+        rdr.align(4)?;
+        let m_bending_stiffness = rdr.read_f32()?;
+        let m_stretching_stiffness = rdr.read_f32()?;
+        let m_damping = rdr.read_f32()?;
+        let m_thickness = rdr.read_f32()?;
+        let m_use_gravity = rdr.read_bool()?;
+        let m_self_collision = rdr.read_bool()?;
+        rdr.align(4)?;
+        let m_external_acceleration = Vector3f::parse(rdr, ver)?;
+        let m_random_acceleration = Vector3f::parse(rdr, ver)?;
+        let m_mesh = crate::PPtr::parse(rdr, ver)?;
+        let m_friction = rdr.read_f32()?;
+        let m_density = rdr.read_f32()?;
+        let m_pressure = rdr.read_f32()?;
+        let m_collision_response = rdr.read_f32()?;
+        let m_attachment_tear_factor = rdr.read_f32()?;
+        let m_attachment_response = rdr.read_f32()?;
+        let m_tear_factor = rdr.read_f32()?;
+        let m_attached_colliders = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ClothAttachment::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
 
         Ok(InteractiveCloth {
             m_game_object,

@@ -15,15 +15,15 @@ pub struct LightProbes {
 
 impl crate::Parse for LightProbes {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let baked_positions = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Vector3f::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        let baked_coefficients = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { LightmapData::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        let tetrahedra = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Tetrahedron::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        let hull_rays = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Vector3f::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let baked_positions = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector3f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let baked_coefficients = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { LightmapData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let tetrahedra = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Tetrahedron::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let hull_rays = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector3f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
 
         Ok(LightProbes {
             m_name,

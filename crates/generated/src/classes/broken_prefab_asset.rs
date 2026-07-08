@@ -14,18 +14,18 @@ pub struct BrokenPrefabAsset {
 
 impl crate::Parse for BrokenPrefabAsset {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_message = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_is_warning = r.read_bool()?;
-        let m_is_variant = r.read_bool()?;
-        let m_is_prefab_file_valid = r.read_bool()?;
-        r.align(4)?;
-        let m_broken_parent_prefab = crate::PPtr::parse(r, ver)?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_message = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_is_warning = rdr.read_bool()?;
+        let m_is_variant = rdr.read_bool()?;
+        let m_is_prefab_file_valid = rdr.read_bool()?;
+        rdr.align(4)?;
+        let m_broken_parent_prefab = crate::PPtr::parse(rdr, ver)?;
 
         Ok(BrokenPrefabAsset {
             m_name,

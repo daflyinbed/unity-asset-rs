@@ -191,6 +191,9 @@ fn collect_type_imports(
                 collect_type_imports(&v.rust_type, out, main_names);
             }
         }
+        RustType::Box(inner) => {
+            collect_type_imports(inner, out, main_names);
+        }
     }
 }
 
@@ -234,7 +237,7 @@ fn emit_versioned_enum(out: &mut String, name: &str, variants: &[EnumVariant]) {
     // impl Parse：按版本降序判断（新版本优先），Always 变体走 else。
     out.push_str(&format!("\nimpl crate::Parse for {} {{\n", name));
     out.push_str(
-        "    fn parse<R: crate::EndianReader>(\n        r: &mut R,\n        ver: &crate::UnityVersion,\n    ) -> Result<Self, R::Error> {\n",
+        "    fn parse<R: crate::EndianReader>(\n        rdr: &mut R,\n        ver: &crate::UnityVersion,\n    ) -> Result<Self, R::Error> {\n",
     );
 
     for (i, v) in variants.iter().rev().enumerate() {
@@ -259,7 +262,7 @@ fn emit_versioned_enum(out: &mut String, name: &str, variants: &[EnumVariant]) {
         let expr = field_read_expr(&v.rust_type);
         out.push_str(&format!("            let v = {expr}?;\n"));
         if v.align_after {
-            out.push_str("            r.align(4)?;\n");
+            out.push_str("            rdr.align(4)?;\n");
         }
         out.push_str(&format!("            Ok(Self::{vname}(v))\n"));
     }
@@ -293,6 +296,7 @@ fn type_handles_own_align(t: &RustType) -> bool {
     match t {
         RustType::VersionedEnum { .. } => true,
         RustType::Option(inner) => type_handles_own_align(inner),
+        RustType::Box(inner) => type_handles_own_align(inner),
         _ => false,
     }
 }
@@ -315,7 +319,7 @@ fn emit_impl_parse(out: &mut String, class: &EmitClass) {
         class.name
     ));
     out.push_str(
-        "    fn parse<R: crate::EndianReader>(\n        r: &mut R,\n        ver: &crate::UnityVersion,\n    ) -> Result<Self, R::Error> {\n",
+        "    fn parse<R: crate::EndianReader>(\n        rdr: &mut R,\n        ver: &crate::UnityVersion,\n    ) -> Result<Self, R::Error> {\n",
     );
 
     // 解 own fields
@@ -535,7 +539,7 @@ fn set_field_none(
         .map(|f| f.align_after)
         .unwrap_or(ef.align_after);
     if align {
-        out.push_str("            r.align(4)?;\n");
+        out.push_str("            rdr.align(4)?;\n");
     }
 }
 
@@ -614,7 +618,7 @@ fn emit_field_parse(out: &mut String, f: &EmitField) {
         if need_align {
             // align 在 if 内（仅当字段被读时才对齐）
             out.push_str(&format!(
-                "        let {name} = if {cond} {{\n            let v = {expr}?;\n            r.align(4)?;\n            Some(v)\n        }} else {{\n            None\n        }};\n",
+                "        let {name} = if {cond} {{\n            let v = {expr}?;\n            rdr.align(4)?;\n            Some(v)\n        }} else {{\n            None\n        }};\n",
                 name = f.rust_name,
                 expr = result_expr,
             ));
@@ -631,7 +635,7 @@ fn emit_field_parse(out: &mut String, f: &EmitField) {
             f.rust_name, result_expr
         ));
         if need_align {
-            out.push_str("        r.align(4)?;\n");
+            out.push_str("        rdr.align(4)?;\n");
         }
     }
 }
@@ -642,23 +646,23 @@ fn emit_field_parse(out: &mut String, f: &EmitField) {
 /// `(0..n).map(|_| {expr}).collect::<Result<Vec<_>, _>>()`。
 fn field_read_expr(t: &RustType) -> String {
     match t {
-        RustType::Bool => "r.read_bool()".into(),
-        RustType::I8 => "r.read_i8()".into(),
-        RustType::U8 => "r.read_u8()".into(),
-        RustType::I16 => "r.read_i16()".into(),
-        RustType::U16 => "r.read_u16()".into(),
-        RustType::I32 => "r.read_i32()".into(),
-        RustType::U32 => "r.read_u32()".into(),
-        RustType::I64 => "r.read_i64()".into(),
-        RustType::U64 => "r.read_u64()".into(),
-        RustType::F32 => "r.read_f32()".into(),
-        RustType::F64 => "r.read_f64()".into(),
-        RustType::String => "r.read_aligned_string()".into(),
-        RustType::Bytes => "( { let n = r.read_i32()? as usize; r.read_bytes(n) } )".into(),
+        RustType::Bool => "rdr.read_bool()".into(),
+        RustType::I8 => "rdr.read_i8()".into(),
+        RustType::U8 => "rdr.read_u8()".into(),
+        RustType::I16 => "rdr.read_i16()".into(),
+        RustType::U16 => "rdr.read_u16()".into(),
+        RustType::I32 => "rdr.read_i32()".into(),
+        RustType::U32 => "rdr.read_u32()".into(),
+        RustType::I64 => "rdr.read_i64()".into(),
+        RustType::U64 => "rdr.read_u64()".into(),
+        RustType::F32 => "rdr.read_f32()".into(),
+        RustType::F64 => "rdr.read_f64()".into(),
+        RustType::String => "rdr.read_aligned_string()".into(),
+        RustType::Bytes => "( { let n = rdr.read_i32()? as usize; rdr.read_bytes(n) } )".into(),
         RustType::List(elem) => {
             let inner = field_read_expr(elem);
             format!(
-                "( {{ let n = r.read_i32()? as usize; (0..n).map(|_| {{ {inner} }}).collect::<Result<Vec<_>, _>>() }} )"
+                "( {{ let n = rdr.read_i32()? as usize; (0..n).map(|_| {{ {inner} }}).collect::<Result<Vec<_>, _>>() }} )"
             )
         }
         RustType::Pair(a, b) => {
@@ -666,10 +670,14 @@ fn field_read_expr(t: &RustType) -> String {
             let b_inner = field_read_expr(b);
             format!("( {{ let a = {a_inner}?; let b = {b_inner}?; Ok((a, b)) }} )")
         }
-        RustType::Pptr { .. } => "crate::PPtr::parse(r, ver)".into(),
-        RustType::Subclass(name) => format!("{name}::parse(r, ver)"),
+        RustType::Pptr { .. } => "crate::PPtr::parse(rdr, ver)".into(),
+        RustType::Subclass(name) => format!("{name}::parse(rdr, ver)"),
         RustType::Option(inner) => field_read_expr(inner),
-        RustType::VersionedEnum { name, .. } => format!("{name}::parse(r, ver)"),
+        RustType::VersionedEnum { name, .. } => format!("{name}::parse(rdr, ver)"),
+        RustType::Box(inner) => {
+            let inner_expr = field_read_expr(inner);
+            format!("( {{ Ok(Box::new({inner_expr}?)) }} )")
+        }
     }
 }
 
@@ -747,17 +755,17 @@ fn emit_unity_object(main_classes: &[&EmitClass]) -> String {
     s.push_str("impl UnityObject {\n");
     s.push_str("    pub fn parse<R: crate::EndianReader>(\n");
     s.push_str("        class_id: crate::ClassIDType,\n");
-    s.push_str("        r: &mut R,\n");
+    s.push_str("        rdr: &mut R,\n");
     s.push_str("        ver: &crate::UnityVersion,\n");
     s.push_str("    ) -> Result<Self, R::Error> {\n");
     s.push_str("        match class_id {\n");
     for c in main_classes {
         s.push_str(&format!(
-            "            crate::ClassIDType::{} => Ok(Self::{}(crate::classes::{}::{}::parse(r, ver)?)),\n",
+            "            crate::ClassIDType::{} => Ok(Self::{}(crate::classes::{}::{}::parse(rdr, ver)?)),\n",
             c.name, c.name, module_name(&c.name), c.name
         ));
     }
-    s.push_str("            _ => return Err(r.make_error(&format!(\"unsupported class_id: {:?}\", class_id))),\n");
+    s.push_str("            _ => return Err(rdr.make_error(&format!(\"unsupported class_id: {:?}\", class_id))),\n");
     s.push_str("        }\n");
     s.push_str("    }\n");
     s.push_str("}\n");

@@ -8,11 +8,11 @@ pub struct LeafInfoConstant {
 
 impl crate::Parse for LeafInfoConstant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_id_array = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
-        let m_index_offset = r.read_u32()?;
+        let m_id_array = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_index_offset = rdr.read_u32()?;
 
         Ok(LeafInfoConstant {
             m_id_array,

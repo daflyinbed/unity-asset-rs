@@ -13,15 +13,15 @@ pub enum StateMTransitionsVariant {
 
 impl crate::Parse for StateMTransitionsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -36,15 +36,15 @@ pub enum StateMStateMachineBehavioursVariant {
 
 impl crate::Parse for StateMStateMachineBehavioursVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -59,15 +59,15 @@ pub enum StateMIkOnFeetVariant {
 
 impl crate::Parse for StateMIkOnFeetVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(4, 1, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V4_1(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -82,15 +82,15 @@ pub enum StateMMirrorVariant {
 
 impl crate::Parse for StateMMirrorVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 1, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V5_1(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -105,15 +105,15 @@ pub enum StateMCycleOffsetParameterActiveVariant {
 
 impl crate::Parse for StateMCycleOffsetParameterActiveVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V2017_2(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -145,7 +145,7 @@ pub struct State {
 
 impl crate::Parse for State {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_name = None;
@@ -169,65 +169,65 @@ impl crate::Parse for State {
         let mut m_mirror_parameter = None;
         let mut m_cycle_offset_parameter = None;
         let mut m_time_parameter = None;
-            m_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_speed = Some(r.read_f32()?);
+            m_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_speed = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_cycle_offset = Some(r.read_f32()?);
-            m_transitions = Some(StateMTransitionsVariant::parse(r, ver)?);
-            m_state_machine_behaviours = Some(StateMStateMachineBehavioursVariant::parse(r, ver)?);
+            m_cycle_offset = Some(rdr.read_f32()?);
+            m_transitions = Some(StateMTransitionsVariant::parse(rdr, ver)?);
+            m_state_machine_behaviours = Some(StateMStateMachineBehavioursVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 1, 0) {
-            m_cycle_offset = Some(r.read_f32()?);
-            m_motions = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_parent_state_machine = Some(crate::PPtr::parse(r, ver)?);
+            m_cycle_offset = Some(rdr.read_f32()?);
+            m_motions = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_parent_state_machine = Some(crate::PPtr::parse(rdr, ver)?);
         } else {
-            m_motions = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_parent_state_machine = Some(crate::PPtr::parse(r, ver)?);
+            m_motions = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_parent_state_machine = Some(crate::PPtr::parse(rdr, ver)?);
         }
-            m_position = Some(Vector3f::parse(r, ver)?);
-            m_ik_on_feet = Some(StateMIkOnFeetVariant::parse(r, ver)?);
+            m_position = Some(Vector3f::parse(rdr, ver)?);
+            m_ik_on_feet = Some(StateMIkOnFeetVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            m_write_default_values = Some(r.read_bool()?);
-            m_mirror = Some(StateMMirrorVariant::parse(r, ver)?);
-            m_speed_parameter_active = Some(r.read_bool()?);
-            m_mirror_parameter_active = Some(r.read_bool()?);
-            m_cycle_offset_parameter_active = Some(StateMCycleOffsetParameterActiveVariant::parse(r, ver)?);
-            m_time_parameter_active = Some(r.read_bool()?);
-            r.align(4)?;
-            m_motion = Some(crate::PPtr::parse(r, ver)?);
+            m_write_default_values = Some(rdr.read_bool()?);
+            m_mirror = Some(StateMMirrorVariant::parse(rdr, ver)?);
+            m_speed_parameter_active = Some(rdr.read_bool()?);
+            m_mirror_parameter_active = Some(rdr.read_bool()?);
+            m_cycle_offset_parameter_active = Some(StateMCycleOffsetParameterActiveVariant::parse(rdr, ver)?);
+            m_time_parameter_active = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_motion = Some(crate::PPtr::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 1, 0) {
-            m_write_default_values = Some(r.read_bool()?);
-            m_mirror = Some(StateMMirrorVariant::parse(r, ver)?);
-            m_speed_parameter_active = Some(r.read_bool()?);
-            m_mirror_parameter_active = Some(r.read_bool()?);
-            m_cycle_offset_parameter_active = Some(StateMCycleOffsetParameterActiveVariant::parse(r, ver)?);
-            m_motion = Some(crate::PPtr::parse(r, ver)?);
+            m_write_default_values = Some(rdr.read_bool()?);
+            m_mirror = Some(StateMMirrorVariant::parse(rdr, ver)?);
+            m_speed_parameter_active = Some(rdr.read_bool()?);
+            m_mirror_parameter_active = Some(rdr.read_bool()?);
+            m_cycle_offset_parameter_active = Some(StateMCycleOffsetParameterActiveVariant::parse(rdr, ver)?);
+            m_motion = Some(crate::PPtr::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_write_default_values = Some(r.read_bool()?);
-            m_mirror = Some(StateMMirrorVariant::parse(r, ver)?);
-            m_motion = Some(crate::PPtr::parse(r, ver)?);
+            m_write_default_values = Some(rdr.read_bool()?);
+            m_mirror = Some(StateMMirrorVariant::parse(rdr, ver)?);
+            m_motion = Some(crate::PPtr::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 1, 0) {
-            m_mirror = Some(StateMMirrorVariant::parse(r, ver)?);
+            m_mirror = Some(StateMMirrorVariant::parse(rdr, ver)?);
         } else {
         }
-            m_tag = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_tag = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            m_speed_parameter = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_mirror_parameter = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_cycle_offset_parameter = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_time_parameter = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_speed_parameter = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_mirror_parameter = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_cycle_offset_parameter = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_time_parameter = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 1, 0) {
-            m_speed_parameter = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_mirror_parameter = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_cycle_offset_parameter = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_speed_parameter = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_mirror_parameter = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_cycle_offset_parameter = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         } else {
         }
 

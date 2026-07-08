@@ -9,11 +9,11 @@ pub struct VrEditorSettings {
 
 impl crate::Parse for VrEditorSettings {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let none = None::parse(r, ver)?;
-        r.align(4)?;
+        let none = None::parse(rdr, ver)?;
+        rdr.align(4)?;
 
         Ok(VrEditorSettings {
             none,

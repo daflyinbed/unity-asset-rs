@@ -13,15 +13,15 @@ pub enum AnimationMAnimationsVariant {
 
 impl crate::Parse for AnimationMAnimationsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -42,7 +42,7 @@ pub struct Animation {
 
 impl crate::Parse for Animation {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_game_object = None;
@@ -55,23 +55,23 @@ impl crate::Parse for Animation {
         let mut m_culling_type = None;
         let mut m_update_mode = None;
         let mut m_user_aabb = None;
-            m_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_enabled = Some(r.read_u8()?);
-            r.align(4)?;
-            m_animation = Some(crate::PPtr::parse(r, ver)?);
-            m_animations = Some(AnimationMAnimationsVariant::parse(r, ver)?);
-            m_wrap_mode = Some(r.read_i32()?);
-            m_play_automatically = Some(r.read_bool()?);
-            m_animate_physics = Some(r.read_bool()?);
-            r.align(4)?;
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_enabled = Some(rdr.read_u8()?);
+            rdr.align(4)?;
+            m_animation = Some(crate::PPtr::parse(rdr, ver)?);
+            m_animations = Some(AnimationMAnimationsVariant::parse(rdr, ver)?);
+            m_wrap_mode = Some(rdr.read_i32()?);
+            m_play_automatically = Some(rdr.read_bool()?);
+            m_animate_physics = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            m_update_mode = Some(r.read_i32()?);
+            m_update_mode = Some(rdr.read_i32()?);
         } else {
         }
-            m_culling_type = Some(r.read_i32()?);
+            m_culling_type = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(4, 3, 0) {
         } else {
-            m_user_aabb = Some(Aabb::parse(r, ver)?);
+            m_user_aabb = Some(Aabb::parse(rdr, ver)?);
         }
 
         Ok(Animation {

@@ -11,12 +11,12 @@ pub struct ClothAttachment {
 
 impl crate::Parse for ClothAttachment {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_collider = crate::PPtr::parse(r, ver)?;
-        let m_two_way_interaction = r.read_bool()?;
-        let m_tearable = r.read_bool()?;
+        let m_collider = crate::PPtr::parse(rdr, ver)?;
+        let m_two_way_interaction = rdr.read_bool()?;
+        let m_tearable = rdr.read_bool()?;
 
         Ok(ClothAttachment {
             m_collider,

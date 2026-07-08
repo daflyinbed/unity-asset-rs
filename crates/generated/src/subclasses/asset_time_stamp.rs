@@ -10,13 +10,13 @@ pub struct AssetTimeStamp {
 
 impl crate::Parse for AssetTimeStamp {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let modification_date_0 = r.read_u32()?;
-        let modification_date_1 = r.read_u32()?;
-        let meta_modification_date_0 = r.read_u32()?;
-        let meta_modification_date_1 = r.read_u32()?;
+        let modification_date_0 = rdr.read_u32()?;
+        let modification_date_1 = rdr.read_u32()?;
+        let meta_modification_date_0 = rdr.read_u32()?;
+        let meta_modification_date_1 = rdr.read_u32()?;
 
         Ok(AssetTimeStamp {
             modification_date_0,

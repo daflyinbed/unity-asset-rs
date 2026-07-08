@@ -20,56 +20,56 @@ pub struct NavMeshObstacle {
 
 impl crate::Parse for NavMeshObstacle {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_enabled = r.read_u8()?;
-        r.align(4)?;
+        let m_game_object = crate::PPtr::parse(rdr, ver)?;
+        let m_enabled = rdr.read_u8()?;
+        rdr.align(4)?;
         let m_radius = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(r.read_f32()?)
+            Some(rdr.read_f32()?)
         } else {
             None
         };
         let m_shape = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_i32()?)
+            Some(rdr.read_i32()?)
         } else {
             None
         };
         let m_height = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(r.read_f32()?)
+            Some(rdr.read_f32()?)
         } else {
             None
         };
         let m_extents = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(Vector3f::parse(r, ver)?)
+            Some(Vector3f::parse(rdr, ver)?)
         } else {
             None
         };
         let m_move_threshold = if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            Some(r.read_f32()?)
+            Some(rdr.read_f32()?)
         } else {
             None
         };
         let m_carve = if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            Some(r.read_bool()?)
+            Some(rdr.read_bool()?)
         } else {
             None
         };
         let m_carve_only_stationary = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Some(v)
         } else {
             None
         };
         let m_center = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(Vector3f::parse(r, ver)?)
+            Some(Vector3f::parse(rdr, ver)?)
         } else {
             None
         };
         let m_time_to_stationary = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(r.read_f32()?)
+            Some(rdr.read_f32()?)
         } else {
             None
         };

@@ -8,11 +8,11 @@ pub struct Node {
 
 impl crate::Parse for Node {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_parent_id = r.read_i32()?;
-        let m_axes_id = r.read_i32()?;
+        let m_parent_id = rdr.read_i32()?;
+        let m_axes_id = rdr.read_i32()?;
 
         Ok(Node {
             m_parent_id,

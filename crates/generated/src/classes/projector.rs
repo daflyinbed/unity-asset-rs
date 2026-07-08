@@ -19,21 +19,21 @@ pub struct Projector {
 
 impl crate::Parse for Projector {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_enabled = r.read_u8()?;
-        r.align(4)?;
-        let m_near_clip_plane = r.read_f32()?;
-        let m_far_clip_plane = r.read_f32()?;
-        let m_field_of_view = r.read_f32()?;
-        let m_aspect_ratio = r.read_f32()?;
-        let m_orthographic = r.read_bool()?;
-        r.align(4)?;
-        let m_orthographic_size = r.read_f32()?;
-        let m_material = crate::PPtr::parse(r, ver)?;
-        let m_ignore_layers = BitField::parse(r, ver)?;
+        let m_game_object = crate::PPtr::parse(rdr, ver)?;
+        let m_enabled = rdr.read_u8()?;
+        rdr.align(4)?;
+        let m_near_clip_plane = rdr.read_f32()?;
+        let m_far_clip_plane = rdr.read_f32()?;
+        let m_field_of_view = rdr.read_f32()?;
+        let m_aspect_ratio = rdr.read_f32()?;
+        let m_orthographic = rdr.read_bool()?;
+        rdr.align(4)?;
+        let m_orthographic_size = rdr.read_f32()?;
+        let m_material = crate::PPtr::parse(rdr, ver)?;
+        let m_ignore_layers = BitField::parse(rdr, ver)?;
 
         Ok(Projector {
             m_game_object,

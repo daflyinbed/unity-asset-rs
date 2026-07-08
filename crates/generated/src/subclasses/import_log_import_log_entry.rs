@@ -13,16 +13,16 @@ pub struct ImportLog_ImportLogEntry {
 
 impl crate::Parse for ImportLog_ImportLogEntry {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let message = r.read_aligned_string()?;
-        r.align(4)?;
-        let mode = r.read_i32()?;
-        let line = r.read_i32()?;
-        let file = r.read_aligned_string()?;
-        r.align(4)?;
-        let object = crate::PPtr::parse(r, ver)?;
+        let message = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let mode = rdr.read_i32()?;
+        let line = rdr.read_i32()?;
+        let file = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let object = crate::PPtr::parse(rdr, ver)?;
 
         Ok(ImportLog_ImportLogEntry {
             message,

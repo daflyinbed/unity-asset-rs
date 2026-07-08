@@ -12,15 +12,15 @@ pub struct PropertyModification {
 
 impl crate::Parse for PropertyModification {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let target = crate::PPtr::parse(r, ver)?;
-        let property_path = r.read_aligned_string()?;
-        r.align(4)?;
-        let value = r.read_aligned_string()?;
-        r.align(4)?;
-        let object_reference = crate::PPtr::parse(r, ver)?;
+        let target = crate::PPtr::parse(rdr, ver)?;
+        let property_path = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let value = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let object_reference = crate::PPtr::parse(rdr, ver)?;
 
         Ok(PropertyModification {
             target,

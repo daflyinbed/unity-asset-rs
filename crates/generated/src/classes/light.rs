@@ -12,21 +12,21 @@ use crate::subclasses::vector4f::Vector4f;
 /// 版本枚举：LightMShadowsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum LightMShadowsVariant {
-    Default(ShadowSettings),
-    V2019_1(ShadowSettings),
+    Default(Box<ShadowSettings>),
+    V2019_1(Box<ShadowSettings>),
 }
 
 impl crate::Parse for LightMShadowsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            let v = ShadowSettings::parse(r, ver)?;
-            r.align(4)?;
+            let v = ( { Ok(Box::new(ShadowSettings::parse(rdr, ver)?)) } )?;
+            rdr.align(4)?;
             Ok(Self::V2019_1(v))
         } else {
-            let v = ShadowSettings::parse(r, ver)?;
+            let v = ( { Ok(Box::new(ShadowSettings::parse(rdr, ver)?)) } )?;
             Ok(Self::Default(v))
         }
     }
@@ -41,15 +41,15 @@ pub enum LightMDrawHaloVariant {
 
 impl crate::Parse for LightMDrawHaloVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V5_4(v))
         } else {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::Default(v))
         }
     }
@@ -58,21 +58,21 @@ impl crate::Parse for LightMDrawHaloVariant {
 /// 版本枚举：LightMBakingOutputVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum LightMBakingOutputVariant {
-    Default(LightBakingOutput),
-    V2017_3(LightBakingOutput),
+    Default(Box<LightBakingOutput>),
+    V2017_3(Box<LightBakingOutput>),
 }
 
 impl crate::Parse for LightMBakingOutputVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            let v = LightBakingOutput::parse(r, ver)?;
-            r.align(4)?;
+            let v = ( { Ok(Box::new(LightBakingOutput::parse(rdr, ver)?)) } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_3(v))
         } else {
-            let v = LightBakingOutput::parse(r, ver)?;
+            let v = ( { Ok(Box::new(LightBakingOutput::parse(rdr, ver)?)) } )?;
             Ok(Self::Default(v))
         }
     }
@@ -87,15 +87,15 @@ pub enum LightMUseBoundingSphereOverrideVariant {
 
 impl crate::Parse for LightMUseBoundingSphereOverrideVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V2020_2(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -110,15 +110,15 @@ pub enum LightMUseViewFrustumForShadowCasterCullVariant {
 
 impl crate::Parse for LightMUseViewFrustumForShadowCasterCullVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V2023_3(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -164,7 +164,7 @@ pub struct Light {
 
 impl crate::Parse for Light {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_game_object = None;
@@ -202,118 +202,118 @@ impl crate::Parse for Light {
         let mut m_shape_radius = None;
         let mut m_lux_at_distance = None;
         let mut m_enable_spot_reflector = None;
-            m_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_enabled = Some(r.read_u8()?);
-            r.align(4)?;
-            m_type = Some(r.read_i32()?);
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_enabled = Some(rdr.read_u8()?);
+            rdr.align(4)?;
+            m_type = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            m_shape = Some(r.read_i32()?);
+            m_shape = Some(rdr.read_i32()?);
         } else {
         }
-            m_color = Some(ColorRgba::parse(r, ver)?);
-            m_intensity = Some(r.read_f32()?);
-            m_range = Some(r.read_f32()?);
-            m_spot_angle = Some(r.read_f32()?);
+            m_color = Some(ColorRgba::parse(rdr, ver)?);
+            m_intensity = Some(rdr.read_f32()?);
+            m_range = Some(rdr.read_f32()?);
+            m_spot_angle = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(6000, 3, 0) {
-            m_inner_spot_angle = Some(r.read_f32()?);
-            m_cookie_size2_d = Some(Vector2f::parse(r, ver)?);
+            m_inner_spot_angle = Some(rdr.read_f32()?);
+            m_cookie_size2_d = Some(Vector2f::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_inner_spot_angle = Some(r.read_f32()?);
-            m_cookie_size = Some(r.read_f32()?);
+            m_inner_spot_angle = Some(rdr.read_f32()?);
+            m_cookie_size = Some(rdr.read_f32()?);
         } else {
-            m_cookie_size = Some(r.read_f32()?);
+            m_cookie_size = Some(rdr.read_f32()?);
         }
-            m_shadows = Some(LightMShadowsVariant::parse(r, ver)?);
-            m_cookie = Some(crate::PPtr::parse(r, ver)?);
-            m_draw_halo = Some(LightMDrawHaloVariant::parse(r, ver)?);
+            m_shadows = Some(LightMShadowsVariant::parse(rdr, ver)?);
+            m_cookie = Some(crate::PPtr::parse(rdr, ver)?);
+            m_draw_halo = Some(LightMDrawHaloVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            m_baking_output = Some(LightMBakingOutputVariant::parse(r, ver)?);
+            m_baking_output = Some(LightMBakingOutputVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            m_baked_index = Some(r.read_i32()?);
-            r.align(4)?;
+            m_baked_index = Some(rdr.read_i32()?);
+            rdr.align(4)?;
         } else {
-            m_actually_lightmapped = Some(r.read_bool()?);
-            r.align(4)?;
+            m_actually_lightmapped = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         }
-            m_flare = Some(crate::PPtr::parse(r, ver)?);
-            m_render_mode = Some(r.read_i32()?);
-            m_culling_mask = Some(BitField::parse(r, ver)?);
+            m_flare = Some(crate::PPtr::parse(rdr, ver)?);
+            m_render_mode = Some(rdr.read_i32()?);
+            m_culling_mask = Some(BitField::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_rendering_layer_mask = Some(r.read_u32()?);
+            m_rendering_layer_mask = Some(rdr.read_u32()?);
         } else {
         }
-            m_lightmapping = Some(r.read_i32()?);
+            m_lightmapping = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(6000, 4, 0) {
-            m_light_shadow_caster_mode = Some(r.read_i32()?);
-            m_area_size = Some(Vector2f::parse(r, ver)?);
-            m_bounce_intensity = Some(r.read_f32()?);
-            m_color_temperature = Some(r.read_f32()?);
-            m_use_color_temperature = Some(r.read_bool()?);
-            r.align(4)?;
-            m_bounding_sphere_override = Some(Vector4f::parse(r, ver)?);
-            m_use_bounding_sphere_override = Some(LightMUseBoundingSphereOverrideVariant::parse(r, ver)?);
-            m_use_view_frustum_for_shadow_caster_cull = Some(LightMUseViewFrustumForShadowCasterCullVariant::parse(r, ver)?);
-            m_force_visible = Some(r.read_bool()?);
-            r.align(4)?;
-            m_shape_radius = Some(r.read_f32()?);
-            m_light_unit = Some(r.read_i32()?);
-            m_lux_at_distance = Some(r.read_f32()?);
-            m_enable_spot_reflector = Some(r.read_bool()?);
-            r.align(4)?;
+            m_light_shadow_caster_mode = Some(rdr.read_i32()?);
+            m_area_size = Some(Vector2f::parse(rdr, ver)?);
+            m_bounce_intensity = Some(rdr.read_f32()?);
+            m_color_temperature = Some(rdr.read_f32()?);
+            m_use_color_temperature = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_bounding_sphere_override = Some(Vector4f::parse(rdr, ver)?);
+            m_use_bounding_sphere_override = Some(LightMUseBoundingSphereOverrideVariant::parse(rdr, ver)?);
+            m_use_view_frustum_for_shadow_caster_cull = Some(LightMUseViewFrustumForShadowCasterCullVariant::parse(rdr, ver)?);
+            m_force_visible = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_shape_radius = Some(rdr.read_f32()?);
+            m_light_unit = Some(rdr.read_i32()?);
+            m_lux_at_distance = Some(rdr.read_f32()?);
+            m_enable_spot_reflector = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            m_light_shadow_caster_mode = Some(r.read_i32()?);
-            m_area_size = Some(Vector2f::parse(r, ver)?);
-            m_bounce_intensity = Some(r.read_f32()?);
-            m_color_temperature = Some(r.read_f32()?);
-            m_use_color_temperature = Some(r.read_bool()?);
-            r.align(4)?;
-            m_bounding_sphere_override = Some(Vector4f::parse(r, ver)?);
-            m_use_bounding_sphere_override = Some(LightMUseBoundingSphereOverrideVariant::parse(r, ver)?);
-            m_use_view_frustum_for_shadow_caster_cull = Some(LightMUseViewFrustumForShadowCasterCullVariant::parse(r, ver)?);
-            m_force_visible = Some(r.read_bool()?);
-            r.align(4)?;
-            m_light_unit = Some(r.read_i32()?);
-            m_lux_at_distance = Some(r.read_f32()?);
-            m_enable_spot_reflector = Some(r.read_bool()?);
-            r.align(4)?;
+            m_light_shadow_caster_mode = Some(rdr.read_i32()?);
+            m_area_size = Some(Vector2f::parse(rdr, ver)?);
+            m_bounce_intensity = Some(rdr.read_f32()?);
+            m_color_temperature = Some(rdr.read_f32()?);
+            m_use_color_temperature = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_bounding_sphere_override = Some(Vector4f::parse(rdr, ver)?);
+            m_use_bounding_sphere_override = Some(LightMUseBoundingSphereOverrideVariant::parse(rdr, ver)?);
+            m_use_view_frustum_for_shadow_caster_cull = Some(LightMUseViewFrustumForShadowCasterCullVariant::parse(rdr, ver)?);
+            m_force_visible = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_light_unit = Some(rdr.read_i32()?);
+            m_lux_at_distance = Some(rdr.read_f32()?);
+            m_enable_spot_reflector = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            m_light_shadow_caster_mode = Some(r.read_i32()?);
-            m_area_size = Some(Vector2f::parse(r, ver)?);
-            m_bounce_intensity = Some(r.read_f32()?);
-            m_color_temperature = Some(r.read_f32()?);
-            m_use_color_temperature = Some(r.read_bool()?);
-            r.align(4)?;
-            m_bounding_sphere_override = Some(Vector4f::parse(r, ver)?);
-            m_use_bounding_sphere_override = Some(LightMUseBoundingSphereOverrideVariant::parse(r, ver)?);
-            m_use_view_frustum_for_shadow_caster_cull = Some(LightMUseViewFrustumForShadowCasterCullVariant::parse(r, ver)?);
+            m_light_shadow_caster_mode = Some(rdr.read_i32()?);
+            m_area_size = Some(Vector2f::parse(rdr, ver)?);
+            m_bounce_intensity = Some(rdr.read_f32()?);
+            m_color_temperature = Some(rdr.read_f32()?);
+            m_use_color_temperature = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_bounding_sphere_override = Some(Vector4f::parse(rdr, ver)?);
+            m_use_bounding_sphere_override = Some(LightMUseBoundingSphereOverrideVariant::parse(rdr, ver)?);
+            m_use_view_frustum_for_shadow_caster_cull = Some(LightMUseViewFrustumForShadowCasterCullVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_light_shadow_caster_mode = Some(r.read_i32()?);
-            m_area_size = Some(Vector2f::parse(r, ver)?);
-            m_bounce_intensity = Some(r.read_f32()?);
-            m_color_temperature = Some(r.read_f32()?);
-            m_use_color_temperature = Some(r.read_bool()?);
-            r.align(4)?;
-            m_bounding_sphere_override = Some(Vector4f::parse(r, ver)?);
-            m_use_bounding_sphere_override = Some(LightMUseBoundingSphereOverrideVariant::parse(r, ver)?);
+            m_light_shadow_caster_mode = Some(rdr.read_i32()?);
+            m_area_size = Some(Vector2f::parse(rdr, ver)?);
+            m_bounce_intensity = Some(rdr.read_f32()?);
+            m_color_temperature = Some(rdr.read_f32()?);
+            m_use_color_temperature = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_bounding_sphere_override = Some(Vector4f::parse(rdr, ver)?);
+            m_use_bounding_sphere_override = Some(LightMUseBoundingSphereOverrideVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2018, 2, 0) {
-            m_light_shadow_caster_mode = Some(r.read_i32()?);
-            m_area_size = Some(Vector2f::parse(r, ver)?);
-            m_bounce_intensity = Some(r.read_f32()?);
-            m_color_temperature = Some(r.read_f32()?);
-            m_use_color_temperature = Some(r.read_bool()?);
-            r.align(4)?;
+            m_light_shadow_caster_mode = Some(rdr.read_i32()?);
+            m_area_size = Some(Vector2f::parse(rdr, ver)?);
+            m_bounce_intensity = Some(rdr.read_f32()?);
+            m_color_temperature = Some(rdr.read_f32()?);
+            m_use_color_temperature = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            m_area_size = Some(Vector2f::parse(r, ver)?);
-            m_bounce_intensity = Some(r.read_f32()?);
-            m_color_temperature = Some(r.read_f32()?);
-            m_use_color_temperature = Some(r.read_bool()?);
-            r.align(4)?;
+            m_area_size = Some(Vector2f::parse(rdr, ver)?);
+            m_bounce_intensity = Some(rdr.read_f32()?);
+            m_color_temperature = Some(rdr.read_f32()?);
+            m_use_color_temperature = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            m_area_size = Some(Vector2f::parse(r, ver)?);
-            m_bounce_intensity = Some(r.read_f32()?);
+            m_area_size = Some(Vector2f::parse(rdr, ver)?);
+            m_bounce_intensity = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_bounce_intensity = Some(r.read_f32()?);
+            m_bounce_intensity = Some(rdr.read_f32()?);
         } else {
         }
 

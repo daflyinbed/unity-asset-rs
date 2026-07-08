@@ -8,11 +8,11 @@ pub struct IntPoint {
 
 impl crate::Parse for IntPoint {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let x = r.read_i64()?;
-        let y = r.read_i64()?;
+        let x = rdr.read_i64()?;
+        let y = rdr.read_i64()?;
 
         Ok(IntPoint {
             x,

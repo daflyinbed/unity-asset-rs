@@ -22,73 +22,73 @@ pub struct PhysicMaterial {
 
 impl crate::Parse for PhysicMaterial {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
         let dynamic_friction = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_f32()?)
+            Some(rdr.read_f32()?)
         } else {
             None
         };
         let m_dynamic_friction = if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            Some(r.read_f32()?)
+            Some(rdr.read_f32()?)
         } else {
             None
         };
         let static_friction = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_f32()?)
+            Some(rdr.read_f32()?)
         } else {
             None
         };
         let m_static_friction = if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            Some(r.read_f32()?)
+            Some(rdr.read_f32()?)
         } else {
             None
         };
         let bounciness = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_f32()?)
+            Some(rdr.read_f32()?)
         } else {
             None
         };
         let m_bounciness = if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            Some(r.read_f32()?)
+            Some(rdr.read_f32()?)
         } else {
             None
         };
         let friction_combine = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_i32()?)
+            Some(rdr.read_i32()?)
         } else {
             None
         };
         let m_friction_combine = if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            Some(r.read_i32()?)
+            Some(rdr.read_i32()?)
         } else {
             None
         };
         let bounce_combine = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_i32()?)
+            Some(rdr.read_i32()?)
         } else {
             None
         };
         let m_bounce_combine = if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            Some(r.read_i32()?)
+            Some(rdr.read_i32()?)
         } else {
             None
         };
         let friction_direction2 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(Vector3f::parse(r, ver)?)
+            Some(Vector3f::parse(rdr, ver)?)
         } else {
             None
         };
         let dynamic_friction2 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_f32()?)
+            Some(rdr.read_f32()?)
         } else {
             None
         };
         let static_friction2 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_f32()?)
+            Some(rdr.read_f32()?)
         } else {
             None
         };

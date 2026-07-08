@@ -8,12 +8,12 @@ pub struct UnityPurchasingSettings {
 
 impl crate::Parse for UnityPurchasingSettings {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_enabled = r.read_bool()?;
-        let m_test_mode = r.read_bool()?;
-        r.align(4)?;
+        let m_enabled = rdr.read_bool()?;
+        let m_test_mode = rdr.read_bool()?;
+        rdr.align(4)?;
 
         Ok(UnityPurchasingSettings {
             m_enabled,

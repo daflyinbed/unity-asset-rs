@@ -11,28 +11,26 @@ pub struct RayTracingShaderPlatformVariant {
     pub local_keywords: Vec<String>,
     pub dynamic_keywords: Vec<String>,
     pub editor_only_variant: bool,
-    pub compiler_platform: i32,
 }
 
 impl crate::Parse for RayTracingShaderPlatformVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let target_renderer = r.read_i32()?;
-        let unique_variants = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { RayTracingShaderReflectionData::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let variant_indices = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_aligned_string()?; let b = r.read_u32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let global_keywords = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let local_keywords = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let dynamic_keywords = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let editor_only_variant = r.read_bool()?;
-        r.align(4)?;
-        let compiler_platform = r.read_i32()?;
+        let target_renderer = rdr.read_i32()?;
+        let unique_variants = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { RayTracingShaderReflectionData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let variant_indices = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_u32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let global_keywords = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let local_keywords = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let dynamic_keywords = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let editor_only_variant = rdr.read_bool()?;
+        rdr.align(4)?;
 
         Ok(RayTracingShaderPlatformVariant {
             target_renderer,
@@ -42,7 +40,6 @@ impl crate::Parse for RayTracingShaderPlatformVariant {
             local_keywords,
             dynamic_keywords,
             editor_only_variant,
-            compiler_platform,
         })
     }
 }

@@ -27,7 +27,7 @@ pub struct VideoClip_329 {
 
 impl crate::Parse for VideoClip_329 {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_name = None;
@@ -48,38 +48,38 @@ impl crate::Parse for VideoClip_329 {
         let mut m_has_split_alpha = None;
         let mut m_video_shaders = None;
         let mut m_s_rgb = None;
-            m_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_original_path = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_proxy_width = Some(r.read_u32()?);
-            m_proxy_height = Some(r.read_u32()?);
-            width = Some(r.read_u32()?);
-            height = Some(r.read_u32()?);
+            m_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_original_path = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_proxy_width = Some(rdr.read_u32()?);
+            m_proxy_height = Some(rdr.read_u32()?);
+            width = Some(rdr.read_u32()?);
+            height = Some(rdr.read_u32()?);
         if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            m_pixel_aspec_ratio_num = Some(r.read_u32()?);
-            m_pixel_aspec_ratio_den = Some(r.read_u32()?);
+            m_pixel_aspec_ratio_num = Some(rdr.read_u32()?);
+            m_pixel_aspec_ratio_den = Some(rdr.read_u32()?);
         } else {
         }
-            m_frame_rate = Some(r.read_f64()?);
-            m_frame_count = Some(r.read_u64()?);
-            m_format = Some(r.read_i32()?);
-            m_audio_channel_count = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u16() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_audio_sample_rate = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_audio_language = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_frame_rate = Some(rdr.read_f64()?);
+            m_frame_count = Some(rdr.read_u64()?);
+            m_format = Some(rdr.read_i32()?);
+            m_audio_channel_count = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u16() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_audio_sample_rate = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_audio_language = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            m_video_shaders = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_video_shaders = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else {
         }
-            m_external_resources = Some(StreamedResource::parse(r, ver)?);
-            r.align(4)?;
-            m_has_split_alpha = Some(r.read_bool()?);
+            m_external_resources = Some(StreamedResource::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_has_split_alpha = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(2019, 2, 0) {
-            m_s_rgb = Some(r.read_bool()?);
+            m_s_rgb = Some(rdr.read_bool()?);
         } else {
         }
 

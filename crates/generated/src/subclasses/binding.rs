@@ -8,11 +8,11 @@ pub struct Binding {
 
 impl crate::Parse for Binding {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_set = r.read_u32()?;
-        let m_slot = r.read_u32()?;
+        let m_set = rdr.read_u32()?;
+        let m_slot = rdr.read_u32()?;
 
         Ok(Binding {
             m_set,

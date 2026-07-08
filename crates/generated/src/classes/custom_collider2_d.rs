@@ -15,15 +15,15 @@ pub enum CustomCollider2DMUsedByEffectorVariant {
 
 impl crate::Parse for CustomCollider2DMUsedByEffectorVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V2023_1(v))
         } else {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::Default(v))
         }
     }
@@ -52,7 +52,7 @@ pub struct CustomCollider2D {
 
 impl crate::Parse for CustomCollider2D {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_game_object = None;
@@ -73,33 +73,33 @@ impl crate::Parse for CustomCollider2D {
         let mut m_callback_layers = None;
         let mut m_composite_operation = None;
         let mut m_composite_order = None;
-            m_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_enabled = Some(r.read_u8()?);
-            r.align(4)?;
-            m_density = Some(r.read_f32()?);
-            m_material = Some(crate::PPtr::parse(r, ver)?);
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_enabled = Some(rdr.read_u8()?);
+            rdr.align(4)?;
+            m_density = Some(rdr.read_f32()?);
+            m_material = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            m_include_layers = Some(BitField::parse(r, ver)?);
-            m_exclude_layers = Some(BitField::parse(r, ver)?);
-            m_layer_override_priority = Some(r.read_i32()?);
-            m_force_send_layers = Some(BitField::parse(r, ver)?);
-            m_force_receive_layers = Some(BitField::parse(r, ver)?);
-            m_contact_capture_layers = Some(BitField::parse(r, ver)?);
-            m_callback_layers = Some(BitField::parse(r, ver)?);
+            m_include_layers = Some(BitField::parse(rdr, ver)?);
+            m_exclude_layers = Some(BitField::parse(rdr, ver)?);
+            m_layer_override_priority = Some(rdr.read_i32()?);
+            m_force_send_layers = Some(BitField::parse(rdr, ver)?);
+            m_force_receive_layers = Some(BitField::parse(rdr, ver)?);
+            m_contact_capture_layers = Some(BitField::parse(rdr, ver)?);
+            m_callback_layers = Some(BitField::parse(rdr, ver)?);
         } else {
         }
-            m_is_trigger = Some(r.read_bool()?);
-            m_used_by_effector = Some(CustomCollider2DMUsedByEffectorVariant::parse(r, ver)?);
+            m_is_trigger = Some(rdr.read_bool()?);
+            m_used_by_effector = Some(CustomCollider2DMUsedByEffectorVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            m_composite_operation = Some(r.read_i32()?);
-            m_composite_order = Some(r.read_i32()?);
+            m_composite_operation = Some(rdr.read_i32()?);
+            m_composite_order = Some(rdr.read_i32()?);
         } else {
-            m_used_by_composite = Some(r.read_bool()?);
-            r.align(4)?;
+            m_used_by_composite = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         }
-            m_offset = Some(Vector2f::parse(r, ver)?);
-            m_custom_shapes = Some(PhysicsShapeGroup2D::parse(r, ver)?);
-            r.align(4)?;
+            m_offset = Some(Vector2f::parse(rdr, ver)?);
+            m_custom_shapes = Some(PhysicsShapeGroup2D::parse(rdr, ver)?);
+            rdr.align(4)?;
 
         Ok(CustomCollider2D {
             m_game_object: m_game_object.unwrap(),

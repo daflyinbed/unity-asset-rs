@@ -15,28 +15,28 @@ pub struct SpeedTreeWindAsset {
 
 impl crate::Parse for SpeedTreeWindAsset {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
         let m_wind = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(SpeedTreeWind::parse(r, ver)?)
+            Some(SpeedTreeWind::parse(rdr, ver)?)
         } else {
             None
         };
         let m_e_version = if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            Some(r.read_i32()?)
+            Some(rdr.read_i32()?)
         } else {
             None
         };
         let m_config8 = if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            Some(SpeedTreeWindConfig8::parse(r, ver)?)
+            Some(SpeedTreeWindConfig8::parse(rdr, ver)?)
         } else {
             None
         };
         let m_config9 = if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            Some(SpeedTreeWindConfig9::parse(r, ver)?)
+            Some(SpeedTreeWindConfig9::parse(rdr, ver)?)
         } else {
             None
         };

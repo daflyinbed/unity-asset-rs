@@ -10,16 +10,16 @@ pub struct AssetBundleScriptInfo {
 
 impl crate::Parse for AssetBundleScriptInfo {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let class_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let name_space = r.read_aligned_string()?;
-        r.align(4)?;
-        let assembly_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let hash = r.read_u32()?;
+        let class_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let name_space = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let assembly_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let hash = rdr.read_u32()?;
 
         Ok(AssetBundleScriptInfo {
             class_name,

@@ -12,19 +12,19 @@ pub struct PresetManager {
 
 impl crate::Parse for PresetManager {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_default_list = if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { DefaultPresetList::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { DefaultPresetList::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Some(v)
         } else {
             None
         };
         let m_default_presets = if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = PresetType::parse(r, ver)?; let b = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { DefaultPreset::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = PresetType::parse(rdr, ver)?; let b = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { DefaultPreset::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Some(v)
         } else {
             None

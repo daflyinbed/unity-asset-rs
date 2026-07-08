@@ -13,17 +13,17 @@ pub struct VulkanDeviceFilterLists {
 
 impl crate::Parse for VulkanDeviceFilterLists {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_vulkan_allow_filter_list = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { AndroidDeviceFilterData::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_vulkan_deny_filter_list = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { AndroidDeviceFilterData::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_gfx_job_filter_list = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { VulkanGraphicsJobsDeviceFilterData::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_vulkan_allow_filter_list = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AndroidDeviceFilterData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let m_vulkan_deny_filter_list = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AndroidDeviceFilterData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let m_gfx_job_filter_list = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VulkanGraphicsJobsDeviceFilterData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
 
         Ok(VulkanDeviceFilterLists {
             m_name,

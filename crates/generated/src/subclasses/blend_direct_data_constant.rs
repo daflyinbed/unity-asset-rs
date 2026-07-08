@@ -8,12 +8,12 @@ pub struct BlendDirectDataConstant {
 
 impl crate::Parse for BlendDirectDataConstant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_child_blend_event_id_array = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
-        let m_normalized_blend_values = r.read_bool()?;
-        r.align(4)?;
+        let m_child_blend_event_id_array = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_normalized_blend_values = rdr.read_bool()?;
+        rdr.align(4)?;
 
         Ok(BlendDirectDataConstant {
             m_child_blend_event_id_array,

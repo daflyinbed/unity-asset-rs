@@ -12,13 +12,13 @@ pub struct BlendShapeVertex {
 
 impl crate::Parse for BlendShapeVertex {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let vertex = Vector3f::parse(r, ver)?;
-        let normal = Vector3f::parse(r, ver)?;
-        let tangent = Vector3f::parse(r, ver)?;
-        let index = r.read_u32()?;
+        let vertex = Vector3f::parse(rdr, ver)?;
+        let normal = Vector3f::parse(rdr, ver)?;
+        let tangent = Vector3f::parse(rdr, ver)?;
+        let index = rdr.read_u32()?;
 
         Ok(BlendShapeVertex {
             vertex,

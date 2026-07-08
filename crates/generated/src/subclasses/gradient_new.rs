@@ -34,36 +34,36 @@ pub struct GradientNew {
 
 impl crate::Parse for GradientNew {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let key0 = ColorRgba::parse(r, ver)?;
-        let key1 = ColorRgba::parse(r, ver)?;
-        let key2 = ColorRgba::parse(r, ver)?;
-        let key3 = ColorRgba::parse(r, ver)?;
-        let key4 = ColorRgba::parse(r, ver)?;
-        let key5 = ColorRgba::parse(r, ver)?;
-        let key6 = ColorRgba::parse(r, ver)?;
-        let key7 = ColorRgba::parse(r, ver)?;
-        let ctime0 = r.read_u16()?;
-        let ctime1 = r.read_u16()?;
-        let ctime2 = r.read_u16()?;
-        let ctime3 = r.read_u16()?;
-        let ctime4 = r.read_u16()?;
-        let ctime5 = r.read_u16()?;
-        let ctime6 = r.read_u16()?;
-        let ctime7 = r.read_u16()?;
-        let atime0 = r.read_u16()?;
-        let atime1 = r.read_u16()?;
-        let atime2 = r.read_u16()?;
-        let atime3 = r.read_u16()?;
-        let atime4 = r.read_u16()?;
-        let atime5 = r.read_u16()?;
-        let atime6 = r.read_u16()?;
-        let atime7 = r.read_u16()?;
-        let m_num_color_keys = r.read_u8()?;
-        let m_num_alpha_keys = r.read_u8()?;
-        r.align(4)?;
+        let key0 = ColorRgba::parse(rdr, ver)?;
+        let key1 = ColorRgba::parse(rdr, ver)?;
+        let key2 = ColorRgba::parse(rdr, ver)?;
+        let key3 = ColorRgba::parse(rdr, ver)?;
+        let key4 = ColorRgba::parse(rdr, ver)?;
+        let key5 = ColorRgba::parse(rdr, ver)?;
+        let key6 = ColorRgba::parse(rdr, ver)?;
+        let key7 = ColorRgba::parse(rdr, ver)?;
+        let ctime0 = rdr.read_u16()?;
+        let ctime1 = rdr.read_u16()?;
+        let ctime2 = rdr.read_u16()?;
+        let ctime3 = rdr.read_u16()?;
+        let ctime4 = rdr.read_u16()?;
+        let ctime5 = rdr.read_u16()?;
+        let ctime6 = rdr.read_u16()?;
+        let ctime7 = rdr.read_u16()?;
+        let atime0 = rdr.read_u16()?;
+        let atime1 = rdr.read_u16()?;
+        let atime2 = rdr.read_u16()?;
+        let atime3 = rdr.read_u16()?;
+        let atime4 = rdr.read_u16()?;
+        let atime5 = rdr.read_u16()?;
+        let atime6 = rdr.read_u16()?;
+        let atime7 = rdr.read_u16()?;
+        let m_num_color_keys = rdr.read_u8()?;
+        let m_num_alpha_keys = rdr.read_u8()?;
+        rdr.align(4)?;
 
         Ok(GradientNew {
             key0,

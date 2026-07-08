@@ -22,25 +22,25 @@ pub struct Hash128 {
 
 impl crate::Parse for Hash128 {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let bytes_0 = r.read_u8()?;
-        let bytes_1 = r.read_u8()?;
-        let bytes_2 = r.read_u8()?;
-        let bytes_3 = r.read_u8()?;
-        let bytes_4 = r.read_u8()?;
-        let bytes_5 = r.read_u8()?;
-        let bytes_6 = r.read_u8()?;
-        let bytes_7 = r.read_u8()?;
-        let bytes_8 = r.read_u8()?;
-        let bytes_9 = r.read_u8()?;
-        let bytes_10 = r.read_u8()?;
-        let bytes_11 = r.read_u8()?;
-        let bytes_12 = r.read_u8()?;
-        let bytes_13 = r.read_u8()?;
-        let bytes_14 = r.read_u8()?;
-        let bytes_15 = r.read_u8()?;
+        let bytes_0 = rdr.read_u8()?;
+        let bytes_1 = rdr.read_u8()?;
+        let bytes_2 = rdr.read_u8()?;
+        let bytes_3 = rdr.read_u8()?;
+        let bytes_4 = rdr.read_u8()?;
+        let bytes_5 = rdr.read_u8()?;
+        let bytes_6 = rdr.read_u8()?;
+        let bytes_7 = rdr.read_u8()?;
+        let bytes_8 = rdr.read_u8()?;
+        let bytes_9 = rdr.read_u8()?;
+        let bytes_10 = rdr.read_u8()?;
+        let bytes_11 = rdr.read_u8()?;
+        let bytes_12 = rdr.read_u8()?;
+        let bytes_13 = rdr.read_u8()?;
+        let bytes_14 = rdr.read_u8()?;
+        let bytes_15 = rdr.read_u8()?;
 
         Ok(Hash128 {
             bytes_0,

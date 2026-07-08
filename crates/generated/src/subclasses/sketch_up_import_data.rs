@@ -11,13 +11,13 @@ pub struct SketchUpImportData {
 
 impl crate::Parse for SketchUpImportData {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let default_camera = SketchUpImportCamera::parse(r, ver)?;
-        r.align(4)?;
-        let scenes = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { SketchUpImportScene::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
+        let default_camera = SketchUpImportCamera::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let scenes = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SketchUpImportScene::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
 
         Ok(SketchUpImportData {
             default_camera,

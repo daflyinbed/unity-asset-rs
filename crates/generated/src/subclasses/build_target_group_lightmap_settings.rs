@@ -9,14 +9,14 @@ pub struct BuildTargetGroupLightmapSettings {
 
 impl crate::Parse for BuildTargetGroupLightmapSettings {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_build_target = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_texture_streaming_enabled = r.read_bool()?;
-        r.align(4)?;
-        let m_texture_streaming_priority = r.read_i32()?;
+        let m_build_target = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_texture_streaming_enabled = rdr.read_bool()?;
+        rdr.align(4)?;
+        let m_texture_streaming_priority = rdr.read_i32()?;
 
         Ok(BuildTargetGroupLightmapSettings {
             m_build_target,

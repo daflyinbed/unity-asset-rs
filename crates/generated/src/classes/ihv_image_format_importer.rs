@@ -14,15 +14,15 @@ pub enum IhvImageFormatImporterMIsReadableVariant {
 
 impl crate::Parse for IhvImageFormatImporterMIsReadableVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V2017_3(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -37,15 +37,15 @@ pub enum IhvImageFormatImporterMSRgbTextureVariant {
 
 impl crate::Parse for IhvImageFormatImporterMSRgbTextureVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2018, 2, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V2018_2(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -60,15 +60,15 @@ pub enum IhvImageFormatImporterMStreamingMipmapsPriorityVariant {
 
 impl crate::Parse for IhvImageFormatImporterMStreamingMipmapsPriorityVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            let v = r.read_i32()?;
+            let v = rdr.read_i32()?;
             Ok(Self::V2022_2(v))
         } else {
-            let v = r.read_i32()?;
-            r.align(4)?;
+            let v = rdr.read_i32()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -92,7 +92,7 @@ pub struct IhvImageFormatImporter {
 
 impl crate::Parse for IhvImageFormatImporter {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_name = None;
@@ -108,44 +108,44 @@ impl crate::Parse for IhvImageFormatImporter {
         let mut m_streaming_mipmaps_priority = None;
         let mut m_ignore_mipmap_limit = None;
         let mut m_mipmap_limit_group_name = None;
-            m_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_external_objects = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(r, ver)?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_used_file_i_ds = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            m_external_objects = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(r, ver)?; let b = crate::PPtr::parse(r, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else {
         }
-            m_texture_settings = Some(GlTextureSettings::parse(r, ver)?);
-            m_is_readable = Some(IhvImageFormatImporterMIsReadableVariant::parse(r, ver)?);
+            m_texture_settings = Some(GlTextureSettings::parse(rdr, ver)?);
+            m_is_readable = Some(IhvImageFormatImporterMIsReadableVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            m_s_rgb_texture = Some(IhvImageFormatImporterMSRgbTextureVariant::parse(r, ver)?);
-            m_streaming_mipmaps = Some(r.read_bool()?);
-            r.align(4)?;
-            m_streaming_mipmaps_priority = Some(IhvImageFormatImporterMStreamingMipmapsPriorityVariant::parse(r, ver)?);
-            m_ignore_mipmap_limit = Some(r.read_bool()?);
-            r.align(4)?;
-            m_mipmap_limit_group_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_s_rgb_texture = Some(IhvImageFormatImporterMSRgbTextureVariant::parse(rdr, ver)?);
+            m_streaming_mipmaps = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_streaming_mipmaps_priority = Some(IhvImageFormatImporterMStreamingMipmapsPriorityVariant::parse(rdr, ver)?);
+            m_ignore_mipmap_limit = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_mipmap_limit_group_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 2, 0) {
-            m_s_rgb_texture = Some(IhvImageFormatImporterMSRgbTextureVariant::parse(r, ver)?);
-            m_streaming_mipmaps = Some(r.read_bool()?);
-            r.align(4)?;
-            m_streaming_mipmaps_priority = Some(IhvImageFormatImporterMStreamingMipmapsPriorityVariant::parse(r, ver)?);
+            m_s_rgb_texture = Some(IhvImageFormatImporterMSRgbTextureVariant::parse(rdr, ver)?);
+            m_streaming_mipmaps = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_streaming_mipmaps_priority = Some(IhvImageFormatImporterMStreamingMipmapsPriorityVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            m_s_rgb_texture = Some(IhvImageFormatImporterMSRgbTextureVariant::parse(r, ver)?);
+            m_s_rgb_texture = Some(IhvImageFormatImporterMSRgbTextureVariant::parse(rdr, ver)?);
         } else {
         }
-            m_user_data = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_asset_bundle_variant = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_user_data = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
 
         Ok(IhvImageFormatImporter {
             m_name: m_name.unwrap(),

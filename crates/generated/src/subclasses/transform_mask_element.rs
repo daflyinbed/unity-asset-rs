@@ -8,12 +8,12 @@ pub struct TransformMaskElement {
 
 impl crate::Parse for TransformMaskElement {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_path = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_weight = r.read_f32()?;
+        let m_path = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_weight = rdr.read_f32()?;
 
         Ok(TransformMaskElement {
             m_path,

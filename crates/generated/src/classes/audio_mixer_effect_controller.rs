@@ -18,21 +18,21 @@ pub struct AudioMixerEffectController {
 
 impl crate::Parse for AudioMixerEffectController {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_effect_id = Guid::parse(r, ver)?;
-        let m_effect_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_mix_level = Guid::parse(r, ver)?;
-        let m_parameters = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Parameter::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_send_target = crate::PPtr::parse(r, ver)?;
-        let m_enable_wet_mix = r.read_bool()?;
-        let m_bypass = r.read_bool()?;
-        r.align(4)?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_effect_id = Guid::parse(rdr, ver)?;
+        let m_effect_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_mix_level = Guid::parse(rdr, ver)?;
+        let m_parameters = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Parameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let m_send_target = crate::PPtr::parse(rdr, ver)?;
+        let m_enable_wet_mix = rdr.read_bool()?;
+        let m_bypass = rdr.read_bool()?;
+        rdr.align(4)?;
 
         Ok(AudioMixerEffectController {
             m_name,

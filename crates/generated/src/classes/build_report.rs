@@ -15,15 +15,15 @@ pub enum BuildReportMAppendicesVariant {
 
 impl crate::Parse for BuildReportMAppendicesVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -40,7 +40,7 @@ pub struct BuildReport {
 
 impl crate::Parse for BuildReport {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_name = None;
@@ -49,20 +49,20 @@ impl crate::Parse for BuildReport {
         let mut m_build_steps = None;
         let mut m_appendices = None;
         let mut m_root_asset_paths = None;
-            m_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_summary = Some(BuildSummary::parse(r, ver)?);
-            r.align(4)?;
-            m_files = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { BuildReportFile::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_build_steps = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { BuildStepInfo::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_summary = Some(BuildSummary::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_files = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { BuildReportFile::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_build_steps = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { BuildStepInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            m_root_asset_paths = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_root_asset_paths = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else {
         }
-            m_appendices = Some(BuildReportMAppendicesVariant::parse(r, ver)?);
+            m_appendices = Some(BuildReportMAppendicesVariant::parse(rdr, ver)?);
 
         Ok(BuildReport {
             m_name: m_name.unwrap(),

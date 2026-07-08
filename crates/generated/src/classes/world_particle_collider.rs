@@ -15,16 +15,16 @@ pub struct WorldParticleCollider {
 
 impl crate::Parse for WorldParticleCollider {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_bounce_factor = r.read_f32()?;
-        let m_collision_energy_loss = r.read_f32()?;
-        let m_collides_with = BitField::parse(r, ver)?;
-        let m_send_collision_message = r.read_bool()?;
-        r.align(4)?;
-        let m_min_kill_velocity = r.read_f32()?;
+        let m_game_object = crate::PPtr::parse(rdr, ver)?;
+        let m_bounce_factor = rdr.read_f32()?;
+        let m_collision_energy_loss = rdr.read_f32()?;
+        let m_collides_with = BitField::parse(rdr, ver)?;
+        let m_send_collision_message = rdr.read_bool()?;
+        rdr.align(4)?;
+        let m_min_kill_velocity = rdr.read_f32()?;
 
         Ok(WorldParticleCollider {
             m_game_object,

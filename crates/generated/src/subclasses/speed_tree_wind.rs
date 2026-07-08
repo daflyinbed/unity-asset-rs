@@ -41,42 +41,42 @@ pub struct SpeedTreeWind {
 
 impl crate::Parse for SpeedTreeWind {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_s_params = SParams::parse(r, ver)?;
-        let branch_wind_anchor0 = r.read_f32()?;
-        let branch_wind_anchor1 = r.read_f32()?;
-        let branch_wind_anchor2 = r.read_f32()?;
-        let m_f_max_branch_level1_length = r.read_f32()?;
-        let global_wind = r.read_bool()?;
-        let global_preserve_shape = r.read_bool()?;
-        let branch_simple_1 = r.read_bool()?;
-        let branch_directional_1 = r.read_bool()?;
-        let branch_directional_frond_1 = r.read_bool()?;
-        let branch_turbulence_1 = r.read_bool()?;
-        let branch_whip_1 = r.read_bool()?;
-        let branch_osc_complex_1 = r.read_bool()?;
-        let branch_simple_2 = r.read_bool()?;
-        let branch_directional_2 = r.read_bool()?;
-        let branch_directional_frond_2 = r.read_bool()?;
-        let branch_turbulence_2 = r.read_bool()?;
-        let branch_whip_2 = r.read_bool()?;
-        let branch_osc_complex_2 = r.read_bool()?;
-        let leaf_ripple_vertex_normal_1 = r.read_bool()?;
-        let leaf_ripple_computed_1 = r.read_bool()?;
-        let leaf_tumble_1 = r.read_bool()?;
-        let leaf_twitch_1 = r.read_bool()?;
-        let leaf_occlusion_1 = r.read_bool()?;
-        let leaf_ripple_vertex_normal_2 = r.read_bool()?;
-        let leaf_ripple_computed_2 = r.read_bool()?;
-        let leaf_tumble_2 = r.read_bool()?;
-        let leaf_twitch_2 = r.read_bool()?;
-        let leaf_occlusion_2 = r.read_bool()?;
-        let frond_ripple_one_sided = r.read_bool()?;
-        let frond_ripple_two_sided = r.read_bool()?;
-        let frond_ripple_adjust_lighting = r.read_bool()?;
-        let rolling = r.read_bool()?;
+        let m_s_params = SParams::parse(rdr, ver)?;
+        let branch_wind_anchor0 = rdr.read_f32()?;
+        let branch_wind_anchor1 = rdr.read_f32()?;
+        let branch_wind_anchor2 = rdr.read_f32()?;
+        let m_f_max_branch_level1_length = rdr.read_f32()?;
+        let global_wind = rdr.read_bool()?;
+        let global_preserve_shape = rdr.read_bool()?;
+        let branch_simple_1 = rdr.read_bool()?;
+        let branch_directional_1 = rdr.read_bool()?;
+        let branch_directional_frond_1 = rdr.read_bool()?;
+        let branch_turbulence_1 = rdr.read_bool()?;
+        let branch_whip_1 = rdr.read_bool()?;
+        let branch_osc_complex_1 = rdr.read_bool()?;
+        let branch_simple_2 = rdr.read_bool()?;
+        let branch_directional_2 = rdr.read_bool()?;
+        let branch_directional_frond_2 = rdr.read_bool()?;
+        let branch_turbulence_2 = rdr.read_bool()?;
+        let branch_whip_2 = rdr.read_bool()?;
+        let branch_osc_complex_2 = rdr.read_bool()?;
+        let leaf_ripple_vertex_normal_1 = rdr.read_bool()?;
+        let leaf_ripple_computed_1 = rdr.read_bool()?;
+        let leaf_tumble_1 = rdr.read_bool()?;
+        let leaf_twitch_1 = rdr.read_bool()?;
+        let leaf_occlusion_1 = rdr.read_bool()?;
+        let leaf_ripple_vertex_normal_2 = rdr.read_bool()?;
+        let leaf_ripple_computed_2 = rdr.read_bool()?;
+        let leaf_tumble_2 = rdr.read_bool()?;
+        let leaf_twitch_2 = rdr.read_bool()?;
+        let leaf_occlusion_2 = rdr.read_bool()?;
+        let frond_ripple_one_sided = rdr.read_bool()?;
+        let frond_ripple_two_sided = rdr.read_bool()?;
+        let frond_ripple_adjust_lighting = rdr.read_bool()?;
+        let rolling = rdr.read_bool()?;
 
         Ok(SpeedTreeWind {
             m_s_params,

@@ -19,22 +19,22 @@ pub struct LightsModule {
 
 impl crate::Parse for LightsModule {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let enabled = r.read_bool()?;
-        r.align(4)?;
-        let ratio = r.read_f32()?;
-        let light = crate::PPtr::parse(r, ver)?;
-        let random_distribution = r.read_bool()?;
-        let color = r.read_bool()?;
-        let range = r.read_bool()?;
-        let intensity = r.read_bool()?;
-        let range_curve = MinMaxCurve::parse(r, ver)?;
-        r.align(4)?;
-        let intensity_curve = MinMaxCurve::parse(r, ver)?;
-        r.align(4)?;
-        let max_lights = r.read_i32()?;
+        let enabled = rdr.read_bool()?;
+        rdr.align(4)?;
+        let ratio = rdr.read_f32()?;
+        let light = crate::PPtr::parse(rdr, ver)?;
+        let random_distribution = rdr.read_bool()?;
+        let color = rdr.read_bool()?;
+        let range = rdr.read_bool()?;
+        let intensity = rdr.read_bool()?;
+        let range_curve = MinMaxCurve::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let intensity_curve = MinMaxCurve::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let max_lights = rdr.read_i32()?;
 
         Ok(LightsModule {
             enabled,

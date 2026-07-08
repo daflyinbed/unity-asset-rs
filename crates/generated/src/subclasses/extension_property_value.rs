@@ -10,16 +10,16 @@ pub struct ExtensionPropertyValue {
 
 impl crate::Parse for ExtensionPropertyValue {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let plugin_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let extension_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let property_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let property_value = r.read_f32()?;
+        let plugin_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let extension_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let property_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let property_value = rdr.read_f32()?;
 
         Ok(ExtensionPropertyValue {
             plugin_name,

@@ -10,13 +10,13 @@ pub struct SketchUpImportScene {
 
 impl crate::Parse for SketchUpImportScene {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let camera = SketchUpImportCamera::parse(r, ver)?;
-        r.align(4)?;
-        let name = r.read_aligned_string()?;
-        r.align(4)?;
+        let camera = SketchUpImportCamera::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
 
         Ok(SketchUpImportScene {
             camera,

@@ -27,33 +27,33 @@ pub struct AudioReverbZone {
 
 impl crate::Parse for AudioReverbZone {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_enabled = r.read_u8()?;
-        r.align(4)?;
-        let m_min_distance = r.read_f32()?;
-        let m_max_distance = r.read_f32()?;
-        let m_reverb_preset = r.read_i32()?;
-        let m_room = r.read_i32()?;
-        let m_room_hf = r.read_i32()?;
-        let m_decay_time = r.read_f32()?;
-        let m_decay_hf_ratio = r.read_f32()?;
-        let m_reflections = r.read_i32()?;
-        let m_reflections_delay = r.read_f32()?;
-        let m_reverb = r.read_i32()?;
-        let m_reverb_delay = r.read_f32()?;
-        let m_hf_reference = r.read_f32()?;
+        let m_game_object = crate::PPtr::parse(rdr, ver)?;
+        let m_enabled = rdr.read_u8()?;
+        rdr.align(4)?;
+        let m_min_distance = rdr.read_f32()?;
+        let m_max_distance = rdr.read_f32()?;
+        let m_reverb_preset = rdr.read_i32()?;
+        let m_room = rdr.read_i32()?;
+        let m_room_hf = rdr.read_i32()?;
+        let m_decay_time = rdr.read_f32()?;
+        let m_decay_hf_ratio = rdr.read_f32()?;
+        let m_reflections = rdr.read_i32()?;
+        let m_reflections_delay = rdr.read_f32()?;
+        let m_reverb = rdr.read_i32()?;
+        let m_reverb_delay = rdr.read_f32()?;
+        let m_hf_reference = rdr.read_f32()?;
         let m_room_rolloff_factor = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_f32()?)
+            Some(rdr.read_f32()?)
         } else {
             None
         };
-        let m_diffusion = r.read_f32()?;
-        let m_density = r.read_f32()?;
-        let m_lf_reference = r.read_f32()?;
-        let m_room_lf = r.read_i32()?;
+        let m_diffusion = rdr.read_f32()?;
+        let m_density = rdr.read_f32()?;
+        let m_lf_reference = rdr.read_f32()?;
+        let m_room_lf = rdr.read_i32()?;
 
         Ok(AudioReverbZone {
             m_game_object,

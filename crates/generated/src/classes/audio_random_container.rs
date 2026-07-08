@@ -28,30 +28,30 @@ pub struct AudioRandomContainer {
 
 impl crate::Parse for AudioRandomContainer {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_volume = r.read_f32()?;
-        let m_pitch = r.read_f32()?;
-        let m_automatic_trigger_time = r.read_f32()?;
-        let m_loop_count = r.read_i32()?;
-        let m_volume_randomization_range = Vector2f::parse(r, ver)?;
-        let m_pitch_randomization_range = Vector2f::parse(r, ver)?;
-        let m_automatic_trigger_time_randomization_range = Vector2f::parse(r, ver)?;
-        let m_loop_count_randomization_range = Vector2f::parse(r, ver)?;
-        let m_elements = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_avoid_repeating_last = r.read_i32()?;
-        let m_playback_mode = r.read_i32()?;
-        let m_trigger_mode = r.read_i32()?;
-        let m_automatic_trigger_mode = r.read_i32()?;
-        let m_loop_mode = r.read_i32()?;
-        let m_volume_randomization_enabled = r.read_bool()?;
-        let m_pitch_randomization_enabled = r.read_bool()?;
-        let m_automatic_trigger_time_randomization_enabled = r.read_bool()?;
-        let m_loop_count_randomization_enabled = r.read_bool()?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_volume = rdr.read_f32()?;
+        let m_pitch = rdr.read_f32()?;
+        let m_automatic_trigger_time = rdr.read_f32()?;
+        let m_loop_count = rdr.read_i32()?;
+        let m_volume_randomization_range = Vector2f::parse(rdr, ver)?;
+        let m_pitch_randomization_range = Vector2f::parse(rdr, ver)?;
+        let m_automatic_trigger_time_randomization_range = Vector2f::parse(rdr, ver)?;
+        let m_loop_count_randomization_range = Vector2f::parse(rdr, ver)?;
+        let m_elements = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let m_avoid_repeating_last = rdr.read_i32()?;
+        let m_playback_mode = rdr.read_i32()?;
+        let m_trigger_mode = rdr.read_i32()?;
+        let m_automatic_trigger_mode = rdr.read_i32()?;
+        let m_loop_mode = rdr.read_i32()?;
+        let m_volume_randomization_enabled = rdr.read_bool()?;
+        let m_pitch_randomization_enabled = rdr.read_bool()?;
+        let m_automatic_trigger_time_randomization_enabled = rdr.read_bool()?;
+        let m_loop_count_randomization_enabled = rdr.read_bool()?;
 
         Ok(AudioRandomContainer {
             m_name,

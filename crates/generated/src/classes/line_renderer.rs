@@ -17,18 +17,18 @@ pub enum LineRendererMEnabledVariant {
 
 impl crate::Parse for LineRendererMEnabledVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V5_4(v))
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V5_0(v))
         } else {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::Default(v))
         }
     }
@@ -43,14 +43,14 @@ pub enum LineRendererMCastShadowsVariant {
 
 impl crate::Parse for LineRendererMCastShadowsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_u8()?;
+            let v = rdr.read_u8()?;
             Ok(Self::V5_0(v))
         } else {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::Default(v))
         }
     }
@@ -66,18 +66,18 @@ pub enum LineRendererMReceiveShadowsVariant {
 
 impl crate::Parse for LineRendererMReceiveShadowsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            let v = r.read_u8()?;
+            let v = rdr.read_u8()?;
             Ok(Self::V5_4(v))
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V5_0(v))
         } else {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::Default(v))
         }
     }
@@ -92,14 +92,14 @@ pub enum LineRendererMLightmapIndexVariant {
 
 impl crate::Parse for LineRendererMLightmapIndexVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_u16()?;
+            let v = rdr.read_u16()?;
             Ok(Self::V5_0(v))
         } else {
-            let v = r.read_u8()?;
+            let v = rdr.read_u8()?;
             Ok(Self::Default(v))
         }
     }
@@ -114,15 +114,15 @@ pub enum LineRendererMMaterialsVariant {
 
 impl crate::Parse for LineRendererMMaterialsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -138,18 +138,18 @@ pub enum LineRendererMReflectionProbeUsageVariant {
 
 impl crate::Parse for LineRendererMReflectionProbeUsageVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            let v = r.read_u8()?;
+            let v = rdr.read_u8()?;
             Ok(Self::V2019_3(v))
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            let v = r.read_u8()?;
-            r.align(4)?;
+            let v = rdr.read_u8()?;
+            rdr.align(4)?;
             Ok(Self::V5_4(v))
         } else {
-            let v = r.read_i32()?;
+            let v = rdr.read_i32()?;
             Ok(Self::Default(v))
         }
     }
@@ -164,15 +164,15 @@ pub enum LineRendererMRayTracingModeVariant {
 
 impl crate::Parse for LineRendererMRayTracingModeVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            let v = r.read_u8()?;
+            let v = rdr.read_u8()?;
             Ok(Self::V2020_1(v))
         } else {
-            let v = r.read_u8()?;
-            r.align(4)?;
+            let v = rdr.read_u8()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -187,15 +187,15 @@ pub enum LineRendererMPositionsVariant {
 
 impl crate::Parse for LineRendererMPositionsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Vector3f::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector3f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Vector3f::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector3f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -210,15 +210,15 @@ pub enum LineRendererMRayTraceProceduralVariant {
 
 impl crate::Parse for LineRendererMRayTraceProceduralVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
-            let v = r.read_u8()?;
+            let v = rdr.read_u8()?;
             Ok(Self::V2023_2(v))
         } else {
-            let v = r.read_u8()?;
-            r.align(4)?;
+            let v = rdr.read_u8()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -227,21 +227,21 @@ impl crate::Parse for LineRendererMRayTraceProceduralVariant {
 /// 版本枚举：LineRendererMParametersVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum LineRendererMParametersVariant {
-    Default(LineParameters),
-    V5_5(LineParameters),
+    Default(Box<LineParameters>),
+    V5_5(Box<LineParameters>),
 }
 
 impl crate::Parse for LineRendererMParametersVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = LineParameters::parse(r, ver)?;
-            r.align(4)?;
+            let v = ( { Ok(Box::new(LineParameters::parse(rdr, ver)?)) } )?;
+            rdr.align(4)?;
             Ok(Self::V5_5(v))
         } else {
-            let v = LineParameters::parse(r, ver)?;
+            let v = ( { Ok(Box::new(LineParameters::parse(rdr, ver)?)) } )?;
             Ok(Self::Default(v))
         }
     }
@@ -256,15 +256,15 @@ pub enum LineRendererMLightProbeAnchorVariant {
 
 impl crate::Parse for LineRendererMLightProbeAnchorVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            let v = crate::PPtr::parse(r, ver)?;
-            r.align(4)?;
+            let v = crate::PPtr::parse(rdr, ver)?;
+            rdr.align(4)?;
             Ok(Self::V4_3(v))
         } else {
-            let v = crate::PPtr::parse(r, ver)?;
+            let v = crate::PPtr::parse(rdr, ver)?;
             Ok(Self::Default(v))
         }
     }
@@ -279,14 +279,14 @@ pub enum LineRendererMSortingLayerIdVariant {
 
 impl crate::Parse for LineRendererMSortingLayerIdVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_i32()?;
+            let v = rdr.read_i32()?;
             Ok(Self::V5_0(v))
         } else {
-            let v = r.read_u32()?;
+            let v = rdr.read_u32()?;
             Ok(Self::Default(v))
         }
     }
@@ -301,15 +301,15 @@ pub enum LineRendererMSortingOrderVariant {
 
 impl crate::Parse for LineRendererMSortingOrderVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            let v = r.read_i16()?;
-            r.align(4)?;
+            let v = rdr.read_i16()?;
+            rdr.align(4)?;
             Ok(Self::V4_5(v))
         } else {
-            let v = r.read_i16()?;
+            let v = rdr.read_i16()?;
             Ok(Self::Default(v))
         }
     }
@@ -324,15 +324,15 @@ pub enum LineRendererMRayTracingAccelStructBuildFlagsVariant {
 
 impl crate::Parse for LineRendererMRayTracingAccelStructBuildFlagsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            let v = r.read_u8()?;
+            let v = rdr.read_u8()?;
             Ok(Self::V2023_3(v))
         } else {
-            let v = r.read_u8()?;
-            r.align(4)?;
+            let v = rdr.read_u8()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -347,15 +347,15 @@ pub enum LineRendererMProbeAnchorVariant {
 
 impl crate::Parse for LineRendererMProbeAnchorVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            let v = crate::PPtr::parse(r, ver)?;
+            let v = crate::PPtr::parse(rdr, ver)?;
             Ok(Self::V5_4(v))
         } else {
-            let v = crate::PPtr::parse(r, ver)?;
-            r.align(4)?;
+            let v = crate::PPtr::parse(rdr, ver)?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -370,15 +370,15 @@ pub enum LineRendererMMaskInteractionVariant {
 
 impl crate::Parse for LineRendererMMaskInteractionVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(6000, 3, 0) {
-            let v = r.read_i32()?;
-            r.align(4)?;
+            let v = rdr.read_i32()?;
+            rdr.align(4)?;
             Ok(Self::V6000_3(v))
         } else {
-            let v = r.read_i32()?;
+            let v = rdr.read_i32()?;
             Ok(Self::Default(v))
         }
     }
@@ -428,7 +428,7 @@ pub struct LineRenderer {
 
 impl crate::Parse for LineRenderer {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_game_object = None;
@@ -470,180 +470,180 @@ impl crate::Parse for LineRenderer {
         let mut m_loop = None;
         let mut m_mask_interaction = None;
         let mut m_apply_active_color_space = None;
-            m_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_enabled = Some(LineRendererMEnabledVariant::parse(r, ver)?);
-            m_cast_shadows = Some(LineRendererMCastShadowsVariant::parse(r, ver)?);
-            m_receive_shadows = Some(LineRendererMReceiveShadowsVariant::parse(r, ver)?);
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_enabled = Some(LineRendererMEnabledVariant::parse(rdr, ver)?);
+            m_cast_shadows = Some(LineRendererMCastShadowsVariant::parse(rdr, ver)?);
+            m_receive_shadows = Some(LineRendererMReceiveShadowsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 2, 0) {
-            m_dynamic_occludee = Some(r.read_u8()?);
-            m_static_shadow_caster = Some(r.read_u8()?);
-            m_motion_vectors = Some(r.read_u8()?);
-            m_light_probe_usage = Some(r.read_u8()?);
-            m_reflection_probe_usage = Some(LineRendererMReflectionProbeUsageVariant::parse(r, ver)?);
-            m_ray_tracing_mode = Some(LineRendererMRayTracingModeVariant::parse(r, ver)?);
-            m_ray_trace_procedural = Some(LineRendererMRayTraceProceduralVariant::parse(r, ver)?);
-            m_ray_tracing_accel_struct_build_flags_override = Some(r.read_u8()?);
-            m_ray_tracing_accel_struct_build_flags = Some(LineRendererMRayTracingAccelStructBuildFlagsVariant::parse(r, ver)?);
-            m_small_mesh_culling = Some(r.read_u8()?);
-            r.align(4)?;
-            m_force_mesh_lod = Some(r.read_i16()?);
-            r.align(4)?;
-            m_mesh_lod_selection_bias = Some(r.read_f32()?);
-            m_rendering_layer_mask = Some(r.read_u32()?);
-            m_renderer_priority = Some(r.read_i32()?);
+            m_dynamic_occludee = Some(rdr.read_u8()?);
+            m_static_shadow_caster = Some(rdr.read_u8()?);
+            m_motion_vectors = Some(rdr.read_u8()?);
+            m_light_probe_usage = Some(rdr.read_u8()?);
+            m_reflection_probe_usage = Some(LineRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_ray_tracing_mode = Some(LineRendererMRayTracingModeVariant::parse(rdr, ver)?);
+            m_ray_trace_procedural = Some(LineRendererMRayTraceProceduralVariant::parse(rdr, ver)?);
+            m_ray_tracing_accel_struct_build_flags_override = Some(rdr.read_u8()?);
+            m_ray_tracing_accel_struct_build_flags = Some(LineRendererMRayTracingAccelStructBuildFlagsVariant::parse(rdr, ver)?);
+            m_small_mesh_culling = Some(rdr.read_u8()?);
+            rdr.align(4)?;
+            m_force_mesh_lod = Some(rdr.read_i16()?);
+            rdr.align(4)?;
+            m_mesh_lod_selection_bias = Some(rdr.read_f32()?);
+            m_rendering_layer_mask = Some(rdr.read_u32()?);
+            m_renderer_priority = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            m_dynamic_occludee = Some(r.read_u8()?);
-            m_static_shadow_caster = Some(r.read_u8()?);
-            m_motion_vectors = Some(r.read_u8()?);
-            m_light_probe_usage = Some(r.read_u8()?);
-            m_reflection_probe_usage = Some(LineRendererMReflectionProbeUsageVariant::parse(r, ver)?);
-            m_ray_tracing_mode = Some(LineRendererMRayTracingModeVariant::parse(r, ver)?);
-            m_ray_trace_procedural = Some(LineRendererMRayTraceProceduralVariant::parse(r, ver)?);
-            m_ray_tracing_accel_struct_build_flags_override = Some(r.read_u8()?);
-            m_ray_tracing_accel_struct_build_flags = Some(LineRendererMRayTracingAccelStructBuildFlagsVariant::parse(r, ver)?);
-            m_small_mesh_culling = Some(r.read_u8()?);
-            r.align(4)?;
-            m_rendering_layer_mask = Some(r.read_u32()?);
-            m_renderer_priority = Some(r.read_i32()?);
+            m_dynamic_occludee = Some(rdr.read_u8()?);
+            m_static_shadow_caster = Some(rdr.read_u8()?);
+            m_motion_vectors = Some(rdr.read_u8()?);
+            m_light_probe_usage = Some(rdr.read_u8()?);
+            m_reflection_probe_usage = Some(LineRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_ray_tracing_mode = Some(LineRendererMRayTracingModeVariant::parse(rdr, ver)?);
+            m_ray_trace_procedural = Some(LineRendererMRayTraceProceduralVariant::parse(rdr, ver)?);
+            m_ray_tracing_accel_struct_build_flags_override = Some(rdr.read_u8()?);
+            m_ray_tracing_accel_struct_build_flags = Some(LineRendererMRayTracingAccelStructBuildFlagsVariant::parse(rdr, ver)?);
+            m_small_mesh_culling = Some(rdr.read_u8()?);
+            rdr.align(4)?;
+            m_rendering_layer_mask = Some(rdr.read_u32()?);
+            m_renderer_priority = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2023, 2, 0) {
-            m_dynamic_occludee = Some(r.read_u8()?);
-            m_static_shadow_caster = Some(r.read_u8()?);
-            m_motion_vectors = Some(r.read_u8()?);
-            m_light_probe_usage = Some(r.read_u8()?);
-            m_reflection_probe_usage = Some(LineRendererMReflectionProbeUsageVariant::parse(r, ver)?);
-            m_ray_tracing_mode = Some(LineRendererMRayTracingModeVariant::parse(r, ver)?);
-            m_ray_trace_procedural = Some(LineRendererMRayTraceProceduralVariant::parse(r, ver)?);
-            m_ray_tracing_accel_struct_build_flags_override = Some(r.read_u8()?);
-            m_ray_tracing_accel_struct_build_flags = Some(LineRendererMRayTracingAccelStructBuildFlagsVariant::parse(r, ver)?);
-            m_rendering_layer_mask = Some(r.read_u32()?);
-            m_renderer_priority = Some(r.read_i32()?);
+            m_dynamic_occludee = Some(rdr.read_u8()?);
+            m_static_shadow_caster = Some(rdr.read_u8()?);
+            m_motion_vectors = Some(rdr.read_u8()?);
+            m_light_probe_usage = Some(rdr.read_u8()?);
+            m_reflection_probe_usage = Some(LineRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_ray_tracing_mode = Some(LineRendererMRayTracingModeVariant::parse(rdr, ver)?);
+            m_ray_trace_procedural = Some(LineRendererMRayTraceProceduralVariant::parse(rdr, ver)?);
+            m_ray_tracing_accel_struct_build_flags_override = Some(rdr.read_u8()?);
+            m_ray_tracing_accel_struct_build_flags = Some(LineRendererMRayTracingAccelStructBuildFlagsVariant::parse(rdr, ver)?);
+            m_rendering_layer_mask = Some(rdr.read_u32()?);
+            m_renderer_priority = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2021, 1, 0) {
-            m_dynamic_occludee = Some(r.read_u8()?);
-            m_static_shadow_caster = Some(r.read_u8()?);
-            m_motion_vectors = Some(r.read_u8()?);
-            m_light_probe_usage = Some(r.read_u8()?);
-            m_reflection_probe_usage = Some(LineRendererMReflectionProbeUsageVariant::parse(r, ver)?);
-            m_ray_tracing_mode = Some(LineRendererMRayTracingModeVariant::parse(r, ver)?);
-            m_ray_trace_procedural = Some(LineRendererMRayTraceProceduralVariant::parse(r, ver)?);
-            m_rendering_layer_mask = Some(r.read_u32()?);
-            m_renderer_priority = Some(r.read_i32()?);
+            m_dynamic_occludee = Some(rdr.read_u8()?);
+            m_static_shadow_caster = Some(rdr.read_u8()?);
+            m_motion_vectors = Some(rdr.read_u8()?);
+            m_light_probe_usage = Some(rdr.read_u8()?);
+            m_reflection_probe_usage = Some(LineRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_ray_tracing_mode = Some(LineRendererMRayTracingModeVariant::parse(rdr, ver)?);
+            m_ray_trace_procedural = Some(LineRendererMRayTraceProceduralVariant::parse(rdr, ver)?);
+            m_rendering_layer_mask = Some(rdr.read_u32()?);
+            m_renderer_priority = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            m_dynamic_occludee = Some(r.read_u8()?);
-            m_motion_vectors = Some(r.read_u8()?);
-            m_light_probe_usage = Some(r.read_u8()?);
-            m_reflection_probe_usage = Some(LineRendererMReflectionProbeUsageVariant::parse(r, ver)?);
-            m_ray_tracing_mode = Some(LineRendererMRayTracingModeVariant::parse(r, ver)?);
-            m_ray_trace_procedural = Some(LineRendererMRayTraceProceduralVariant::parse(r, ver)?);
-            m_rendering_layer_mask = Some(r.read_u32()?);
-            m_renderer_priority = Some(r.read_i32()?);
+            m_dynamic_occludee = Some(rdr.read_u8()?);
+            m_motion_vectors = Some(rdr.read_u8()?);
+            m_light_probe_usage = Some(rdr.read_u8()?);
+            m_reflection_probe_usage = Some(LineRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_ray_tracing_mode = Some(LineRendererMRayTracingModeVariant::parse(rdr, ver)?);
+            m_ray_trace_procedural = Some(LineRendererMRayTraceProceduralVariant::parse(rdr, ver)?);
+            m_rendering_layer_mask = Some(rdr.read_u32()?);
+            m_renderer_priority = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            m_dynamic_occludee = Some(r.read_u8()?);
-            m_motion_vectors = Some(r.read_u8()?);
-            m_light_probe_usage = Some(r.read_u8()?);
-            m_reflection_probe_usage = Some(LineRendererMReflectionProbeUsageVariant::parse(r, ver)?);
-            m_ray_tracing_mode = Some(LineRendererMRayTracingModeVariant::parse(r, ver)?);
-            m_rendering_layer_mask = Some(r.read_u32()?);
-            m_renderer_priority = Some(r.read_i32()?);
+            m_dynamic_occludee = Some(rdr.read_u8()?);
+            m_motion_vectors = Some(rdr.read_u8()?);
+            m_light_probe_usage = Some(rdr.read_u8()?);
+            m_reflection_probe_usage = Some(LineRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_ray_tracing_mode = Some(LineRendererMRayTracingModeVariant::parse(rdr, ver)?);
+            m_rendering_layer_mask = Some(rdr.read_u32()?);
+            m_renderer_priority = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            m_dynamic_occludee = Some(r.read_u8()?);
-            m_motion_vectors = Some(r.read_u8()?);
-            m_light_probe_usage = Some(r.read_u8()?);
-            m_reflection_probe_usage = Some(LineRendererMReflectionProbeUsageVariant::parse(r, ver)?);
-            m_rendering_layer_mask = Some(r.read_u32()?);
-            m_renderer_priority = Some(r.read_i32()?);
+            m_dynamic_occludee = Some(rdr.read_u8()?);
+            m_motion_vectors = Some(rdr.read_u8()?);
+            m_light_probe_usage = Some(rdr.read_u8()?);
+            m_reflection_probe_usage = Some(LineRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_rendering_layer_mask = Some(rdr.read_u32()?);
+            m_renderer_priority = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            m_dynamic_occludee = Some(r.read_u8()?);
-            m_motion_vectors = Some(r.read_u8()?);
-            m_light_probe_usage = Some(r.read_u8()?);
-            m_reflection_probe_usage = Some(LineRendererMReflectionProbeUsageVariant::parse(r, ver)?);
-            m_rendering_layer_mask = Some(r.read_u32()?);
+            m_dynamic_occludee = Some(rdr.read_u8()?);
+            m_motion_vectors = Some(rdr.read_u8()?);
+            m_light_probe_usage = Some(rdr.read_u8()?);
+            m_reflection_probe_usage = Some(LineRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_rendering_layer_mask = Some(rdr.read_u32()?);
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            m_dynamic_occludee = Some(r.read_u8()?);
-            m_motion_vectors = Some(r.read_u8()?);
-            m_light_probe_usage = Some(r.read_u8()?);
-            m_reflection_probe_usage = Some(LineRendererMReflectionProbeUsageVariant::parse(r, ver)?);
+            m_dynamic_occludee = Some(rdr.read_u8()?);
+            m_motion_vectors = Some(rdr.read_u8()?);
+            m_light_probe_usage = Some(rdr.read_u8()?);
+            m_reflection_probe_usage = Some(LineRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            m_motion_vectors = Some(r.read_u8()?);
-            m_light_probe_usage = Some(r.read_u8()?);
-            m_reflection_probe_usage = Some(LineRendererMReflectionProbeUsageVariant::parse(r, ver)?);
+            m_motion_vectors = Some(rdr.read_u8()?);
+            m_light_probe_usage = Some(rdr.read_u8()?);
+            m_reflection_probe_usage = Some(LineRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
         } else {
         }
-            m_lightmap_index = Some(LineRendererMLightmapIndexVariant::parse(r, ver)?);
+            m_lightmap_index = Some(LineRendererMLightmapIndexVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_lightmap_index_dynamic = Some(r.read_u16()?);
+            m_lightmap_index_dynamic = Some(rdr.read_u16()?);
         } else {
         }
-            m_lightmap_tiling_offset = Some(Vector4f::parse(r, ver)?);
+            m_lightmap_tiling_offset = Some(Vector4f::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_lightmap_tiling_offset_dynamic = Some(Vector4f::parse(r, ver)?);
+            m_lightmap_tiling_offset_dynamic = Some(Vector4f::parse(rdr, ver)?);
         } else {
         }
-            m_materials = Some(LineRendererMMaterialsVariant::parse(r, ver)?);
+            m_materials = Some(LineRendererMMaterialsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            m_static_batch_info = Some(StaticBatchInfo::parse(r, ver)?);
+            m_static_batch_info = Some(StaticBatchInfo::parse(rdr, ver)?);
         } else {
-            m_subset_indices = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_subset_indices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
         }
-            m_static_batch_root = Some(crate::PPtr::parse(r, ver)?);
+            m_static_batch_root = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 3, 0) {
-            m_probe_anchor = Some(LineRendererMProbeAnchorVariant::parse(r, ver)?);
-            m_light_probe_volume_override = Some(crate::PPtr::parse(r, ver)?);
-            r.align(4)?;
-            m_sorting_layer_id = Some(LineRendererMSortingLayerIdVariant::parse(r, ver)?);
-            m_sorting_layer = Some(r.read_i16()?);
-            m_sorting_order = Some(LineRendererMSortingOrderVariant::parse(r, ver)?);
-            m_mask_interaction = Some(LineRendererMMaskInteractionVariant::parse(r, ver)?);
+            m_probe_anchor = Some(LineRendererMProbeAnchorVariant::parse(rdr, ver)?);
+            m_light_probe_volume_override = Some(crate::PPtr::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_sorting_layer_id = Some(LineRendererMSortingLayerIdVariant::parse(rdr, ver)?);
+            m_sorting_layer = Some(rdr.read_i16()?);
+            m_sorting_order = Some(LineRendererMSortingOrderVariant::parse(rdr, ver)?);
+            m_mask_interaction = Some(LineRendererMMaskInteractionVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            m_probe_anchor = Some(LineRendererMProbeAnchorVariant::parse(r, ver)?);
-            m_light_probe_volume_override = Some(crate::PPtr::parse(r, ver)?);
-            r.align(4)?;
-            m_sorting_layer_id = Some(LineRendererMSortingLayerIdVariant::parse(r, ver)?);
-            m_sorting_layer = Some(r.read_i16()?);
-            m_sorting_order = Some(LineRendererMSortingOrderVariant::parse(r, ver)?);
+            m_probe_anchor = Some(LineRendererMProbeAnchorVariant::parse(rdr, ver)?);
+            m_light_probe_volume_override = Some(crate::PPtr::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_sorting_layer_id = Some(LineRendererMSortingLayerIdVariant::parse(rdr, ver)?);
+            m_sorting_layer = Some(rdr.read_i16()?);
+            m_sorting_order = Some(LineRendererMSortingOrderVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            m_probe_anchor = Some(LineRendererMProbeAnchorVariant::parse(r, ver)?);
-            m_light_probe_volume_override = Some(crate::PPtr::parse(r, ver)?);
-            r.align(4)?;
-            m_sorting_layer_id = Some(LineRendererMSortingLayerIdVariant::parse(r, ver)?);
-            m_sorting_order = Some(LineRendererMSortingOrderVariant::parse(r, ver)?);
+            m_probe_anchor = Some(LineRendererMProbeAnchorVariant::parse(rdr, ver)?);
+            m_light_probe_volume_override = Some(crate::PPtr::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_sorting_layer_id = Some(LineRendererMSortingLayerIdVariant::parse(rdr, ver)?);
+            m_sorting_order = Some(LineRendererMSortingOrderVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_use_light_probes = Some(r.read_bool()?);
-            r.align(4)?;
-            m_reflection_probe_usage = Some(LineRendererMReflectionProbeUsageVariant::parse(r, ver)?);
-            m_probe_anchor = Some(LineRendererMProbeAnchorVariant::parse(r, ver)?);
-            m_sorting_layer_id = Some(LineRendererMSortingLayerIdVariant::parse(r, ver)?);
-            m_sorting_order = Some(LineRendererMSortingOrderVariant::parse(r, ver)?);
+            m_use_light_probes = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_reflection_probe_usage = Some(LineRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_probe_anchor = Some(LineRendererMProbeAnchorVariant::parse(rdr, ver)?);
+            m_sorting_layer_id = Some(LineRendererMSortingLayerIdVariant::parse(rdr, ver)?);
+            m_sorting_order = Some(LineRendererMSortingOrderVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            m_use_light_probes = Some(r.read_bool()?);
-            r.align(4)?;
-            m_light_probe_anchor = Some(LineRendererMLightProbeAnchorVariant::parse(r, ver)?);
-            m_sorting_layer_id = Some(LineRendererMSortingLayerIdVariant::parse(r, ver)?);
-            m_sorting_order = Some(LineRendererMSortingOrderVariant::parse(r, ver)?);
+            m_use_light_probes = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_light_probe_anchor = Some(LineRendererMLightProbeAnchorVariant::parse(rdr, ver)?);
+            m_sorting_layer_id = Some(LineRendererMSortingLayerIdVariant::parse(rdr, ver)?);
+            m_sorting_order = Some(LineRendererMSortingOrderVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            m_use_light_probes = Some(r.read_bool()?);
-            r.align(4)?;
-            m_light_probe_anchor = Some(LineRendererMLightProbeAnchorVariant::parse(r, ver)?);
-            m_sorting_layer = Some(r.read_i16()?);
-            m_sorting_order = Some(LineRendererMSortingOrderVariant::parse(r, ver)?);
+            m_use_light_probes = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_light_probe_anchor = Some(LineRendererMLightProbeAnchorVariant::parse(rdr, ver)?);
+            m_sorting_layer = Some(rdr.read_i16()?);
+            m_sorting_order = Some(LineRendererMSortingOrderVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            m_use_light_probes = Some(r.read_bool()?);
-            r.align(4)?;
-            m_light_probe_anchor = Some(LineRendererMLightProbeAnchorVariant::parse(r, ver)?);
+            m_use_light_probes = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_light_probe_anchor = Some(LineRendererMLightProbeAnchorVariant::parse(rdr, ver)?);
         } else {
         }
-            m_positions = Some(LineRendererMPositionsVariant::parse(r, ver)?);
-            m_parameters = Some(LineRendererMParametersVariant::parse(r, ver)?);
+            m_positions = Some(LineRendererMPositionsVariant::parse(rdr, ver)?);
+            m_parameters = Some(LineRendererMParametersVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 3, 0) {
         } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
-            m_mask_interaction = Some(LineRendererMMaskInteractionVariant::parse(r, ver)?);
+            m_mask_interaction = Some(LineRendererMMaskInteractionVariant::parse(rdr, ver)?);
         } else {
         }
-            m_use_world_space = Some(r.read_bool()?);
+            m_use_world_space = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(2022, 1, 0) {
-            m_loop = Some(r.read_bool()?);
-            m_apply_active_color_space = Some(r.read_bool()?);
+            m_loop = Some(rdr.read_bool()?);
+            m_apply_active_color_space = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            m_loop = Some(r.read_bool()?);
+            m_loop = Some(rdr.read_bool()?);
         } else {
         }
 

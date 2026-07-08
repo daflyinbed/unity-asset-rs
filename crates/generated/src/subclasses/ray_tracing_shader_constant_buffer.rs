@@ -7,23 +7,33 @@ pub struct RayTracingShaderConstantBuffer {
     pub name: String,
     pub byte_size: i32,
     pub params: Vec<RayTracingShaderParam>,
+    pub hash: Option<u32>,
 }
 
 impl crate::Parse for RayTracingShaderConstantBuffer {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let name = r.read_aligned_string()?;
-        r.align(4)?;
-        let byte_size = r.read_i32()?;
-        let params = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { RayTracingShaderParam::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
+        let mut name = None;
+        let mut byte_size = None;
+        let mut params = None;
+        let mut hash = None;
+            name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            byte_size = Some(rdr.read_i32()?);
+        if *ver >= crate::UnityVersion::new(2020, 1, 0) {
+            hash = Some(rdr.read_u32()?);
+        } else {
+        }
+            params = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { RayTracingShaderParam::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
 
         Ok(RayTracingShaderConstantBuffer {
-            name,
-            byte_size,
-            params,
+            name: name.unwrap(),
+            byte_size: byte_size.unwrap(),
+            params: params.unwrap(),
+            hash,
         })
     }
 }

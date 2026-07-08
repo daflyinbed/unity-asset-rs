@@ -17,27 +17,27 @@ pub struct D3D12DeviceFilterData {
 
 impl crate::Parse for D3D12DeviceFilterData {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let vendor_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let device_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let driver_version_comparator = r.read_u32()?;
-        let driver_version = r.read_aligned_string()?;
-        r.align(4)?;
-        let feature_level_comparator = r.read_u32()?;
-        let feature_level = r.read_aligned_string()?;
-        r.align(4)?;
-        let graphics_memory_comparator = r.read_u32()?;
-        let graphics_memory = r.read_aligned_string()?;
-        r.align(4)?;
-        let processor_count_comparator = r.read_u32()?;
-        let processor_count = r.read_aligned_string()?;
-        r.align(4)?;
-        let device_type = r.read_u32()?;
-        r.align(4)?;
+        let vendor_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let device_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let driver_version_comparator = rdr.read_u32()?;
+        let driver_version = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let feature_level_comparator = rdr.read_u32()?;
+        let feature_level = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let graphics_memory_comparator = rdr.read_u32()?;
+        let graphics_memory = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let processor_count_comparator = rdr.read_u32()?;
+        let processor_count = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let device_type = rdr.read_u32()?;
+        rdr.align(4)?;
 
         Ok(D3D12DeviceFilterData {
             vendor_name,

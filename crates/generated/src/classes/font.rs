@@ -13,15 +13,15 @@ pub enum FontMTextureVariant {
 
 impl crate::Parse for FontMTextureVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = crate::PPtr::parse(r, ver)?;
-            r.align(4)?;
+            let v = crate::PPtr::parse(rdr, ver)?;
+            rdr.align(4)?;
             Ok(Self::V5_5(v))
         } else {
-            let v = crate::PPtr::parse(r, ver)?;
+            let v = crate::PPtr::parse(rdr, ver)?;
             Ok(Self::Default(v))
         }
     }
@@ -36,15 +36,15 @@ pub enum FontMCharacterRectsVariant {
 
 impl crate::Parse for FontMCharacterRectsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { CharacterInfo::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { CharacterInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V4_0(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { CharacterInfo::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { CharacterInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -82,7 +82,7 @@ pub struct Font {
 
 impl crate::Parse for Font {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_name = None;
@@ -112,93 +112,93 @@ impl crate::Parse for Font {
         let mut m_font_rendering_mode = None;
         let mut m_use_legacy_bounds_calculation = None;
         let mut m_should_round_advance_value = None;
-            m_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
         } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            m_ascii_start_offset = Some(r.read_i32()?);
-            m_tracking = Some(r.read_f32()?);
+            m_ascii_start_offset = Some(rdr.read_i32()?);
+            m_tracking = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            m_ascii_start_offset = Some(r.read_i32()?);
-            m_kerning = Some(r.read_f32()?);
+            m_ascii_start_offset = Some(rdr.read_i32()?);
+            m_kerning = Some(rdr.read_f32()?);
         } else {
-            m_ascii_start_offset = Some(r.read_i32()?);
-            m_font_count_x = Some(r.read_i32()?);
-            m_font_count_y = Some(r.read_i32()?);
-            m_kerning = Some(r.read_f32()?);
+            m_ascii_start_offset = Some(rdr.read_i32()?);
+            m_font_count_x = Some(rdr.read_i32()?);
+            m_font_count_y = Some(rdr.read_i32()?);
+            m_kerning = Some(rdr.read_f32()?);
         }
-            m_line_spacing = Some(r.read_f32()?);
+            m_line_spacing = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            m_character_spacing = Some(r.read_i32()?);
-            m_character_padding = Some(r.read_i32()?);
-            m_convert_case = Some(r.read_i32()?);
+            m_character_spacing = Some(rdr.read_i32()?);
+            m_character_padding = Some(rdr.read_i32()?);
+            m_convert_case = Some(rdr.read_i32()?);
         } else {
-            m_per_character_kerning = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = r.read_i32()?; let b = r.read_f32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_convert_case = Some(r.read_i32()?);
+            m_per_character_kerning = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i32()?; let b = rdr.read_f32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_convert_case = Some(rdr.read_i32()?);
         }
-            m_default_material = Some(crate::PPtr::parse(r, ver)?);
+            m_default_material = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            m_font_size = Some(r.read_f32()?);
+            m_font_size = Some(rdr.read_f32()?);
         } else {
-            m_character_rects = Some(FontMCharacterRectsVariant::parse(r, ver)?);
+            m_character_rects = Some(FontMCharacterRectsVariant::parse(rdr, ver)?);
         }
-            m_texture = Some(FontMTextureVariant::parse(r, ver)?);
+            m_texture = Some(FontMTextureVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            m_ascii_start_offset = Some(r.read_i32()?);
-            m_tracking = Some(r.read_f32()?);
-            m_character_spacing = Some(r.read_i32()?);
-            m_character_padding = Some(r.read_i32()?);
-            m_convert_case = Some(r.read_i32()?);
-            m_character_rects = Some(FontMCharacterRectsVariant::parse(r, ver)?);
+            m_ascii_start_offset = Some(rdr.read_i32()?);
+            m_tracking = Some(rdr.read_f32()?);
+            m_character_spacing = Some(rdr.read_i32()?);
+            m_character_padding = Some(rdr.read_i32()?);
+            m_convert_case = Some(rdr.read_i32()?);
+            m_character_rects = Some(FontMCharacterRectsVariant::parse(rdr, ver)?);
         } else {
         }
-            m_kerning_values = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { ( { let a = ( { let a = r.read_u16()?; let b = r.read_u16()?; Ok((a, b)) } )?; let b = r.read_f32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_kerning_values = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = ( { let a = rdr.read_u16()?; let b = rdr.read_u16()?; Ok((a, b)) } )?; let b = rdr.read_f32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
         if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            m_pixel_scale = Some(r.read_f32()?);
-            r.align(4)?;
+            m_pixel_scale = Some(rdr.read_f32()?);
+            rdr.align(4)?;
         } else {
-            m_grid_font = Some(r.read_bool()?);
-            r.align(4)?;
+            m_grid_font = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         }
-            m_font_data = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_font_data = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
         } else {
-            m_font_size = Some(r.read_f32()?);
+            m_font_size = Some(rdr.read_f32()?);
         }
-            m_ascent = Some(r.read_f32()?);
+            m_ascent = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            m_descent = Some(r.read_f32()?);
+            m_descent = Some(rdr.read_f32()?);
         } else {
         }
-            m_default_style = Some(r.read_u32()?);
-            m_font_names = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
+            m_default_style = Some(rdr.read_u32()?);
+            m_font_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            m_fallback_fonts = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_font_rendering_mode = Some(r.read_i32()?);
-            m_use_legacy_bounds_calculation = Some(r.read_bool()?);
-            m_should_round_advance_value = Some(r.read_bool()?);
+            m_fallback_fonts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_font_rendering_mode = Some(rdr.read_i32()?);
+            m_use_legacy_bounds_calculation = Some(rdr.read_bool()?);
+            m_should_round_advance_value = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2017, 1, 2) {
-            m_fallback_fonts = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_font_rendering_mode = Some(r.read_i32()?);
-            m_use_legacy_bounds_calculation = Some(r.read_bool()?);
+            m_fallback_fonts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_font_rendering_mode = Some(rdr.read_i32()?);
+            m_use_legacy_bounds_calculation = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            m_fallback_fonts = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_font_rendering_mode = Some(r.read_i32()?);
+            m_fallback_fonts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_font_rendering_mode = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(5, 6, 5) {
-            m_fallback_fonts = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_font_rendering_mode = Some(r.read_i32()?);
-            m_use_legacy_bounds_calculation = Some(r.read_bool()?);
+            m_fallback_fonts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_font_rendering_mode = Some(rdr.read_i32()?);
+            m_use_legacy_bounds_calculation = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            m_fallback_fonts = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            r.align(4)?;
-            m_font_rendering_mode = Some(r.read_i32()?);
+            m_fallback_fonts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_font_rendering_mode = Some(rdr.read_i32()?);
         } else {
         }
 

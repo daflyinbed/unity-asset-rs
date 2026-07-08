@@ -8,12 +8,12 @@ pub struct VfxMapping {
 
 impl crate::Parse for VfxMapping {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let name_id = r.read_aligned_string()?;
-        r.align(4)?;
-        let index = r.read_i32()?;
+        let name_id = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let index = rdr.read_i32()?;
 
         Ok(VfxMapping {
             name_id,

@@ -13,15 +13,15 @@ pub struct UpdateZoneInfo {
 
 impl crate::Parse for UpdateZoneInfo {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let update_zone_center = Vector3f::parse(r, ver)?;
-        let update_zone_size = Vector3f::parse(r, ver)?;
-        let rotation = r.read_f32()?;
-        let pass_index = r.read_i32()?;
-        let need_swap = r.read_bool()?;
-        r.align(4)?;
+        let update_zone_center = Vector3f::parse(rdr, ver)?;
+        let update_zone_size = Vector3f::parse(rdr, ver)?;
+        let rotation = rdr.read_f32()?;
+        let pass_index = rdr.read_i32()?;
+        let need_swap = rdr.read_bool()?;
+        rdr.align(4)?;
 
         Ok(UpdateZoneInfo {
             update_zone_center,

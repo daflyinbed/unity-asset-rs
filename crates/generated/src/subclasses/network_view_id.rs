@@ -8,11 +8,11 @@ pub struct NetworkViewId {
 
 impl crate::Parse for NetworkViewId {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_id = r.read_u32()?;
-        let m_type = r.read_u32()?;
+        let m_id = rdr.read_u32()?;
+        let m_type = rdr.read_u32()?;
 
         Ok(NetworkViewId {
             m_id,

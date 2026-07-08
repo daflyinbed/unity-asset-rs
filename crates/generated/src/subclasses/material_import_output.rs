@@ -10,12 +10,12 @@ pub struct MaterialImportOutput {
 
 impl crate::Parse for MaterialImportOutput {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let current_settings = BuildTargetSettings::parse(r, ver)?;
-        r.align(4)?;
-        let baked = r.read_i32()?;
+        let current_settings = BuildTargetSettings::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let baked = rdr.read_i32()?;
 
         Ok(MaterialImportOutput {
             current_settings,

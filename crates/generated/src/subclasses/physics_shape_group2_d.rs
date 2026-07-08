@@ -11,13 +11,13 @@ pub struct PhysicsShapeGroup2D {
 
 impl crate::Parse for PhysicsShapeGroup2D {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_shapes = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { PhysicsShape::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_vertices = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
+        let m_shapes = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { PhysicsShape::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let m_vertices = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
 
         Ok(PhysicsShapeGroup2D {
             m_shapes,

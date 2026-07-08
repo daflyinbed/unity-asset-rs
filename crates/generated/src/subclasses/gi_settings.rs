@@ -5,7 +5,7 @@ pub struct GiSettings {
     pub m_bounce_scale: f32,
     pub m_indirect_output_scale: f32,
     pub m_albedo_boost: f32,
-    pub m_temporal_coherence_threshold: f32,
+    pub m_temporal_coherence_threshold: Option<f32>,
     pub m_environment_lighting_mode: u32,
     pub m_enable_baked_lightmaps: bool,
     pub m_enable_realtime_lightmaps: bool,
@@ -13,17 +13,21 @@ pub struct GiSettings {
 
 impl crate::Parse for GiSettings {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_bounce_scale = r.read_f32()?;
-        let m_indirect_output_scale = r.read_f32()?;
-        let m_albedo_boost = r.read_f32()?;
-        let m_temporal_coherence_threshold = r.read_f32()?;
-        let m_environment_lighting_mode = r.read_u32()?;
-        let m_enable_baked_lightmaps = r.read_bool()?;
-        let m_enable_realtime_lightmaps = r.read_bool()?;
-        r.align(4)?;
+        let m_bounce_scale = rdr.read_f32()?;
+        let m_indirect_output_scale = rdr.read_f32()?;
+        let m_albedo_boost = rdr.read_f32()?;
+        let m_temporal_coherence_threshold = if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            Some(rdr.read_f32()?)
+        } else {
+            None
+        };
+        let m_environment_lighting_mode = rdr.read_u32()?;
+        let m_enable_baked_lightmaps = rdr.read_bool()?;
+        let m_enable_realtime_lightmaps = rdr.read_bool()?;
+        rdr.align(4)?;
 
         Ok(GiSettings {
             m_bounce_scale,

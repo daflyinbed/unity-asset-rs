@@ -15,15 +15,15 @@ pub enum Physics2DSettingsMRaycastsHitTriggersVariant {
 
 impl crate::Parse for Physics2DSettingsMRaycastsHitTriggersVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(4, 5, 3) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V4_5_3(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -38,15 +38,15 @@ pub enum Physics2DSettingsMLayerCollisionMatrixVariant {
 
 impl crate::Parse for Physics2DSettingsMLayerCollisionMatrixVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -61,15 +61,15 @@ pub enum Physics2DSettingsMChangeStopsCallbacksVariant {
 
 impl crate::Parse for Physics2DSettingsMChangeStopsCallbacksVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 6, 1) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V5_6_1(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -84,15 +84,15 @@ pub enum Physics2DSettingsMCallbacksOnDisableVariant {
 
 impl crate::Parse for Physics2DSettingsMCallbacksOnDisableVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V2017_2(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -140,7 +140,7 @@ pub struct Physics2DSettings {
 
 impl crate::Parse for Physics2DSettings {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_gravity = None;
@@ -180,254 +180,254 @@ impl crate::Parse for Physics2DSettings {
         let mut m_use_sub_stepping = None;
         let mut m_use_sub_step_contacts = None;
         let mut m_physics_low_level_settings = None;
-            m_gravity = Some(Vector2f::parse(r, ver)?);
-            m_default_material = Some(crate::PPtr::parse(r, ver)?);
-            m_velocity_iterations = Some(r.read_i32()?);
-            m_position_iterations = Some(r.read_i32()?);
+            m_gravity = Some(Vector2f::parse(rdr, ver)?);
+            m_default_material = Some(crate::PPtr::parse(rdr, ver)?);
+            m_velocity_iterations = Some(rdr.read_i32()?);
+            m_position_iterations = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(6000, 0, 1) {
-            m_bounce_threshold = Some(r.read_f32()?);
-            m_max_linear_correction = Some(r.read_f32()?);
-            m_max_angular_correction = Some(r.read_f32()?);
-            m_max_translation_speed = Some(r.read_f32()?);
-            m_max_rotation_speed = Some(r.read_f32()?);
-            m_baumgarte_scale = Some(r.read_f32()?);
-            m_baumgarte_time_of_impact_scale = Some(r.read_f32()?);
-            m_time_to_sleep = Some(r.read_f32()?);
-            m_linear_sleep_tolerance = Some(r.read_f32()?);
-            m_angular_sleep_tolerance = Some(r.read_f32()?);
-            m_default_contact_offset = Some(r.read_f32()?);
-            m_contact_threshold = Some(r.read_f32()?);
-            m_job_options = Some(PhysicsJobOptions2D::parse(r, ver)?);
-            r.align(4)?;
-            m_simulation_mode = Some(r.read_i32()?);
-            m_simulation_layers = Some(BitField::parse(r, ver)?);
-            m_max_sub_step_count = Some(r.read_i32()?);
-            m_min_sub_step_fps = Some(r.read_f32()?);
-            m_use_sub_stepping = Some(r.read_bool()?);
-            m_use_sub_step_contacts = Some(r.read_bool()?);
-            m_queries_hit_triggers = Some(r.read_bool()?);
-            m_queries_start_in_colliders = Some(r.read_bool()?);
-            m_callbacks_on_disable = Some(Physics2DSettingsMCallbacksOnDisableVariant::parse(r, ver)?);
-            m_reuse_collision_callbacks = Some(r.read_bool()?);
-            m_auto_sync_transforms = Some(r.read_bool()?);
-            r.align(4)?;
+            m_bounce_threshold = Some(rdr.read_f32()?);
+            m_max_linear_correction = Some(rdr.read_f32()?);
+            m_max_angular_correction = Some(rdr.read_f32()?);
+            m_max_translation_speed = Some(rdr.read_f32()?);
+            m_max_rotation_speed = Some(rdr.read_f32()?);
+            m_baumgarte_scale = Some(rdr.read_f32()?);
+            m_baumgarte_time_of_impact_scale = Some(rdr.read_f32()?);
+            m_time_to_sleep = Some(rdr.read_f32()?);
+            m_linear_sleep_tolerance = Some(rdr.read_f32()?);
+            m_angular_sleep_tolerance = Some(rdr.read_f32()?);
+            m_default_contact_offset = Some(rdr.read_f32()?);
+            m_contact_threshold = Some(rdr.read_f32()?);
+            m_job_options = Some(PhysicsJobOptions2D::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_simulation_mode = Some(rdr.read_i32()?);
+            m_simulation_layers = Some(BitField::parse(rdr, ver)?);
+            m_max_sub_step_count = Some(rdr.read_i32()?);
+            m_min_sub_step_fps = Some(rdr.read_f32()?);
+            m_use_sub_stepping = Some(rdr.read_bool()?);
+            m_use_sub_step_contacts = Some(rdr.read_bool()?);
+            m_queries_hit_triggers = Some(rdr.read_bool()?);
+            m_queries_start_in_colliders = Some(rdr.read_bool()?);
+            m_callbacks_on_disable = Some(Physics2DSettingsMCallbacksOnDisableVariant::parse(rdr, ver)?);
+            m_reuse_collision_callbacks = Some(rdr.read_bool()?);
+            m_auto_sync_transforms = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            m_bounce_threshold = Some(r.read_f32()?);
-            m_max_linear_correction = Some(r.read_f32()?);
-            m_max_angular_correction = Some(r.read_f32()?);
-            m_max_translation_speed = Some(r.read_f32()?);
-            m_max_rotation_speed = Some(r.read_f32()?);
-            m_baumgarte_scale = Some(r.read_f32()?);
-            m_baumgarte_time_of_impact_scale = Some(r.read_f32()?);
-            m_time_to_sleep = Some(r.read_f32()?);
-            m_linear_sleep_tolerance = Some(r.read_f32()?);
-            m_angular_sleep_tolerance = Some(r.read_f32()?);
-            m_default_contact_offset = Some(r.read_f32()?);
-            m_job_options = Some(PhysicsJobOptions2D::parse(r, ver)?);
-            r.align(4)?;
-            m_simulation_mode = Some(r.read_i32()?);
-            m_simulation_layers = Some(BitField::parse(r, ver)?);
-            m_max_sub_step_count = Some(r.read_i32()?);
-            m_min_sub_step_fps = Some(r.read_f32()?);
-            m_use_sub_stepping = Some(r.read_bool()?);
-            m_use_sub_step_contacts = Some(r.read_bool()?);
-            m_queries_hit_triggers = Some(r.read_bool()?);
-            m_queries_start_in_colliders = Some(r.read_bool()?);
-            m_callbacks_on_disable = Some(Physics2DSettingsMCallbacksOnDisableVariant::parse(r, ver)?);
-            m_reuse_collision_callbacks = Some(r.read_bool()?);
-            m_auto_sync_transforms = Some(r.read_bool()?);
-            r.align(4)?;
+            m_bounce_threshold = Some(rdr.read_f32()?);
+            m_max_linear_correction = Some(rdr.read_f32()?);
+            m_max_angular_correction = Some(rdr.read_f32()?);
+            m_max_translation_speed = Some(rdr.read_f32()?);
+            m_max_rotation_speed = Some(rdr.read_f32()?);
+            m_baumgarte_scale = Some(rdr.read_f32()?);
+            m_baumgarte_time_of_impact_scale = Some(rdr.read_f32()?);
+            m_time_to_sleep = Some(rdr.read_f32()?);
+            m_linear_sleep_tolerance = Some(rdr.read_f32()?);
+            m_angular_sleep_tolerance = Some(rdr.read_f32()?);
+            m_default_contact_offset = Some(rdr.read_f32()?);
+            m_job_options = Some(PhysicsJobOptions2D::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_simulation_mode = Some(rdr.read_i32()?);
+            m_simulation_layers = Some(BitField::parse(rdr, ver)?);
+            m_max_sub_step_count = Some(rdr.read_i32()?);
+            m_min_sub_step_fps = Some(rdr.read_f32()?);
+            m_use_sub_stepping = Some(rdr.read_bool()?);
+            m_use_sub_step_contacts = Some(rdr.read_bool()?);
+            m_queries_hit_triggers = Some(rdr.read_bool()?);
+            m_queries_start_in_colliders = Some(rdr.read_bool()?);
+            m_callbacks_on_disable = Some(Physics2DSettingsMCallbacksOnDisableVariant::parse(rdr, ver)?);
+            m_reuse_collision_callbacks = Some(rdr.read_bool()?);
+            m_auto_sync_transforms = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            m_velocity_threshold = Some(r.read_f32()?);
-            m_max_linear_correction = Some(r.read_f32()?);
-            m_max_angular_correction = Some(r.read_f32()?);
-            m_max_translation_speed = Some(r.read_f32()?);
-            m_max_rotation_speed = Some(r.read_f32()?);
-            m_baumgarte_scale = Some(r.read_f32()?);
-            m_baumgarte_time_of_impact_scale = Some(r.read_f32()?);
-            m_time_to_sleep = Some(r.read_f32()?);
-            m_linear_sleep_tolerance = Some(r.read_f32()?);
-            m_angular_sleep_tolerance = Some(r.read_f32()?);
-            m_default_contact_offset = Some(r.read_f32()?);
-            m_job_options = Some(PhysicsJobOptions2D::parse(r, ver)?);
-            r.align(4)?;
-            m_simulation_mode = Some(r.read_i32()?);
-            m_queries_hit_triggers = Some(r.read_bool()?);
-            m_queries_start_in_colliders = Some(r.read_bool()?);
-            m_callbacks_on_disable = Some(Physics2DSettingsMCallbacksOnDisableVariant::parse(r, ver)?);
-            m_reuse_collision_callbacks = Some(r.read_bool()?);
-            m_auto_sync_transforms = Some(r.read_bool()?);
-            r.align(4)?;
+            m_velocity_threshold = Some(rdr.read_f32()?);
+            m_max_linear_correction = Some(rdr.read_f32()?);
+            m_max_angular_correction = Some(rdr.read_f32()?);
+            m_max_translation_speed = Some(rdr.read_f32()?);
+            m_max_rotation_speed = Some(rdr.read_f32()?);
+            m_baumgarte_scale = Some(rdr.read_f32()?);
+            m_baumgarte_time_of_impact_scale = Some(rdr.read_f32()?);
+            m_time_to_sleep = Some(rdr.read_f32()?);
+            m_linear_sleep_tolerance = Some(rdr.read_f32()?);
+            m_angular_sleep_tolerance = Some(rdr.read_f32()?);
+            m_default_contact_offset = Some(rdr.read_f32()?);
+            m_job_options = Some(PhysicsJobOptions2D::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_simulation_mode = Some(rdr.read_i32()?);
+            m_queries_hit_triggers = Some(rdr.read_bool()?);
+            m_queries_start_in_colliders = Some(rdr.read_bool()?);
+            m_callbacks_on_disable = Some(Physics2DSettingsMCallbacksOnDisableVariant::parse(rdr, ver)?);
+            m_reuse_collision_callbacks = Some(rdr.read_bool()?);
+            m_auto_sync_transforms = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            m_velocity_threshold = Some(r.read_f32()?);
-            m_max_linear_correction = Some(r.read_f32()?);
-            m_max_angular_correction = Some(r.read_f32()?);
-            m_max_translation_speed = Some(r.read_f32()?);
-            m_max_rotation_speed = Some(r.read_f32()?);
-            m_baumgarte_scale = Some(r.read_f32()?);
-            m_baumgarte_time_of_impact_scale = Some(r.read_f32()?);
-            m_time_to_sleep = Some(r.read_f32()?);
-            m_linear_sleep_tolerance = Some(r.read_f32()?);
-            m_angular_sleep_tolerance = Some(r.read_f32()?);
-            m_default_contact_offset = Some(r.read_f32()?);
-            m_job_options = Some(PhysicsJobOptions2D::parse(r, ver)?);
-            r.align(4)?;
-            m_auto_simulation = Some(r.read_bool()?);
-            m_queries_hit_triggers = Some(r.read_bool()?);
-            m_queries_start_in_colliders = Some(r.read_bool()?);
-            m_callbacks_on_disable = Some(Physics2DSettingsMCallbacksOnDisableVariant::parse(r, ver)?);
-            m_reuse_collision_callbacks = Some(r.read_bool()?);
-            m_auto_sync_transforms = Some(r.read_bool()?);
-            r.align(4)?;
+            m_velocity_threshold = Some(rdr.read_f32()?);
+            m_max_linear_correction = Some(rdr.read_f32()?);
+            m_max_angular_correction = Some(rdr.read_f32()?);
+            m_max_translation_speed = Some(rdr.read_f32()?);
+            m_max_rotation_speed = Some(rdr.read_f32()?);
+            m_baumgarte_scale = Some(rdr.read_f32()?);
+            m_baumgarte_time_of_impact_scale = Some(rdr.read_f32()?);
+            m_time_to_sleep = Some(rdr.read_f32()?);
+            m_linear_sleep_tolerance = Some(rdr.read_f32()?);
+            m_angular_sleep_tolerance = Some(rdr.read_f32()?);
+            m_default_contact_offset = Some(rdr.read_f32()?);
+            m_job_options = Some(PhysicsJobOptions2D::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_auto_simulation = Some(rdr.read_bool()?);
+            m_queries_hit_triggers = Some(rdr.read_bool()?);
+            m_queries_start_in_colliders = Some(rdr.read_bool()?);
+            m_callbacks_on_disable = Some(Physics2DSettingsMCallbacksOnDisableVariant::parse(rdr, ver)?);
+            m_reuse_collision_callbacks = Some(rdr.read_bool()?);
+            m_auto_sync_transforms = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            m_velocity_threshold = Some(r.read_f32()?);
-            m_max_linear_correction = Some(r.read_f32()?);
-            m_max_angular_correction = Some(r.read_f32()?);
-            m_max_translation_speed = Some(r.read_f32()?);
-            m_max_rotation_speed = Some(r.read_f32()?);
-            m_baumgarte_scale = Some(r.read_f32()?);
-            m_baumgarte_time_of_impact_scale = Some(r.read_f32()?);
-            m_time_to_sleep = Some(r.read_f32()?);
-            m_linear_sleep_tolerance = Some(r.read_f32()?);
-            m_angular_sleep_tolerance = Some(r.read_f32()?);
-            m_default_contact_offset = Some(r.read_f32()?);
-            m_job_options = Some(PhysicsJobOptions2D::parse(r, ver)?);
-            r.align(4)?;
-            m_auto_simulation = Some(r.read_bool()?);
-            m_queries_hit_triggers = Some(r.read_bool()?);
-            m_queries_start_in_colliders = Some(r.read_bool()?);
-            m_callbacks_on_disable = Some(Physics2DSettingsMCallbacksOnDisableVariant::parse(r, ver)?);
-            m_auto_sync_transforms = Some(r.read_bool()?);
-            r.align(4)?;
+            m_velocity_threshold = Some(rdr.read_f32()?);
+            m_max_linear_correction = Some(rdr.read_f32()?);
+            m_max_angular_correction = Some(rdr.read_f32()?);
+            m_max_translation_speed = Some(rdr.read_f32()?);
+            m_max_rotation_speed = Some(rdr.read_f32()?);
+            m_baumgarte_scale = Some(rdr.read_f32()?);
+            m_baumgarte_time_of_impact_scale = Some(rdr.read_f32()?);
+            m_time_to_sleep = Some(rdr.read_f32()?);
+            m_linear_sleep_tolerance = Some(rdr.read_f32()?);
+            m_angular_sleep_tolerance = Some(rdr.read_f32()?);
+            m_default_contact_offset = Some(rdr.read_f32()?);
+            m_job_options = Some(PhysicsJobOptions2D::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_auto_simulation = Some(rdr.read_bool()?);
+            m_queries_hit_triggers = Some(rdr.read_bool()?);
+            m_queries_start_in_colliders = Some(rdr.read_bool()?);
+            m_callbacks_on_disable = Some(Physics2DSettingsMCallbacksOnDisableVariant::parse(rdr, ver)?);
+            m_auto_sync_transforms = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            m_velocity_threshold = Some(r.read_f32()?);
-            m_max_linear_correction = Some(r.read_f32()?);
-            m_max_angular_correction = Some(r.read_f32()?);
-            m_max_translation_speed = Some(r.read_f32()?);
-            m_max_rotation_speed = Some(r.read_f32()?);
-            m_baumgarte_scale = Some(r.read_f32()?);
-            m_baumgarte_time_of_impact_scale = Some(r.read_f32()?);
-            m_time_to_sleep = Some(r.read_f32()?);
-            m_linear_sleep_tolerance = Some(r.read_f32()?);
-            m_angular_sleep_tolerance = Some(r.read_f32()?);
-            m_default_contact_offset = Some(r.read_f32()?);
-            m_auto_simulation = Some(r.read_bool()?);
-            m_queries_hit_triggers = Some(r.read_bool()?);
-            m_queries_start_in_colliders = Some(r.read_bool()?);
-            m_change_stops_callbacks = Some(Physics2DSettingsMChangeStopsCallbacksVariant::parse(r, ver)?);
-            m_callbacks_on_disable = Some(Physics2DSettingsMCallbacksOnDisableVariant::parse(r, ver)?);
-            m_auto_sync_transforms = Some(r.read_bool()?);
-            r.align(4)?;
+            m_velocity_threshold = Some(rdr.read_f32()?);
+            m_max_linear_correction = Some(rdr.read_f32()?);
+            m_max_angular_correction = Some(rdr.read_f32()?);
+            m_max_translation_speed = Some(rdr.read_f32()?);
+            m_max_rotation_speed = Some(rdr.read_f32()?);
+            m_baumgarte_scale = Some(rdr.read_f32()?);
+            m_baumgarte_time_of_impact_scale = Some(rdr.read_f32()?);
+            m_time_to_sleep = Some(rdr.read_f32()?);
+            m_linear_sleep_tolerance = Some(rdr.read_f32()?);
+            m_angular_sleep_tolerance = Some(rdr.read_f32()?);
+            m_default_contact_offset = Some(rdr.read_f32()?);
+            m_auto_simulation = Some(rdr.read_bool()?);
+            m_queries_hit_triggers = Some(rdr.read_bool()?);
+            m_queries_start_in_colliders = Some(rdr.read_bool()?);
+            m_change_stops_callbacks = Some(Physics2DSettingsMChangeStopsCallbacksVariant::parse(rdr, ver)?);
+            m_callbacks_on_disable = Some(Physics2DSettingsMCallbacksOnDisableVariant::parse(rdr, ver)?);
+            m_auto_sync_transforms = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            m_velocity_threshold = Some(r.read_f32()?);
-            m_max_linear_correction = Some(r.read_f32()?);
-            m_max_angular_correction = Some(r.read_f32()?);
-            m_max_translation_speed = Some(r.read_f32()?);
-            m_max_rotation_speed = Some(r.read_f32()?);
-            m_baumgarte_scale = Some(r.read_f32()?);
-            m_baumgarte_time_of_impact_scale = Some(r.read_f32()?);
-            m_time_to_sleep = Some(r.read_f32()?);
-            m_linear_sleep_tolerance = Some(r.read_f32()?);
-            m_angular_sleep_tolerance = Some(r.read_f32()?);
-            m_default_contact_offset = Some(r.read_f32()?);
-            m_auto_simulation = Some(r.read_bool()?);
-            m_queries_hit_triggers = Some(r.read_bool()?);
-            m_queries_start_in_colliders = Some(r.read_bool()?);
-            m_change_stops_callbacks = Some(Physics2DSettingsMChangeStopsCallbacksVariant::parse(r, ver)?);
-            m_callbacks_on_disable = Some(Physics2DSettingsMCallbacksOnDisableVariant::parse(r, ver)?);
+            m_velocity_threshold = Some(rdr.read_f32()?);
+            m_max_linear_correction = Some(rdr.read_f32()?);
+            m_max_angular_correction = Some(rdr.read_f32()?);
+            m_max_translation_speed = Some(rdr.read_f32()?);
+            m_max_rotation_speed = Some(rdr.read_f32()?);
+            m_baumgarte_scale = Some(rdr.read_f32()?);
+            m_baumgarte_time_of_impact_scale = Some(rdr.read_f32()?);
+            m_time_to_sleep = Some(rdr.read_f32()?);
+            m_linear_sleep_tolerance = Some(rdr.read_f32()?);
+            m_angular_sleep_tolerance = Some(rdr.read_f32()?);
+            m_default_contact_offset = Some(rdr.read_f32()?);
+            m_auto_simulation = Some(rdr.read_bool()?);
+            m_queries_hit_triggers = Some(rdr.read_bool()?);
+            m_queries_start_in_colliders = Some(rdr.read_bool()?);
+            m_change_stops_callbacks = Some(Physics2DSettingsMChangeStopsCallbacksVariant::parse(rdr, ver)?);
+            m_callbacks_on_disable = Some(Physics2DSettingsMCallbacksOnDisableVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 6, 1) {
-            m_velocity_threshold = Some(r.read_f32()?);
-            m_max_linear_correction = Some(r.read_f32()?);
-            m_max_angular_correction = Some(r.read_f32()?);
-            m_max_translation_speed = Some(r.read_f32()?);
-            m_max_rotation_speed = Some(r.read_f32()?);
-            m_baumgarte_scale = Some(r.read_f32()?);
-            m_baumgarte_time_of_impact_scale = Some(r.read_f32()?);
-            m_time_to_sleep = Some(r.read_f32()?);
-            m_linear_sleep_tolerance = Some(r.read_f32()?);
-            m_angular_sleep_tolerance = Some(r.read_f32()?);
-            m_default_contact_offset = Some(r.read_f32()?);
-            m_queries_hit_triggers = Some(r.read_bool()?);
-            m_queries_start_in_colliders = Some(r.read_bool()?);
-            m_change_stops_callbacks = Some(Physics2DSettingsMChangeStopsCallbacksVariant::parse(r, ver)?);
-            m_callbacks_on_disable = Some(Physics2DSettingsMCallbacksOnDisableVariant::parse(r, ver)?);
+            m_velocity_threshold = Some(rdr.read_f32()?);
+            m_max_linear_correction = Some(rdr.read_f32()?);
+            m_max_angular_correction = Some(rdr.read_f32()?);
+            m_max_translation_speed = Some(rdr.read_f32()?);
+            m_max_rotation_speed = Some(rdr.read_f32()?);
+            m_baumgarte_scale = Some(rdr.read_f32()?);
+            m_baumgarte_time_of_impact_scale = Some(rdr.read_f32()?);
+            m_time_to_sleep = Some(rdr.read_f32()?);
+            m_linear_sleep_tolerance = Some(rdr.read_f32()?);
+            m_angular_sleep_tolerance = Some(rdr.read_f32()?);
+            m_default_contact_offset = Some(rdr.read_f32()?);
+            m_queries_hit_triggers = Some(rdr.read_bool()?);
+            m_queries_start_in_colliders = Some(rdr.read_bool()?);
+            m_change_stops_callbacks = Some(Physics2DSettingsMChangeStopsCallbacksVariant::parse(rdr, ver)?);
+            m_callbacks_on_disable = Some(Physics2DSettingsMCallbacksOnDisableVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            m_velocity_threshold = Some(r.read_f32()?);
-            m_max_linear_correction = Some(r.read_f32()?);
-            m_max_angular_correction = Some(r.read_f32()?);
-            m_max_translation_speed = Some(r.read_f32()?);
-            m_max_rotation_speed = Some(r.read_f32()?);
-            m_baumgarte_scale = Some(r.read_f32()?);
-            m_baumgarte_time_of_impact_scale = Some(r.read_f32()?);
-            m_time_to_sleep = Some(r.read_f32()?);
-            m_linear_sleep_tolerance = Some(r.read_f32()?);
-            m_angular_sleep_tolerance = Some(r.read_f32()?);
-            m_default_contact_offset = Some(r.read_f32()?);
-            m_queries_hit_triggers = Some(r.read_bool()?);
-            m_queries_start_in_colliders = Some(r.read_bool()?);
-            m_change_stops_callbacks = Some(Physics2DSettingsMChangeStopsCallbacksVariant::parse(r, ver)?);
+            m_velocity_threshold = Some(rdr.read_f32()?);
+            m_max_linear_correction = Some(rdr.read_f32()?);
+            m_max_angular_correction = Some(rdr.read_f32()?);
+            m_max_translation_speed = Some(rdr.read_f32()?);
+            m_max_rotation_speed = Some(rdr.read_f32()?);
+            m_baumgarte_scale = Some(rdr.read_f32()?);
+            m_baumgarte_time_of_impact_scale = Some(rdr.read_f32()?);
+            m_time_to_sleep = Some(rdr.read_f32()?);
+            m_linear_sleep_tolerance = Some(rdr.read_f32()?);
+            m_angular_sleep_tolerance = Some(rdr.read_f32()?);
+            m_default_contact_offset = Some(rdr.read_f32()?);
+            m_queries_hit_triggers = Some(rdr.read_bool()?);
+            m_queries_start_in_colliders = Some(rdr.read_bool()?);
+            m_change_stops_callbacks = Some(Physics2DSettingsMChangeStopsCallbacksVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            m_velocity_threshold = Some(r.read_f32()?);
-            m_max_linear_correction = Some(r.read_f32()?);
-            m_max_angular_correction = Some(r.read_f32()?);
-            m_max_translation_speed = Some(r.read_f32()?);
-            m_max_rotation_speed = Some(r.read_f32()?);
-            m_min_penetration_for_penalty = Some(r.read_f32()?);
-            m_baumgarte_scale = Some(r.read_f32()?);
-            m_baumgarte_time_of_impact_scale = Some(r.read_f32()?);
-            m_time_to_sleep = Some(r.read_f32()?);
-            m_linear_sleep_tolerance = Some(r.read_f32()?);
-            m_angular_sleep_tolerance = Some(r.read_f32()?);
-            m_queries_hit_triggers = Some(r.read_bool()?);
-            m_queries_start_in_colliders = Some(r.read_bool()?);
-            m_change_stops_callbacks = Some(Physics2DSettingsMChangeStopsCallbacksVariant::parse(r, ver)?);
+            m_velocity_threshold = Some(rdr.read_f32()?);
+            m_max_linear_correction = Some(rdr.read_f32()?);
+            m_max_angular_correction = Some(rdr.read_f32()?);
+            m_max_translation_speed = Some(rdr.read_f32()?);
+            m_max_rotation_speed = Some(rdr.read_f32()?);
+            m_min_penetration_for_penalty = Some(rdr.read_f32()?);
+            m_baumgarte_scale = Some(rdr.read_f32()?);
+            m_baumgarte_time_of_impact_scale = Some(rdr.read_f32()?);
+            m_time_to_sleep = Some(rdr.read_f32()?);
+            m_linear_sleep_tolerance = Some(rdr.read_f32()?);
+            m_angular_sleep_tolerance = Some(rdr.read_f32()?);
+            m_queries_hit_triggers = Some(rdr.read_bool()?);
+            m_queries_start_in_colliders = Some(rdr.read_bool()?);
+            m_change_stops_callbacks = Some(Physics2DSettingsMChangeStopsCallbacksVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 6, 1) {
-            m_velocity_threshold = Some(r.read_f32()?);
-            m_max_linear_correction = Some(r.read_f32()?);
-            m_max_angular_correction = Some(r.read_f32()?);
-            m_max_translation_speed = Some(r.read_f32()?);
-            m_max_rotation_speed = Some(r.read_f32()?);
-            m_min_penetration_for_penalty = Some(r.read_f32()?);
-            m_baumgarte_scale = Some(r.read_f32()?);
-            m_baumgarte_time_of_impact_scale = Some(r.read_f32()?);
-            m_time_to_sleep = Some(r.read_f32()?);
-            m_linear_sleep_tolerance = Some(r.read_f32()?);
-            m_angular_sleep_tolerance = Some(r.read_f32()?);
-            m_raycasts_hit_triggers = Some(Physics2DSettingsMRaycastsHitTriggersVariant::parse(r, ver)?);
-            m_raycasts_start_in_colliders = Some(r.read_bool()?);
-            m_change_stops_callbacks = Some(Physics2DSettingsMChangeStopsCallbacksVariant::parse(r, ver)?);
+            m_velocity_threshold = Some(rdr.read_f32()?);
+            m_max_linear_correction = Some(rdr.read_f32()?);
+            m_max_angular_correction = Some(rdr.read_f32()?);
+            m_max_translation_speed = Some(rdr.read_f32()?);
+            m_max_rotation_speed = Some(rdr.read_f32()?);
+            m_min_penetration_for_penalty = Some(rdr.read_f32()?);
+            m_baumgarte_scale = Some(rdr.read_f32()?);
+            m_baumgarte_time_of_impact_scale = Some(rdr.read_f32()?);
+            m_time_to_sleep = Some(rdr.read_f32()?);
+            m_linear_sleep_tolerance = Some(rdr.read_f32()?);
+            m_angular_sleep_tolerance = Some(rdr.read_f32()?);
+            m_raycasts_hit_triggers = Some(Physics2DSettingsMRaycastsHitTriggersVariant::parse(rdr, ver)?);
+            m_raycasts_start_in_colliders = Some(rdr.read_bool()?);
+            m_change_stops_callbacks = Some(Physics2DSettingsMChangeStopsCallbacksVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 5, 3) {
-            m_velocity_threshold = Some(r.read_f32()?);
-            m_max_linear_correction = Some(r.read_f32()?);
-            m_max_angular_correction = Some(r.read_f32()?);
-            m_max_translation_speed = Some(r.read_f32()?);
-            m_max_rotation_speed = Some(r.read_f32()?);
-            m_baumgarte_scale = Some(r.read_f32()?);
-            m_baumgarte_time_of_impact_scale = Some(r.read_f32()?);
-            m_time_to_sleep = Some(r.read_f32()?);
-            m_linear_sleep_tolerance = Some(r.read_f32()?);
-            m_angular_sleep_tolerance = Some(r.read_f32()?);
-            m_raycasts_hit_triggers = Some(Physics2DSettingsMRaycastsHitTriggersVariant::parse(r, ver)?);
-            m_delete_stops_callbacks = Some(r.read_bool()?);
-            r.align(4)?;
+            m_velocity_threshold = Some(rdr.read_f32()?);
+            m_max_linear_correction = Some(rdr.read_f32()?);
+            m_max_angular_correction = Some(rdr.read_f32()?);
+            m_max_translation_speed = Some(rdr.read_f32()?);
+            m_max_rotation_speed = Some(rdr.read_f32()?);
+            m_baumgarte_scale = Some(rdr.read_f32()?);
+            m_baumgarte_time_of_impact_scale = Some(rdr.read_f32()?);
+            m_time_to_sleep = Some(rdr.read_f32()?);
+            m_linear_sleep_tolerance = Some(rdr.read_f32()?);
+            m_angular_sleep_tolerance = Some(rdr.read_f32()?);
+            m_raycasts_hit_triggers = Some(Physics2DSettingsMRaycastsHitTriggersVariant::parse(rdr, ver)?);
+            m_delete_stops_callbacks = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            m_velocity_threshold = Some(r.read_f32()?);
-            m_max_linear_correction = Some(r.read_f32()?);
-            m_max_angular_correction = Some(r.read_f32()?);
-            m_max_translation_speed = Some(r.read_f32()?);
-            m_max_rotation_speed = Some(r.read_f32()?);
-            m_baumgarte_scale = Some(r.read_f32()?);
-            m_baumgarte_time_of_impact_scale = Some(r.read_f32()?);
-            m_time_to_sleep = Some(r.read_f32()?);
-            m_linear_sleep_tolerance = Some(r.read_f32()?);
-            m_angular_sleep_tolerance = Some(r.read_f32()?);
-            m_raycasts_hit_triggers = Some(Physics2DSettingsMRaycastsHitTriggersVariant::parse(r, ver)?);
+            m_velocity_threshold = Some(rdr.read_f32()?);
+            m_max_linear_correction = Some(rdr.read_f32()?);
+            m_max_angular_correction = Some(rdr.read_f32()?);
+            m_max_translation_speed = Some(rdr.read_f32()?);
+            m_max_rotation_speed = Some(rdr.read_f32()?);
+            m_baumgarte_scale = Some(rdr.read_f32()?);
+            m_baumgarte_time_of_impact_scale = Some(rdr.read_f32()?);
+            m_time_to_sleep = Some(rdr.read_f32()?);
+            m_linear_sleep_tolerance = Some(rdr.read_f32()?);
+            m_angular_sleep_tolerance = Some(rdr.read_f32()?);
+            m_raycasts_hit_triggers = Some(Physics2DSettingsMRaycastsHitTriggersVariant::parse(rdr, ver)?);
         } else {
-            m_raycasts_hit_triggers = Some(Physics2DSettingsMRaycastsHitTriggersVariant::parse(r, ver)?);
+            m_raycasts_hit_triggers = Some(Physics2DSettingsMRaycastsHitTriggersVariant::parse(rdr, ver)?);
         }
-            m_layer_collision_matrix = Some(Physics2DSettingsMLayerCollisionMatrixVariant::parse(r, ver)?);
+            m_layer_collision_matrix = Some(Physics2DSettingsMLayerCollisionMatrixVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 3, 0) {
-            m_physics_low_level_settings = Some(crate::PPtr::parse(r, ver)?);
+            m_physics_low_level_settings = Some(crate::PPtr::parse(rdr, ver)?);
         } else {
         }
 

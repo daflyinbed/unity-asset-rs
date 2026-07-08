@@ -8,12 +8,12 @@ pub struct LodSelectionCurve {
 
 impl crate::Parse for LodSelectionCurve {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_lod_slope = r.read_f32()?;
-        let m_lod_bias = r.read_f32()?;
-        r.align(4)?;
+        let m_lod_slope = rdr.read_f32()?;
+        let m_lod_bias = rdr.read_f32()?;
+        rdr.align(4)?;
 
         Ok(LodSelectionCurve {
             m_lod_slope,

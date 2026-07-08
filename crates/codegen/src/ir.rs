@@ -124,6 +124,9 @@ pub enum RustType {
         name: String,
         variants: Vec<EnumVariant>,
     },
+    /// `Box<T>`：用于 VersionedEnum 变体里的 Subclass，打破递归类型循环
+    /// （如 Clip → OffsetPtr → OffsetPtrDataVariant → Clip）。
+    Box(Box<RustType>),
 }
 
 /// 版本枚举的一个变体：某版本区间对应的实际类型 + 对齐。
@@ -157,6 +160,7 @@ impl RustType {
             Self::Subclass(name) => name.clone(),
             Self::Option(t) => format!("Option<{}>", t.to_rust_src()),
             Self::VersionedEnum { name, .. } => name.clone(),
+            Self::Box(inner) => format!("Box<{}>", inner.to_rust_src()),
         }
     }
 }

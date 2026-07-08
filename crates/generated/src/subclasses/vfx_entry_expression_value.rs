@@ -3,17 +3,17 @@
 #[derive(Debug, Clone)]
 pub struct VfxEntryExpressionValue {
     pub m_expression_index: u32,
-    pub m_value: f32,
+    pub m_value: bool,
 }
 
 impl crate::Parse for VfxEntryExpressionValue {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_expression_index = r.read_u32()?;
-        let m_value = r.read_f32()?;
-        r.align(4)?;
+        let m_expression_index = rdr.read_u32()?;
+        let m_value = rdr.read_bool()?;
+        rdr.align(4)?;
 
         Ok(VfxEntryExpressionValue {
             m_expression_index,

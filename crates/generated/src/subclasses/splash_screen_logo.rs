@@ -10,12 +10,12 @@ pub struct SplashScreenLogo {
 
 impl crate::Parse for SplashScreenLogo {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let logo = crate::PPtr::parse(r, ver)?;
-        let duration = r.read_f32()?;
-        r.align(4)?;
+        let logo = crate::PPtr::parse(rdr, ver)?;
+        let duration = rdr.read_f32()?;
+        rdr.align(4)?;
 
         Ok(SplashScreenLogo {
             logo,

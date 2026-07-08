@@ -9,12 +9,12 @@ pub struct EnlightenTerrainChunksInformation {
 
 impl crate::Parse for EnlightenTerrainChunksInformation {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let first_system_id = r.read_i32()?;
-        let num_chunks_in_x = r.read_i32()?;
-        let num_chunks_in_y = r.read_i32()?;
+        let first_system_id = rdr.read_i32()?;
+        let num_chunks_in_x = rdr.read_i32()?;
+        let num_chunks_in_y = rdr.read_i32()?;
 
         Ok(EnlightenTerrainChunksInformation {
             first_system_id,

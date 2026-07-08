@@ -2,20 +2,31 @@
 
 #[derive(Debug, Clone)]
 pub struct SkeletonMaskElement {
-    pub m_index: u32,
+    pub m_index: Option<u32>,
+    pub m_path_hash: Option<u32>,
     pub m_weight: f32,
 }
 
 impl crate::Parse for SkeletonMaskElement {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_index = r.read_u32()?;
-        let m_weight = r.read_f32()?;
+        let m_index = if *ver >= crate::UnityVersion::new(4, 0, 0) {
+            Some(rdr.read_u32()?)
+        } else {
+            None
+        };
+        let m_path_hash = if *ver >= crate::UnityVersion::new(4, 3, 0) {
+            Some(rdr.read_u32()?)
+        } else {
+            None
+        };
+        let m_weight = rdr.read_f32()?;
 
         Ok(SkeletonMaskElement {
             m_index,
+            m_path_hash,
             m_weight,
         })
     }

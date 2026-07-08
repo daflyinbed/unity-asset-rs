@@ -12,15 +12,15 @@ pub enum PackedAssetsMContentsVariant {
 
 impl crate::Parse for PackedAssetsMContentsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 4, 2) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { BuildReportPackedAssetInfo::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { BuildReportPackedAssetInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V5_4_2(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { BuildReportPackedAssetInfo::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { BuildReportPackedAssetInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -35,18 +35,18 @@ pub struct PackedAssets {
 
 impl crate::Parse for PackedAssets {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_file = if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            Some(r.read_u32()?)
+            Some(rdr.read_u32()?)
         } else {
             None
         };
-        let m_short_path = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_overhead = r.read_u64()?;
-        let m_contents = PackedAssetsMContentsVariant::parse(r, ver)?;
+        let m_short_path = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_overhead = rdr.read_u64()?;
+        let m_contents = PackedAssetsMContentsVariant::parse(rdr, ver)?;
 
         Ok(PackedAssets {
             m_file,

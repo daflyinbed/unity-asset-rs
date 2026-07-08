@@ -10,14 +10,14 @@ pub struct MeshBlendShapeChannel {
 
 impl crate::Parse for MeshBlendShapeChannel {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let name = r.read_aligned_string()?;
-        r.align(4)?;
-        let name_hash = r.read_u32()?;
-        let frame_index = r.read_i32()?;
-        let frame_count = r.read_i32()?;
+        let name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let name_hash = rdr.read_u32()?;
+        let frame_index = rdr.read_i32()?;
+        let frame_count = rdr.read_i32()?;
 
         Ok(MeshBlendShapeChannel {
             name,

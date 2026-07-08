@@ -41,42 +41,42 @@ pub struct ScriptableCamera {
 
 impl crate::Parse for ScriptableCamera {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_enabled = r.read_u8()?;
-        r.align(4)?;
-        let m_clear_flags = r.read_u32()?;
-        let m_back_ground_color = ColorRgba::parse(r, ver)?;
-        let m_projection_matrix_mode = r.read_i32()?;
-        let m_gate_fit_mode = r.read_i32()?;
-        r.align(4)?;
-        let m_sensor_size = Vector2f::parse(r, ver)?;
-        let m_lens_shift = Vector2f::parse(r, ver)?;
-        let m_focal_length = r.read_f32()?;
-        let m_normalized_view_port_rect = Rectf::parse(r, ver)?;
-        let near_clip_plane = r.read_f32()?;
-        let far_clip_plane = r.read_f32()?;
-        let field_of_view = r.read_f32()?;
-        let orthographic = r.read_bool()?;
-        r.align(4)?;
-        let orthographic_size = r.read_f32()?;
-        let m_depth = r.read_f32()?;
-        let m_culling_mask = BitField::parse(r, ver)?;
-        let m_rendering_path = r.read_i32()?;
-        let m_target_texture = crate::PPtr::parse(r, ver)?;
-        let m_target_display = r.read_i32()?;
-        let m_target_eye = r.read_i32()?;
-        let m_hdr = r.read_bool()?;
-        let m_allow_msaa = r.read_bool()?;
-        let m_allow_dynamic_resolution = r.read_bool()?;
-        let m_force_into_rt = r.read_bool()?;
-        let m_occlusion_culling = r.read_bool()?;
-        r.align(4)?;
-        let m_stereo_convergence = r.read_f32()?;
-        let m_stereo_separation = r.read_f32()?;
-        let m_script = crate::PPtr::parse(r, ver)?;
+        let m_game_object = crate::PPtr::parse(rdr, ver)?;
+        let m_enabled = rdr.read_u8()?;
+        rdr.align(4)?;
+        let m_clear_flags = rdr.read_u32()?;
+        let m_back_ground_color = ColorRgba::parse(rdr, ver)?;
+        let m_projection_matrix_mode = rdr.read_i32()?;
+        let m_gate_fit_mode = rdr.read_i32()?;
+        rdr.align(4)?;
+        let m_sensor_size = Vector2f::parse(rdr, ver)?;
+        let m_lens_shift = Vector2f::parse(rdr, ver)?;
+        let m_focal_length = rdr.read_f32()?;
+        let m_normalized_view_port_rect = Rectf::parse(rdr, ver)?;
+        let near_clip_plane = rdr.read_f32()?;
+        let far_clip_plane = rdr.read_f32()?;
+        let field_of_view = rdr.read_f32()?;
+        let orthographic = rdr.read_bool()?;
+        rdr.align(4)?;
+        let orthographic_size = rdr.read_f32()?;
+        let m_depth = rdr.read_f32()?;
+        let m_culling_mask = BitField::parse(rdr, ver)?;
+        let m_rendering_path = rdr.read_i32()?;
+        let m_target_texture = crate::PPtr::parse(rdr, ver)?;
+        let m_target_display = rdr.read_i32()?;
+        let m_target_eye = rdr.read_i32()?;
+        let m_hdr = rdr.read_bool()?;
+        let m_allow_msaa = rdr.read_bool()?;
+        let m_allow_dynamic_resolution = rdr.read_bool()?;
+        let m_force_into_rt = rdr.read_bool()?;
+        let m_occlusion_culling = rdr.read_bool()?;
+        rdr.align(4)?;
+        let m_stereo_convergence = rdr.read_f32()?;
+        let m_stereo_separation = rdr.read_f32()?;
+        let m_script = crate::PPtr::parse(rdr, ver)?;
 
         Ok(ScriptableCamera {
             m_game_object,

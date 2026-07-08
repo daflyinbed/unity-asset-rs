@@ -14,18 +14,18 @@ pub enum PlatformEffector2DMUseOneWayVariant {
 
 impl crate::Parse for PlatformEffector2DMUseOneWayVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 2, 4) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V5_2_4(v))
         } else if *ver >= crate::UnityVersion::new(5, 1, 2) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V5_1_2(v))
         } else {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::Default(v))
         }
     }
@@ -51,7 +51,7 @@ pub struct PlatformEffector2D {
 
 impl crate::Parse for PlatformEffector2D {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_game_object = None;
@@ -69,59 +69,59 @@ impl crate::Parse for PlatformEffector2D {
         let mut m_use_one_way_grouping = None;
         let mut m_side_angle_variance = None;
         let mut m_side_arc = None;
-            m_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_enabled = Some(r.read_u8()?);
-            r.align(4)?;
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_enabled = Some(rdr.read_u8()?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 0, 2) {
-            m_use_collider_mask = Some(r.read_bool()?);
-            r.align(4)?;
+            m_use_collider_mask = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else {
         }
-            m_collider_mask = Some(BitField::parse(r, ver)?);
+            m_collider_mask = Some(BitField::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            m_rotational_offset = Some(r.read_f32()?);
-            m_use_one_way = Some(PlatformEffector2DMUseOneWayVariant::parse(r, ver)?);
-            m_use_one_way_grouping = Some(r.read_bool()?);
-            r.align(4)?;
-            m_surface_arc = Some(r.read_f32()?);
-            m_use_side_friction = Some(r.read_bool()?);
-            m_use_side_bounce = Some(r.read_bool()?);
-            r.align(4)?;
-            m_side_arc = Some(r.read_f32()?);
+            m_rotational_offset = Some(rdr.read_f32()?);
+            m_use_one_way = Some(PlatformEffector2DMUseOneWayVariant::parse(rdr, ver)?);
+            m_use_one_way_grouping = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_surface_arc = Some(rdr.read_f32()?);
+            m_use_side_friction = Some(rdr.read_bool()?);
+            m_use_side_bounce = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_side_arc = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(5, 2, 4) {
-            m_use_one_way = Some(PlatformEffector2DMUseOneWayVariant::parse(r, ver)?);
-            m_use_one_way_grouping = Some(r.read_bool()?);
-            r.align(4)?;
-            m_surface_arc = Some(r.read_f32()?);
-            m_use_side_friction = Some(r.read_bool()?);
-            m_use_side_bounce = Some(r.read_bool()?);
-            r.align(4)?;
-            m_side_arc = Some(r.read_f32()?);
+            m_use_one_way = Some(PlatformEffector2DMUseOneWayVariant::parse(rdr, ver)?);
+            m_use_one_way_grouping = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_surface_arc = Some(rdr.read_f32()?);
+            m_use_side_friction = Some(rdr.read_bool()?);
+            m_use_side_bounce = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_side_arc = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(5, 2, 2) {
-            m_use_one_way = Some(PlatformEffector2DMUseOneWayVariant::parse(r, ver)?);
-            m_surface_arc = Some(r.read_f32()?);
-            m_use_side_friction = Some(r.read_bool()?);
-            m_use_side_bounce = Some(r.read_bool()?);
-            r.align(4)?;
-            m_side_arc = Some(r.read_f32()?);
+            m_use_one_way = Some(PlatformEffector2DMUseOneWayVariant::parse(rdr, ver)?);
+            m_surface_arc = Some(rdr.read_f32()?);
+            m_use_side_friction = Some(rdr.read_bool()?);
+            m_use_side_bounce = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_side_arc = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(5, 1, 2) {
-            m_use_one_way = Some(PlatformEffector2DMUseOneWayVariant::parse(r, ver)?);
-            m_surface_arc = Some(r.read_f32()?);
-            m_use_side_friction = Some(r.read_bool()?);
-            m_use_side_bounce = Some(r.read_bool()?);
-            r.align(4)?;
+            m_use_one_way = Some(PlatformEffector2DMUseOneWayVariant::parse(rdr, ver)?);
+            m_surface_arc = Some(rdr.read_f32()?);
+            m_use_side_friction = Some(rdr.read_bool()?);
+            m_use_side_bounce = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 0, 1) {
-            m_use_one_way = Some(PlatformEffector2DMUseOneWayVariant::parse(r, ver)?);
-            m_use_side_friction = Some(r.read_bool()?);
-            m_use_side_bounce = Some(r.read_bool()?);
-            r.align(4)?;
-            m_side_angle_variance = Some(r.read_f32()?);
+            m_use_one_way = Some(PlatformEffector2DMUseOneWayVariant::parse(rdr, ver)?);
+            m_use_side_friction = Some(rdr.read_bool()?);
+            m_use_side_bounce = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_side_angle_variance = Some(rdr.read_f32()?);
         } else {
-            m_one_way = Some(r.read_bool()?);
-            m_side_friction = Some(r.read_bool()?);
-            m_side_bounce = Some(r.read_bool()?);
-            r.align(4)?;
-            m_side_angle_variance = Some(r.read_f32()?);
+            m_one_way = Some(rdr.read_bool()?);
+            m_side_friction = Some(rdr.read_bool()?);
+            m_side_bounce = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_side_angle_variance = Some(rdr.read_f32()?);
         }
 
         Ok(PlatformEffector2D {

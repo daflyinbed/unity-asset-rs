@@ -8,11 +8,11 @@ pub struct LightmapBakeMode {
 
 impl crate::Parse for LightmapBakeMode {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let lightmap_bake_type = r.read_i32()?;
-        let mixed_lighting_mode = r.read_i32()?;
+        let lightmap_bake_type = rdr.read_i32()?;
+        let mixed_lighting_mode = rdr.read_i32()?;
 
         Ok(LightmapBakeMode {
             lightmap_bake_type,

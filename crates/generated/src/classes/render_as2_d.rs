@@ -42,47 +42,47 @@ pub struct RenderAs2D {
 
 impl crate::Parse for RenderAs2D {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_enabled = r.read_bool()?;
-        let m_cast_shadows = r.read_u8()?;
-        let m_receive_shadows = r.read_u8()?;
-        let m_dynamic_occludee = r.read_u8()?;
-        let m_static_shadow_caster = r.read_u8()?;
-        let m_motion_vectors = r.read_u8()?;
-        let m_light_probe_usage = r.read_u8()?;
-        let m_reflection_probe_usage = r.read_u8()?;
-        let m_ray_tracing_mode = r.read_u8()?;
-        let m_ray_trace_procedural = r.read_u8()?;
-        let m_ray_tracing_accel_struct_build_flags_override = r.read_u8()?;
-        let m_ray_tracing_accel_struct_build_flags = r.read_u8()?;
-        let m_small_mesh_culling = r.read_u8()?;
-        r.align(4)?;
-        let m_force_mesh_lod = r.read_i16()?;
-        r.align(4)?;
-        let m_mesh_lod_selection_bias = r.read_f32()?;
-        let m_rendering_layer_mask = r.read_u32()?;
-        let m_renderer_priority = r.read_i32()?;
-        let m_lightmap_index = r.read_u16()?;
-        let m_lightmap_index_dynamic = r.read_u16()?;
-        let m_lightmap_tiling_offset = Vector4f::parse(r, ver)?;
-        let m_lightmap_tiling_offset_dynamic = Vector4f::parse(r, ver)?;
-        let m_materials = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_static_batch_info = StaticBatchInfo::parse(r, ver)?;
-        let m_static_batch_root = crate::PPtr::parse(r, ver)?;
-        let m_probe_anchor = crate::PPtr::parse(r, ver)?;
-        let m_light_probe_volume_override = crate::PPtr::parse(r, ver)?;
-        r.align(4)?;
-        let m_sorting_layer_id = r.read_i32()?;
-        let m_sorting_layer = r.read_i16()?;
-        let m_sorting_order = r.read_i16()?;
-        r.align(4)?;
-        let m_mask_interaction = r.read_i32()?;
-        r.align(4)?;
-        let m_owning_sorting_group = crate::PPtr::parse(r, ver)?;
+        let m_game_object = crate::PPtr::parse(rdr, ver)?;
+        let m_enabled = rdr.read_bool()?;
+        let m_cast_shadows = rdr.read_u8()?;
+        let m_receive_shadows = rdr.read_u8()?;
+        let m_dynamic_occludee = rdr.read_u8()?;
+        let m_static_shadow_caster = rdr.read_u8()?;
+        let m_motion_vectors = rdr.read_u8()?;
+        let m_light_probe_usage = rdr.read_u8()?;
+        let m_reflection_probe_usage = rdr.read_u8()?;
+        let m_ray_tracing_mode = rdr.read_u8()?;
+        let m_ray_trace_procedural = rdr.read_u8()?;
+        let m_ray_tracing_accel_struct_build_flags_override = rdr.read_u8()?;
+        let m_ray_tracing_accel_struct_build_flags = rdr.read_u8()?;
+        let m_small_mesh_culling = rdr.read_u8()?;
+        rdr.align(4)?;
+        let m_force_mesh_lod = rdr.read_i16()?;
+        rdr.align(4)?;
+        let m_mesh_lod_selection_bias = rdr.read_f32()?;
+        let m_rendering_layer_mask = rdr.read_u32()?;
+        let m_renderer_priority = rdr.read_i32()?;
+        let m_lightmap_index = rdr.read_u16()?;
+        let m_lightmap_index_dynamic = rdr.read_u16()?;
+        let m_lightmap_tiling_offset = Vector4f::parse(rdr, ver)?;
+        let m_lightmap_tiling_offset_dynamic = Vector4f::parse(rdr, ver)?;
+        let m_materials = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let m_static_batch_info = StaticBatchInfo::parse(rdr, ver)?;
+        let m_static_batch_root = crate::PPtr::parse(rdr, ver)?;
+        let m_probe_anchor = crate::PPtr::parse(rdr, ver)?;
+        let m_light_probe_volume_override = crate::PPtr::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let m_sorting_layer_id = rdr.read_i32()?;
+        let m_sorting_layer = rdr.read_i16()?;
+        let m_sorting_order = rdr.read_i16()?;
+        rdr.align(4)?;
+        let m_mask_interaction = rdr.read_i32()?;
+        rdr.align(4)?;
+        let m_owning_sorting_group = crate::PPtr::parse(rdr, ver)?;
 
         Ok(RenderAs2D {
             m_game_object,

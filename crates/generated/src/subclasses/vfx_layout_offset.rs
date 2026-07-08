@@ -9,12 +9,12 @@ pub struct VfxLayoutOffset {
 
 impl crate::Parse for VfxLayoutOffset {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let bucket = r.read_u32()?;
-        let structure = r.read_u32()?;
-        let element = r.read_u32()?;
+        let bucket = rdr.read_u32()?;
+        let structure = rdr.read_u32()?;
+        let element = rdr.read_u32()?;
 
         Ok(VfxLayoutOffset {
             bucket,

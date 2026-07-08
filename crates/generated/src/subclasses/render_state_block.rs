@@ -17,17 +17,17 @@ pub struct RenderStateBlock {
 
 impl crate::Parse for RenderStateBlock {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let blend_state = GfxBlendState::parse(r, ver)?;
-        r.align(4)?;
-        let raster_state = GfxRasterState::parse(r, ver)?;
-        let depth_state = GfxDepthState::parse(r, ver)?;
-        r.align(4)?;
-        let stencil_state = GfxStencilState::parse(r, ver)?;
-        let stencil_ref = r.read_i32()?;
-        let mask = r.read_i32()?;
+        let blend_state = GfxBlendState::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let raster_state = GfxRasterState::parse(rdr, ver)?;
+        let depth_state = GfxDepthState::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let stencil_state = GfxStencilState::parse(rdr, ver)?;
+        let stencil_ref = rdr.read_i32()?;
+        let mask = rdr.read_i32()?;
 
         Ok(RenderStateBlock {
             blend_state,

@@ -9,21 +9,27 @@ pub struct VfxTemplate {
     pub description: String,
     pub icon: PPtr,
     pub thumbnail: PPtr,
+    pub order: Option<i32>,
 }
 
 impl crate::Parse for VfxTemplate {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let name = r.read_aligned_string()?;
-        r.align(4)?;
-        let category = r.read_aligned_string()?;
-        r.align(4)?;
-        let description = r.read_aligned_string()?;
-        r.align(4)?;
-        let icon = crate::PPtr::parse(r, ver)?;
-        let thumbnail = crate::PPtr::parse(r, ver)?;
+        let name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let category = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let description = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let icon = crate::PPtr::parse(rdr, ver)?;
+        let thumbnail = crate::PPtr::parse(rdr, ver)?;
+        let order = if *ver >= crate::UnityVersion::new(6000, 5, 0) {
+            Some(rdr.read_i32()?)
+        } else {
+            None
+        };
 
         Ok(VfxTemplate {
             name,
@@ -31,6 +37,7 @@ impl crate::Parse for VfxTemplate {
             description,
             icon,
             thumbnail,
+            order,
         })
     }
 }

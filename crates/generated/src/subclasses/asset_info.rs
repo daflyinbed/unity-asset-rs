@@ -11,12 +11,12 @@ pub struct AssetInfo {
 
 impl crate::Parse for AssetInfo {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let preload_index = r.read_i32()?;
-        let preload_size = r.read_i32()?;
-        let asset = crate::PPtr::parse(r, ver)?;
+        let preload_index = rdr.read_i32()?;
+        let preload_size = rdr.read_i32()?;
+        let asset = crate::PPtr::parse(rdr, ver)?;
 
         Ok(AssetInfo {
             preload_index,

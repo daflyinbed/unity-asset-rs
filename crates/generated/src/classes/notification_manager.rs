@@ -6,7 +6,7 @@ pub struct NotificationManager {
 
 impl crate::Parse for NotificationManager {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
 

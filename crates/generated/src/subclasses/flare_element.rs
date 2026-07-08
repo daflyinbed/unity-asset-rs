@@ -16,17 +16,17 @@ pub struct FlareElement {
 
 impl crate::Parse for FlareElement {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_image_index = r.read_u32()?;
-        let m_position = r.read_f32()?;
-        let m_size = r.read_f32()?;
-        let m_color = ColorRgba::parse(r, ver)?;
-        let m_use_light_color = r.read_bool()?;
-        let m_rotate = r.read_bool()?;
-        let m_zoom = r.read_bool()?;
-        let m_fade = r.read_bool()?;
+        let m_image_index = rdr.read_u32()?;
+        let m_position = rdr.read_f32()?;
+        let m_size = rdr.read_f32()?;
+        let m_color = ColorRgba::parse(rdr, ver)?;
+        let m_use_light_color = rdr.read_bool()?;
+        let m_rotate = rdr.read_bool()?;
+        let m_zoom = rdr.read_bool()?;
+        let m_fade = rdr.read_bool()?;
 
         Ok(FlareElement {
             m_image_index,

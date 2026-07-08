@@ -7,11 +7,11 @@ pub struct MdFour {
 
 impl crate::Parse for MdFour {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let md4_hash = ( { let n = r.read_i32()? as usize; r.read_bytes(n) } )?;
-        r.align(4)?;
+        let md4_hash = ( { let n = rdr.read_i32()? as usize; rdr.read_bytes(n) } )?;
+        rdr.align(4)?;
 
         Ok(MdFour {
             md4_hash,

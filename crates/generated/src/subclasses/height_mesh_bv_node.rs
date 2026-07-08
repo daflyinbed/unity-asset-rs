@@ -12,13 +12,13 @@ pub struct HeightMeshBvNode {
 
 impl crate::Parse for HeightMeshBvNode {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let min = Vector3f::parse(r, ver)?;
-        let max = Vector3f::parse(r, ver)?;
-        let i = r.read_i32()?;
-        let n = r.read_i32()?;
+        let min = Vector3f::parse(rdr, ver)?;
+        let max = Vector3f::parse(rdr, ver)?;
+        let i = rdr.read_i32()?;
+        let n = rdr.read_i32()?;
 
         Ok(HeightMeshBvNode {
             min,

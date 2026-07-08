@@ -7,21 +7,21 @@ use crate::subclasses::animation_curve::AnimationCurve;
 /// 版本枚举：AudioLowPassFilterLowpassLevelCustomCurveVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AudioLowPassFilterLowpassLevelCustomCurveVariant {
-    Default(AnimationCurve),
-    V2017_1(AnimationCurve),
+    Default(Box<AnimationCurve>),
+    V2017_1(Box<AnimationCurve>),
 }
 
 impl crate::Parse for AudioLowPassFilterLowpassLevelCustomCurveVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = AnimationCurve::parse(r, ver)?;
-            r.align(4)?;
+            let v = ( { Ok(Box::new(AnimationCurve::parse(rdr, ver)?)) } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = AnimationCurve::parse(r, ver)?;
+            let v = ( { Ok(Box::new(AnimationCurve::parse(rdr, ver)?)) } )?;
             Ok(Self::Default(v))
         }
     }
@@ -37,19 +37,19 @@ pub struct AudioLowPassFilter {
 
 impl crate::Parse for AudioLowPassFilter {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(r, ver)?;
-        let m_enabled = r.read_u8()?;
-        r.align(4)?;
+        let m_game_object = crate::PPtr::parse(rdr, ver)?;
+        let m_enabled = rdr.read_u8()?;
+        rdr.align(4)?;
         let m_cutoff_frequency = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(r.read_f32()?)
+            Some(rdr.read_f32()?)
         } else {
             None
         };
-        let m_lowpass_resonance_q = r.read_f32()?;
-        let lowpass_level_custom_curve = AudioLowPassFilterLowpassLevelCustomCurveVariant::parse(r, ver)?;
+        let m_lowpass_resonance_q = rdr.read_f32()?;
+        let lowpass_level_custom_curve = AudioLowPassFilterLowpassLevelCustomCurveVariant::parse(rdr, ver)?;
 
         Ok(AudioLowPassFilter {
             m_game_object,

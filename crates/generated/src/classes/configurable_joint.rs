@@ -17,15 +17,15 @@ pub enum ConfigurableJointMConfiguredInWorldSpaceVariant {
 
 impl crate::Parse for ConfigurableJointMConfiguredInWorldSpaceVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V3_5(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -40,15 +40,15 @@ pub enum ConfigurableJointMEnablePreprocessingVariant {
 
 impl crate::Parse for ConfigurableJointMEnablePreprocessingVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::Default(v))
         }
     }
@@ -103,7 +103,7 @@ pub struct ConfigurableJoint {
 
 impl crate::Parse for ConfigurableJoint {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_game_object = None;
@@ -150,76 +150,76 @@ impl crate::Parse for ConfigurableJoint {
         let mut m_enable_preprocessing = None;
         let mut m_mass_scale = None;
         let mut m_connected_mass_scale = None;
-            m_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_connected_body = Some(crate::PPtr::parse(r, ver)?);
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_connected_body = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            m_connected_articulation_body = Some(crate::PPtr::parse(r, ver)?);
+            m_connected_articulation_body = Some(crate::PPtr::parse(rdr, ver)?);
         } else {
         }
-            m_anchor = Some(Vector3f::parse(r, ver)?);
-            m_axis = Some(Vector3f::parse(r, ver)?);
+            m_anchor = Some(Vector3f::parse(rdr, ver)?);
+            m_axis = Some(Vector3f::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            m_auto_configure_connected_anchor = Some(r.read_bool()?);
-            r.align(4)?;
-            m_connected_anchor = Some(Vector3f::parse(r, ver)?);
+            m_auto_configure_connected_anchor = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_connected_anchor = Some(Vector3f::parse(rdr, ver)?);
         } else {
         }
-            m_secondary_axis = Some(Vector3f::parse(r, ver)?);
-            m_x_motion = Some(r.read_i32()?);
-            m_y_motion = Some(r.read_i32()?);
-            m_z_motion = Some(r.read_i32()?);
-            m_angular_x_motion = Some(r.read_i32()?);
-            m_angular_y_motion = Some(r.read_i32()?);
-            m_angular_z_motion = Some(r.read_i32()?);
+            m_secondary_axis = Some(Vector3f::parse(rdr, ver)?);
+            m_x_motion = Some(rdr.read_i32()?);
+            m_y_motion = Some(rdr.read_i32()?);
+            m_z_motion = Some(rdr.read_i32()?);
+            m_angular_x_motion = Some(rdr.read_i32()?);
+            m_angular_y_motion = Some(rdr.read_i32()?);
+            m_angular_z_motion = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_linear_limit_spring = Some(SoftJointLimitSpring::parse(r, ver)?);
+            m_linear_limit_spring = Some(SoftJointLimitSpring::parse(rdr, ver)?);
         } else {
         }
-            m_linear_limit = Some(SoftJointLimit::parse(r, ver)?);
+            m_linear_limit = Some(SoftJointLimit::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_angular_x_limit_spring = Some(SoftJointLimitSpring::parse(r, ver)?);
+            m_angular_x_limit_spring = Some(SoftJointLimitSpring::parse(rdr, ver)?);
         } else {
         }
-            m_low_angular_x_limit = Some(SoftJointLimit::parse(r, ver)?);
-            m_high_angular_x_limit = Some(SoftJointLimit::parse(r, ver)?);
+            m_low_angular_x_limit = Some(SoftJointLimit::parse(rdr, ver)?);
+            m_high_angular_x_limit = Some(SoftJointLimit::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_angular_yz_limit_spring = Some(SoftJointLimitSpring::parse(r, ver)?);
+            m_angular_yz_limit_spring = Some(SoftJointLimitSpring::parse(rdr, ver)?);
         } else {
         }
-            m_angular_y_limit = Some(SoftJointLimit::parse(r, ver)?);
-            m_angular_z_limit = Some(SoftJointLimit::parse(r, ver)?);
-            m_target_position = Some(Vector3f::parse(r, ver)?);
-            m_target_velocity = Some(Vector3f::parse(r, ver)?);
-            m_x_drive = Some(JointDrive::parse(r, ver)?);
-            m_y_drive = Some(JointDrive::parse(r, ver)?);
-            m_z_drive = Some(JointDrive::parse(r, ver)?);
-            m_target_rotation = Some(Quaternionf::parse(r, ver)?);
-            m_target_angular_velocity = Some(Vector3f::parse(r, ver)?);
-            m_rotation_drive_mode = Some(r.read_i32()?);
-            m_angular_x_drive = Some(JointDrive::parse(r, ver)?);
-            m_angular_yz_drive = Some(JointDrive::parse(r, ver)?);
-            m_slerp_drive = Some(JointDrive::parse(r, ver)?);
-            m_projection_mode = Some(r.read_i32()?);
-            m_projection_distance = Some(r.read_f32()?);
-            m_projection_angle = Some(r.read_f32()?);
-            m_configured_in_world_space = Some(ConfigurableJointMConfiguredInWorldSpaceVariant::parse(r, ver)?);
+            m_angular_y_limit = Some(SoftJointLimit::parse(rdr, ver)?);
+            m_angular_z_limit = Some(SoftJointLimit::parse(rdr, ver)?);
+            m_target_position = Some(Vector3f::parse(rdr, ver)?);
+            m_target_velocity = Some(Vector3f::parse(rdr, ver)?);
+            m_x_drive = Some(JointDrive::parse(rdr, ver)?);
+            m_y_drive = Some(JointDrive::parse(rdr, ver)?);
+            m_z_drive = Some(JointDrive::parse(rdr, ver)?);
+            m_target_rotation = Some(Quaternionf::parse(rdr, ver)?);
+            m_target_angular_velocity = Some(Vector3f::parse(rdr, ver)?);
+            m_rotation_drive_mode = Some(rdr.read_i32()?);
+            m_angular_x_drive = Some(JointDrive::parse(rdr, ver)?);
+            m_angular_yz_drive = Some(JointDrive::parse(rdr, ver)?);
+            m_slerp_drive = Some(JointDrive::parse(rdr, ver)?);
+            m_projection_mode = Some(rdr.read_i32()?);
+            m_projection_distance = Some(rdr.read_f32()?);
+            m_projection_angle = Some(rdr.read_f32()?);
+            m_configured_in_world_space = Some(ConfigurableJointMConfiguredInWorldSpaceVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            m_swap_bodies = Some(r.read_bool()?);
-            r.align(4)?;
+            m_swap_bodies = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else {
         }
-            m_break_force = Some(r.read_f32()?);
-            m_break_torque = Some(r.read_f32()?);
+            m_break_force = Some(rdr.read_f32()?);
+            m_break_torque = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            m_enable_collision = Some(r.read_bool()?);
-            m_enable_preprocessing = Some(ConfigurableJointMEnablePreprocessingVariant::parse(r, ver)?);
-            m_mass_scale = Some(r.read_f32()?);
-            m_connected_mass_scale = Some(r.read_f32()?);
+            m_enable_collision = Some(rdr.read_bool()?);
+            m_enable_preprocessing = Some(ConfigurableJointMEnablePreprocessingVariant::parse(rdr, ver)?);
+            m_mass_scale = Some(rdr.read_f32()?);
+            m_connected_mass_scale = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_enable_collision = Some(r.read_bool()?);
-            m_enable_preprocessing = Some(ConfigurableJointMEnablePreprocessingVariant::parse(r, ver)?);
+            m_enable_collision = Some(rdr.read_bool()?);
+            m_enable_preprocessing = Some(ConfigurableJointMEnablePreprocessingVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            m_enable_collision = Some(r.read_bool()?);
+            m_enable_collision = Some(rdr.read_bool()?);
         } else {
         }
 

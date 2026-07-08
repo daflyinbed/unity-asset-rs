@@ -10,11 +10,11 @@ pub struct AssetBundleInfo {
 
 impl crate::Parse for AssetBundleInfo {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let asset_bundle_hash = Hash128::parse(r, ver)?;
-        let asset_bundle_dependencies = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+        let asset_bundle_hash = Hash128::parse(rdr, ver)?;
+        let asset_bundle_dependencies = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
 
         Ok(AssetBundleInfo {
             asset_bundle_hash,

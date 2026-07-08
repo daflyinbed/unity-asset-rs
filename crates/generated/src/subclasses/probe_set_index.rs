@@ -11,12 +11,12 @@ pub struct ProbeSetIndex {
 
 impl crate::Parse for ProbeSetIndex {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_hash = Hash128::parse(r, ver)?;
-        let m_offset = r.read_i32()?;
-        let m_size = r.read_i32()?;
+        let m_hash = Hash128::parse(rdr, ver)?;
+        let m_offset = rdr.read_i32()?;
+        let m_size = rdr.read_i32()?;
 
         Ok(ProbeSetIndex {
             m_hash,

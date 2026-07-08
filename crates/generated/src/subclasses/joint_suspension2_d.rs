@@ -9,12 +9,12 @@ pub struct JointSuspension2D {
 
 impl crate::Parse for JointSuspension2D {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_damping_ratio = r.read_f32()?;
-        let m_frequency = r.read_f32()?;
-        let m_angle = r.read_f32()?;
+        let m_damping_ratio = rdr.read_f32()?;
+        let m_frequency = rdr.read_f32()?;
+        let m_angle = rdr.read_f32()?;
 
         Ok(JointSuspension2D {
             m_damping_ratio,

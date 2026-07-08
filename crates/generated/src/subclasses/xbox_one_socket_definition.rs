@@ -13,20 +13,20 @@ pub struct XboxOneSocketDefinition {
 
 impl crate::Parse for XboxOneSocketDefinition {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_port = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_protocol = r.read_i32()?;
-        let m_usages = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
-        let m_template_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_session_requirment = r.read_i32()?;
-        let m_device_usages = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_port = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_protocol = rdr.read_i32()?;
+        let m_usages = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_template_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_session_requirment = rdr.read_i32()?;
+        let m_device_usages = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
 
         Ok(XboxOneSocketDefinition {
             m_name,

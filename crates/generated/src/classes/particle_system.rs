@@ -32,20 +32,20 @@ use crate::subclasses::velocity_module::VelocityModule;
 #[derive(Debug, Clone)]
 pub enum ParticleSystemStartDelayVariant {
     Default(f32),
-    V5_3(MinMaxCurve),
+    V5_3(Box<MinMaxCurve>),
 }
 
 impl crate::Parse for ParticleSystemStartDelayVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            let v = MinMaxCurve::parse(r, ver)?;
-            r.align(4)?;
+            let v = ( { Ok(Box::new(MinMaxCurve::parse(rdr, ver)?)) } )?;
+            rdr.align(4)?;
             Ok(Self::V5_3(v))
         } else {
-            let v = r.read_f32()?;
+            let v = rdr.read_f32()?;
             Ok(Self::Default(v))
         }
     }
@@ -60,14 +60,14 @@ pub enum ParticleSystemRandomSeedVariant {
 
 impl crate::Parse for ParticleSystemRandomSeedVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 4, 1) {
-            let v = r.read_i32()?;
+            let v = rdr.read_i32()?;
             Ok(Self::V5_4_1(v))
         } else {
-            let v = r.read_u32()?;
+            let v = rdr.read_u32()?;
             Ok(Self::Default(v))
         }
     }
@@ -83,19 +83,19 @@ pub enum ParticleSystemAutoRandomSeedVariant {
 
 impl crate::Parse for ParticleSystemAutoRandomSeedVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2021, 1, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V2021_1(v))
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -110,15 +110,15 @@ pub enum ParticleSystemMoveWithTransformVariant {
 
 impl crate::Parse for ParticleSystemMoveWithTransformVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = r.read_i32()?;
-            r.align(4)?;
+            let v = rdr.read_i32()?;
+            rdr.align(4)?;
             Ok(Self::V5_5(v))
         } else {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::Default(v))
         }
     }
@@ -172,7 +172,7 @@ pub struct ParticleSystem {
 
 impl crate::Parse for ParticleSystem {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_game_object = None;
@@ -218,134 +218,134 @@ impl crate::Parse for ParticleSystem {
         let mut lights_module = None;
         let mut trail_module = None;
         let mut custom_data_module = None;
-            m_game_object = Some(crate::PPtr::parse(r, ver)?);
-            length_in_sec = Some(r.read_f32()?);
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            length_in_sec = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2021, 1, 0) {
-            simulation_speed = Some(r.read_f32()?);
-            stop_action = Some(r.read_i32()?);
-            culling_mode = Some(r.read_i32()?);
-            ring_buffer_mode = Some(r.read_i32()?);
-            ring_buffer_loop_range = Some(Vector2f::parse(r, ver)?);
-            emitter_velocity_mode = Some(r.read_i32()?);
+            simulation_speed = Some(rdr.read_f32()?);
+            stop_action = Some(rdr.read_i32()?);
+            culling_mode = Some(rdr.read_i32()?);
+            ring_buffer_mode = Some(rdr.read_i32()?);
+            ring_buffer_loop_range = Some(Vector2f::parse(rdr, ver)?);
+            emitter_velocity_mode = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            simulation_speed = Some(r.read_f32()?);
-            stop_action = Some(r.read_i32()?);
-            culling_mode = Some(r.read_i32()?);
-            ring_buffer_mode = Some(r.read_i32()?);
-            ring_buffer_loop_range = Some(Vector2f::parse(r, ver)?);
+            simulation_speed = Some(rdr.read_f32()?);
+            stop_action = Some(rdr.read_i32()?);
+            culling_mode = Some(rdr.read_i32()?);
+            ring_buffer_mode = Some(rdr.read_i32()?);
+            ring_buffer_loop_range = Some(Vector2f::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            simulation_speed = Some(r.read_f32()?);
-            stop_action = Some(r.read_i32()?);
+            simulation_speed = Some(rdr.read_f32()?);
+            stop_action = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(5, 5, 1) {
-            simulation_speed = Some(r.read_f32()?);
+            simulation_speed = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            speed = Some(r.read_f32()?);
+            speed = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 1) {
-            start_delay = Some(ParticleSystemStartDelayVariant::parse(r, ver)?);
-            speed = Some(r.read_f32()?);
+            start_delay = Some(ParticleSystemStartDelayVariant::parse(rdr, ver)?);
+            speed = Some(rdr.read_f32()?);
         } else {
-            start_delay = Some(ParticleSystemStartDelayVariant::parse(r, ver)?);
-            speed = Some(r.read_f32()?);
-            random_seed = Some(ParticleSystemRandomSeedVariant::parse(r, ver)?);
+            start_delay = Some(ParticleSystemStartDelayVariant::parse(rdr, ver)?);
+            speed = Some(rdr.read_f32()?);
+            random_seed = Some(ParticleSystemRandomSeedVariant::parse(rdr, ver)?);
         }
-            looping = Some(r.read_bool()?);
-            prewarm = Some(r.read_bool()?);
-            play_on_awake = Some(r.read_bool()?);
+            looping = Some(rdr.read_bool()?);
+            prewarm = Some(rdr.read_bool()?);
+            play_on_awake = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(2021, 1, 0) {
-            use_unscaled_time = Some(r.read_bool()?);
-            auto_random_seed = Some(ParticleSystemAutoRandomSeedVariant::parse(r, ver)?);
-            start_delay = Some(ParticleSystemStartDelayVariant::parse(r, ver)?);
+            use_unscaled_time = Some(rdr.read_bool()?);
+            auto_random_seed = Some(ParticleSystemAutoRandomSeedVariant::parse(rdr, ver)?);
+            start_delay = Some(ParticleSystemStartDelayVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            use_unscaled_time = Some(r.read_bool()?);
-            auto_random_seed = Some(ParticleSystemAutoRandomSeedVariant::parse(r, ver)?);
-            use_rigidbody_for_velocity = Some(r.read_bool()?);
-            r.align(4)?;
-            start_delay = Some(ParticleSystemStartDelayVariant::parse(r, ver)?);
+            use_unscaled_time = Some(rdr.read_bool()?);
+            auto_random_seed = Some(ParticleSystemAutoRandomSeedVariant::parse(rdr, ver)?);
+            use_rigidbody_for_velocity = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            start_delay = Some(ParticleSystemStartDelayVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            auto_random_seed = Some(ParticleSystemAutoRandomSeedVariant::parse(r, ver)?);
-            start_delay = Some(ParticleSystemStartDelayVariant::parse(r, ver)?);
+            auto_random_seed = Some(ParticleSystemAutoRandomSeedVariant::parse(rdr, ver)?);
+            start_delay = Some(ParticleSystemStartDelayVariant::parse(rdr, ver)?);
         } else {
         }
-            move_with_transform = Some(ParticleSystemMoveWithTransformVariant::parse(r, ver)?);
+            move_with_transform = Some(ParticleSystemMoveWithTransformVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            move_with_custom_transform = Some(crate::PPtr::parse(r, ver)?);
-            scaling_mode = Some(r.read_i32()?);
-            random_seed = Some(ParticleSystemRandomSeedVariant::parse(r, ver)?);
+            move_with_custom_transform = Some(crate::PPtr::parse(rdr, ver)?);
+            scaling_mode = Some(rdr.read_i32()?);
+            random_seed = Some(ParticleSystemRandomSeedVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 1) {
-            auto_random_seed = Some(ParticleSystemAutoRandomSeedVariant::parse(r, ver)?);
-            scaling_mode = Some(r.read_i32()?);
-            random_seed = Some(ParticleSystemRandomSeedVariant::parse(r, ver)?);
+            auto_random_seed = Some(ParticleSystemAutoRandomSeedVariant::parse(rdr, ver)?);
+            scaling_mode = Some(rdr.read_i32()?);
+            random_seed = Some(ParticleSystemRandomSeedVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            scaling_mode = Some(r.read_i32()?);
+            scaling_mode = Some(rdr.read_i32()?);
         } else {
         }
-            initial_module = Some(InitialModule::parse(r, ver)?);
-            r.align(4)?;
-            shape_module = Some(ShapeModule::parse(r, ver)?);
-            r.align(4)?;
-            emission_module = Some(EmissionModule::parse(r, ver)?);
-            r.align(4)?;
-            size_module = Some(SizeModule::parse(r, ver)?);
-            r.align(4)?;
-            rotation_module = Some(RotationModule::parse(r, ver)?);
-            r.align(4)?;
-            color_module = Some(ColorModule::parse(r, ver)?);
-            r.align(4)?;
-            uv_module = Some(UvModule::parse(r, ver)?);
-            r.align(4)?;
-            velocity_module = Some(VelocityModule::parse(r, ver)?);
-            r.align(4)?;
+            initial_module = Some(InitialModule::parse(rdr, ver)?);
+            rdr.align(4)?;
+            shape_module = Some(ShapeModule::parse(rdr, ver)?);
+            rdr.align(4)?;
+            emission_module = Some(EmissionModule::parse(rdr, ver)?);
+            rdr.align(4)?;
+            size_module = Some(SizeModule::parse(rdr, ver)?);
+            rdr.align(4)?;
+            rotation_module = Some(RotationModule::parse(rdr, ver)?);
+            rdr.align(4)?;
+            color_module = Some(ColorModule::parse(rdr, ver)?);
+            rdr.align(4)?;
+            uv_module = Some(UvModule::parse(rdr, ver)?);
+            rdr.align(4)?;
+            velocity_module = Some(VelocityModule::parse(rdr, ver)?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            inherit_velocity_module = Some(InheritVelocityModule::parse(r, ver)?);
-            r.align(4)?;
-            lifetime_by_emitter_speed_module = Some(LifetimeByEmitterSpeedModule::parse(r, ver)?);
-            r.align(4)?;
+            inherit_velocity_module = Some(InheritVelocityModule::parse(rdr, ver)?);
+            rdr.align(4)?;
+            lifetime_by_emitter_speed_module = Some(LifetimeByEmitterSpeedModule::parse(rdr, ver)?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            inherit_velocity_module = Some(InheritVelocityModule::parse(r, ver)?);
-            r.align(4)?;
+            inherit_velocity_module = Some(InheritVelocityModule::parse(rdr, ver)?);
+            rdr.align(4)?;
         } else {
         }
-            force_module = Some(ForceModule::parse(r, ver)?);
-            r.align(4)?;
+            force_module = Some(ForceModule::parse(rdr, ver)?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            external_forces_module = Some(ExternalForcesModule::parse(r, ver)?);
-            r.align(4)?;
+            external_forces_module = Some(ExternalForcesModule::parse(rdr, ver)?);
+            rdr.align(4)?;
         } else {
         }
-            clamp_velocity_module = Some(ClampVelocityModule::parse(r, ver)?);
-            r.align(4)?;
+            clamp_velocity_module = Some(ClampVelocityModule::parse(rdr, ver)?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            noise_module = Some(NoiseModule::parse(r, ver)?);
-            r.align(4)?;
+            noise_module = Some(NoiseModule::parse(rdr, ver)?);
+            rdr.align(4)?;
         } else {
         }
-            size_by_speed_module = Some(SizeBySpeedModule::parse(r, ver)?);
-            r.align(4)?;
-            rotation_by_speed_module = Some(RotationBySpeedModule::parse(r, ver)?);
-            r.align(4)?;
-            color_by_speed_module = Some(ColorBySpeedModule::parse(r, ver)?);
-            r.align(4)?;
-            collision_module = Some(CollisionModule::parse(r, ver)?);
-            r.align(4)?;
+            size_by_speed_module = Some(SizeBySpeedModule::parse(rdr, ver)?);
+            rdr.align(4)?;
+            rotation_by_speed_module = Some(RotationBySpeedModule::parse(rdr, ver)?);
+            rdr.align(4)?;
+            color_by_speed_module = Some(ColorBySpeedModule::parse(rdr, ver)?);
+            rdr.align(4)?;
+            collision_module = Some(CollisionModule::parse(rdr, ver)?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            trigger_module = Some(TriggerModule::parse(r, ver)?);
-            r.align(4)?;
+            trigger_module = Some(TriggerModule::parse(rdr, ver)?);
+            rdr.align(4)?;
         } else {
         }
-            sub_module = Some(SubModule::parse(r, ver)?);
-            r.align(4)?;
+            sub_module = Some(SubModule::parse(rdr, ver)?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            lights_module = Some(LightsModule::parse(r, ver)?);
-            r.align(4)?;
-            trail_module = Some(TrailModule::parse(r, ver)?);
-            r.align(4)?;
-            custom_data_module = Some(CustomDataModule::parse(r, ver)?);
-            r.align(4)?;
+            lights_module = Some(LightsModule::parse(rdr, ver)?);
+            rdr.align(4)?;
+            trail_module = Some(TrailModule::parse(rdr, ver)?);
+            rdr.align(4)?;
+            custom_data_module = Some(CustomDataModule::parse(rdr, ver)?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            lights_module = Some(LightsModule::parse(r, ver)?);
-            r.align(4)?;
-            trail_module = Some(TrailModule::parse(r, ver)?);
-            r.align(4)?;
+            lights_module = Some(LightsModule::parse(rdr, ver)?);
+            rdr.align(4)?;
+            trail_module = Some(TrailModule::parse(rdr, ver)?);
+            rdr.align(4)?;
         } else {
         }
 

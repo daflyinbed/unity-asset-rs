@@ -10,13 +10,13 @@ pub struct Rectf {
 
 impl crate::Parse for Rectf {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let x = r.read_f32()?;
-        let y = r.read_f32()?;
-        let width = r.read_f32()?;
-        let height = r.read_f32()?;
+        let x = rdr.read_f32()?;
+        let y = rdr.read_f32()?;
+        let width = rdr.read_f32()?;
+        let height = rdr.read_f32()?;
 
         Ok(Rectf {
             x,

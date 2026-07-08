@@ -7,10 +7,10 @@ pub struct DateTime {
 
 impl crate::Parse for DateTime {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let ticks = r.read_i64()?;
+        let ticks = rdr.read_i64()?;
 
         Ok(DateTime {
             ticks,

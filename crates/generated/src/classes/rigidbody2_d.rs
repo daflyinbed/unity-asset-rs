@@ -13,14 +13,14 @@ pub enum Rigidbody2DMInterpolateVariant {
 
 impl crate::Parse for Rigidbody2DMInterpolateVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = r.read_i32()?;
+            let v = rdr.read_i32()?;
             Ok(Self::V5_5(v))
         } else {
-            let v = r.read_u8()?;
+            let v = rdr.read_u8()?;
             Ok(Self::Default(v))
         }
     }
@@ -35,14 +35,14 @@ pub enum Rigidbody2DMSleepingModeVariant {
 
 impl crate::Parse for Rigidbody2DMSleepingModeVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = r.read_i32()?;
+            let v = rdr.read_i32()?;
             Ok(Self::V5_5(v))
         } else {
-            let v = r.read_u8()?;
+            let v = rdr.read_u8()?;
             Ok(Self::Default(v))
         }
     }
@@ -57,15 +57,15 @@ pub enum Rigidbody2DMCollisionDetectionVariant {
 
 impl crate::Parse for Rigidbody2DMCollisionDetectionVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = r.read_i32()?;
+            let v = rdr.read_i32()?;
             Ok(Self::V5_5(v))
         } else {
-            let v = r.read_u8()?;
-            r.align(4)?;
+            let v = rdr.read_u8()?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -96,7 +96,7 @@ pub struct Rigidbody2D {
 
 impl crate::Parse for Rigidbody2D {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_game_object = None;
@@ -119,44 +119,44 @@ impl crate::Parse for Rigidbody2D {
         let mut m_material = None;
         let mut m_include_layers = None;
         let mut m_exclude_layers = None;
-            m_game_object = Some(crate::PPtr::parse(r, ver)?);
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            m_body_type = Some(r.read_i32()?);
-            m_simulated = Some(r.read_bool()?);
-            m_use_full_kinematic_contacts = Some(r.read_bool()?);
-            m_use_auto_mass = Some(r.read_bool()?);
-            r.align(4)?;
+            m_body_type = Some(rdr.read_i32()?);
+            m_simulated = Some(rdr.read_bool()?);
+            m_use_full_kinematic_contacts = Some(rdr.read_bool()?);
+            m_use_auto_mass = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            m_use_auto_mass = Some(r.read_bool()?);
-            r.align(4)?;
+            m_use_auto_mass = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else {
         }
-            m_mass = Some(r.read_f32()?);
+            m_mass = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(6000, 0, 11) {
-            m_linear_damping = Some(r.read_f32()?);
-            m_angular_damping = Some(r.read_f32()?);
+            m_linear_damping = Some(rdr.read_f32()?);
+            m_angular_damping = Some(rdr.read_f32()?);
         } else {
-            m_linear_drag = Some(r.read_f32()?);
-            m_angular_drag = Some(r.read_f32()?);
+            m_linear_drag = Some(rdr.read_f32()?);
+            m_angular_drag = Some(rdr.read_f32()?);
         }
-            m_gravity_scale = Some(r.read_f32()?);
+            m_gravity_scale = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            m_material = Some(crate::PPtr::parse(r, ver)?);
-            m_include_layers = Some(BitField::parse(r, ver)?);
-            m_exclude_layers = Some(BitField::parse(r, ver)?);
+            m_material = Some(crate::PPtr::parse(rdr, ver)?);
+            m_include_layers = Some(BitField::parse(rdr, ver)?);
+            m_exclude_layers = Some(BitField::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            m_material = Some(crate::PPtr::parse(r, ver)?);
+            m_material = Some(crate::PPtr::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 1, 0) {
-            m_is_kinematic = Some(r.read_bool()?);
+            m_is_kinematic = Some(rdr.read_bool()?);
         } else {
-            m_fixed_angle = Some(r.read_bool()?);
-            m_is_kinematic = Some(r.read_bool()?);
+            m_fixed_angle = Some(rdr.read_bool()?);
+            m_is_kinematic = Some(rdr.read_bool()?);
         }
-            m_interpolate = Some(Rigidbody2DMInterpolateVariant::parse(r, ver)?);
-            m_sleeping_mode = Some(Rigidbody2DMSleepingModeVariant::parse(r, ver)?);
-            m_collision_detection = Some(Rigidbody2DMCollisionDetectionVariant::parse(r, ver)?);
+            m_interpolate = Some(Rigidbody2DMInterpolateVariant::parse(rdr, ver)?);
+            m_sleeping_mode = Some(Rigidbody2DMSleepingModeVariant::parse(rdr, ver)?);
+            m_collision_detection = Some(Rigidbody2DMCollisionDetectionVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 1, 0) {
-            m_constraints = Some(r.read_i32()?);
+            m_constraints = Some(rdr.read_i32()?);
         } else {
         }
 

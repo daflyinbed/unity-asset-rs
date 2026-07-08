@@ -13,15 +13,15 @@ pub enum AudioMixerControllerMSnapshotsVariant {
 
 impl crate::Parse for AudioMixerControllerMSnapshotsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -41,7 +41,7 @@ pub struct AudioMixerController {
 
 impl crate::Parse for AudioMixerController {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_name = None;
@@ -53,22 +53,22 @@ impl crate::Parse for AudioMixerController {
         let mut m_enable_suspend = None;
         let mut m_mixer_constant = None;
         let mut m_update_mode = None;
-            m_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
-            m_output_group = Some(crate::PPtr::parse(r, ver)?);
-            m_master_group = Some(crate::PPtr::parse(r, ver)?);
-            m_snapshots = Some(AudioMixerControllerMSnapshotsVariant::parse(r, ver)?);
-            m_start_snapshot = Some(crate::PPtr::parse(r, ver)?);
-            m_suspend_threshold = Some(r.read_f32()?);
-            m_enable_suspend = Some(r.read_bool()?);
-            r.align(4)?;
+            m_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_output_group = Some(crate::PPtr::parse(rdr, ver)?);
+            m_master_group = Some(crate::PPtr::parse(rdr, ver)?);
+            m_snapshots = Some(AudioMixerControllerMSnapshotsVariant::parse(rdr, ver)?);
+            m_start_snapshot = Some(crate::PPtr::parse(rdr, ver)?);
+            m_suspend_threshold = Some(rdr.read_f32()?);
+            m_enable_suspend = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 3, 6) {
-            m_update_mode = Some(r.read_i32()?);
-            r.align(4)?;
+            m_update_mode = Some(rdr.read_i32()?);
+            rdr.align(4)?;
         } else {
         }
-            m_mixer_constant = Some(AudioMixerConstant::parse(r, ver)?);
-            r.align(4)?;
+            m_mixer_constant = Some(AudioMixerConstant::parse(rdr, ver)?);
+            rdr.align(4)?;
 
         Ok(AudioMixerController {
             m_name: m_name.unwrap(),

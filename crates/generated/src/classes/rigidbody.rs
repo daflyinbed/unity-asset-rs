@@ -29,7 +29,7 @@ pub struct Rigidbody {
 
 impl crate::Parse for Rigidbody {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_game_object = None;
@@ -50,38 +50,38 @@ impl crate::Parse for Rigidbody {
         let mut m_exclude_layers = None;
         let mut m_implicit_com = None;
         let mut m_implicit_tensor = None;
-            m_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_mass = Some(r.read_f32()?);
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_mass = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(6000, 1, 0) {
-            m_linear_damping = Some(r.read_f32()?);
-            m_angular_damping = Some(r.read_f32()?);
-            m_center_of_mass = Some(Vector3f::parse(r, ver)?);
-            m_inertia_tensor = Some(Vector3f::parse(r, ver)?);
-            m_inertia_rotation = Some(Quaternionf::parse(r, ver)?);
-            m_include_layers = Some(BitField::parse(r, ver)?);
-            m_exclude_layers = Some(BitField::parse(r, ver)?);
-            m_implicit_com = Some(r.read_bool()?);
-            m_implicit_tensor = Some(r.read_bool()?);
+            m_linear_damping = Some(rdr.read_f32()?);
+            m_angular_damping = Some(rdr.read_f32()?);
+            m_center_of_mass = Some(Vector3f::parse(rdr, ver)?);
+            m_inertia_tensor = Some(Vector3f::parse(rdr, ver)?);
+            m_inertia_rotation = Some(Quaternionf::parse(rdr, ver)?);
+            m_include_layers = Some(BitField::parse(rdr, ver)?);
+            m_exclude_layers = Some(BitField::parse(rdr, ver)?);
+            m_implicit_com = Some(rdr.read_bool()?);
+            m_implicit_tensor = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            m_drag = Some(r.read_f32()?);
-            m_angular_drag = Some(r.read_f32()?);
-            m_center_of_mass = Some(Vector3f::parse(r, ver)?);
-            m_inertia_tensor = Some(Vector3f::parse(r, ver)?);
-            m_inertia_rotation = Some(Quaternionf::parse(r, ver)?);
-            m_include_layers = Some(BitField::parse(r, ver)?);
-            m_exclude_layers = Some(BitField::parse(r, ver)?);
-            m_implicit_com = Some(r.read_bool()?);
-            m_implicit_tensor = Some(r.read_bool()?);
+            m_drag = Some(rdr.read_f32()?);
+            m_angular_drag = Some(rdr.read_f32()?);
+            m_center_of_mass = Some(Vector3f::parse(rdr, ver)?);
+            m_inertia_tensor = Some(Vector3f::parse(rdr, ver)?);
+            m_inertia_rotation = Some(Quaternionf::parse(rdr, ver)?);
+            m_include_layers = Some(BitField::parse(rdr, ver)?);
+            m_exclude_layers = Some(BitField::parse(rdr, ver)?);
+            m_implicit_com = Some(rdr.read_bool()?);
+            m_implicit_tensor = Some(rdr.read_bool()?);
         } else {
-            m_drag = Some(r.read_f32()?);
-            m_angular_drag = Some(r.read_f32()?);
+            m_drag = Some(rdr.read_f32()?);
+            m_angular_drag = Some(rdr.read_f32()?);
         }
-            m_use_gravity = Some(r.read_bool()?);
-            m_is_kinematic = Some(r.read_bool()?);
-            m_interpolate = Some(r.read_u8()?);
-            r.align(4)?;
-            m_constraints = Some(r.read_i32()?);
-            m_collision_detection = Some(r.read_i32()?);
+            m_use_gravity = Some(rdr.read_bool()?);
+            m_is_kinematic = Some(rdr.read_bool()?);
+            m_interpolate = Some(rdr.read_u8()?);
+            rdr.align(4)?;
+            m_constraints = Some(rdr.read_i32()?);
+            m_collision_detection = Some(rdr.read_i32()?);
 
         Ok(Rigidbody {
             m_game_object: m_game_object.unwrap(),

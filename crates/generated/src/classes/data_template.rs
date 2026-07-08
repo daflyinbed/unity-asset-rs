@@ -14,15 +14,15 @@ pub enum DataTemplateMIsPrefabParentVariant {
 
 impl crate::Parse for DataTemplateMIsPrefabParentVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = r.read_bool()?;
-            r.align(4)?;
+            let v = rdr.read_bool()?;
+            rdr.align(4)?;
             Ok(Self::V5_0(v))
         } else {
-            let v = r.read_bool()?;
+            let v = rdr.read_bool()?;
             Ok(Self::Default(v))
         }
     }
@@ -45,7 +45,7 @@ pub struct DataTemplate {
 
 impl crate::Parse for DataTemplate {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_last_merge_identifier = None;
@@ -61,39 +61,39 @@ impl crate::Parse for DataTemplate {
         let mut m_name = None;
         let mut m_is_exploded = None;
         if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            m_root_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_modification = Some(PrefabModification::parse(r, ver)?);
-            r.align(4)?;
-            m_source_prefab = Some(crate::PPtr::parse(r, ver)?);
+            m_root_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_modification = Some(PrefabModification::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_source_prefab = Some(crate::PPtr::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2018, 2, 0) {
-            m_modification = Some(PrefabModification::parse(r, ver)?);
-            r.align(4)?;
-            m_source_prefab = Some(crate::PPtr::parse(r, ver)?);
-            m_root_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_is_prefab_asset = Some(r.read_bool()?);
-            r.align(4)?;
+            m_modification = Some(PrefabModification::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_source_prefab = Some(crate::PPtr::parse(rdr, ver)?);
+            m_root_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_is_prefab_asset = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_modification = Some(PrefabModification::parse(r, ver)?);
-            r.align(4)?;
-            m_parent_prefab = Some(crate::PPtr::parse(r, ver)?);
-            m_root_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_is_prefab_parent = Some(DataTemplateMIsPrefabParentVariant::parse(r, ver)?);
+            m_modification = Some(PrefabModification::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_parent_prefab = Some(crate::PPtr::parse(rdr, ver)?);
+            m_root_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_is_prefab_parent = Some(DataTemplateMIsPrefabParentVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            m_modification = Some(PrefabModification::parse(r, ver)?);
-            r.align(4)?;
-            m_parent_prefab = Some(crate::PPtr::parse(r, ver)?);
-            m_root_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_is_prefab_parent = Some(DataTemplateMIsPrefabParentVariant::parse(r, ver)?);
-            m_is_exploded = Some(r.read_bool()?);
-            r.align(4)?;
+            m_modification = Some(PrefabModification::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_parent_prefab = Some(crate::PPtr::parse(rdr, ver)?);
+            m_root_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_is_prefab_parent = Some(DataTemplateMIsPrefabParentVariant::parse(rdr, ver)?);
+            m_is_exploded = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else {
-            m_last_merge_identifier = Some(Guid::parse(r, ver)?);
-            m_objects = Some(( { let n = r.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_father = Some(crate::PPtr::parse(r, ver)?);
-            m_is_data_template = Some(r.read_bool()?);
-            r.align(4)?;
-            m_name = Some(r.read_aligned_string()?);
-            r.align(4)?;
+            m_last_merge_identifier = Some(Guid::parse(rdr, ver)?);
+            m_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_father = Some(crate::PPtr::parse(rdr, ver)?);
+            m_is_data_template = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
         }
 
         Ok(DataTemplate {

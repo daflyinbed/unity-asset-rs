@@ -17,18 +17,18 @@ pub struct Tetrahedron {
 
 impl crate::Parse for Tetrahedron {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let indices_0 = r.read_i32()?;
-        let indices_1 = r.read_i32()?;
-        let indices_2 = r.read_i32()?;
-        let indices_3 = r.read_i32()?;
-        let neighbors_0 = r.read_i32()?;
-        let neighbors_1 = r.read_i32()?;
-        let neighbors_2 = r.read_i32()?;
-        let neighbors_3 = r.read_i32()?;
-        let matrix = Matrix3x4f::parse(r, ver)?;
+        let indices_0 = rdr.read_i32()?;
+        let indices_1 = rdr.read_i32()?;
+        let indices_2 = rdr.read_i32()?;
+        let indices_3 = rdr.read_i32()?;
+        let neighbors_0 = rdr.read_i32()?;
+        let neighbors_1 = rdr.read_i32()?;
+        let neighbors_2 = rdr.read_i32()?;
+        let neighbors_3 = rdr.read_i32()?;
+        let matrix = Matrix3x4f::parse(rdr, ver)?;
 
         Ok(Tetrahedron {
             indices_0,

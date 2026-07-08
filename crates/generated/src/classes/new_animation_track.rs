@@ -11,14 +11,14 @@ pub struct NewAnimationTrack {
 
 impl crate::Parse for NewAnimationTrack {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_curves = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { Channel::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_class_id = r.read_i32()?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_curves = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Channel::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let m_class_id = rdr.read_i32()?;
 
         Ok(NewAnimationTrack {
             m_name,

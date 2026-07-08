@@ -8,11 +8,11 @@ pub struct Vector2f {
 
 impl crate::Parse for Vector2f {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let x = r.read_f32()?;
-        let y = r.read_f32()?;
+        let x = rdr.read_f32()?;
+        let y = rdr.read_f32()?;
 
         Ok(Vector2f {
             x,

@@ -7,10 +7,10 @@ pub struct MarshallingTestObject {
 
 impl crate::Parse for MarshallingTestObject {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_prop = r.read_i32()?;
+        let m_prop = rdr.read_i32()?;
 
         Ok(MarshallingTestObject {
             m_prop,

@@ -15,18 +15,18 @@ pub struct HumanHandle {
 
 impl crate::Parse for HumanHandle {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_bone_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_position = Vector3f::parse(r, ver)?;
-        let m_rotation = Quaternionf::parse(r, ver)?;
-        let m_scale = Vector3f::parse(r, ver)?;
-        let m_look_at = r.read_bool()?;
-        r.align(4)?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_bone_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_position = Vector3f::parse(rdr, ver)?;
+        let m_rotation = Quaternionf::parse(rdr, ver)?;
+        let m_scale = Vector3f::parse(rdr, ver)?;
+        let m_look_at = rdr.read_bool()?;
+        rdr.align(4)?;
 
         Ok(HumanHandle {
             m_name,

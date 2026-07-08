@@ -11,14 +11,14 @@ pub struct GfxRasterState {
 
 impl crate::Parse for GfxRasterState {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let cull_mode = r.read_i32()?;
-        let depth_bias = r.read_i32()?;
-        let slope_scaled_depth_bias = r.read_f32()?;
-        let depth_clip = r.read_u8()?;
-        let conservative = r.read_u8()?;
+        let cull_mode = rdr.read_i32()?;
+        let depth_bias = rdr.read_i32()?;
+        let slope_scaled_depth_bias = rdr.read_f32()?;
+        let depth_clip = rdr.read_u8()?;
+        let conservative = rdr.read_u8()?;
 
         Ok(GfxRasterState {
             cull_mode,

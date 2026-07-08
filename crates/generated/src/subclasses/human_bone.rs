@@ -11,15 +11,15 @@ pub struct HumanBone {
 
 impl crate::Parse for HumanBone {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_bone_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_human_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_limit = SkeletonBoneLimit::parse(r, ver)?;
-        r.align(4)?;
+        let m_bone_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_human_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_limit = SkeletonBoneLimit::parse(rdr, ver)?;
+        rdr.align(4)?;
 
         Ok(HumanBone {
             m_bone_name,

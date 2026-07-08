@@ -15,35 +15,35 @@ pub struct PropertyModificationsTargetTestObject {
 
 impl crate::Parse for PropertyModificationsTargetTestObject {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_data = PropertyModificationsTargetTestNativeObject::parse(r, ver)?;
-        let m_array = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { PropertyModificationsTargetTestNativeObject::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_float_test_value = r.read_f32()?;
+        let m_data = PropertyModificationsTargetTestNativeObject::parse(rdr, ver)?;
+        let m_array = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { PropertyModificationsTargetTestNativeObject::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let m_float_test_value = rdr.read_f32()?;
         let m_bytes = if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Some(v)
         } else {
             None
         };
         let m_floats = if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { r.read_f32() }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_f32() }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Some(v)
         } else {
             None
         };
         let m_bytes_size = if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            Some(r.read_u32()?)
+            Some(rdr.read_u32()?)
         } else {
             None
         };
         let byte_data = if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            let v = ( { let n = r.read_i32()? as usize; r.read_bytes(n) } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; rdr.read_bytes(n) } )?;
+            rdr.align(4)?;
             Some(v)
         } else {
             None

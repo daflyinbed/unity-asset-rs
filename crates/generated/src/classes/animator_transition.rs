@@ -16,19 +16,19 @@ pub struct AnimatorTransition {
 
 impl crate::Parse for AnimatorTransition {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_conditions = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { AnimatorCondition::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let m_dst_state_machine = crate::PPtr::parse(r, ver)?;
-        let m_dst_state = crate::PPtr::parse(r, ver)?;
-        let m_solo = r.read_bool()?;
-        let m_mute = r.read_bool()?;
-        let m_is_exit = r.read_bool()?;
-        r.align(4)?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_conditions = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AnimatorCondition::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let m_dst_state_machine = crate::PPtr::parse(rdr, ver)?;
+        let m_dst_state = crate::PPtr::parse(rdr, ver)?;
+        let m_solo = rdr.read_bool()?;
+        let m_mute = rdr.read_bool()?;
+        let m_is_exit = rdr.read_bool()?;
+        rdr.align(4)?;
 
         Ok(AnimatorTransition {
             m_name,

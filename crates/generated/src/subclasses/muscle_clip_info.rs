@@ -21,25 +21,25 @@ pub struct MuscleClipInfo {
 
 impl crate::Parse for MuscleClipInfo {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_start_time = r.read_f32()?;
-        let m_stop_time = r.read_f32()?;
-        let m_orientation_offset_y = r.read_f32()?;
-        let m_level = r.read_f32()?;
-        let m_cycle_offset = r.read_f32()?;
-        let m_loop_blend = r.read_bool()?;
-        let m_loop_blend_orientation = r.read_bool()?;
-        let m_loop_blend_position_y = r.read_bool()?;
-        let m_loop_blend_position_xz = r.read_bool()?;
-        let m_keep_original_orientation = r.read_bool()?;
-        let m_keep_original_position_y = r.read_bool()?;
-        let m_keep_original_position_xz = r.read_bool()?;
-        let m_height_from_feet = r.read_bool()?;
-        let m_mirror = r.read_bool()?;
-        let m_keep_additional_bones_animation = r.read_bool()?;
-        r.align(4)?;
+        let m_start_time = rdr.read_f32()?;
+        let m_stop_time = rdr.read_f32()?;
+        let m_orientation_offset_y = rdr.read_f32()?;
+        let m_level = rdr.read_f32()?;
+        let m_cycle_offset = rdr.read_f32()?;
+        let m_loop_blend = rdr.read_bool()?;
+        let m_loop_blend_orientation = rdr.read_bool()?;
+        let m_loop_blend_position_y = rdr.read_bool()?;
+        let m_loop_blend_position_xz = rdr.read_bool()?;
+        let m_keep_original_orientation = rdr.read_bool()?;
+        let m_keep_original_position_y = rdr.read_bool()?;
+        let m_keep_original_position_xz = rdr.read_bool()?;
+        let m_height_from_feet = rdr.read_bool()?;
+        let m_mirror = rdr.read_bool()?;
+        let m_keep_additional_bones_animation = rdr.read_bool()?;
+        rdr.align(4)?;
 
         Ok(MuscleClipInfo {
             m_start_time,

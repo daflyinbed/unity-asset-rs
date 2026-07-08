@@ -8,12 +8,12 @@ pub struct AvatarSkeletonMaskElement {
 
 impl crate::Parse for AvatarSkeletonMaskElement {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let path = r.read_aligned_string()?;
-        r.align(4)?;
-        let weight = r.read_f32()?;
+        let path = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let weight = rdr.read_f32()?;
 
         Ok(AvatarSkeletonMaskElement {
             path,

@@ -14,17 +14,17 @@ pub struct ComputeShaderPlatformVariant {
 
 impl crate::Parse for ComputeShaderPlatformVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let target_renderer = r.read_i32()?;
-        let target_level = r.read_i32()?;
-        let kernels = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ComputeShaderKernelParent::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let constant_buffers = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { ComputeShaderCb::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
-        let resources_resolved = r.read_bool()?;
-        r.align(4)?;
+        let target_renderer = rdr.read_i32()?;
+        let target_level = rdr.read_i32()?;
+        let kernels = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderKernelParent::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let constant_buffers = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderCb::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
+        let resources_resolved = rdr.read_bool()?;
+        rdr.align(4)?;
 
         Ok(ComputeShaderPlatformVariant {
             target_renderer,

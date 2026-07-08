@@ -13,15 +13,15 @@ pub enum FlareMElementsVariant {
 
 impl crate::Parse for FlareMElementsVariant {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { FlareElement::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            r.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { FlareElement::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { FlareElement::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { FlareElement::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -37,15 +37,15 @@ pub struct Flare {
 
 impl crate::Parse for Flare {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let m_flare_texture = crate::PPtr::parse(r, ver)?;
-        let m_texture_layout = r.read_i32()?;
-        let m_elements = FlareMElementsVariant::parse(r, ver)?;
-        let m_use_fog = r.read_bool()?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let m_flare_texture = crate::PPtr::parse(rdr, ver)?;
+        let m_texture_layout = rdr.read_i32()?;
+        let m_elements = FlareMElementsVariant::parse(rdr, ver)?;
+        let m_use_fog = rdr.read_bool()?;
 
         Ok(Flare {
             m_name,

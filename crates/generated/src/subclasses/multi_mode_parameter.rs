@@ -12,14 +12,14 @@ pub struct MultiModeParameter {
 
 impl crate::Parse for MultiModeParameter {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let value = r.read_f32()?;
-        let mode = r.read_i32()?;
-        let spread = r.read_f32()?;
-        let speed = MinMaxCurve::parse(r, ver)?;
-        r.align(4)?;
+        let value = rdr.read_f32()?;
+        let mode = rdr.read_i32()?;
+        let spread = rdr.read_f32()?;
+        let speed = MinMaxCurve::parse(rdr, ver)?;
+        rdr.align(4)?;
 
         Ok(MultiModeParameter {
             value,

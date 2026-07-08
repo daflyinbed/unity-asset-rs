@@ -8,12 +8,12 @@ pub struct GfxDepthState {
 
 impl crate::Parse for GfxDepthState {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let depth_write = r.read_u8()?;
-        let depth_func = r.read_i8()?;
-        r.align(4)?;
+        let depth_write = rdr.read_u8()?;
+        let depth_func = rdr.read_i8()?;
+        rdr.align(4)?;
 
         Ok(GfxDepthState {
             depth_write,

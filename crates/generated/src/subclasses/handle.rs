@@ -11,12 +11,12 @@ pub struct Handle {
 
 impl crate::Parse for Handle {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_x = xform::parse(r, ver)?;
-        let m_parent_human_index = r.read_u32()?;
-        let m_id = r.read_u32()?;
+        let m_x = xform::parse(rdr, ver)?;
+        let m_parent_human_index = rdr.read_u32()?;
+        let m_id = rdr.read_u32()?;
 
         Ok(Handle {
             m_x,

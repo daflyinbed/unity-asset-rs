@@ -8,12 +8,12 @@ pub struct KeywordOverrideInfo {
 
 impl crate::Parse for KeywordOverrideInfo {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let name = r.read_aligned_string()?;
-        r.align(4)?;
-        let keep_in_build = r.read_bool()?;
+        let name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let keep_in_build = rdr.read_bool()?;
 
         Ok(KeywordOverrideInfo {
             name,

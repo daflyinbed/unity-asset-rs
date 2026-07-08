@@ -19,7 +19,7 @@ pub struct SurfaceEffector2D {
 
 impl crate::Parse for SurfaceEffector2D {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_game_object = None;
@@ -32,23 +32,23 @@ impl crate::Parse for SurfaceEffector2D {
         let mut m_use_contact_force = None;
         let mut m_use_friction = None;
         let mut m_use_bounce = None;
-            m_game_object = Some(crate::PPtr::parse(r, ver)?);
-            m_enabled = Some(r.read_u8()?);
-            r.align(4)?;
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_enabled = Some(rdr.read_u8()?);
+            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 0, 2) {
-            m_use_collider_mask = Some(r.read_bool()?);
-            r.align(4)?;
+            m_use_collider_mask = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else {
         }
-            m_collider_mask = Some(BitField::parse(r, ver)?);
-            m_speed = Some(r.read_f32()?);
-            m_speed_variation = Some(r.read_f32()?);
+            m_collider_mask = Some(BitField::parse(rdr, ver)?);
+            m_speed = Some(rdr.read_f32()?);
+            m_speed_variation = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(5, 0, 1) {
-            m_force_scale = Some(r.read_f32()?);
-            m_use_contact_force = Some(r.read_bool()?);
-            m_use_friction = Some(r.read_bool()?);
-            m_use_bounce = Some(r.read_bool()?);
-            r.align(4)?;
+            m_force_scale = Some(rdr.read_f32()?);
+            m_use_contact_force = Some(rdr.read_bool()?);
+            m_use_friction = Some(rdr.read_bool()?);
+            m_use_bounce = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else {
         }
 

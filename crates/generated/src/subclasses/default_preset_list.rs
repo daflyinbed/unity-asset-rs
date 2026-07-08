@@ -11,13 +11,13 @@ pub struct DefaultPresetList {
 
 impl crate::Parse for DefaultPresetList {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let r#type = PresetType::parse(r, ver)?;
-        r.align(4)?;
-        let default_presets = ( { let n = r.read_i32()? as usize; (0..n).map(|_| { DefaultPreset::parse(r, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        r.align(4)?;
+        let r#type = PresetType::parse(rdr, ver)?;
+        rdr.align(4)?;
+        let default_presets = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { DefaultPreset::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
 
         Ok(DefaultPresetList {
             r#type,

@@ -7,10 +7,10 @@ pub struct UnitySceneHandle {
 
 impl crate::Parse for UnitySceneHandle {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let value = r.read_i32()?;
+        let value = rdr.read_i32()?;
 
         Ok(UnitySceneHandle {
             value,

@@ -21,32 +21,32 @@ pub struct InputAxis {
 
 impl crate::Parse for InputAxis {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let descriptive_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let descriptive_negative_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let negative_button = r.read_aligned_string()?;
-        r.align(4)?;
-        let positive_button = r.read_aligned_string()?;
-        r.align(4)?;
-        let alt_negative_button = r.read_aligned_string()?;
-        r.align(4)?;
-        let alt_positive_button = r.read_aligned_string()?;
-        r.align(4)?;
-        let gravity = r.read_f32()?;
-        let dead = r.read_f32()?;
-        let sensitivity = r.read_f32()?;
-        let snap = r.read_bool()?;
-        let invert = r.read_bool()?;
-        r.align(4)?;
-        let r#type = r.read_i32()?;
-        let axis = r.read_i32()?;
-        let joy_num = r.read_i32()?;
+        let m_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let descriptive_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let descriptive_negative_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let negative_button = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let positive_button = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let alt_negative_button = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let alt_positive_button = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let gravity = rdr.read_f32()?;
+        let dead = rdr.read_f32()?;
+        let sensitivity = rdr.read_f32()?;
+        let snap = rdr.read_bool()?;
+        let invert = rdr.read_bool()?;
+        rdr.align(4)?;
+        let r#type = rdr.read_i32()?;
+        let axis = rdr.read_i32()?;
+        let joy_num = rdr.read_i32()?;
 
         Ok(InputAxis {
             m_name,

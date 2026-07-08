@@ -8,12 +8,12 @@ pub struct KeywordTargetInfo {
 
 impl crate::Parse for KeywordTargetInfo {
     fn parse<R: crate::EndianReader>(
-        r: &mut R,
+        rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let keyword_name = r.read_aligned_string()?;
-        r.align(4)?;
-        let requirements = r.read_i32()?;
+        let keyword_name = rdr.read_aligned_string()?;
+        rdr.align(4)?;
+        let requirements = rdr.read_i32()?;
 
         Ok(KeywordTargetInfo {
             keyword_name,
