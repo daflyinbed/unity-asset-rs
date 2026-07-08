@@ -39,66 +39,87 @@ impl crate::Parse for SpeedTreeWindConfig9 {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_f_strength_response = rdr.read_f32()?;
-        let m_f_direction_response = rdr.read_f32()?;
-        let m_f_gust_frequency = rdr.read_f32()?;
-        let m_f_gust_strength_min = rdr.read_f32()?;
-        let m_f_gust_strength_max = rdr.read_f32()?;
-        let m_f_gust_duration_min = rdr.read_f32()?;
-        let m_f_gust_duration_max = rdr.read_f32()?;
-        let m_f_gust_rise_scalar = rdr.read_f32()?;
-        let m_f_gust_fall_scalar = rdr.read_f32()?;
-        let m_f_branch1_stretch_limit = rdr.read_f32()?;
-        let m_f_branch2_stretch_limit = rdr.read_f32()?;
-        let m_f_shared_height_start = rdr.read_f32()?;
-        let m_s_shared = BranchWindLevel::parse(rdr, ver)?;
-        let m_s_branch1 = BranchWindLevel::parse(rdr, ver)?;
-        let m_s_branch2 = BranchWindLevel::parse(rdr, ver)?;
-        let m_s_ripple = RippleGroup::parse(rdr, ver)?;
-        let m_v_tree_extents = Vector3f::parse(rdr, ver)?;
-        let m_f_wind_independence = rdr.read_f32()?;
-        let m_b_do_shared = rdr.read_i32()?;
-        let m_b_do_branch1 = rdr.read_i32()?;
-        let m_b_do_branch2 = rdr.read_i32()?;
-        let m_b_do_ripple = rdr.read_i32()?;
-        let m_b_do_shimmer = rdr.read_i32()?;
-        let m_b_lod_fade = rdr.read_i32()?;
-        let pad = if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            Some(rdr.read_i32()?)
+        let mut m_f_strength_response = None;
+        let mut m_f_direction_response = None;
+        let mut m_f_gust_frequency = None;
+        let mut m_f_gust_strength_min = None;
+        let mut m_f_gust_strength_max = None;
+        let mut m_f_gust_duration_min = None;
+        let mut m_f_gust_duration_max = None;
+        let mut m_f_gust_rise_scalar = None;
+        let mut m_f_gust_fall_scalar = None;
+        let mut m_f_branch1_stretch_limit = None;
+        let mut m_f_branch2_stretch_limit = None;
+        let mut m_f_shared_height_start = None;
+        let mut m_s_shared = None;
+        let mut m_s_branch1 = None;
+        let mut m_s_branch2 = None;
+        let mut m_s_ripple = None;
+        let mut m_v_tree_extents = None;
+        let mut m_f_wind_independence = None;
+        let mut m_b_do_shared = None;
+        let mut m_b_do_branch1 = None;
+        let mut m_b_do_branch2 = None;
+        let mut m_b_do_ripple = None;
+        let mut m_b_do_shimmer = None;
+        let mut m_b_lod_fade = None;
+        let mut pad = None;
+        let mut m_f_import_scaling = None;
+            m_f_strength_response = Some(rdr.read_f32()?);
+            m_f_direction_response = Some(rdr.read_f32()?);
+            m_f_gust_frequency = Some(rdr.read_f32()?);
+            m_f_gust_strength_min = Some(rdr.read_f32()?);
+            m_f_gust_strength_max = Some(rdr.read_f32()?);
+            m_f_gust_duration_min = Some(rdr.read_f32()?);
+            m_f_gust_duration_max = Some(rdr.read_f32()?);
+            m_f_gust_rise_scalar = Some(rdr.read_f32()?);
+            m_f_gust_fall_scalar = Some(rdr.read_f32()?);
+            m_f_branch1_stretch_limit = Some(rdr.read_f32()?);
+            m_f_branch2_stretch_limit = Some(rdr.read_f32()?);
+            m_f_shared_height_start = Some(rdr.read_f32()?);
+            m_s_shared = Some(BranchWindLevel::parse(rdr, ver)?);
+            m_s_branch1 = Some(BranchWindLevel::parse(rdr, ver)?);
+            m_s_branch2 = Some(BranchWindLevel::parse(rdr, ver)?);
+            m_s_ripple = Some(RippleGroup::parse(rdr, ver)?);
+            m_v_tree_extents = Some(Vector3f::parse(rdr, ver)?);
+            m_f_wind_independence = Some(rdr.read_f32()?);
+            m_b_do_shared = Some(rdr.read_i32()?);
+            m_b_do_branch1 = Some(rdr.read_i32()?);
+            m_b_do_branch2 = Some(rdr.read_i32()?);
+            m_b_do_ripple = Some(rdr.read_i32()?);
+            m_b_do_shimmer = Some(rdr.read_i32()?);
+            m_b_lod_fade = Some(rdr.read_i32()?);
+        if *ver >= crate::UnityVersion::new(6000, 0, 8) {
+            m_f_import_scaling = Some(rdr.read_f32()?);
         } else {
-            None
-        };
-        let m_f_import_scaling = if *ver >= crate::UnityVersion::new(6000, 0, 8) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
+            pad = Some(rdr.read_i32()?);
+        }
 
         Ok(SpeedTreeWindConfig9 {
-            m_f_strength_response,
-            m_f_direction_response,
-            m_f_gust_frequency,
-            m_f_gust_strength_min,
-            m_f_gust_strength_max,
-            m_f_gust_duration_min,
-            m_f_gust_duration_max,
-            m_f_gust_rise_scalar,
-            m_f_gust_fall_scalar,
-            m_f_branch1_stretch_limit,
-            m_f_branch2_stretch_limit,
-            m_f_shared_height_start,
-            m_s_shared,
-            m_s_branch1,
-            m_s_branch2,
-            m_s_ripple,
-            m_v_tree_extents,
-            m_f_wind_independence,
-            m_b_do_shared,
-            m_b_do_branch1,
-            m_b_do_branch2,
-            m_b_do_ripple,
-            m_b_do_shimmer,
-            m_b_lod_fade,
+            m_f_strength_response: m_f_strength_response.unwrap(),
+            m_f_direction_response: m_f_direction_response.unwrap(),
+            m_f_gust_frequency: m_f_gust_frequency.unwrap(),
+            m_f_gust_strength_min: m_f_gust_strength_min.unwrap(),
+            m_f_gust_strength_max: m_f_gust_strength_max.unwrap(),
+            m_f_gust_duration_min: m_f_gust_duration_min.unwrap(),
+            m_f_gust_duration_max: m_f_gust_duration_max.unwrap(),
+            m_f_gust_rise_scalar: m_f_gust_rise_scalar.unwrap(),
+            m_f_gust_fall_scalar: m_f_gust_fall_scalar.unwrap(),
+            m_f_branch1_stretch_limit: m_f_branch1_stretch_limit.unwrap(),
+            m_f_branch2_stretch_limit: m_f_branch2_stretch_limit.unwrap(),
+            m_f_shared_height_start: m_f_shared_height_start.unwrap(),
+            m_s_shared: m_s_shared.unwrap(),
+            m_s_branch1: m_s_branch1.unwrap(),
+            m_s_branch2: m_s_branch2.unwrap(),
+            m_s_ripple: m_s_ripple.unwrap(),
+            m_v_tree_extents: m_v_tree_extents.unwrap(),
+            m_f_wind_independence: m_f_wind_independence.unwrap(),
+            m_b_do_shared: m_b_do_shared.unwrap(),
+            m_b_do_branch1: m_b_do_branch1.unwrap(),
+            m_b_do_branch2: m_b_do_branch2.unwrap(),
+            m_b_do_ripple: m_b_do_ripple.unwrap(),
+            m_b_do_shimmer: m_b_do_shimmer.unwrap(),
+            m_b_lod_fade: m_b_lod_fade.unwrap(),
             pad,
             m_f_import_scaling,
         })

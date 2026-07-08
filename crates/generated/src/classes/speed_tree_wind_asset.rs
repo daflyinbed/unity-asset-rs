@@ -18,31 +18,23 @@ impl crate::Parse for SpeedTreeWindAsset {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
-        let m_wind = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(SpeedTreeWind::parse(rdr, ver)?)
+        let mut m_name = None;
+        let mut m_wind = None;
+        let mut m_e_version = None;
+        let mut m_config8 = None;
+        let mut m_config9 = None;
+            m_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+        if *ver >= crate::UnityVersion::new(2023, 3, 0) {
+            m_e_version = Some(rdr.read_i32()?);
+            m_config8 = Some(SpeedTreeWindConfig8::parse(rdr, ver)?);
+            m_config9 = Some(SpeedTreeWindConfig9::parse(rdr, ver)?);
         } else {
-            None
-        };
-        let m_e_version = if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            Some(rdr.read_i32()?)
-        } else {
-            None
-        };
-        let m_config8 = if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            Some(SpeedTreeWindConfig8::parse(rdr, ver)?)
-        } else {
-            None
-        };
-        let m_config9 = if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            Some(SpeedTreeWindConfig9::parse(rdr, ver)?)
-        } else {
-            None
-        };
+            m_wind = Some(SpeedTreeWind::parse(rdr, ver)?);
+        }
 
         Ok(SpeedTreeWindAsset {
-            m_name,
+            m_name: m_name.unwrap(),
             m_wind,
             m_e_version,
             m_config8,

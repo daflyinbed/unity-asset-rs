@@ -13,27 +13,25 @@ impl crate::Parse for LightProbeOcclusion {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_baked_light_index = if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?)
+        let mut m_baked_light_index = None;
+        let mut m_probe_occlusion_light_index = None;
+        let mut m_occlusion = None;
+        let mut m_occlusion_mask_channel = None;
+        if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            m_probe_occlusion_light_index = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
         } else {
-            None
-        };
-        let m_probe_occlusion_light_index = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?)
+            m_baked_light_index = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+        }
+            m_occlusion = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_f32() }).collect::<Result<Vec<_>, _>>() } )?);
+        if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            m_occlusion_mask_channel = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i8() }).collect::<Result<Vec<_>, _>>() } )?);
         } else {
-            None
-        };
-        let m_occlusion = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_f32() }).collect::<Result<Vec<_>, _>>() } )?;
-        let m_occlusion_mask_channel = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i8() }).collect::<Result<Vec<_>, _>>() } )?)
-        } else {
-            None
-        };
+        }
 
         Ok(LightProbeOcclusion {
             m_baked_light_index,
             m_probe_occlusion_light_index,
-            m_occlusion,
+            m_occlusion: m_occlusion.unwrap(),
             m_occlusion_mask_channel,
         })
     }

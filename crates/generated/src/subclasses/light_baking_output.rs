@@ -16,29 +16,24 @@ impl crate::Parse for LightBakingOutput {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let probe_occlusion_light_index = rdr.read_i32()?;
-        let occlusion_mask_channel = rdr.read_i32()?;
-        let lightmapping_mask = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            Some(rdr.read_i32()?)
-        } else {
-            None
-        };
-        let lightmap_bake_mode = if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            Some(LightmapBakeMode::parse(rdr, ver)?)
-        } else {
-            None
-        };
-        let is_baked = if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            let v = rdr.read_bool()?;
+        let mut probe_occlusion_light_index = None;
+        let mut occlusion_mask_channel = None;
+        let mut lightmapping_mask = None;
+        let mut lightmap_bake_mode = None;
+        let mut is_baked = None;
+            probe_occlusion_light_index = Some(rdr.read_i32()?);
+            occlusion_mask_channel = Some(rdr.read_i32()?);
+        if *ver >= crate::UnityVersion::new(2017, 3, 0) {
+            lightmap_bake_mode = Some(LightmapBakeMode::parse(rdr, ver)?);
+            is_baked = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            Some(v)
         } else {
-            None
-        };
+            lightmapping_mask = Some(rdr.read_i32()?);
+        }
 
         Ok(LightBakingOutput {
-            probe_occlusion_light_index,
-            occlusion_mask_channel,
+            probe_occlusion_light_index: probe_occlusion_light_index.unwrap(),
+            occlusion_mask_channel: occlusion_mask_channel.unwrap(),
             lightmapping_mask,
             lightmap_bake_mode,
             is_baked,

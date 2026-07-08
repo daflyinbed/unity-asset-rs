@@ -15,31 +15,27 @@ impl crate::Parse for DetailPatch {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let bounds = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(Aabb::parse(rdr, ver)?)
+        let mut bounds = None;
+        let mut layer_indices = None;
+        let mut number_of_objects = None;
+        let mut coverage = None;
+        if *ver >= crate::UnityVersion::new(2020, 2, 0) {
         } else {
-            None
-        };
-        let layer_indices = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
-        rdr.align(4)?;
-        let number_of_objects = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
+            bounds = Some(Aabb::parse(rdr, ver)?);
+        }
+            layer_indices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let coverage = if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
+        if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            coverage = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
-            Some(v)
         } else {
-            None
-        };
+            number_of_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+        }
 
         Ok(DetailPatch {
             bounds,
-            layer_indices,
+            layer_indices: layer_indices.unwrap(),
             number_of_objects,
             coverage,
         })

@@ -25,76 +25,47 @@ impl crate::Parse for PhysicMaterial {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
-        let dynamic_friction = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(rdr.read_f32()?)
+        let mut m_name = None;
+        let mut dynamic_friction = None;
+        let mut m_dynamic_friction = None;
+        let mut static_friction = None;
+        let mut m_static_friction = None;
+        let mut bounciness = None;
+        let mut m_bounciness = None;
+        let mut friction_combine = None;
+        let mut m_friction_combine = None;
+        let mut bounce_combine = None;
+        let mut m_bounce_combine = None;
+        let mut friction_direction2 = None;
+        let mut dynamic_friction2 = None;
+        let mut static_friction2 = None;
+            m_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+        if *ver >= crate::UnityVersion::new(2023, 3, 0) {
+            m_dynamic_friction = Some(rdr.read_f32()?);
+            m_static_friction = Some(rdr.read_f32()?);
+            m_bounciness = Some(rdr.read_f32()?);
+            m_friction_combine = Some(rdr.read_i32()?);
+            m_bounce_combine = Some(rdr.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(5, 2, 0) {
+            dynamic_friction = Some(rdr.read_f32()?);
+            static_friction = Some(rdr.read_f32()?);
+            bounciness = Some(rdr.read_f32()?);
+            friction_combine = Some(rdr.read_i32()?);
+            bounce_combine = Some(rdr.read_i32()?);
         } else {
-            None
-        };
-        let m_dynamic_friction = if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let static_friction = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let m_static_friction = if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let bounciness = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let m_bounciness = if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let friction_combine = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(rdr.read_i32()?)
-        } else {
-            None
-        };
-        let m_friction_combine = if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            Some(rdr.read_i32()?)
-        } else {
-            None
-        };
-        let bounce_combine = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(rdr.read_i32()?)
-        } else {
-            None
-        };
-        let m_bounce_combine = if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            Some(rdr.read_i32()?)
-        } else {
-            None
-        };
-        let friction_direction2 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(Vector3f::parse(rdr, ver)?)
-        } else {
-            None
-        };
-        let dynamic_friction2 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let static_friction2 = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
+            dynamic_friction = Some(rdr.read_f32()?);
+            static_friction = Some(rdr.read_f32()?);
+            bounciness = Some(rdr.read_f32()?);
+            friction_combine = Some(rdr.read_i32()?);
+            bounce_combine = Some(rdr.read_i32()?);
+            friction_direction2 = Some(Vector3f::parse(rdr, ver)?);
+            dynamic_friction2 = Some(rdr.read_f32()?);
+            static_friction2 = Some(rdr.read_f32()?);
+        }
 
         Ok(PhysicMaterial {
-            m_name,
+            m_name: m_name.unwrap(),
             dynamic_friction,
             m_dynamic_friction,
             static_friction,

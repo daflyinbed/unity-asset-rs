@@ -19,34 +19,39 @@ impl crate::Parse for RayTracingShaderImporter {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
-        let m_external_objects = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-        rdr.align(4)?;
-        let m_used_file_i_ds = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?;
-        rdr.align(4)?;
-        let m_current_api_mask = if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            let v = rdr.read_u32()?;
+        let mut m_name = None;
+        let mut m_external_objects = None;
+        let mut m_used_file_i_ds = None;
+        let mut m_current_api_mask = None;
+        let mut m_user_data = None;
+        let mut m_asset_bundle_name = None;
+        let mut m_asset_bundle_variant = None;
+            m_name = Some(rdr.read_aligned_string()?);
             rdr.align(4)?;
-            Some(v)
+            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+        if *ver >= crate::UnityVersion::new(2021, 1, 0) {
         } else {
-            None
-        };
-        let m_user_data = rdr.read_aligned_string()?;
-        rdr.align(4)?;
-        let m_asset_bundle_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
-        let m_asset_bundle_variant = rdr.read_aligned_string()?;
-        rdr.align(4)?;
+            m_current_api_mask = Some(rdr.read_u32()?);
+            rdr.align(4)?;
+        }
+            m_user_data = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
 
         Ok(RayTracingShaderImporter {
-            m_name,
-            m_external_objects,
-            m_used_file_i_ds,
+            m_name: m_name.unwrap(),
+            m_external_objects: m_external_objects.unwrap(),
+            m_used_file_i_ds: m_used_file_i_ds.unwrap(),
             m_current_api_mask,
-            m_user_data,
-            m_asset_bundle_name,
-            m_asset_bundle_variant,
+            m_user_data: m_user_data.unwrap(),
+            m_asset_bundle_name: m_asset_bundle_name.unwrap(),
+            m_asset_bundle_variant: m_asset_bundle_variant.unwrap(),
         })
     }
 }

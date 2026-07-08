@@ -14,37 +14,22 @@ impl crate::Parse for UnityAnalyticsManager {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_enabled = if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            Some(rdr.read_bool()?)
+        let mut m_enabled = None;
+        let mut m_initialize_on_startup = None;
+        let mut m_test_mode = None;
+        let mut m_test_event_url = None;
+        let mut m_test_config_url = None;
+        if *ver >= crate::UnityVersion::new(5, 3, 0) {
         } else {
-            None
-        };
-        let m_initialize_on_startup = if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            Some(rdr.read_bool()?)
-        } else {
-            None
-        };
-        let m_test_mode = if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            let v = rdr.read_bool()?;
+            m_enabled = Some(rdr.read_bool()?);
+            m_initialize_on_startup = Some(rdr.read_bool()?);
+            m_test_mode = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_test_event_url = if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            let v = rdr.read_aligned_string()?;
+            m_test_event_url = Some(rdr.read_aligned_string()?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_test_config_url = if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            let v = rdr.read_aligned_string()?;
+            m_test_config_url = Some(rdr.read_aligned_string()?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
+        }
 
         Ok(UnityAnalyticsManager {
             m_enabled,

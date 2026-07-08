@@ -12,20 +12,22 @@ impl crate::Parse for SortingLayerEntry {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
-        let user_id = if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            Some(rdr.read_u32()?)
+        let mut name = None;
+        let mut user_id = None;
+        let mut unique_id = None;
+            name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+        if *ver >= crate::UnityVersion::new(5, 0, 0) {
         } else {
-            None
-        };
-        let unique_id = rdr.read_u32()?;
-        rdr.align(4)?;
+            user_id = Some(rdr.read_u32()?);
+        }
+            unique_id = Some(rdr.read_u32()?);
+            rdr.align(4)?;
 
         Ok(SortingLayerEntry {
-            name,
+            name: name.unwrap(),
             user_id,
-            unique_id,
+            unique_id: unique_id.unwrap(),
         })
     }
 }

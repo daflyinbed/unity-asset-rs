@@ -72,254 +72,118 @@ impl crate::Parse for NavMeshLayers {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let built_in_layer_0 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = NavMeshLayerData::parse(rdr, ver)?;
+        let mut built_in_layer_0 = None;
+        let mut areas = None;
+        let mut built_in_layer_1 = None;
+        let mut m_last_agent_type_id = None;
+        let mut built_in_layer_2 = None;
+        let mut m_settings = None;
+        let mut user_layer_0 = None;
+        let mut m_setting_names = None;
+        let mut user_layer_1 = None;
+        let mut user_layer_2 = None;
+        let mut user_layer_3 = None;
+        let mut user_layer_4 = None;
+        let mut user_layer_5 = None;
+        let mut user_layer_6 = None;
+        let mut user_layer_7 = None;
+        let mut user_layer_8 = None;
+        let mut user_layer_9 = None;
+        let mut user_layer_10 = None;
+        let mut user_layer_11 = None;
+        let mut user_layer_12 = None;
+        let mut user_layer_13 = None;
+        let mut user_layer_14 = None;
+        let mut user_layer_15 = None;
+        let mut user_layer_16 = None;
+        let mut user_layer_17 = None;
+        let mut user_layer_18 = None;
+        let mut user_layer_19 = None;
+        let mut user_layer_20 = None;
+        let mut user_layer_21 = None;
+        let mut user_layer_22 = None;
+        let mut user_layer_23 = None;
+        let mut user_layer_24 = None;
+        let mut user_layer_25 = None;
+        let mut user_layer_26 = None;
+        let mut user_layer_27 = None;
+        let mut user_layer_28 = None;
+        if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            areas = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { NavMeshAreaData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let areas = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { NavMeshAreaData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            m_last_agent_type_id = Some(rdr.read_i32()?);
+            m_settings = Some(NavMeshLayersMSettingsVariant::parse(rdr, ver)?);
+            m_setting_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let built_in_layer_1 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = NavMeshLayerData::parse(rdr, ver)?;
+        } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            areas = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { NavMeshAreaData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
-            Some(v)
         } else {
-            None
-        };
-        let m_last_agent_type_id = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            Some(rdr.read_i32()?)
-        } else {
-            None
-        };
-        let built_in_layer_2 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = NavMeshLayerData::parse(rdr, ver)?;
+            built_in_layer_0 = Some(NavMeshLayerData::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_settings = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            Some(NavMeshLayersMSettingsVariant::parse(rdr, ver)?)
-        } else {
-            None
-        };
-        let user_layer_0 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = NavMeshLayerData::parse(rdr, ver)?;
+            built_in_layer_1 = Some(NavMeshLayerData::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_setting_names = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            built_in_layer_2 = Some(NavMeshLayerData::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_1 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = NavMeshLayerData::parse(rdr, ver)?;
+            user_layer_0 = Some(NavMeshLayerData::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_2 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = NavMeshLayerData::parse(rdr, ver)?;
+            user_layer_1 = Some(NavMeshLayerData::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_3 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = NavMeshLayerData::parse(rdr, ver)?;
+            user_layer_2 = Some(NavMeshLayerData::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_4 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = NavMeshLayerData::parse(rdr, ver)?;
+            user_layer_3 = Some(NavMeshLayerData::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_5 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = NavMeshLayerData::parse(rdr, ver)?;
+            user_layer_4 = Some(NavMeshLayerData::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_6 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = NavMeshLayerData::parse(rdr, ver)?;
+            user_layer_5 = Some(NavMeshLayerData::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_7 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = NavMeshLayerData::parse(rdr, ver)?;
+            user_layer_6 = Some(NavMeshLayerData::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_8 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = NavMeshLayerData::parse(rdr, ver)?;
+            user_layer_7 = Some(NavMeshLayerData::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_9 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = NavMeshLayerData::parse(rdr, ver)?;
+            user_layer_8 = Some(NavMeshLayerData::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_10 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = NavMeshLayerData::parse(rdr, ver)?;
+            user_layer_9 = Some(NavMeshLayerData::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_11 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = NavMeshLayerData::parse(rdr, ver)?;
+            user_layer_10 = Some(NavMeshLayerData::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_12 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = NavMeshLayerData::parse(rdr, ver)?;
+            user_layer_11 = Some(NavMeshLayerData::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_13 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = NavMeshLayerData::parse(rdr, ver)?;
+            user_layer_12 = Some(NavMeshLayerData::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_14 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = NavMeshLayerData::parse(rdr, ver)?;
+            user_layer_13 = Some(NavMeshLayerData::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_15 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = NavMeshLayerData::parse(rdr, ver)?;
+            user_layer_14 = Some(NavMeshLayerData::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_16 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = NavMeshLayerData::parse(rdr, ver)?;
+            user_layer_15 = Some(NavMeshLayerData::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_17 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = NavMeshLayerData::parse(rdr, ver)?;
+            user_layer_16 = Some(NavMeshLayerData::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_18 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = NavMeshLayerData::parse(rdr, ver)?;
+            user_layer_17 = Some(NavMeshLayerData::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_19 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = NavMeshLayerData::parse(rdr, ver)?;
+            user_layer_18 = Some(NavMeshLayerData::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_20 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = NavMeshLayerData::parse(rdr, ver)?;
+            user_layer_19 = Some(NavMeshLayerData::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_21 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = NavMeshLayerData::parse(rdr, ver)?;
+            user_layer_20 = Some(NavMeshLayerData::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_22 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = NavMeshLayerData::parse(rdr, ver)?;
+            user_layer_21 = Some(NavMeshLayerData::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_23 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = NavMeshLayerData::parse(rdr, ver)?;
+            user_layer_22 = Some(NavMeshLayerData::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_24 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = NavMeshLayerData::parse(rdr, ver)?;
+            user_layer_23 = Some(NavMeshLayerData::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_25 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = NavMeshLayerData::parse(rdr, ver)?;
+            user_layer_24 = Some(NavMeshLayerData::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_26 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = NavMeshLayerData::parse(rdr, ver)?;
+            user_layer_25 = Some(NavMeshLayerData::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_27 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = NavMeshLayerData::parse(rdr, ver)?;
+            user_layer_26 = Some(NavMeshLayerData::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let user_layer_28 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = NavMeshLayerData::parse(rdr, ver)?;
+            user_layer_27 = Some(NavMeshLayerData::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
+            user_layer_28 = Some(NavMeshLayerData::parse(rdr, ver)?);
+            rdr.align(4)?;
+        }
 
         Ok(NavMeshLayers {
             built_in_layer_0,

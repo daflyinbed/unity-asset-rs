@@ -17,27 +17,25 @@ impl crate::Parse for HeightmapData {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let position = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(Vector3f::parse(rdr, ver)?)
+        let mut position = None;
+        let mut surface_to_terrain = None;
+        let mut terrain_data = None;
+        let mut is_rotated = None;
+        if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            surface_to_terrain = Some(Matrix4x4f::parse(rdr, ver)?);
         } else {
-            None
-        };
-        let surface_to_terrain = if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            Some(Matrix4x4f::parse(rdr, ver)?)
+            position = Some(Vector3f::parse(rdr, ver)?);
+        }
+            terrain_data = Some(crate::PPtr::parse(rdr, ver)?);
+        if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            is_rotated = Some(rdr.read_bool()?);
         } else {
-            None
-        };
-        let terrain_data = crate::PPtr::parse(rdr, ver)?;
-        let is_rotated = if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            Some(rdr.read_bool()?)
-        } else {
-            None
-        };
+        }
 
         Ok(HeightmapData {
             position,
             surface_to_terrain,
-            terrain_data,
+            terrain_data: terrain_data.unwrap(),
             is_rotated,
         })
     }

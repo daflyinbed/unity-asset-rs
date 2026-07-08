@@ -25,52 +25,55 @@ impl crate::Parse for ContentSummary {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_serialized_file_size = rdr.read_u64()?;
-        let m_generated_file_size = if *ver >= crate::UnityVersion::new(6000, 4, 0) {
-            Some(rdr.read_u64()?)
+        let mut m_serialized_file_size = None;
+        let mut m_generated_file_size = None;
+        let mut m_reused_serialized_file_size = None;
+        let mut m_size_reused_content_in_output_directory = None;
+        let mut m_resource_data_size = None;
+        let mut m_header_size = None;
+        let mut m_serialized_file_count = None;
+        let mut m_generated_file_count = None;
+        let mut m_reused_serialized_file_count = None;
+        let mut m_resource_file_count = None;
+        let mut m_object_count = None;
+        let mut m_type_stats_list = None;
+        let mut m_asset_stats_list = None;
+            m_serialized_file_size = Some(rdr.read_u64()?);
+        if *ver >= crate::UnityVersion::new(6000, 6, 0) {
+            m_reused_serialized_file_size = Some(rdr.read_u64()?);
         } else {
-            None
-        };
-        let m_reused_serialized_file_size = if *ver >= crate::UnityVersion::new(6000, 6, 0) {
-            Some(rdr.read_u64()?)
+            m_generated_file_size = Some(rdr.read_u64()?);
+        }
+            m_size_reused_content_in_output_directory = Some(rdr.read_u64()?);
+            m_resource_data_size = Some(rdr.read_u64()?);
+            m_header_size = Some(rdr.read_u64()?);
+            m_serialized_file_count = Some(rdr.read_i32()?);
+        if *ver >= crate::UnityVersion::new(6000, 6, 0) {
+            m_reused_serialized_file_count = Some(rdr.read_i32()?);
         } else {
-            None
-        };
-        let m_size_reused_content_in_output_directory = rdr.read_u64()?;
-        let m_resource_data_size = rdr.read_u64()?;
-        let m_header_size = rdr.read_u64()?;
-        let m_serialized_file_count = rdr.read_i32()?;
-        let m_generated_file_count = if *ver >= crate::UnityVersion::new(6000, 4, 0) {
-            Some(rdr.read_i32()?)
-        } else {
-            None
-        };
-        let m_reused_serialized_file_count = if *ver >= crate::UnityVersion::new(6000, 6, 0) {
-            Some(rdr.read_i32()?)
-        } else {
-            None
-        };
-        let m_resource_file_count = rdr.read_i32()?;
-        let m_object_count = rdr.read_i32()?;
-        let m_type_stats_list = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TypeStats::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        rdr.align(4)?;
-        let m_asset_stats_list = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AssetStats::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        rdr.align(4)?;
+            m_generated_file_count = Some(rdr.read_i32()?);
+        }
+            m_resource_file_count = Some(rdr.read_i32()?);
+            m_object_count = Some(rdr.read_i32()?);
+            m_type_stats_list = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TypeStats::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_asset_stats_list = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AssetStats::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
 
         Ok(ContentSummary {
-            m_serialized_file_size,
+            m_serialized_file_size: m_serialized_file_size.unwrap(),
             m_generated_file_size,
             m_reused_serialized_file_size,
-            m_size_reused_content_in_output_directory,
-            m_resource_data_size,
-            m_header_size,
-            m_serialized_file_count,
+            m_size_reused_content_in_output_directory: m_size_reused_content_in_output_directory.unwrap(),
+            m_resource_data_size: m_resource_data_size.unwrap(),
+            m_header_size: m_header_size.unwrap(),
+            m_serialized_file_count: m_serialized_file_count.unwrap(),
             m_generated_file_count,
             m_reused_serialized_file_count,
-            m_resource_file_count,
-            m_object_count,
-            m_type_stats_list,
-            m_asset_stats_list,
+            m_resource_file_count: m_resource_file_count.unwrap(),
+            m_object_count: m_object_count.unwrap(),
+            m_type_stats_list: m_type_stats_list.unwrap(),
+            m_asset_stats_list: m_asset_stats_list.unwrap(),
         })
     }
 }

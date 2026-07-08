@@ -9,7 +9,6 @@ use crate::serialized_file::{ObjectInfo, SerializedFile};
 use crate::typetree::{interpret, RefTypeTable, Value};
 use crate::Endian;
 use generated::{ClassIDType, UnityObject};
-use unity_core::Parse;
 
 /// 解析结果：typed struct 或动态 Value。
 #[derive(Debug)]

@@ -28,42 +28,55 @@ impl crate::Parse for AudioMixerConstant {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let groups = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { GroupConstant::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        rdr.align(4)?;
-        let group_gui_ds = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Guid::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        let effects = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { EffectConstant::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        rdr.align(4)?;
-        let effect_gui_ds = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Guid::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        let num_side_chain_buffers = rdr.read_u32()?;
-        let snapshots = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SnapshotConstant::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        let snapshot_gui_ds = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Guid::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        let group_name_buffer = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
-        rdr.align(4)?;
-        let snapshot_name_buffer = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
-        rdr.align(4)?;
-        let plugin_effect_name_buffer = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
-        rdr.align(4)?;
-        let exposed_parameter_names = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
-        let exposed_parameter_indices = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
-        let group_connections = if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { GroupConnection::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?)
+        let mut groups = None;
+        let mut group_gui_ds = None;
+        let mut effects = None;
+        let mut effect_gui_ds = None;
+        let mut num_side_chain_buffers = None;
+        let mut snapshots = None;
+        let mut snapshot_gui_ds = None;
+        let mut group_name_buffer = None;
+        let mut snapshot_name_buffer = None;
+        let mut plugin_effect_name_buffer = None;
+        let mut exposed_parameter_names = None;
+        let mut exposed_parameter_indices = None;
+        let mut group_connections = None;
+            groups = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { GroupConstant::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            group_gui_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Guid::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            effects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { EffectConstant::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            effect_gui_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Guid::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            num_side_chain_buffers = Some(rdr.read_u32()?);
+            snapshots = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SnapshotConstant::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            snapshot_gui_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Guid::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            group_name_buffer = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            snapshot_name_buffer = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            plugin_effect_name_buffer = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            exposed_parameter_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
+            exposed_parameter_indices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
+        if *ver >= crate::UnityVersion::new(2022, 1, 0) {
+        } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
+            group_connections = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { GroupConnection::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
         } else {
-            None
-        };
+        }
 
         Ok(AudioMixerConstant {
-            groups,
-            group_gui_ds,
-            effects,
-            effect_gui_ds,
-            num_side_chain_buffers,
-            snapshots,
-            snapshot_gui_ds,
-            group_name_buffer,
-            snapshot_name_buffer,
-            plugin_effect_name_buffer,
-            exposed_parameter_names,
-            exposed_parameter_indices,
+            groups: groups.unwrap(),
+            group_gui_ds: group_gui_ds.unwrap(),
+            effects: effects.unwrap(),
+            effect_gui_ds: effect_gui_ds.unwrap(),
+            num_side_chain_buffers: num_side_chain_buffers.unwrap(),
+            snapshots: snapshots.unwrap(),
+            snapshot_gui_ds: snapshot_gui_ds.unwrap(),
+            group_name_buffer: group_name_buffer.unwrap(),
+            snapshot_name_buffer: snapshot_name_buffer.unwrap(),
+            plugin_effect_name_buffer: plugin_effect_name_buffer.unwrap(),
+            exposed_parameter_names: exposed_parameter_names.unwrap(),
+            exposed_parameter_indices: exposed_parameter_indices.unwrap(),
             group_connections,
         })
     }

@@ -73,34 +73,41 @@ impl crate::Parse for BillboardAsset {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
-        let width = rdr.read_f32()?;
-        let bottom = rdr.read_f32()?;
-        let height = rdr.read_f32()?;
-        let image_tex_coords = BillboardAssetImageTexCoordsVariant::parse(rdr, ver)?;
-        let rotated = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
+        let mut m_name = None;
+        let mut width = None;
+        let mut bottom = None;
+        let mut height = None;
+        let mut image_tex_coords = None;
+        let mut rotated = None;
+        let mut vertices = None;
+        let mut indices = None;
+        let mut material = None;
+            m_name = Some(rdr.read_aligned_string()?);
             rdr.align(4)?;
-            Some(v)
+            width = Some(rdr.read_f32()?);
+            bottom = Some(rdr.read_f32()?);
+            height = Some(rdr.read_f32()?);
+            image_tex_coords = Some(BillboardAssetImageTexCoordsVariant::parse(rdr, ver)?);
+        if *ver >= crate::UnityVersion::new(5, 3, 0) {
         } else {
-            None
-        };
-        let vertices = BillboardAssetVerticesVariant::parse(rdr, ver)?;
-        let indices = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u16() }).collect::<Result<Vec<_>, _>>() } )?;
-        rdr.align(4)?;
-        let material = crate::PPtr::parse(rdr, ver)?;
+            rotated = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+        }
+            vertices = Some(BillboardAssetVerticesVariant::parse(rdr, ver)?);
+            indices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u16() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            material = Some(crate::PPtr::parse(rdr, ver)?);
 
         Ok(BillboardAsset {
-            m_name,
-            width,
-            bottom,
-            height,
-            image_tex_coords,
+            m_name: m_name.unwrap(),
+            width: width.unwrap(),
+            bottom: bottom.unwrap(),
+            height: height.unwrap(),
+            image_tex_coords: image_tex_coords.unwrap(),
             rotated,
-            vertices,
-            indices,
-            material,
+            vertices: vertices.unwrap(),
+            indices: indices.unwrap(),
+            material: material.unwrap(),
         })
     }
 }

@@ -12,21 +12,22 @@ impl crate::Parse for CgProgram {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
-        let m_script = rdr.read_aligned_string()?;
-        rdr.align(4)?;
-        let m_path_name = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = rdr.read_aligned_string()?;
+        let mut m_name = None;
+        let mut m_script = None;
+        let mut m_path_name = None;
+            m_name = Some(rdr.read_aligned_string()?);
             rdr.align(4)?;
-            Some(v)
+            m_script = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
         } else {
-            None
-        };
+            m_path_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+        }
 
         Ok(CgProgram {
-            m_name,
-            m_script,
+            m_name: m_name.unwrap(),
+            m_script: m_script.unwrap(),
             m_path_name,
         })
     }

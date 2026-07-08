@@ -42,30 +42,23 @@ impl crate::Parse for ComputeShader {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
-        let kernels = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderKernel::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let mut m_name = None;
+        let mut kernels = None;
+        let mut variants = None;
+        let mut constant_buffers = None;
+            m_name = Some(rdr.read_aligned_string()?);
             rdr.align(4)?;
-            Some(v)
+        if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            variants = Some(ComputeShaderVariantsVariant::parse(rdr, ver)?);
         } else {
-            None
-        };
-        let variants = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(ComputeShaderVariantsVariant::parse(rdr, ver)?)
-        } else {
-            None
-        };
-        let constant_buffers = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderCb::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            kernels = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderKernel::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
+            constant_buffers = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderCb::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+        }
 
         Ok(ComputeShader {
-            m_name,
+            m_name: m_name.unwrap(),
             kernels,
             variants,
             constant_buffers,

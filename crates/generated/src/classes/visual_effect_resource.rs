@@ -44,30 +44,31 @@ impl crate::Parse for VisualEffectResource {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
-        let m_graph = crate::PPtr::parse(rdr, ver)?;
-        let m_shader_sources = if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VfxShaderSourceDesc::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let mut m_name = None;
+        let mut m_graph = None;
+        let mut m_shader_sources = None;
+        let mut m_infos = None;
+        let mut m_systems = None;
+            m_name = Some(rdr.read_aligned_string()?);
             rdr.align(4)?;
-            Some(v)
+            m_graph = Some(crate::PPtr::parse(rdr, ver)?);
+        if *ver >= crate::UnityVersion::new(2020, 1, 0) {
         } else {
-            None
-        };
-        let m_infos = VisualEffectResourceMInfosVariant::parse(rdr, ver)?;
-        let m_systems = if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VfxEditorSystemDesc::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            m_shader_sources = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VfxShaderSourceDesc::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
-            Some(v)
+        }
+            m_infos = Some(VisualEffectResourceMInfosVariant::parse(rdr, ver)?);
+        if *ver >= crate::UnityVersion::new(2020, 1, 0) {
         } else {
-            None
-        };
+            m_systems = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VfxEditorSystemDesc::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+        }
 
         Ok(VisualEffectResource {
-            m_name,
-            m_graph,
+            m_name: m_name.unwrap(),
+            m_graph: m_graph.unwrap(),
             m_shader_sources,
-            m_infos,
+            m_infos: m_infos.unwrap(),
             m_systems,
         })
     }

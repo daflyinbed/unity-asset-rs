@@ -14,15 +14,16 @@ impl crate::Parse for SpriteVertex {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let pos = Vector3f::parse(rdr, ver)?;
-        let uv = if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            Some(Vector2f::parse(rdr, ver)?)
+        let mut pos = None;
+        let mut uv = None;
+            pos = Some(Vector3f::parse(rdr, ver)?);
+        if *ver >= crate::UnityVersion::new(4, 5, 0) {
         } else {
-            None
-        };
+            uv = Some(Vector2f::parse(rdr, ver)?);
+        }
 
         Ok(SpriteVertex {
-            pos,
+            pos: pos.unwrap(),
             uv,
         })
     }

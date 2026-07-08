@@ -73,29 +73,32 @@ impl crate::Parse for Oculus {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let shared_depth_buffer = rdr.read_bool()?;
-        let dash_support = OculusDashSupportVariant::parse(rdr, ver)?;
-        let low_overhead_mode = if *ver >= crate::UnityVersion::new(2018, 4, 9) {
-            Some(OculusLowOverheadModeVariant::parse(rdr, ver)?)
-        } else {
-            None
-        };
-        let protected_context = if *ver >= crate::UnityVersion::new(2018, 4, 9) {
-            Some(rdr.read_bool()?)
-        } else {
-            None
-        };
-        let v2_signing = if *ver >= crate::UnityVersion::new(2018, 4, 9) {
-            let v = rdr.read_bool()?;
+        let mut shared_depth_buffer = None;
+        let mut dash_support = None;
+        let mut low_overhead_mode = None;
+        let mut protected_context = None;
+        let mut v2_signing = None;
+            shared_depth_buffer = Some(rdr.read_bool()?);
+            dash_support = Some(OculusDashSupportVariant::parse(rdr, ver)?);
+        if *ver >= crate::UnityVersion::new(2019, 2, 3) {
+            low_overhead_mode = Some(OculusLowOverheadModeVariant::parse(rdr, ver)?);
+            protected_context = Some(rdr.read_bool()?);
+            v2_signing = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            Some(v)
+        } else if *ver >= crate::UnityVersion::new(2019, 2, 0) {
+            low_overhead_mode = Some(OculusLowOverheadModeVariant::parse(rdr, ver)?);
+        } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
+        } else if *ver >= crate::UnityVersion::new(2018, 4, 9) {
+            low_overhead_mode = Some(OculusLowOverheadModeVariant::parse(rdr, ver)?);
+            protected_context = Some(rdr.read_bool()?);
+            v2_signing = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else {
-            None
-        };
+        }
 
         Ok(Oculus {
-            shared_depth_buffer,
-            dash_support,
+            shared_depth_buffer: shared_depth_buffer.unwrap(),
+            dash_support: dash_support.unwrap(),
             low_overhead_mode,
             protected_context,
             v2_signing,

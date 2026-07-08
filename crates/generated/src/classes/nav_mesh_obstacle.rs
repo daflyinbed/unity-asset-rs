@@ -23,60 +23,42 @@ impl crate::Parse for NavMeshObstacle {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(rdr, ver)?;
-        let m_enabled = rdr.read_u8()?;
-        rdr.align(4)?;
-        let m_radius = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let m_shape = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(rdr.read_i32()?)
-        } else {
-            None
-        };
-        let m_height = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let m_extents = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(Vector3f::parse(rdr, ver)?)
-        } else {
-            None
-        };
-        let m_move_threshold = if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let m_carve = if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            Some(rdr.read_bool()?)
-        } else {
-            None
-        };
-        let m_carve_only_stationary = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = rdr.read_bool()?;
+        let mut m_game_object = None;
+        let mut m_enabled = None;
+        let mut m_radius = None;
+        let mut m_shape = None;
+        let mut m_height = None;
+        let mut m_extents = None;
+        let mut m_move_threshold = None;
+        let mut m_carve = None;
+        let mut m_carve_only_stationary = None;
+        let mut m_center = None;
+        let mut m_time_to_stationary = None;
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_enabled = Some(rdr.read_u8()?);
             rdr.align(4)?;
-            Some(v)
+        if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            m_shape = Some(rdr.read_i32()?);
+            m_extents = Some(Vector3f::parse(rdr, ver)?);
+            m_move_threshold = Some(rdr.read_f32()?);
+            m_carve = Some(rdr.read_bool()?);
+            m_carve_only_stationary = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+            m_center = Some(Vector3f::parse(rdr, ver)?);
+            m_time_to_stationary = Some(rdr.read_f32()?);
+        } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
+            m_radius = Some(rdr.read_f32()?);
+            m_height = Some(rdr.read_f32()?);
+            m_move_threshold = Some(rdr.read_f32()?);
+            m_carve = Some(rdr.read_bool()?);
         } else {
-            None
-        };
-        let m_center = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(Vector3f::parse(rdr, ver)?)
-        } else {
-            None
-        };
-        let m_time_to_stationary = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
+            m_radius = Some(rdr.read_f32()?);
+            m_height = Some(rdr.read_f32()?);
+        }
 
         Ok(NavMeshObstacle {
-            m_game_object,
-            m_enabled,
+            m_game_object: m_game_object.unwrap(),
+            m_enabled: m_enabled.unwrap(),
             m_radius,
             m_shape,
             m_height,

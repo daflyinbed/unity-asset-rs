@@ -11,20 +11,15 @@ impl crate::Parse for PlatformShaderSettings {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let use_screen_space_shadows = if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            let v = rdr.read_bool()?;
+        let mut use_screen_space_shadows = None;
+        let mut use_cascaded_shadow_maps = None;
+        if *ver >= crate::UnityVersion::new(5, 4, 0) {
+            use_cascaded_shadow_maps = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            Some(v)
         } else {
-            None
-        };
-        let use_cascaded_shadow_maps = if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            let v = rdr.read_bool()?;
+            use_screen_space_shadows = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
+        }
 
         Ok(PlatformShaderSettings {
             use_screen_space_shadows,

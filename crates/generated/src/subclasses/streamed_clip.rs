@@ -42,17 +42,22 @@ impl crate::Parse for StreamedClip {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let data = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
-        let curve_count = StreamedClipCurveCountVariant::parse(rdr, ver)?;
-        let discrete_curve_count = if *ver >= crate::UnityVersion::new(2022, 3, 19) {
-            Some(rdr.read_u16()?)
+        let mut data = None;
+        let mut curve_count = None;
+        let mut discrete_curve_count = None;
+            data = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
+            curve_count = Some(StreamedClipCurveCountVariant::parse(rdr, ver)?);
+        if *ver >= crate::UnityVersion::new(2023, 2, 8) {
+            discrete_curve_count = Some(rdr.read_u16()?);
+        } else if *ver >= crate::UnityVersion::new(2023, 1, 0) {
+        } else if *ver >= crate::UnityVersion::new(2022, 3, 19) {
+            discrete_curve_count = Some(rdr.read_u16()?);
         } else {
-            None
-        };
+        }
 
         Ok(StreamedClip {
-            data,
-            curve_count,
+            data: data.unwrap(),
+            curve_count: curve_count.unwrap(),
             discrete_curve_count,
         })
     }

@@ -13,16 +13,13 @@ impl crate::Parse for NavMeshSettings {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_nav_mesh = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(crate::PPtr::parse(rdr, ver)?)
+        let mut m_nav_mesh = None;
+        let mut m_nav_mesh_data = None;
+        if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            m_nav_mesh_data = Some(crate::PPtr::parse(rdr, ver)?);
         } else {
-            None
-        };
-        let m_nav_mesh_data = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(crate::PPtr::parse(rdr, ver)?)
-        } else {
-            None
-        };
+            m_nav_mesh = Some(crate::PPtr::parse(rdr, ver)?);
+        }
 
         Ok(NavMeshSettings {
             m_nav_mesh,

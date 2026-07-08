@@ -20,41 +20,23 @@ impl crate::Parse for SceneVisibilityState {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_scene_data = if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SceneIdentifier::parse(rdr, ver)?; let b = SceneVisibilityData::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?)
+        let mut m_scene_data = None;
+        let mut m_scene_visibility_data = None;
+        let mut m_main_stage_isolated = None;
+        let mut m_scene_visibility_data_isolated = None;
+        let mut m_prefab_stage_isolated = None;
+        let mut m_scene_picking_data = None;
+        let mut m_isolation_mode = None;
+        if *ver >= crate::UnityVersion::new(2019, 3, 0) {
+            m_scene_visibility_data = Some(SceneDataContainer::parse(rdr, ver)?);
+            m_scene_visibility_data_isolated = Some(SceneDataContainer::parse(rdr, ver)?);
+            m_scene_picking_data = Some(SceneDataContainer::parse(rdr, ver)?);
+            m_isolation_mode = Some(rdr.read_bool()?);
         } else {
-            None
-        };
-        let m_scene_visibility_data = if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            Some(SceneDataContainer::parse(rdr, ver)?)
-        } else {
-            None
-        };
-        let m_main_stage_isolated = if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            Some(rdr.read_bool()?)
-        } else {
-            None
-        };
-        let m_scene_visibility_data_isolated = if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            Some(SceneDataContainer::parse(rdr, ver)?)
-        } else {
-            None
-        };
-        let m_prefab_stage_isolated = if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            Some(rdr.read_bool()?)
-        } else {
-            None
-        };
-        let m_scene_picking_data = if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            Some(SceneDataContainer::parse(rdr, ver)?)
-        } else {
-            None
-        };
-        let m_isolation_mode = if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            Some(rdr.read_bool()?)
-        } else {
-            None
-        };
+            m_scene_data = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SceneIdentifier::parse(rdr, ver)?; let b = SceneVisibilityData::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_main_stage_isolated = Some(rdr.read_bool()?);
+            m_prefab_stage_isolated = Some(rdr.read_bool()?);
+        }
 
         Ok(SceneVisibilityState {
             m_scene_data,

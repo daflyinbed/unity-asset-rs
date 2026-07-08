@@ -40,23 +40,27 @@ impl crate::Parse for AudioLowPassFilter {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(rdr, ver)?;
-        let m_enabled = rdr.read_u8()?;
-        rdr.align(4)?;
-        let m_cutoff_frequency = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(rdr.read_f32()?)
+        let mut m_game_object = None;
+        let mut m_enabled = None;
+        let mut m_cutoff_frequency = None;
+        let mut m_lowpass_resonance_q = None;
+        let mut lowpass_level_custom_curve = None;
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_enabled = Some(rdr.read_u8()?);
+            rdr.align(4)?;
+        if *ver >= crate::UnityVersion::new(5, 2, 0) {
         } else {
-            None
-        };
-        let m_lowpass_resonance_q = rdr.read_f32()?;
-        let lowpass_level_custom_curve = AudioLowPassFilterLowpassLevelCustomCurveVariant::parse(rdr, ver)?;
+            m_cutoff_frequency = Some(rdr.read_f32()?);
+        }
+            m_lowpass_resonance_q = Some(rdr.read_f32()?);
+            lowpass_level_custom_curve = Some(AudioLowPassFilterLowpassLevelCustomCurveVariant::parse(rdr, ver)?);
 
         Ok(AudioLowPassFilter {
-            m_game_object,
-            m_enabled,
+            m_game_object: m_game_object.unwrap(),
+            m_enabled: m_enabled.unwrap(),
             m_cutoff_frequency,
-            m_lowpass_resonance_q,
-            lowpass_level_custom_curve,
+            m_lowpass_resonance_q: m_lowpass_resonance_q.unwrap(),
+            lowpass_level_custom_curve: lowpass_level_custom_curve.unwrap(),
         })
     }
 }

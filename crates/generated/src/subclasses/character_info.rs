@@ -17,31 +17,31 @@ impl crate::Parse for CharacterInfo {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let index = rdr.read_u32()?;
-        let uv = Rectf::parse(rdr, ver)?;
-        let vert = Rectf::parse(rdr, ver)?;
-        let width = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let advance = if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let flipped = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            let v = rdr.read_bool()?;
+        let mut index = None;
+        let mut uv = None;
+        let mut vert = None;
+        let mut width = None;
+        let mut advance = None;
+        let mut flipped = None;
+            index = Some(rdr.read_u32()?);
+            uv = Some(Rectf::parse(rdr, ver)?);
+            vert = Some(Rectf::parse(rdr, ver)?);
+        if *ver >= crate::UnityVersion::new(5, 3, 0) {
+            advance = Some(rdr.read_f32()?);
+            flipped = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            Some(v)
+        } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
+            width = Some(rdr.read_f32()?);
+            flipped = Some(rdr.read_bool()?);
+            rdr.align(4)?;
         } else {
-            None
-        };
+            width = Some(rdr.read_f32()?);
+        }
 
         Ok(CharacterInfo {
-            index,
-            uv,
-            vert,
+            index: index.unwrap(),
+            uv: uv.unwrap(),
+            vert: vert.unwrap(),
             width,
             advance,
             flipped,

@@ -12,22 +12,20 @@ impl crate::Parse for SkeletonMaskElement {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_index = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(rdr.read_u32()?)
+        let mut m_index = None;
+        let mut m_path_hash = None;
+        let mut m_weight = None;
+        if *ver >= crate::UnityVersion::new(4, 3, 0) {
+            m_path_hash = Some(rdr.read_u32()?);
         } else {
-            None
-        };
-        let m_path_hash = if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            Some(rdr.read_u32()?)
-        } else {
-            None
-        };
-        let m_weight = rdr.read_f32()?;
+            m_index = Some(rdr.read_u32()?);
+        }
+            m_weight = Some(rdr.read_f32()?);
 
         Ok(SkeletonMaskElement {
             m_index,
             m_path_hash,
-            m_weight,
+            m_weight: m_weight.unwrap(),
         })
     }
 }

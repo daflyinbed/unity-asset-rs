@@ -42,26 +42,33 @@ impl crate::Parse for TerrainData {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
-        let m_splat_database = TerrainDataMSplatDatabaseVariant::parse(rdr, ver)?;
-        let m_detail_database = DetailDatabase::parse(rdr, ver)?;
-        rdr.align(4)?;
-        let m_heightmap = Heightmap::parse(rdr, ver)?;
-        rdr.align(4)?;
-        let m_preload_shaders = if *ver >= crate::UnityVersion::new(2018, 4, 14) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let mut m_name = None;
+        let mut m_splat_database = None;
+        let mut m_detail_database = None;
+        let mut m_heightmap = None;
+        let mut m_preload_shaders = None;
+            m_name = Some(rdr.read_aligned_string()?);
             rdr.align(4)?;
-            Some(v)
+            m_splat_database = Some(TerrainDataMSplatDatabaseVariant::parse(rdr, ver)?);
+            m_detail_database = Some(DetailDatabase::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_heightmap = Some(Heightmap::parse(rdr, ver)?);
+            rdr.align(4)?;
+        if *ver >= crate::UnityVersion::new(2019, 2, 17) {
+            m_preload_shaders = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
+        } else if *ver >= crate::UnityVersion::new(2018, 4, 14) {
+            m_preload_shaders = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else {
-            None
-        };
+        }
 
         Ok(TerrainData {
-            m_name,
-            m_splat_database,
-            m_detail_database,
-            m_heightmap,
+            m_name: m_name.unwrap(),
+            m_splat_database: m_splat_database.unwrap(),
+            m_detail_database: m_detail_database.unwrap(),
+            m_heightmap: m_heightmap.unwrap(),
             m_preload_shaders,
         })
     }

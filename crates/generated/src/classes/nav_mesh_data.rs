@@ -122,52 +122,45 @@ impl crate::Parse for NavMeshData {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
-        let m_nav_mesh_tiles = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { NavMeshTileData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        rdr.align(4)?;
-        let m_nav_mesh_params = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(NavMeshParams::parse(rdr, ver)?)
+        let mut m_name = None;
+        let mut m_nav_mesh_tiles = None;
+        let mut m_nav_mesh_params = None;
+        let mut m_nav_mesh_build_settings = None;
+        let mut m_heightmaps = None;
+        let mut m_height_meshes = None;
+        let mut m_off_mesh_links = None;
+        let mut m_source_bounds = None;
+        let mut m_rotation = None;
+        let mut m_position = None;
+        let mut m_agent_type_id = None;
+            m_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_nav_mesh_tiles = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { NavMeshTileData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+        if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            m_nav_mesh_build_settings = Some(NavMeshDataMNavMeshBuildSettingsVariant::parse(rdr, ver)?);
         } else {
-            None
-        };
-        let m_nav_mesh_build_settings = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            Some(NavMeshDataMNavMeshBuildSettingsVariant::parse(rdr, ver)?)
+            m_nav_mesh_params = Some(NavMeshParams::parse(rdr, ver)?);
+        }
+            m_heightmaps = Some(NavMeshDataMHeightmapsVariant::parse(rdr, ver)?);
+            m_height_meshes = Some(NavMeshDataMHeightMeshesVariant::parse(rdr, ver)?);
+            m_off_mesh_links = Some(NavMeshDataMOffMeshLinksVariant::parse(rdr, ver)?);
+        if *ver >= crate::UnityVersion::new(5, 6, 1) {
+            m_source_bounds = Some(Aabb::parse(rdr, ver)?);
+            m_rotation = Some(Quaternionf::parse(rdr, ver)?);
+            m_position = Some(Vector3f::parse(rdr, ver)?);
+            m_agent_type_id = Some(rdr.read_i32()?);
         } else {
-            None
-        };
-        let m_heightmaps = NavMeshDataMHeightmapsVariant::parse(rdr, ver)?;
-        let m_height_meshes = NavMeshDataMHeightMeshesVariant::parse(rdr, ver)?;
-        let m_off_mesh_links = NavMeshDataMOffMeshLinksVariant::parse(rdr, ver)?;
-        let m_source_bounds = if *ver >= crate::UnityVersion::new(5, 6, 1) {
-            Some(Aabb::parse(rdr, ver)?)
-        } else {
-            None
-        };
-        let m_rotation = if *ver >= crate::UnityVersion::new(5, 6, 1) {
-            Some(Quaternionf::parse(rdr, ver)?)
-        } else {
-            None
-        };
-        let m_position = if *ver >= crate::UnityVersion::new(5, 6, 1) {
-            Some(Vector3f::parse(rdr, ver)?)
-        } else {
-            None
-        };
-        let m_agent_type_id = if *ver >= crate::UnityVersion::new(5, 6, 1) {
-            Some(rdr.read_i32()?)
-        } else {
-            None
-        };
+        }
 
         Ok(NavMeshData {
-            m_name,
-            m_nav_mesh_tiles,
+            m_name: m_name.unwrap(),
+            m_nav_mesh_tiles: m_nav_mesh_tiles.unwrap(),
             m_nav_mesh_params,
             m_nav_mesh_build_settings,
-            m_heightmaps,
-            m_height_meshes,
-            m_off_mesh_links,
+            m_heightmaps: m_heightmaps.unwrap(),
+            m_height_meshes: m_height_meshes.unwrap(),
+            m_off_mesh_links: m_off_mesh_links.unwrap(),
             m_source_bounds,
             m_rotation,
             m_position,

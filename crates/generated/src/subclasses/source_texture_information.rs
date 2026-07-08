@@ -14,26 +14,26 @@ impl crate::Parse for SourceTextureInformation {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let width = rdr.read_i32()?;
-        let height = rdr.read_i32()?;
-        let does_texture_contain_alpha = rdr.read_bool()?;
-        let does_texture_contain_color = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(rdr.read_bool()?)
-        } else {
-            None
-        };
-        let source_was_hdr = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = rdr.read_bool()?;
+        let mut width = None;
+        let mut height = None;
+        let mut does_texture_contain_alpha = None;
+        let mut does_texture_contain_color = None;
+        let mut source_was_hdr = None;
+            width = Some(rdr.read_i32()?);
+            height = Some(rdr.read_i32()?);
+            does_texture_contain_alpha = Some(rdr.read_bool()?);
+        if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            source_was_hdr = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            Some(v)
+        } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
+            does_texture_contain_color = Some(rdr.read_bool()?);
         } else {
-            None
-        };
+        }
 
         Ok(SourceTextureInformation {
-            width,
-            height,
-            does_texture_contain_alpha,
+            width: width.unwrap(),
+            height: height.unwrap(),
+            does_texture_contain_alpha: does_texture_contain_alpha.unwrap(),
             does_texture_contain_color,
             source_was_hdr,
         })

@@ -21,32 +21,41 @@ impl crate::Parse for AudioChorusFilter {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(rdr, ver)?;
-        let m_enabled = rdr.read_u8()?;
-        rdr.align(4)?;
-        let m_dry_mix = rdr.read_f32()?;
-        let m_wet_mix1 = rdr.read_f32()?;
-        let m_wet_mix2 = rdr.read_f32()?;
-        let m_wet_mix3 = rdr.read_f32()?;
-        let m_delay = rdr.read_f32()?;
-        let m_rate = rdr.read_f32()?;
-        let m_depth = rdr.read_f32()?;
-        let m_feed_back = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(rdr.read_f32()?)
+        let mut m_game_object = None;
+        let mut m_enabled = None;
+        let mut m_dry_mix = None;
+        let mut m_wet_mix1 = None;
+        let mut m_wet_mix2 = None;
+        let mut m_wet_mix3 = None;
+        let mut m_delay = None;
+        let mut m_rate = None;
+        let mut m_depth = None;
+        let mut m_feed_back = None;
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_enabled = Some(rdr.read_u8()?);
+            rdr.align(4)?;
+            m_dry_mix = Some(rdr.read_f32()?);
+            m_wet_mix1 = Some(rdr.read_f32()?);
+            m_wet_mix2 = Some(rdr.read_f32()?);
+            m_wet_mix3 = Some(rdr.read_f32()?);
+            m_delay = Some(rdr.read_f32()?);
+            m_rate = Some(rdr.read_f32()?);
+            m_depth = Some(rdr.read_f32()?);
+        if *ver >= crate::UnityVersion::new(4, 2, 0) {
         } else {
-            None
-        };
+            m_feed_back = Some(rdr.read_f32()?);
+        }
 
         Ok(AudioChorusFilter {
-            m_game_object,
-            m_enabled,
-            m_dry_mix,
-            m_wet_mix1,
-            m_wet_mix2,
-            m_wet_mix3,
-            m_delay,
-            m_rate,
-            m_depth,
+            m_game_object: m_game_object.unwrap(),
+            m_enabled: m_enabled.unwrap(),
+            m_dry_mix: m_dry_mix.unwrap(),
+            m_wet_mix1: m_wet_mix1.unwrap(),
+            m_wet_mix2: m_wet_mix2.unwrap(),
+            m_wet_mix3: m_wet_mix3.unwrap(),
+            m_delay: m_delay.unwrap(),
+            m_rate: m_rate.unwrap(),
+            m_depth: m_depth.unwrap(),
             m_feed_back,
         })
     }

@@ -24,44 +24,48 @@ impl crate::Parse for PositionConstraint {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_game_object = crate::PPtr::parse(rdr, ver)?;
-        let m_enabled = rdr.read_u8()?;
-        rdr.align(4)?;
-        let m_weight = rdr.read_f32()?;
-        let m_translation_at_rest = Vector3f::parse(rdr, ver)?;
-        let m_translation_offset = Vector3f::parse(rdr, ver)?;
-        let m_affect_translation_x = rdr.read_bool()?;
-        let m_affect_translation_y = rdr.read_bool()?;
-        let m_affect_translation_z = rdr.read_bool()?;
-        let m_is_contraint_active = if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            let v = rdr.read_bool()?;
+        let mut m_game_object = None;
+        let mut m_enabled = None;
+        let mut m_weight = None;
+        let mut m_translation_at_rest = None;
+        let mut m_translation_offset = None;
+        let mut m_affect_translation_x = None;
+        let mut m_affect_translation_y = None;
+        let mut m_affect_translation_z = None;
+        let mut m_is_contraint_active = None;
+        let mut m_active = None;
+        let mut m_sources = None;
+            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_enabled = Some(rdr.read_u8()?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_active = if *ver >= crate::UnityVersion::new(2022, 1, 0) {
-            let v = rdr.read_bool()?;
+            m_weight = Some(rdr.read_f32()?);
+            m_translation_at_rest = Some(Vector3f::parse(rdr, ver)?);
+            m_translation_offset = Some(Vector3f::parse(rdr, ver)?);
+            m_affect_translation_x = Some(rdr.read_bool()?);
+            m_affect_translation_y = Some(rdr.read_bool()?);
+            m_affect_translation_z = Some(rdr.read_bool()?);
+        if *ver >= crate::UnityVersion::new(2022, 1, 0) {
+            m_active = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            Some(v)
         } else {
-            None
-        };
-        let m_sources = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ConstraintSource::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        rdr.align(4)?;
+            m_is_contraint_active = Some(rdr.read_bool()?);
+            rdr.align(4)?;
+        }
+            m_sources = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ConstraintSource::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
 
         Ok(PositionConstraint {
-            m_game_object,
-            m_enabled,
-            m_weight,
-            m_translation_at_rest,
-            m_translation_offset,
-            m_affect_translation_x,
-            m_affect_translation_y,
-            m_affect_translation_z,
+            m_game_object: m_game_object.unwrap(),
+            m_enabled: m_enabled.unwrap(),
+            m_weight: m_weight.unwrap(),
+            m_translation_at_rest: m_translation_at_rest.unwrap(),
+            m_translation_offset: m_translation_offset.unwrap(),
+            m_affect_translation_x: m_affect_translation_x.unwrap(),
+            m_affect_translation_y: m_affect_translation_y.unwrap(),
+            m_affect_translation_z: m_affect_translation_z.unwrap(),
             m_is_contraint_active,
             m_active,
-            m_sources,
+            m_sources: m_sources.unwrap(),
         })
     }
 }

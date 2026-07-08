@@ -15,24 +15,23 @@ impl crate::Parse for BufferBindingParameter {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name_index = rdr.read_i32()?;
-        let m_index = if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            Some(rdr.read_i32()?)
+        let mut m_name_index = None;
+        let mut m_index = None;
+        let mut m_binding = None;
+        let mut m_array_size = None;
+            m_name_index = Some(rdr.read_i32()?);
+        if *ver >= crate::UnityVersion::new(6000, 6, 0) {
+            m_binding = Some(Binding::parse(rdr, ver)?);
         } else {
-            None
-        };
-        let m_binding = if *ver >= crate::UnityVersion::new(6000, 6, 0) {
-            Some(Binding::parse(rdr, ver)?)
-        } else {
-            None
-        };
-        let m_array_size = rdr.read_i32()?;
+            m_index = Some(rdr.read_i32()?);
+        }
+            m_array_size = Some(rdr.read_i32()?);
 
         Ok(BufferBindingParameter {
-            m_name_index,
+            m_name_index: m_name_index.unwrap(),
             m_index,
             m_binding,
-            m_array_size,
+            m_array_size: m_array_size.unwrap(),
         })
     }
 }

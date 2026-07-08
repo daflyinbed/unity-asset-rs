@@ -14,23 +14,24 @@ impl crate::Parse for VersionControlSettings {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_mode = rdr.read_aligned_string()?;
-        rdr.align(4)?;
-        let m_collab_editor_settings = if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            let v = CollabEditorSettings::parse(rdr, ver)?;
+        let mut m_mode = None;
+        let mut m_collab_editor_settings = None;
+        let mut m_track_packages_outside_project = None;
+            m_mode = Some(rdr.read_aligned_string()?);
             rdr.align(4)?;
-            Some(v)
+        if *ver >= crate::UnityVersion::new(6000, 0, 0) {
+            m_track_packages_outside_project = Some(rdr.read_bool()?);
+        } else if *ver >= crate::UnityVersion::new(2023, 1, 0) {
+            m_collab_editor_settings = Some(CollabEditorSettings::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_track_packages_outside_project = Some(rdr.read_bool()?);
         } else {
-            None
-        };
-        let m_track_packages_outside_project = if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            Some(rdr.read_bool()?)
-        } else {
-            None
-        };
+            m_collab_editor_settings = Some(CollabEditorSettings::parse(rdr, ver)?);
+            rdr.align(4)?;
+        }
 
         Ok(VersionControlSettings {
-            m_mode,
+            m_mode: m_mode.unwrap(),
             m_collab_editor_settings,
             m_track_packages_outside_project,
         })

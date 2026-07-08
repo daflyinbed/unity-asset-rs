@@ -15,29 +15,30 @@ impl crate::Parse for VectorParameter {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name_index = rdr.read_i32()?;
-        let m_index = if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            Some(rdr.read_i32()?)
+        let mut m_name_index = None;
+        let mut m_index = None;
+        let mut m_offset_in_constant_buffer = None;
+        let mut m_array_size = None;
+        let mut m_type = None;
+        let mut m_dim = None;
+            m_name_index = Some(rdr.read_i32()?);
+        if *ver >= crate::UnityVersion::new(6000, 6, 0) {
+            m_offset_in_constant_buffer = Some(rdr.read_i32()?);
         } else {
-            None
-        };
-        let m_offset_in_constant_buffer = if *ver >= crate::UnityVersion::new(6000, 6, 0) {
-            Some(rdr.read_i32()?)
-        } else {
-            None
-        };
-        let m_array_size = rdr.read_i32()?;
-        let m_type = rdr.read_i8()?;
-        let m_dim = rdr.read_i8()?;
-        rdr.align(4)?;
+            m_index = Some(rdr.read_i32()?);
+        }
+            m_array_size = Some(rdr.read_i32()?);
+            m_type = Some(rdr.read_i8()?);
+            m_dim = Some(rdr.read_i8()?);
+            rdr.align(4)?;
 
         Ok(VectorParameter {
-            m_name_index,
+            m_name_index: m_name_index.unwrap(),
             m_index,
             m_offset_in_constant_buffer,
-            m_array_size,
-            m_type,
-            m_dim,
+            m_array_size: m_array_size.unwrap(),
+            m_type: m_type.unwrap(),
+            m_dim: m_dim.unwrap(),
         })
     }
 }

@@ -12,21 +12,17 @@ impl crate::Parse for PluginImportOutput {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let plugin_type = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(rdr.read_i32()?)
+        let mut plugin_type = None;
+        let mut dll_type = None;
+        let mut scripting_runtime_version = None;
+        if *ver >= crate::UnityVersion::new(2018, 3, 0) {
+            dll_type = Some(rdr.read_i32()?);
+            scripting_runtime_version = Some(rdr.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
+            dll_type = Some(rdr.read_i32()?);
         } else {
-            None
-        };
-        let dll_type = if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            Some(rdr.read_i32()?)
-        } else {
-            None
-        };
-        let scripting_runtime_version = if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            Some(rdr.read_i32()?)
-        } else {
-            None
-        };
+            plugin_type = Some(rdr.read_i32()?);
+        }
 
         Ok(PluginImportOutput {
             plugin_type,

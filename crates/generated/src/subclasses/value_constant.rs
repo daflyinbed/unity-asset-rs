@@ -13,20 +13,23 @@ impl crate::Parse for ValueConstant {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_id = rdr.read_u32()?;
-        let m_type_id = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(rdr.read_u32()?)
+        let mut m_id = None;
+        let mut m_type_id = None;
+        let mut m_type = None;
+        let mut m_index = None;
+            m_id = Some(rdr.read_u32()?);
+        if *ver >= crate::UnityVersion::new(5, 5, 0) {
         } else {
-            None
-        };
-        let m_type = rdr.read_u32()?;
-        let m_index = rdr.read_u32()?;
+            m_type_id = Some(rdr.read_u32()?);
+        }
+            m_type = Some(rdr.read_u32()?);
+            m_index = Some(rdr.read_u32()?);
 
         Ok(ValueConstant {
-            m_id,
+            m_id: m_id.unwrap(),
             m_type_id,
-            m_type,
-            m_index,
+            m_type: m_type.unwrap(),
+            m_index: m_index.unwrap(),
         })
     }
 }

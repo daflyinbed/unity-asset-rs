@@ -42,161 +42,76 @@ impl crate::Parse for LightmapData {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_lightmap = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(crate::PPtr::parse(rdr, ver)?)
+        let mut m_lightmap = None;
+        let mut sh_0 = None;
+        let mut m_indirect_lightmap = None;
+        let mut sh_1 = None;
+        let mut m_dir_lightmap = None;
+        let mut sh_2 = None;
+        let mut m_shadow_mask = None;
+        let mut sh_3 = None;
+        let mut sh_4 = None;
+        let mut sh_5 = None;
+        let mut sh_6 = None;
+        let mut sh_7 = None;
+        let mut sh_8 = None;
+        let mut sh_9 = None;
+        let mut sh_10 = None;
+        let mut sh_11 = None;
+        let mut sh_12 = None;
+        let mut sh_13 = None;
+        let mut sh_14 = None;
+        let mut sh_15 = None;
+        let mut sh_16 = None;
+        let mut sh_17 = None;
+        let mut sh_18 = None;
+        let mut sh_19 = None;
+        let mut sh_20 = None;
+        let mut sh_21 = None;
+        let mut sh_22 = None;
+        let mut sh_23 = None;
+        let mut sh_24 = None;
+        let mut sh_25 = None;
+        let mut sh_26 = None;
+        if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            m_lightmap = Some(crate::PPtr::parse(rdr, ver)?);
+            m_dir_lightmap = Some(crate::PPtr::parse(rdr, ver)?);
+            m_shadow_mask = Some(crate::PPtr::parse(rdr, ver)?);
+        } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            m_lightmap = Some(crate::PPtr::parse(rdr, ver)?);
+            m_indirect_lightmap = Some(crate::PPtr::parse(rdr, ver)?);
+        } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
+            sh_0 = Some(rdr.read_f32()?);
+            sh_1 = Some(rdr.read_f32()?);
+            sh_2 = Some(rdr.read_f32()?);
+            sh_3 = Some(rdr.read_f32()?);
+            sh_4 = Some(rdr.read_f32()?);
+            sh_5 = Some(rdr.read_f32()?);
+            sh_6 = Some(rdr.read_f32()?);
+            sh_7 = Some(rdr.read_f32()?);
+            sh_8 = Some(rdr.read_f32()?);
+            sh_9 = Some(rdr.read_f32()?);
+            sh_10 = Some(rdr.read_f32()?);
+            sh_11 = Some(rdr.read_f32()?);
+            sh_12 = Some(rdr.read_f32()?);
+            sh_13 = Some(rdr.read_f32()?);
+            sh_14 = Some(rdr.read_f32()?);
+            sh_15 = Some(rdr.read_f32()?);
+            sh_16 = Some(rdr.read_f32()?);
+            sh_17 = Some(rdr.read_f32()?);
+            sh_18 = Some(rdr.read_f32()?);
+            sh_19 = Some(rdr.read_f32()?);
+            sh_20 = Some(rdr.read_f32()?);
+            sh_21 = Some(rdr.read_f32()?);
+            sh_22 = Some(rdr.read_f32()?);
+            sh_23 = Some(rdr.read_f32()?);
+            sh_24 = Some(rdr.read_f32()?);
+            sh_25 = Some(rdr.read_f32()?);
+            sh_26 = Some(rdr.read_f32()?);
         } else {
-            None
-        };
-        let sh_0 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let m_indirect_lightmap = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(crate::PPtr::parse(rdr, ver)?)
-        } else {
-            None
-        };
-        let sh_1 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let m_dir_lightmap = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            Some(crate::PPtr::parse(rdr, ver)?)
-        } else {
-            None
-        };
-        let sh_2 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let m_shadow_mask = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            Some(crate::PPtr::parse(rdr, ver)?)
-        } else {
-            None
-        };
-        let sh_3 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let sh_4 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let sh_5 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let sh_6 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let sh_7 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let sh_8 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let sh_9 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let sh_10 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let sh_11 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let sh_12 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let sh_13 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let sh_14 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let sh_15 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let sh_16 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let sh_17 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let sh_18 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let sh_19 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let sh_20 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let sh_21 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let sh_22 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let sh_23 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let sh_24 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let sh_25 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let sh_26 = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
+            m_lightmap = Some(crate::PPtr::parse(rdr, ver)?);
+            m_indirect_lightmap = Some(crate::PPtr::parse(rdr, ver)?);
+        }
 
         Ok(LightmapData {
             m_lightmap,

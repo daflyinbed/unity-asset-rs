@@ -461,6 +461,7 @@ dependencies = [
  "env_logger",
  "log",
  "lz4_flex",
+ "lzma-rs",
  "snafu",
  "unity-asset-generated",
  "unity-core",

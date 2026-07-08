@@ -12,20 +12,22 @@ impl crate::Parse for AssetDatabaseMetrics {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let total_asset_count = rdr.read_i32()?;
-        let non_pro_asset_count = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(rdr.read_i32()?)
+        let mut total_asset_count = None;
+        let mut non_pro_asset_count = None;
+        let mut non_pro_assets_created_after_pro_license = None;
+            total_asset_count = Some(rdr.read_i32()?);
+        if *ver >= crate::UnityVersion::new(2017, 4, 6) {
+        } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
+            non_pro_asset_count = Some(rdr.read_i32()?);
+            non_pro_assets_created_after_pro_license = Some(rdr.read_i32()?);
+        } else if *ver >= crate::UnityVersion::new(2017, 2, 3) {
         } else {
-            None
-        };
-        let non_pro_assets_created_after_pro_license = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(rdr.read_i32()?)
-        } else {
-            None
-        };
+            non_pro_asset_count = Some(rdr.read_i32()?);
+            non_pro_assets_created_after_pro_license = Some(rdr.read_i32()?);
+        }
 
         Ok(AssetDatabaseMetrics {
-            total_asset_count,
+            total_asset_count: total_asset_count.unwrap(),
             non_pro_asset_count,
             non_pro_assets_created_after_pro_license,
         })

@@ -40,39 +40,35 @@ impl crate::Parse for ParticleSystemEmissionBurst {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let time = rdr.read_f32()?;
-        let min_count = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            Some(rdr.read_u32()?)
-        } else {
-            None
-        };
-        let count_curve = if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            let v = MinMaxCurve::parse(rdr, ver)?;
+        let mut time = None;
+        let mut min_count = None;
+        let mut count_curve = None;
+        let mut max_count = None;
+        let mut cycle_count = None;
+        let mut repeat_interval = None;
+        let mut probability = None;
+            time = Some(rdr.read_f32()?);
+        if *ver >= crate::UnityVersion::new(2017, 2, 0) {
+            count_curve = Some(MinMaxCurve::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
         } else {
-            None
-        };
-        let max_count = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            Some(rdr.read_u32()?)
+            min_count = Some(rdr.read_u32()?);
+            max_count = Some(rdr.read_u32()?);
+        }
+            cycle_count = Some(ParticleSystemEmissionBurstCycleCountVariant::parse(rdr, ver)?);
+            repeat_interval = Some(rdr.read_f32()?);
+        if *ver >= crate::UnityVersion::new(2018, 3, 0) {
+            probability = Some(rdr.read_f32()?);
         } else {
-            None
-        };
-        let cycle_count = ParticleSystemEmissionBurstCycleCountVariant::parse(rdr, ver)?;
-        let repeat_interval = rdr.read_f32()?;
-        let probability = if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
+        }
 
         Ok(ParticleSystemEmissionBurst {
-            time,
+            time: time.unwrap(),
             min_count,
             count_curve,
             max_count,
-            cycle_count,
-            repeat_interval,
+            cycle_count: cycle_count.unwrap(),
+            repeat_interval: repeat_interval.unwrap(),
             probability,
         })
     }

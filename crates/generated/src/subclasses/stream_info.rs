@@ -37,29 +37,26 @@ impl crate::Parse for StreamInfo {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let channel_mask = rdr.read_u32()?;
-        let offset = rdr.read_u32()?;
-        let stride = StreamInfoStrideVariant::parse(rdr, ver)?;
-        let align = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(rdr.read_u32()?)
+        let mut channel_mask = None;
+        let mut offset = None;
+        let mut stride = None;
+        let mut align = None;
+        let mut divider_op = None;
+        let mut frequency = None;
+            channel_mask = Some(rdr.read_u32()?);
+            offset = Some(rdr.read_u32()?);
+            stride = Some(StreamInfoStrideVariant::parse(rdr, ver)?);
+        if *ver >= crate::UnityVersion::new(4, 0, 0) {
+            divider_op = Some(rdr.read_u8()?);
+            frequency = Some(rdr.read_u16()?);
         } else {
-            None
-        };
-        let divider_op = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(rdr.read_u8()?)
-        } else {
-            None
-        };
-        let frequency = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(rdr.read_u16()?)
-        } else {
-            None
-        };
+            align = Some(rdr.read_u32()?);
+        }
 
         Ok(StreamInfo {
-            channel_mask,
-            offset,
-            stride,
+            channel_mask: channel_mask.unwrap(),
+            offset: offset.unwrap(),
+            stride: stride.unwrap(),
             align,
             divider_op,
             frequency,

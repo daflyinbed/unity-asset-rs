@@ -24,63 +24,67 @@ impl crate::Parse for CompressedMesh {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_vertices = PackedBitVector::parse(rdr, ver)?;
-        rdr.align(4)?;
-        let m_uv = PackedBitVector::parse(rdr, ver)?;
-        rdr.align(4)?;
-        let m_bind_poses = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = PackedBitVector::parse(rdr, ver)?;
+        let mut m_vertices = None;
+        let mut m_uv = None;
+        let mut m_bind_poses = None;
+        let mut m_normals = None;
+        let mut m_tangents = None;
+        let mut m_weights = None;
+        let mut m_normal_signs = None;
+        let mut m_tangent_signs = None;
+        let mut m_float_colors = None;
+        let mut m_bone_indices = None;
+        let mut m_triangles = None;
+        let mut m_colors = None;
+        let mut m_uv_info = None;
+            m_vertices = Some(PackedBitVector::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let m_normals = PackedBitVector::parse(rdr, ver)?;
-        rdr.align(4)?;
-        let m_tangents = PackedBitVector::parse(rdr, ver)?;
-        rdr.align(4)?;
-        let m_weights = PackedBitVector::parse(rdr, ver)?;
-        rdr.align(4)?;
-        let m_normal_signs = PackedBitVector::parse(rdr, ver)?;
-        rdr.align(4)?;
-        let m_tangent_signs = PackedBitVector::parse(rdr, ver)?;
-        rdr.align(4)?;
-        let m_float_colors = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = PackedBitVector::parse(rdr, ver)?;
+            m_uv = Some(PackedBitVector::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
+        if *ver >= crate::UnityVersion::new(5, 0, 0) {
         } else {
-            None
-        };
-        let m_bone_indices = PackedBitVector::parse(rdr, ver)?;
-        rdr.align(4)?;
-        let m_triangles = PackedBitVector::parse(rdr, ver)?;
-        rdr.align(4)?;
-        let m_colors = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = PackedBitVector::parse(rdr, ver)?;
+            m_bind_poses = Some(PackedBitVector::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
+        }
+            m_normals = Some(PackedBitVector::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_tangents = Some(PackedBitVector::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_weights = Some(PackedBitVector::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_normal_signs = Some(PackedBitVector::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_tangent_signs = Some(PackedBitVector::parse(rdr, ver)?);
+            rdr.align(4)?;
+        if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            m_float_colors = Some(PackedBitVector::parse(rdr, ver)?);
+            rdr.align(4)?;
         } else {
-            None
-        };
-        let m_uv_info = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(rdr.read_u32()?)
+        }
+            m_bone_indices = Some(PackedBitVector::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_triangles = Some(PackedBitVector::parse(rdr, ver)?);
+            rdr.align(4)?;
+        if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            m_uv_info = Some(rdr.read_u32()?);
+        } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
+            m_colors = Some(PackedBitVector::parse(rdr, ver)?);
+            rdr.align(4)?;
         } else {
-            None
-        };
+        }
 
         Ok(CompressedMesh {
-            m_vertices,
-            m_uv,
+            m_vertices: m_vertices.unwrap(),
+            m_uv: m_uv.unwrap(),
             m_bind_poses,
-            m_normals,
-            m_tangents,
-            m_weights,
-            m_normal_signs,
-            m_tangent_signs,
+            m_normals: m_normals.unwrap(),
+            m_tangents: m_tangents.unwrap(),
+            m_weights: m_weights.unwrap(),
+            m_normal_signs: m_normal_signs.unwrap(),
+            m_tangent_signs: m_tangent_signs.unwrap(),
             m_float_colors,
-            m_bone_indices,
-            m_triangles,
+            m_bone_indices: m_bone_indices.unwrap(),
+            m_triangles: m_triangles.unwrap(),
             m_colors,
             m_uv_info,
         })

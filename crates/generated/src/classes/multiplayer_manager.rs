@@ -11,16 +11,13 @@ impl crate::Parse for MultiplayerManager {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_active_multiplayer_role = if *ver >= crate::UnityVersion::new(2023, 2, 0) {
-            Some(rdr.read_i32()?)
+        let mut m_active_multiplayer_role = None;
+        let mut m_active_multiplayer_roles = None;
+        if *ver >= crate::UnityVersion::new(2023, 3, 0) {
+            m_active_multiplayer_roles = Some(rdr.read_i32()?);
         } else {
-            None
-        };
-        let m_active_multiplayer_roles = if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            Some(rdr.read_i32()?)
-        } else {
-            None
-        };
+            m_active_multiplayer_role = Some(rdr.read_i32()?);
+        }
 
         Ok(MultiplayerManager {
             m_active_multiplayer_role,

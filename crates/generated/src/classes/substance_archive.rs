@@ -11,18 +11,18 @@ impl crate::Parse for SubstanceArchive {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
-        let m_package_data = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
+        let mut m_name = None;
+        let mut m_package_data = None;
+            m_name = Some(rdr.read_aligned_string()?);
             rdr.align(4)?;
-            Some(v)
+        if *ver >= crate::UnityVersion::new(2018, 1, 0) {
         } else {
-            None
-        };
+            m_package_data = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+        }
 
         Ok(SubstanceArchive {
-            m_name,
+            m_name: m_name.unwrap(),
             m_package_data,
         })
     }

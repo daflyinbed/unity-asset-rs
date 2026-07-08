@@ -17,35 +17,21 @@ impl crate::Parse for EditorExtensionImpl {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_object = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(crate::PPtr::parse(rdr, ver)?)
+        let mut m_object = None;
+        let mut m_template_father = None;
+        let mut m_data_template = None;
+        let mut m_override_variable = None;
+        let mut g_flattened_type_tree = None;
+        if *ver >= crate::UnityVersion::new(3, 5, 0) {
         } else {
-            None
-        };
-        let m_template_father = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(crate::PPtr::parse(rdr, ver)?)
-        } else {
-            None
-        };
-        let m_data_template = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(crate::PPtr::parse(rdr, ver)?)
-        } else {
-            None
-        };
-        let m_override_variable = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = bitset::parse(rdr, ver)?;
+            m_object = Some(crate::PPtr::parse(rdr, ver)?);
+            m_template_father = Some(crate::PPtr::parse(rdr, ver)?);
+            m_data_template = Some(crate::PPtr::parse(rdr, ver)?);
+            m_override_variable = Some(bitset::parse(rdr, ver)?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
-        let g_flattened_type_tree = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
+            g_flattened_type_tree = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
-            Some(v)
-        } else {
-            None
-        };
+        }
 
         Ok(EditorExtensionImpl {
             m_object,

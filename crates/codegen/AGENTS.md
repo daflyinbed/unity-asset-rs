@@ -103,11 +103,12 @@ emit 侧 `collect_type_imports` 对 `RustType::Subclass(name)` 按同样规则�
    顺序读取，差异字段用 `Option` 门控。
 2. **version-gated 块**（~150 个类，含 main class + subclass）：字段顺序跨版本真变了，必须按版本分支读。
 
-判定线性 parse 安全需**两道检查都通过**：
+判定线性 parse 安全需**三道检查都通过**：
 
 - **`common_order_consistent`**：两个版本的公共字段相对顺序一致（快检）。
 - **`merged_order_compatible`**：`merge_fields_across_versions` 按首次出现位置排序
   得到的合并顺序，对每个版本的字段验证位置序列严格递增。
+- **`presence_is_monotonic`**：每个字段的 presence 单调——一旦出现就不再消失。
 
 > **为什么需要第二道检查？** 新字段可能插在现有字段之间（如 v5.3 在 `material` 前
 > 插入 `density`）。此时公共字段顺序不变（第一道过），但合并顺序把 `material` 排在
@@ -115,9 +116,16 @@ emit 侧 `collect_type_imports` 对 `RustType::Subclass(name)` 按同样规则�
 > 线性 parse 读错字节。`merged_order_compatible` 检测此矛盾，不兼容时升级为
 > version-gated。
 
+> **为什么需要第三道检查？** `merge_fields_across_versions` 对非全版本字段只产出
+> `Since(earliest)`，不产出 `Range`。若字段在早期版本存在、后期被移除（非单调），
+> `Since(earliest)` 会让线性 parse 在字段已不存在的版本里仍然尝试读取，导致后续
+> 字节全部错位。`presence_is_monotonic` 检测此情况，非单调时升级为 version-gated。
+> version-gated 分支只读自己 layout 里的字段，字段消失的版本不会多读。
+
 > **不要去掉任一检查**：去掉 `common_order_consistent` 会让 ~220 个类触发
 > version-gated，生成代码从 ~80K 行暴涨到 ~160K 行。去掉 `merged_order_compatible`
-> 会让新字段插入型重排漏检，typed parse 读错字节。
+> 会让新字段插入型重排漏检，typed parse 读错字节。去掉 `presence_is_monotonic`
+> 会让字段移除型变化漏检（~247 个字段在 linear-parse 类里会读错字节）。
 
 ### version-gated 的锚点分段优化（`emit.rs`）
 
@@ -184,7 +192,10 @@ crates/generated/src/
   subclass）回退到 node_pool 首次出现。VersionedEnum 变体里的 Subclass 自动包
   `Box` 以打破递归类型循环（如 Clip ↔ OffsetPtr）。
 - `VersionGate::Range` 变体存在且 emit 能处理，但 `merge_fields_across_versions`
-  只产出 `Always`/`Since`，不产出 `Range`（消失后重现的罕见字段会误判为 `Since`）。
+  只产出 `Always`/`Since`，不产出 `Range`。非单调 presence（字段消失后重现，或
+  字段被移除不再回来）由 `dedup_layouts` 的 `presence_is_monotonic` 检查兜底：
+  非单调时强制 version-gated 块，每版本分支只读自己 layout 里的字段，不会在
+  字段不存在的版本里多读。`Range` 变体本身仍未被产出（保留以备将来需要）。
 - version-gated 块的 **rust_type** 取 `own_map`（merged）。跨版本类型变化的字段
   会生成 VersionedEnum，其 `parse` 按版本选变体，因此 type 层面正确。同名
   Subclass 内部字段变化也由 subclass 自身的 version-gated parse 处理。剩余

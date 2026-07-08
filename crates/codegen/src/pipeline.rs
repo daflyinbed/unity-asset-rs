@@ -415,14 +415,21 @@ fn compute_main_fields(
 
 /// 判定是否需要 version-gated parse 块，需要时返回按版本去重后的 layouts。
 ///
-/// 线性 parse + per-field `Option<T>` 门控**只在以下两个条件都满足时才安全**：
+/// 线性 parse + per-field `Option<T>` 门控**只在以下三个条件都满足时才安全**：
 /// 1. 所有版本变体的公共字段相对顺序一致（`common_order_consistent`）
 /// 2. 合并后的字段顺序兼容每个版本的实际字节布局（`merged_order_compatible`）
+/// 3. 每个字段的 presence 单调——一旦出现就不再消失（`presence_is_monotonic`）
 ///
 /// 条件 2 是必要的因为：新字段可能插在现有字段之间（如 v5.3 在 `material` 前插入
 /// `density`）。此时公共字段顺序不变（条件 1 过），但 `merge_fields_across_versions`
 /// 按首次出现位置排序得到的合并顺序（`material` 先于 `density`）与新版本的实际字节
 /// 顺序（`density` 先于 `material`）不兼容，线性 parse 会读到错误的字节。
+///
+/// 条件 3 是必要的因为：`merge_fields_across_versions` 对非全版本字段只产出
+/// `Since(earliest)`，不产出 `Range`。若字段在早期版本存在、后期被移除（非单调），
+/// `Since(earliest)` 会让线性 parse 在字段已不存在的版本里仍然尝试读取，导致后续
+/// 字节全部错位。此时必须用 version-gated 块——每版本分支只读自己 layout 里的字段，
+/// 字段消失的版本不会多读。
 fn dedup_layouts(layouts: &[VersionLayout]) -> Vec<VersionLayout> {
     if layouts.len() <= 1 {
         return Vec::new(); // 0 或 1 个 = 无需分块
@@ -447,13 +454,15 @@ fn dedup_layouts(layouts: &[VersionLayout]) -> Vec<VersionLayout> {
     if !any_reorder {
         // 条件 2：合并顺序是否兼容每个版本的实际字段顺序
         let merged_order = compute_merged_field_order(&orders);
+        // 条件 3：字段 presence 是否单调（一旦出现就不再消失）
         if orders
             .iter()
             .all(|ver_order| merged_order_compatible(&merged_order, ver_order))
+            && presence_is_monotonic(&orders)
         {
             return Vec::new(); // 线性 parse 安全
         }
-        // 合并顺序不兼容某些版本（新字段插在现有字段之间）→ 需要 version-gated
+        // 合并顺序不兼容（新字段插在现有字段之间）或字段非单调消失 → 需要 version-gated
     }
 
     // 有真重排（或合并顺序不兼容）：合并连续相同顺序的 layouts，减少分支数
@@ -529,6 +538,32 @@ fn merged_order_compatible(merged: &[&str], version_fields: &[&str]) -> bool {
 
     // 位置序列必须严格递增
     positions.windows(2).all(|w| w[0] < w[1])
+}
+
+/// 检查字段 presence 是否单调：每个字段一旦出现就不再消失。
+///
+/// `orders` 按版本升序排列。对每个字段，遍历各版本的 presence，一旦出现（`seen=true`）
+/// 就不应再消失。非单调（如字段在 v5.0 存在、v2017 被移除）时返回 `false`，
+/// 触发 version-gated 块。
+///
+/// 这弥补了 `merge_fields_across_versions` 只产出 `Since(earliest)` 不产出 `Range`
+/// 的限制：非单调字段在线性 parse 下会在不存在的版本里被错误读取。
+fn presence_is_monotonic(orders: &[Vec<&str>]) -> bool {
+    let all_fields: BTreeSet<&str> = orders
+        .iter()
+        .flat_map(|o| o.iter().copied())
+        .collect();
+    for name in &all_fields {
+        let mut seen = false;
+        for order in orders {
+            if order.contains(name) {
+                seen = true;
+            } else if seen {
+                return false; // 非单调：存在后消失
+            }
+        }
+    }
+    true
 }
 
 /// 展平字段（root 的直接子节点 = 字段列表）。
@@ -991,5 +1026,55 @@ mod tests {
         let merged = ["a", "b", "c"];
         assert!(merged_order_compatible(&merged, &["a", "b", "c"]));
         assert!(merged_order_compatible(&merged, &["a", "b"]));
+    }
+
+    #[test]
+    fn presence_monotonic_all_present() {
+        // 所有版本都有所有字段 → 单调
+        assert!(presence_is_monotonic(&[
+            vec!["a", "b", "c"],
+            vec!["a", "b", "c"],
+        ]));
+    }
+
+    #[test]
+    fn presence_monotonic_field_added() {
+        // 字段在后续版本新增 → 单调（Since 门控可正确处理）
+        assert!(presence_is_monotonic(&[
+            vec!["a", "b"],
+            vec!["a", "b", "c"],
+        ]));
+        // 多版本渐进新增
+        assert!(presence_is_monotonic(&[
+            vec!["a"],
+            vec!["a", "b"],
+            vec!["a", "b", "c"],
+        ]));
+    }
+
+    #[test]
+    fn presence_non_monotonic_field_removed() {
+        // 字段在后期版本被移除 → 非单调
+        // v5.0: [a, b, c], v2017: [a, c]（b 被删除）
+        assert!(!presence_is_monotonic(&[
+            vec!["a", "b", "c"],
+            vec!["a", "c"],
+        ]));
+    }
+
+    #[test]
+    fn presence_non_monotonic_field_removed_and_readded() {
+        // 字段消失后重现 → 非单调
+        assert!(!presence_is_monotonic(&[
+            vec!["a", "b"],
+            vec!["a"],
+            vec!["a", "b"],
+        ]));
+    }
+
+    #[test]
+    fn presence_monotonic_single_version() {
+        // 单版本 → trivially 单调
+        assert!(presence_is_monotonic(&[vec!["a", "b"]]));
     }
 }

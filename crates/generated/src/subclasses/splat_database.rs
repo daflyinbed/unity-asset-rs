@@ -66,45 +66,38 @@ impl crate::Parse for SplatDatabase {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_splats = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(SplatDatabaseMSplatsVariant::parse(rdr, ver)?)
-        } else {
-            None
-        };
-        let m_terrain_layers = if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let mut m_splats = None;
+        let mut m_terrain_layers = None;
+        let mut m_alpha_textures = None;
+        let mut m_alphamap_resolution = None;
+        let mut m_base_map_resolution = None;
+        let mut m_color_space = None;
+        let mut m_material_requires_metallic = None;
+        let mut m_material_requires_smoothness = None;
+        if *ver >= crate::UnityVersion::new(2018, 3, 0) {
+            m_terrain_layers = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
-            Some(v)
         } else {
-            None
-        };
-        let m_alpha_textures = SplatDatabaseMAlphaTexturesVariant::parse(rdr, ver)?;
-        let m_alphamap_resolution = rdr.read_i32()?;
-        let m_base_map_resolution = rdr.read_i32()?;
-        let m_color_space = if *ver >= crate::UnityVersion::new(5, 0, 1) {
-            Some(rdr.read_i32()?)
-        } else {
-            None
-        };
-        let m_material_requires_metallic = if *ver >= crate::UnityVersion::new(5, 0, 1) {
-            Some(rdr.read_bool()?)
-        } else {
-            None
-        };
-        let m_material_requires_smoothness = if *ver >= crate::UnityVersion::new(5, 0, 1) {
-            let v = rdr.read_bool()?;
+            m_splats = Some(SplatDatabaseMSplatsVariant::parse(rdr, ver)?);
+        }
+            m_alpha_textures = Some(SplatDatabaseMAlphaTexturesVariant::parse(rdr, ver)?);
+            m_alphamap_resolution = Some(rdr.read_i32()?);
+            m_base_map_resolution = Some(rdr.read_i32()?);
+        if *ver >= crate::UnityVersion::new(2018, 3, 0) {
+        } else if *ver >= crate::UnityVersion::new(5, 0, 1) {
+            m_color_space = Some(rdr.read_i32()?);
+            m_material_requires_metallic = Some(rdr.read_bool()?);
+            m_material_requires_smoothness = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            Some(v)
         } else {
-            None
-        };
+        }
 
         Ok(SplatDatabase {
             m_splats,
             m_terrain_layers,
-            m_alpha_textures,
-            m_alphamap_resolution,
-            m_base_map_resolution,
+            m_alpha_textures: m_alpha_textures.unwrap(),
+            m_alphamap_resolution: m_alphamap_resolution.unwrap(),
+            m_base_map_resolution: m_base_map_resolution.unwrap(),
             m_color_space,
             m_material_requires_metallic,
             m_material_requires_smoothness,

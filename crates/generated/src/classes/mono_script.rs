@@ -40,29 +40,35 @@ impl crate::Parse for MonoScript {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
-        let m_execution_order = rdr.read_i32()?;
-        let m_properties_hash = MonoScriptMPropertiesHashVariant::parse(rdr, ver)?;
-        let m_class_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
-        let m_namespace = rdr.read_aligned_string()?;
-        rdr.align(4)?;
-        let m_assembly_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
-        let m_is_editor_script = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(rdr.read_bool()?)
+        let mut m_name = None;
+        let mut m_execution_order = None;
+        let mut m_properties_hash = None;
+        let mut m_class_name = None;
+        let mut m_namespace = None;
+        let mut m_assembly_name = None;
+        let mut m_is_editor_script = None;
+            m_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_execution_order = Some(rdr.read_i32()?);
+            m_properties_hash = Some(MonoScriptMPropertiesHashVariant::parse(rdr, ver)?);
+            m_class_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_namespace = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_assembly_name = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+        if *ver >= crate::UnityVersion::new(2018, 2, 0) {
         } else {
-            None
-        };
+            m_is_editor_script = Some(rdr.read_bool()?);
+        }
 
         Ok(MonoScript {
-            m_name,
-            m_execution_order,
-            m_properties_hash,
-            m_class_name,
-            m_namespace,
-            m_assembly_name,
+            m_name: m_name.unwrap(),
+            m_execution_order: m_execution_order.unwrap(),
+            m_properties_hash: m_properties_hash.unwrap(),
+            m_class_name: m_class_name.unwrap(),
+            m_namespace: m_namespace.unwrap(),
+            m_assembly_name: m_assembly_name.unwrap(),
             m_is_editor_script,
         })
     }

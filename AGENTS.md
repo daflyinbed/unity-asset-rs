@@ -61,9 +61,11 @@ Edition is `2024` → requires Rust >= 1.85.
   flags (e.g. Arknights uses an LZ4 variant on flag 4/5 — see ADR-0003 / UnityPy
   issue #308). **Never hardcode game-specific codecs in the library**; that is
   exactly what the `Registry` extension point is for.
-- `Registry::defaults()` registers **LZ4 / LZ4HC / NONE only**. The design doc
-  lists LZMA as a default too, but LZMA is **deliberately omitted** here (would
-  pull in `lzma-rs`). Don't "fix" this without checking intent.
+- `Registry::defaults()` registers **LZMA + LZ4 + LZ4HC + NONE** (UnityFS flags
+  0-3). LZMA (flag 1) uses `lzma-rs` and the same `lzma_decompress_with_options`
+  + `UseProvided` approach as `crates/codegen/src/tpk/compression.rs` — Unity's
+  LZMA streams carry a 5-byte properties header but **no embedded unpacked size**,
+  so the size must be supplied by the caller. Unity LZMA ≠ standard `.lzma`.
 - Naming drift between code and doc: code uses `Registry` / `Decompressor`; the
   doc writes `DecompressorRegistry`. Code wins — don't rename to match the doc.
 - `bytes::Bytes` is threaded through the pipeline for cheap Arc-shared slices.

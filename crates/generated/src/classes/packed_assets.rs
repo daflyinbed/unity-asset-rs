@@ -38,21 +38,24 @@ impl crate::Parse for PackedAssets {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_file = if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            Some(rdr.read_u32()?)
+        let mut m_file = None;
+        let mut m_short_path = None;
+        let mut m_overhead = None;
+        let mut m_contents = None;
+        if *ver >= crate::UnityVersion::new(2021, 2, 0) {
         } else {
-            None
-        };
-        let m_short_path = rdr.read_aligned_string()?;
-        rdr.align(4)?;
-        let m_overhead = rdr.read_u64()?;
-        let m_contents = PackedAssetsMContentsVariant::parse(rdr, ver)?;
+            m_file = Some(rdr.read_u32()?);
+        }
+            m_short_path = Some(rdr.read_aligned_string()?);
+            rdr.align(4)?;
+            m_overhead = Some(rdr.read_u64()?);
+            m_contents = Some(PackedAssetsMContentsVariant::parse(rdr, ver)?);
 
         Ok(PackedAssets {
             m_file,
-            m_short_path,
-            m_overhead,
-            m_contents,
+            m_short_path: m_short_path.unwrap(),
+            m_overhead: m_overhead.unwrap(),
+            m_contents: m_contents.unwrap(),
         })
     }
 }

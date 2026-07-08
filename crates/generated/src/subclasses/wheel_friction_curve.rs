@@ -19,56 +19,29 @@ impl crate::Parse for WheelFrictionCurve {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let extremum_slip = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(rdr.read_f32()?)
+        let mut extremum_slip = None;
+        let mut m_extremum_slip = None;
+        let mut extremum_value = None;
+        let mut m_extremum_value = None;
+        let mut asymptote_slip = None;
+        let mut m_asymptote_slip = None;
+        let mut asymptote_value = None;
+        let mut m_asymptote_value = None;
+        let mut stiffness_factor = None;
+        let mut m_stiffness = None;
+        if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            m_extremum_slip = Some(rdr.read_f32()?);
+            m_extremum_value = Some(rdr.read_f32()?);
+            m_asymptote_slip = Some(rdr.read_f32()?);
+            m_asymptote_value = Some(rdr.read_f32()?);
+            m_stiffness = Some(rdr.read_f32()?);
         } else {
-            None
-        };
-        let m_extremum_slip = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let extremum_value = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let m_extremum_value = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let asymptote_slip = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let m_asymptote_slip = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let asymptote_value = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let m_asymptote_value = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let stiffness_factor = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
-        let m_stiffness = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            Some(rdr.read_f32()?)
-        } else {
-            None
-        };
+            extremum_slip = Some(rdr.read_f32()?);
+            extremum_value = Some(rdr.read_f32()?);
+            asymptote_slip = Some(rdr.read_f32()?);
+            asymptote_value = Some(rdr.read_f32()?);
+            stiffness_factor = Some(rdr.read_f32()?);
+        }
 
         Ok(WheelFrictionCurve {
             extremum_slip,

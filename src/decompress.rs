@@ -52,6 +52,43 @@ impl Decompressor for Lz4Decompressor {
     }
 }
 
+/// LZMA 解压器。Unity bundle 的 LZMA 块与标准 `.lzma` 不同：
+/// 前 5 字节是 properties（1 byte lc/lp/pb + 4 byte dict size，LE），其后是
+/// 压缩流，**流内不含 8 字节 unpacked-size 字段**，必须由调用方提供。
+///
+/// 故使用 `lzma_decompress_with_options` + `UnpackedSize::UseProvided(expected)`，
+/// 与 `crates/codegen/src/tpk/compression.rs::decompress_lzma` 同源
+/// （参考 AssetRipper `LzmaHandler.cs:24-28` + SharpCompress `LzmaStream`）。
+pub struct LzmaDecompressor;
+
+impl Decompressor for LzmaDecompressor {
+    fn decompress(&self, input: &[u8], expected: usize) -> Result<Vec<u8>> {
+        if input.len() < 5 {
+            return Err(DecompressSnafu {
+                reason: format!(
+                    "LZMA 输入过短（{} 字节 < 5 字节 properties）",
+                    input.len()
+                ),
+            }
+            .build());
+        }
+        let mut out = Vec::with_capacity(expected);
+        lzma_rs::lzma_decompress_with_options(
+            &mut std::io::Cursor::new(input),
+            &mut out,
+            &lzma_rs::decompress::Options {
+                unpacked_size: lzma_rs::decompress::UnpackedSize::UseProvided(Some(
+                    expected as u64,
+                )),
+                allow_incomplete: false,
+                memlimit: None,
+            },
+        )
+        .map_err(|e| DecompressSnafu { reason: e.to_string() }.build())?;
+        Ok(out)
+    }
+}
+
 /// 解压器注册表。按 `CompressionType` 键控，可覆盖任意槽位。
 #[derive(Clone)]
 pub struct Registry {
@@ -66,10 +103,11 @@ impl Registry {
         }
     }
 
-    /// 默认注册 LZ4 + LZ4HC + NONE。不含 LZMA。
+    /// 默认注册 LZMA + LZ4 + LZ4HC + NONE（即 UnityFS 的 flag 0-3）。
     pub fn defaults() -> Self {
         let mut r = Self::new();
         let lz4: Arc<dyn Decompressor> = Arc::new(Lz4Decompressor);
+        r.register(CompressionType::LZMA, Arc::new(LzmaDecompressor));
         r.register(CompressionType::LZ4, lz4.clone());
         r.register(CompressionType::LZ4HC, lz4);
         r.register(CompressionType::NONE, Arc::new(IdentityDecompressor));

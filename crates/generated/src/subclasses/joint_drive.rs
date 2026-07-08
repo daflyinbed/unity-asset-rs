@@ -14,25 +14,28 @@ impl crate::Parse for JointDrive {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let mode = if *ver >= crate::UnityVersion::new(3, 4, 0) {
-            Some(rdr.read_i32()?)
+        let mut mode = None;
+        let mut position_spring = None;
+        let mut position_damper = None;
+        let mut maximum_force = None;
+        let mut use_acceleration = None;
+        if *ver >= crate::UnityVersion::new(5, 3, 0) {
         } else {
-            None
-        };
-        let position_spring = rdr.read_f32()?;
-        let position_damper = rdr.read_f32()?;
-        let maximum_force = rdr.read_f32()?;
-        let use_acceleration = if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            Some(rdr.read_i32()?)
+            mode = Some(rdr.read_i32()?);
+        }
+            position_spring = Some(rdr.read_f32()?);
+            position_damper = Some(rdr.read_f32()?);
+            maximum_force = Some(rdr.read_f32()?);
+        if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            use_acceleration = Some(rdr.read_i32()?);
         } else {
-            None
-        };
+        }
 
         Ok(JointDrive {
             mode,
-            position_spring,
-            position_damper,
-            maximum_force,
+            position_spring: position_spring.unwrap(),
+            position_damper: position_damper.unwrap(),
+            maximum_force: maximum_force.unwrap(),
             use_acceleration,
         })
     }

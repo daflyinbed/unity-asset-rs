@@ -94,47 +94,47 @@ impl crate::Parse for GenericBinding {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let path = rdr.read_u32()?;
-        let attribute = rdr.read_u32()?;
-        let script = crate::PPtr::parse(rdr, ver)?;
-        let class_id = if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            Some(rdr.read_u16()?)
+        let mut path = None;
+        let mut attribute = None;
+        let mut script = None;
+        let mut class_id = None;
+        let mut type_id = None;
+        let mut custom_type = None;
+        let mut is_p_ptr_curve = None;
+        let mut is_int_curve = None;
+        let mut is_serialize_reference_curve = None;
+        let mut meta_data = None;
+            path = Some(rdr.read_u32()?);
+            attribute = Some(rdr.read_u32()?);
+            script = Some(crate::PPtr::parse(rdr, ver)?);
+        if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            type_id = Some(rdr.read_i32()?);
         } else {
-            None
-        };
-        let type_id = if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            Some(rdr.read_i32()?)
-        } else {
-            None
-        };
-        let custom_type = rdr.read_u8()?;
-        let is_p_ptr_curve = GenericBindingIsPPtrCurveVariant::parse(rdr, ver)?;
-        let is_int_curve = if *ver >= crate::UnityVersion::new(2022, 1, 0) {
-            Some(GenericBindingIsIntCurveVariant::parse(rdr, ver)?)
-        } else {
-            None
-        };
-        let is_serialize_reference_curve = if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            Some(GenericBindingIsSerializeReferenceCurveVariant::parse(rdr, ver)?)
-        } else {
-            None
-        };
-        let meta_data = if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            let v = rdr.read_u16()?;
+            class_id = Some(rdr.read_u16()?);
+        }
+            custom_type = Some(rdr.read_u8()?);
+            is_p_ptr_curve = Some(GenericBindingIsPPtrCurveVariant::parse(rdr, ver)?);
+        if *ver >= crate::UnityVersion::new(6000, 5, 0) {
+            is_int_curve = Some(GenericBindingIsIntCurveVariant::parse(rdr, ver)?);
+            is_serialize_reference_curve = Some(GenericBindingIsSerializeReferenceCurveVariant::parse(rdr, ver)?);
+            meta_data = Some(rdr.read_u16()?);
             rdr.align(4)?;
-            Some(v)
+        } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            is_int_curve = Some(GenericBindingIsIntCurveVariant::parse(rdr, ver)?);
+            is_serialize_reference_curve = Some(GenericBindingIsSerializeReferenceCurveVariant::parse(rdr, ver)?);
+        } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
+            is_int_curve = Some(GenericBindingIsIntCurveVariant::parse(rdr, ver)?);
         } else {
-            None
-        };
+        }
 
         Ok(GenericBinding {
-            path,
-            attribute,
-            script,
+            path: path.unwrap(),
+            attribute: attribute.unwrap(),
+            script: script.unwrap(),
             class_id,
             type_id,
-            custom_type,
-            is_p_ptr_curve,
+            custom_type: custom_type.unwrap(),
+            is_p_ptr_curve: is_p_ptr_curve.unwrap(),
             is_int_curve,
             is_serialize_reference_curve,
             meta_data,

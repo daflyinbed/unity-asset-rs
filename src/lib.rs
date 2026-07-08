@@ -1,7 +1,7 @@
 pub use bytes::Bytes;
 pub use bundle::{Bundle, BundleFile};
 pub use cursor::Cursor;
-pub use decompress::{CompressionType, Decompressor, IdentityDecompressor, Lz4Decompressor, Registry};
+pub use decompress::{CompressionType, Decompressor, IdentityDecompressor, Lz4Decompressor, LzmaDecompressor, Registry};
 pub use error::{Error, Result};
 pub use serialized_file::{ObjectInfo, SerializedFile, SerializedType};
 pub use typetree::{build_tree, interpret, parse_blob, BlobNode, PPtrValue, RefTypeTable, TypeKind, TypeNode, Value};

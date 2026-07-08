@@ -14,20 +14,18 @@ impl crate::Parse for SamplerParameter {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let sampler = rdr.read_u32()?;
-        let bind_point = if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            Some(rdr.read_i32()?)
+        let mut sampler = None;
+        let mut bind_point = None;
+        let mut m_binding = None;
+            sampler = Some(rdr.read_u32()?);
+        if *ver >= crate::UnityVersion::new(6000, 6, 0) {
+            m_binding = Some(Binding::parse(rdr, ver)?);
         } else {
-            None
-        };
-        let m_binding = if *ver >= crate::UnityVersion::new(6000, 6, 0) {
-            Some(Binding::parse(rdr, ver)?)
-        } else {
-            None
-        };
+            bind_point = Some(rdr.read_i32()?);
+        }
 
         Ok(SamplerParameter {
-            sampler,
+            sampler: sampler.unwrap(),
             bind_point,
             m_binding,
         })

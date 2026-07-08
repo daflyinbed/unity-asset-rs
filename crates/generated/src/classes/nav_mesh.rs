@@ -14,23 +14,20 @@ impl crate::Parse for NavMesh {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
-        let m_mesh_data = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
+        let mut m_name = None;
+        let mut m_mesh_data = None;
+        let mut m_heightmaps = None;
+            m_name = Some(rdr.read_aligned_string()?);
             rdr.align(4)?;
-            Some(v)
+        if *ver >= crate::UnityVersion::new(5, 0, 0) {
         } else {
-            None
-        };
-        let m_heightmaps = if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { HeightmapData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?)
-        } else {
-            None
-        };
+            m_mesh_data = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_heightmaps = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { HeightmapData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+        }
 
         Ok(NavMesh {
-            m_name,
+            m_name: m_name.unwrap(),
             m_mesh_data,
             m_heightmaps,
         })

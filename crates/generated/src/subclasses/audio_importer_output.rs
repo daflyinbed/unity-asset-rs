@@ -63,23 +63,26 @@ impl crate::Parse for AudioImporterOutput {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let output_settings = AudioImporterOutputOutputSettingsVariant::parse(rdr, ver)?;
-        let output_container_format = rdr.read_i32()?;
-        let editor_output_settings = AudioImporterOutputEditorOutputSettingsVariant::parse(rdr, ver)?;
-        let editor_output_container_format = rdr.read_i32()?;
-        let player_resource = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = StreamedResource::parse(rdr, ver)?;
-            rdr.align(4)?;
-            Some(v)
+        let mut output_settings = None;
+        let mut output_container_format = None;
+        let mut editor_output_settings = None;
+        let mut editor_output_container_format = None;
+        let mut player_resource = None;
+            output_settings = Some(AudioImporterOutputOutputSettingsVariant::parse(rdr, ver)?);
+            output_container_format = Some(rdr.read_i32()?);
+            editor_output_settings = Some(AudioImporterOutputEditorOutputSettingsVariant::parse(rdr, ver)?);
+            editor_output_container_format = Some(rdr.read_i32()?);
+        if *ver >= crate::UnityVersion::new(2018, 1, 0) {
         } else {
-            None
-        };
+            player_resource = Some(StreamedResource::parse(rdr, ver)?);
+            rdr.align(4)?;
+        }
 
         Ok(AudioImporterOutput {
-            output_settings,
-            output_container_format,
-            editor_output_settings,
-            editor_output_container_format,
+            output_settings: output_settings.unwrap(),
+            output_container_format: output_container_format.unwrap(),
+            editor_output_settings: editor_output_settings.unwrap(),
+            editor_output_container_format: editor_output_container_format.unwrap(),
             player_resource,
         })
     }

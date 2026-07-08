@@ -36,15 +36,16 @@ impl crate::Parse for BlendTreeConstant {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_node_array = BlendTreeConstantMNodeArrayVariant::parse(rdr, ver)?;
-        let m_blend_event_array_constant = if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            Some(OffsetPtr::parse(rdr, ver)?)
+        let mut m_node_array = None;
+        let mut m_blend_event_array_constant = None;
+            m_node_array = Some(BlendTreeConstantMNodeArrayVariant::parse(rdr, ver)?);
+        if *ver >= crate::UnityVersion::new(4, 5, 0) {
         } else {
-            None
-        };
+            m_blend_event_array_constant = Some(OffsetPtr::parse(rdr, ver)?);
+        }
 
         Ok(BlendTreeConstant {
-            m_node_array,
+            m_node_array: m_node_array.unwrap(),
             m_blend_event_array_constant,
         })
     }
