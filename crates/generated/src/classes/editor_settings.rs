@@ -18,7 +18,6 @@ impl crate::Parse for EditorSettingsMExternalVersionControlSupportVariant {
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(4, 0, 0) {
             let v = rdr.read_aligned_string()?;
-            rdr.align(4)?;
             Ok(Self::V4_0(v))
         } else {
             let v = rdr.read_i32()?;
@@ -275,9 +274,7 @@ impl crate::Parse for EditorSettings {
             m_etc_texture_normal_compressor = Some(rdr.read_i32()?);
             m_etc_texture_best_compressor = Some(rdr.read_i32()?);
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
             m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
             m_enable_editor_async_cpu_texture_loading = Some(rdr.read_bool()?);
@@ -304,9 +301,7 @@ impl crate::Parse for EditorSettings {
             m_refresh_import_mode = Some(rdr.read_i32()?);
             m_cache_server_mode = Some(rdr.read_i32()?);
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_enable_download = Some(rdr.read_bool()?);
             m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
             m_cache_server_enable_tls = Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
@@ -333,9 +328,7 @@ impl crate::Parse for EditorSettings {
             m_etc_texture_normal_compressor = Some(rdr.read_i32()?);
             m_etc_texture_best_compressor = Some(rdr.read_i32()?);
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
             m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
             m_enable_editor_async_cpu_texture_loading = Some(rdr.read_bool()?);
@@ -364,9 +357,7 @@ impl crate::Parse for EditorSettings {
             m_refresh_import_mode = Some(rdr.read_i32()?);
             m_cache_server_mode = Some(rdr.read_i32()?);
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_enable_download = Some(rdr.read_bool()?);
             m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
             m_cache_server_enable_tls = Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
@@ -393,9 +384,7 @@ impl crate::Parse for EditorSettings {
             m_etc_texture_normal_compressor = Some(rdr.read_i32()?);
             m_etc_texture_best_compressor = Some(rdr.read_i32()?);
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
             m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
             m_enable_editor_async_cpu_texture_loading = Some(rdr.read_bool()?);
@@ -424,9 +413,7 @@ impl crate::Parse for EditorSettings {
             m_refresh_import_mode = Some(rdr.read_i32()?);
             m_cache_server_mode = Some(rdr.read_i32()?);
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_enable_download = Some(rdr.read_bool()?);
             m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
             m_cache_server_enable_tls = Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
@@ -451,9 +438,7 @@ impl crate::Parse for EditorSettings {
             m_etc_texture_normal_compressor = Some(rdr.read_i32()?);
             m_etc_texture_best_compressor = Some(rdr.read_i32()?);
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
             m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
             m_enable_editor_async_cpu_texture_loading = Some(rdr.read_bool()?);
@@ -480,9 +465,7 @@ impl crate::Parse for EditorSettings {
             m_refresh_import_mode = Some(rdr.read_i32()?);
             m_cache_server_mode = Some(rdr.read_i32()?);
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_enable_download = Some(rdr.read_bool()?);
             m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
             m_cache_server_enable_auth = Some(rdr.read_bool()?);
@@ -507,9 +490,7 @@ impl crate::Parse for EditorSettings {
             m_etc_texture_normal_compressor = Some(rdr.read_i32()?);
             m_etc_texture_best_compressor = Some(rdr.read_i32()?);
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
             m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
             m_enable_editor_async_cpu_texture_loading = Some(rdr.read_bool()?);
@@ -536,9 +517,7 @@ impl crate::Parse for EditorSettings {
             m_refresh_import_mode = Some(rdr.read_i32()?);
             m_cache_server_mode = Some(rdr.read_i32()?);
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_enable_download = Some(rdr.read_bool()?);
             m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
             m_cache_server_enable_auth = Some(rdr.read_bool()?);
@@ -562,9 +541,7 @@ impl crate::Parse for EditorSettings {
             m_etc_texture_normal_compressor = Some(rdr.read_i32()?);
             m_etc_texture_best_compressor = Some(rdr.read_i32()?);
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
             m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
             m_enable_editor_async_cpu_texture_loading = Some(rdr.read_bool()?);
@@ -591,9 +568,7 @@ impl crate::Parse for EditorSettings {
             m_refresh_import_mode = Some(rdr.read_i32()?);
             m_cache_server_mode = Some(rdr.read_i32()?);
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_enable_download = Some(rdr.read_bool()?);
             m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
             m_cache_server_enable_auth = Some(rdr.read_bool()?);
@@ -618,9 +593,7 @@ impl crate::Parse for EditorSettings {
             m_etc_texture_normal_compressor = Some(rdr.read_i32()?);
             m_etc_texture_best_compressor = Some(rdr.read_i32()?);
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
             m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
             m_enable_editor_async_cpu_texture_loading = Some(rdr.read_bool()?);
@@ -647,9 +620,7 @@ impl crate::Parse for EditorSettings {
             m_refresh_import_mode = Some(rdr.read_i32()?);
             m_cache_server_mode = Some(rdr.read_i32()?);
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_enable_download = Some(rdr.read_bool()?);
             m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
             m_cache_server_enable_auth = Some(rdr.read_bool()?);
@@ -673,9 +644,7 @@ impl crate::Parse for EditorSettings {
             m_etc_texture_normal_compressor = Some(rdr.read_i32()?);
             m_etc_texture_best_compressor = Some(rdr.read_i32()?);
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
             m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
             m_enable_editor_async_cpu_texture_loading = Some(rdr.read_bool()?);
@@ -700,9 +669,7 @@ impl crate::Parse for EditorSettings {
             m_refresh_import_mode = Some(rdr.read_i32()?);
             m_cache_server_mode = Some(rdr.read_i32()?);
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_enable_download = Some(rdr.read_bool()?);
             m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
             m_cache_server_enable_auth = Some(rdr.read_bool()?);
@@ -726,9 +693,7 @@ impl crate::Parse for EditorSettings {
             m_etc_texture_normal_compressor = Some(rdr.read_i32()?);
             m_etc_texture_best_compressor = Some(rdr.read_i32()?);
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
             m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
             m_enable_editor_async_cpu_texture_loading = Some(rdr.read_bool()?);
@@ -753,9 +718,7 @@ impl crate::Parse for EditorSettings {
             m_refresh_import_mode = Some(rdr.read_i32()?);
             m_cache_server_mode = Some(rdr.read_i32()?);
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_enable_download = Some(rdr.read_bool()?);
             m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
             m_cache_server_enable_auth = Some(rdr.read_bool()?);
@@ -778,9 +741,7 @@ impl crate::Parse for EditorSettings {
             m_etc_texture_normal_compressor = Some(rdr.read_i32()?);
             m_etc_texture_best_compressor = Some(rdr.read_i32()?);
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
             m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
             m_enable_editor_async_cpu_texture_loading = Some(rdr.read_bool()?);
@@ -803,9 +764,7 @@ impl crate::Parse for EditorSettings {
             m_refresh_import_mode = Some(rdr.read_i32()?);
             m_cache_server_mode = Some(rdr.read_i32()?);
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_enable_download = Some(rdr.read_bool()?);
             m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
             m_cache_server_enable_auth = Some(rdr.read_bool()?);
@@ -827,9 +786,7 @@ impl crate::Parse for EditorSettings {
             m_etc_texture_normal_compressor = Some(rdr.read_i32()?);
             m_etc_texture_best_compressor = Some(rdr.read_i32()?);
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
             m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
             m_enable_editor_async_cpu_texture_loading = Some(rdr.read_bool()?);
@@ -852,9 +809,7 @@ impl crate::Parse for EditorSettings {
             m_refresh_import_mode = Some(rdr.read_i32()?);
             m_cache_server_mode = Some(rdr.read_i32()?);
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_enable_download = Some(rdr.read_bool()?);
             m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
             m_cache_server_enable_auth = Some(rdr.read_bool()?);
@@ -874,9 +829,7 @@ impl crate::Parse for EditorSettings {
             m_etc_texture_normal_compressor = Some(rdr.read_i32()?);
             m_etc_texture_best_compressor = Some(rdr.read_i32()?);
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
             m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
             m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(rdr, ver)?);
@@ -899,9 +852,7 @@ impl crate::Parse for EditorSettings {
             m_refresh_import_mode = Some(rdr.read_i32()?);
             m_cache_server_mode = Some(rdr.read_i32()?);
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_enable_download = Some(rdr.read_bool()?);
             m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
             m_cache_server_enable_auth = Some(rdr.read_bool()?);
@@ -922,9 +873,7 @@ impl crate::Parse for EditorSettings {
             m_etc_texture_normal_compressor = Some(rdr.read_i32()?);
             m_etc_texture_best_compressor = Some(rdr.read_i32()?);
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
             m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
             m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(rdr, ver)?);
@@ -947,9 +896,7 @@ impl crate::Parse for EditorSettings {
             m_refresh_import_mode = Some(rdr.read_i32()?);
             m_cache_server_mode = Some(rdr.read_i32()?);
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_enable_download = Some(rdr.read_bool()?);
             m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
             m_cache_server_enable_auth = Some(rdr.read_bool()?);
@@ -969,9 +916,7 @@ impl crate::Parse for EditorSettings {
             m_etc_texture_normal_compressor = Some(rdr.read_i32()?);
             m_etc_texture_best_compressor = Some(rdr.read_i32()?);
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
             m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
             m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(rdr, ver)?);
@@ -994,9 +939,7 @@ impl crate::Parse for EditorSettings {
             m_refresh_import_mode = Some(rdr.read_i32()?);
             m_cache_server_mode = Some(rdr.read_i32()?);
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_enable_download = Some(rdr.read_bool()?);
             m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
             m_cache_server_enable_auth = Some(rdr.read_bool()?);
@@ -1014,9 +957,7 @@ impl crate::Parse for EditorSettings {
             m_etc_texture_normal_compressor = Some(rdr.read_i32()?);
             m_etc_texture_best_compressor = Some(rdr.read_i32()?);
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
             m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
             m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(rdr, ver)?);
@@ -1038,9 +979,7 @@ impl crate::Parse for EditorSettings {
             m_asset_pipeline_mode = Some(rdr.read_i32()?);
             m_cache_server_mode = Some(rdr.read_i32()?);
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_enable_download = Some(rdr.read_bool()?);
             m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
             m_cache_server_enable_auth = Some(rdr.read_bool()?);
@@ -1058,9 +997,7 @@ impl crate::Parse for EditorSettings {
             m_etc_texture_normal_compressor = Some(rdr.read_i32()?);
             m_etc_texture_best_compressor = Some(rdr.read_i32()?);
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
             m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
             m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(rdr, ver)?);
@@ -1082,9 +1019,7 @@ impl crate::Parse for EditorSettings {
             m_asset_pipeline_mode = Some(rdr.read_i32()?);
             m_cache_server_mode = Some(rdr.read_i32()?);
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_enable_download = Some(rdr.read_bool()?);
             m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
             m_cache_server_enable_auth = Some(rdr.read_bool()?);
@@ -1103,9 +1038,7 @@ impl crate::Parse for EditorSettings {
             m_etc_texture_normal_compressor = Some(rdr.read_i32()?);
             m_etc_texture_best_compressor = Some(rdr.read_i32()?);
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
             m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
             m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(rdr, ver)?);
@@ -1127,9 +1060,7 @@ impl crate::Parse for EditorSettings {
             m_asset_pipeline_mode = Some(rdr.read_i32()?);
             m_cache_server_mode = Some(rdr.read_i32()?);
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_enable_download = Some(rdr.read_bool()?);
             m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
             m_cache_server_enable_auth = Some(rdr.read_bool()?);
@@ -1147,9 +1078,7 @@ impl crate::Parse for EditorSettings {
             m_etc_texture_normal_compressor = Some(rdr.read_i32()?);
             m_etc_texture_best_compressor = Some(rdr.read_i32()?);
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
             m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
             m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(rdr, ver)?);
@@ -1170,9 +1099,7 @@ impl crate::Parse for EditorSettings {
             m_asset_pipeline_mode = Some(rdr.read_i32()?);
             m_cache_server_mode = Some(rdr.read_i32()?);
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_enable_download = Some(rdr.read_bool()?);
             m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
             m_cache_server_enable_auth = Some(rdr.read_bool()?);
@@ -1191,11 +1118,8 @@ impl crate::Parse for EditorSettings {
             m_etc_texture_normal_compressor = Some(rdr.read_i32()?);
             m_etc_texture_best_compressor = Some(rdr.read_i32()?);
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_collab_editor_settings = Some(CollabEditorSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
             m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
             m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(rdr, ver)?);
@@ -1209,9 +1133,7 @@ impl crate::Parse for EditorSettings {
             m_asset_pipeline_mode = Some(rdr.read_i32()?);
             m_cache_server_mode = Some(rdr.read_i32()?);
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_enable_download = Some(rdr.read_bool()?);
             m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
             m_cache_server_validation_mode = Some(rdr.read_i32()?);
@@ -1229,11 +1151,8 @@ impl crate::Parse for EditorSettings {
             m_etc_texture_normal_compressor = Some(rdr.read_i32()?);
             m_etc_texture_best_compressor = Some(rdr.read_i32()?);
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_collab_editor_settings = Some(CollabEditorSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
             m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
             m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(rdr, ver)?);
@@ -1247,9 +1166,7 @@ impl crate::Parse for EditorSettings {
             m_asset_pipeline_mode = Some(rdr.read_i32()?);
             m_cache_server_mode = Some(rdr.read_i32()?);
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_cache_server_enable_download = Some(rdr.read_bool()?);
             m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2019, 2, 0) {
@@ -1266,11 +1183,8 @@ impl crate::Parse for EditorSettings {
             m_etc_texture_normal_compressor = Some(rdr.read_i32()?);
             m_etc_texture_best_compressor = Some(rdr.read_i32()?);
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_collab_editor_settings = Some(CollabEditorSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
             m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
             m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(rdr, ver)?);
@@ -1290,11 +1204,8 @@ impl crate::Parse for EditorSettings {
             m_etc_texture_normal_compressor = Some(rdr.read_i32()?);
             m_etc_texture_best_compressor = Some(rdr.read_i32()?);
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_collab_editor_settings = Some(CollabEditorSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
             m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
             m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(rdr, ver)?);
@@ -1312,11 +1223,8 @@ impl crate::Parse for EditorSettings {
             m_etc_texture_normal_compressor = Some(rdr.read_i32()?);
             m_etc_texture_best_compressor = Some(rdr.read_i32()?);
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_collab_editor_settings = Some(CollabEditorSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2018, 2, 0) {
             m_external_version_control_support = Some(EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?);
@@ -1330,13 +1238,9 @@ impl crate::Parse for EditorSettings {
             m_etc_texture_normal_compressor = Some(rdr.read_i32()?);
             m_etc_texture_best_compressor = Some(rdr.read_i32()?);
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_user_generated_project_suffix = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_collab_editor_settings = Some(CollabEditorSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
             m_external_version_control_support = Some(EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?);
@@ -1350,13 +1254,9 @@ impl crate::Parse for EditorSettings {
             m_etc_texture_normal_compressor = Some(rdr.read_i32()?);
             m_etc_texture_best_compressor = Some(rdr.read_i32()?);
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_user_generated_project_suffix = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_collab_editor_settings = Some(CollabEditorSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             m_external_version_control_support = Some(EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?);
             m_serialization_mode = Some(EditorSettingsMSerializationModeVariant::parse(rdr, ver)?);
@@ -1368,13 +1268,9 @@ impl crate::Parse for EditorSettings {
             m_etc_texture_normal_compressor = Some(rdr.read_i32()?);
             m_etc_texture_best_compressor = Some(rdr.read_i32()?);
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_user_generated_project_suffix = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_collab_editor_settings = Some(CollabEditorSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             m_external_version_control_support = Some(EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?);
             m_serialization_mode = Some(EditorSettingsMSerializationModeVariant::parse(rdr, ver)?);
@@ -1382,13 +1278,9 @@ impl crate::Parse for EditorSettings {
             m_sprite_packer_mode = Some(rdr.read_i32()?);
             m_sprite_packer_padding_power = Some(rdr.read_i32()?);
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_user_generated_project_suffix = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_collab_editor_settings = Some(CollabEditorSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
             m_external_version_control_support = Some(EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?);
             m_serialization_mode = Some(EditorSettingsMSerializationModeVariant::parse(rdr, ver)?);
@@ -1396,11 +1288,8 @@ impl crate::Parse for EditorSettings {
             m_sprite_packer_mode = Some(rdr.read_i32()?);
             m_sprite_packer_padding_power = Some(rdr.read_i32()?);
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_user_generated_project_suffix = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 2, 0) {
             m_external_version_control_support = Some(EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?);
             m_serialization_mode = Some(EditorSettingsMSerializationModeVariant::parse(rdr, ver)?);
@@ -1411,9 +1300,7 @@ impl crate::Parse for EditorSettings {
             m_sprite_packer_mode = Some(rdr.read_i32()?);
             m_sprite_packer_padding_power = Some(rdr.read_i32()?);
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 1, 0) {
             m_external_version_control_support = Some(EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?);
             m_serialization_mode = Some(EditorSettingsMSerializationModeVariant::parse(rdr, ver)?);

@@ -13,7 +13,6 @@ impl crate::Parse for BuildStepMessage {
     ) -> Result<Self, R::Error> {
         let r#type = rdr.read_i32()?;
         let content = rdr.read_aligned_string()?;
-        rdr.align(4)?;
 
         Ok(BuildStepMessage {
             r#type,

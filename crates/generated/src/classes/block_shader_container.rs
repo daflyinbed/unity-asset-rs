@@ -19,7 +19,6 @@ impl crate::Parse for BlockShaderContainer {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let guid = Guid::parse(rdr, ver)?;
         let dependencies = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
         rdr.align(4)?;

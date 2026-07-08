@@ -124,9 +124,7 @@ impl crate::Parse for AudioManager {
             m_virtual_voice_count = Some(rdr.read_i32()?);
             m_real_voice_count = Some(AudioManagerMRealVoiceCountVariant::parse(rdr, ver)?);
             m_spatializer_plugin = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_ambisonic_decoder_plugin = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_disable_audio = Some(AudioManagerMDisableAudioVariant::parse(rdr, ver)?);
             m_virtualize_effects = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -138,9 +136,7 @@ impl crate::Parse for AudioManager {
             m_virtual_voice_count = Some(rdr.read_i32()?);
             m_real_voice_count = Some(AudioManagerMRealVoiceCountVariant::parse(rdr, ver)?);
             m_spatializer_plugin = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_ambisonic_decoder_plugin = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_disable_audio = Some(AudioManagerMDisableAudioVariant::parse(rdr, ver)?);
             m_virtualize_effects = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -149,9 +145,7 @@ impl crate::Parse for AudioManager {
             m_virtual_voice_count = Some(rdr.read_i32()?);
             m_real_voice_count = Some(AudioManagerMRealVoiceCountVariant::parse(rdr, ver)?);
             m_spatializer_plugin = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_ambisonic_decoder_plugin = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_disable_audio = Some(AudioManagerMDisableAudioVariant::parse(rdr, ver)?);
             m_virtualize_effects = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -159,9 +153,7 @@ impl crate::Parse for AudioManager {
             m_virtual_voice_count = Some(rdr.read_i32()?);
             m_real_voice_count = Some(AudioManagerMRealVoiceCountVariant::parse(rdr, ver)?);
             m_spatializer_plugin = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_ambisonic_decoder_plugin = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_disable_audio = Some(AudioManagerMDisableAudioVariant::parse(rdr, ver)?);
             m_virtualize_effects = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -170,9 +162,7 @@ impl crate::Parse for AudioManager {
             m_virtual_voice_count = Some(rdr.read_i32()?);
             m_real_voice_count = Some(AudioManagerMRealVoiceCountVariant::parse(rdr, ver)?);
             m_spatializer_plugin = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_ambisonic_decoder_plugin = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_disable_audio = Some(AudioManagerMDisableAudioVariant::parse(rdr, ver)?);
             m_virtualize_effects = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -180,7 +170,6 @@ impl crate::Parse for AudioManager {
             m_virtual_voice_count = Some(rdr.read_i32()?);
             m_real_voice_count = Some(AudioManagerMRealVoiceCountVariant::parse(rdr, ver)?);
             m_spatializer_plugin = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_disable_audio = Some(AudioManagerMDisableAudioVariant::parse(rdr, ver)?);
             m_virtualize_effects = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -188,7 +177,6 @@ impl crate::Parse for AudioManager {
             m_virtual_voice_count = Some(rdr.read_i32()?);
             m_real_voice_count = Some(AudioManagerMRealVoiceCountVariant::parse(rdr, ver)?);
             m_spatializer_plugin = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_disable_audio = Some(AudioManagerMDisableAudioVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_virtual_voice_count = Some(rdr.read_i32()?);

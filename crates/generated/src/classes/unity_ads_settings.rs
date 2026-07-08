@@ -29,9 +29,7 @@ impl crate::Parse for UnityAdsSettings {
             rdr.align(4)?;
             m_enabled_platforms = Some(rdr.read_u32()?);
             m_ios_game_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_android_game_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         }
 
         Ok(UnityAdsSettings {

@@ -17,7 +17,6 @@ impl crate::Parse for BlobObject {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_blob_type_hash = rdr.read_u64()?;
         let m_blob_data = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
         rdr.align(4)?;

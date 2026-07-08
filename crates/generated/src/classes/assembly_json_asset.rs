@@ -12,9 +12,7 @@ impl crate::Parse for AssemblyJsonAsset {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_script = rdr.read_aligned_string()?;
-        rdr.align(4)?;
 
         Ok(AssemblyJsonAsset {
             m_name,

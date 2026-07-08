@@ -1,6 +1,6 @@
 //! 自动生成。请勿手动修改。
 
-use crate::subclasses::buffer_binding::BufferBinding;
+use crate::subclasses::buffer_binding_parameter::BufferBindingParameter;
 use crate::subclasses::constant_buffer::ConstantBuffer;
 use crate::subclasses::matrix_parameter::MatrixParameter;
 use crate::subclasses::sampler_parameter::SamplerParameter;
@@ -13,9 +13,9 @@ pub struct SerializedProgramParameters {
     pub m_vector_params: Vec<VectorParameter>,
     pub m_matrix_params: Vec<MatrixParameter>,
     pub m_texture_params: Vec<TextureParameter>,
-    pub m_buffer_params: Vec<BufferBinding>,
+    pub m_buffer_params: Vec<BufferBindingParameter>,
     pub m_constant_buffers: Vec<ConstantBuffer>,
-    pub m_constant_buffer_bindings: Vec<BufferBinding>,
+    pub m_constant_buffer_bindings: Vec<BufferBindingParameter>,
     pub m_uav_params: Vec<UavParameter>,
     pub m_samplers: Vec<SamplerParameter>,
 }
@@ -31,11 +31,11 @@ impl crate::Parse for SerializedProgramParameters {
         rdr.align(4)?;
         let m_texture_params = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TextureParameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
         rdr.align(4)?;
-        let m_buffer_params = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { BufferBinding::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_buffer_params = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { BufferBindingParameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
         rdr.align(4)?;
         let m_constant_buffers = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ConstantBuffer::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
         rdr.align(4)?;
-        let m_constant_buffer_bindings = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { BufferBinding::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_constant_buffer_bindings = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { BufferBindingParameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
         rdr.align(4)?;
         let m_uav_params = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { UavParameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
         rdr.align(4)?;

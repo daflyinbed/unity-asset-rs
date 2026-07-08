@@ -18,7 +18,6 @@ impl crate::Parse for NavMesh {
         let mut m_mesh_data = None;
         let mut m_heightmaps = None;
             m_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
         } else {
             m_mesh_data = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);

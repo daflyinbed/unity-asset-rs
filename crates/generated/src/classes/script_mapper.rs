@@ -1,10 +1,10 @@
 //! 自动生成。请勿手动修改。
 
-use crate::subclasses::name_to_object_map::NameToObjectMap;
+use crate::subclasses::name_to_object_map_shader::NameToObjectMap_Shader;
 
 #[derive(Debug, Clone)]
 pub struct ScriptMapper {
-    pub m_shaders: NameToObjectMap,
+    pub m_shaders: NameToObjectMap_Shader,
     pub m_preload_shaders: Option<bool>,
 }
 
@@ -13,8 +13,7 @@ impl crate::Parse for ScriptMapper {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_shaders = NameToObjectMap::parse(rdr, ver)?;
-        rdr.align(4)?;
+        let m_shaders = NameToObjectMap_Shader::parse(rdr, ver)?;
         let m_preload_shaders = if *ver >= crate::UnityVersion::new(5, 0, 0) {
             Some(rdr.read_bool()?)
         } else {

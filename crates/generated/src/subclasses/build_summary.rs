@@ -116,21 +116,16 @@ impl crate::Parse for BuildSummary {
             build_guid = Some(Guid::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
             name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             build_guid = Some(Guid::parse(rdr, ver)?);
         } else {
             name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         }
             platform_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2021, 2, 0) {
             platform_group_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             subtarget = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
             platform_group_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else {
         }
             options = Some(rdr.read_i32()?);
@@ -140,15 +135,11 @@ impl crate::Parse for BuildSummary {
         }
             asset_bundle_options = Some(rdr.read_i32()?);
             output_path = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(6000, 5, 0) {
             data_path = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             build_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(6000, 4, 0) {
             data_path = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else {
         }
             crc = Some(rdr.read_u32()?);

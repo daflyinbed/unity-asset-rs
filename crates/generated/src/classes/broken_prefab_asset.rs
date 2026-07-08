@@ -18,9 +18,7 @@ impl crate::Parse for BrokenPrefabAsset {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_message = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_is_warning = rdr.read_bool()?;
         let m_is_variant = rdr.read_bool()?;
         let m_is_prefab_file_valid = rdr.read_bool()?;

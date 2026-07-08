@@ -12,7 +12,6 @@ impl crate::Parse for BuildTargetGraphicsJobMode {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_build_target = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_graphics_job_mode = rdr.read_i32()?;
 
         Ok(BuildTargetGraphicsJobMode {

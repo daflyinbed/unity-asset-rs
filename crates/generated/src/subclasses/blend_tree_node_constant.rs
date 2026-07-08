@@ -51,7 +51,6 @@ impl crate::Parse for BlendTreeNodeConstant {
             m_blend1d_data = Some(OffsetPtr::parse(rdr, ver)?);
             m_blend2d_data = Some(OffsetPtr::parse(rdr, ver)?);
             m_blend_direct_data = Some(OffsetPtr::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 1, 0) {
             m_blend1d_data = Some(OffsetPtr::parse(rdr, ver)?);
             m_blend2d_data = Some(OffsetPtr::parse(rdr, ver)?);

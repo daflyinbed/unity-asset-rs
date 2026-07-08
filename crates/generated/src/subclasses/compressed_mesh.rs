@@ -1,21 +1,22 @@
 //! 自动生成。请勿手动修改。
 
-use crate::subclasses::packed_bit_vector::PackedBitVector;
+use crate::subclasses::packed_bit_vector_int32::PackedBitVector_Int32;
+use crate::subclasses::packed_bit_vector_single::PackedBitVector_Single;
 
 #[derive(Debug, Clone)]
 pub struct CompressedMesh {
-    pub m_vertices: PackedBitVector,
-    pub m_uv: PackedBitVector,
-    pub m_bind_poses: Option<PackedBitVector>,
-    pub m_normals: PackedBitVector,
-    pub m_tangents: PackedBitVector,
-    pub m_weights: PackedBitVector,
-    pub m_normal_signs: PackedBitVector,
-    pub m_tangent_signs: PackedBitVector,
-    pub m_float_colors: Option<PackedBitVector>,
-    pub m_bone_indices: PackedBitVector,
-    pub m_triangles: PackedBitVector,
-    pub m_colors: Option<PackedBitVector>,
+    pub m_vertices: PackedBitVector_Single,
+    pub m_uv: PackedBitVector_Single,
+    pub m_bind_poses: Option<PackedBitVector_Single>,
+    pub m_normals: PackedBitVector_Single,
+    pub m_tangents: PackedBitVector_Single,
+    pub m_weights: PackedBitVector_Int32,
+    pub m_normal_signs: PackedBitVector_Int32,
+    pub m_tangent_signs: PackedBitVector_Int32,
+    pub m_float_colors: Option<PackedBitVector_Single>,
+    pub m_bone_indices: PackedBitVector_Int32,
+    pub m_triangles: PackedBitVector_Int32,
+    pub m_colors: Option<PackedBitVector_Int32>,
     pub m_uv_info: Option<u32>,
 }
 
@@ -37,39 +38,27 @@ impl crate::Parse for CompressedMesh {
         let mut m_triangles = None;
         let mut m_colors = None;
         let mut m_uv_info = None;
-            m_vertices = Some(PackedBitVector::parse(rdr, ver)?);
-            rdr.align(4)?;
-            m_uv = Some(PackedBitVector::parse(rdr, ver)?);
-            rdr.align(4)?;
+            m_vertices = Some(PackedBitVector_Single::parse(rdr, ver)?);
+            m_uv = Some(PackedBitVector_Single::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
         } else {
-            m_bind_poses = Some(PackedBitVector::parse(rdr, ver)?);
-            rdr.align(4)?;
+            m_bind_poses = Some(PackedBitVector_Single::parse(rdr, ver)?);
         }
-            m_normals = Some(PackedBitVector::parse(rdr, ver)?);
-            rdr.align(4)?;
-            m_tangents = Some(PackedBitVector::parse(rdr, ver)?);
-            rdr.align(4)?;
-            m_weights = Some(PackedBitVector::parse(rdr, ver)?);
-            rdr.align(4)?;
-            m_normal_signs = Some(PackedBitVector::parse(rdr, ver)?);
-            rdr.align(4)?;
-            m_tangent_signs = Some(PackedBitVector::parse(rdr, ver)?);
-            rdr.align(4)?;
+            m_normals = Some(PackedBitVector_Single::parse(rdr, ver)?);
+            m_tangents = Some(PackedBitVector_Single::parse(rdr, ver)?);
+            m_weights = Some(PackedBitVector_Int32::parse(rdr, ver)?);
+            m_normal_signs = Some(PackedBitVector_Int32::parse(rdr, ver)?);
+            m_tangent_signs = Some(PackedBitVector_Int32::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_float_colors = Some(PackedBitVector::parse(rdr, ver)?);
-            rdr.align(4)?;
+            m_float_colors = Some(PackedBitVector_Single::parse(rdr, ver)?);
         } else {
         }
-            m_bone_indices = Some(PackedBitVector::parse(rdr, ver)?);
-            rdr.align(4)?;
-            m_triangles = Some(PackedBitVector::parse(rdr, ver)?);
-            rdr.align(4)?;
+            m_bone_indices = Some(PackedBitVector_Int32::parse(rdr, ver)?);
+            m_triangles = Some(PackedBitVector_Int32::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_uv_info = Some(rdr.read_u32()?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            m_colors = Some(PackedBitVector::parse(rdr, ver)?);
-            rdr.align(4)?;
+            m_colors = Some(PackedBitVector_Int32::parse(rdr, ver)?);
         } else {
         }
 

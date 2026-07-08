@@ -62,17 +62,14 @@ impl crate::Parse for NavMeshBuildSettings {
             max_job_workers = Some(rdr.read_u32()?);
             preserve_tiles_outside_bounds = Some(rdr.read_i32()?);
             debug = Some(NavMeshBuildDebugSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
             accurate_placement = Some(rdr.read_i32()?);
             max_job_workers = Some(rdr.read_u32()?);
             preserve_tiles_outside_bounds = Some(rdr.read_i32()?);
             debug = Some(NavMeshBuildDebugSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             accurate_placement = Some(rdr.read_i32()?);
             debug = Some(NavMeshBuildDebugSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else {
             accurate_placement = Some(rdr.read_i32()?);
         }

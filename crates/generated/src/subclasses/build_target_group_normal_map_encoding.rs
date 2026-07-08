@@ -12,7 +12,6 @@ impl crate::Parse for BuildTargetGroupNormalMapEncoding {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_build_target = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_encoding = rdr.read_i32()?;
 
         Ok(BuildTargetGroupNormalMapEncoding {

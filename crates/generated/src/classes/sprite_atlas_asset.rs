@@ -19,11 +19,9 @@ impl crate::Parse for SpriteAtlasAssetMImporterDataVariant {
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2022, 1, 0) {
             let v = ( { Ok(Box::new(SpriteAtlasAssetData::parse(rdr, ver)?)) } )?;
-            rdr.align(4)?;
             Ok(Self::V2022_1(v))
         } else {
             let v = ( { Ok(Box::new(SpriteAtlasEditorData::parse(rdr, ver)?)) } )?;
-            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -43,7 +41,6 @@ impl crate::Parse for SpriteAtlasAsset {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_master_atlas = crate::PPtr::parse(rdr, ver)?;
         let m_importer_data = SpriteAtlasAssetMImporterDataVariant::parse(rdr, ver)?;
         let m_is_variant = rdr.read_bool()?;

@@ -69,7 +69,6 @@ impl crate::Parse for GameObject {
         let m_component = GameObjectMComponentVariant::parse(rdr, ver)?;
         let m_layer = rdr.read_u32()?;
         let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_tag = rdr.read_u16()?;
         let m_is_active = GameObjectMIsActiveVariant::parse(rdr, ver)?;
 

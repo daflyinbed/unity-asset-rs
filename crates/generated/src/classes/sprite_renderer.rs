@@ -1,7 +1,7 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
-use crate::subclasses::color_rgba::ColorRgba;
+use crate::subclasses::color_rgb_af::ColorRgbAf;
 use crate::subclasses::static_batch_info::StaticBatchInfo;
 use crate::subclasses::vector2f::Vector2f;
 use crate::subclasses::vector4f::Vector4f;
@@ -295,8 +295,8 @@ impl crate::Parse for SpriteRendererMProbeAnchorVariant {
 /// 版本枚举：SpriteRendererMColorVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum SpriteRendererMColorVariant {
-    Default(Box<ColorRgba>),
-    V4_5(Box<ColorRgba>),
+    Default(Box<ColorRgbAf>),
+    V4_5(Box<ColorRgbAf>),
 }
 
 impl crate::Parse for SpriteRendererMColorVariant {
@@ -305,11 +305,11 @@ impl crate::Parse for SpriteRendererMColorVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            let v = ( { Ok(Box::new(ColorRgba::parse(rdr, ver)?)) } )?;
+            let v = ( { Ok(Box::new(ColorRgbAf::parse(rdr, ver)?)) } )?;
             rdr.align(4)?;
             Ok(Self::V4_5(v))
         } else {
-            let v = ( { Ok(Box::new(ColorRgba::parse(rdr, ver)?)) } )?;
+            let v = ( { Ok(Box::new(ColorRgbAf::parse(rdr, ver)?)) } )?;
             Ok(Self::Default(v))
         }
     }

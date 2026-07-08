@@ -12,9 +12,7 @@ impl crate::Parse for AssetBundleFullName {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_asset_bundle_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_asset_bundle_variant = rdr.read_aligned_string()?;
-        rdr.align(4)?;
 
         Ok(AssetBundleFullName {
             m_asset_bundle_name,

@@ -99,7 +99,6 @@ impl crate::Parse for CustomCollider2D {
         }
             m_offset = Some(Vector2f::parse(rdr, ver)?);
             m_custom_shapes = Some(PhysicsShapeGroup2D::parse(rdr, ver)?);
-            rdr.align(4)?;
 
         Ok(CustomCollider2D {
             m_game_object: m_game_object.unwrap(),

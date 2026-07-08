@@ -115,7 +115,6 @@ impl crate::Parse for UnityAnalyticsSettings {
             m_initialize_on_startup = Some(UnityAnalyticsSettingsMInitializeOnStartupVariant::parse(rdr, ver)?);
         } else {
             m_test_event_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_test_config_url = Some(rdr.read_aligned_string()?);
             rdr.align(4)?;
         }

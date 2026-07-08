@@ -12,7 +12,6 @@ impl crate::Parse for TransformMaskElement {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_path = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_weight = rdr.read_f32()?;
 
         Ok(TransformMaskElement {

@@ -16,7 +16,6 @@ impl crate::Parse for AudioMixerSnapshotController {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_audio_mixer = crate::PPtr::parse(rdr, ver)?;
         let m_snapshot_id = Guid::parse(rdr, ver)?;
 

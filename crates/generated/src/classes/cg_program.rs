@@ -16,13 +16,10 @@ impl crate::Parse for CgProgram {
         let mut m_script = None;
         let mut m_path_name = None;
             m_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_script = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
         } else {
             m_path_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         }
 
         Ok(CgProgram {

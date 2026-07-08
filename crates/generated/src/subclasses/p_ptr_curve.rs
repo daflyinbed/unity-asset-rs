@@ -43,9 +43,7 @@ impl crate::Parse for PPtrCurve {
     ) -> Result<Self, R::Error> {
         let curve = PPtrCurveCurveVariant::parse(rdr, ver)?;
         let attribute = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let path = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let class_id = rdr.read_i32()?;
         let script = crate::PPtr::parse(rdr, ver)?;
         let flags = if *ver >= crate::UnityVersion::new(2022, 2, 0) {

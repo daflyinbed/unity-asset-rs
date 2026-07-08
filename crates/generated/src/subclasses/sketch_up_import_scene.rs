@@ -14,7 +14,6 @@ impl crate::Parse for SketchUpImportScene {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let camera = SketchUpImportCamera::parse(rdr, ver)?;
-        rdr.align(4)?;
         let name = rdr.read_aligned_string()?;
         rdr.align(4)?;
 

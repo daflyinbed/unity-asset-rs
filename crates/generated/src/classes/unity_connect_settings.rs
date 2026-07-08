@@ -7,6 +7,29 @@ use crate::subclasses::performance_reporting_settings::PerformanceReportingSetti
 use crate::subclasses::unity_analytics_settings::UnityAnalyticsSettings;
 use crate::subclasses::unity_purchasing_settings::UnityPurchasingSettings;
 
+
+/// 版本枚举：UnityConnectSettingsMTestConfigUrlVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum UnityConnectSettingsMTestConfigUrlVariant {
+    Default(String),
+    V5_6(String),
+}
+
+impl crate::Parse for UnityConnectSettingsMTestConfigUrlVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            let v = rdr.read_aligned_string()?;
+            Ok(Self::V5_6(v))
+        } else {
+            let v = rdr.read_aligned_string()?;
+            rdr.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct UnityConnectSettings {
     pub unity_purchasing_settings: UnityPurchasingSettings,
@@ -15,7 +38,7 @@ pub struct UnityConnectSettings {
     pub m_test_mode: Option<bool>,
     pub m_test_event_url: Option<String>,
     pub m_event_old_url: Option<String>,
-    pub m_test_config_url: Option<String>,
+    pub m_test_config_url: Option<UnityConnectSettingsMTestConfigUrlVariant>,
     pub m_event_url: Option<String>,
     pub crash_reporting_settings: Option<CrashReportingSettings>,
     pub m_test_init_mode: Option<i32>,
@@ -51,153 +74,105 @@ impl crate::Parse for UnityConnectSettings {
             m_test_mode = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_event_old_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_event_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_config_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_dashboard_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_test_init_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             insights_settings = Some(InsightsSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
             crash_reporting_settings = Some(CrashReportingSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(6000, 1, 0) {
             m_enabled = Some(rdr.read_bool()?);
             m_test_mode = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_event_old_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_event_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_config_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_dashboard_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_test_init_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             crash_reporting_settings = Some(CrashReportingSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(6000, 0, 70) {
             m_enabled = Some(rdr.read_bool()?);
             m_test_mode = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_event_old_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_event_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_config_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_dashboard_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_test_init_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             insights_settings = Some(InsightsSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
             crash_reporting_settings = Some(CrashReportingSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2023, 1, 0) {
             m_enabled = Some(rdr.read_bool()?);
             m_test_mode = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_event_old_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_event_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_config_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_dashboard_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_test_init_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             crash_reporting_settings = Some(CrashReportingSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2022, 3, 74) {
             m_enabled = Some(rdr.read_bool()?);
             m_test_mode = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_event_old_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_event_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_config_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_dashboard_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_test_init_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             insights_settings = Some(InsightsSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
             crash_reporting_settings = Some(CrashReportingSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2020, 3, 5) {
             m_enabled = Some(rdr.read_bool()?);
             m_test_mode = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_event_old_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_event_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_config_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_dashboard_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_test_init_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             crash_reporting_settings = Some(CrashReportingSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
             m_enabled = Some(rdr.read_bool()?);
             m_test_mode = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_event_old_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_event_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_config_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_test_init_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             crash_reporting_settings = Some(CrashReportingSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
             m_enabled = Some(rdr.read_bool()?);
             m_test_mode = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_test_event_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
-            m_test_config_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
+            m_test_config_url = Some(UnityConnectSettingsMTestConfigUrlVariant::parse(rdr, ver)?);
             m_test_init_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             crash_reporting_settings = Some(CrashReportingSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
             m_enabled = Some(rdr.read_bool()?);
             m_test_mode = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_test_event_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
-            m_test_config_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
+            m_test_config_url = Some(UnityConnectSettingsMTestConfigUrlVariant::parse(rdr, ver)?);
             crash_reporting_settings = Some(CrashReportingSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else {
         }
             unity_purchasing_settings = Some(UnityPurchasingSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
             unity_analytics_settings = Some(UnityAnalyticsSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
             unity_ads_settings = Some(UnityAdsSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
             performance_reporting_settings = Some(PerformanceReportingSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
             unity_ads_settings = Some(UnityAdsSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else {
         }
 

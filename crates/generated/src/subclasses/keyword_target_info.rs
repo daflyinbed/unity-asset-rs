@@ -12,7 +12,6 @@ impl crate::Parse for KeywordTargetInfo {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let keyword_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let requirements = rdr.read_i32()?;
 
         Ok(KeywordTargetInfo {

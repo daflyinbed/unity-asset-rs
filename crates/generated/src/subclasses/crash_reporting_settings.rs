@@ -20,7 +20,6 @@ impl crate::Parse for CrashReportingSettings {
         let mut m_enable_cloud_diagnostics_reporting = None;
         let mut m_log_buffer_size = None;
             m_event_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(6000, 2, 0) {
             m_enable_cloud_diagnostics_reporting = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -53,7 +52,6 @@ impl crate::Parse for CrashReportingSettings {
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             m_native_event_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else {

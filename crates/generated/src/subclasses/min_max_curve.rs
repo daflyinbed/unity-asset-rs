@@ -26,58 +26,12 @@ impl crate::Parse for MinMaxCurveMinMaxStateVariant {
         }
     }
 }
-
-/// 版本枚举：MinMaxCurveMaxCurveVariant 的类型跨版本变化。
-#[derive(Debug, Clone)]
-pub enum MinMaxCurveMaxCurveVariant {
-    Default(Box<AnimationCurve>),
-    V2017_1(Box<AnimationCurve>),
-}
-
-impl crate::Parse for MinMaxCurveMaxCurveVariant {
-    fn parse<R: crate::EndianReader>(
-        rdr: &mut R,
-        ver: &crate::UnityVersion,
-    ) -> Result<Self, R::Error> {
-        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { Ok(Box::new(AnimationCurve::parse(rdr, ver)?)) } )?;
-            rdr.align(4)?;
-            Ok(Self::V2017_1(v))
-        } else {
-            let v = ( { Ok(Box::new(AnimationCurve::parse(rdr, ver)?)) } )?;
-            Ok(Self::Default(v))
-        }
-    }
-}
-
-/// 版本枚举：MinMaxCurveMinCurveVariant 的类型跨版本变化。
-#[derive(Debug, Clone)]
-pub enum MinMaxCurveMinCurveVariant {
-    Default(Box<AnimationCurve>),
-    V2017_1(Box<AnimationCurve>),
-}
-
-impl crate::Parse for MinMaxCurveMinCurveVariant {
-    fn parse<R: crate::EndianReader>(
-        rdr: &mut R,
-        ver: &crate::UnityVersion,
-    ) -> Result<Self, R::Error> {
-        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { Ok(Box::new(AnimationCurve::parse(rdr, ver)?)) } )?;
-            rdr.align(4)?;
-            Ok(Self::V2017_1(v))
-        } else {
-            let v = ( { Ok(Box::new(AnimationCurve::parse(rdr, ver)?)) } )?;
-            Ok(Self::Default(v))
-        }
-    }
-}
 #[derive(Debug, Clone)]
 pub struct MinMaxCurve {
     pub scalar: f32,
     pub min_max_state: MinMaxCurveMinMaxStateVariant,
-    pub max_curve: MinMaxCurveMaxCurveVariant,
-    pub min_curve: MinMaxCurveMinCurveVariant,
+    pub max_curve: AnimationCurve,
+    pub min_curve: AnimationCurve,
     pub min_scalar: Option<f32>,
 }
 
@@ -100,8 +54,8 @@ impl crate::Parse for MinMaxCurve {
             min_scalar = Some(rdr.read_f32()?);
         } else {
         }
-            max_curve = Some(MinMaxCurveMaxCurveVariant::parse(rdr, ver)?);
-            min_curve = Some(MinMaxCurveMinCurveVariant::parse(rdr, ver)?);
+            max_curve = Some(AnimationCurve::parse(rdr, ver)?);
+            min_curve = Some(AnimationCurve::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
         } else {
             min_max_state = Some(MinMaxCurveMinMaxStateVariant::parse(rdr, ver)?);

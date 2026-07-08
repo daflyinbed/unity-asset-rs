@@ -16,9 +16,7 @@ impl crate::Parse for DefaultPreset {
     ) -> Result<Self, R::Error> {
         let m_preset = crate::PPtr::parse(rdr, ver)?;
         let m_filter = if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            let v = rdr.read_aligned_string()?;
-            rdr.align(4)?;
-            Some(v)
+            Some(rdr.read_aligned_string()?)
         } else {
             None
         };

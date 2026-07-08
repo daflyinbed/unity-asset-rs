@@ -82,71 +82,43 @@ impl crate::Parse for SerializedShaderState {
         let mut m_lod = None;
         let mut lighting = None;
             m_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             rt_blend0 = Some(SerializedShaderRtBlendState::parse(rdr, ver)?);
-            rdr.align(4)?;
             rt_blend1 = Some(SerializedShaderRtBlendState::parse(rdr, ver)?);
-            rdr.align(4)?;
             rt_blend2 = Some(SerializedShaderRtBlendState::parse(rdr, ver)?);
-            rdr.align(4)?;
             rt_blend3 = Some(SerializedShaderRtBlendState::parse(rdr, ver)?);
-            rdr.align(4)?;
             rt_blend4 = Some(SerializedShaderRtBlendState::parse(rdr, ver)?);
-            rdr.align(4)?;
             rt_blend5 = Some(SerializedShaderRtBlendState::parse(rdr, ver)?);
-            rdr.align(4)?;
             rt_blend6 = Some(SerializedShaderRtBlendState::parse(rdr, ver)?);
-            rdr.align(4)?;
             rt_blend7 = Some(SerializedShaderRtBlendState::parse(rdr, ver)?);
-            rdr.align(4)?;
             rt_separate_blend = Some(rdr.read_bool()?);
             rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             z_clip = Some(SerializedShaderFloatValue::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else {
         }
             z_test = Some(SerializedShaderFloatValue::parse(rdr, ver)?);
-            rdr.align(4)?;
             z_write = Some(SerializedShaderFloatValue::parse(rdr, ver)?);
-            rdr.align(4)?;
             culling = Some(SerializedShaderFloatValue::parse(rdr, ver)?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2020, 1, 0) {
             conservative = Some(SerializedShaderFloatValue::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else {
         }
             offset_factor = Some(SerializedShaderFloatValue::parse(rdr, ver)?);
-            rdr.align(4)?;
             offset_units = Some(SerializedShaderFloatValue::parse(rdr, ver)?);
-            rdr.align(4)?;
             alpha_to_mask = Some(SerializedShaderFloatValue::parse(rdr, ver)?);
-            rdr.align(4)?;
             stencil_op = Some(SerializedStencilOp::parse(rdr, ver)?);
-            rdr.align(4)?;
             stencil_op_front = Some(SerializedStencilOp::parse(rdr, ver)?);
-            rdr.align(4)?;
             stencil_op_back = Some(SerializedStencilOp::parse(rdr, ver)?);
-            rdr.align(4)?;
             stencil_read_mask = Some(SerializedShaderFloatValue::parse(rdr, ver)?);
-            rdr.align(4)?;
             stencil_write_mask = Some(SerializedShaderFloatValue::parse(rdr, ver)?);
-            rdr.align(4)?;
             stencil_ref = Some(SerializedShaderFloatValue::parse(rdr, ver)?);
-            rdr.align(4)?;
             fog_start = Some(SerializedShaderFloatValue::parse(rdr, ver)?);
-            rdr.align(4)?;
             fog_end = Some(SerializedShaderFloatValue::parse(rdr, ver)?);
-            rdr.align(4)?;
             fog_density = Some(SerializedShaderFloatValue::parse(rdr, ver)?);
-            rdr.align(4)?;
             fog_color = Some(SerializedShaderVectorValue::parse(rdr, ver)?);
-            rdr.align(4)?;
             fog_mode = Some(rdr.read_i32()?);
             gpu_program_id = Some(rdr.read_i32()?);
             m_tags = Some(SerializedTagMap::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_lod = Some(rdr.read_i32()?);
             lighting = Some(rdr.read_bool()?);
             rdr.align(4)?;

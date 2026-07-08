@@ -22,7 +22,6 @@ impl crate::Parse for DeletedItemDigestVariant {
             Ok(Self::V5_0(v))
         } else {
             let v = ( { Ok(Box::new(MdFour::parse(rdr, ver)?)) } )?;
-            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -46,7 +45,6 @@ impl crate::Parse for DeletedItem {
         let guid = Guid::parse(rdr, ver)?;
         let parent = Guid::parse(rdr, ver)?;
         let full_path = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let r#type = rdr.read_i32()?;
         let digest = DeletedItemDigestVariant::parse(rdr, ver)?;
 

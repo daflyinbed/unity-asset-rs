@@ -15,7 +15,6 @@ impl crate::Parse for PhysicsMaterial2D {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let friction = rdr.read_f32()?;
         let bounciness = rdr.read_f32()?;
         let m_friction_combine = if *ver >= crate::UnityVersion::new(6000, 0, 14) {

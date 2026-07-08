@@ -63,24 +63,20 @@ impl crate::Parse for DataTemplate {
         if *ver >= crate::UnityVersion::new(2018, 3, 0) {
             m_root_game_object = Some(crate::PPtr::parse(rdr, ver)?);
             m_modification = Some(PrefabModification::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_source_prefab = Some(crate::PPtr::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2018, 2, 0) {
             m_modification = Some(PrefabModification::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_source_prefab = Some(crate::PPtr::parse(rdr, ver)?);
             m_root_game_object = Some(crate::PPtr::parse(rdr, ver)?);
             m_is_prefab_asset = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_modification = Some(PrefabModification::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_parent_prefab = Some(crate::PPtr::parse(rdr, ver)?);
             m_root_game_object = Some(crate::PPtr::parse(rdr, ver)?);
             m_is_prefab_parent = Some(DataTemplateMIsPrefabParentVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
             m_modification = Some(PrefabModification::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_parent_prefab = Some(crate::PPtr::parse(rdr, ver)?);
             m_root_game_object = Some(crate::PPtr::parse(rdr, ver)?);
             m_is_prefab_parent = Some(DataTemplateMIsPrefabParentVariant::parse(rdr, ver)?);
@@ -93,7 +89,6 @@ impl crate::Parse for DataTemplate {
             m_is_data_template = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         }
 
         Ok(DataTemplate {

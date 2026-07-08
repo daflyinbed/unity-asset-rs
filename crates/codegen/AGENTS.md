@@ -47,15 +47,44 @@ cargo run    -p unity-asset-codegen --example explain_inheritance  # 查看 TPK 
 |---|---|---|
 | p00 | `p00_filter_engine_types` | 过滤 classID 100000-100011（引擎内部类型，对齐 AssetRipper `Pass000`） |
 | p01 | `p01_normalize_types` | 类型名归一化（`int→SInt32` 等别名） |
+| rename | `rename::run` ★ | 对应 AssetRipper `Pass002`：同名异构 type 拆分（见下），在 p01 后、p02 前 |
 | p02 | `p02_extract_subclasses` | 扫 `node_pool` 收集 `NodeType::Type` → subclass（排除非抽象 main class 名字，见下） |
 | p03 | `p03_collect_pptr_targets` | 收集 `PPtr<X>` 目标（记录用；PPtr 非 generic） |
 | p04 | `p04_resolve_inheritance` | 为每个 main class 建骨架：名字 + `is_abstract`/`is_mono_behaviour` + 重名加 `_ID` |
 | p05 | `p05_merge_fields` ★ | **核心**：字段并集 + 版本门控（见下） |
-| p06 | `p06_plan_alignment` | `meta_flag & (0x4000\|0x8000)` → `align_after` |
+| p06 | `p06_plan_alignment` | no-op（对齐已在 `flatten_root`/`compute_align_after` 计算） |
 
 p05 后 `emit.rs` 的 `emit_all` 把每个 `EmitClass` 写成一个 `.rs` 文件。
 
 ## 关键设计决策（不要无意中改掉）
+
+### rename pass（Pass002）：同名异构 type 必须拆分
+
+TPK 里若干 type_name 在不同上下文（父类）下布局完全不同，却被同名引用：
+
+- `ColorRGBA`：4×float（16字节，Material/Camera/Light 用）vs `UInt32`（4字节，Halo/Sprite/Terrain 用）
+- `PackedBitVector`：5/3/2 个子节点 → `_Single`/`_Int32`/`_Quaternionf`
+- `OffsetPtr`/`Keyframe`/`AnimationCurve`/`TilemapRefCountedData`：按内层元素类型后缀化
+- 若干按字段名上下文拆分（`Output`、`BuildTargetSettings`、`Google`、`PlatformSettingsData` 等）
+
+`rename::run`（移植自 AssetRipper `Pass002_RenameSubnodes`）在 p01 后、p02 前对这些 type
+**就地改 `type_name_index`**，把同名异构 type 拆成独立 subclass（`ColorRGBA`→`ColorRGBAf`/
+`ColorRGBA32` 等）。不拆的话 p05 会把它们当同一 subclass 合并，按版本切换 enum——但实际
+区别是父类上下文而非版本，typed parse 会读错字节（Material 的 ColorRGBA bug：每读一个
+color 少读 12 字节 → `data truncated`）。
+
+**关键偏差**（与 AssetRipper 不一致、有意为之）：
+- **不做 `string → Utf8String` 重命名**。本 codegen 已通过 `NodeType::String` 特判正确
+  处理 `string`（读 size + bytes + align(4)）；若改成 `Utf8String` subclass，会被当作
+  普通 struct，丢失末尾对齐 → 字节错位。
+- **不做 PPtr 重命名**（`PPtr<X>` → `PPtr_X_`）。本 codegen 直接按 `PPtr<` 前缀解析 PPtr，
+  重命名反而会破坏 `NodeType::classify` 的 PPtr 检测。
+- **不做纯字段重命名**（如 `m_Dst`→`m_Destination`、Hash128 字段排序、`m_Val`→`m_Value`）。
+  这些只改字段名不改字节布局；本 codegen 按 `unity_name` 合并跨版本字段，字段名变化对
+  字节读取无影响。
+- 拼名时用 `sanitize_type_for_compound` 把 `PPtr<GameObject>` → `PPtr_GameObject_`
+  （对应 AssetRipper `ValidNameGenerator.ReplaceBadCharacters`），否则会生成非法 Rust
+  标识符（文件名/模块名）。
 
 ### 扁平 struct，无父类
 

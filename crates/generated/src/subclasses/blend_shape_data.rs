@@ -28,6 +28,52 @@ impl crate::Parse for BlendShapeDataVerticesVariant {
     }
 }
 
+/// 版本枚举：BlendShapeDataShapesVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum BlendShapeDataShapesVariant {
+    Default(Vec<MeshBlendShape>),
+    V2017_1(Vec<MeshBlendShape>),
+}
+
+impl crate::Parse for BlendShapeDataShapesVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MeshBlendShape::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MeshBlendShape::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：BlendShapeDataChannelsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum BlendShapeDataChannelsVariant {
+    Default(Vec<MeshBlendShapeChannel>),
+    V2017_1(Vec<MeshBlendShapeChannel>),
+}
+
+impl crate::Parse for BlendShapeDataChannelsVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MeshBlendShapeChannel::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MeshBlendShapeChannel::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
 /// 版本枚举：BlendShapeDataFullWeightsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum BlendShapeDataFullWeightsVariant {
@@ -53,8 +99,8 @@ impl crate::Parse for BlendShapeDataFullWeightsVariant {
 #[derive(Debug, Clone)]
 pub struct BlendShapeData {
     pub vertices: BlendShapeDataVerticesVariant,
-    pub shapes: Vec<MeshBlendShape>,
-    pub channels: Vec<MeshBlendShapeChannel>,
+    pub shapes: BlendShapeDataShapesVariant,
+    pub channels: BlendShapeDataChannelsVariant,
     pub full_weights: BlendShapeDataFullWeightsVariant,
 }
 
@@ -64,10 +110,8 @@ impl crate::Parse for BlendShapeData {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let vertices = BlendShapeDataVerticesVariant::parse(rdr, ver)?;
-        let shapes = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MeshBlendShape::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        rdr.align(4)?;
-        let channels = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MeshBlendShapeChannel::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        rdr.align(4)?;
+        let shapes = BlendShapeDataShapesVariant::parse(rdr, ver)?;
+        let channels = BlendShapeDataChannelsVariant::parse(rdr, ver)?;
         let full_weights = BlendShapeDataFullWeightsVariant::parse(rdr, ver)?;
 
         Ok(BlendShapeData {

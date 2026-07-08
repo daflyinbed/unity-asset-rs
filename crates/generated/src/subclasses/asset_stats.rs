@@ -18,7 +18,6 @@ impl crate::Parse for AssetStats {
     ) -> Result<Self, R::Error> {
         let source_asset_guid = Guid::parse(rdr, ver)?;
         let source_asset_path = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let size = rdr.read_u64()?;
         let object_count = rdr.read_i32()?;
         let resource_count = rdr.read_i32()?;

@@ -51,7 +51,6 @@ impl crate::Parse for MeshBlendShape {
         if *ver >= crate::UnityVersion::new(4, 3, 0) {
         } else {
             name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         }
             first_vertex = Some(rdr.read_u32()?);
             vertex_count = Some(rdr.read_u32()?);

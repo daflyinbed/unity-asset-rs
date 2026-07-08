@@ -12,7 +12,6 @@ impl crate::Parse for SerializedTextureProperty {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_default_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_tex_dim = rdr.read_i32()?;
 
         Ok(SerializedTextureProperty {

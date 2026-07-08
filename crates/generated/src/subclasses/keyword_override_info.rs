@@ -12,7 +12,6 @@ impl crate::Parse for KeywordOverrideInfo {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let keep_in_build = rdr.read_bool()?;
 
         Ok(KeywordOverrideInfo {

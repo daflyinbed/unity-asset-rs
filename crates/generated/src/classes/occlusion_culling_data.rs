@@ -38,7 +38,6 @@ impl crate::Parse for OcclusionCullingData {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_pvs_data = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
         rdr.align(4)?;
         let m_scenes = OcclusionCullingDataMScenesVariant::parse(rdr, ver)?;

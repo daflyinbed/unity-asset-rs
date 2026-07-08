@@ -13,7 +13,6 @@ impl crate::Parse for AssetImporterHashKey {
     ) -> Result<Self, R::Error> {
         let r#type = rdr.read_i32()?;
         let script_class = rdr.read_aligned_string()?;
-        rdr.align(4)?;
 
         Ok(AssetImporterHashKey {
             r#type,

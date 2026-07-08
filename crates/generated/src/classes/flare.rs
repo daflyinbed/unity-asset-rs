@@ -41,7 +41,6 @@ impl crate::Parse for Flare {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_flare_texture = crate::PPtr::parse(rdr, ver)?;
         let m_texture_layout = rdr.read_i32()?;
         let m_elements = FlareMElementsVariant::parse(rdr, ver)?;

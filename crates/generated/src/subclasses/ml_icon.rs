@@ -13,9 +13,7 @@ impl crate::Parse for MlIcon {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_model_folder_path = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_portal_folder_path = rdr.read_aligned_string()?;
         rdr.align(4)?;
 

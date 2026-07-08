@@ -37,7 +37,6 @@ impl crate::Parse for StreamingInfo {
         let offset = StreamingInfoOffsetVariant::parse(rdr, ver)?;
         let size = rdr.read_u32()?;
         let path = rdr.read_aligned_string()?;
-        rdr.align(4)?;
 
         Ok(StreamingInfo {
             offset,

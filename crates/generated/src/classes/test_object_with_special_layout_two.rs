@@ -16,7 +16,6 @@ impl crate::Parse for TestObjectWithSpecialLayoutTwo {
     ) -> Result<Self, R::Error> {
         let different_layout = LayoutDataTwo::parse(rdr, ver)?;
         let same_layout = LayoutDataThree::parse(rdr, ver)?;
-        rdr.align(4)?;
 
         Ok(TestObjectWithSpecialLayoutTwo {
             different_layout,

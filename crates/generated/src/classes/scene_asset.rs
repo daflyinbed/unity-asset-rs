@@ -13,11 +13,8 @@ impl crate::Parse for SceneAsset {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_message = if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = rdr.read_aligned_string()?;
-            rdr.align(4)?;
-            Some(v)
+            Some(rdr.read_aligned_string()?)
         } else {
             None
         };

@@ -13,7 +13,6 @@ impl crate::Parse for NavMeshLayerData {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let cost = rdr.read_f32()?;
         let edit_type = rdr.read_i32()?;
 

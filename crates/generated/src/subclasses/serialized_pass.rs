@@ -97,24 +97,16 @@ impl crate::Parse for SerializedPass {
         } else {
         }
             m_name_indices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_type = Some(rdr.read_i32()?);
             m_state = Some(SerializedShaderState::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_program_mask = Some(rdr.read_u32()?);
             prog_vertex = Some(SerializedProgram::parse(rdr, ver)?);
-            rdr.align(4)?;
             prog_fragment = Some(SerializedProgram::parse(rdr, ver)?);
-            rdr.align(4)?;
             prog_geometry = Some(SerializedProgram::parse(rdr, ver)?);
-            rdr.align(4)?;
             prog_hull = Some(SerializedProgram::parse(rdr, ver)?);
-            rdr.align(4)?;
             prog_domain = Some(SerializedProgram::parse(rdr, ver)?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2019, 3, 0) {
             prog_ray_tracing = Some(SerializedProgram::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else {
         }
             m_has_instancing_variant = Some(SerializedPassMHasInstancingVariantVariant::parse(rdr, ver)?);
@@ -124,13 +116,9 @@ impl crate::Parse for SerializedPass {
         } else {
         }
             m_use_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_texture_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_tags = Some(SerializedTagMap::parse(rdr, ver)?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2022, 1, 0) {
         } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
             m_serialized_keyword_state_mask = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u16() }).collect::<Result<Vec<_>, _>>() } )?);

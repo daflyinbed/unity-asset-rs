@@ -22,7 +22,6 @@ impl crate::Parse for CachedAssetMetaDataOriginalDigestVariant {
             Ok(Self::V5_0(v))
         } else {
             let v = ( { Ok(Box::new(MdFour::parse(rdr, ver)?)) } )?;
-            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -44,10 +43,8 @@ impl crate::Parse for CachedAssetMetaData {
     ) -> Result<Self, R::Error> {
         let guid = Guid::parse(rdr, ver)?;
         let path_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let original_changeset = rdr.read_u32()?;
         let original_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let original_parent = Guid::parse(rdr, ver)?;
         let original_digest = CachedAssetMetaDataOriginalDigestVariant::parse(rdr, ver)?;
 

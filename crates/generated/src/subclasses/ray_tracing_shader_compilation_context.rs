@@ -30,11 +30,8 @@ impl crate::Parse for RayTracingShaderCompilationContext {
         let build_target = BuildTargetSelection::parse(rdr, ver)?;
         let platform_group = rdr.read_i32()?;
         let source_file_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let source = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let source_file = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let compilation_flags = rdr.read_u64()?;
         let max_recursion_depth = rdr.read_u32()?;
         let enable_ray_payload_size_checks = rdr.read_bool()?;

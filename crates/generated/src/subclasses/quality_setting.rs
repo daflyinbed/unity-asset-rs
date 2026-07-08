@@ -305,7 +305,6 @@ impl crate::Parse for QualitySetting {
         let mut terrain_max_trees = None;
         if *ver >= crate::UnityVersion::new(3, 5, 0) {
             name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else {
         }
             pixel_light_count = Some(rdr.read_i32()?);

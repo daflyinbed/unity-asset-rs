@@ -19,7 +19,6 @@ impl crate::Parse for ParticleSystemForceField {
         let m_enabled = rdr.read_u8()?;
         rdr.align(4)?;
         let m_parameters = ParticleSystemForceFieldParameters::parse(rdr, ver)?;
-        rdr.align(4)?;
 
         Ok(ParticleSystemForceField {
             m_game_object,

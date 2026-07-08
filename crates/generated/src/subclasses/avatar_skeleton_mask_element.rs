@@ -12,7 +12,6 @@ impl crate::Parse for AvatarSkeletonMaskElement {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let path = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let weight = rdr.read_f32()?;
 
         Ok(AvatarSkeletonMaskElement {

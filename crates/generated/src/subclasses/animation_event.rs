@@ -20,9 +20,7 @@ impl crate::Parse for AnimationEvent {
     ) -> Result<Self, R::Error> {
         let time = rdr.read_f32()?;
         let function_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let data = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let object_reference_parameter = crate::PPtr::parse(rdr, ver)?;
         let float_parameter = rdr.read_f32()?;
         let int_parameter = rdr.read_i32()?;

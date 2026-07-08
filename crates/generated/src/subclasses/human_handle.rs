@@ -19,9 +19,7 @@ impl crate::Parse for HumanHandle {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_bone_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_position = Vector3f::parse(rdr, ver)?;
         let m_rotation = Quaternionf::parse(rdr, ver)?;
         let m_scale = Vector3f::parse(rdr, ver)?;

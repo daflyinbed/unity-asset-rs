@@ -66,7 +66,6 @@ impl crate::Parse for VfxManager {
         } else {
         }
             m_render_pipe_settings_path = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_fixed_time_step = Some(rdr.read_f32()?);
             m_max_delta_time = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2023, 1, 0) {

@@ -12,9 +12,7 @@ impl crate::Parse for MetroFtaFileType {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let content_type = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let file_type = rdr.read_aligned_string()?;
-        rdr.align(4)?;
 
         Ok(MetroFtaFileType {
             content_type,

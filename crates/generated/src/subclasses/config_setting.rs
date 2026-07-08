@@ -12,7 +12,6 @@ impl crate::Parse for ConfigSetting {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let value = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let flags = rdr.read_u32()?;
 
         Ok(ConfigSetting {

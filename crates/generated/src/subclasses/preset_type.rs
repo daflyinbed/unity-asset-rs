@@ -17,7 +17,6 @@ impl crate::Parse for PresetType {
         let m_native_type_id = rdr.read_i32()?;
         let m_managed_type_p_ptr = crate::PPtr::parse(rdr, ver)?;
         let m_managed_type_fallback = rdr.read_aligned_string()?;
-        rdr.align(4)?;
 
         Ok(PresetType {
             m_native_type_id,

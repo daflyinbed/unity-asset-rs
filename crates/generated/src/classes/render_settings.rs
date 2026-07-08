@@ -1,7 +1,7 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
-use crate::subclasses::color_rgba::ColorRgba;
+use crate::subclasses::color_rgb_af::ColorRgbAf;
 use crate::subclasses::spherical_harmonics_l2::SphericalHarmonicsL2;
 
 
@@ -29,24 +29,24 @@ impl crate::Parse for RenderSettingsMCustomReflectionVariant {
 #[derive(Debug, Clone)]
 pub struct RenderSettings {
     pub m_fog: bool,
-    pub m_fog_color: ColorRgba,
+    pub m_fog_color: ColorRgbAf,
     pub m_fog_mode: i32,
     pub m_fog_density: f32,
     pub m_linear_fog_start: f32,
     pub m_linear_fog_end: f32,
-    pub m_ambient_light: Option<ColorRgba>,
-    pub m_ambient_sky_color: Option<ColorRgba>,
+    pub m_ambient_light: Option<ColorRgbAf>,
+    pub m_ambient_sky_color: Option<ColorRgbAf>,
     pub m_skybox_material: PPtr,
-    pub m_ambient_equator_color: Option<ColorRgba>,
+    pub m_ambient_equator_color: Option<ColorRgbAf>,
     pub m_halo_strength: f32,
-    pub m_ambient_ground_color: Option<ColorRgba>,
+    pub m_ambient_ground_color: Option<ColorRgbAf>,
     pub m_flare_strength: f32,
     pub m_ambient_intensity: Option<f32>,
     pub m_halo_texture: PPtr,
     pub m_flare_fade_speed: Option<f32>,
     pub m_ambient_mode: Option<i32>,
     pub m_spot_cookie: PPtr,
-    pub m_subtractive_shadow_color: Option<ColorRgba>,
+    pub m_subtractive_shadow_color: Option<ColorRgbAf>,
     pub m_default_reflection_mode: Option<i32>,
     pub m_default_reflection_resolution: Option<i32>,
     pub m_reflection_bounces: Option<i32>,
@@ -56,7 +56,7 @@ pub struct RenderSettings {
     pub m_ambient_probe_in_gamma: Option<SphericalHarmonicsL2>,
     pub m_generated_skybox_reflection: Option<PPtr>,
     pub m_sun: Option<PPtr>,
-    pub m_indirect_specular_color: Option<ColorRgba>,
+    pub m_indirect_specular_color: Option<ColorRgbAf>,
     pub m_use_radiance_ambient_probe: Option<bool>,
 }
 
@@ -97,28 +97,28 @@ impl crate::Parse for RenderSettings {
         let mut m_use_radiance_ambient_probe = None;
             m_fog = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_fog_color = Some(ColorRgba::parse(rdr, ver)?);
+            m_fog_color = Some(ColorRgbAf::parse(rdr, ver)?);
             m_fog_mode = Some(rdr.read_i32()?);
             m_fog_density = Some(rdr.read_f32()?);
             m_linear_fog_start = Some(rdr.read_f32()?);
             m_linear_fog_end = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            m_ambient_sky_color = Some(ColorRgba::parse(rdr, ver)?);
-            m_ambient_equator_color = Some(ColorRgba::parse(rdr, ver)?);
-            m_ambient_ground_color = Some(ColorRgba::parse(rdr, ver)?);
+            m_ambient_sky_color = Some(ColorRgbAf::parse(rdr, ver)?);
+            m_ambient_equator_color = Some(ColorRgbAf::parse(rdr, ver)?);
+            m_ambient_ground_color = Some(ColorRgbAf::parse(rdr, ver)?);
             m_ambient_intensity = Some(rdr.read_f32()?);
             m_ambient_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
-            m_subtractive_shadow_color = Some(ColorRgba::parse(rdr, ver)?);
+            m_subtractive_shadow_color = Some(ColorRgbAf::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_ambient_sky_color = Some(ColorRgba::parse(rdr, ver)?);
-            m_ambient_equator_color = Some(ColorRgba::parse(rdr, ver)?);
-            m_ambient_ground_color = Some(ColorRgba::parse(rdr, ver)?);
+            m_ambient_sky_color = Some(ColorRgbAf::parse(rdr, ver)?);
+            m_ambient_equator_color = Some(ColorRgbAf::parse(rdr, ver)?);
+            m_ambient_ground_color = Some(ColorRgbAf::parse(rdr, ver)?);
             m_ambient_intensity = Some(rdr.read_f32()?);
             m_ambient_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
         } else {
-            m_ambient_light = Some(ColorRgba::parse(rdr, ver)?);
+            m_ambient_light = Some(ColorRgbAf::parse(rdr, ver)?);
         }
             m_skybox_material = Some(crate::PPtr::parse(rdr, ver)?);
             m_halo_strength = Some(rdr.read_f32()?);
@@ -138,7 +138,7 @@ impl crate::Parse for RenderSettings {
             m_ambient_probe = Some(SphericalHarmonicsL2::parse(rdr, ver)?);
             m_generated_skybox_reflection = Some(crate::PPtr::parse(rdr, ver)?);
             m_sun = Some(crate::PPtr::parse(rdr, ver)?);
-            m_indirect_specular_color = Some(ColorRgba::parse(rdr, ver)?);
+            m_indirect_specular_color = Some(ColorRgbAf::parse(rdr, ver)?);
             m_use_radiance_ambient_probe = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
             m_default_reflection_mode = Some(rdr.read_i32()?);
@@ -149,7 +149,7 @@ impl crate::Parse for RenderSettings {
             m_ambient_probe = Some(SphericalHarmonicsL2::parse(rdr, ver)?);
             m_generated_skybox_reflection = Some(crate::PPtr::parse(rdr, ver)?);
             m_sun = Some(crate::PPtr::parse(rdr, ver)?);
-            m_indirect_specular_color = Some(ColorRgba::parse(rdr, ver)?);
+            m_indirect_specular_color = Some(ColorRgbAf::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
             m_default_reflection_mode = Some(rdr.read_i32()?);
             m_default_reflection_resolution = Some(rdr.read_i32()?);

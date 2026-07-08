@@ -6,6 +6,52 @@ use crate::subclasses::quaternionf::Quaternionf;
 use crate::subclasses::skeleton_bone::SkeletonBone;
 
 
+/// 版本枚举：HumanDescriptionMHumanVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum HumanDescriptionMHumanVariant {
+    Default(Vec<HumanBone>),
+    V2017_1(Vec<HumanBone>),
+}
+
+impl crate::Parse for HumanDescriptionMHumanVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { HumanBone::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { HumanBone::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：HumanDescriptionMSkeletonVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum HumanDescriptionMSkeletonVariant {
+    Default(Vec<SkeletonBone>),
+    V2017_1(Vec<SkeletonBone>),
+}
+
+impl crate::Parse for HumanDescriptionMSkeletonVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SkeletonBone::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SkeletonBone::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
 /// 版本枚举：HumanDescriptionMHasTranslationDoFVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum HumanDescriptionMHasTranslationDoFVariant {
@@ -30,8 +76,8 @@ impl crate::Parse for HumanDescriptionMHasTranslationDoFVariant {
 }
 #[derive(Debug, Clone)]
 pub struct HumanDescription {
-    pub m_human: Vec<HumanBone>,
-    pub m_skeleton: Vec<SkeletonBone>,
+    pub m_human: HumanDescriptionMHumanVariant,
+    pub m_skeleton: HumanDescriptionMSkeletonVariant,
     pub m_handles: Option<Vec<HumanHandle>>,
     pub m_arm_twist: f32,
     pub m_fore_arm_twist: f32,
@@ -69,14 +115,11 @@ impl crate::Parse for HumanDescription {
         let mut m_root_motion_bone_rotation = None;
         let mut m_has_extra_root = None;
         let mut m_skeleton_has_parents = None;
-            m_human = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { HumanBone::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            m_skeleton = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SkeletonBone::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_human = Some(HumanDescriptionMHumanVariant::parse(rdr, ver)?);
+            m_skeleton = Some(HumanDescriptionMSkeletonVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(4, 3, 0) {
         } else {
             m_handles = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { HumanHandle::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
         }
             m_arm_twist = Some(rdr.read_f32()?);
             m_fore_arm_twist = Some(rdr.read_f32()?);
@@ -90,7 +133,6 @@ impl crate::Parse for HumanDescription {
         } else {
         }
             m_root_motion_bone_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2018, 2, 13) {
             m_has_translation_do_f = Some(HumanDescriptionMHasTranslationDoFVariant::parse(rdr, ver)?);
             m_has_extra_root = Some(rdr.read_bool()?);

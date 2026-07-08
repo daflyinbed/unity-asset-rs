@@ -2,7 +2,7 @@
 
 use crate::PPtr;
 use crate::subclasses::bit_field::BitField;
-use crate::subclasses::color_rgba::ColorRgba;
+use crate::subclasses::color_rgb_af::ColorRgbAf;
 use crate::subclasses::rectf::Rectf;
 use crate::subclasses::vector2f::Vector2f;
 
@@ -102,7 +102,7 @@ pub struct Camera {
     pub m_game_object: PPtr,
     pub m_enabled: u8,
     pub m_clear_flags: u32,
-    pub m_back_ground_color: ColorRgba,
+    pub m_back_ground_color: ColorRgbAf,
     pub m_normalized_view_port_rect: Rectf,
     pub m_projection_matrix_mode: Option<CameraMProjectionMatrixModeVariant>,
     pub near_clip_plane: f32,
@@ -184,7 +184,7 @@ impl crate::Parse for Camera {
             m_enabled = Some(rdr.read_u8()?);
             rdr.align(4)?;
             m_clear_flags = Some(rdr.read_u32()?);
-            m_back_ground_color = Some(ColorRgba::parse(rdr, ver)?);
+            m_back_ground_color = Some(ColorRgbAf::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             m_projection_matrix_mode = Some(CameraMProjectionMatrixModeVariant::parse(rdr, ver)?);
             m_gate_fit_mode = Some(CameraMGateFitModeVariant::parse(rdr, ver)?);

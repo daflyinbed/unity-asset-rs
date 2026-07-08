@@ -22,7 +22,6 @@ impl crate::Parse for ItemDigestVariant {
             Ok(Self::V5_0(v))
         } else {
             let v = ( { Ok(Box::new(MdFour::parse(rdr, ver)?)) } )?;
-            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -49,7 +48,6 @@ impl crate::Parse for Item {
         let changeset = rdr.read_i32()?;
         let guid = Guid::parse(rdr, ver)?;
         let name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let parent = Guid::parse(rdr, ver)?;
         let int_type = rdr.read_i32()?;
         let digest = ItemDigestVariant::parse(rdr, ver)?;

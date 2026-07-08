@@ -36,14 +36,11 @@ impl crate::Parse for SpriteAtlasEditorData {
         let mut is_atlas_v2 = None;
         let mut cached_data = None;
             texture_settings = Some(TextureSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
             platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TextureImporterPlatformSettings::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             packing_settings = Some(PackingSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2020, 2, 0) {
             secondary_texture_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = SecondaryTextureSettings::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
         } else {
         }
             variant_multiplier = Some(rdr.read_f32()?);

@@ -17,7 +17,6 @@ impl crate::Parse for NativeType {
         let a = rdr.read_i32()?;
         let b = rdr.read_f32()?;
         let embedded = EmbeddedNativeType::parse(rdr, ver)?;
-        rdr.align(4)?;
 
         Ok(NativeType {
             a,

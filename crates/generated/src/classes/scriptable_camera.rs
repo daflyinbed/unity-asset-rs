@@ -2,7 +2,7 @@
 
 use crate::PPtr;
 use crate::subclasses::bit_field::BitField;
-use crate::subclasses::color_rgba::ColorRgba;
+use crate::subclasses::color_rgb_af::ColorRgbAf;
 use crate::subclasses::rectf::Rectf;
 use crate::subclasses::vector2f::Vector2f;
 
@@ -11,7 +11,7 @@ pub struct ScriptableCamera {
     pub m_game_object: PPtr,
     pub m_enabled: u8,
     pub m_clear_flags: u32,
-    pub m_back_ground_color: ColorRgba,
+    pub m_back_ground_color: ColorRgbAf,
     pub m_projection_matrix_mode: i32,
     pub m_gate_fit_mode: i32,
     pub m_sensor_size: Vector2f,
@@ -48,7 +48,7 @@ impl crate::Parse for ScriptableCamera {
         let m_enabled = rdr.read_u8()?;
         rdr.align(4)?;
         let m_clear_flags = rdr.read_u32()?;
-        let m_back_ground_color = ColorRgba::parse(rdr, ver)?;
+        let m_back_ground_color = ColorRgbAf::parse(rdr, ver)?;
         let m_projection_matrix_mode = rdr.read_i32()?;
         let m_gate_fit_mode = rdr.read_i32()?;
         rdr.align(4)?;

@@ -2,9 +2,8 @@
 
 use crate::subclasses::aabb::Aabb;
 use crate::subclasses::blend_shape_data::BlendShapeData;
-use crate::subclasses::bone_influence::BoneInfluence;
 use crate::subclasses::bone_weights4::BoneWeights4;
-use crate::subclasses::color_rgba::ColorRgba;
+use crate::subclasses::color_rgba32::ColorRgba32;
 use crate::subclasses::compressed_mesh::CompressedMesh;
 use crate::subclasses::matrix4x4f::Matrix4x4f;
 use crate::subclasses::mesh_blend_shape::MeshBlendShape;
@@ -80,11 +79,9 @@ impl crate::Parse for MeshMShapesVariant {
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(4, 3, 0) {
             let v = ( { Ok(Box::new(BlendShapeData::parse(rdr, ver)?)) } )?;
-            rdr.align(4)?;
             Ok(Self::V4_3(v))
         } else {
             let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MeshBlendShape::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -116,7 +113,7 @@ impl crate::Parse for MeshMBindPoseVariant {
 /// 版本枚举：MeshMSkinVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum MeshMSkinVariant {
-    Default(Vec<BoneInfluence>),
+    Default(Vec<BoneWeights4>),
     V2017_1(Vec<BoneWeights4>),
 }
 
@@ -130,7 +127,7 @@ impl crate::Parse for MeshMSkinVariant {
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { BoneInfluence::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { BoneWeights4::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -210,7 +207,7 @@ pub struct Mesh {
     pub m_tangents: Option<Vec<Vector4f>>,
     pub m_index_format: Option<i32>,
     pub m_normals: Option<Vec<Vector3f>>,
-    pub m_colors: Option<Vec<ColorRgba>>,
+    pub m_colors: Option<Vec<ColorRgba32>>,
     pub m_collision_triangles: Option<Vec<u32>>,
     pub m_collision_vertex_count: Option<i32>,
     pub m_baked_convex_collision_mesh: Option<Vec<u8>>,
@@ -265,7 +262,6 @@ impl crate::Parse for Mesh {
         let mut m_stream_data = None;
         let mut m_mesh_lod_info = None;
             m_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(3, 5, 0) {
         } else {
             m_use16_bit_indices = Some(rdr.read_i32()?);
@@ -279,7 +275,6 @@ impl crate::Parse for Mesh {
             m_bones_aabb = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MinMaxAabb::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             m_variable_bone_count_weights = Some(VariableBoneCountWeights::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
             m_shapes = Some(MeshMShapesVariant::parse(rdr, ver)?);
             m_bind_pose = Some(MeshMBindPoseVariant::parse(rdr, ver)?);
@@ -332,14 +327,12 @@ impl crate::Parse for Mesh {
             m_uv1 = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             m_tangents = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector4f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             m_normals = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector3f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
         }
             m_compressed_mesh = Some(CompressedMesh::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_local_aabb = Some(Aabb::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(3, 5, 0) {
         } else {
-            m_colors = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ColorRgba::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_colors = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ColorRgba32::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             m_collision_triangles = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
             m_collision_vertex_count = Some(rdr.read_i32()?);
         }
@@ -353,9 +346,7 @@ impl crate::Parse for Mesh {
             m_mesh_metrics_0 = Some(rdr.read_f32()?);
             m_mesh_metrics_1 = Some(MeshMMeshMetrics1Variant::parse(rdr, ver)?);
             m_stream_data = Some(StreamingInfo::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_mesh_lod_info = Some(MeshLodInfo::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
             m_cooking_options = Some(rdr.read_i32()?);
             m_baked_convex_collision_mesh = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
@@ -365,7 +356,6 @@ impl crate::Parse for Mesh {
             m_mesh_metrics_0 = Some(rdr.read_f32()?);
             m_mesh_metrics_1 = Some(MeshMMeshMetrics1Variant::parse(rdr, ver)?);
             m_stream_data = Some(StreamingInfo::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
             m_baked_convex_collision_mesh = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
@@ -374,7 +364,6 @@ impl crate::Parse for Mesh {
             m_mesh_metrics_0 = Some(rdr.read_f32()?);
             m_mesh_metrics_1 = Some(MeshMMeshMetrics1Variant::parse(rdr, ver)?);
             m_stream_data = Some(StreamingInfo::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 2, 0) {
             m_baked_convex_collision_mesh = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;

@@ -18,7 +18,6 @@ impl crate::Parse for LifetimeByEmitterSpeedModule {
         let enabled = rdr.read_bool()?;
         rdr.align(4)?;
         let m_curve = MinMaxCurve::parse(rdr, ver)?;
-        rdr.align(4)?;
         let m_range = Vector2f::parse(rdr, ver)?;
 
         Ok(LifetimeByEmitterSpeedModule {

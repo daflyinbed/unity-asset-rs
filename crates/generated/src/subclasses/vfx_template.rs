@@ -18,11 +18,8 @@ impl crate::Parse for VfxTemplate {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let category = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let description = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let icon = crate::PPtr::parse(rdr, ver)?;
         let thumbnail = crate::PPtr::parse(rdr, ver)?;
         let order = if *ver >= crate::UnityVersion::new(6000, 5, 0) {

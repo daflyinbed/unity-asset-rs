@@ -2,13 +2,82 @@
 
 use crate::subclasses::sorting_layer_entry::SortingLayerEntry;
 
+
+/// 版本枚举：TagManagerTagsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum TagManagerTagsVariant {
+    Default(Vec<String>),
+    V2017_1(Vec<String>),
+}
+
+impl crate::Parse for TagManagerTagsVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：TagManagerLayersVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum TagManagerLayersVariant {
+    Default(Vec<String>),
+    V2017_1(Vec<String>),
+}
+
+impl crate::Parse for TagManagerLayersVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：TagManagerMSortingLayersVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum TagManagerMSortingLayersVariant {
+    Default(Vec<SortingLayerEntry>),
+    V2017_1(Vec<SortingLayerEntry>),
+}
+
+impl crate::Parse for TagManagerMSortingLayersVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SortingLayerEntry::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SortingLayerEntry::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct TagManager {
-    pub tags: Vec<String>,
+    pub tags: TagManagerTagsVariant,
     pub builtin_layer_0: Option<String>,
-    pub layers: Option<Vec<String>>,
+    pub layers: Option<TagManagerLayersVariant>,
     pub builtin_layer_1: Option<String>,
-    pub m_sorting_layers: Option<Vec<SortingLayerEntry>>,
+    pub m_sorting_layers: Option<TagManagerMSortingLayersVariant>,
     pub builtin_layer_2: Option<String>,
     pub m_rendering_layers: Option<Vec<String>>,
     pub builtin_layer_3: Option<String>,
@@ -83,152 +152,82 @@ impl crate::Parse for TagManager {
         let mut user_layer_29 = None;
         let mut user_layer_30 = None;
         let mut user_layer_31 = None;
-            tags = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            tags = Some(TagManagerTagsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            layers = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            m_sorting_layers = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SortingLayerEntry::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            layers = Some(TagManagerLayersVariant::parse(rdr, ver)?);
+            m_sorting_layers = Some(TagManagerMSortingLayersVariant::parse(rdr, ver)?);
             m_rendering_layers = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            layers = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            m_sorting_layers = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SortingLayerEntry::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            layers = Some(TagManagerLayersVariant::parse(rdr, ver)?);
+            m_sorting_layers = Some(TagManagerMSortingLayersVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
             builtin_layer_0 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             builtin_layer_1 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             builtin_layer_2 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             builtin_layer_3 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             builtin_layer_4 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             builtin_layer_5 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             builtin_layer_6 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             builtin_layer_7 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_8 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_9 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_10 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_11 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_12 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_13 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_14 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_15 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_16 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_17 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_18 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_19 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_20 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_21 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_22 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_23 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_24 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_25 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_26 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_27 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_28 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_29 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_30 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_31 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
-            m_sorting_layers = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SortingLayerEntry::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_sorting_layers = Some(TagManagerMSortingLayersVariant::parse(rdr, ver)?);
         } else {
             builtin_layer_0 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             builtin_layer_1 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             builtin_layer_2 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             builtin_layer_3 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             builtin_layer_4 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             builtin_layer_5 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             builtin_layer_6 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             builtin_layer_7 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_8 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_9 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_10 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_11 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_12 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_13 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_14 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_15 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_16 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_17 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_18 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_19 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_20 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_21 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_22 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_23 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_24 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_25 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_26 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_27 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_28 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_29 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_30 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             user_layer_31 = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         }
 
         Ok(TagManager {

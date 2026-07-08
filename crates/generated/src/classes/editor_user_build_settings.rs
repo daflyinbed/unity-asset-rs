@@ -2,8 +2,31 @@
 
 use crate::PPtr;
 use crate::subclasses::guid::Guid;
-use crate::subclasses::platform_settings_data::PlatformSettingsData;
+use crate::subclasses::platform_settings_data_editor::PlatformSettingsData_Editor;
 
+
+/// 版本枚举：EditorUserBuildSettingsMBuildLocationVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum EditorUserBuildSettingsMBuildLocationVariant {
+    Default(Vec<String>),
+    V2017_1(Vec<String>),
+}
+
+impl crate::Parse for EditorUserBuildSettingsMBuildLocationVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 
 /// 版本枚举：EditorUserBuildSettingsMSymlinkLibrariesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
@@ -119,6 +142,29 @@ impl crate::Parse for EditorUserBuildSettingsMExportAsGoogleAndroidProjectVarian
         } else {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：EditorUserBuildSettingsMWsaDotNetNativeEnabledVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum EditorUserBuildSettingsMWsaDotNetNativeEnabledVariant {
+    Default(Vec<bool>),
+    V2017_1(Vec<bool>),
+}
+
+impl crate::Parse for EditorUserBuildSettingsMWsaDotNetNativeEnabledVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -327,7 +373,7 @@ impl crate::Parse for EditorUserBuildSettingsMOverrideTextureCompressionVariant 
 }
 #[derive(Debug, Clone)]
 pub struct EditorUserBuildSettings {
-    pub m_build_location: Vec<String>,
+    pub m_build_location: EditorUserBuildSettingsMBuildLocationVariant,
     pub m_active_build_target: i32,
     pub m_selected_build_target_group: i32,
     pub m_active_build_target_group: Option<i32>,
@@ -410,7 +456,7 @@ pub struct EditorUserBuildSettings {
     pub m_selected_xbox_one_deploy_method: Option<i32>,
     pub m_selected_wsa_subtarget: Option<i32>,
     pub m_explicit_array_bounds_checks: Option<bool>,
-    pub m_wsa_dot_net_native_enabled: Option<Vec<bool>>,
+    pub m_wsa_dot_net_native_enabled: Option<EditorUserBuildSettingsMWsaDotNetNativeEnabledVariant>,
     pub m_selected_wsauwpsdk: Option<String>,
     pub m_create_solution_file_for_switch: Option<bool>,
     pub m_create_rom_file_for_switch: Option<bool>,
@@ -431,7 +477,7 @@ pub struct EditorUserBuildSettings {
     pub m_nvn_draw_validation_heavy: Option<bool>,
     pub m_enable_heap_inspector_for_switch: Option<bool>,
     pub m_rom_compression_config_for_switch: Option<String>,
-    pub m_platform_settings: Option<Vec<(String, PlatformSettingsData)>>,
+    pub m_platform_settings: Option<Vec<(String, PlatformSettingsData_Editor)>>,
     pub m_build_app_bundle: Option<EditorUserBuildSettingsMBuildAppBundleVariant>,
     pub m_use_legacy_nvn_pool_allocator_for_switch: Option<bool>,
     pub m_htcs_script_debugging_for_switch: Option<bool>,
@@ -632,8 +678,7 @@ impl crate::Parse for EditorUserBuildSettings {
         let mut m_active_profile_path = None;
         let mut m_active_build_profile = None;
         let mut m_build_output_to_build_metadata_map = None;
-            m_build_location = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_build_location = Some(EditorUserBuildSettingsMBuildLocationVariant::parse(rdr, ver)?);
             m_active_build_target = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(6000, 0, 4) {
             m_active_platform_guid = Some(Guid::parse(rdr, ver)?);
@@ -649,9 +694,7 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_build_target_group = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2021, 2, 0) {
             m_active_build_platform_group_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_build_platform_group_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else {
         }
             m_selected_standalone_target = Some(rdr.read_i32()?);
@@ -674,11 +717,8 @@ impl crate::Parse for EditorUserBuildSettings {
             m_android_release_minification = Some(rdr.read_i32()?);
             m_android_debug_minification = Some(rdr.read_i32()?);
             m_android_device_socket_address = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_android_current_deployment_target_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_compression_type = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2023, 1, 0) {
             m_selected_ps4_subtarget = Some(rdr.read_i32()?);
             m_ps4_hardware_target = Some(rdr.read_i32()?);
@@ -690,11 +730,8 @@ impl crate::Parse for EditorUserBuildSettings {
             m_android_debug_minification = Some(rdr.read_i32()?);
             m_selected_android_etc2_fallback = Some(rdr.read_i32()?);
             m_android_device_socket_address = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_android_current_deployment_target_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_compression_type = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2022, 3, 70) {
             m_selected_ps4_subtarget = Some(rdr.read_i32()?);
             m_ps4_hardware_target = Some(rdr.read_i32()?);
@@ -706,13 +743,9 @@ impl crate::Parse for EditorUserBuildSettings {
             m_android_debug_minification = Some(rdr.read_i32()?);
             m_selected_android_etc2_fallback = Some(rdr.read_i32()?);
             m_android_device_socket_address = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_android_current_deployment_target_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_compression_type = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_selected_diagnostic_setting = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
             m_selected_ps4_subtarget = Some(rdr.read_i32()?);
             m_ps4_hardware_target = Some(rdr.read_i32()?);
@@ -724,11 +757,8 @@ impl crate::Parse for EditorUserBuildSettings {
             m_android_debug_minification = Some(rdr.read_i32()?);
             m_selected_android_etc2_fallback = Some(rdr.read_i32()?);
             m_android_device_socket_address = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_android_current_deployment_target_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_compression_type = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
             m_selected_ps4_subtarget = Some(rdr.read_i32()?);
             m_ps4_hardware_target = Some(rdr.read_i32()?);
@@ -740,13 +770,9 @@ impl crate::Parse for EditorUserBuildSettings {
             m_android_debug_minification = Some(rdr.read_i32()?);
             m_selected_android_etc2_fallback = Some(rdr.read_i32()?);
             m_android_device_socket_address = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_android_current_deployment_target_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_compression_type = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_facebook_access_token = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
             m_selected_psp2_subtarget = Some(rdr.read_i32()?);
             m_selected_ps4_subtarget = Some(rdr.read_i32()?);
@@ -759,13 +785,9 @@ impl crate::Parse for EditorUserBuildSettings {
             m_android_debug_minification = Some(rdr.read_i32()?);
             m_selected_android_etc2_fallback = Some(rdr.read_i32()?);
             m_android_device_socket_address = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_android_current_deployment_target_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_compression_type = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_facebook_access_token = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
             m_selected_psp2_subtarget = Some(rdr.read_i32()?);
             m_selected_ps4_subtarget = Some(rdr.read_i32()?);
@@ -782,11 +804,8 @@ impl crate::Parse for EditorUserBuildSettings {
             m_android_debug_minification = Some(rdr.read_i32()?);
             m_selected_android_etc2_fallback = Some(rdr.read_i32()?);
             m_android_device_socket_address = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_compression_type = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_facebook_access_token = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             m_selected_psp2_subtarget = Some(rdr.read_i32()?);
             m_selected_ps4_subtarget = Some(rdr.read_i32()?);
@@ -802,11 +821,8 @@ impl crate::Parse for EditorUserBuildSettings {
             m_android_release_minification = Some(rdr.read_i32()?);
             m_android_debug_minification = Some(rdr.read_i32()?);
             m_android_device_socket_address = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_compression_type = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_facebook_access_token = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             m_selected_psp2_subtarget = Some(rdr.read_i32()?);
             m_selected_ps4_subtarget = Some(rdr.read_i32()?);
@@ -822,7 +838,6 @@ impl crate::Parse for EditorUserBuildSettings {
             m_android_release_minification = Some(rdr.read_i32()?);
             m_android_debug_minification = Some(rdr.read_i32()?);
             m_facebook_access_token = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
             m_selected_psp2_subtarget = Some(rdr.read_i32()?);
             m_selected_ps4_subtarget = Some(rdr.read_i32()?);
@@ -836,7 +851,6 @@ impl crate::Parse for EditorUserBuildSettings {
             m_android_build_system = Some(rdr.read_i32()?);
             m_android_build_type = Some(rdr.read_i32()?);
             m_facebook_access_token = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
             m_selected_psp2_subtarget = Some(rdr.read_i32()?);
             m_selected_ps4_subtarget = Some(rdr.read_i32()?);
@@ -970,7 +984,6 @@ impl crate::Parse for EditorUserBuildSettings {
             m_rom_compression_type_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_level_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_config_for_switch = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_generate_nintendo_switch_shader_info = Some(rdr.read_bool()?);
             m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
@@ -1006,7 +1019,6 @@ impl crate::Parse for EditorUserBuildSettings {
             m_rom_compression_type_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_level_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_config_for_switch = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_generate_nintendo_switch_shader_info = Some(rdr.read_bool()?);
             m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
@@ -1042,7 +1054,6 @@ impl crate::Parse for EditorUserBuildSettings {
             m_rom_compression_type_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_level_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_config_for_switch = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_generate_nintendo_switch_shader_info = Some(rdr.read_bool()?);
             m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
@@ -1078,7 +1089,6 @@ impl crate::Parse for EditorUserBuildSettings {
             m_rom_compression_type_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_level_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_config_for_switch = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_generate_nintendo_switch_shader_info = Some(rdr.read_bool()?);
             m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
@@ -1114,7 +1124,6 @@ impl crate::Parse for EditorUserBuildSettings {
             m_rom_compression_type_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_level_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_config_for_switch = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_generate_nintendo_switch_shader_info = Some(rdr.read_bool()?);
             m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
@@ -1149,7 +1158,6 @@ impl crate::Parse for EditorUserBuildSettings {
             m_rom_compression_type_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_level_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_config_for_switch = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_generate_nintendo_switch_shader_info = Some(rdr.read_bool()?);
             m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
@@ -1183,7 +1191,6 @@ impl crate::Parse for EditorUserBuildSettings {
             m_rom_compression_type_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_level_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_config_for_switch = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_generate_nintendo_switch_shader_info = Some(rdr.read_bool()?);
             m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
@@ -1220,7 +1227,6 @@ impl crate::Parse for EditorUserBuildSettings {
             m_rom_compression_type_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_level_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_config_for_switch = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_generate_nintendo_switch_shader_info = Some(rdr.read_bool()?);
             m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
@@ -1256,7 +1262,6 @@ impl crate::Parse for EditorUserBuildSettings {
             m_rom_compression_type_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_level_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_config_for_switch = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_generate_nintendo_switch_shader_info = Some(rdr.read_bool()?);
             m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
@@ -1291,7 +1296,6 @@ impl crate::Parse for EditorUserBuildSettings {
             m_rom_compression_type_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_level_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_config_for_switch = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_generate_nintendo_switch_shader_info = Some(rdr.read_bool()?);
             m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
@@ -1325,7 +1329,6 @@ impl crate::Parse for EditorUserBuildSettings {
             m_rom_compression_type_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_level_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_config_for_switch = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_generate_nintendo_switch_shader_info = Some(rdr.read_bool()?);
             m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
@@ -1362,7 +1365,6 @@ impl crate::Parse for EditorUserBuildSettings {
             m_rom_compression_type_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_level_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_config_for_switch = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_generate_nintendo_switch_shader_info = Some(rdr.read_bool()?);
             m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
@@ -1482,7 +1484,6 @@ impl crate::Parse for EditorUserBuildSettings {
             m_rom_compression_type_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_level_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_config_for_switch = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_generate_nintendo_switch_shader_info = Some(rdr.read_bool()?);
             m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
@@ -1595,7 +1596,6 @@ impl crate::Parse for EditorUserBuildSettings {
             m_rom_compression_type_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_level_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_config_for_switch = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_generate_nintendo_switch_shader_info = Some(rdr.read_bool()?);
             m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
@@ -1612,7 +1612,6 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_ps5_compression_type = Some(rdr.read_i32()?);
             m_selected_ps5_compression_level = Some(rdr.read_i32()?);
             m_ps5_workspace_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2019, 4, 25) {
             m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(rdr, ver)?);
             m_symlink_trampoline = Some(rdr.read_bool()?);
@@ -1645,7 +1644,6 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_ps5_compression_type = Some(rdr.read_i32()?);
             m_selected_ps5_compression_level = Some(rdr.read_i32()?);
             m_ps5_workspace_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2019, 4, 24) {
             m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(rdr, ver)?);
             m_symlink_trampoline = Some(rdr.read_bool()?);
@@ -1677,7 +1675,6 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_ps5_compression_type = Some(rdr.read_i32()?);
             m_selected_ps5_compression_level = Some(rdr.read_i32()?);
             m_ps5_workspace_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2019, 4, 23) {
             m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(rdr, ver)?);
             m_symlink_trampoline = Some(rdr.read_bool()?);
@@ -1708,7 +1705,6 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_ps5_compression_type = Some(rdr.read_i32()?);
             m_selected_ps5_compression_level = Some(rdr.read_i32()?);
             m_ps5_workspace_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2019, 2, 11) {
             m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(rdr, ver)?);
             m_symlink_trampoline = Some(rdr.read_bool()?);
@@ -2014,39 +2010,28 @@ impl crate::Parse for EditorUserBuildSettings {
             rdr.align(4)?;
             m_selected_wsauwp_build_type = Some(rdr.read_i32()?);
             m_selected_wsauwpsdk = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_min_uwpsdk = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_architecture = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsauwpvs_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
             m_selected_windows_build_and_run_deploy_target = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_windows_device_portal_address = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_windows_device_portal_username = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_drive = Some(rdr.read_i32()?);
             m_macos_xcode_build_config = Some(rdr.read_i32()?);
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             m_selected_embedded_linux_architecture = Some(rdr.read_i32()?);
             m_selected_qnx_os_version = Some(rdr.read_i32()?);
             m_selected_qnx_architecture = Some(rdr.read_i32()?);
             m_remote_device_info = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_remote_device_address = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_remote_device_username = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_remote_device_exports = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_path_on_remote_device = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_active_build_profile = Some(crate::PPtr::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(6000, 4, 0) {
             m_selected_web_gl_subtarget = Some(rdr.read_i32()?);
@@ -2056,42 +2041,30 @@ impl crate::Parse for EditorUserBuildSettings {
             rdr.align(4)?;
             m_selected_wsauwp_build_type = Some(rdr.read_i32()?);
             m_selected_wsauwpsdk = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_min_uwpsdk = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_architecture = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsauwpvs_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
             m_selected_windows_build_and_run_deploy_target = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_windows_device_portal_address = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_windows_device_portal_username = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_drive = Some(rdr.read_i32()?);
             m_macos_xcode_build_config = Some(rdr.read_i32()?);
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             m_selected_embedded_linux_architecture = Some(rdr.read_i32()?);
             m_selected_qnx_os_version = Some(rdr.read_i32()?);
             m_selected_qnx_architecture = Some(rdr.read_i32()?);
             m_remote_device_info = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_remote_device_address = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_remote_device_username = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_remote_device_exports = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_path_on_remote_device = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_active_build_profile = Some(crate::PPtr::parse(rdr, ver)?);
             m_build_output_to_build_metadata_map = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(6000, 0, 20) {
             m_selected_web_gl_subtarget = Some(rdr.read_i32()?);
             m_web_gl_client_platform = Some(rdr.read_i32()?);
@@ -2100,39 +2073,28 @@ impl crate::Parse for EditorUserBuildSettings {
             rdr.align(4)?;
             m_selected_wsauwp_build_type = Some(rdr.read_i32()?);
             m_selected_wsauwpsdk = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_min_uwpsdk = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_architecture = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsauwpvs_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
             m_selected_windows_build_and_run_deploy_target = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_windows_device_portal_address = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_windows_device_portal_username = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_drive = Some(rdr.read_i32()?);
             m_macos_xcode_build_config = Some(rdr.read_i32()?);
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             m_selected_embedded_linux_architecture = Some(rdr.read_i32()?);
             m_selected_qnx_os_version = Some(rdr.read_i32()?);
             m_selected_qnx_architecture = Some(rdr.read_i32()?);
             m_remote_device_info = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_remote_device_address = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_remote_device_username = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_remote_device_exports = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_path_on_remote_device = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_active_build_profile = Some(crate::PPtr::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(6000, 0, 0) {
             m_selected_web_gl_subtarget = Some(rdr.read_i32()?);
@@ -2142,41 +2104,29 @@ impl crate::Parse for EditorUserBuildSettings {
             rdr.align(4)?;
             m_selected_wsauwp_build_type = Some(rdr.read_i32()?);
             m_selected_wsauwpsdk = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_min_uwpsdk = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_architecture = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsauwpvs_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
             m_selected_windows_build_and_run_deploy_target = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_windows_device_portal_address = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_windows_device_portal_username = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_drive = Some(rdr.read_i32()?);
             m_macos_xcode_build_config = Some(rdr.read_i32()?);
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             m_selected_embedded_linux_architecture = Some(rdr.read_i32()?);
             m_selected_qnx_os_version = Some(rdr.read_i32()?);
             m_selected_qnx_architecture = Some(rdr.read_i32()?);
             m_remote_device_info = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_remote_device_address = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_remote_device_username = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_remote_device_exports = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_path_on_remote_device = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_active_profile_path = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2023, 3, 0) {
             m_selected_web_gl_subtarget = Some(rdr.read_i32()?);
             m_web_gl_client_platform = Some(rdr.read_i32()?);
@@ -2185,39 +2135,28 @@ impl crate::Parse for EditorUserBuildSettings {
             rdr.align(4)?;
             m_selected_wsauwp_build_type = Some(rdr.read_i32()?);
             m_selected_wsauwpsdk = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_min_uwpsdk = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_architecture = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsauwpvs_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
             m_selected_windows_build_and_run_deploy_target = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_windows_device_portal_address = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_windows_device_portal_username = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_drive = Some(rdr.read_i32()?);
             m_macos_xcode_build_config = Some(rdr.read_i32()?);
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             m_selected_embedded_linux_architecture = Some(rdr.read_i32()?);
             m_selected_qnx_os_version = Some(rdr.read_i32()?);
             m_selected_qnx_architecture = Some(rdr.read_i32()?);
             m_remote_device_info = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_remote_device_address = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_remote_device_username = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_remote_device_exports = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_path_on_remote_device = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2023, 2, 0) {
             m_selected_web_gl_subtarget = Some(rdr.read_i32()?);
             m_web_gl_client_browser_type = Some(rdr.read_i32()?);
@@ -2225,368 +2164,261 @@ impl crate::Parse for EditorUserBuildSettings {
             rdr.align(4)?;
             m_selected_wsauwp_build_type = Some(rdr.read_i32()?);
             m_selected_wsauwpsdk = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_min_uwpsdk = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_architecture = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsauwpvs_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
             m_selected_windows_build_and_run_deploy_target = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_windows_device_portal_address = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_windows_device_portal_username = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_drive = Some(rdr.read_i32()?);
             m_macos_xcode_build_config = Some(rdr.read_i32()?);
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             m_selected_embedded_linux_architecture = Some(rdr.read_i32()?);
             m_selected_qnx_os_version = Some(rdr.read_i32()?);
             m_selected_qnx_architecture = Some(rdr.read_i32()?);
             m_remote_device_info = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_remote_device_address = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_remote_device_username = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_remote_device_exports = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_path_on_remote_device = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2023, 1, 10) {
             m_selected_web_gl_subtarget = Some(rdr.read_i32()?);
             m_selected_wsauwp_build_type = Some(rdr.read_i32()?);
             m_selected_wsauwpsdk = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_min_uwpsdk = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_architecture = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsauwpvs_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
             m_selected_windows_build_and_run_deploy_target = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_windows_device_portal_address = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_windows_device_portal_username = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_drive = Some(rdr.read_i32()?);
             m_macos_xcode_build_config = Some(rdr.read_i32()?);
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             m_selected_embedded_linux_architecture = Some(rdr.read_i32()?);
             m_selected_qnx_os_version = Some(rdr.read_i32()?);
             m_selected_qnx_architecture = Some(rdr.read_i32()?);
             m_remote_device_info = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_remote_device_address = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_remote_device_username = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_remote_device_exports = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_path_on_remote_device = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             m_selected_web_gl_subtarget = Some(rdr.read_i32()?);
             m_selected_wsauwp_build_type = Some(rdr.read_i32()?);
             m_selected_wsauwpsdk = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_min_uwpsdk = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_architecture = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsauwpvs_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
             m_windows_device_portal_address = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_windows_device_portal_username = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_drive = Some(rdr.read_i32()?);
             m_macos_xcode_build_config = Some(rdr.read_i32()?);
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             m_selected_embedded_linux_architecture = Some(rdr.read_i32()?);
             m_selected_qnx_os_version = Some(rdr.read_i32()?);
             m_selected_qnx_architecture = Some(rdr.read_i32()?);
             m_remote_device_info = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_remote_device_address = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_remote_device_username = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_remote_device_exports = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_path_on_remote_device = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
             m_selected_web_gl_subtarget = Some(rdr.read_i32()?);
             m_selected_wsauwp_build_type = Some(rdr.read_i32()?);
             m_selected_wsauwpsdk = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_min_uwpsdk = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_architecture = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsauwpvs_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
             m_windows_device_portal_address = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_windows_device_portal_username = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_drive = Some(rdr.read_i32()?);
             m_macos_xcode_build_config = Some(rdr.read_i32()?);
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             m_selected_embedded_linux_architecture = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2021, 2, 14) {
             m_selected_web_gl_subtarget = Some(rdr.read_i32()?);
             m_selected_wsauwp_build_type = Some(rdr.read_i32()?);
             m_selected_wsauwpsdk = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_min_uwpsdk = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_architecture = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsauwpvs_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
             m_windows_device_portal_address = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_windows_device_portal_username = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_drive = Some(rdr.read_i32()?);
             m_macos_xcode_build_config = Some(rdr.read_i32()?);
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             m_selected_embedded_linux_architecture = Some(rdr.read_i32()?);
             m_remote_device_info = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_remote_device_address = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_remote_device_username = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_remote_device_exports = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_path_on_remote_device = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
             m_selected_web_gl_subtarget = Some(rdr.read_i32()?);
             m_selected_wsauwp_build_type = Some(rdr.read_i32()?);
             m_selected_wsauwpsdk = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_min_uwpsdk = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_architecture = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsauwpvs_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
             m_windows_device_portal_address = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_windows_device_portal_username = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_drive = Some(rdr.read_i32()?);
             m_macos_xcode_build_config = Some(rdr.read_i32()?);
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             m_selected_embedded_linux_architecture = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2019, 2, 0) {
             m_selected_wsa_subtarget = Some(rdr.read_i32()?);
             m_selected_wsauwp_build_type = Some(rdr.read_i32()?);
             m_selected_wsauwpsdk = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_min_uwpsdk = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_architecture = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsauwpvs_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
             m_windows_device_portal_address = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_windows_device_portal_username = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_drive = Some(rdr.read_i32()?);
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             m_selected_wsa_subtarget = Some(rdr.read_i32()?);
             m_selected_wsauwp_build_type = Some(rdr.read_i32()?);
             m_selected_wsauwpsdk = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_min_uwpsdk = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_architecture = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsauwpvs_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_drive = Some(rdr.read_i32()?);
             m_xbox_one_username = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_xbox_one_network_share_path = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
             m_selected_wsa_subtarget = Some(rdr.read_i32()?);
             m_selected_wsauwp_build_type = Some(rdr.read_i32()?);
             m_selected_wsauwpsdk = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_min_uwpsdk = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_architecture = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsauwpvs_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
             m_generate_wsa_reference_projects = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_wsa_dot_net_native_enabled = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_wsa_dot_net_native_enabled = Some(EditorUserBuildSettingsMWsaDotNetNativeEnabledVariant::parse(rdr, ver)?);
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_drive = Some(rdr.read_i32()?);
             m_xbox_one_username = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_xbox_one_network_share_path = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
         } else if *ver >= crate::UnityVersion::new(2018, 2, 0) {
             m_selected_wsa_subtarget = Some(rdr.read_i32()?);
             m_selected_wsauwp_build_type = Some(rdr.read_i32()?);
             m_selected_wsauwpsdk = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsauwpvs_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
             m_generate_wsa_reference_projects = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_wsa_dot_net_native_enabled = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_wsa_dot_net_native_enabled = Some(EditorUserBuildSettingsMWsaDotNetNativeEnabledVariant::parse(rdr, ver)?);
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_drive = Some(rdr.read_i32()?);
             m_xbox_one_username = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_xbox_one_network_share_path = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
             m_selected_wsa_subtarget = Some(rdr.read_i32()?);
             m_selected_wsauwp_build_type = Some(rdr.read_i32()?);
             m_selected_wsauwpsdk = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsauwpvs_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
             m_generate_wsa_reference_projects = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_wsa_dot_net_native_enabled = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_wsa_dot_net_native_enabled = Some(EditorUserBuildSettingsMWsaDotNetNativeEnabledVariant::parse(rdr, ver)?);
             m_selected_tizen_subtarget = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_xbox_one_username = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_xbox_one_network_share_path = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             m_selected_wsa_subtarget = Some(rdr.read_i32()?);
             m_selected_wsauwp_build_type = Some(rdr.read_i32()?);
             m_selected_wsauwpsdk = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
             m_generate_wsa_reference_projects = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_wsa_dot_net_native_enabled = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_wsa_dot_net_native_enabled = Some(EditorUserBuildSettingsMWsaDotNetNativeEnabledVariant::parse(rdr, ver)?);
             m_selected_tizen_subtarget = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_xbox_one_username = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_xbox_one_network_share_path = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_facebook_create_package_for_submission = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
         } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
             m_selected_wsa_subtarget = Some(rdr.read_i32()?);
             m_selected_wsasdk = Some(rdr.read_i32()?);
             m_selected_wsauwp_build_type = Some(rdr.read_i32()?);
             m_selected_wsauwpsdk = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
             m_generate_wsa_reference_projects = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_wsa_dot_net_native_enabled = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_wsa_dot_net_native_enabled = Some(EditorUserBuildSettingsMWsaDotNetNativeEnabledVariant::parse(rdr, ver)?);
             m_selected_tizen_subtarget = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_xbox_one_username = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_xbox_one_network_share_path = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_force_optimize_script_compilation = Some(EditorUserBuildSettingsMForceOptimizeScriptCompilationVariant::parse(rdr, ver)?);
             m_facebook_create_package_for_submission = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
         } else if *ver >= crate::UnityVersion::new(5, 5, 2) {
             m_selected_wsa_subtarget = Some(rdr.read_i32()?);
             m_selected_wsasdk = Some(rdr.read_i32()?);
             m_selected_wsauwp_build_type = Some(rdr.read_i32()?);
             m_selected_wsauwpsdk = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
             m_generate_wsa_reference_projects = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_wsa_dot_net_native_enabled = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_wsa_dot_net_native_enabled = Some(EditorUserBuildSettingsMWsaDotNetNativeEnabledVariant::parse(rdr, ver)?);
             m_selected_tizen_subtarget = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_xbox_one_username = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_xbox_one_network_share_path = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_force_optimize_script_compilation = Some(EditorUserBuildSettingsMForceOptimizeScriptCompilationVariant::parse(rdr, ver)?);
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
             m_selected_wsa_subtarget = Some(rdr.read_i32()?);
             m_selected_wsasdk = Some(rdr.read_i32()?);
@@ -2594,46 +2426,37 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
             m_generate_wsa_reference_projects = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_wsa_dot_net_native_enabled = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_wsa_dot_net_native_enabled = Some(EditorUserBuildSettingsMWsaDotNetNativeEnabledVariant::parse(rdr, ver)?);
             m_selected_tizen_subtarget = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_xbox_one_username = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_xbox_one_network_share_path = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_force_optimize_script_compilation = Some(EditorUserBuildSettingsMForceOptimizeScriptCompilationVariant::parse(rdr, ver)?);
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
             m_selected_wsasdk = Some(rdr.read_i32()?);
             m_selected_wsauwp_build_type = Some(rdr.read_i32()?);
             m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
             m_generate_wsa_reference_projects = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_wsa_dot_net_native_enabled = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_wsa_dot_net_native_enabled = Some(EditorUserBuildSettingsMWsaDotNetNativeEnabledVariant::parse(rdr, ver)?);
             m_selected_tizen_subtarget = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_xbox_one_username = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_xbox_one_network_share_path = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_force_optimize_script_compilation = Some(EditorUserBuildSettingsMForceOptimizeScriptCompilationVariant::parse(rdr, ver)?);
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
         } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
             m_selected_wsasdk = Some(rdr.read_i32()?);
             m_selected_wsauwp_build_type = Some(rdr.read_i32()?);
             m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
             m_generate_wsa_reference_projects = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_wsa_dot_net_native_enabled = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_wsa_dot_net_native_enabled = Some(EditorUserBuildSettingsMWsaDotNetNativeEnabledVariant::parse(rdr, ver)?);
             m_selected_black_berry_subtarget = Some(rdr.read_i32()?);
             m_selected_black_berry_build_type = Some(EditorUserBuildSettingsMSelectedBlackBerryBuildTypeVariant::parse(rdr, ver)?);
             m_selected_tizen_subtarget = Some(rdr.read_i32()?);
@@ -2641,9 +2464,7 @@ impl crate::Parse for EditorUserBuildSettings {
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_xbox_one_username = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_xbox_one_network_share_path = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_force_optimize_script_compilation = Some(EditorUserBuildSettingsMForceOptimizeScriptCompilationVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 2, 2) {
             m_selected_wsasdk = Some(rdr.read_i32()?);

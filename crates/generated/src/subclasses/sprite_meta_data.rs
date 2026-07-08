@@ -72,14 +72,12 @@ impl crate::Parse for SpriteMetaData {
         let mut m_edges = None;
         let mut m_weights = None;
             m_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_rect = Some(Rectf::parse(rdr, ver)?);
             m_alignment = Some(rdr.read_i32()?);
             m_pivot = Some(Vector2f::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2023, 3, 0) {
             m_border = Some(Vector4f::parse(rdr, ver)?);
             m_custom_data = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_outline = Some(SpriteMetaDataMOutlineVariant::parse(rdr, ver)?);
             m_physics_shape = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
@@ -87,7 +85,6 @@ impl crate::Parse for SpriteMetaData {
             m_bones = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SpriteBone::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             m_sprite_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_internal_id = Some(rdr.read_i64()?);
             m_vertices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
@@ -106,7 +103,6 @@ impl crate::Parse for SpriteMetaData {
             m_bones = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SpriteBone::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             m_sprite_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_internal_id = Some(rdr.read_i64()?);
             m_vertices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
@@ -125,7 +121,6 @@ impl crate::Parse for SpriteMetaData {
             m_bones = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SpriteBone::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             m_sprite_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_vertices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             m_indices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);

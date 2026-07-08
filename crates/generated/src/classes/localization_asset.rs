@@ -14,13 +14,10 @@ impl crate::Parse for LocalizationAsset {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let locale_iso_code = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let editor_asset = rdr.read_bool()?;
         rdr.align(4)?;
         let string_table = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-        rdr.align(4)?;
 
         Ok(LocalizationAsset {
             m_name,

@@ -52,29 +52,6 @@ impl crate::Parse for CompositeCollider2DMColliderPathsVariant {
         }
     }
 }
-
-/// 版本枚举：CompositeCollider2DMCompositePathsVariant 的类型跨版本变化。
-#[derive(Debug, Clone)]
-pub enum CompositeCollider2DMCompositePathsVariant {
-    Default(Box<Polygon2D>),
-    V2017_1(Box<Polygon2D>),
-}
-
-impl crate::Parse for CompositeCollider2DMCompositePathsVariant {
-    fn parse<R: crate::EndianReader>(
-        rdr: &mut R,
-        ver: &crate::UnityVersion,
-    ) -> Result<Self, R::Error> {
-        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { Ok(Box::new(Polygon2D::parse(rdr, ver)?)) } )?;
-            rdr.align(4)?;
-            Ok(Self::V2017_1(v))
-        } else {
-            let v = ( { Ok(Box::new(Polygon2D::parse(rdr, ver)?)) } )?;
-            Ok(Self::Default(v))
-        }
-    }
-}
 #[derive(Debug, Clone)]
 pub struct CompositeCollider2D {
     pub m_game_object: PPtr,
@@ -96,7 +73,7 @@ pub struct CompositeCollider2D {
     pub m_edge_radius: f32,
     pub m_callback_layers: Option<BitField>,
     pub m_collider_paths: CompositeCollider2DMColliderPathsVariant,
-    pub m_composite_paths: CompositeCollider2DMCompositePathsVariant,
+    pub m_composite_paths: Polygon2D,
     pub m_vertex_distance: f32,
     pub m_composite_operation: Option<i32>,
     pub m_offset_distance: Option<f32>,
@@ -165,7 +142,7 @@ impl crate::Parse for CompositeCollider2D {
             m_generation_type = Some(rdr.read_i32()?);
             m_edge_radius = Some(rdr.read_f32()?);
             m_collider_paths = Some(CompositeCollider2DMColliderPathsVariant::parse(rdr, ver)?);
-            m_composite_paths = Some(CompositeCollider2DMCompositePathsVariant::parse(rdr, ver)?);
+            m_composite_paths = Some(Polygon2D::parse(rdr, ver)?);
             m_vertex_distance = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2022, 1, 18) {
             m_offset_distance = Some(rdr.read_f32()?);

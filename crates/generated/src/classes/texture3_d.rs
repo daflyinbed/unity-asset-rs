@@ -150,7 +150,6 @@ impl crate::Parse for Texture3D {
         let mut m_usage_mode = None;
         let mut m_lightmap_format = None;
             m_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
             m_is_alpha_channel_optional = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -218,7 +217,6 @@ impl crate::Parse for Texture3D {
             rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
             m_stream_data = Some(StreamingInfo::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else {
         }
 

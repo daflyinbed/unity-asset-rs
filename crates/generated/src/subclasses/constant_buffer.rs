@@ -4,11 +4,57 @@ use crate::subclasses::matrix_parameter::MatrixParameter;
 use crate::subclasses::struct_parameter::StructParameter;
 use crate::subclasses::vector_parameter::VectorParameter;
 
+
+/// 版本枚举：ConstantBufferMMatrixParamsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum ConstantBufferMMatrixParamsVariant {
+    Default(Vec<MatrixParameter>),
+    V2017_1(Vec<MatrixParameter>),
+}
+
+impl crate::Parse for ConstantBufferMMatrixParamsVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MatrixParameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MatrixParameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：ConstantBufferMVectorParamsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum ConstantBufferMVectorParamsVariant {
+    Default(Vec<VectorParameter>),
+    V2017_1(Vec<VectorParameter>),
+}
+
+impl crate::Parse for ConstantBufferMVectorParamsVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VectorParameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VectorParameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct ConstantBuffer {
     pub m_name_index: i32,
-    pub m_matrix_params: Vec<MatrixParameter>,
-    pub m_vector_params: Vec<VectorParameter>,
+    pub m_matrix_params: ConstantBufferMMatrixParamsVariant,
+    pub m_vector_params: ConstantBufferMVectorParamsVariant,
     pub m_size: i32,
     pub m_struct_params: Option<Vec<StructParameter>>,
     pub m_is_partial_cb: Option<bool>,
@@ -26,10 +72,8 @@ impl crate::Parse for ConstantBuffer {
         let mut m_struct_params = None;
         let mut m_is_partial_cb = None;
             m_name_index = Some(rdr.read_i32()?);
-            m_matrix_params = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MatrixParameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            m_vector_params = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VectorParameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_matrix_params = Some(ConstantBufferMMatrixParamsVariant::parse(rdr, ver)?);
+            m_vector_params = Some(ConstantBufferMVectorParamsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2017, 3, 0) {
             m_struct_params = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { StructParameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;

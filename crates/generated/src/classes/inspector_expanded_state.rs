@@ -13,7 +13,6 @@ impl crate::Parse for InspectorExpandedState {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_expanded_data = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ExpandedData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        rdr.align(4)?;
 
         Ok(InspectorExpandedState {
             m_expanded_data,

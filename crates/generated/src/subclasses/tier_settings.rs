@@ -4,8 +4,7 @@ use crate::subclasses::tier_graphics_settings_editor::TierGraphicsSettingsEditor
 
 #[derive(Debug, Clone)]
 pub struct TierSettings {
-    pub m_build_target: i32,
-    pub m_tier: i32,
+    pub m_build_target: String,
     pub m_settings: TierGraphicsSettingsEditor,
     pub m_automatic: bool,
 }
@@ -15,16 +14,13 @@ impl crate::Parse for TierSettings {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_build_target = rdr.read_i32()?;
-        let m_tier = rdr.read_i32()?;
+        let m_build_target = rdr.read_aligned_string()?;
         let m_settings = TierGraphicsSettingsEditor::parse(rdr, ver)?;
-        rdr.align(4)?;
         let m_automatic = rdr.read_bool()?;
         rdr.align(4)?;
 
         Ok(TierSettings {
             m_build_target,
-            m_tier,
             m_settings,
             m_automatic,
         })

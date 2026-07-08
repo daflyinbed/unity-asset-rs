@@ -17,9 +17,7 @@ impl crate::Parse for PlatformShaderDefines {
     ) -> Result<Self, R::Error> {
         let shader_platform = rdr.read_i32()?;
         let defines_tier1 = fixed_bitset::parse(rdr, ver)?;
-        rdr.align(4)?;
         let defines_tier2 = fixed_bitset::parse(rdr, ver)?;
-        rdr.align(4)?;
         let defines_tier3 = fixed_bitset::parse(rdr, ver)?;
         rdr.align(4)?;
 

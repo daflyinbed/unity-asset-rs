@@ -71,7 +71,6 @@ impl crate::Parse for Sprite {
         let mut m_bones = None;
         let mut m_scriptable_objects = None;
             m_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_rect = Some(Rectf::parse(rdr, ver)?);
             m_offset = Some(Vector2f::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(4, 5, 0) {

@@ -1,10 +1,38 @@
 //! 自动生成。请勿手动修改。
 
+
+/// 版本枚举：ClassInfoMClassNameVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum ClassInfoMClassNameVariant {
+    Default(String),
+    V2019_4_29(String),
+    V2020_1(String),
+}
+
+impl crate::Parse for ClassInfoMClassNameVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2020, 1, 0) {
+            let v = rdr.read_aligned_string()?;
+            rdr.align(4)?;
+            Ok(Self::V2020_1(v))
+        } else if *ver >= crate::UnityVersion::new(2019, 4, 29) {
+            let v = rdr.read_aligned_string()?;
+            Ok(Self::V2019_4_29(v))
+        } else {
+            let v = rdr.read_aligned_string()?;
+            rdr.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct ClassInfo {
     pub m_assembly_name_index: i32,
     pub m_namespace_index: i32,
-    pub m_class_name: String,
+    pub m_class_name: ClassInfoMClassNameVariant,
     pub m_num_of_methods: i32,
     pub m_namespace_name: Option<String>,
     pub m_method_index: i32,
@@ -26,8 +54,7 @@ impl crate::Parse for ClassInfo {
             m_assembly_name_index = Some(rdr.read_i32()?);
             m_namespace_index = Some(rdr.read_i32()?);
             rdr.align(4)?;
-            m_class_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
+            m_class_name = Some(ClassInfoMClassNameVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2020, 1, 0) {
         } else if *ver >= crate::UnityVersion::new(2019, 4, 29) {
             m_namespace_name = Some(rdr.read_aligned_string()?);

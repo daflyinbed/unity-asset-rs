@@ -15,7 +15,6 @@ impl crate::Parse for ExposedAudioParameter {
     ) -> Result<Self, R::Error> {
         let guid = Guid::parse(rdr, ver)?;
         let name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
 
         Ok(ExposedAudioParameter {
             guid,

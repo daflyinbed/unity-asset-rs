@@ -41,7 +41,6 @@ impl crate::Parse for LowerResBlitTexture {
         let mut m_is_alpha_channel_optional = None;
         let mut m_downscale_fallback = None;
             m_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
             m_is_alpha_channel_optional = Some(rdr.read_bool()?);
             rdr.align(4)?;

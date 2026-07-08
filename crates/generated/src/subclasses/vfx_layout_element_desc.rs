@@ -15,7 +15,6 @@ impl crate::Parse for VfxLayoutElementDesc {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let r#type = rdr.read_i32()?;
         let offset = VfxLayoutOffset::parse(rdr, ver)?;
 

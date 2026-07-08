@@ -1,7 +1,184 @@
 //! 自动生成。请勿手动修改。
 
-use crate::subclasses::color_rgba::ColorRgba;
+use crate::subclasses::color_rgb_af::ColorRgbAf;
+use crate::subclasses::color_rgba32::ColorRgba32;
 
+
+/// 版本枚举：GradientKey0Variant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum GradientKey0Variant {
+    Default(Box<ColorRgba32>),
+    V5_6(Box<ColorRgbAf>),
+}
+
+impl crate::Parse for GradientKey0Variant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            let v = ( { Ok(Box::new(ColorRgbAf::parse(rdr, ver)?)) } )?;
+            Ok(Self::V5_6(v))
+        } else {
+            let v = ( { Ok(Box::new(ColorRgba32::parse(rdr, ver)?)) } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：GradientKey1Variant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum GradientKey1Variant {
+    Default(Box<ColorRgba32>),
+    V5_6(Box<ColorRgbAf>),
+}
+
+impl crate::Parse for GradientKey1Variant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            let v = ( { Ok(Box::new(ColorRgbAf::parse(rdr, ver)?)) } )?;
+            Ok(Self::V5_6(v))
+        } else {
+            let v = ( { Ok(Box::new(ColorRgba32::parse(rdr, ver)?)) } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：GradientKey2Variant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum GradientKey2Variant {
+    Default(Box<ColorRgba32>),
+    V5_6(Box<ColorRgbAf>),
+}
+
+impl crate::Parse for GradientKey2Variant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            let v = ( { Ok(Box::new(ColorRgbAf::parse(rdr, ver)?)) } )?;
+            Ok(Self::V5_6(v))
+        } else {
+            let v = ( { Ok(Box::new(ColorRgba32::parse(rdr, ver)?)) } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：GradientKey3Variant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum GradientKey3Variant {
+    Default(Box<ColorRgba32>),
+    V5_6(Box<ColorRgbAf>),
+}
+
+impl crate::Parse for GradientKey3Variant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            let v = ( { Ok(Box::new(ColorRgbAf::parse(rdr, ver)?)) } )?;
+            Ok(Self::V5_6(v))
+        } else {
+            let v = ( { Ok(Box::new(ColorRgba32::parse(rdr, ver)?)) } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：GradientKey4Variant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum GradientKey4Variant {
+    Default(Box<ColorRgba32>),
+    V5_6(Box<ColorRgbAf>),
+}
+
+impl crate::Parse for GradientKey4Variant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            let v = ( { Ok(Box::new(ColorRgbAf::parse(rdr, ver)?)) } )?;
+            Ok(Self::V5_6(v))
+        } else {
+            let v = ( { Ok(Box::new(ColorRgba32::parse(rdr, ver)?)) } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：GradientKey5Variant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum GradientKey5Variant {
+    Default(Box<ColorRgba32>),
+    V5_6(Box<ColorRgbAf>),
+}
+
+impl crate::Parse for GradientKey5Variant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            let v = ( { Ok(Box::new(ColorRgbAf::parse(rdr, ver)?)) } )?;
+            Ok(Self::V5_6(v))
+        } else {
+            let v = ( { Ok(Box::new(ColorRgba32::parse(rdr, ver)?)) } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：GradientKey6Variant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum GradientKey6Variant {
+    Default(Box<ColorRgba32>),
+    V5_6(Box<ColorRgbAf>),
+}
+
+impl crate::Parse for GradientKey6Variant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            let v = ( { Ok(Box::new(ColorRgbAf::parse(rdr, ver)?)) } )?;
+            Ok(Self::V5_6(v))
+        } else {
+            let v = ( { Ok(Box::new(ColorRgba32::parse(rdr, ver)?)) } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：GradientKey7Variant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum GradientKey7Variant {
+    Default(Box<ColorRgba32>),
+    V5_6(Box<ColorRgbAf>),
+}
+
+impl crate::Parse for GradientKey7Variant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 6, 0) {
+            let v = ( { Ok(Box::new(ColorRgbAf::parse(rdr, ver)?)) } )?;
+            Ok(Self::V5_6(v))
+        } else {
+            let v = ( { Ok(Box::new(ColorRgba32::parse(rdr, ver)?)) } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 
 /// 版本枚举：GradientMModeVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
@@ -26,19 +203,19 @@ impl crate::Parse for GradientMModeVariant {
 }
 #[derive(Debug, Clone)]
 pub struct Gradient {
-    pub m_color_0: Option<ColorRgba>,
-    pub key0: Option<ColorRgba>,
-    pub m_color_1: Option<ColorRgba>,
-    pub key1: Option<ColorRgba>,
-    pub m_color_2: Option<ColorRgba>,
-    pub key2: Option<ColorRgba>,
-    pub m_color_3: Option<ColorRgba>,
-    pub key3: Option<ColorRgba>,
-    pub m_color_4: Option<ColorRgba>,
-    pub key4: Option<ColorRgba>,
-    pub key5: Option<ColorRgba>,
-    pub key6: Option<ColorRgba>,
-    pub key7: Option<ColorRgba>,
+    pub m_color_0: Option<ColorRgba32>,
+    pub key0: Option<GradientKey0Variant>,
+    pub m_color_1: Option<ColorRgba32>,
+    pub key1: Option<GradientKey1Variant>,
+    pub m_color_2: Option<ColorRgba32>,
+    pub key2: Option<GradientKey2Variant>,
+    pub m_color_3: Option<ColorRgba32>,
+    pub key3: Option<GradientKey3Variant>,
+    pub m_color_4: Option<ColorRgba32>,
+    pub key4: Option<GradientKey4Variant>,
+    pub key5: Option<GradientKey5Variant>,
+    pub key6: Option<GradientKey6Variant>,
+    pub key7: Option<GradientKey7Variant>,
     pub ctime0: Option<u16>,
     pub ctime1: Option<u16>,
     pub ctime2: Option<u16>,
@@ -55,10 +232,10 @@ pub struct Gradient {
     pub atime5: Option<u16>,
     pub atime6: Option<u16>,
     pub atime7: Option<u16>,
-    pub m_mode: Option<GradientMModeVariant>,
     pub m_num_color_keys: Option<u8>,
-    pub m_color_space: Option<i8>,
+    pub m_mode: Option<GradientMModeVariant>,
     pub m_num_alpha_keys: Option<u8>,
+    pub m_color_space: Option<i8>,
 }
 
 impl crate::Parse for Gradient {
@@ -95,19 +272,19 @@ impl crate::Parse for Gradient {
         let mut atime5 = None;
         let mut atime6 = None;
         let mut atime7 = None;
-        let mut m_mode = None;
         let mut m_num_color_keys = None;
-        let mut m_color_space = None;
+        let mut m_mode = None;
         let mut m_num_alpha_keys = None;
+        let mut m_color_space = None;
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            key0 = Some(ColorRgba::parse(rdr, ver)?);
-            key1 = Some(ColorRgba::parse(rdr, ver)?);
-            key2 = Some(ColorRgba::parse(rdr, ver)?);
-            key3 = Some(ColorRgba::parse(rdr, ver)?);
-            key4 = Some(ColorRgba::parse(rdr, ver)?);
-            key5 = Some(ColorRgba::parse(rdr, ver)?);
-            key6 = Some(ColorRgba::parse(rdr, ver)?);
-            key7 = Some(ColorRgba::parse(rdr, ver)?);
+            key0 = Some(GradientKey0Variant::parse(rdr, ver)?);
+            key1 = Some(GradientKey1Variant::parse(rdr, ver)?);
+            key2 = Some(GradientKey2Variant::parse(rdr, ver)?);
+            key3 = Some(GradientKey3Variant::parse(rdr, ver)?);
+            key4 = Some(GradientKey4Variant::parse(rdr, ver)?);
+            key5 = Some(GradientKey5Variant::parse(rdr, ver)?);
+            key6 = Some(GradientKey6Variant::parse(rdr, ver)?);
+            key7 = Some(GradientKey7Variant::parse(rdr, ver)?);
             ctime0 = Some(rdr.read_u16()?);
             ctime1 = Some(rdr.read_u16()?);
             ctime2 = Some(rdr.read_u16()?);
@@ -130,14 +307,14 @@ impl crate::Parse for Gradient {
             m_num_alpha_keys = Some(rdr.read_u8()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            key0 = Some(ColorRgba::parse(rdr, ver)?);
-            key1 = Some(ColorRgba::parse(rdr, ver)?);
-            key2 = Some(ColorRgba::parse(rdr, ver)?);
-            key3 = Some(ColorRgba::parse(rdr, ver)?);
-            key4 = Some(ColorRgba::parse(rdr, ver)?);
-            key5 = Some(ColorRgba::parse(rdr, ver)?);
-            key6 = Some(ColorRgba::parse(rdr, ver)?);
-            key7 = Some(ColorRgba::parse(rdr, ver)?);
+            key0 = Some(GradientKey0Variant::parse(rdr, ver)?);
+            key1 = Some(GradientKey1Variant::parse(rdr, ver)?);
+            key2 = Some(GradientKey2Variant::parse(rdr, ver)?);
+            key3 = Some(GradientKey3Variant::parse(rdr, ver)?);
+            key4 = Some(GradientKey4Variant::parse(rdr, ver)?);
+            key5 = Some(GradientKey5Variant::parse(rdr, ver)?);
+            key6 = Some(GradientKey6Variant::parse(rdr, ver)?);
+            key7 = Some(GradientKey7Variant::parse(rdr, ver)?);
             ctime0 = Some(rdr.read_u16()?);
             ctime1 = Some(rdr.read_u16()?);
             ctime2 = Some(rdr.read_u16()?);
@@ -158,12 +335,108 @@ impl crate::Parse for Gradient {
             m_num_color_keys = Some(rdr.read_u8()?);
             m_num_alpha_keys = Some(rdr.read_u8()?);
             rdr.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
+            key0 = Some(GradientKey0Variant::parse(rdr, ver)?);
+            key1 = Some(GradientKey1Variant::parse(rdr, ver)?);
+            key2 = Some(GradientKey2Variant::parse(rdr, ver)?);
+            key3 = Some(GradientKey3Variant::parse(rdr, ver)?);
+            key4 = Some(GradientKey4Variant::parse(rdr, ver)?);
+            key5 = Some(GradientKey5Variant::parse(rdr, ver)?);
+            key6 = Some(GradientKey6Variant::parse(rdr, ver)?);
+            key7 = Some(GradientKey7Variant::parse(rdr, ver)?);
+            ctime0 = Some(rdr.read_u16()?);
+            ctime1 = Some(rdr.read_u16()?);
+            ctime2 = Some(rdr.read_u16()?);
+            ctime3 = Some(rdr.read_u16()?);
+            ctime4 = Some(rdr.read_u16()?);
+            ctime5 = Some(rdr.read_u16()?);
+            ctime6 = Some(rdr.read_u16()?);
+            ctime7 = Some(rdr.read_u16()?);
+            atime0 = Some(rdr.read_u16()?);
+            atime1 = Some(rdr.read_u16()?);
+            atime2 = Some(rdr.read_u16()?);
+            atime3 = Some(rdr.read_u16()?);
+            atime4 = Some(rdr.read_u16()?);
+            atime5 = Some(rdr.read_u16()?);
+            atime6 = Some(rdr.read_u16()?);
+            atime7 = Some(rdr.read_u16()?);
+            m_num_color_keys = Some(rdr.read_u8()?);
+            m_num_alpha_keys = Some(rdr.read_u8()?);
+            rdr.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(5, 2, 3) {
+            m_color_0 = Some(ColorRgba32::parse(rdr, ver)?);
+            m_color_1 = Some(ColorRgba32::parse(rdr, ver)?);
+            m_color_2 = Some(ColorRgba32::parse(rdr, ver)?);
+            m_color_3 = Some(ColorRgba32::parse(rdr, ver)?);
+            m_color_4 = Some(ColorRgba32::parse(rdr, ver)?);
+        } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            key0 = Some(GradientKey0Variant::parse(rdr, ver)?);
+            key1 = Some(GradientKey1Variant::parse(rdr, ver)?);
+            key2 = Some(GradientKey2Variant::parse(rdr, ver)?);
+            key3 = Some(GradientKey3Variant::parse(rdr, ver)?);
+            key4 = Some(GradientKey4Variant::parse(rdr, ver)?);
+            key5 = Some(GradientKey5Variant::parse(rdr, ver)?);
+            key6 = Some(GradientKey6Variant::parse(rdr, ver)?);
+            key7 = Some(GradientKey7Variant::parse(rdr, ver)?);
+            ctime0 = Some(rdr.read_u16()?);
+            ctime1 = Some(rdr.read_u16()?);
+            ctime2 = Some(rdr.read_u16()?);
+            ctime3 = Some(rdr.read_u16()?);
+            ctime4 = Some(rdr.read_u16()?);
+            ctime5 = Some(rdr.read_u16()?);
+            ctime6 = Some(rdr.read_u16()?);
+            ctime7 = Some(rdr.read_u16()?);
+            atime0 = Some(rdr.read_u16()?);
+            atime1 = Some(rdr.read_u16()?);
+            atime2 = Some(rdr.read_u16()?);
+            atime3 = Some(rdr.read_u16()?);
+            atime4 = Some(rdr.read_u16()?);
+            atime5 = Some(rdr.read_u16()?);
+            atime6 = Some(rdr.read_u16()?);
+            atime7 = Some(rdr.read_u16()?);
+            m_num_color_keys = Some(rdr.read_u8()?);
+            m_num_alpha_keys = Some(rdr.read_u8()?);
+            rdr.align(4)?;
+        } else if *ver >= crate::UnityVersion::new(4, 5, 0) {
+            m_color_0 = Some(ColorRgba32::parse(rdr, ver)?);
+            m_color_1 = Some(ColorRgba32::parse(rdr, ver)?);
+            m_color_2 = Some(ColorRgba32::parse(rdr, ver)?);
+            m_color_3 = Some(ColorRgba32::parse(rdr, ver)?);
+            m_color_4 = Some(ColorRgba32::parse(rdr, ver)?);
+        } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
+            key0 = Some(GradientKey0Variant::parse(rdr, ver)?);
+            key1 = Some(GradientKey1Variant::parse(rdr, ver)?);
+            key2 = Some(GradientKey2Variant::parse(rdr, ver)?);
+            key3 = Some(GradientKey3Variant::parse(rdr, ver)?);
+            key4 = Some(GradientKey4Variant::parse(rdr, ver)?);
+            key5 = Some(GradientKey5Variant::parse(rdr, ver)?);
+            key6 = Some(GradientKey6Variant::parse(rdr, ver)?);
+            key7 = Some(GradientKey7Variant::parse(rdr, ver)?);
+            ctime0 = Some(rdr.read_u16()?);
+            ctime1 = Some(rdr.read_u16()?);
+            ctime2 = Some(rdr.read_u16()?);
+            ctime3 = Some(rdr.read_u16()?);
+            ctime4 = Some(rdr.read_u16()?);
+            ctime5 = Some(rdr.read_u16()?);
+            ctime6 = Some(rdr.read_u16()?);
+            ctime7 = Some(rdr.read_u16()?);
+            atime0 = Some(rdr.read_u16()?);
+            atime1 = Some(rdr.read_u16()?);
+            atime2 = Some(rdr.read_u16()?);
+            atime3 = Some(rdr.read_u16()?);
+            atime4 = Some(rdr.read_u16()?);
+            atime5 = Some(rdr.read_u16()?);
+            atime6 = Some(rdr.read_u16()?);
+            atime7 = Some(rdr.read_u16()?);
+            m_num_color_keys = Some(rdr.read_u8()?);
+            m_num_alpha_keys = Some(rdr.read_u8()?);
+            rdr.align(4)?;
         } else {
-            m_color_0 = Some(ColorRgba::parse(rdr, ver)?);
-            m_color_1 = Some(ColorRgba::parse(rdr, ver)?);
-            m_color_2 = Some(ColorRgba::parse(rdr, ver)?);
-            m_color_3 = Some(ColorRgba::parse(rdr, ver)?);
-            m_color_4 = Some(ColorRgba::parse(rdr, ver)?);
+            m_color_0 = Some(ColorRgba32::parse(rdr, ver)?);
+            m_color_1 = Some(ColorRgba32::parse(rdr, ver)?);
+            m_color_2 = Some(ColorRgba32::parse(rdr, ver)?);
+            m_color_3 = Some(ColorRgba32::parse(rdr, ver)?);
+            m_color_4 = Some(ColorRgba32::parse(rdr, ver)?);
         }
 
         Ok(Gradient {
@@ -196,10 +469,10 @@ impl crate::Parse for Gradient {
             atime5,
             atime6,
             atime7,
-            m_mode,
             m_num_color_keys,
-            m_color_space,
+            m_mode,
             m_num_alpha_keys,
+            m_color_space,
         })
     }
 }

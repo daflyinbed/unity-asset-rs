@@ -38,7 +38,6 @@ impl crate::Parse for ResourceManager {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_container = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-        rdr.align(4)?;
         let m_dependent_assets = if *ver >= crate::UnityVersion::new(3, 5, 0) {
             Some(ResourceManagerMDependentAssetsVariant::parse(rdr, ver)?)
         } else {

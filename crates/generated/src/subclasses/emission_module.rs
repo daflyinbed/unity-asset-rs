@@ -277,14 +277,10 @@ impl crate::Parse for EmissionModule {
             rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
             rate_over_time = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             rate_over_distance = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
             rate_over_time = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             rate_over_distance = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             cnt0 = Some(EmissionModuleCnt0Variant::parse(rdr, ver)?);
             cnt1 = Some(EmissionModuleCnt1Variant::parse(rdr, ver)?);
             cnt2 = Some(EmissionModuleCnt2Variant::parse(rdr, ver)?);
@@ -300,7 +296,6 @@ impl crate::Parse for EmissionModule {
         } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
             m_type = Some(rdr.read_i32()?);
             rate = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             cnt0 = Some(EmissionModuleCnt0Variant::parse(rdr, ver)?);
             cnt1 = Some(EmissionModuleCnt1Variant::parse(rdr, ver)?);
             cnt2 = Some(EmissionModuleCnt2Variant::parse(rdr, ver)?);
@@ -316,7 +311,6 @@ impl crate::Parse for EmissionModule {
         } else {
             m_type = Some(rdr.read_i32()?);
             rate = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             cnt0 = Some(EmissionModuleCnt0Variant::parse(rdr, ver)?);
             cnt1 = Some(EmissionModuleCnt1Variant::parse(rdr, ver)?);
             cnt2 = Some(EmissionModuleCnt2Variant::parse(rdr, ver)?);

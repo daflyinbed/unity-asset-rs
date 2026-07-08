@@ -12,7 +12,6 @@ impl crate::Parse for VfxMapping {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let name_id = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let index = rdr.read_i32()?;
 
         Ok(VfxMapping {

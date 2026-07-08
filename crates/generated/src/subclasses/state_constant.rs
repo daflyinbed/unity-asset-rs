@@ -4,29 +4,6 @@ use crate::subclasses::leaf_info_constant::LeafInfoConstant;
 use crate::subclasses::offset_ptr::OffsetPtr;
 
 
-/// 版本枚举：StateConstantMBlendTreeConstantArrayVariant 的类型跨版本变化。
-#[derive(Debug, Clone)]
-pub enum StateConstantMBlendTreeConstantArrayVariant {
-    Default(Vec<OffsetPtr>),
-    V4_1_3(Vec<OffsetPtr>),
-}
-
-impl crate::Parse for StateConstantMBlendTreeConstantArrayVariant {
-    fn parse<R: crate::EndianReader>(
-        rdr: &mut R,
-        ver: &crate::UnityVersion,
-    ) -> Result<Self, R::Error> {
-        if *ver >= crate::UnityVersion::new(4, 1, 3) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { OffsetPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            rdr.align(4)?;
-            Ok(Self::V4_1_3(v))
-        } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { OffsetPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            Ok(Self::Default(v))
-        }
-    }
-}
-
 /// 版本枚举：StateConstantMLoopVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum StateConstantMLoopVariant {
@@ -54,7 +31,7 @@ pub struct StateConstant {
     pub m_transition_constant_array: Vec<OffsetPtr>,
     pub m_blend_tree_constant_index_array: Vec<i32>,
     pub m_leaf_info_array: Option<Vec<LeafInfoConstant>>,
-    pub m_blend_tree_constant_array: StateConstantMBlendTreeConstantArrayVariant,
+    pub m_blend_tree_constant_array: Vec<OffsetPtr>,
     pub m_name_id: Option<u32>,
     pub m_id: Option<u32>,
     pub m_path_id: Option<u32>,
@@ -97,13 +74,12 @@ impl crate::Parse for StateConstant {
         let mut m_time_param_id = None;
         let mut m_write_default_values = None;
             m_transition_constant_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { OffsetPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_blend_tree_constant_index_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
         if *ver >= crate::UnityVersion::new(5, 2, 0) {
         } else {
             m_leaf_info_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { LeafInfoConstant::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
         }
-            m_blend_tree_constant_array = Some(StateConstantMBlendTreeConstantArrayVariant::parse(rdr, ver)?);
+            m_blend_tree_constant_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { OffsetPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_name_id = Some(rdr.read_u32()?);
             m_path_id = Some(rdr.read_u32()?);

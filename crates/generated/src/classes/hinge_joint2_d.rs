@@ -1,33 +1,10 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
-use crate::subclasses::joint_angle_limit2_d::JointAngleLimit2D;
 use crate::subclasses::joint_angle_limits2_d::JointAngleLimits2D;
 use crate::subclasses::joint_motor2_d::JointMotor2D;
 use crate::subclasses::vector2f::Vector2f;
 
-
-/// 版本枚举：HingeJoint2DMAngleLimitsVariant 的类型跨版本变化。
-#[derive(Debug, Clone)]
-pub enum HingeJoint2DMAngleLimitsVariant {
-    Default(Box<JointAngleLimit2D>),
-    V5_0(Box<JointAngleLimits2D>),
-}
-
-impl crate::Parse for HingeJoint2DMAngleLimitsVariant {
-    fn parse<R: crate::EndianReader>(
-        rdr: &mut R,
-        ver: &crate::UnityVersion,
-    ) -> Result<Self, R::Error> {
-        if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = ( { Ok(Box::new(JointAngleLimits2D::parse(rdr, ver)?)) } )?;
-            Ok(Self::V5_0(v))
-        } else {
-            let v = ( { Ok(Box::new(JointAngleLimit2D::parse(rdr, ver)?)) } )?;
-            Ok(Self::Default(v))
-        }
-    }
-}
 #[derive(Debug, Clone)]
 pub struct HingeJoint2D {
     pub m_game_object: PPtr,
@@ -44,7 +21,7 @@ pub struct HingeJoint2D {
     pub m_break_action: Option<i32>,
     pub m_motor: JointMotor2D,
     pub m_use_limits: bool,
-    pub m_angle_limits: HingeJoint2DMAngleLimitsVariant,
+    pub m_angle_limits: JointAngleLimits2D,
     pub m_use_connected_anchor: Option<bool>,
 }
 
@@ -104,7 +81,7 @@ impl crate::Parse for HingeJoint2D {
             m_motor = Some(JointMotor2D::parse(rdr, ver)?);
             m_use_limits = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_angle_limits = Some(HingeJoint2DMAngleLimitsVariant::parse(rdr, ver)?);
+            m_angle_limits = Some(JointAngleLimits2D::parse(rdr, ver)?);
 
         Ok(HingeJoint2D {
             m_game_object: m_game_object.unwrap(),

@@ -15,9 +15,7 @@ impl crate::Parse for VfxShaderSourceDesc {
         let compute = rdr.read_bool()?;
         rdr.align(4)?;
         let name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let source = rdr.read_aligned_string()?;
-        rdr.align(4)?;
 
         Ok(VfxShaderSourceDesc {
             compute,

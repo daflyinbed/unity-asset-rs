@@ -13,11 +13,8 @@ impl crate::Parse for SourceAssetIdentifier {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let r#type = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let assembly = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
 
         Ok(SourceAssetIdentifier {
             r#type,

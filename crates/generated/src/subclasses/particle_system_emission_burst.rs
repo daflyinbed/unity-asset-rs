@@ -50,7 +50,6 @@ impl crate::Parse for ParticleSystemEmissionBurst {
             time = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             count_curve = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else {
             min_count = Some(rdr.read_u32()?);
             max_count = Some(rdr.read_u32()?);

@@ -3,9 +3,9 @@
 use crate::subclasses::aabb::Aabb;
 use crate::subclasses::animation_clip_binding_constant::AnimationClipBindingConstant;
 use crate::subclasses::animation_event::AnimationEvent;
-use crate::subclasses::clip_muscle_constant::ClipMuscleConstant;
 use crate::subclasses::compressed_animation_curve::CompressedAnimationCurve;
 use crate::subclasses::float_curve::FloatCurve;
+use crate::subclasses::muscle_clip_constant::MuscleClipConstant;
 use crate::subclasses::p_ptr_curve::PPtrCurve;
 use crate::subclasses::quaternion_curve::QuaternionCurve;
 use crate::subclasses::vector3_curve::Vector3Curve;
@@ -34,24 +34,185 @@ impl crate::Parse for AnimationClipMCompressedVariant {
     }
 }
 
-/// 版本枚举：AnimationClipMClipBindingConstantVariant 的类型跨版本变化。
+/// 版本枚举：AnimationClipMRotationCurvesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
-pub enum AnimationClipMClipBindingConstantVariant {
-    Default(Box<AnimationClipBindingConstant>),
-    V5_6(Box<AnimationClipBindingConstant>),
+pub enum AnimationClipMRotationCurvesVariant {
+    Default(Vec<QuaternionCurve>),
+    V2017_1(Vec<QuaternionCurve>),
 }
 
-impl crate::Parse for AnimationClipMClipBindingConstantVariant {
+impl crate::Parse for AnimationClipMRotationCurvesVariant {
     fn parse<R: crate::EndianReader>(
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            let v = ( { Ok(Box::new(AnimationClipBindingConstant::parse(rdr, ver)?)) } )?;
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { QuaternionCurve::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             rdr.align(4)?;
-            Ok(Self::V5_6(v))
+            Ok(Self::V2017_1(v))
         } else {
-            let v = ( { Ok(Box::new(AnimationClipBindingConstant::parse(rdr, ver)?)) } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { QuaternionCurve::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：AnimationClipMCompressedRotationCurvesVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum AnimationClipMCompressedRotationCurvesVariant {
+    Default(Vec<CompressedAnimationCurve>),
+    V2017_1(Vec<CompressedAnimationCurve>),
+}
+
+impl crate::Parse for AnimationClipMCompressedRotationCurvesVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { CompressedAnimationCurve::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { CompressedAnimationCurve::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：AnimationClipMPositionCurvesVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum AnimationClipMPositionCurvesVariant {
+    Default(Vec<Vector3Curve>),
+    V2017_1(Vec<Vector3Curve>),
+}
+
+impl crate::Parse for AnimationClipMPositionCurvesVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector3Curve::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector3Curve::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：AnimationClipMScaleCurvesVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum AnimationClipMScaleCurvesVariant {
+    Default(Vec<Vector3Curve>),
+    V2017_1(Vec<Vector3Curve>),
+}
+
+impl crate::Parse for AnimationClipMScaleCurvesVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector3Curve::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector3Curve::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：AnimationClipMFloatCurvesVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum AnimationClipMFloatCurvesVariant {
+    Default(Vec<FloatCurve>),
+    V2017_1(Vec<FloatCurve>),
+}
+
+impl crate::Parse for AnimationClipMFloatCurvesVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { FloatCurve::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { FloatCurve::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：AnimationClipMEulerCurvesVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum AnimationClipMEulerCurvesVariant {
+    Default(Vec<Vector3Curve>),
+    V2017_1(Vec<Vector3Curve>),
+}
+
+impl crate::Parse for AnimationClipMEulerCurvesVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector3Curve::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector3Curve::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：AnimationClipMPPtrCurvesVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum AnimationClipMPPtrCurvesVariant {
+    Default(Vec<PPtrCurve>),
+    V2017_1(Vec<PPtrCurve>),
+}
+
+impl crate::Parse for AnimationClipMPPtrCurvesVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { PPtrCurve::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { PPtrCurve::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：AnimationClipMEventsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum AnimationClipMEventsVariant {
+    Default(Vec<AnimationEvent>),
+    V2017_1(Vec<AnimationEvent>),
+}
+
+impl crate::Parse for AnimationClipMEventsVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AnimationEvent::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AnimationEvent::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -62,21 +223,21 @@ pub struct AnimationClip {
     pub m_compressed: AnimationClipMCompressedVariant,
     pub m_animation_type: Option<i32>,
     pub m_legacy: Option<bool>,
-    pub m_rotation_curves: Vec<QuaternionCurve>,
-    pub m_compressed_rotation_curves: Vec<CompressedAnimationCurve>,
+    pub m_rotation_curves: AnimationClipMRotationCurvesVariant,
+    pub m_compressed_rotation_curves: AnimationClipMCompressedRotationCurvesVariant,
     pub m_use_high_quality_curve: Option<bool>,
-    pub m_position_curves: Vec<Vector3Curve>,
-    pub m_scale_curves: Vec<Vector3Curve>,
-    pub m_float_curves: Vec<FloatCurve>,
-    pub m_euler_curves: Option<Vec<Vector3Curve>>,
+    pub m_position_curves: AnimationClipMPositionCurvesVariant,
+    pub m_scale_curves: AnimationClipMScaleCurvesVariant,
+    pub m_float_curves: AnimationClipMFloatCurvesVariant,
+    pub m_euler_curves: Option<AnimationClipMEulerCurvesVariant>,
     pub m_sample_rate: f32,
     pub m_wrap_mode: i32,
     pub m_bounds: Aabb,
-    pub m_p_ptr_curves: Option<Vec<PPtrCurve>>,
-    pub m_events: Vec<AnimationEvent>,
+    pub m_p_ptr_curves: Option<AnimationClipMPPtrCurvesVariant>,
+    pub m_events: AnimationClipMEventsVariant,
     pub m_muscle_clip_size: Option<u32>,
-    pub m_muscle_clip: Option<ClipMuscleConstant>,
-    pub m_clip_binding_constant: Option<AnimationClipMClipBindingConstantVariant>,
+    pub m_muscle_clip: Option<MuscleClipConstant>,
+    pub m_clip_binding_constant: Option<AnimationClipBindingConstant>,
     pub m_has_generic_root_transform: Option<bool>,
     pub m_has_motion_float_curves: Option<bool>,
 }
@@ -108,7 +269,6 @@ impl crate::Parse for AnimationClip {
         let mut m_has_generic_root_transform = None;
         let mut m_has_motion_float_curves = None;
             m_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_legacy = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
@@ -121,24 +281,17 @@ impl crate::Parse for AnimationClip {
             rdr.align(4)?;
         } else {
         }
-            m_rotation_curves = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { QuaternionCurve::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            m_compressed_rotation_curves = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { CompressedAnimationCurve::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_rotation_curves = Some(AnimationClipMRotationCurvesVariant::parse(rdr, ver)?);
+            m_compressed_rotation_curves = Some(AnimationClipMCompressedRotationCurvesVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            m_euler_curves = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector3Curve::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_euler_curves = Some(AnimationClipMEulerCurvesVariant::parse(rdr, ver)?);
         } else {
         }
-            m_position_curves = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector3Curve::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            m_scale_curves = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector3Curve::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            m_float_curves = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { FloatCurve::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_position_curves = Some(AnimationClipMPositionCurvesVariant::parse(rdr, ver)?);
+            m_scale_curves = Some(AnimationClipMScaleCurvesVariant::parse(rdr, ver)?);
+            m_float_curves = Some(AnimationClipMFloatCurvesVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            m_p_ptr_curves = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { PPtrCurve::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_p_ptr_curves = Some(AnimationClipMPPtrCurvesVariant::parse(rdr, ver)?);
         } else {
         }
             m_sample_rate = Some(rdr.read_f32()?);
@@ -146,25 +299,21 @@ impl crate::Parse for AnimationClip {
             m_bounds = Some(Aabb::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2018, 3, 0) {
             m_muscle_clip_size = Some(rdr.read_u32()?);
-            m_muscle_clip = Some(ClipMuscleConstant::parse(rdr, ver)?);
-            rdr.align(4)?;
-            m_clip_binding_constant = Some(AnimationClipMClipBindingConstantVariant::parse(rdr, ver)?);
+            m_muscle_clip = Some(MuscleClipConstant::parse(rdr, ver)?);
+            m_clip_binding_constant = Some(AnimationClipBindingConstant::parse(rdr, ver)?);
             m_has_generic_root_transform = Some(rdr.read_bool()?);
             m_has_motion_float_curves = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
             m_muscle_clip_size = Some(rdr.read_u32()?);
-            m_muscle_clip = Some(ClipMuscleConstant::parse(rdr, ver)?);
-            rdr.align(4)?;
-            m_clip_binding_constant = Some(AnimationClipMClipBindingConstantVariant::parse(rdr, ver)?);
+            m_muscle_clip = Some(MuscleClipConstant::parse(rdr, ver)?);
+            m_clip_binding_constant = Some(AnimationClipBindingConstant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
             m_muscle_clip_size = Some(rdr.read_u32()?);
-            m_muscle_clip = Some(ClipMuscleConstant::parse(rdr, ver)?);
-            rdr.align(4)?;
+            m_muscle_clip = Some(MuscleClipConstant::parse(rdr, ver)?);
         } else {
         }
-            m_events = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AnimationEvent::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_events = Some(AnimationClipMEventsVariant::parse(rdr, ver)?);
 
         Ok(AnimationClip {
             m_name: m_name.unwrap(),

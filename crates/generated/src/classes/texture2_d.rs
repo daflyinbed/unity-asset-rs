@@ -4,6 +4,33 @@ use crate::subclasses::gl_texture_settings::GlTextureSettings;
 use crate::subclasses::streaming_info::StreamingInfo;
 
 
+/// 版本枚举：Texture2DMNameVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum Texture2DMNameVariant {
+    Default(String),
+    V4_2(String),
+    V5_0(String),
+}
+
+impl crate::Parse for Texture2DMNameVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            let v = rdr.read_aligned_string()?;
+            Ok(Self::V5_0(v))
+        } else if *ver >= crate::UnityVersion::new(4, 2, 0) {
+            let v = rdr.read_aligned_string()?;
+            rdr.align(4)?;
+            Ok(Self::V4_2(v))
+        } else {
+            let v = rdr.read_aligned_string()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
 /// 版本枚举：Texture2DMDownscaleFallbackVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum Texture2DMDownscaleFallbackVariant {
@@ -77,7 +104,7 @@ impl crate::Parse for Texture2DMIsReadableVariant {
 }
 #[derive(Debug, Clone)]
 pub struct Texture2D {
-    pub m_name: String,
+    pub m_name: Texture2DMNameVariant,
     pub m_width: i32,
     pub m_forced_fallback_format: Option<i32>,
     pub m_is_alpha_channel_optional: Option<bool>,
@@ -138,8 +165,7 @@ impl crate::Parse for Texture2D {
         let mut image_data = None;
         let mut m_stream_data = None;
         let mut m_platform_blob = None;
-            m_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
+            m_name = Some(Texture2DMNameVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
             m_is_alpha_channel_optional = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -172,7 +198,6 @@ impl crate::Parse for Texture2D {
             m_ignore_mipmap_limit = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_mipmap_limit_group_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_streaming_mipmaps = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_streaming_mipmaps_priority = Some(rdr.read_i32()?);
@@ -223,7 +248,6 @@ impl crate::Parse for Texture2D {
             rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 3, 0) {
             m_stream_data = Some(StreamingInfo::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else {
         }
 

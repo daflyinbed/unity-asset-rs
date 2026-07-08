@@ -19,17 +19,11 @@ impl crate::Parse for RuleSetFileImporter {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_external_objects = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-        rdr.align(4)?;
         let m_used_file_i_ds = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?;
-        rdr.align(4)?;
         let m_user_data = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_asset_bundle_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_asset_bundle_variant = rdr.read_aligned_string()?;
-        rdr.align(4)?;
 
         Ok(RuleSetFileImporter {
             m_name,

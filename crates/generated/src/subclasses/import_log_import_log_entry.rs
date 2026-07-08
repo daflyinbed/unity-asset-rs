@@ -17,11 +17,9 @@ impl crate::Parse for ImportLog_ImportLogEntry {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let message = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let mode = rdr.read_i32()?;
         let line = rdr.read_i32()?;
         let file = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let object = crate::PPtr::parse(rdr, ver)?;
 
         Ok(ImportLog_ImportLogEntry {

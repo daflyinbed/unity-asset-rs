@@ -14,7 +14,6 @@ impl crate::Parse for SubstanceArchive {
         let mut m_name = None;
         let mut m_package_data = None;
             m_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2018, 1, 0) {
         } else {
             m_package_data = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);

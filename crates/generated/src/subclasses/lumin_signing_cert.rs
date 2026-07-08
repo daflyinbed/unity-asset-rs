@@ -12,7 +12,6 @@ impl crate::Parse for LuminSigningCert {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_cert_path = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_private_key_path = rdr.read_aligned_string()?;
         rdr.align(4)?;
 

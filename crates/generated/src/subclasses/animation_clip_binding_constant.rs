@@ -8,7 +8,7 @@ use crate::subclasses::generic_binding::GenericBinding;
 #[derive(Debug, Clone)]
 pub enum AnimationClipBindingConstantGenericBindingsVariant {
     Default(Vec<GenericBinding>),
-    V5_6(Vec<GenericBinding>),
+    V2017_1(Vec<GenericBinding>),
 }
 
 impl crate::Parse for AnimationClipBindingConstantGenericBindingsVariant {
@@ -16,10 +16,10 @@ impl crate::Parse for AnimationClipBindingConstantGenericBindingsVariant {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        if *ver >= crate::UnityVersion::new(5, 6, 0) {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { GenericBinding::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             rdr.align(4)?;
-            Ok(Self::V5_6(v))
+            Ok(Self::V2017_1(v))
         } else {
             let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { GenericBinding::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))

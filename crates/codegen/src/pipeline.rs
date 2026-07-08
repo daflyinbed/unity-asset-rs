@@ -35,6 +35,7 @@ pub fn run_pipeline(blob: TpkTypeTree) -> Pipeline {
 
     p00_filter_engine_types(&mut blob);
     p01_normalize_types(&mut blob);
+    crate::rename::run(&mut blob);
     p02_extract_subclasses(&blob, &mut state);
     p03_collect_pptr_targets(&blob, &mut state);
     p04_resolve_inheritance(&blob, &mut state);
@@ -352,7 +353,7 @@ fn p05_merge_fields(blob: &TpkTypeTree, state: &mut Pipeline) {
                         unity_name: f.unity_name,
                         rust_type: f.rust_type,
                         version_gate: Some(VersionGate::Always),
-                        align_after: false,
+                        align_after: f.align_after,
                         unity_meta_flag: f.meta_flag,
                     })
                     .collect();
@@ -573,6 +574,41 @@ struct FlatField {
     rust_name: String,
     rust_type: RustType,
     meta_flag: u32,
+    /// 读完后是否需要 align(4)。对 vector/map 检查 Array wrapper 子节点的 0x4000，
+    /// 对其他类型检查自身 0x4000。**不使用** 0x8000 (AnyChildUsesAlignBytes)——
+    /// 该位仅表示「某后代有 0x4000」，不代表「此字段后需要对齐」。
+    align_after: bool,
+}
+
+/// 计算字段读完后是否需要 align(4)。
+///
+/// 对齐判定与 `src/typetree/interpret.rs` 的 `walk` 保持一致：
+/// - 非容器字段（标量 / struct / PPtr / string）：检查自身 `meta_flag & 0x4000`
+/// - vector / map：检查 Array wrapper 子节点（`sub_nodes[0]`）的 `meta_flag & 0x4000`
+/// - **忽略 0x8000**（AnyChildUsesAlignBytes）：该位仅表示后代某处有对齐，
+///   不代表此字段本身需要额外对齐（如 `stringTagMap` 的 String 元素内部有对齐，
+///   但 map 本身读完后不需要 align）。
+fn compute_align_after(node: &TpkUnityNode, blob: &TpkTypeTree) -> bool {
+    let type_name = blob
+        .string_pool
+        .get(node.type_name_index as usize)
+        .map(String::as_str)
+        .unwrap_or("");
+    let nt = NodeType::classify(type_name, &node.sub_nodes);
+    match nt {
+        NodeType::Vector | NodeType::Map | NodeType::Array => {
+            // 容器字段：检查 Array wrapper 子节点的 0x4000
+            if let Some(&array_idx) = node.sub_nodes.first() {
+                blob.node_pool[array_idx as usize].meta_flag & 0x4000 != 0
+            } else {
+                false
+            }
+        }
+        _ => {
+            // 非容器字段：检查自身 0x4000
+            node.meta_flag & 0x4000 != 0
+        }
+    }
 }
 
 fn flatten_root(root_idx: usize, blob: &TpkTypeTree) -> Vec<FlatField> {
@@ -588,11 +624,13 @@ fn flatten_root(root_idx: usize, blob: &TpkTypeTree) -> Vec<FlatField> {
                 .unwrap_or_default();
             let rust_name = to_rust_field_name(&unity_name);
             let rust_type = node_to_rust_type(node, blob);
+            let align_after = compute_align_after(node, blob);
             FlatField {
                 unity_name,
                 rust_name,
                 rust_type,
                 meta_flag: node.meta_flag,
+                align_after,
             }
         })
         .collect()
@@ -775,14 +813,14 @@ fn merge_fields_across_versions(
     let mut result: Vec<EmitField> = Vec::with_capacity(all_names_ordered.len());
 
     for rust_name in &all_names_ordered {
-        // 收集该字段在所有版本里的 (version, rust_type, meta_flag)
-        let present: Vec<(UnityVersion, RustType, u32)> = versions
+        // 收集该字段在所有版本里的 (version, rust_type, align_after)
+        let present: Vec<(UnityVersion, RustType, bool)> = versions
             .iter()
             .filter_map(|(v, fields)| {
                 fields
                     .iter()
                     .find(|f| &f.rust_name == rust_name)
-                    .map(|f| (*v, f.rust_type.clone(), f.meta_flag))
+                    .map(|f| (*v, f.rust_type.clone(), f.align_after))
             })
             .collect();
 
@@ -801,10 +839,9 @@ fn merge_fields_across_versions(
         // 类型不变但 align_after 变了也要生成 VersionedEnum，
         // 否则老版本会按新版本的 align 读，多读/少读对齐字节。
         let first = &present[0];
-        let first_align = meta_to_align(first.2);
         let all_same = present
             .iter()
-            .all(|(_, t, m)| t == &first.1 && meta_to_align(*m) == first_align);
+            .all(|(_, t, a)| t == &first.1 && *a == first.2);
 
         let base_type = if all_same {
             first.1.clone()
@@ -818,7 +855,7 @@ fn merge_fields_across_versions(
             RustType::Option(Box::new(base_type))
         };
 
-        // 取最新版本的字段定义（unity_name / meta_flag）
+        // 取最新版本的字段定义（unity_name / meta_flag / align_after）
         let latest_field = versions
             .iter()
             .rev()
@@ -831,7 +868,7 @@ fn merge_fields_across_versions(
             unity_name: latest_field.unity_name.clone(),
             rust_type,
             version_gate: Some(gate),
-            align_after: false,
+            align_after: latest_field.align_after,
             unity_meta_flag: latest_field.meta_flag,
         });
     }
@@ -855,21 +892,20 @@ fn merge_fields_across_versions(
 /// 也拆成新变体——否则老版本会按新版本的 align 读，多读/少读对齐字节。
 /// 第一组 → `VersionGate::Always`；后续组 → `VersionGate::Since(该组起始版本)`。
 fn build_versioned_enum(
-    present: &[(UnityVersion, RustType, u32)],
+    present: &[(UnityVersion, RustType, bool)],
     field_name: &str,
     class_name: &str,
 ) -> RustType {
     // 按 (类型, align_after) 分组
     let mut groups: Vec<(UnityVersion, RustType, bool)> = Vec::new();
-    for (ver, ty, meta) in present {
-        let align = meta_to_align(*meta);
+    for (ver, ty, align) in present {
         if let Some(last) = groups.last()
             && last.1 == *ty
-            && last.2 == align
+            && last.2 == *align
         {
             continue; // 同 (类型, align)，合并
         }
-        groups.push((*ver, ty.clone(), align));
+        groups.push((*ver, ty.clone(), *align));
     }
 
     let pascal = field_name.to_upper_camel_case(); // m_shapes → MShapes
@@ -900,11 +936,6 @@ fn build_versioned_enum(
         name: enum_name,
         variants,
     }
-}
-
-/// meta_flag → align_after：AlignBytes (0x4000) 或 AnyChildUsesAlignBytes (0x8000)。
-fn meta_to_align(meta: u32) -> bool {
-    (meta & 0x4000) != 0 || (meta & 0x8000) != 0
 }
 
 /// 从跨版本字段列表计算 merged `own_fields` + deduped `version_layouts`。
@@ -946,7 +977,7 @@ fn merge_and_layout(
                     unity_name: f.unity_name.clone(),
                     rust_type: f.rust_type.clone(),
                     version_gate: Some(VersionGate::Always),
-                    align_after: meta_to_align(f.meta_flag),
+                    align_after: f.align_after,
                     unity_meta_flag: f.meta_flag,
                 })
                 .collect(),
@@ -957,18 +988,12 @@ fn merge_and_layout(
 }
 
 // ────────────────────────────────────────────────────────────────────
-// p06：计算对齐（meta_flag & (0x4000 | 0x8000) → align_after）
+// p06：对齐已在 p05 的 flatten_root / merge 阶段计算完毕（compute_align_after）。
+// p06 保留为 no-op 占位（管线阶段编号不变，便于和文档对照）。
 // ────────────────────────────────────────────────────────────────────
 
-fn p06_plan_alignment(state: &mut Pipeline) {
-    log::info!("p06: 计算对齐");
-    for class in state.classes.values_mut() {
-        for field in &mut class.own_fields {
-            // AlignBytes (0x4000) 或 AnyChildUsesAlignBytes (0x8000) 任一置位 → 该字段后对齐。
-            // 参考 AssetRipper SerializablePrimitive.cs:66。
-            field.align_after = meta_to_align(field.unity_meta_flag);
-        }
-    }
+fn p06_plan_alignment(_state: &mut Pipeline) {
+    log::info!("p06: 对齐已在 flatten_root 计算（no-op）");
 }
 
 // ────────────────────────────────────────────────────────────────────

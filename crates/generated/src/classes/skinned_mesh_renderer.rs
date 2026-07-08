@@ -272,7 +272,7 @@ impl crate::Parse for SkinnedMeshRendererMSortingLayerIdVariant {
 #[derive(Debug, Clone)]
 pub enum SkinnedMeshRendererMBonesVariant {
     Default(Vec<PPtr>),
-    V4_3(Vec<PPtr>),
+    V2017_1(Vec<PPtr>),
 }
 
 impl crate::Parse for SkinnedMeshRendererMBonesVariant {
@@ -280,10 +280,10 @@ impl crate::Parse for SkinnedMeshRendererMBonesVariant {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        if *ver >= crate::UnityVersion::new(4, 3, 0) {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             rdr.align(4)?;
-            Ok(Self::V4_3(v))
+            Ok(Self::V2017_1(v))
         } else {
             let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))

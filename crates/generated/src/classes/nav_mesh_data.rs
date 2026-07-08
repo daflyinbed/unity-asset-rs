@@ -11,24 +11,24 @@ use crate::subclasses::quaternionf::Quaternionf;
 use crate::subclasses::vector3f::Vector3f;
 
 
-/// 版本枚举：NavMeshDataMNavMeshBuildSettingsVariant 的类型跨版本变化。
+/// 版本枚举：NavMeshDataMNavMeshTilesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
-pub enum NavMeshDataMNavMeshBuildSettingsVariant {
-    Default(Box<NavMeshBuildSettings>),
-    V2017_2(Box<NavMeshBuildSettings>),
+pub enum NavMeshDataMNavMeshTilesVariant {
+    Default(Vec<NavMeshTileData>),
+    V2017_1(Vec<NavMeshTileData>),
 }
 
-impl crate::Parse for NavMeshDataMNavMeshBuildSettingsVariant {
+impl crate::Parse for NavMeshDataMNavMeshTilesVariant {
     fn parse<R: crate::EndianReader>(
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            let v = ( { Ok(Box::new(NavMeshBuildSettings::parse(rdr, ver)?)) } )?;
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { NavMeshTileData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             rdr.align(4)?;
-            Ok(Self::V2017_2(v))
+            Ok(Self::V2017_1(v))
         } else {
-            let v = ( { Ok(Box::new(NavMeshBuildSettings::parse(rdr, ver)?)) } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { NavMeshTileData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -105,9 +105,9 @@ impl crate::Parse for NavMeshDataMOffMeshLinksVariant {
 #[derive(Debug, Clone)]
 pub struct NavMeshData {
     pub m_name: String,
-    pub m_nav_mesh_tiles: Vec<NavMeshTileData>,
+    pub m_nav_mesh_tiles: NavMeshDataMNavMeshTilesVariant,
     pub m_nav_mesh_params: Option<NavMeshParams>,
-    pub m_nav_mesh_build_settings: Option<NavMeshDataMNavMeshBuildSettingsVariant>,
+    pub m_nav_mesh_build_settings: Option<NavMeshBuildSettings>,
     pub m_heightmaps: NavMeshDataMHeightmapsVariant,
     pub m_height_meshes: NavMeshDataMHeightMeshesVariant,
     pub m_off_mesh_links: NavMeshDataMOffMeshLinksVariant,
@@ -134,11 +134,9 @@ impl crate::Parse for NavMeshData {
         let mut m_position = None;
         let mut m_agent_type_id = None;
             m_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
-            m_nav_mesh_tiles = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { NavMeshTileData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_nav_mesh_tiles = Some(NavMeshDataMNavMeshTilesVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            m_nav_mesh_build_settings = Some(NavMeshDataMNavMeshBuildSettingsVariant::parse(rdr, ver)?);
+            m_nav_mesh_build_settings = Some(NavMeshBuildSettings::parse(rdr, ver)?);
         } else {
             m_nav_mesh_params = Some(NavMeshParams::parse(rdr, ver)?);
         }

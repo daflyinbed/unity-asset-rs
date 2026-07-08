@@ -16,13 +16,9 @@ impl crate::Parse for SerializedStencilOp {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let pass = SerializedShaderFloatValue::parse(rdr, ver)?;
-        rdr.align(4)?;
         let fail = SerializedShaderFloatValue::parse(rdr, ver)?;
-        rdr.align(4)?;
         let z_fail = SerializedShaderFloatValue::parse(rdr, ver)?;
-        rdr.align(4)?;
         let comp = SerializedShaderFloatValue::parse(rdr, ver)?;
-        rdr.align(4)?;
 
         Ok(SerializedStencilOp {
             pass,

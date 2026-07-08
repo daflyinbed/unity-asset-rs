@@ -14,11 +14,8 @@ impl crate::Parse for ExtensionPropertyValue {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let plugin_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let extension_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let property_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let property_value = rdr.read_f32()?;
 
         Ok(ExtensionPropertyValue {

@@ -17,7 +17,6 @@ impl crate::Parse for D3D12DeviceFilterLists {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_allow_filter_list = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { D3D12DeviceFilterData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
         rdr.align(4)?;
         let m_deny_filter_list = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { D3D12DeviceFilterData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;

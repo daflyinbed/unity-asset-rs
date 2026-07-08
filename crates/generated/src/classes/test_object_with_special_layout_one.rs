@@ -14,9 +14,7 @@ impl crate::Parse for TestObjectWithSpecialLayoutOne {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let different_layout = LayoutDataOne::parse(rdr, ver)?;
-        rdr.align(4)?;
         let same_layout = LayoutDataOne::parse(rdr, ver)?;
-        rdr.align(4)?;
 
         Ok(TestObjectWithSpecialLayoutOne {
             different_layout,

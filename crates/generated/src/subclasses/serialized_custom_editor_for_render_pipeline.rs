@@ -12,9 +12,7 @@ impl crate::Parse for SerializedCustomEditorForRenderPipeline {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let custom_editor_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let render_pipeline_type = rdr.read_aligned_string()?;
-        rdr.align(4)?;
 
         Ok(SerializedCustomEditorForRenderPipeline {
             custom_editor_name,

@@ -13,7 +13,6 @@ impl crate::Parse for BuildTargetGroupLightmapSettings {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_build_target = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_texture_streaming_enabled = rdr.read_bool()?;
         rdr.align(4)?;
         let m_texture_streaming_priority = rdr.read_i32()?;

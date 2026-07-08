@@ -1,7 +1,7 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
-use crate::subclasses::color_rgba::ColorRgba;
+use crate::subclasses::color_rgba32::ColorRgba32;
 use crate::subclasses::hash128::Hash128;
 use crate::subclasses::vector4f::Vector4f;
 
@@ -156,7 +156,7 @@ pub struct Terrain {
     pub m_reflection_probe_usage: i32,
     pub m_material_type: Option<i32>,
     pub m_static_shadow_caster: Option<bool>,
-    pub m_legacy_specular: Option<ColorRgba>,
+    pub m_legacy_specular: Option<ColorRgba32>,
     pub m_material_template: PPtr,
     pub m_ignore_quality_settings: Option<bool>,
     pub m_legacy_shininess: Option<f32>,
@@ -270,11 +270,11 @@ impl crate::Parse for Terrain {
         if *ver >= crate::UnityVersion::new(2019, 2, 0) {
         } else if *ver >= crate::UnityVersion::new(5, 0, 1) {
             m_material_type = Some(rdr.read_i32()?);
-            m_legacy_specular = Some(ColorRgba::parse(rdr, ver)?);
+            m_legacy_specular = Some(ColorRgba32::parse(rdr, ver)?);
             m_legacy_shininess = Some(rdr.read_f32()?);
         } else {
             m_material_type = Some(rdr.read_i32()?);
-            m_legacy_specular = Some(ColorRgba::parse(rdr, ver)?);
+            m_legacy_specular = Some(ColorRgba32::parse(rdr, ver)?);
             m_legacy_shininess = Some(rdr.read_f32()?);
             m_use_default_smoothness = Some(rdr.read_bool()?);
             rdr.align(4)?;

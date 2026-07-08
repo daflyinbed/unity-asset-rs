@@ -18,16 +18,13 @@ impl crate::Parse for VersionControlSettings {
         let mut m_collab_editor_settings = None;
         let mut m_track_packages_outside_project = None;
             m_mode = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(6000, 0, 0) {
             m_track_packages_outside_project = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2023, 1, 0) {
             m_collab_editor_settings = Some(CollabEditorSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_track_packages_outside_project = Some(rdr.read_bool()?);
         } else {
             m_collab_editor_settings = Some(CollabEditorSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
         }
 
         Ok(VersionControlSettings {

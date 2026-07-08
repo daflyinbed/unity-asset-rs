@@ -13,7 +13,6 @@ impl crate::Parse for BuildTargetGraphicsApIs {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_build_target = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_ap_is = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
         let m_automatic = rdr.read_bool()?;
         rdr.align(4)?;

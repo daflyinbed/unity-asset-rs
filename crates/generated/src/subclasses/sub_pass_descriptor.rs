@@ -15,9 +15,7 @@ impl crate::Parse for SubPassDescriptor {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let inputs = AttachmentIndexArray::parse(rdr, ver)?;
-        rdr.align(4)?;
         let color_outputs = AttachmentIndexArray::parse(rdr, ver)?;
-        rdr.align(4)?;
         let flags = rdr.read_i32()?;
 
         Ok(SubPassDescriptor {

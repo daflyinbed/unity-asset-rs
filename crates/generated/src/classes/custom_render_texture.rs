@@ -1,7 +1,7 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
-use crate::subclasses::color_rgba::ColorRgba;
+use crate::subclasses::color_rgb_af::ColorRgbAf;
 use crate::subclasses::gl_texture_settings::GlTextureSettings;
 use crate::subclasses::update_zone_info::UpdateZoneInfo;
 
@@ -115,6 +115,29 @@ impl crate::Parse for CustomRenderTextureMEnableCompatibleFormatVariant {
         }
     }
 }
+
+/// 版本枚举：CustomRenderTextureMUpdateZonesVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum CustomRenderTextureMUpdateZonesVariant {
+    Default(Vec<UpdateZoneInfo>),
+    V2017_1(Vec<UpdateZoneInfo>),
+}
+
+impl crate::Parse for CustomRenderTextureMUpdateZonesVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { UpdateZoneInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { UpdateZoneInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct CustomRenderTexture {
     pub m_name: String,
@@ -141,7 +164,7 @@ pub struct CustomRenderTexture {
     pub m_init_source: i32,
     pub m_enable_compatible_format: Option<CustomRenderTextureMEnableCompatibleFormatVariant>,
     pub m_init_material: PPtr,
-    pub m_init_color: ColorRgba,
+    pub m_init_color: ColorRgbAf,
     pub m_enable_random_write: Option<bool>,
     pub m_init_texture: PPtr,
     pub m_update_mode: i32,
@@ -149,7 +172,7 @@ pub struct CustomRenderTexture {
     pub m_update_zone_space: i32,
     pub m_shadow_sampling_mode: Option<i32>,
     pub m_current_update_zone_space: i32,
-    pub m_update_zones: Vec<UpdateZoneInfo>,
+    pub m_update_zones: CustomRenderTextureMUpdateZonesVariant,
     pub m_update_period: f32,
     pub m_shader_pass: u32,
     pub m_cubemap_face_mask: u32,
@@ -201,7 +224,6 @@ impl crate::Parse for CustomRenderTexture {
         let mut m_double_buffered = None;
         let mut m_wrap_update_zones = None;
             m_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
             m_is_alpha_channel_optional = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -283,14 +305,13 @@ impl crate::Parse for CustomRenderTexture {
             m_material = Some(crate::PPtr::parse(rdr, ver)?);
             m_init_source = Some(rdr.read_i32()?);
             m_init_material = Some(crate::PPtr::parse(rdr, ver)?);
-            m_init_color = Some(ColorRgba::parse(rdr, ver)?);
+            m_init_color = Some(ColorRgbAf::parse(rdr, ver)?);
             m_init_texture = Some(crate::PPtr::parse(rdr, ver)?);
             m_update_mode = Some(rdr.read_i32()?);
             m_initialization_mode = Some(rdr.read_i32()?);
             m_update_zone_space = Some(rdr.read_i32()?);
             m_current_update_zone_space = Some(rdr.read_i32()?);
-            m_update_zones = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { UpdateZoneInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_update_zones = Some(CustomRenderTextureMUpdateZonesVariant::parse(rdr, ver)?);
             m_update_period = Some(rdr.read_f32()?);
             rdr.align(4)?;
             m_shader_pass = Some(rdr.read_u32()?);

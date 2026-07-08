@@ -97,7 +97,6 @@ impl crate::Parse for Texture2DArray {
         let mut m_ignore_mipmap_limit = None;
         let mut m_mipmap_limit_group_name = None;
             m_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
             m_is_alpha_channel_optional = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -145,14 +144,12 @@ impl crate::Parse for Texture2DArray {
             m_ignore_mipmap_limit = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_mipmap_limit_group_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else {
         }
             image_data = Some(( { let n = rdr.read_i32()? as usize; rdr.read_bytes(n) } )?);
             rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
             m_stream_data = Some(StreamingInfo::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else {
         }
 

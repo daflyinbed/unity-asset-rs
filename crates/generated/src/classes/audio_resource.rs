@@ -11,7 +11,6 @@ impl crate::Parse for AudioResource {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
 
         Ok(AudioResource {
             m_name,

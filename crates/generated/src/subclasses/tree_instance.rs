@@ -1,6 +1,6 @@
 //! 自动生成。请勿手动修改。
 
-use crate::subclasses::color_rgba::ColorRgba;
+use crate::subclasses::color_rgba32::ColorRgba32;
 use crate::subclasses::vector3f::Vector3f;
 
 #[derive(Debug, Clone)]
@@ -8,9 +8,9 @@ pub struct TreeInstance {
     pub position: Vector3f,
     pub width_scale: f32,
     pub height_scale: f32,
-    pub color: ColorRgba,
+    pub color: ColorRgba32,
     pub rotation: Option<f32>,
-    pub lightmap_color: ColorRgba,
+    pub lightmap_color: ColorRgba32,
     pub index: i32,
 }
 
@@ -33,8 +33,8 @@ impl crate::Parse for TreeInstance {
             rotation = Some(rdr.read_f32()?);
         } else {
         }
-            color = Some(ColorRgba::parse(rdr, ver)?);
-            lightmap_color = Some(ColorRgba::parse(rdr, ver)?);
+            color = Some(ColorRgba32::parse(rdr, ver)?);
+            lightmap_color = Some(ColorRgba32::parse(rdr, ver)?);
             index = Some(rdr.read_i32()?);
 
         Ok(TreeInstance {

@@ -103,13 +103,10 @@ impl crate::Parse for LibraryRepresentation {
         let mut flags = None;
         let mut local_identifier = None;
             name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             thumbnail = Some(Image::parse(rdr, ver)?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 1, 0) {
             guid = Some(Guid::parse(rdr, ver)?);
             path = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             local_identifier = Some(rdr.read_i64()?);
         } else {
             object = Some(LibraryRepresentationObjectVariant::parse(rdr, ver)?);
@@ -120,7 +117,6 @@ impl crate::Parse for LibraryRepresentation {
         } else {
         }
             script_class_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
 
         Ok(LibraryRepresentation {
             name: name.unwrap(),

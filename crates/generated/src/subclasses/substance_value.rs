@@ -23,9 +23,7 @@ impl crate::Parse for SubstanceValue {
         let scalar_3 = rdr.read_f32()?;
         let texture = crate::PPtr::parse(rdr, ver)?;
         let stringvalue = if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            let v = rdr.read_aligned_string()?;
-            rdr.align(4)?;
-            Some(v)
+            Some(rdr.read_aligned_string()?)
         } else {
             None
         };

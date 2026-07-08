@@ -19,11 +19,55 @@ impl crate::Parse for ComputeShaderKernelNameVariant {
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
             let v = rdr.read_aligned_string()?;
-            rdr.align(4)?;
             Ok(Self::V5_6(v))
         } else {
             let v = ( { Ok(Box::new(FastPropertyName::parse(rdr, ver)?)) } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：ComputeShaderKernelCbsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum ComputeShaderKernelCbsVariant {
+    Default(Vec<ComputeShaderResource>),
+    V2017_1(Vec<ComputeShaderResource>),
+}
+
+impl crate::Parse for ComputeShaderKernelCbsVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderResource::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderResource::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：ComputeShaderKernelTexturesVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum ComputeShaderKernelTexturesVariant {
+    Default(Vec<ComputeShaderResource>),
+    V2017_1(Vec<ComputeShaderResource>),
+}
+
+impl crate::Parse for ComputeShaderKernelTexturesVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderResource::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderResource::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -51,15 +95,61 @@ impl crate::Parse for ComputeShaderKernelBuiltinSamplersVariant {
         }
     }
 }
+
+/// 版本枚举：ComputeShaderKernelInBuffersVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum ComputeShaderKernelInBuffersVariant {
+    Default(Vec<ComputeShaderResource>),
+    V2017_1(Vec<ComputeShaderResource>),
+}
+
+impl crate::Parse for ComputeShaderKernelInBuffersVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderResource::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderResource::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：ComputeShaderKernelOutBuffersVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum ComputeShaderKernelOutBuffersVariant {
+    Default(Vec<ComputeShaderResource>),
+    V2017_1(Vec<ComputeShaderResource>),
+}
+
+impl crate::Parse for ComputeShaderKernelOutBuffersVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderResource::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderResource::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct ComputeShaderKernel {
     pub name: Option<ComputeShaderKernelNameVariant>,
     pub cb_variant_indices: Option<Vec<u32>>,
-    pub cbs: Vec<ComputeShaderResource>,
-    pub textures: Vec<ComputeShaderResource>,
+    pub cbs: ComputeShaderKernelCbsVariant,
+    pub textures: ComputeShaderKernelTexturesVariant,
     pub builtin_samplers: ComputeShaderKernelBuiltinSamplersVariant,
-    pub in_buffers: Vec<ComputeShaderResource>,
-    pub out_buffers: Vec<ComputeShaderResource>,
+    pub in_buffers: ComputeShaderKernelInBuffersVariant,
+    pub out_buffers: ComputeShaderKernelOutBuffersVariant,
     pub code: Vec<u8>,
     pub thread_group_size: Option<Vec<u32>>,
     pub requirements: Option<i64>,
@@ -86,15 +176,11 @@ impl crate::Parse for ComputeShaderKernel {
         } else {
             name = Some(ComputeShaderKernelNameVariant::parse(rdr, ver)?);
         }
-            cbs = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderResource::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            textures = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderResource::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            cbs = Some(ComputeShaderKernelCbsVariant::parse(rdr, ver)?);
+            textures = Some(ComputeShaderKernelTexturesVariant::parse(rdr, ver)?);
             builtin_samplers = Some(ComputeShaderKernelBuiltinSamplersVariant::parse(rdr, ver)?);
-            in_buffers = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderResource::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            out_buffers = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderResource::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            in_buffers = Some(ComputeShaderKernelInBuffersVariant::parse(rdr, ver)?);
+            out_buffers = Some(ComputeShaderKernelOutBuffersVariant::parse(rdr, ver)?);
             code = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2021, 1, 0) {

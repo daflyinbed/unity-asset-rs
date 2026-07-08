@@ -14,7 +14,6 @@ impl crate::Parse for VfxExposedMapping {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mapping = VfxMapping::parse(rdr, ver)?;
-        rdr.align(4)?;
         let space = rdr.read_i32()?;
 
         Ok(VfxExposedMapping {

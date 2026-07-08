@@ -12,9 +12,7 @@ impl crate::Parse for BlockShaderSourceArtifact {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let shader_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let shader_source = rdr.read_aligned_string()?;
-        rdr.align(4)?;
 
         Ok(BlockShaderSourceArtifact {
             shader_name,

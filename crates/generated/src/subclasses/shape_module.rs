@@ -1,7 +1,7 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
-use crate::subclasses::multi_mode_parameter::MultiModeParameter;
+use crate::subclasses::multi_mode_parameter_mesh_spawn::MultiModeParameter_MeshSpawn;
 use crate::subclasses::vector3f::Vector3f;
 
 
@@ -9,7 +9,7 @@ use crate::subclasses::vector3f::Vector3f;
 #[derive(Debug, Clone)]
 pub enum ShapeModuleRadiusVariant {
     Default(f32),
-    V5_6(Box<MultiModeParameter>),
+    V5_6(Box<MultiModeParameter_MeshSpawn>),
 }
 
 impl crate::Parse for ShapeModuleRadiusVariant {
@@ -18,8 +18,7 @@ impl crate::Parse for ShapeModuleRadiusVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            let v = ( { Ok(Box::new(MultiModeParameter::parse(rdr, ver)?)) } )?;
-            rdr.align(4)?;
+            let v = ( { Ok(Box::new(MultiModeParameter_MeshSpawn::parse(rdr, ver)?)) } )?;
             Ok(Self::V5_6(v))
         } else {
             let v = rdr.read_f32()?;
@@ -32,7 +31,7 @@ impl crate::Parse for ShapeModuleRadiusVariant {
 #[derive(Debug, Clone)]
 pub enum ShapeModuleArcVariant {
     Default(f32),
-    V5_6(Box<MultiModeParameter>),
+    V5_6(Box<MultiModeParameter_MeshSpawn>),
 }
 
 impl crate::Parse for ShapeModuleArcVariant {
@@ -41,8 +40,7 @@ impl crate::Parse for ShapeModuleArcVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            let v = ( { Ok(Box::new(MultiModeParameter::parse(rdr, ver)?)) } )?;
-            rdr.align(4)?;
+            let v = ( { Ok(Box::new(MultiModeParameter_MeshSpawn::parse(rdr, ver)?)) } )?;
             Ok(Self::V5_6(v))
         } else {
             let v = rdr.read_f32()?;
@@ -74,7 +72,7 @@ pub struct ShapeModule {
     pub m_mesh_material_index: Option<i32>,
     pub m_skinned_mesh_renderer: Option<PPtr>,
     pub m_mesh_normal_offset: Option<f32>,
-    pub m_mesh_spawn: Option<MultiModeParameter>,
+    pub m_mesh_spawn: Option<MultiModeParameter_MeshSpawn>,
     pub m_use_mesh_material_index: Option<bool>,
     pub m_mesh_scale: Option<f32>,
     pub m_use_mesh_colors: Option<bool>,
@@ -180,8 +178,7 @@ impl crate::Parse for ShapeModule {
         if *ver >= crate::UnityVersion::new(2018, 3, 0) {
             m_mesh_material_index = Some(rdr.read_i32()?);
             m_mesh_normal_offset = Some(rdr.read_f32()?);
-            m_mesh_spawn = Some(MultiModeParameter::parse(rdr, ver)?);
-            rdr.align(4)?;
+            m_mesh_spawn = Some(MultiModeParameter_MeshSpawn::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
             m_mesh_material_index = Some(rdr.read_i32()?);
             m_mesh_normal_offset = Some(rdr.read_f32()?);

@@ -26,7 +26,6 @@ impl crate::Parse for VideoClip {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_original_path = rdr.read_aligned_string()?;
         rdr.align(4)?;
         let m_proxy_width = rdr.read_u32()?;
@@ -37,13 +36,9 @@ impl crate::Parse for VideoClip {
         let m_frame_count = rdr.read_u64()?;
         let m_format = rdr.read_i32()?;
         let m_audio_channel_count = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u16() }).collect::<Result<Vec<_>, _>>() } )?;
-        rdr.align(4)?;
         let m_audio_sample_rate = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
-        rdr.align(4)?;
         let m_audio_language = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
-        rdr.align(4)?;
         let m_external_resources = StreamedResource::parse(rdr, ver)?;
-        rdr.align(4)?;
         let m_has_split_alpha = rdr.read_bool()?;
 
         Ok(VideoClip {

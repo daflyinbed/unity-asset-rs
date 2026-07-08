@@ -2,7 +2,7 @@
 
 use crate::PPtr;
 use crate::subclasses::aabb::Aabb;
-use crate::subclasses::color_rgba::ColorRgba;
+use crate::subclasses::color_rgb_af::ColorRgbAf;
 use crate::subclasses::static_batch_info::StaticBatchInfo;
 use crate::subclasses::vector4f::Vector4f;
 
@@ -153,7 +153,7 @@ pub struct SpriteShapeRenderer {
     pub m_sorting_layer_id: i32,
     pub m_sorting_layer: i16,
     pub m_sorting_order: i16,
-    pub m_color: ColorRgba,
+    pub m_color: ColorRgbAf,
     pub m_mask_interaction: SpriteShapeRendererMMaskInteractionVariant,
     pub m_shape_texture: PPtr,
     pub m_sprites: Vec<PPtr>,
@@ -265,11 +265,11 @@ impl crate::Parse for SpriteShapeRenderer {
             rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(6000, 3, 0) {
         } else {
-            m_color = Some(ColorRgba::parse(rdr, ver)?);
+            m_color = Some(ColorRgbAf::parse(rdr, ver)?);
         }
             m_mask_interaction = Some(SpriteShapeRendererMMaskInteractionVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 3, 0) {
-            m_color = Some(ColorRgba::parse(rdr, ver)?);
+            m_color = Some(ColorRgbAf::parse(rdr, ver)?);
         } else {
         }
             m_shape_texture = Some(crate::PPtr::parse(rdr, ver)?);

@@ -1,63 +1,31 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
-use crate::subclasses::color_rgba::ColorRgba;
+use crate::subclasses::color_rgb_af::ColorRgbAf;
 use crate::subclasses::int3_storage::int3_storage;
 use crate::subclasses::matrix4x4f::Matrix4x4f;
 use crate::subclasses::tile::Tile;
 use crate::subclasses::tile_animation_data::TileAnimationData;
-use crate::subclasses::tilemap_ref_counted_data::TilemapRefCountedData;
+use crate::subclasses::tilemap_ref_counted_data_color_rgb_af::TilemapRefCountedData_ColorRgbAf;
+use crate::subclasses::tilemap_ref_counted_data_matrix4x4f::TilemapRefCountedData_Matrix4x4f;
+use crate::subclasses::tilemap_ref_counted_data_p_ptr_game_object_::TilemapRefCountedData_PPtr_GameObject_;
+use crate::subclasses::tilemap_ref_counted_data_p_ptr_object_::TilemapRefCountedData_PPtr_Object_;
+use crate::subclasses::tilemap_ref_counted_data_p_ptr_sprite_::TilemapRefCountedData_PPtr_Sprite_;
 use crate::subclasses::vector3f::Vector3f;
 
-
-/// 版本枚举：TilemapMTilesVariant 的类型跨版本变化。
-#[derive(Debug, Clone)]
-pub enum TilemapMTilesVariant {
-    Default(Vec<(int3_storage, Tile)>),
-    V2019_3(Vec<(int3_storage, Tile)>),
-    V2019_4_24(Vec<(int3_storage, Tile)>),
-    V2020_1(Vec<(int3_storage, Tile)>),
-    V2020_1_8(Vec<(int3_storage, Tile)>),
-}
-
-impl crate::Parse for TilemapMTilesVariant {
-    fn parse<R: crate::EndianReader>(
-        rdr: &mut R,
-        ver: &crate::UnityVersion,
-    ) -> Result<Self, R::Error> {
-        if *ver >= crate::UnityVersion::new(2020, 1, 8) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = int3_storage::parse(rdr, ver)?; let b = Tile::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-            Ok(Self::V2020_1_8(v))
-        } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = int3_storage::parse(rdr, ver)?; let b = Tile::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-            rdr.align(4)?;
-            Ok(Self::V2020_1(v))
-        } else if *ver >= crate::UnityVersion::new(2019, 4, 24) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = int3_storage::parse(rdr, ver)?; let b = Tile::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-            Ok(Self::V2019_4_24(v))
-        } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = int3_storage::parse(rdr, ver)?; let b = Tile::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-            rdr.align(4)?;
-            Ok(Self::V2019_3(v))
-        } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = int3_storage::parse(rdr, ver)?; let b = Tile::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-            Ok(Self::Default(v))
-        }
-    }
-}
 #[derive(Debug, Clone)]
 pub struct Tilemap {
     pub m_game_object: PPtr,
     pub m_enabled: u8,
-    pub m_tiles: TilemapMTilesVariant,
+    pub m_tiles: Vec<(int3_storage, Tile)>,
     pub m_animated_tiles: Vec<(int3_storage, TileAnimationData)>,
-    pub m_tile_asset_array: Vec<TilemapRefCountedData>,
-    pub m_tile_sprite_array: Vec<TilemapRefCountedData>,
-    pub m_tile_matrix_array: Vec<TilemapRefCountedData>,
-    pub m_tile_color_array: Vec<TilemapRefCountedData>,
+    pub m_tile_asset_array: Vec<TilemapRefCountedData_PPtr_Object_>,
+    pub m_tile_sprite_array: Vec<TilemapRefCountedData_PPtr_Sprite_>,
+    pub m_tile_matrix_array: Vec<TilemapRefCountedData_Matrix4x4f>,
+    pub m_tile_color_array: Vec<TilemapRefCountedData_ColorRgbAf>,
     pub m_animation_frame_rate: f32,
-    pub m_tile_object_to_instantiate_array: Option<Vec<TilemapRefCountedData>>,
-    pub m_color: ColorRgba,
+    pub m_tile_object_to_instantiate_array: Option<Vec<TilemapRefCountedData_PPtr_GameObject_>>,
+    pub m_color: ColorRgbAf,
     pub m_origin: int3_storage,
     pub m_size: int3_storage,
     pub m_tile_anchor: Vector3f,
@@ -89,24 +57,23 @@ impl crate::Parse for Tilemap {
             m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
             m_enabled = Some(rdr.read_u8()?);
             rdr.align(4)?;
-            m_tiles = Some(TilemapMTilesVariant::parse(rdr, ver)?);
+            m_tiles = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = int3_storage::parse(rdr, ver)?; let b = Tile::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             m_animated_tiles = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = int3_storage::parse(rdr, ver)?; let b = TileAnimationData::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_tile_asset_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TilemapRefCountedData_PPtr_Object_::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
-            m_tile_asset_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TilemapRefCountedData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_tile_sprite_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TilemapRefCountedData_PPtr_Sprite_::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
-            m_tile_sprite_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TilemapRefCountedData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_tile_matrix_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TilemapRefCountedData_Matrix4x4f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
-            m_tile_matrix_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TilemapRefCountedData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            m_tile_color_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TilemapRefCountedData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_tile_color_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TilemapRefCountedData_ColorRgbAf::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            m_tile_object_to_instantiate_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TilemapRefCountedData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_tile_object_to_instantiate_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TilemapRefCountedData_PPtr_GameObject_::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
         } else {
         }
             m_animation_frame_rate = Some(rdr.read_f32()?);
-            m_color = Some(ColorRgba::parse(rdr, ver)?);
+            m_color = Some(ColorRgbAf::parse(rdr, ver)?);
             m_origin = Some(int3_storage::parse(rdr, ver)?);
             m_size = Some(int3_storage::parse(rdr, ver)?);
             m_tile_anchor = Some(Vector3f::parse(rdr, ver)?);

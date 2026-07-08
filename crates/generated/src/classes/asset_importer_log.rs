@@ -39,7 +39,6 @@ impl crate::Parse for AssetImporterLog {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_logs = AssetImporterLogMLogsVariant::parse(rdr, ver)?;
 
         Ok(AssetImporterLog {

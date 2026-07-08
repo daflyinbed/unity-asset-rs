@@ -3,6 +3,52 @@
 use crate::subclasses::annotation::Annotation;
 
 
+/// 版本枚举：AnnotationManagerMCurrentPresetMAnnotationListVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum AnnotationManagerMCurrentPresetMAnnotationListVariant {
+    Default(Vec<Annotation>),
+    V2017_1(Vec<Annotation>),
+}
+
+impl crate::Parse for AnnotationManagerMCurrentPresetMAnnotationListVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Annotation::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Annotation::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：AnnotationManagerMRecentlyChangedVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum AnnotationManagerMRecentlyChangedVariant {
+    Default(Vec<Annotation>),
+    V2017_1(Vec<Annotation>),
+}
+
+impl crate::Parse for AnnotationManagerMRecentlyChangedVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Annotation::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Annotation::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
 /// 版本枚举：AnnotationManagerMUse3dGizmosVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AnnotationManagerMUse3dGizmosVariant {
@@ -73,8 +119,8 @@ impl crate::Parse for AnnotationManagerMShowSelectionWireVariant {
 }
 #[derive(Debug, Clone)]
 pub struct AnnotationManager {
-    pub m_current_preset_m_annotation_list: Vec<Annotation>,
-    pub m_recently_changed: Vec<Annotation>,
+    pub m_current_preset_m_annotation_list: AnnotationManagerMCurrentPresetMAnnotationListVariant,
+    pub m_recently_changed: AnnotationManagerMRecentlyChangedVariant,
     pub m_icon_size: Option<f32>,
     pub m_world_icon_size: Option<f32>,
     pub m_use3d_gizmos: Option<AnnotationManagerMUse3dGizmosVariant>,
@@ -102,10 +148,8 @@ impl crate::Parse for AnnotationManager {
         let mut m_show_selection_outline = None;
         let mut m_show_selection_wire = None;
         let mut m_show_lod_labels = None;
-            m_current_preset_m_annotation_list = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Annotation::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            m_recently_changed = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Annotation::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_current_preset_m_annotation_list = Some(AnnotationManagerMCurrentPresetMAnnotationListVariant::parse(rdr, ver)?);
+            m_recently_changed = Some(AnnotationManagerMRecentlyChangedVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 4, 0) {
             m_world_icon_size = Some(rdr.read_f32()?);
             m_fade_gizmo_size = Some(rdr.read_f32()?);

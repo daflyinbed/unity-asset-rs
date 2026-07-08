@@ -26,12 +26,9 @@ impl crate::Parse for StateMachineConstant {
         let mut m_synchronized_layer_count = None;
         let mut m_evaluate_transitions_on_start = None;
             m_state_constant_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { OffsetPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_any_state_transition_constant_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { OffsetPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_selector_state_constant_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { OffsetPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
         } else {
         }
             m_default_state = Some(rdr.read_u32()?);

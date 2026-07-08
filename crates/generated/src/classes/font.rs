@@ -31,7 +31,7 @@ impl crate::Parse for FontMTextureVariant {
 #[derive(Debug, Clone)]
 pub enum FontMCharacterRectsVariant {
     Default(Vec<CharacterInfo>),
-    V4_0(Vec<CharacterInfo>),
+    V2017_1(Vec<CharacterInfo>),
 }
 
 impl crate::Parse for FontMCharacterRectsVariant {
@@ -39,12 +39,81 @@ impl crate::Parse for FontMCharacterRectsVariant {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        if *ver >= crate::UnityVersion::new(4, 0, 0) {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { CharacterInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             rdr.align(4)?;
-            Ok(Self::V4_0(v))
+            Ok(Self::V2017_1(v))
         } else {
             let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { CharacterInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：FontMFontDataVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum FontMFontDataVariant {
+    Default(Vec<u8>),
+    V2017_1(Vec<u8>),
+}
+
+impl crate::Parse for FontMFontDataVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：FontMFontNamesVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum FontMFontNamesVariant {
+    Default(Vec<String>),
+    V2017_1(Vec<String>),
+}
+
+impl crate::Parse for FontMFontNamesVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：FontMFallbackFontsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum FontMFallbackFontsVariant {
+    Default(Vec<PPtr>),
+    V2017_1(Vec<PPtr>),
+}
+
+impl crate::Parse for FontMFallbackFontsVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -69,12 +138,12 @@ pub struct Font {
     pub m_kerning_values: Vec<((u16, u16), f32)>,
     pub m_pixel_scale: Option<f32>,
     pub m_grid_font: Option<bool>,
-    pub m_font_data: Vec<u8>,
+    pub m_font_data: FontMFontDataVariant,
     pub m_ascent: f32,
     pub m_default_style: u32,
     pub m_descent: Option<f32>,
-    pub m_font_names: Vec<String>,
-    pub m_fallback_fonts: Option<Vec<PPtr>>,
+    pub m_font_names: FontMFontNamesVariant,
+    pub m_fallback_fonts: Option<FontMFallbackFontsVariant>,
     pub m_font_rendering_mode: Option<i32>,
     pub m_use_legacy_bounds_calculation: Option<bool>,
     pub m_should_round_advance_value: Option<bool>,
@@ -113,7 +182,6 @@ impl crate::Parse for Font {
         let mut m_use_legacy_bounds_calculation = None;
         let mut m_should_round_advance_value = None;
             m_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
         } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
             m_ascii_start_offset = Some(rdr.read_i32()?);
@@ -161,8 +229,7 @@ impl crate::Parse for Font {
             m_grid_font = Some(rdr.read_bool()?);
             rdr.align(4)?;
         }
-            m_font_data = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_font_data = Some(FontMFontDataVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
         } else {
             m_font_size = Some(rdr.read_f32()?);
@@ -173,31 +240,25 @@ impl crate::Parse for Font {
         } else {
         }
             m_default_style = Some(rdr.read_u32()?);
-            m_font_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_font_names = Some(FontMFontNamesVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            m_fallback_fonts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_fallback_fonts = Some(FontMFallbackFontsVariant::parse(rdr, ver)?);
             m_font_rendering_mode = Some(rdr.read_i32()?);
             m_use_legacy_bounds_calculation = Some(rdr.read_bool()?);
             m_should_round_advance_value = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2017, 1, 2) {
-            m_fallback_fonts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_fallback_fonts = Some(FontMFallbackFontsVariant::parse(rdr, ver)?);
             m_font_rendering_mode = Some(rdr.read_i32()?);
             m_use_legacy_bounds_calculation = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            m_fallback_fonts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_fallback_fonts = Some(FontMFallbackFontsVariant::parse(rdr, ver)?);
             m_font_rendering_mode = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(5, 6, 5) {
-            m_fallback_fonts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_fallback_fonts = Some(FontMFallbackFontsVariant::parse(rdr, ver)?);
             m_font_rendering_mode = Some(rdr.read_i32()?);
             m_use_legacy_bounds_calculation = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            m_fallback_fonts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_fallback_fonts = Some(FontMFallbackFontsVariant::parse(rdr, ver)?);
             m_font_rendering_mode = Some(rdr.read_i32()?);
         } else {
         }

@@ -26,9 +26,7 @@ impl crate::Parse for UnityAnalyticsManager {
             m_test_mode = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_test_event_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_test_config_url = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         }
 
         Ok(UnityAnalyticsManager {

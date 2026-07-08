@@ -19,18 +19,13 @@ impl crate::Parse for SizeModule {
         let enabled = rdr.read_bool()?;
         rdr.align(4)?;
         let curve = MinMaxCurve::parse(rdr, ver)?;
-        rdr.align(4)?;
         let y = if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            let v = MinMaxCurve::parse(rdr, ver)?;
-            rdr.align(4)?;
-            Some(v)
+            Some(MinMaxCurve::parse(rdr, ver)?)
         } else {
             None
         };
         let z = if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            let v = MinMaxCurve::parse(rdr, ver)?;
-            rdr.align(4)?;
-            Some(v)
+            Some(MinMaxCurve::parse(rdr, ver)?)
         } else {
             None
         };

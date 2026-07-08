@@ -13,7 +13,6 @@ impl crate::Parse for RayTracingShaderId {
     ) -> Result<Self, R::Error> {
         let r#type = rdr.read_i32()?;
         let name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
 
         Ok(RayTracingShaderId {
             r#type,

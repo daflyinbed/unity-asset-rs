@@ -1,6 +1,6 @@
 //! 自动生成。请勿手动修改。
 
-use crate::subclasses::color_rgba::ColorRgba;
+use crate::subclasses::color_rgba32::ColorRgba32;
 use crate::subclasses::quaternionf::Quaternionf;
 use crate::subclasses::vector3f::Vector3f;
 
@@ -12,7 +12,7 @@ pub struct SpriteBone {
     pub rotation: Quaternionf,
     pub length: f32,
     pub parent_id: i32,
-    pub color: Option<ColorRgba>,
+    pub color: Option<ColorRgba32>,
 }
 
 impl crate::Parse for SpriteBone {
@@ -39,7 +39,7 @@ impl crate::Parse for SpriteBone {
             length = Some(rdr.read_f32()?);
             parent_id = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2021, 1, 0) {
-            color = Some(ColorRgba::parse(rdr, ver)?);
+            color = Some(ColorRgba32::parse(rdr, ver)?);
         } else {
         }
 

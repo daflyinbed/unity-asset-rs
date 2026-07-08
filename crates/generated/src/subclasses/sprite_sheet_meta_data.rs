@@ -9,6 +9,29 @@ use crate::subclasses::sprite_meta_data::SpriteMetaData;
 use crate::subclasses::vector2f::Vector2f;
 
 
+/// 版本枚举：SpriteSheetMetaDataMSpritesVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum SpriteSheetMetaDataMSpritesVariant {
+    Default(Vec<SpriteMetaData>),
+    V2017_1(Vec<SpriteMetaData>),
+}
+
+impl crate::Parse for SpriteSheetMetaDataMSpritesVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SpriteMetaData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SpriteMetaData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
 /// 版本枚举：SpriteSheetMetaDataMOutlineVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum SpriteSheetMetaDataMOutlineVariant {
@@ -33,7 +56,7 @@ impl crate::Parse for SpriteSheetMetaDataMOutlineVariant {
 }
 #[derive(Debug, Clone)]
 pub struct SpriteSheetMetaData {
-    pub m_sprites: Vec<SpriteMetaData>,
+    pub m_sprites: SpriteSheetMetaDataMSpritesVariant,
     pub m_outline: Option<SpriteSheetMetaDataMOutlineVariant>,
     pub m_physics_shape: Option<Vec<Vec<Vector2f>>>,
     pub m_custom_data: Option<String>,
@@ -68,18 +91,15 @@ impl crate::Parse for SpriteSheetMetaData {
         let mut m_secondary_textures = None;
         let mut m_name_file_id_table = None;
         let mut m_sprite_custom_metadata = None;
-            m_sprites = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SpriteMetaData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_sprites = Some(SpriteSheetMetaDataMSpritesVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 0, 7) {
             m_outline = Some(SpriteSheetMetaDataMOutlineVariant::parse(rdr, ver)?);
             m_custom_data = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_physics_shape = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             m_bones = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SpriteBone::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             m_sprite_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_internal_id = Some(rdr.read_i64()?);
             m_vertices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
@@ -92,19 +112,15 @@ impl crate::Parse for SpriteSheetMetaData {
             m_secondary_textures = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SecondarySpriteTexture::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             m_sprite_custom_metadata = Some(SpriteCustomMetadata::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_name_file_id_table = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i64()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2023, 3, 0) {
             m_outline = Some(SpriteSheetMetaDataMOutlineVariant::parse(rdr, ver)?);
             m_custom_data = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_physics_shape = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             m_bones = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SpriteBone::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             m_sprite_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_internal_id = Some(rdr.read_i64()?);
             m_vertices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
@@ -117,7 +133,6 @@ impl crate::Parse for SpriteSheetMetaData {
             m_secondary_textures = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SecondarySpriteTexture::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             m_name_file_id_table = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i64()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
             m_outline = Some(SpriteSheetMetaDataMOutlineVariant::parse(rdr, ver)?);
             m_physics_shape = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?);
@@ -125,7 +140,6 @@ impl crate::Parse for SpriteSheetMetaData {
             m_bones = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SpriteBone::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             m_sprite_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_internal_id = Some(rdr.read_i64()?);
             m_vertices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
@@ -138,7 +152,6 @@ impl crate::Parse for SpriteSheetMetaData {
             m_secondary_textures = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SecondarySpriteTexture::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             m_name_file_id_table = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i64()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             m_outline = Some(SpriteSheetMetaDataMOutlineVariant::parse(rdr, ver)?);
             m_physics_shape = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?);
@@ -146,7 +159,6 @@ impl crate::Parse for SpriteSheetMetaData {
             m_bones = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SpriteBone::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             m_sprite_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_internal_id = Some(rdr.read_i64()?);
             m_vertices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
@@ -165,7 +177,6 @@ impl crate::Parse for SpriteSheetMetaData {
             m_bones = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SpriteBone::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             m_sprite_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_vertices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             m_indices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);

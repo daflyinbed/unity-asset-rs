@@ -19,9 +19,7 @@ impl crate::Parse for Preset {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_target_type = PresetType::parse(rdr, ver)?;
-        rdr.align(4)?;
         let m_properties = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { PropertyModification::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
         rdr.align(4)?;
         let m_excluded_properties = if *ver >= crate::UnityVersion::new(2020, 1, 0) {
@@ -32,9 +30,7 @@ impl crate::Parse for Preset {
             None
         };
         let m_coupled_type = if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            let v = PresetType::parse(rdr, ver)?;
-            rdr.align(4)?;
-            Some(v)
+            Some(PresetType::parse(rdr, ver)?)
         } else {
             None
         };

@@ -19,7 +19,6 @@ impl crate::Parse for InitialModuleGravityModifierVariant {
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
             let v = ( { Ok(Box::new(MinMaxCurve::parse(rdr, ver)?)) } )?;
-            rdr.align(4)?;
             Ok(Self::V5_5(v))
         } else {
             let v = rdr.read_f32()?;
@@ -75,31 +74,20 @@ impl crate::Parse for InitialModule {
             enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
             start_lifetime = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             start_speed = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             start_color = Some(MinMaxGradient::parse(rdr, ver)?);
-            rdr.align(4)?;
             start_size = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
             start_size_y = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             start_size_z = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             start_rotation_x = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             start_rotation_y = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
             start_rotation_x = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             start_rotation_y = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else {
         }
             start_rotation = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2022, 1, 0) {
             randomize_rotation_direction = Some(rdr.read_f32()?);
             gravity_source = Some(rdr.read_i32()?);

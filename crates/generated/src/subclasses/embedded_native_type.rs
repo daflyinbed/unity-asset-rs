@@ -14,7 +14,6 @@ impl crate::Parse for EmbeddedNativeType {
         let m_float_array = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_f32() }).collect::<Result<Vec<_>, _>>() } )?;
         rdr.align(4)?;
         let m_string = rdr.read_aligned_string()?;
-        rdr.align(4)?;
 
         Ok(EmbeddedNativeType {
             m_float_array,

@@ -89,7 +89,6 @@ impl crate::Parse for VisualEffect {
             m_asset = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2019, 3, 0) {
             m_initial_event_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_initial_event_name_overriden = Some(rdr.read_u8()?);
             rdr.align(4)?;
         } else {
@@ -105,7 +104,6 @@ impl crate::Parse for VisualEffect {
         } else {
         }
             m_property_sheet = Some(VfxPropertySheetSerializedBase::parse(rdr, ver)?);
-            rdr.align(4)?;
 
         Ok(VisualEffect {
             m_game_object: m_game_object.unwrap(),

@@ -11,7 +11,6 @@ impl crate::Parse for EditorProjectAccess {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
 
         Ok(EditorProjectAccess {
             m_name,

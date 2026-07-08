@@ -14,7 +14,6 @@ impl crate::Parse for MeshBlendShapeChannel {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let name_hash = rdr.read_u32()?;
         let frame_index = rdr.read_i32()?;
         let frame_count = rdr.read_i32()?;

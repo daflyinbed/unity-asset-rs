@@ -4,6 +4,29 @@ use crate::PPtr;
 use crate::subclasses::vector3f::Vector3f;
 
 
+/// 版本枚举：HeightmapMHeightsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum HeightmapMHeightsVariant {
+    Default(Vec<i16>),
+    V2017_1(Vec<i16>),
+}
+
+impl crate::Parse for HeightmapMHeightsVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i16() }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i16() }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
 /// 版本枚举：HeightmapMPrecomputedErrorVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum HeightmapMPrecomputedErrorVariant {
@@ -51,7 +74,7 @@ impl crate::Parse for HeightmapMMinMaxPatchHeightsVariant {
 }
 #[derive(Debug, Clone)]
 pub struct Heightmap {
-    pub m_heights: Vec<i16>,
+    pub m_heights: HeightmapMHeightsVariant,
     pub m_precomputed_error: HeightmapMPrecomputedErrorVariant,
     pub m_holes: Option<Vec<u8>>,
     pub m_min_max_patch_heights: HeightmapMMinMaxPatchHeightsVariant,
@@ -84,8 +107,7 @@ impl crate::Parse for Heightmap {
         let mut m_levels = None;
         let mut m_resolution = None;
         let mut m_scale = None;
-            m_heights = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i16() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_heights = Some(HeightmapMHeightsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2019, 3, 0) {
             m_holes = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;

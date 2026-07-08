@@ -32,7 +32,6 @@ impl crate::Parse for OffsetPtrDataVariant {
             Ok(Self::V6000_5(v))
         } else if *ver >= crate::UnityVersion::new(6000, 2, 0) {
             let v = ( { Ok(Box::new(ValueArray::parse(rdr, ver)?)) } )?;
-            rdr.align(4)?;
             Ok(Self::V6000_2(v))
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
             let v = ( { Ok(Box::new(Clip::parse(rdr, ver)?)) } )?;
@@ -42,7 +41,6 @@ impl crate::Parse for OffsetPtrDataVariant {
             Ok(Self::V2017_3(v))
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             let v = ( { Ok(Box::new(ValueArray::parse(rdr, ver)?)) } )?;
-            rdr.align(4)?;
             Ok(Self::V2017_2(v))
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             let v = ( { Ok(Box::new(ValueArrayConstant::parse(rdr, ver)?)) } )?;
@@ -55,14 +53,12 @@ impl crate::Parse for OffsetPtrDataVariant {
             Ok(Self::V5_6(v))
         } else if *ver >= crate::UnityVersion::new(5, 3, 5) {
             let v = ( { Ok(Box::new(ValueArray::parse(rdr, ver)?)) } )?;
-            rdr.align(4)?;
             Ok(Self::V5_3_5(v))
         } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
             let v = ( { Ok(Box::new(ValueArrayConstant::parse(rdr, ver)?)) } )?;
             Ok(Self::V5_3(v))
         } else {
             let v = ( { Ok(Box::new(ValueArray::parse(rdr, ver)?)) } )?;
-            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }

@@ -25,13 +25,10 @@ impl crate::Parse for RotationModule {
             rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 3, 0) {
             x = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             y = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else {
         }
             curve = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 3, 0) {
             separate_axes = Some(rdr.read_bool()?);
             rdr.align(4)?;

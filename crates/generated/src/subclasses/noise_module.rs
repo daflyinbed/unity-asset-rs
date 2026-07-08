@@ -56,11 +56,8 @@ impl crate::Parse for NoiseModule {
         let enabled = rdr.read_bool()?;
         rdr.align(4)?;
         let strength = MinMaxCurve::parse(rdr, ver)?;
-        rdr.align(4)?;
         let strength_y = MinMaxCurve::parse(rdr, ver)?;
-        rdr.align(4)?;
         let strength_z = MinMaxCurve::parse(rdr, ver)?;
-        rdr.align(4)?;
         let separate_axes = rdr.read_bool()?;
         rdr.align(4)?;
         let frequency = rdr.read_f32()?;
@@ -71,32 +68,22 @@ impl crate::Parse for NoiseModule {
         let octave_scale = rdr.read_f32()?;
         let quality = rdr.read_i32()?;
         let scroll_speed = MinMaxCurve::parse(rdr, ver)?;
-        rdr.align(4)?;
         let remap = MinMaxCurve::parse(rdr, ver)?;
-        rdr.align(4)?;
         let remap_y = MinMaxCurve::parse(rdr, ver)?;
-        rdr.align(4)?;
         let remap_z = MinMaxCurve::parse(rdr, ver)?;
-        rdr.align(4)?;
         let remap_enabled = NoiseModuleRemapEnabledVariant::parse(rdr, ver)?;
         let position_amount = if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = MinMaxCurve::parse(rdr, ver)?;
-            rdr.align(4)?;
-            Some(v)
+            Some(MinMaxCurve::parse(rdr, ver)?)
         } else {
             None
         };
         let rotation_amount = if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = MinMaxCurve::parse(rdr, ver)?;
-            rdr.align(4)?;
-            Some(v)
+            Some(MinMaxCurve::parse(rdr, ver)?)
         } else {
             None
         };
         let size_amount = if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = MinMaxCurve::parse(rdr, ver)?;
-            rdr.align(4)?;
-            Some(v)
+            Some(MinMaxCurve::parse(rdr, ver)?)
         } else {
             None
         };

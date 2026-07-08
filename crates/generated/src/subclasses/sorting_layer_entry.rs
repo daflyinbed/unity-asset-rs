@@ -16,7 +16,6 @@ impl crate::Parse for SortingLayerEntry {
         let mut user_id = None;
         let mut unique_id = None;
             name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
         } else {
             user_id = Some(rdr.read_u32()?);

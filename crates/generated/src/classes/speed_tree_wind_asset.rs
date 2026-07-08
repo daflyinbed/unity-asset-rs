@@ -24,7 +24,6 @@ impl crate::Parse for SpeedTreeWindAsset {
         let mut m_config8 = None;
         let mut m_config9 = None;
             m_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2023, 3, 0) {
             m_e_version = Some(rdr.read_i32()?);
             m_config8 = Some(SpeedTreeWindConfig8::parse(rdr, ver)?);

@@ -13,7 +13,6 @@ impl crate::Parse for NativeObjectType {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_inner = NativeType::parse(rdr, ver)?;
-        rdr.align(4)?;
 
         Ok(NativeObjectType {
             m_inner,

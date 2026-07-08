@@ -37,7 +37,6 @@ impl crate::Parse for VfxSystemDesc {
             layer = Some(rdr.read_u32()?);
         if *ver >= crate::UnityVersion::new(2020, 1, 0) {
             name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else {
         }
             buffers = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VfxMapping::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);

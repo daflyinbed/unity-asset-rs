@@ -13,7 +13,6 @@ impl crate::Parse for BuildTargetBatching {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_build_target = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_static_batching = rdr.read_bool()?;
         let m_dynamic_batching = rdr.read_bool()?;
         rdr.align(4)?;

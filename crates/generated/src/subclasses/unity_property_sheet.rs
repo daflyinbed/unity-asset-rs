@@ -1,6 +1,6 @@
 //! 自动生成。请勿手动修改。
 
-use crate::subclasses::color_rgba::ColorRgba;
+use crate::subclasses::color_rgb_af::ColorRgbAf;
 use crate::subclasses::fast_property_name::FastPropertyName;
 use crate::subclasses::unity_tex_env::UnityTexEnv;
 
@@ -19,11 +19,9 @@ impl crate::Parse for UnityPropertySheetMTexEnvsVariant {
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
             let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = UnityTexEnv::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-            rdr.align(4)?;
             Ok(Self::V5_6(v))
         } else {
             let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = FastPropertyName::parse(rdr, ver)?; let b = UnityTexEnv::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -43,11 +41,9 @@ impl crate::Parse for UnityPropertySheetMFloatsVariant {
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
             let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_f32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-            rdr.align(4)?;
             Ok(Self::V5_6(v))
         } else {
             let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = FastPropertyName::parse(rdr, ver)?; let b = rdr.read_f32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -56,8 +52,8 @@ impl crate::Parse for UnityPropertySheetMFloatsVariant {
 /// 版本枚举：UnityPropertySheetMColorsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum UnityPropertySheetMColorsVariant {
-    Default(Vec<(FastPropertyName, ColorRgba)>),
-    V5_6(Vec<(String, ColorRgba)>),
+    Default(Vec<(FastPropertyName, ColorRgbAf)>),
+    V5_6(Vec<(String, ColorRgbAf)>),
 }
 
 impl crate::Parse for UnityPropertySheetMColorsVariant {
@@ -66,12 +62,10 @@ impl crate::Parse for UnityPropertySheetMColorsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = ColorRgba::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-            rdr.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = ColorRgbAf::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::V5_6(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = FastPropertyName::parse(rdr, ver)?; let b = ColorRgba::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-            rdr.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = FastPropertyName::parse(rdr, ver)?; let b = ColorRgbAf::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -96,7 +90,6 @@ impl crate::Parse for UnityPropertySheet {
             m_tex_envs = Some(UnityPropertySheetMTexEnvsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2021, 1, 0) {
             m_ints = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
         } else {
         }
             m_floats = Some(UnityPropertySheetMFloatsVariant::parse(rdr, ver)?);

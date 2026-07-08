@@ -1,13 +1,13 @@
 //! 自动生成。请勿手动修改。
 
-use crate::subclasses::color_rgba::ColorRgba;
+use crate::subclasses::color_rgb_af::ColorRgbAf;
 
 #[derive(Debug, Clone)]
 pub struct FlareElement {
     pub m_image_index: u32,
     pub m_position: f32,
     pub m_size: f32,
-    pub m_color: ColorRgba,
+    pub m_color: ColorRgbAf,
     pub m_use_light_color: bool,
     pub m_rotate: bool,
     pub m_zoom: bool,
@@ -22,7 +22,7 @@ impl crate::Parse for FlareElement {
         let m_image_index = rdr.read_u32()?;
         let m_position = rdr.read_f32()?;
         let m_size = rdr.read_f32()?;
-        let m_color = ColorRgba::parse(rdr, ver)?;
+        let m_color = ColorRgbAf::parse(rdr, ver)?;
         let m_use_light_color = rdr.read_bool()?;
         let m_rotate = rdr.read_bool()?;
         let m_zoom = rdr.read_bool()?;

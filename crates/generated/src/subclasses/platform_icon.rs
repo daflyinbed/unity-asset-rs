@@ -22,7 +22,6 @@ impl crate::Parse for PlatformIcon {
         let m_height = rdr.read_i32()?;
         let m_kind = rdr.read_i32()?;
         let m_sub_kind = rdr.read_aligned_string()?;
-        rdr.align(4)?;
 
         Ok(PlatformIcon {
             m_textures,

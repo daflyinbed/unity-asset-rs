@@ -42,13 +42,11 @@ impl crate::Parse for VfxgpuBufferDesc {
         } else if *ver >= crate::UnityVersion::new(6000, 4, 4) {
             mode = Some(rdr.read_i32()?);
             debug_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(6000, 4, 0) {
             mode = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(6000, 3, 14) {
             mode = Some(rdr.read_i32()?);
             debug_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(6000, 0, 0) {
             mode = Some(rdr.read_i32()?);
         } else {

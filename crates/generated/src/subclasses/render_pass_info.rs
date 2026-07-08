@@ -56,10 +56,8 @@ impl crate::Parse for RenderPassInfo {
         let mut sample_count = None;
         let mut has_eye_texture = None;
             attachments = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AttachmentInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             attachment_count = Some(rdr.read_i32()?);
             sub_passes = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SubPassDescriptor::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             sub_pass_count = Some(rdr.read_i32()?);
             depth_attachment_index = Some(rdr.read_i32()?);
             shading_rate_index = Some(rdr.read_i32()?);

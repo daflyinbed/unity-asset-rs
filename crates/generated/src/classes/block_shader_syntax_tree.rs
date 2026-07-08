@@ -13,11 +13,8 @@ impl crate::Parse for BlockShaderSyntaxTree {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let file_path = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let source = rdr.read_aligned_string()?;
-        rdr.align(4)?;
 
         Ok(BlockShaderSyntaxTree {
             m_name,

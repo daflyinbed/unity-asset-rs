@@ -18,7 +18,6 @@ impl crate::Parse for ColorBySpeedModule {
         let enabled = rdr.read_bool()?;
         rdr.align(4)?;
         let gradient = MinMaxGradient::parse(rdr, ver)?;
-        rdr.align(4)?;
         let range = Vector2f::parse(rdr, ver)?;
 
         Ok(ColorBySpeedModule {

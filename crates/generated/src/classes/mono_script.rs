@@ -48,15 +48,11 @@ impl crate::Parse for MonoScript {
         let mut m_assembly_name = None;
         let mut m_is_editor_script = None;
             m_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_execution_order = Some(rdr.read_i32()?);
             m_properties_hash = Some(MonoScriptMPropertiesHashVariant::parse(rdr, ver)?);
             m_class_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_namespace = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_assembly_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2018, 2, 0) {
         } else {
             m_is_editor_script = Some(rdr.read_bool()?);

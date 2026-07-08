@@ -13,7 +13,6 @@ impl crate::Parse for GuidSerializer {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let guid_to_path = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = Guid::parse(rdr, ver)?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-        rdr.align(4)?;
 
         Ok(GuidSerializer {
             guid_to_path,

@@ -111,11 +111,8 @@ impl crate::Parse for CollisionModule {
             m_planes = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             m_dampen = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_bounce = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_energy_loss_on_collision = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             collision_mode = Some(rdr.read_i32()?);
             collider_force = Some(rdr.read_f32()?);
@@ -130,11 +127,8 @@ impl crate::Parse for CollisionModule {
             plane4 = Some(crate::PPtr::parse(rdr, ver)?);
             plane5 = Some(crate::PPtr::parse(rdr, ver)?);
             m_dampen = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_bounce = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_energy_loss_on_collision = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
             collision_mode = Some(rdr.read_i32()?);
             plane0 = Some(crate::PPtr::parse(rdr, ver)?);
@@ -144,11 +138,8 @@ impl crate::Parse for CollisionModule {
             plane4 = Some(crate::PPtr::parse(rdr, ver)?);
             plane5 = Some(crate::PPtr::parse(rdr, ver)?);
             m_dampen = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_bounce = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_energy_loss_on_collision = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else {
             plane0 = Some(crate::PPtr::parse(rdr, ver)?);
             plane1 = Some(crate::PPtr::parse(rdr, ver)?);

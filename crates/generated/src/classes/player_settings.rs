@@ -3,7 +3,7 @@
 use crate::PPtr;
 use crate::subclasses::android_device_filter_data::AndroidDeviceFilterData;
 use crate::subclasses::aspect_ratios::AspectRatios;
-use crate::subclasses::color_rgba::ColorRgba;
+use crate::subclasses::color_rgb_af::ColorRgbAf;
 use crate::subclasses::guid::Guid;
 use crate::subclasses::hash128::Hash128;
 use crate::subclasses::rectf::Rectf;
@@ -237,6 +237,29 @@ impl crate::Parse for PlayerSettingsMStackTraceTypesVariant {
             Ok(Self::V2017_1(v))
         } else {
             let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：PlayerSettingsMSplashScreenLogosVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum PlayerSettingsMSplashScreenLogosVariant {
+    Default(Vec<SplashScreenLogo>),
+    V2017_1(Vec<SplashScreenLogo>),
+}
+
+impl crate::Parse for PlayerSettingsMSplashScreenLogosVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SplashScreenLogo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SplashScreenLogo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -1046,7 +1069,7 @@ pub struct PlayerSettings {
     pub default_screen_width_web: i32,
     pub m_virtual_reality_splash_screen: Option<PlayerSettingsMVirtualRealitySplashScreenVariant>,
     pub m_splash_screen_style: Option<i32>,
-    pub m_splash_screen_background_color: Option<ColorRgba>,
+    pub m_splash_screen_background_color: Option<ColorRgbAf>,
     pub default_screen_height_web: i32,
     pub m_rendering_path: Option<i32>,
     pub m_show_unity_splash_logo: Option<bool>,
@@ -1081,7 +1104,7 @@ pub struct PlayerSettings {
     pub m_stack_trace_types: Option<PlayerSettingsMStackTraceTypesVariant>,
     pub m_splash_screen_background_portrait_uvs: Option<Rectf>,
     pub capture_single_screen: Option<bool>,
-    pub m_splash_screen_logos: Option<Vec<SplashScreenLogo>>,
+    pub m_splash_screen_logos: Option<PlayerSettingsMSplashScreenLogosVariant>,
     pub override_i_pod_music: Option<bool>,
     pub m_splash_screen_background_landscape: Option<PPtr>,
     pub use_player_log: bool,
@@ -1116,7 +1139,7 @@ pub struct PlayerSettings {
     pub mute_other_audio_sources: Option<bool>,
     pub mip_stripping: Option<bool>,
     pub aid: Option<Hash128>,
-    pub wii_loading_screen_background: Option<ColorRgba>,
+    pub wii_loading_screen_background: Option<ColorRgbAf>,
     pub bake_collision_meshes: Option<bool>,
     pub number_of_mips_stripped: Option<i32>,
     pub player_min_open_gles_version: Option<i32>,
@@ -1598,13 +1621,11 @@ impl crate::Parse for PlayerSettings {
             target_resolution = Some(PlayerSettingsTargetResolutionVariant::parse(rdr, ver)?);
         }
             company_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             product_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(6000, 4, 0) {
             default_cursor = Some(crate::PPtr::parse(rdr, ver)?);
             cursor_hotspot = Some(Vector2f::parse(rdr, ver)?);
-            m_splash_screen_background_color = Some(ColorRgba::parse(rdr, ver)?);
+            m_splash_screen_background_color = Some(ColorRgbAf::parse(rdr, ver)?);
             m_show_unity_splash_screen = Some(PlayerSettingsMShowUnitySplashScreenVariant::parse(rdr, ver)?);
             m_show_unity_splash_logo = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -1619,8 +1640,7 @@ impl crate::Parse for PlayerSettings {
             m_splash_screen_background_portrait_aspect = Some(rdr.read_f32()?);
             m_splash_screen_background_landscape_uvs = Some(Rectf::parse(rdr, ver)?);
             m_splash_screen_background_portrait_uvs = Some(Rectf::parse(rdr, ver)?);
-            m_splash_screen_logos = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SplashScreenLogo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_splash_screen_logos = Some(PlayerSettingsMSplashScreenLogosVariant::parse(rdr, ver)?);
             m_splash_screen_background_landscape = Some(crate::PPtr::parse(rdr, ver)?);
             m_splash_screen_background_portrait = Some(crate::PPtr::parse(rdr, ver)?);
             m_unity_splash_logo = Some(crate::PPtr::parse(rdr, ver)?);
@@ -1628,7 +1648,7 @@ impl crate::Parse for PlayerSettings {
         } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             default_cursor = Some(crate::PPtr::parse(rdr, ver)?);
             cursor_hotspot = Some(Vector2f::parse(rdr, ver)?);
-            m_splash_screen_background_color = Some(ColorRgba::parse(rdr, ver)?);
+            m_splash_screen_background_color = Some(ColorRgbAf::parse(rdr, ver)?);
             m_show_unity_splash_screen = Some(PlayerSettingsMShowUnitySplashScreenVariant::parse(rdr, ver)?);
             m_show_unity_splash_logo = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -1643,8 +1663,7 @@ impl crate::Parse for PlayerSettings {
             m_splash_screen_background_portrait_aspect = Some(rdr.read_f32()?);
             m_splash_screen_background_landscape_uvs = Some(Rectf::parse(rdr, ver)?);
             m_splash_screen_background_portrait_uvs = Some(Rectf::parse(rdr, ver)?);
-            m_splash_screen_logos = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SplashScreenLogo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_splash_screen_logos = Some(PlayerSettingsMSplashScreenLogosVariant::parse(rdr, ver)?);
             m_splash_screen_background_landscape = Some(crate::PPtr::parse(rdr, ver)?);
             m_splash_screen_background_portrait = Some(crate::PPtr::parse(rdr, ver)?);
             m_unity_splash_logo = Some(crate::PPtr::parse(rdr, ver)?);
@@ -1653,7 +1672,7 @@ impl crate::Parse for PlayerSettings {
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
             default_cursor = Some(crate::PPtr::parse(rdr, ver)?);
             cursor_hotspot = Some(Vector2f::parse(rdr, ver)?);
-            m_splash_screen_background_color = Some(ColorRgba::parse(rdr, ver)?);
+            m_splash_screen_background_color = Some(ColorRgbAf::parse(rdr, ver)?);
             m_show_unity_splash_screen = Some(PlayerSettingsMShowUnitySplashScreenVariant::parse(rdr, ver)?);
             m_show_unity_splash_logo = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -1668,8 +1687,7 @@ impl crate::Parse for PlayerSettings {
             m_splash_screen_background_portrait_aspect = Some(rdr.read_f32()?);
             m_splash_screen_background_landscape_uvs = Some(Rectf::parse(rdr, ver)?);
             m_splash_screen_background_portrait_uvs = Some(Rectf::parse(rdr, ver)?);
-            m_splash_screen_logos = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SplashScreenLogo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_splash_screen_logos = Some(PlayerSettingsMSplashScreenLogosVariant::parse(rdr, ver)?);
             m_splash_screen_background_landscape = Some(crate::PPtr::parse(rdr, ver)?);
             m_splash_screen_background_portrait = Some(crate::PPtr::parse(rdr, ver)?);
             m_virtual_reality_splash_screen = Some(PlayerSettingsMVirtualRealitySplashScreenVariant::parse(rdr, ver)?);
@@ -1691,13 +1709,11 @@ impl crate::Parse for PlayerSettings {
             m_show_unity_splash_screen = Some(PlayerSettingsMShowUnitySplashScreenVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 1) {
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             default_cursor = Some(crate::PPtr::parse(rdr, ver)?);
             cursor_hotspot = Some(Vector2f::parse(rdr, ver)?);
             m_show_unity_splash_screen = Some(PlayerSettingsMShowUnitySplashScreenVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             default_cursor = Some(crate::PPtr::parse(rdr, ver)?);
             cursor_hotspot = Some(Vector2f::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
@@ -1705,7 +1721,6 @@ impl crate::Parse for PlayerSettings {
             cursor_hotspot = Some(Vector2f::parse(rdr, ver)?);
         } else {
             android_license_public_key = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         }
             default_screen_width = Some(rdr.read_i32()?);
             default_screen_height = Some(rdr.read_i32()?);
@@ -1726,7 +1741,6 @@ impl crate::Parse for PlayerSettings {
             rdr.align(4)?;
             number_of_mips_stripped = Some(rdr.read_i32()?);
             number_of_mips_stripped_per_mipmap_limit_group = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_stack_trace_types = Some(PlayerSettingsMStackTraceTypesVariant::parse(rdr, ver)?);
             ios_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
             android_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
@@ -1745,7 +1759,6 @@ impl crate::Parse for PlayerSettings {
             rdr.align(4)?;
             number_of_mips_stripped = Some(rdr.read_i32()?);
             number_of_mips_stripped_per_mipmap_limit_group = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_stack_trace_types = Some(PlayerSettingsMStackTraceTypesVariant::parse(rdr, ver)?);
             ios_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
             android_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
@@ -1763,7 +1776,6 @@ impl crate::Parse for PlayerSettings {
             rdr.align(4)?;
             number_of_mips_stripped = Some(rdr.read_i32()?);
             number_of_mips_stripped_per_mipmap_limit_group = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_stack_trace_types = Some(PlayerSettingsMStackTraceTypesVariant::parse(rdr, ver)?);
             ios_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
             android_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
@@ -1782,7 +1794,6 @@ impl crate::Parse for PlayerSettings {
             rdr.align(4)?;
             number_of_mips_stripped = Some(rdr.read_i32()?);
             number_of_mips_stripped_per_mipmap_limit_group = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_stack_trace_types = Some(PlayerSettingsMStackTraceTypesVariant::parse(rdr, ver)?);
             ios_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
             android_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
@@ -1800,7 +1811,6 @@ impl crate::Parse for PlayerSettings {
             rdr.align(4)?;
             number_of_mips_stripped = Some(rdr.read_i32()?);
             number_of_mips_stripped_per_mipmap_limit_group = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_stack_trace_types = Some(PlayerSettingsMStackTraceTypesVariant::parse(rdr, ver)?);
             ios_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
             android_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
@@ -2696,7 +2706,6 @@ impl crate::Parse for PlayerSettings {
             use_mac_app_store_validation = Some(PlayerSettingsUseMacAppStoreValidationVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 4, 1) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             mesh_deformation = Some(rdr.read_i32()?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
@@ -2754,11 +2763,8 @@ impl crate::Parse for PlayerSettings {
             invalidated_pattern_texture = Some(crate::PPtr::parse(rdr, ver)?);
             rdr.align(4)?;
             vision_os_bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             tv_os_bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -2791,14 +2797,11 @@ impl crate::Parse for PlayerSettings {
             enable_direct_storage = Some(rdr.read_bool()?);
             rdr.align(4)?;
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
@@ -2814,7 +2817,6 @@ impl crate::Parse for PlayerSettings {
             allowed_http_connections = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(6000, 4, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             mesh_deformation = Some(rdr.read_i32()?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
@@ -2872,11 +2874,8 @@ impl crate::Parse for PlayerSettings {
             invalidated_pattern_texture = Some(crate::PPtr::parse(rdr, ver)?);
             rdr.align(4)?;
             vision_os_bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             tv_os_bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -2907,14 +2906,11 @@ impl crate::Parse for PlayerSettings {
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
@@ -2930,7 +2926,6 @@ impl crate::Parse for PlayerSettings {
             allowed_http_connections = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(6000, 3, 11) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             mesh_deformation = Some(rdr.read_i32()?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
@@ -2988,11 +2983,8 @@ impl crate::Parse for PlayerSettings {
             invalidated_pattern_texture = Some(crate::PPtr::parse(rdr, ver)?);
             rdr.align(4)?;
             vision_os_bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             tv_os_bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -3026,14 +3018,11 @@ impl crate::Parse for PlayerSettings {
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
@@ -3049,7 +3038,6 @@ impl crate::Parse for PlayerSettings {
             allowed_http_connections = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(6000, 3, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             mesh_deformation = Some(rdr.read_i32()?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
@@ -3105,11 +3093,8 @@ impl crate::Parse for PlayerSettings {
             invalidated_pattern_texture = Some(crate::PPtr::parse(rdr, ver)?);
             rdr.align(4)?;
             vision_os_bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             tv_os_bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -3143,14 +3128,11 @@ impl crate::Parse for PlayerSettings {
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
@@ -3166,7 +3148,6 @@ impl crate::Parse for PlayerSettings {
             allowed_http_connections = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(6000, 2, 7) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             mesh_deformation = Some(rdr.read_i32()?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
@@ -3222,11 +3203,8 @@ impl crate::Parse for PlayerSettings {
             invalidated_pattern_texture = Some(crate::PPtr::parse(rdr, ver)?);
             rdr.align(4)?;
             vision_os_bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             tv_os_bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -3260,14 +3238,11 @@ impl crate::Parse for PlayerSettings {
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
@@ -3282,7 +3257,6 @@ impl crate::Parse for PlayerSettings {
             d3d12_device_filter_list_asset = Some(PlayerSettingsD3d12DeviceFilterListAssetVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(6000, 2, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             mesh_deformation = Some(rdr.read_i32()?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
@@ -3338,11 +3312,8 @@ impl crate::Parse for PlayerSettings {
             invalidated_pattern_texture = Some(crate::PPtr::parse(rdr, ver)?);
             rdr.align(4)?;
             vision_os_bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             tv_os_bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -3376,14 +3347,11 @@ impl crate::Parse for PlayerSettings {
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
@@ -3397,7 +3365,6 @@ impl crate::Parse for PlayerSettings {
             android_vulkan_device_filter_list_asset = Some(crate::PPtr::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(6000, 1, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             mesh_deformation = Some(rdr.read_i32()?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
@@ -3451,11 +3418,8 @@ impl crate::Parse for PlayerSettings {
             invalidated_pattern_texture = Some(crate::PPtr::parse(rdr, ver)?);
             rdr.align(4)?;
             vision_os_bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             tv_os_bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -3489,14 +3453,11 @@ impl crate::Parse for PlayerSettings {
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
@@ -3510,7 +3471,6 @@ impl crate::Parse for PlayerSettings {
             android_vulkan_device_filter_list_asset = Some(crate::PPtr::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(6000, 0, 5) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             mesh_deformation = Some(rdr.read_i32()?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
@@ -3564,11 +3524,8 @@ impl crate::Parse for PlayerSettings {
             invalidated_pattern_texture = Some(crate::PPtr::parse(rdr, ver)?);
             rdr.align(4)?;
             vision_os_bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             tv_os_bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -3602,14 +3559,11 @@ impl crate::Parse for PlayerSettings {
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
@@ -3622,7 +3576,6 @@ impl crate::Parse for PlayerSettings {
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2023, 3, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             mesh_deformation = Some(rdr.read_i32()?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
@@ -3676,11 +3629,8 @@ impl crate::Parse for PlayerSettings {
             invalidated_pattern_texture = Some(crate::PPtr::parse(rdr, ver)?);
             rdr.align(4)?;
             vision_os_bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             tv_os_bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -3714,14 +3664,11 @@ impl crate::Parse for PlayerSettings {
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
@@ -3730,7 +3677,6 @@ impl crate::Parse for PlayerSettings {
             insecure_http_option = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2023, 2, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             mesh_deformation = Some(rdr.read_i32()?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
@@ -3784,7 +3730,6 @@ impl crate::Parse for PlayerSettings {
             invalidated_pattern_texture = Some(crate::PPtr::parse(rdr, ver)?);
             rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -3818,14 +3763,11 @@ impl crate::Parse for PlayerSettings {
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
@@ -3834,7 +3776,6 @@ impl crate::Parse for PlayerSettings {
             insecure_http_option = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2023, 1, 12) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             mesh_deformation = Some(rdr.read_i32()?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
@@ -3888,7 +3829,6 @@ impl crate::Parse for PlayerSettings {
             invalidated_pattern_texture = Some(crate::PPtr::parse(rdr, ver)?);
             rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -3920,14 +3860,11 @@ impl crate::Parse for PlayerSettings {
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
@@ -3935,7 +3872,6 @@ impl crate::Parse for PlayerSettings {
             insecure_http_option = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2023, 1, 10) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             mesh_deformation = Some(rdr.read_i32()?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
@@ -3989,7 +3925,6 @@ impl crate::Parse for PlayerSettings {
             invalidated_pattern_texture = Some(crate::PPtr::parse(rdr, ver)?);
             rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -4019,14 +3954,11 @@ impl crate::Parse for PlayerSettings {
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
@@ -4034,7 +3966,6 @@ impl crate::Parse for PlayerSettings {
             insecure_http_option = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2023, 1, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             mesh_deformation = Some(rdr.read_i32()?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
@@ -4087,7 +4018,6 @@ impl crate::Parse for PlayerSettings {
             invalidated_pattern_texture = Some(crate::PPtr::parse(rdr, ver)?);
             rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -4117,14 +4047,11 @@ impl crate::Parse for PlayerSettings {
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
@@ -4132,7 +4059,6 @@ impl crate::Parse for PlayerSettings {
             insecure_http_option = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2022, 3, 18) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
             xbox_enable_avatar = Some(rdr.read_bool()?);
@@ -4188,11 +4114,8 @@ impl crate::Parse for PlayerSettings {
             invalidated_pattern_texture = Some(crate::PPtr::parse(rdr, ver)?);
             rdr.align(4)?;
             vision_os_bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             tv_os_bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -4224,14 +4147,11 @@ impl crate::Parse for PlayerSettings {
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
@@ -4240,7 +4160,6 @@ impl crate::Parse for PlayerSettings {
             insecure_http_option = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2022, 3, 11) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
             xbox_enable_avatar = Some(rdr.read_bool()?);
@@ -4296,7 +4215,6 @@ impl crate::Parse for PlayerSettings {
             invalidated_pattern_texture = Some(crate::PPtr::parse(rdr, ver)?);
             rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -4328,14 +4246,11 @@ impl crate::Parse for PlayerSettings {
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
@@ -4344,7 +4259,6 @@ impl crate::Parse for PlayerSettings {
             insecure_http_option = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2022, 3, 8) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
             xbox_enable_avatar = Some(rdr.read_bool()?);
@@ -4400,7 +4314,6 @@ impl crate::Parse for PlayerSettings {
             invalidated_pattern_texture = Some(crate::PPtr::parse(rdr, ver)?);
             rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -4430,14 +4343,11 @@ impl crate::Parse for PlayerSettings {
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
@@ -4446,7 +4356,6 @@ impl crate::Parse for PlayerSettings {
             insecure_http_option = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2022, 2, 19) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
             xbox_enable_avatar = Some(rdr.read_bool()?);
@@ -4501,7 +4410,6 @@ impl crate::Parse for PlayerSettings {
             invalidated_pattern_texture = Some(crate::PPtr::parse(rdr, ver)?);
             rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -4531,14 +4439,11 @@ impl crate::Parse for PlayerSettings {
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
@@ -4547,7 +4452,6 @@ impl crate::Parse for PlayerSettings {
             insecure_http_option = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2022, 2, 15) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
             xbox_enable_avatar = Some(rdr.read_bool()?);
@@ -4602,7 +4506,6 @@ impl crate::Parse for PlayerSettings {
             invalidated_pattern_texture = Some(crate::PPtr::parse(rdr, ver)?);
             rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -4632,14 +4535,11 @@ impl crate::Parse for PlayerSettings {
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
@@ -4647,7 +4547,6 @@ impl crate::Parse for PlayerSettings {
             insecure_http_option = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2022, 2, 3) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
             xbox_enable_avatar = Some(rdr.read_bool()?);
@@ -4702,7 +4601,6 @@ impl crate::Parse for PlayerSettings {
             invalidated_pattern_texture = Some(crate::PPtr::parse(rdr, ver)?);
             rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -4732,14 +4630,11 @@ impl crate::Parse for PlayerSettings {
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
@@ -4747,7 +4642,6 @@ impl crate::Parse for PlayerSettings {
             insecure_http_option = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
             xbox_enable_avatar = Some(rdr.read_bool()?);
@@ -4800,7 +4694,6 @@ impl crate::Parse for PlayerSettings {
             load_store_debug_mode_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -4830,14 +4723,11 @@ impl crate::Parse for PlayerSettings {
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
@@ -4845,7 +4735,6 @@ impl crate::Parse for PlayerSettings {
             insecure_http_option = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2022, 1, 2) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
             xbox_enable_avatar = Some(rdr.read_bool()?);
@@ -4896,9 +4785,7 @@ impl crate::Parse for PlayerSettings {
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -4925,24 +4812,19 @@ impl crate::Parse for PlayerSettings {
             android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
             player_data_path = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             force_srgb_blit = Some(rdr.read_bool()?);
             virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
             insecure_http_option = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
             xbox_enable_avatar = Some(rdr.read_bool()?);
@@ -4993,9 +4875,7 @@ impl crate::Parse for PlayerSettings {
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -5020,24 +4900,19 @@ impl crate::Parse for PlayerSettings {
             android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
             player_data_path = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             force_srgb_blit = Some(rdr.read_bool()?);
             virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
             insecure_http_option = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2021, 3, 30) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
             xbox_enable_avatar = Some(rdr.read_bool()?);
@@ -5085,9 +4960,7 @@ impl crate::Parse for PlayerSettings {
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -5117,23 +4990,18 @@ impl crate::Parse for PlayerSettings {
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
             player_data_path = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             force_srgb_blit = Some(rdr.read_bool()?);
             virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2021, 3, 13) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
             xbox_enable_avatar = Some(rdr.read_bool()?);
@@ -5180,9 +5048,7 @@ impl crate::Parse for PlayerSettings {
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -5212,23 +5078,18 @@ impl crate::Parse for PlayerSettings {
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
             player_data_path = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             force_srgb_blit = Some(rdr.read_bool()?);
             virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2021, 3, 3) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
             xbox_enable_avatar = Some(rdr.read_bool()?);
@@ -5275,9 +5136,7 @@ impl crate::Parse for PlayerSettings {
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -5306,23 +5165,18 @@ impl crate::Parse for PlayerSettings {
             android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
             player_data_path = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             force_srgb_blit = Some(rdr.read_bool()?);
             virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2021, 3, 2) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
             xbox_enable_avatar = Some(rdr.read_bool()?);
@@ -5369,9 +5223,7 @@ impl crate::Parse for PlayerSettings {
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -5398,23 +5250,18 @@ impl crate::Parse for PlayerSettings {
             android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
             player_data_path = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             force_srgb_blit = Some(rdr.read_bool()?);
             virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2021, 2, 4) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
             xbox_enable_avatar = Some(rdr.read_bool()?);
@@ -5461,9 +5308,7 @@ impl crate::Parse for PlayerSettings {
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -5488,23 +5333,18 @@ impl crate::Parse for PlayerSettings {
             android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
             player_data_path = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             force_srgb_blit = Some(rdr.read_bool()?);
             virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
             xbox_enable_avatar = Some(rdr.read_bool()?);
@@ -5551,9 +5391,7 @@ impl crate::Parse for PlayerSettings {
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -5578,24 +5416,19 @@ impl crate::Parse for PlayerSettings {
             android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
             player_data_path = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             force_srgb_blit = Some(rdr.read_bool()?);
             virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
             upload_cleared_texture_data_after_creation_from_script = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2021, 1, 14) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
             xbox_enable_avatar = Some(rdr.read_bool()?);
@@ -5642,9 +5475,7 @@ impl crate::Parse for PlayerSettings {
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -5669,20 +5500,16 @@ impl crate::Parse for PlayerSettings {
             android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
             virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2021, 1, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
             xbox_enable_avatar = Some(rdr.read_bool()?);
@@ -5727,9 +5554,7 @@ impl crate::Parse for PlayerSettings {
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
             vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -5754,20 +5579,16 @@ impl crate::Parse for PlayerSettings {
             android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
             virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2020, 3, 42) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
             xbox_enable_avatar = Some(rdr.read_bool()?);
@@ -5814,9 +5635,7 @@ impl crate::Parse for PlayerSettings {
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -5844,20 +5663,16 @@ impl crate::Parse for PlayerSettings {
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
             virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2020, 3, 35) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
             xbox_enable_avatar = Some(rdr.read_bool()?);
@@ -5904,9 +5719,7 @@ impl crate::Parse for PlayerSettings {
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -5933,20 +5746,16 @@ impl crate::Parse for PlayerSettings {
             android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
             virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2020, 3, 18) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
             xbox_enable_avatar = Some(rdr.read_bool()?);
@@ -5993,9 +5802,7 @@ impl crate::Parse for PlayerSettings {
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -6020,20 +5827,16 @@ impl crate::Parse for PlayerSettings {
             android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
             virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
             xbox_enable_avatar = Some(rdr.read_bool()?);
@@ -6078,9 +5881,7 @@ impl crate::Parse for PlayerSettings {
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
             vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -6105,20 +5906,16 @@ impl crate::Parse for PlayerSettings {
             android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
             virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2020, 1, 7) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
             xbox_enable_avatar = Some(rdr.read_bool()?);
@@ -6162,9 +5959,7 @@ impl crate::Parse for PlayerSettings {
             vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
             vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -6188,12 +5983,9 @@ impl crate::Parse for PlayerSettings {
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
             android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             enable_native_platform_backends_for_new_input_system = Some(rdr.read_bool()?);
             disable_old_input_manager_support = Some(rdr.read_bool()?);
@@ -6201,7 +5993,6 @@ impl crate::Parse for PlayerSettings {
             virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2020, 1, 1) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
             xbox_enable_avatar = Some(rdr.read_bool()?);
@@ -6244,9 +6035,7 @@ impl crate::Parse for PlayerSettings {
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
             vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -6270,12 +6059,9 @@ impl crate::Parse for PlayerSettings {
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
             android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             enable_native_platform_backends_for_new_input_system = Some(rdr.read_bool()?);
             disable_old_input_manager_support = Some(rdr.read_bool()?);
@@ -6283,7 +6069,6 @@ impl crate::Parse for PlayerSettings {
             virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
             xbox_enable_avatar = Some(rdr.read_bool()?);
@@ -6324,9 +6109,7 @@ impl crate::Parse for PlayerSettings {
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
             vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -6350,12 +6133,9 @@ impl crate::Parse for PlayerSettings {
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
             android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             enable_native_platform_backends_for_new_input_system = Some(rdr.read_bool()?);
             disable_old_input_manager_support = Some(rdr.read_bool()?);
@@ -6363,7 +6143,6 @@ impl crate::Parse for PlayerSettings {
             virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2019, 4, 6) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
             xbox_enable_avatar = Some(rdr.read_bool()?);
@@ -6407,9 +6186,7 @@ impl crate::Parse for PlayerSettings {
             vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
             vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -6433,19 +6210,15 @@ impl crate::Parse for PlayerSettings {
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
             android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             enable_native_platform_backends_for_new_input_system = Some(rdr.read_bool()?);
             disable_old_input_manager_support = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2019, 3, 15) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
             xbox_enable_avatar = Some(rdr.read_bool()?);
@@ -6486,9 +6259,7 @@ impl crate::Parse for PlayerSettings {
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
             vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -6512,19 +6283,15 @@ impl crate::Parse for PlayerSettings {
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
             android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             enable_native_platform_backends_for_new_input_system = Some(rdr.read_bool()?);
             disable_old_input_manager_support = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2019, 3, 2) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
             xbox_enable_avatar = Some(rdr.read_bool()?);
@@ -6562,9 +6329,7 @@ impl crate::Parse for PlayerSettings {
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
             vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -6588,19 +6353,15 @@ impl crate::Parse for PlayerSettings {
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
             android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             enable_native_platform_backends_for_new_input_system = Some(rdr.read_bool()?);
             disable_old_input_manager_support = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
             xbox_enable_avatar = Some(rdr.read_bool()?);
@@ -6636,9 +6397,7 @@ impl crate::Parse for PlayerSettings {
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
             vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -6662,19 +6421,15 @@ impl crate::Parse for PlayerSettings {
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
             android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             enable_native_platform_backends_for_new_input_system = Some(rdr.read_bool()?);
             disable_old_input_manager_support = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             graphics_jobs = Some(rdr.read_bool()?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
@@ -6711,9 +6466,7 @@ impl crate::Parse for PlayerSettings {
             switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
             vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -6737,19 +6490,15 @@ impl crate::Parse for PlayerSettings {
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
             android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             enable_native_platform_backends_for_new_input_system = Some(rdr.read_bool()?);
             disable_old_input_manager_support = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2018, 4, 26) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             graphics_jobs = Some(rdr.read_bool()?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
@@ -6790,9 +6539,7 @@ impl crate::Parse for PlayerSettings {
             switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
             vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -6816,19 +6563,15 @@ impl crate::Parse for PlayerSettings {
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
             android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             enable_native_platform_backends_for_new_input_system = Some(rdr.read_bool()?);
             disable_old_input_manager_support = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2018, 4, 17) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             graphics_jobs = Some(rdr.read_bool()?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
@@ -6867,9 +6610,7 @@ impl crate::Parse for PlayerSettings {
             switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
             vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -6893,19 +6634,15 @@ impl crate::Parse for PlayerSettings {
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
             android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             enable_native_platform_backends_for_new_input_system = Some(rdr.read_bool()?);
             disable_old_input_manager_support = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2018, 3, 5) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             graphics_jobs = Some(rdr.read_bool()?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
@@ -6942,9 +6679,7 @@ impl crate::Parse for PlayerSettings {
             switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
             vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -6968,19 +6703,15 @@ impl crate::Parse for PlayerSettings {
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
             android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             enable_native_platform_backends_for_new_input_system = Some(rdr.read_bool()?);
             disable_old_input_manager_support = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             graphics_jobs = Some(rdr.read_bool()?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
@@ -7012,9 +6743,7 @@ impl crate::Parse for PlayerSettings {
             switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
             vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -7038,19 +6767,15 @@ impl crate::Parse for PlayerSettings {
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
             android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             enable_native_platform_backends_for_new_input_system = Some(rdr.read_bool()?);
             disable_old_input_manager_support = Some(rdr.read_bool()?);
             legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2018, 2, 9) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             graphics_jobs = Some(rdr.read_bool()?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
@@ -7091,9 +6816,7 @@ impl crate::Parse for PlayerSettings {
             vulkan_use_sw_command_buffers = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -7116,17 +6839,13 @@ impl crate::Parse for PlayerSettings {
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
             android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             enable_native_platform_backends_for_new_input_system = Some(rdr.read_bool()?);
             disable_old_input_manager_support = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2018, 2, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             graphics_jobs = Some(rdr.read_bool()?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
@@ -7167,9 +6886,7 @@ impl crate::Parse for PlayerSettings {
             vulkan_use_sw_command_buffers = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -7190,17 +6907,13 @@ impl crate::Parse for PlayerSettings {
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
             android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             enable_native_platform_backends_for_new_input_system = Some(rdr.read_bool()?);
             disable_old_input_manager_support = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             graphics_jobs = Some(rdr.read_bool()?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
@@ -7238,9 +6951,7 @@ impl crate::Parse for PlayerSettings {
             psp2_acquire_bgm = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -7261,17 +6972,13 @@ impl crate::Parse for PlayerSettings {
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
             android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             enable_native_platform_backends_for_new_input_system = Some(rdr.read_bool()?);
             disable_old_input_manager_support = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             graphics_jobs = Some(rdr.read_bool()?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
@@ -7319,9 +7026,7 @@ impl crate::Parse for PlayerSettings {
             rdr.align(4)?;
             wii_u_controller_count = Some(rdr.read_i32()?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
@@ -7342,17 +7047,13 @@ impl crate::Parse for PlayerSettings {
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
             android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             enable_native_platform_backends_for_new_input_system = Some(rdr.read_bool()?);
             disable_old_input_manager_support = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             graphics_jobs = Some(rdr.read_bool()?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
@@ -7403,9 +7104,7 @@ impl crate::Parse for PlayerSettings {
             rdr.align(4)?;
             wii_u_controller_count = Some(rdr.read_i32()?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
@@ -7424,17 +7123,13 @@ impl crate::Parse for PlayerSettings {
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
             android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             enable_native_platform_backends_for_new_input_system = Some(rdr.read_bool()?);
             disable_old_input_manager_support = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2017, 1, 2) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             graphics_jobs = Some(rdr.read_bool()?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
@@ -7483,9 +7178,7 @@ impl crate::Parse for PlayerSettings {
             rdr.align(4)?;
             wii_u_controller_count = Some(rdr.read_i32()?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
@@ -7500,17 +7193,13 @@ impl crate::Parse for PlayerSettings {
             target_pixel_density = Some(rdr.read_i32()?);
             resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             enable_native_platform_backends_for_new_input_system = Some(rdr.read_bool()?);
             disable_old_input_manager_support = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             graphics_jobs = Some(rdr.read_bool()?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
@@ -7557,9 +7246,7 @@ impl crate::Parse for PlayerSettings {
             rdr.align(4)?;
             wii_u_controller_count = Some(rdr.read_i32()?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
@@ -7574,17 +7261,13 @@ impl crate::Parse for PlayerSettings {
             target_pixel_density = Some(rdr.read_i32()?);
             resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             enable_native_platform_backends_for_new_input_system = Some(rdr.read_bool()?);
             disable_old_input_manager_support = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(5, 6, 5) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             graphics_jobs = Some(rdr.read_bool()?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
@@ -7631,9 +7314,7 @@ impl crate::Parse for PlayerSettings {
             rdr.align(4)?;
             wii_u_controller_count = Some(rdr.read_i32()?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
@@ -7646,16 +7327,12 @@ impl crate::Parse for PlayerSettings {
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             enable_new_input_system = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(5, 6, 1) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             graphics_jobs = Some(rdr.read_bool()?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
@@ -7700,9 +7377,7 @@ impl crate::Parse for PlayerSettings {
             rdr.align(4)?;
             wii_u_controller_count = Some(rdr.read_i32()?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
@@ -7715,11 +7390,8 @@ impl crate::Parse for PlayerSettings {
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             enable_new_input_system = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
@@ -7767,9 +7439,7 @@ impl crate::Parse for PlayerSettings {
             rdr.align(4)?;
             wii_u_controller_count = Some(rdr.read_i32()?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
@@ -7782,11 +7452,8 @@ impl crate::Parse for PlayerSettings {
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
             enable_new_input_system = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(5, 5, 6) {
@@ -7837,11 +7504,8 @@ impl crate::Parse for PlayerSettings {
             rdr.align(4)?;
             wii_u_controller_count = Some(rdr.read_i32()?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_identifier = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
@@ -7850,11 +7514,8 @@ impl crate::Parse for PlayerSettings {
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(5, 5, 4) {
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -7902,11 +7563,8 @@ impl crate::Parse for PlayerSettings {
             rdr.align(4)?;
             wii_u_controller_count = Some(rdr.read_i32()?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_identifier = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
@@ -7915,11 +7573,8 @@ impl crate::Parse for PlayerSettings {
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(5, 5, 2) {
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -7967,22 +7622,16 @@ impl crate::Parse for PlayerSettings {
             rdr.align(4)?;
             wii_u_controller_count = Some(rdr.read_i32()?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_identifier = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
             xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             protect_graphics_memory = Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -8029,22 +7678,16 @@ impl crate::Parse for PlayerSettings {
             rdr.align(4)?;
             wii_u_controller_count = Some(rdr.read_i32()?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_identifier = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
             xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             protect_graphics_memory = Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 1) {
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -8092,22 +7735,16 @@ impl crate::Parse for PlayerSettings {
             rdr.align(4)?;
             wii_u_controller_count = Some(rdr.read_i32()?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_identifier = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_enable_independent_input_source = Some(rdr.read_bool()?);
             xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             single_pass_stereo_rendering = Some(rdr.read_bool()?);
             protect_graphics_memory = Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -8154,22 +7791,16 @@ impl crate::Parse for PlayerSettings {
             rdr.align(4)?;
             wii_u_controller_count = Some(rdr.read_i32()?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_identifier = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_enable_independent_input_source = Some(rdr.read_bool()?);
             xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             single_pass_stereo_rendering = Some(rdr.read_bool()?);
             protect_graphics_memory = Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(5, 3, 7) {
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -8218,11 +7849,8 @@ impl crate::Parse for PlayerSettings {
             rdr.align(4)?;
             wii_u_controller_count = Some(rdr.read_i32()?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_identifier = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_enable_independent_input_source = Some(rdr.read_bool()?);
             metro_enable_low_latency_presentation_api = Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
@@ -8230,11 +7858,8 @@ impl crate::Parse for PlayerSettings {
             virtual_reality_supported = Some(rdr.read_bool()?);
             rdr.align(4)?;
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(5, 3, 6) {
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -8282,11 +7907,8 @@ impl crate::Parse for PlayerSettings {
             rdr.align(4)?;
             wii_u_controller_count = Some(rdr.read_i32()?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_identifier = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_enable_independent_input_source = Some(rdr.read_bool()?);
             metro_enable_low_latency_presentation_api = Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
@@ -8294,11 +7916,8 @@ impl crate::Parse for PlayerSettings {
             virtual_reality_supported = Some(rdr.read_bool()?);
             rdr.align(4)?;
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(5, 3, 1) {
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -8343,11 +7962,8 @@ impl crate::Parse for PlayerSettings {
             rdr.align(4)?;
             wii_u_controller_count = Some(rdr.read_i32()?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_identifier = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_enable_independent_input_source = Some(rdr.read_bool()?);
             metro_enable_low_latency_presentation_api = Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
@@ -8355,11 +7971,8 @@ impl crate::Parse for PlayerSettings {
             virtual_reality_supported = Some(rdr.read_bool()?);
             rdr.align(4)?;
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -8402,11 +8015,8 @@ impl crate::Parse for PlayerSettings {
             rdr.align(4)?;
             wii_u_controller_count = Some(rdr.read_i32()?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_identifier = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_enable_independent_input_source = Some(rdr.read_bool()?);
             metro_enable_low_latency_presentation_api = Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
@@ -8414,11 +8024,8 @@ impl crate::Parse for PlayerSettings {
             virtual_reality_supported = Some(rdr.read_bool()?);
             rdr.align(4)?;
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(5, 2, 0) {
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -8456,11 +8063,8 @@ impl crate::Parse for PlayerSettings {
             rdr.align(4)?;
             wii_u_controller_count = Some(rdr.read_i32()?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_identifier = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_enable_independent_input_source = Some(rdr.read_bool()?);
             metro_enable_low_latency_presentation_api = Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
@@ -8468,11 +8072,8 @@ impl crate::Parse for PlayerSettings {
             virtual_reality_supported = Some(rdr.read_bool()?);
             rdr.align(4)?;
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(5, 1, 1) {
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -8497,11 +8098,8 @@ impl crate::Parse for PlayerSettings {
             psp2_acquire_bgm = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_identifier = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_enable_independent_input_source = Some(rdr.read_bool()?);
             metro_enable_low_latency_presentation_api = Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
@@ -8509,13 +8107,9 @@ impl crate::Parse for PlayerSettings {
             virtual_reality_supported = Some(rdr.read_bool()?);
             rdr.align(4)?;
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(5, 1, 0) {
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -8540,23 +8134,16 @@ impl crate::Parse for PlayerSettings {
             psp2_acquire_bgm = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_identifier = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_enable_independent_input_source = Some(rdr.read_bool()?);
             metro_enable_low_latency_presentation_api = Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
             xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             project_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             organization_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             cloud_enabled = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -8581,11 +8168,8 @@ impl crate::Parse for PlayerSettings {
             psp2_acquire_bgm = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             bundle_identifier = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             bundle_version = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_enable_independent_input_source = Some(rdr.read_bool()?);
             metro_enable_low_latency_presentation_api = Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
@@ -8608,9 +8192,7 @@ impl crate::Parse for PlayerSettings {
             rdr.align(4)?;
             video_memory_for_vertex_buffers = Some(rdr.read_i32()?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             i_phone_bundle_identifier = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             metro_enable_independent_input_source = Some(rdr.read_bool()?);
             metro_enable_low_latency_presentation_api = Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 5, 4) {
@@ -8629,9 +8211,7 @@ impl crate::Parse for PlayerSettings {
             rdr.align(4)?;
             video_memory_for_vertex_buffers = Some(rdr.read_i32()?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             i_phone_bundle_identifier = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             metro_enable_independent_input_source = Some(rdr.read_bool()?);
             metro_enable_low_latency_presentation_api = Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 5, 3) {
@@ -8649,9 +8229,7 @@ impl crate::Parse for PlayerSettings {
             rdr.align(4)?;
             video_memory_for_vertex_buffers = Some(rdr.read_i32()?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             i_phone_bundle_identifier = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             metro_enable_independent_input_source = Some(rdr.read_bool()?);
             metro_enable_low_latency_presentation_api = Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 5, 0) {
@@ -8668,9 +8246,7 @@ impl crate::Parse for PlayerSettings {
             rdr.align(4)?;
             video_memory_for_vertex_buffers = Some(rdr.read_i32()?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             i_phone_bundle_identifier = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             metro_enable_independent_input_source = Some(rdr.read_bool()?);
             metro_enable_low_latency_presentation_api = Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 3, 3) {
@@ -8687,15 +8263,12 @@ impl crate::Parse for PlayerSettings {
             rdr.align(4)?;
             wii_hio2_usage = Some(rdr.read_i32()?);
             wii_loading_screen_rect_placement = Some(rdr.read_i32()?);
-            wii_loading_screen_background = Some(ColorRgba::parse(rdr, ver)?);
+            wii_loading_screen_background = Some(ColorRgbAf::parse(rdr, ver)?);
             wii_loading_screen_period = Some(rdr.read_i32()?);
             wii_loading_screen_file_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             wii_loading_screen_rect = Some(Rectf::parse(rdr, ver)?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             i_phone_bundle_identifier = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             metro_enable_independent_input_source = Some(rdr.read_bool()?);
             metro_enable_low_latency_presentation_api = Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
@@ -8712,15 +8285,12 @@ impl crate::Parse for PlayerSettings {
             rdr.align(4)?;
             wii_hio2_usage = Some(rdr.read_i32()?);
             wii_loading_screen_rect_placement = Some(rdr.read_i32()?);
-            wii_loading_screen_background = Some(ColorRgba::parse(rdr, ver)?);
+            wii_loading_screen_background = Some(ColorRgbAf::parse(rdr, ver)?);
             wii_loading_screen_period = Some(rdr.read_i32()?);
             wii_loading_screen_file_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             wii_loading_screen_rect = Some(Rectf::parse(rdr, ver)?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             i_phone_bundle_identifier = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 2, 0) {
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_enable_avatar = Some(rdr.read_bool()?);
@@ -8732,15 +8302,12 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
             wii_hio2_usage = Some(rdr.read_i32()?);
             wii_loading_screen_rect_placement = Some(rdr.read_i32()?);
-            wii_loading_screen_background = Some(ColorRgba::parse(rdr, ver)?);
+            wii_loading_screen_background = Some(ColorRgbAf::parse(rdr, ver)?);
             wii_loading_screen_period = Some(rdr.read_i32()?);
             wii_loading_screen_file_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             wii_loading_screen_rect = Some(Rectf::parse(rdr, ver)?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             i_phone_bundle_identifier = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 1, 2) {
             xbox_skin_on_gpu = Some(PlayerSettingsXboxSkinOnGpuVariant::parse(rdr, ver)?);
             xbox_enable_avatar = Some(rdr.read_bool()?);
@@ -8752,15 +8319,12 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
             wii_hio2_usage = Some(rdr.read_i32()?);
             wii_loading_screen_rect_placement = Some(rdr.read_i32()?);
-            wii_loading_screen_background = Some(ColorRgba::parse(rdr, ver)?);
+            wii_loading_screen_background = Some(ColorRgbAf::parse(rdr, ver)?);
             wii_loading_screen_period = Some(rdr.read_i32()?);
             wii_loading_screen_file_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             wii_loading_screen_rect = Some(Rectf::parse(rdr, ver)?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             i_phone_bundle_identifier = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 1, 0) {
             xbox_skin_on_gpu = Some(PlayerSettingsXboxSkinOnGpuVariant::parse(rdr, ver)?);
             xbox_enable_avatar = Some(rdr.read_bool()?);
@@ -8772,13 +8336,11 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
             wii_hio2_usage = Some(rdr.read_i32()?);
             wii_loading_screen_rect_placement = Some(rdr.read_i32()?);
-            wii_loading_screen_background = Some(ColorRgba::parse(rdr, ver)?);
+            wii_loading_screen_background = Some(ColorRgbAf::parse(rdr, ver)?);
             wii_loading_screen_period = Some(rdr.read_i32()?);
             wii_loading_screen_file_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             wii_loading_screen_rect = Some(Rectf::parse(rdr, ver)?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
             xbox_skin_on_gpu = Some(PlayerSettingsXboxSkinOnGpuVariant::parse(rdr, ver)?);
             xbox_enable_avatar = Some(rdr.read_bool()?);
@@ -8789,13 +8351,11 @@ impl crate::Parse for PlayerSettings {
             xbox_speech_db = Some(rdr.read_u32()?);
             wii_hio2_usage = Some(rdr.read_i32()?);
             wii_loading_screen_rect_placement = Some(rdr.read_i32()?);
-            wii_loading_screen_background = Some(ColorRgba::parse(rdr, ver)?);
+            wii_loading_screen_background = Some(ColorRgbAf::parse(rdr, ver)?);
             wii_loading_screen_period = Some(rdr.read_i32()?);
             wii_loading_screen_file_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             wii_loading_screen_rect = Some(Rectf::parse(rdr, ver)?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(3, 5, 5) {
             xbox_skin_on_gpu = Some(PlayerSettingsXboxSkinOnGpuVariant::parse(rdr, ver)?);
             xbox_enable_avatar = Some(rdr.read_bool()?);
@@ -8805,13 +8365,11 @@ impl crate::Parse for PlayerSettings {
             rdr.align(4)?;
             wii_hio2_usage = Some(rdr.read_i32()?);
             wii_loading_screen_rect_placement = Some(rdr.read_i32()?);
-            wii_loading_screen_background = Some(ColorRgba::parse(rdr, ver)?);
+            wii_loading_screen_background = Some(ColorRgbAf::parse(rdr, ver)?);
             wii_loading_screen_period = Some(rdr.read_i32()?);
             wii_loading_screen_file_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             wii_loading_screen_rect = Some(Rectf::parse(rdr, ver)?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
             debug_unload_mode = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
             xbox_skin_on_gpu = Some(PlayerSettingsXboxSkinOnGpuVariant::parse(rdr, ver)?);
@@ -8822,17 +8380,14 @@ impl crate::Parse for PlayerSettings {
             rdr.align(4)?;
             wii_hio2_usage = Some(rdr.read_i32()?);
             wii_loading_screen_rect_placement = Some(rdr.read_i32()?);
-            wii_loading_screen_background = Some(ColorRgba::parse(rdr, ver)?);
+            wii_loading_screen_background = Some(ColorRgbAf::parse(rdr, ver)?);
             wii_loading_screen_period = Some(rdr.read_i32()?);
             wii_loading_screen_file_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             wii_loading_screen_rect = Some(Rectf::parse(rdr, ver)?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else {
             xbox_skin_on_gpu = Some(PlayerSettingsXboxSkinOnGpuVariant::parse(rdr, ver)?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
-            rdr.align(4)?;
         }
 
         Ok(PlayerSettings {

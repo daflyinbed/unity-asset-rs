@@ -15,7 +15,6 @@ impl crate::Parse for RayTracingShaderFunctionDesc {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let identifier = RayTracingShaderId::parse(rdr, ver)?;
-        rdr.align(4)?;
         let payload_size_in_bytes = rdr.read_u32()?;
         let attribute_size_in_bytes = rdr.read_u32()?;
 

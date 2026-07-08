@@ -28,7 +28,6 @@ impl crate::Parse for LightingSettings {
         let mut m_indirect_output_scale = None;
         let mut m_using_shadowmask = None;
             m_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
         } else {
             m_gi_workflow_mode = Some(rdr.read_i32()?);

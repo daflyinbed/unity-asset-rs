@@ -41,31 +41,22 @@ impl crate::Parse for SpriteAtlasImporter {
         let mut m_variant_multiplier = None;
         let mut m_bind_as_default = None;
             m_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2022, 1, 0) {
             m_texture_settings = Some(TextureSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TextureImporterPlatformSettings::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             m_packing_settings = Some(PackingSettings::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_secondary_texture_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = SecondaryTextureSettings::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_variant_multiplier = Some(rdr.read_f32()?);
             m_bind_as_default = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else {
         }
             m_user_data = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_asset_bundle_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
 
         Ok(SpriteAtlasImporter {
             m_name: m_name.unwrap(),

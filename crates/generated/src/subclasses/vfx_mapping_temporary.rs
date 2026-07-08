@@ -15,7 +15,6 @@ impl crate::Parse for VfxMappingTemporary {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mapping = VfxMapping::parse(rdr, ver)?;
-        rdr.align(4)?;
         let past_frame_index = rdr.read_u32()?;
         let per_camera_buffer = rdr.read_bool()?;
         rdr.align(4)?;

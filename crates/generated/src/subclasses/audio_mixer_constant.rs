@@ -42,20 +42,15 @@ impl crate::Parse for AudioMixerConstant {
         let mut exposed_parameter_indices = None;
         let mut group_connections = None;
             groups = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { GroupConstant::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             group_gui_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Guid::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             effects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { EffectConstant::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             effect_gui_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Guid::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             num_side_chain_buffers = Some(rdr.read_u32()?);
             snapshots = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SnapshotConstant::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             snapshot_gui_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Guid::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             group_name_buffer = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             snapshot_name_buffer = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             plugin_effect_name_buffer = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             exposed_parameter_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
             exposed_parameter_indices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
         if *ver >= crate::UnityVersion::new(2022, 1, 0) {

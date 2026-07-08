@@ -596,7 +596,6 @@ impl crate::Parse for TrailRenderer {
             m_time = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
             m_parameters = Some(LineParameters::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else {
             m_start_width = Some(rdr.read_f32()?);
             m_end_width = Some(rdr.read_f32()?);

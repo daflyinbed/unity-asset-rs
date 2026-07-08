@@ -32,7 +32,6 @@ impl crate::Parse for AudioRandomContainer {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_volume = rdr.read_f32()?;
         let m_pitch = rdr.read_f32()?;
         let m_automatic_trigger_time = rdr.read_f32()?;

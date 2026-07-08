@@ -1,7 +1,7 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
-use crate::subclasses::color_rgba::ColorRgba;
+use crate::subclasses::color_rgba32::ColorRgba32;
 use crate::subclasses::vector2f::Vector2f;
 
 #[derive(Debug, Clone)]
@@ -19,7 +19,7 @@ pub struct GuiText {
     pub m_font_size: i32,
     pub m_font_style: i32,
     pub m_pixel_correct: bool,
-    pub m_color: Option<ColorRgba>,
+    pub m_color: Option<ColorRgba32>,
     pub m_rich_text: Option<bool>,
 }
 
@@ -47,7 +47,6 @@ impl crate::Parse for GuiText {
             m_enabled = Some(rdr.read_u8()?);
             rdr.align(4)?;
             m_text = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_anchor = Some(rdr.read_i16()?);
             m_alignment = Some(rdr.read_i16()?);
             m_pixel_offset = Some(Vector2f::parse(rdr, ver)?);
@@ -58,7 +57,7 @@ impl crate::Parse for GuiText {
             m_font_size = Some(rdr.read_i32()?);
             m_font_style = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(4, 2, 0) {
-            m_color = Some(ColorRgba::parse(rdr, ver)?);
+            m_color = Some(ColorRgba32::parse(rdr, ver)?);
         } else {
         }
             m_pixel_correct = Some(rdr.read_bool()?);

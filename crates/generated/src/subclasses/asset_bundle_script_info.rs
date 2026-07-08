@@ -14,11 +14,8 @@ impl crate::Parse for AssetBundleScriptInfo {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let class_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let name_space = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let assembly_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let hash = rdr.read_u32()?;
 
         Ok(AssetBundleScriptInfo {

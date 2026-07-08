@@ -2,35 +2,12 @@
 
 use crate::PPtr;
 use crate::subclasses::bit_field::BitField;
-use crate::subclasses::color_rgba::ColorRgba;
+use crate::subclasses::color_rgb_af::ColorRgbAf;
 use crate::subclasses::light_baking_output::LightBakingOutput;
 use crate::subclasses::shadow_settings::ShadowSettings;
 use crate::subclasses::vector2f::Vector2f;
 use crate::subclasses::vector4f::Vector4f;
 
-
-/// 版本枚举：LightMShadowsVariant 的类型跨版本变化。
-#[derive(Debug, Clone)]
-pub enum LightMShadowsVariant {
-    Default(Box<ShadowSettings>),
-    V2019_1(Box<ShadowSettings>),
-}
-
-impl crate::Parse for LightMShadowsVariant {
-    fn parse<R: crate::EndianReader>(
-        rdr: &mut R,
-        ver: &crate::UnityVersion,
-    ) -> Result<Self, R::Error> {
-        if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            let v = ( { Ok(Box::new(ShadowSettings::parse(rdr, ver)?)) } )?;
-            rdr.align(4)?;
-            Ok(Self::V2019_1(v))
-        } else {
-            let v = ( { Ok(Box::new(ShadowSettings::parse(rdr, ver)?)) } )?;
-            Ok(Self::Default(v))
-        }
-    }
-}
 
 /// 版本枚举：LightMDrawHaloVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
@@ -50,29 +27,6 @@ impl crate::Parse for LightMDrawHaloVariant {
             Ok(Self::V5_4(v))
         } else {
             let v = rdr.read_bool()?;
-            Ok(Self::Default(v))
-        }
-    }
-}
-
-/// 版本枚举：LightMBakingOutputVariant 的类型跨版本变化。
-#[derive(Debug, Clone)]
-pub enum LightMBakingOutputVariant {
-    Default(Box<LightBakingOutput>),
-    V2017_3(Box<LightBakingOutput>),
-}
-
-impl crate::Parse for LightMBakingOutputVariant {
-    fn parse<R: crate::EndianReader>(
-        rdr: &mut R,
-        ver: &crate::UnityVersion,
-    ) -> Result<Self, R::Error> {
-        if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            let v = ( { Ok(Box::new(LightBakingOutput::parse(rdr, ver)?)) } )?;
-            rdr.align(4)?;
-            Ok(Self::V2017_3(v))
-        } else {
-            let v = ( { Ok(Box::new(LightBakingOutput::parse(rdr, ver)?)) } )?;
             Ok(Self::Default(v))
         }
     }
@@ -128,20 +82,20 @@ pub struct Light {
     pub m_game_object: PPtr,
     pub m_enabled: u8,
     pub m_type: i32,
-    pub m_color: ColorRgba,
+    pub m_color: ColorRgbAf,
     pub m_shape: Option<i32>,
     pub m_intensity: f32,
     pub m_range: f32,
     pub m_spot_angle: f32,
     pub m_cookie_size: Option<f32>,
     pub m_inner_spot_angle: Option<f32>,
-    pub m_shadows: LightMShadowsVariant,
+    pub m_shadows: ShadowSettings,
     pub m_cookie_size2_d: Option<Vector2f>,
     pub m_cookie: PPtr,
     pub m_draw_halo: LightMDrawHaloVariant,
     pub m_actually_lightmapped: Option<bool>,
     pub m_baked_index: Option<i32>,
-    pub m_baking_output: Option<LightMBakingOutputVariant>,
+    pub m_baking_output: Option<LightBakingOutput>,
     pub m_flare: PPtr,
     pub m_render_mode: i32,
     pub m_culling_mask: BitField,
@@ -211,7 +165,7 @@ impl crate::Parse for Light {
             m_shape = Some(rdr.read_i32()?);
         } else {
         }
-            m_color = Some(ColorRgba::parse(rdr, ver)?);
+            m_color = Some(ColorRgbAf::parse(rdr, ver)?);
             m_intensity = Some(rdr.read_f32()?);
             m_range = Some(rdr.read_f32()?);
             m_spot_angle = Some(rdr.read_f32()?);
@@ -224,11 +178,11 @@ impl crate::Parse for Light {
         } else {
             m_cookie_size = Some(rdr.read_f32()?);
         }
-            m_shadows = Some(LightMShadowsVariant::parse(rdr, ver)?);
+            m_shadows = Some(ShadowSettings::parse(rdr, ver)?);
             m_cookie = Some(crate::PPtr::parse(rdr, ver)?);
             m_draw_halo = Some(LightMDrawHaloVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            m_baking_output = Some(LightMBakingOutputVariant::parse(rdr, ver)?);
+            m_baking_output = Some(LightBakingOutput::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
             m_baked_index = Some(rdr.read_i32()?);
             rdr.align(4)?;

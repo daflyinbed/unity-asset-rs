@@ -60,14 +60,11 @@ impl crate::Parse for UvModule {
         } else {
         }
             frame_over_time = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2018, 3, 0) {
             start_frame = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             speed_range = Some(Vector2f::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
             start_frame = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else {
         }
             tiles_x = Some(rdr.read_i32()?);

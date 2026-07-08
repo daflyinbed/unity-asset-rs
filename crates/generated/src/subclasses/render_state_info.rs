@@ -13,7 +13,6 @@ impl crate::Parse for RenderStateInfo {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let render_state = RenderStateBlock::parse(rdr, ver)?;
-        rdr.align(4)?;
 
         Ok(RenderStateInfo {
             render_state,

@@ -134,7 +134,6 @@ impl crate::Parse for BoxCollider2D {
             m_composite_order = Some(rdr.read_i32()?);
             m_offset = Some(Vector2f::parse(rdr, ver)?);
             m_sprite_tiling_property = Some(SpriteTilingProperty::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_auto_tiling = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
@@ -143,7 +142,6 @@ impl crate::Parse for BoxCollider2D {
             rdr.align(4)?;
             m_offset = Some(Vector2f::parse(rdr, ver)?);
             m_sprite_tiling_property = Some(SpriteTilingProperty::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_auto_tiling = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {

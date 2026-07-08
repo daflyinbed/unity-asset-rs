@@ -35,6 +35,29 @@ impl crate::Parse for SpriteRenderDataMSubMeshesVariant {
         }
     }
 }
+
+/// 版本枚举：SpriteRenderDataMVertexDataVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum SpriteRenderDataMVertexDataVariant {
+    Default(Box<VertexData>),
+    V2018_1(Box<VertexData>),
+}
+
+impl crate::Parse for SpriteRenderDataMVertexDataVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2018, 1, 0) {
+            let v = ( { Ok(Box::new(VertexData::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2018_1(v))
+        } else {
+            let v = ( { Ok(Box::new(VertexData::parse(rdr, ver)?)) } )?;
+            rdr.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct SpriteRenderData {
     pub texture: PPtr,
@@ -46,7 +69,7 @@ pub struct SpriteRenderData {
     pub texture_rect: Rectf,
     pub m_index_buffer: Option<Vec<u8>>,
     pub texture_rect_offset: Vector2f,
-    pub m_vertex_data: Option<VertexData>,
+    pub m_vertex_data: Option<SpriteRenderDataMVertexDataVariant>,
     pub settings_raw: u32,
     pub m_bindpose: Option<Vec<Matrix4x4f>>,
     pub uv_transform: Option<Vector4f>,
@@ -86,8 +109,7 @@ impl crate::Parse for SpriteRenderData {
             m_sub_meshes = Some(SpriteRenderDataMSubMeshesVariant::parse(rdr, ver)?);
             m_index_buffer = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
-            m_vertex_data = Some(VertexData::parse(rdr, ver)?);
-            rdr.align(4)?;
+            m_vertex_data = Some(SpriteRenderDataMVertexDataVariant::parse(rdr, ver)?);
             m_bindpose = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Matrix4x4f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             m_blend_shapes = Some(BlendShapeData::parse(rdr, ver)?);
@@ -99,8 +121,7 @@ impl crate::Parse for SpriteRenderData {
             m_sub_meshes = Some(SpriteRenderDataMSubMeshesVariant::parse(rdr, ver)?);
             m_index_buffer = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
-            m_vertex_data = Some(VertexData::parse(rdr, ver)?);
-            rdr.align(4)?;
+            m_vertex_data = Some(SpriteRenderDataMVertexDataVariant::parse(rdr, ver)?);
             m_bindpose = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Matrix4x4f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 2, 0) {
@@ -108,8 +129,7 @@ impl crate::Parse for SpriteRenderData {
             m_sub_meshes = Some(SpriteRenderDataMSubMeshesVariant::parse(rdr, ver)?);
             m_index_buffer = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
-            m_vertex_data = Some(VertexData::parse(rdr, ver)?);
-            rdr.align(4)?;
+            m_vertex_data = Some(SpriteRenderDataMVertexDataVariant::parse(rdr, ver)?);
             m_bindpose = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Matrix4x4f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
@@ -117,8 +137,7 @@ impl crate::Parse for SpriteRenderData {
             m_sub_meshes = Some(SpriteRenderDataMSubMeshesVariant::parse(rdr, ver)?);
             m_index_buffer = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
-            m_vertex_data = Some(VertexData::parse(rdr, ver)?);
-            rdr.align(4)?;
+            m_vertex_data = Some(SpriteRenderDataMVertexDataVariant::parse(rdr, ver)?);
             m_bindpose = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Matrix4x4f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             m_source_skin = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { BoneWeights4::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
@@ -128,17 +147,14 @@ impl crate::Parse for SpriteRenderData {
             m_sub_meshes = Some(SpriteRenderDataMSubMeshesVariant::parse(rdr, ver)?);
             m_index_buffer = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
-            m_vertex_data = Some(VertexData::parse(rdr, ver)?);
-            rdr.align(4)?;
+            m_vertex_data = Some(SpriteRenderDataMVertexDataVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 2, 0) {
             alpha_texture = Some(crate::PPtr::parse(rdr, ver)?);
             vertices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SpriteVertex::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             indices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u16() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
         } else {
             vertices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SpriteVertex::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             indices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u16() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
         }
             texture_rect = Some(Rectf::parse(rdr, ver)?);
             texture_rect_offset = Some(Vector2f::parse(rdr, ver)?);

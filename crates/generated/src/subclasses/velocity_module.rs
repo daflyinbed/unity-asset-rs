@@ -40,31 +40,19 @@ impl crate::Parse for VelocityModule {
             enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
             x = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             y = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             z = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2018, 1, 0) {
             orbital_x = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             orbital_y = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             orbital_z = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             orbital_offset_x = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             orbital_offset_y = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             orbital_offset_z = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             radial = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             speed_modifier = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
             speed_modifier = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else {
         }
             in_world_space = Some(rdr.read_bool()?);

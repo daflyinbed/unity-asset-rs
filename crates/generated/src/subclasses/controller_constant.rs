@@ -23,16 +23,12 @@ impl crate::Parse for ControllerConstant {
         let mut m_default_values = None;
         if *ver >= crate::UnityVersion::new(4, 3, 0) {
             m_layer_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { OffsetPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
         } else {
             m_human_layer_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { OffsetPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
         }
             m_state_machine_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { OffsetPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_values = Some(OffsetPtr::parse(rdr, ver)?);
             m_default_values = Some(OffsetPtr::parse(rdr, ver)?);
-            rdr.align(4)?;
 
         Ok(ControllerConstant {
             m_human_layer_array,

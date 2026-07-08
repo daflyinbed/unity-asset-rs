@@ -18,7 +18,6 @@ impl crate::Parse for InheritVelocityModule {
         rdr.align(4)?;
         let m_mode = rdr.read_i32()?;
         let m_curve = MinMaxCurve::parse(rdr, ver)?;
-        rdr.align(4)?;
 
         Ok(InheritVelocityModule {
             enabled,

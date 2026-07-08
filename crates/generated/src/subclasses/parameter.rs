@@ -14,7 +14,6 @@ impl crate::Parse for Parameter {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_parameter_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_guid = Guid::parse(rdr, ver)?;
 
         Ok(Parameter {

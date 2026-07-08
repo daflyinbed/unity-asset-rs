@@ -5,29 +5,6 @@ use crate::subclasses::light_probe_occlusion::LightProbeOcclusion;
 use crate::subclasses::spherical_harmonics_l2::SphericalHarmonicsL2;
 
 
-/// 版本枚举：LightProbes_258MDataVariant 的类型跨版本变化。
-#[derive(Debug, Clone)]
-pub enum LightProbes_258MDataVariant {
-    Default(Box<LightProbeData>),
-    V2017_1(Box<LightProbeData>),
-}
-
-impl crate::Parse for LightProbes_258MDataVariant {
-    fn parse<R: crate::EndianReader>(
-        rdr: &mut R,
-        ver: &crate::UnityVersion,
-    ) -> Result<Self, R::Error> {
-        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { Ok(Box::new(LightProbeData::parse(rdr, ver)?)) } )?;
-            rdr.align(4)?;
-            Ok(Self::V2017_1(v))
-        } else {
-            let v = ( { Ok(Box::new(LightProbeData::parse(rdr, ver)?)) } )?;
-            Ok(Self::Default(v))
-        }
-    }
-}
-
 /// 版本枚举：LightProbes_258MBakedCoefficientsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum LightProbes_258MBakedCoefficientsVariant {
@@ -76,7 +53,7 @@ impl crate::Parse for LightProbes_258MBakedLightOcclusionVariant {
 #[derive(Debug, Clone)]
 pub struct LightProbes_258 {
     pub m_name: String,
-    pub m_data: LightProbes_258MDataVariant,
+    pub m_data: LightProbeData,
     pub m_baked_coefficients: LightProbes_258MBakedCoefficientsVariant,
     pub m_baked_light_occlusion: Option<LightProbes_258MBakedLightOcclusionVariant>,
     pub m_has_been_edited: Option<bool>,
@@ -88,8 +65,7 @@ impl crate::Parse for LightProbes_258 {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
-        let m_data = LightProbes_258MDataVariant::parse(rdr, ver)?;
+        let m_data = LightProbeData::parse(rdr, ver)?;
         let m_baked_coefficients = LightProbes_258MBakedCoefficientsVariant::parse(rdr, ver)?;
         let m_baked_light_occlusion = if *ver >= crate::UnityVersion::new(5, 4, 0) {
             Some(LightProbes_258MBakedLightOcclusionVariant::parse(rdr, ver)?)

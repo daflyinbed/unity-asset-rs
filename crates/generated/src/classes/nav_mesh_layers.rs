@@ -5,6 +5,29 @@ use crate::subclasses::nav_mesh_build_settings::NavMeshBuildSettings;
 use crate::subclasses::nav_mesh_layer_data::NavMeshLayerData;
 
 
+/// 版本枚举：NavMeshLayersAreasVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum NavMeshLayersAreasVariant {
+    Default(Vec<NavMeshAreaData>),
+    V2017_1(Vec<NavMeshAreaData>),
+}
+
+impl crate::Parse for NavMeshLayersAreasVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { NavMeshAreaData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { NavMeshAreaData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
 /// 版本枚举：NavMeshLayersMSettingsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum NavMeshLayersMSettingsVariant {
@@ -27,16 +50,39 @@ impl crate::Parse for NavMeshLayersMSettingsVariant {
         }
     }
 }
+
+/// 版本枚举：NavMeshLayersMSettingNamesVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum NavMeshLayersMSettingNamesVariant {
+    Default(Vec<String>),
+    V2017_1(Vec<String>),
+}
+
+impl crate::Parse for NavMeshLayersMSettingNamesVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct NavMeshLayers {
     pub built_in_layer_0: Option<NavMeshLayerData>,
-    pub areas: Option<Vec<NavMeshAreaData>>,
+    pub areas: Option<NavMeshLayersAreasVariant>,
     pub built_in_layer_1: Option<NavMeshLayerData>,
     pub m_last_agent_type_id: Option<i32>,
     pub built_in_layer_2: Option<NavMeshLayerData>,
     pub m_settings: Option<NavMeshLayersMSettingsVariant>,
     pub user_layer_0: Option<NavMeshLayerData>,
-    pub m_setting_names: Option<Vec<String>>,
+    pub m_setting_names: Option<NavMeshLayersMSettingNamesVariant>,
     pub user_layer_1: Option<NavMeshLayerData>,
     pub user_layer_2: Option<NavMeshLayerData>,
     pub user_layer_3: Option<NavMeshLayerData>,
@@ -109,80 +155,45 @@ impl crate::Parse for NavMeshLayers {
         let mut user_layer_27 = None;
         let mut user_layer_28 = None;
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            areas = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { NavMeshAreaData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            areas = Some(NavMeshLayersAreasVariant::parse(rdr, ver)?);
             m_last_agent_type_id = Some(rdr.read_i32()?);
             m_settings = Some(NavMeshLayersMSettingsVariant::parse(rdr, ver)?);
-            m_setting_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_setting_names = Some(NavMeshLayersMSettingNamesVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            areas = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { NavMeshAreaData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            areas = Some(NavMeshLayersAreasVariant::parse(rdr, ver)?);
         } else {
             built_in_layer_0 = Some(NavMeshLayerData::parse(rdr, ver)?);
-            rdr.align(4)?;
             built_in_layer_1 = Some(NavMeshLayerData::parse(rdr, ver)?);
-            rdr.align(4)?;
             built_in_layer_2 = Some(NavMeshLayerData::parse(rdr, ver)?);
-            rdr.align(4)?;
             user_layer_0 = Some(NavMeshLayerData::parse(rdr, ver)?);
-            rdr.align(4)?;
             user_layer_1 = Some(NavMeshLayerData::parse(rdr, ver)?);
-            rdr.align(4)?;
             user_layer_2 = Some(NavMeshLayerData::parse(rdr, ver)?);
-            rdr.align(4)?;
             user_layer_3 = Some(NavMeshLayerData::parse(rdr, ver)?);
-            rdr.align(4)?;
             user_layer_4 = Some(NavMeshLayerData::parse(rdr, ver)?);
-            rdr.align(4)?;
             user_layer_5 = Some(NavMeshLayerData::parse(rdr, ver)?);
-            rdr.align(4)?;
             user_layer_6 = Some(NavMeshLayerData::parse(rdr, ver)?);
-            rdr.align(4)?;
             user_layer_7 = Some(NavMeshLayerData::parse(rdr, ver)?);
-            rdr.align(4)?;
             user_layer_8 = Some(NavMeshLayerData::parse(rdr, ver)?);
-            rdr.align(4)?;
             user_layer_9 = Some(NavMeshLayerData::parse(rdr, ver)?);
-            rdr.align(4)?;
             user_layer_10 = Some(NavMeshLayerData::parse(rdr, ver)?);
-            rdr.align(4)?;
             user_layer_11 = Some(NavMeshLayerData::parse(rdr, ver)?);
-            rdr.align(4)?;
             user_layer_12 = Some(NavMeshLayerData::parse(rdr, ver)?);
-            rdr.align(4)?;
             user_layer_13 = Some(NavMeshLayerData::parse(rdr, ver)?);
-            rdr.align(4)?;
             user_layer_14 = Some(NavMeshLayerData::parse(rdr, ver)?);
-            rdr.align(4)?;
             user_layer_15 = Some(NavMeshLayerData::parse(rdr, ver)?);
-            rdr.align(4)?;
             user_layer_16 = Some(NavMeshLayerData::parse(rdr, ver)?);
-            rdr.align(4)?;
             user_layer_17 = Some(NavMeshLayerData::parse(rdr, ver)?);
-            rdr.align(4)?;
             user_layer_18 = Some(NavMeshLayerData::parse(rdr, ver)?);
-            rdr.align(4)?;
             user_layer_19 = Some(NavMeshLayerData::parse(rdr, ver)?);
-            rdr.align(4)?;
             user_layer_20 = Some(NavMeshLayerData::parse(rdr, ver)?);
-            rdr.align(4)?;
             user_layer_21 = Some(NavMeshLayerData::parse(rdr, ver)?);
-            rdr.align(4)?;
             user_layer_22 = Some(NavMeshLayerData::parse(rdr, ver)?);
-            rdr.align(4)?;
             user_layer_23 = Some(NavMeshLayerData::parse(rdr, ver)?);
-            rdr.align(4)?;
             user_layer_24 = Some(NavMeshLayerData::parse(rdr, ver)?);
-            rdr.align(4)?;
             user_layer_25 = Some(NavMeshLayerData::parse(rdr, ver)?);
-            rdr.align(4)?;
             user_layer_26 = Some(NavMeshLayerData::parse(rdr, ver)?);
-            rdr.align(4)?;
             user_layer_27 = Some(NavMeshLayerData::parse(rdr, ver)?);
-            rdr.align(4)?;
             user_layer_28 = Some(NavMeshLayerData::parse(rdr, ver)?);
-            rdr.align(4)?;
         }
 
         Ok(NavMeshLayers {

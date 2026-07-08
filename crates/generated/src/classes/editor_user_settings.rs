@@ -200,19 +200,13 @@ impl crate::Parse for EditorUserSettings {
         let mut m_compress_assets_on_import = None;
         if *ver >= crate::UnityVersion::new(5, 4, 2) {
             m_config_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = ConfigSetting::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
             m_config_values = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
         } else {
             m_vc_user_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_vc_password = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_vc_server = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_vc_workspace = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         }
             m_vc_automatic_add = Some(rdr.read_bool()?);
             m_vc_debug_com = Some(rdr.read_bool()?);

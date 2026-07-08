@@ -20,11 +20,8 @@ impl crate::Parse for ForceModule {
         let enabled = rdr.read_bool()?;
         rdr.align(4)?;
         let x = MinMaxCurve::parse(rdr, ver)?;
-        rdr.align(4)?;
         let y = MinMaxCurve::parse(rdr, ver)?;
-        rdr.align(4)?;
         let z = MinMaxCurve::parse(rdr, ver)?;
-        rdr.align(4)?;
         let in_world_space = rdr.read_bool()?;
         let randomize_per_frame = rdr.read_bool()?;
         rdr.align(4)?;

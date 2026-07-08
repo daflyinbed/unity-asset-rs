@@ -12,9 +12,7 @@ impl crate::Parse for BuildTextureStackReference {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let group_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let item_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
 
         Ok(BuildTextureStackReference {
             group_name,

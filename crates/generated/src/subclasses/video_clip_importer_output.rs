@@ -114,7 +114,6 @@ impl crate::Parse for VideoClipImporterOutput {
             encoded_start_frame = Some(rdr.read_i32()?);
             encoded_end_frame = Some(rdr.read_i32()?);
             streamed_resource = Some(StreamedResource::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 1, 3) {
             source_frame_rate = Some(rdr.read_f64()?);
             source_file_size = Some(rdr.read_u64()?);
@@ -137,7 +136,6 @@ impl crate::Parse for VideoClipImporterOutput {
             encoded_start_frame = Some(rdr.read_i32()?);
             encoded_end_frame = Some(rdr.read_i32()?);
             streamed_resource = Some(StreamedResource::parse(rdr, ver)?);
-            rdr.align(4)?;
         }
 
         Ok(VideoClipImporterOutput {

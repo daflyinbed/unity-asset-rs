@@ -7,7 +7,7 @@ use crate::subclasses::build_report_packed_asset_info::BuildReportPackedAssetInf
 #[derive(Debug, Clone)]
 pub enum PackedAssetsMContentsVariant {
     Default(Vec<BuildReportPackedAssetInfo>),
-    V5_4_2(Vec<BuildReportPackedAssetInfo>),
+    V2017_1(Vec<BuildReportPackedAssetInfo>),
 }
 
 impl crate::Parse for PackedAssetsMContentsVariant {
@@ -15,10 +15,10 @@ impl crate::Parse for PackedAssetsMContentsVariant {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        if *ver >= crate::UnityVersion::new(5, 4, 2) {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { BuildReportPackedAssetInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             rdr.align(4)?;
-            Ok(Self::V5_4_2(v))
+            Ok(Self::V2017_1(v))
         } else {
             let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { BuildReportPackedAssetInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
@@ -47,7 +47,6 @@ impl crate::Parse for PackedAssets {
             m_file = Some(rdr.read_u32()?);
         }
             m_short_path = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_overhead = Some(rdr.read_u64()?);
             m_contents = Some(PackedAssetsMContentsVariant::parse(rdr, ver)?);
 

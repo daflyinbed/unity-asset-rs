@@ -23,11 +23,9 @@ impl crate::Parse for Mesh3DsImporterMFileIdToRecycleNameVariant {
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i64()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-            rdr.align(4)?;
             Ok(Self::V5_0(v))
         } else {
             let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i32()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -152,6 +150,29 @@ impl crate::Parse for Mesh3DsImporterMUseFileUnitsVariant {
     }
 }
 
+/// 版本枚举：Mesh3DsImporterMClipAnimationsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum Mesh3DsImporterMClipAnimationsVariant {
+    Default(Vec<ClipAnimationInfo>),
+    V2017_1(Vec<ClipAnimationInfo>),
+}
+
+impl crate::Parse for Mesh3DsImporterMClipAnimationsVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ClipAnimationInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ClipAnimationInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
 /// 版本枚举：Mesh3DsImporterMAnimationDoRetargetingWarningsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum Mesh3DsImporterMAnimationDoRetargetingWarningsVariant {
@@ -170,6 +191,29 @@ impl crate::Parse for Mesh3DsImporterMAnimationDoRetargetingWarningsVariant {
         } else {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：Mesh3DsImporterMExtraExposedTransformPathsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum Mesh3DsImporterMExtraExposedTransformPathsVariant {
+    Default(Vec<String>),
+    V2017_1(Vec<String>),
+}
+
+impl crate::Parse for Mesh3DsImporterMExtraExposedTransformPathsVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -358,6 +402,29 @@ impl crate::Parse for Mesh3DsImporterMHasExtraRootVariant {
             Ok(Self::V4_3(v))
         } else {
             let v = rdr.read_bool()?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：Mesh3DsImporterMImportedTakeInfosVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum Mesh3DsImporterMImportedTakeInfosVariant {
+    Default(Vec<TakeInfo>),
+    V2017_1(Vec<TakeInfo>),
+}
+
+impl crate::Parse for Mesh3DsImporterMImportedTakeInfosVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TakeInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TakeInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -644,10 +711,10 @@ pub struct Mesh3DsImporter {
     pub m_animation_wrap_mode: i32,
     pub m_animation_retargeting_warnings: Option<String>,
     pub m_rig_import_warnings: Option<String>,
-    pub m_clip_animations: Vec<ClipAnimationInfo>,
+    pub m_clip_animations: Mesh3DsImporterMClipAnimationsVariant,
     pub m_animation_do_retargeting_warnings: Option<Mesh3DsImporterMAnimationDoRetargetingWarningsVariant>,
     pub m_is_readable: Option<bool>,
-    pub m_extra_exposed_transform_paths: Option<Vec<String>>,
+    pub m_extra_exposed_transform_paths: Option<Mesh3DsImporterMExtraExposedTransformPathsVariant>,
     pub m_lod_screen_percentages: Option<Mesh3DsImporterMLodScreenPercentagesVariant>,
     pub m_remove_constant_scale_curves: Option<bool>,
     pub m_mesh_compression: i32,
@@ -681,7 +748,7 @@ pub struct Mesh3DsImporter {
     pub tangent_import_mode: Option<Mesh3DsImporterTangentImportModeVariant>,
     pub m_import_visibility: Option<bool>,
     pub m_has_extra_root: Mesh3DsImporterMHasExtraRootVariant,
-    pub m_imported_take_infos: Option<Vec<TakeInfo>>,
+    pub m_imported_take_infos: Option<Mesh3DsImporterMImportedTakeInfosVariant>,
     pub m_referenced_clips: Option<Mesh3DsImporterMReferencedClipsVariant>,
     pub m_import_cameras: Option<bool>,
     pub m_use_file_scale: Option<bool>,
@@ -871,14 +938,11 @@ impl crate::Parse for Mesh3DsImporter {
         let mut m_remap_materials_if_material_import_mode_is_none = None;
         let mut m_import_blend_shape_deform_percent = None;
             m_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(6000, 6, 0) {
             m_internal_id_to_name_table = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = ( { let a = rdr.read_i32()?; let b = rdr.read_i64()?; Ok((a, b)) } )?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_supports_embedded_materials = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_material_import_mode = Some(rdr.read_i32()?);
@@ -886,15 +950,12 @@ impl crate::Parse for Mesh3DsImporter {
             m_material_search = Some(rdr.read_i32()?);
             m_material_location = Some(rdr.read_i32()?);
             m_materials = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_legacy_generate_animations = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(6000, 5, 0) {
             m_internal_id_to_name_table = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = ( { let a = rdr.read_i32()?; let b = rdr.read_i64()?; Ok((a, b)) } )?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_supports_embedded_materials = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_material_import_mode = Some(rdr.read_i32()?);
@@ -904,15 +965,12 @@ impl crate::Parse for Mesh3DsImporter {
             m_search_textures_globally = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_materials = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_legacy_generate_animations = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
             m_internal_id_to_name_table = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = ( { let a = rdr.read_i32()?; let b = rdr.read_i64()?; Ok((a, b)) } )?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_supports_embedded_materials = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_material_import_mode = Some(rdr.read_i32()?);
@@ -920,15 +978,12 @@ impl crate::Parse for Mesh3DsImporter {
             m_material_search = Some(rdr.read_i32()?);
             m_material_location = Some(rdr.read_i32()?);
             m_materials = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_legacy_generate_animations = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             m_internal_id_to_name_table = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = ( { let a = rdr.read_i32()?; let b = rdr.read_i64()?; Ok((a, b)) } )?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_import_materials = Some(Mesh3DsImporterMImportMaterialsVariant::parse(rdr, ver)?);
             m_supports_embedded_materials = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -936,12 +991,10 @@ impl crate::Parse for Mesh3DsImporter {
             m_material_search = Some(rdr.read_i32()?);
             m_material_location = Some(rdr.read_i32()?);
             m_materials = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_legacy_generate_animations = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             m_file_id_to_recycle_name = Some(Mesh3DsImporterMFileIdToRecycleNameVariant::parse(rdr, ver)?);
             m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_import_materials = Some(Mesh3DsImporterMImportMaterialsVariant::parse(rdr, ver)?);
             m_supports_embedded_materials = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -949,7 +1002,6 @@ impl crate::Parse for Mesh3DsImporter {
             m_material_search = Some(rdr.read_i32()?);
             m_material_location = Some(rdr.read_i32()?);
             m_materials = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_legacy_generate_animations = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
             m_file_id_to_recycle_name = Some(Mesh3DsImporterMFileIdToRecycleNameVariant::parse(rdr, ver)?);
@@ -966,9 +1018,7 @@ impl crate::Parse for Mesh3DsImporter {
         } else {
             m_file_id_to_recycle_name = Some(Mesh3DsImporterMFileIdToRecycleNameVariant::parse(rdr, ver)?);
             m_old_hash_identity = Some(MdFour::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_new_hash_identity = Some(MdFour::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_generate_materials = Some(rdr.read_i32()?);
             m_generate_animations = Some(rdr.read_i32()?);
             m_global_scale = Some(rdr.read_f32()?);
@@ -980,13 +1030,9 @@ impl crate::Parse for Mesh3DsImporter {
             m_remove_constant_scale_curves = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_motion_node_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_import_errors = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_import_warnings = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_retargeting_warnings = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_do_retargeting_warnings = Some(Mesh3DsImporterMAnimationDoRetargetingWarningsVariant::parse(rdr, ver)?);
             m_import_animated_custom_properties = Some(Mesh3DsImporterMImportAnimatedCustomPropertiesVariant::parse(rdr, ver)?);
             m_import_constraints = Some(rdr.read_bool()?);
@@ -997,17 +1043,11 @@ impl crate::Parse for Mesh3DsImporter {
             m_remove_constant_scale_curves = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_motion_node_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_rig_import_errors = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_rig_import_warnings = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_import_errors = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_import_warnings = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_retargeting_warnings = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_do_retargeting_warnings = Some(Mesh3DsImporterMAnimationDoRetargetingWarningsVariant::parse(rdr, ver)?);
             m_import_animated_custom_properties = Some(Mesh3DsImporterMImportAnimatedCustomPropertiesVariant::parse(rdr, ver)?);
             m_import_constraints = Some(rdr.read_bool()?);
@@ -1016,17 +1056,11 @@ impl crate::Parse for Mesh3DsImporter {
             m_resample_curves = Some(rdr.read_bool()?);
             m_optimize_game_objects = Some(Mesh3DsImporterMOptimizeGameObjectsVariant::parse(rdr, ver)?);
             m_motion_node_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_rig_import_errors = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_rig_import_warnings = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_import_errors = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_import_warnings = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_retargeting_warnings = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_do_retargeting_warnings = Some(Mesh3DsImporterMAnimationDoRetargetingWarningsVariant::parse(rdr, ver)?);
             m_import_animated_custom_properties = Some(Mesh3DsImporterMImportAnimatedCustomPropertiesVariant::parse(rdr, ver)?);
             m_import_constraints = Some(rdr.read_bool()?);
@@ -1035,74 +1069,49 @@ impl crate::Parse for Mesh3DsImporter {
             m_resample_curves = Some(rdr.read_bool()?);
             m_optimize_game_objects = Some(Mesh3DsImporterMOptimizeGameObjectsVariant::parse(rdr, ver)?);
             m_motion_node_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_rig_import_errors = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_rig_import_warnings = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_import_errors = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_import_warnings = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_retargeting_warnings = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_do_retargeting_warnings = Some(Mesh3DsImporterMAnimationDoRetargetingWarningsVariant::parse(rdr, ver)?);
             m_import_animated_custom_properties = Some(Mesh3DsImporterMImportAnimatedCustomPropertiesVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
             m_resample_curves = Some(rdr.read_bool()?);
             m_optimize_game_objects = Some(Mesh3DsImporterMOptimizeGameObjectsVariant::parse(rdr, ver)?);
             m_motion_node_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_rig_import_errors = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_rig_import_warnings = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_import_errors = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_import_warnings = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_retargeting_warnings = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_do_retargeting_warnings = Some(Mesh3DsImporterMAnimationDoRetargetingWarningsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
             m_resample_curves = Some(rdr.read_bool()?);
             m_optimize_game_objects = Some(Mesh3DsImporterMOptimizeGameObjectsVariant::parse(rdr, ver)?);
             m_motion_node_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_import_errors = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_import_warnings = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_retargeting_warnings = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_do_retargeting_warnings = Some(Mesh3DsImporterMAnimationDoRetargetingWarningsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
             m_resample_rotations = Some(rdr.read_bool()?);
             m_optimize_game_objects = Some(Mesh3DsImporterMOptimizeGameObjectsVariant::parse(rdr, ver)?);
             m_motion_node_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_import_errors = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_import_warnings = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_retargeting_warnings = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_do_retargeting_warnings = Some(Mesh3DsImporterMAnimationDoRetargetingWarningsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 1, 0) {
             m_optimize_game_objects = Some(Mesh3DsImporterMOptimizeGameObjectsVariant::parse(rdr, ver)?);
             m_motion_node_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_import_errors = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_import_warnings = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_retargeting_warnings = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_do_retargeting_warnings = Some(Mesh3DsImporterMAnimationDoRetargetingWarningsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 5, 0) {
             m_optimize_game_objects = Some(Mesh3DsImporterMOptimizeGameObjectsVariant::parse(rdr, ver)?);
             m_motion_node_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
             m_optimize_game_objects = Some(Mesh3DsImporterMOptimizeGameObjectsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
@@ -1133,17 +1142,14 @@ impl crate::Parse for Mesh3DsImporter {
         }
             m_animation_wrap_mode = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            m_extra_exposed_transform_paths = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_extra_exposed_transform_paths = Some(Mesh3DsImporterMExtraExposedTransformPathsVariant::parse(rdr, ver)?);
             m_extra_user_properties = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            m_extra_exposed_transform_paths = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_extra_exposed_transform_paths = Some(Mesh3DsImporterMExtraExposedTransformPathsVariant::parse(rdr, ver)?);
         } else {
         }
-            m_clip_animations = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ClipAnimationInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_clip_animations = Some(Mesh3DsImporterMClipAnimationsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 5, 0) {
             m_is_readable = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -1193,7 +1199,6 @@ impl crate::Parse for Mesh3DsImporter {
             rdr.align(4)?;
             m_file_scale = Some(Mesh3DsImporterMFileScaleVariant::parse(rdr, ver)?);
             m_file_scale_unit = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_file_scale_factor = Some(rdr.read_f32()?);
             rdr.align(4)?;
             m_strict_vertex_data_checks = Some(rdr.read_bool()?);
@@ -1244,7 +1249,6 @@ impl crate::Parse for Mesh3DsImporter {
             rdr.align(4)?;
             m_file_scale = Some(Mesh3DsImporterMFileScaleVariant::parse(rdr, ver)?);
             m_file_scale_unit = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_file_scale_factor = Some(rdr.read_f32()?);
             rdr.align(4)?;
             m_strict_vertex_data_checks = Some(rdr.read_bool()?);
@@ -1291,7 +1295,6 @@ impl crate::Parse for Mesh3DsImporter {
             rdr.align(4)?;
             m_file_scale = Some(Mesh3DsImporterMFileScaleVariant::parse(rdr, ver)?);
             m_file_scale_unit = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_file_scale_factor = Some(rdr.read_f32()?);
             rdr.align(4)?;
             m_strict_vertex_data_checks = Some(rdr.read_bool()?);
@@ -1337,7 +1340,6 @@ impl crate::Parse for Mesh3DsImporter {
             rdr.align(4)?;
             m_file_scale = Some(Mesh3DsImporterMFileScaleVariant::parse(rdr, ver)?);
             m_file_scale_unit = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_file_scale_factor = Some(rdr.read_f32()?);
             rdr.align(4)?;
             m_strict_vertex_data_checks = Some(rdr.read_bool()?);
@@ -1383,7 +1385,6 @@ impl crate::Parse for Mesh3DsImporter {
             rdr.align(4)?;
             m_file_scale = Some(Mesh3DsImporterMFileScaleVariant::parse(rdr, ver)?);
             m_file_scale_unit = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_file_scale_factor = Some(rdr.read_f32()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
@@ -1425,7 +1426,6 @@ impl crate::Parse for Mesh3DsImporter {
             rdr.align(4)?;
             m_file_scale = Some(Mesh3DsImporterMFileScaleVariant::parse(rdr, ver)?);
             m_file_scale_unit = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_file_scale_factor = Some(rdr.read_f32()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2019, 3, 17) {
@@ -1463,7 +1463,6 @@ impl crate::Parse for Mesh3DsImporter {
             rdr.align(4)?;
             m_file_scale = Some(Mesh3DsImporterMFileScaleVariant::parse(rdr, ver)?);
             m_file_scale_unit = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_file_scale_factor = Some(rdr.read_f32()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2019, 2, 0) {
@@ -1500,7 +1499,6 @@ impl crate::Parse for Mesh3DsImporter {
             rdr.align(4)?;
             m_file_scale = Some(Mesh3DsImporterMFileScaleVariant::parse(rdr, ver)?);
             m_file_scale_unit = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_file_scale_factor = Some(rdr.read_f32()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
@@ -1536,7 +1534,6 @@ impl crate::Parse for Mesh3DsImporter {
             rdr.align(4)?;
             m_file_scale = Some(Mesh3DsImporterMFileScaleVariant::parse(rdr, ver)?);
             m_file_scale_unit = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_file_scale_factor = Some(rdr.read_f32()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
@@ -1569,7 +1566,6 @@ impl crate::Parse for Mesh3DsImporter {
             rdr.align(4)?;
             m_file_scale = Some(Mesh3DsImporterMFileScaleVariant::parse(rdr, ver)?);
             m_file_scale_unit = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_file_scale_factor = Some(rdr.read_f32()?);
             rdr.align(4)?;
             m_previous_calculated_global_scale = Some(rdr.read_f32()?);
@@ -1740,8 +1736,7 @@ impl crate::Parse for Mesh3DsImporter {
             normal_smoothing_source = Some(Mesh3DsImporterNormalSmoothingSourceVariant::parse(rdr, ver)?);
             calculate_blendshape_normals_delta_from_imported_normals = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_imported_take_infos = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TakeInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_imported_take_infos = Some(Mesh3DsImporterMImportedTakeInfosVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             normal_import_mode = Some(rdr.read_i32()?);
             tangent_import_mode = Some(Mesh3DsImporterTangentImportModeVariant::parse(rdr, ver)?);
@@ -1750,8 +1745,7 @@ impl crate::Parse for Mesh3DsImporter {
             rdr.align(4)?;
             blend_shape_normal_import_mode = Some(rdr.read_i32()?);
             normal_smoothing_source = Some(Mesh3DsImporterNormalSmoothingSourceVariant::parse(rdr, ver)?);
-            m_imported_take_infos = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TakeInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_imported_take_infos = Some(Mesh3DsImporterMImportedTakeInfosVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
             normal_import_mode = Some(rdr.read_i32()?);
             tangent_import_mode = Some(Mesh3DsImporterTangentImportModeVariant::parse(rdr, ver)?);
@@ -1760,29 +1754,25 @@ impl crate::Parse for Mesh3DsImporter {
             rdr.align(4)?;
             blend_shape_normal_import_mode = Some(rdr.read_i32()?);
             normal_smoothing_source = Some(Mesh3DsImporterNormalSmoothingSourceVariant::parse(rdr, ver)?);
-            m_imported_take_infos = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TakeInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_imported_take_infos = Some(Mesh3DsImporterMImportedTakeInfosVariant::parse(rdr, ver)?);
             m_referenced_clips = Some(Mesh3DsImporterMReferencedClipsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             normal_import_mode = Some(rdr.read_i32()?);
             tangent_import_mode = Some(Mesh3DsImporterTangentImportModeVariant::parse(rdr, ver)?);
             normal_calculation_mode = Some(Mesh3DsImporterNormalCalculationModeVariant::parse(rdr, ver)?);
-            m_imported_take_infos = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TakeInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_imported_take_infos = Some(Mesh3DsImporterMImportedTakeInfosVariant::parse(rdr, ver)?);
             m_referenced_clips = Some(Mesh3DsImporterMReferencedClipsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
             normal_import_mode = Some(rdr.read_i32()?);
             tangent_import_mode = Some(Mesh3DsImporterTangentImportModeVariant::parse(rdr, ver)?);
-            m_imported_take_infos = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TakeInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_imported_take_infos = Some(Mesh3DsImporterMImportedTakeInfosVariant::parse(rdr, ver)?);
             m_referenced_clips = Some(Mesh3DsImporterMReferencedClipsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
             split_tangents_across_uv = Some(rdr.read_bool()?);
             rdr.align(4)?;
             normal_import_mode = Some(rdr.read_i32()?);
             tangent_import_mode = Some(Mesh3DsImporterTangentImportModeVariant::parse(rdr, ver)?);
-            m_imported_take_infos = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TakeInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_imported_take_infos = Some(Mesh3DsImporterMImportedTakeInfosVariant::parse(rdr, ver)?);
             m_referenced_clips = Some(Mesh3DsImporterMReferencedClipsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
             split_tangents_across_uv = Some(rdr.read_bool()?);
@@ -1802,7 +1792,6 @@ impl crate::Parse for Mesh3DsImporter {
             m_referenced_clips = Some(Mesh3DsImporterMReferencedClipsVariant::parse(rdr, ver)?);
             m_import_animation = Some(Mesh3DsImporterMImportAnimationVariant::parse(rdr, ver)?);
             m_human_description = Some(HumanDescription::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_last_human_description_avatar_source = Some(crate::PPtr::parse(rdr, ver)?);
             m_auto_generate_avatar_mapping_if_unspecified = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -1816,17 +1805,13 @@ impl crate::Parse for Mesh3DsImporter {
             m_additional_bone = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_user_data = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_asset_bundle_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2022, 1, 5) {
             m_has_embedded_textures = Some(Mesh3DsImporterMHasEmbeddedTexturesVariant::parse(rdr, ver)?);
             m_referenced_clips = Some(Mesh3DsImporterMReferencedClipsVariant::parse(rdr, ver)?);
             m_import_animation = Some(Mesh3DsImporterMImportAnimationVariant::parse(rdr, ver)?);
             m_human_description = Some(HumanDescription::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_last_human_description_avatar_source = Some(crate::PPtr::parse(rdr, ver)?);
             m_auto_generate_avatar_mapping_if_unspecified = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -1840,17 +1825,13 @@ impl crate::Parse for Mesh3DsImporter {
             m_additional_bone = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_user_data = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_asset_bundle_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
             m_has_embedded_textures = Some(Mesh3DsImporterMHasEmbeddedTexturesVariant::parse(rdr, ver)?);
             m_referenced_clips = Some(Mesh3DsImporterMReferencedClipsVariant::parse(rdr, ver)?);
             m_import_animation = Some(Mesh3DsImporterMImportAnimationVariant::parse(rdr, ver)?);
             m_human_description = Some(HumanDescription::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_last_human_description_avatar_source = Some(crate::PPtr::parse(rdr, ver)?);
             m_auto_generate_avatar_mapping_if_unspecified = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -1862,17 +1843,13 @@ impl crate::Parse for Mesh3DsImporter {
             m_additional_bone = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_user_data = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_asset_bundle_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2021, 3, 5) {
             m_has_embedded_textures = Some(Mesh3DsImporterMHasEmbeddedTexturesVariant::parse(rdr, ver)?);
             m_referenced_clips = Some(Mesh3DsImporterMReferencedClipsVariant::parse(rdr, ver)?);
             m_import_animation = Some(Mesh3DsImporterMImportAnimationVariant::parse(rdr, ver)?);
             m_human_description = Some(HumanDescription::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_last_human_description_avatar_source = Some(crate::PPtr::parse(rdr, ver)?);
             m_auto_generate_avatar_mapping_if_unspecified = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -1885,17 +1862,13 @@ impl crate::Parse for Mesh3DsImporter {
             m_additional_bone = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_user_data = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_asset_bundle_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2021, 1, 0) {
             m_has_embedded_textures = Some(Mesh3DsImporterMHasEmbeddedTexturesVariant::parse(rdr, ver)?);
             m_referenced_clips = Some(Mesh3DsImporterMReferencedClipsVariant::parse(rdr, ver)?);
             m_import_animation = Some(Mesh3DsImporterMImportAnimationVariant::parse(rdr, ver)?);
             m_human_description = Some(HumanDescription::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_last_human_description_avatar_source = Some(crate::PPtr::parse(rdr, ver)?);
             m_auto_generate_avatar_mapping_if_unspecified = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -1906,17 +1879,13 @@ impl crate::Parse for Mesh3DsImporter {
             m_additional_bone = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_user_data = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_asset_bundle_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2020, 3, 37) {
             m_has_embedded_textures = Some(Mesh3DsImporterMHasEmbeddedTexturesVariant::parse(rdr, ver)?);
             m_referenced_clips = Some(Mesh3DsImporterMReferencedClipsVariant::parse(rdr, ver)?);
             m_import_animation = Some(Mesh3DsImporterMImportAnimationVariant::parse(rdr, ver)?);
             m_human_description = Some(HumanDescription::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_last_human_description_avatar_source = Some(crate::PPtr::parse(rdr, ver)?);
             m_auto_generate_avatar_mapping_if_unspecified = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -1929,17 +1898,13 @@ impl crate::Parse for Mesh3DsImporter {
             m_additional_bone = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_user_data = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_asset_bundle_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
             m_has_embedded_textures = Some(Mesh3DsImporterMHasEmbeddedTexturesVariant::parse(rdr, ver)?);
             m_referenced_clips = Some(Mesh3DsImporterMReferencedClipsVariant::parse(rdr, ver)?);
             m_import_animation = Some(Mesh3DsImporterMImportAnimationVariant::parse(rdr, ver)?);
             m_human_description = Some(HumanDescription::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_last_human_description_avatar_source = Some(crate::PPtr::parse(rdr, ver)?);
             m_auto_generate_avatar_mapping_if_unspecified = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -1950,17 +1915,13 @@ impl crate::Parse for Mesh3DsImporter {
             m_additional_bone = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_user_data = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_asset_bundle_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
             m_has_embedded_textures = Some(Mesh3DsImporterMHasEmbeddedTexturesVariant::parse(rdr, ver)?);
             m_referenced_clips = Some(Mesh3DsImporterMReferencedClipsVariant::parse(rdr, ver)?);
             m_import_animation = Some(Mesh3DsImporterMImportAnimationVariant::parse(rdr, ver)?);
             m_human_description = Some(HumanDescription::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_last_human_description_avatar_source = Some(crate::PPtr::parse(rdr, ver)?);
             m_auto_generate_avatar_mapping_if_unspecified = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -1970,11 +1931,8 @@ impl crate::Parse for Mesh3DsImporter {
             m_additional_bone = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_user_data = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_asset_bundle_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             m_has_embedded_textures = Some(Mesh3DsImporterMHasEmbeddedTexturesVariant::parse(rdr, ver)?);
             m_referenced_clips = Some(Mesh3DsImporterMReferencedClipsVariant::parse(rdr, ver)?);
@@ -1982,103 +1940,81 @@ impl crate::Parse for Mesh3DsImporter {
             m_copy_avatar = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_human_description = Some(HumanDescription::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_last_human_description_avatar_source = Some(crate::PPtr::parse(rdr, ver)?);
             m_animation_type = Some(Mesh3DsImporterMAnimationTypeVariant::parse(rdr, ver)?);
             m_humanoid_oversampling = Some(rdr.read_i32()?);
             m_additional_bone = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_user_data = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_asset_bundle_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             m_has_embedded_textures = Some(Mesh3DsImporterMHasEmbeddedTexturesVariant::parse(rdr, ver)?);
             m_import_animation = Some(Mesh3DsImporterMImportAnimationVariant::parse(rdr, ver)?);
             m_copy_avatar = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_human_description = Some(HumanDescription::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_last_human_description_avatar_source = Some(crate::PPtr::parse(rdr, ver)?);
             m_animation_type = Some(Mesh3DsImporterMAnimationTypeVariant::parse(rdr, ver)?);
             m_humanoid_oversampling = Some(rdr.read_i32()?);
             m_additional_bone = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_user_data = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_asset_bundle_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 2, 0) {
             m_import_animation = Some(Mesh3DsImporterMImportAnimationVariant::parse(rdr, ver)?);
             m_copy_avatar = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_human_description = Some(HumanDescription::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_last_human_description_avatar_source = Some(crate::PPtr::parse(rdr, ver)?);
             m_animation_type = Some(Mesh3DsImporterMAnimationTypeVariant::parse(rdr, ver)?);
             m_humanoid_oversampling = Some(rdr.read_i32()?);
             m_additional_bone = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_user_data = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_asset_bundle_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_import_animation = Some(Mesh3DsImporterMImportAnimationVariant::parse(rdr, ver)?);
             m_copy_avatar = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_human_description = Some(HumanDescription::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_last_human_description_avatar_source = Some(crate::PPtr::parse(rdr, ver)?);
             m_animation_type = Some(Mesh3DsImporterMAnimationTypeVariant::parse(rdr, ver)?);
             m_additional_bone = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_user_data = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_asset_bundle_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 3, 3) {
             m_import_animation = Some(Mesh3DsImporterMImportAnimationVariant::parse(rdr, ver)?);
             m_copy_avatar = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_human_description = Some(HumanDescription::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_last_human_description_avatar_source = Some(crate::PPtr::parse(rdr, ver)?);
             m_animation_type = Some(Mesh3DsImporterMAnimationTypeVariant::parse(rdr, ver)?);
             m_additional_bone = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_user_data = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
             m_import_animation = Some(Mesh3DsImporterMImportAnimationVariant::parse(rdr, ver)?);
             m_copy_avatar = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_human_description = Some(HumanDescription::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_last_human_description_avatar_source = Some(crate::PPtr::parse(rdr, ver)?);
             m_animation_type = Some(Mesh3DsImporterMAnimationTypeVariant::parse(rdr, ver)?);
             m_user_data = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
             m_import_animation = Some(Mesh3DsImporterMImportAnimationVariant::parse(rdr, ver)?);
             m_copy_avatar = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_human_description = Some(HumanDescription::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_last_human_description_avatar_source = Some(crate::PPtr::parse(rdr, ver)?);
             m_additional_bone = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_animation_type = Some(Mesh3DsImporterMAnimationTypeVariant::parse(rdr, ver)?);
             m_user_data = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else {
         }
 

@@ -12,7 +12,6 @@ impl crate::Parse for SourceLocation {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_file = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_position = rdr.read_u32()?;
 
         Ok(SourceLocation {

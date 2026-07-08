@@ -224,29 +224,6 @@ impl crate::Parse for LineRendererMRayTraceProceduralVariant {
     }
 }
 
-/// 版本枚举：LineRendererMParametersVariant 的类型跨版本变化。
-#[derive(Debug, Clone)]
-pub enum LineRendererMParametersVariant {
-    Default(Box<LineParameters>),
-    V5_5(Box<LineParameters>),
-}
-
-impl crate::Parse for LineRendererMParametersVariant {
-    fn parse<R: crate::EndianReader>(
-        rdr: &mut R,
-        ver: &crate::UnityVersion,
-    ) -> Result<Self, R::Error> {
-        if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = ( { Ok(Box::new(LineParameters::parse(rdr, ver)?)) } )?;
-            rdr.align(4)?;
-            Ok(Self::V5_5(v))
-        } else {
-            let v = ( { Ok(Box::new(LineParameters::parse(rdr, ver)?)) } )?;
-            Ok(Self::Default(v))
-        }
-    }
-}
-
 /// 版本枚举：LineRendererMLightProbeAnchorVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum LineRendererMLightProbeAnchorVariant {
@@ -407,7 +384,7 @@ pub struct LineRenderer {
     pub m_use_light_probes: Option<bool>,
     pub m_renderer_priority: Option<i32>,
     pub m_ray_trace_procedural: Option<LineRendererMRayTraceProceduralVariant>,
-    pub m_parameters: LineRendererMParametersVariant,
+    pub m_parameters: LineParameters,
     pub m_light_probe_anchor: Option<LineRendererMLightProbeAnchorVariant>,
     pub m_use_world_space: bool,
     pub m_sorting_layer: Option<i16>,
@@ -632,7 +609,7 @@ impl crate::Parse for LineRenderer {
         } else {
         }
             m_positions = Some(LineRendererMPositionsVariant::parse(rdr, ver)?);
-            m_parameters = Some(LineRendererMParametersVariant::parse(rdr, ver)?);
+            m_parameters = Some(LineParameters::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 3, 0) {
         } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
             m_mask_interaction = Some(LineRendererMMaskInteractionVariant::parse(rdr, ver)?);

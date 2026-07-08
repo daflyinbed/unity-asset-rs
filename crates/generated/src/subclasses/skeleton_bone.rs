@@ -25,10 +25,8 @@ impl crate::Parse for SkeletonBone {
         let mut m_scale = None;
         let mut m_transform_modified = None;
             m_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
             m_parent_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else {
         }
             m_position = Some(Vector3f::parse(rdr, ver)?);

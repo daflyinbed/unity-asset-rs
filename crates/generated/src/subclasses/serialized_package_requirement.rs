@@ -13,9 +13,7 @@ impl crate::Parse for SerializedPackageRequirement {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let version = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let status = rdr.read_i8()?;
 
         Ok(SerializedPackageRequirement {

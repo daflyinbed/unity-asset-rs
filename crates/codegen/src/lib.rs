@@ -6,6 +6,7 @@ pub mod emit;
 pub mod ir;
 pub mod names;
 pub mod pipeline;
+pub mod rename;
 pub mod tpk;
 
 pub use ir::{ClassKey, EmitClass, Pipeline};

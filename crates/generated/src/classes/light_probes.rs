@@ -19,7 +19,6 @@ impl crate::Parse for LightProbes {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let baked_positions = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector3f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
         let baked_coefficients = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { LightmapData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
         let tetrahedra = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Tetrahedron::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;

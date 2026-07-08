@@ -15,9 +15,7 @@ impl crate::Parse for BuildReportFile {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let path = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let role = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let id = rdr.read_u32()?;
         let total_size = rdr.read_u64()?;
         let flags = if *ver >= crate::UnityVersion::new(6000, 5, 0) {

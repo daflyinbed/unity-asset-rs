@@ -14,9 +14,7 @@ impl crate::Parse for InsightsSettings {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_event_url = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_stack_trace_url = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_engine_diagnostics_enabled = rdr.read_bool()?;
         let m_enabled = rdr.read_bool()?;
         rdr.align(4)?;

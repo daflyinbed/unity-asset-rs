@@ -18,11 +18,9 @@ impl crate::Parse for SerializedShaderVectorValueNameVariant {
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
             let v = rdr.read_aligned_string()?;
-            rdr.align(4)?;
             Ok(Self::V5_6(v))
         } else {
             let v = ( { Ok(Box::new(FastPropertyName::parse(rdr, ver)?)) } )?;
-            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -42,13 +40,9 @@ impl crate::Parse for SerializedShaderVectorValue {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let x = SerializedShaderFloatValue::parse(rdr, ver)?;
-        rdr.align(4)?;
         let y = SerializedShaderFloatValue::parse(rdr, ver)?;
-        rdr.align(4)?;
         let z = SerializedShaderFloatValue::parse(rdr, ver)?;
-        rdr.align(4)?;
         let w = SerializedShaderFloatValue::parse(rdr, ver)?;
-        rdr.align(4)?;
         let name = SerializedShaderVectorValueNameVariant::parse(rdr, ver)?;
 
         Ok(SerializedShaderVectorValue {

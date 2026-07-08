@@ -13,7 +13,6 @@ impl crate::Parse for ShaderInfo {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let variants = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VariantInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        rdr.align(4)?;
 
         Ok(ShaderInfo {
             variants,

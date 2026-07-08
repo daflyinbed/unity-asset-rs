@@ -118,7 +118,6 @@ impl crate::Parse for RayTracingShaderParam {
         let mut property_sheet_type = None;
         let mut col_count = None;
             name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2020, 1, 0) {
             data_type = Some(rdr.read_i32()?);
             data_size = Some(rdr.read_u32()?);

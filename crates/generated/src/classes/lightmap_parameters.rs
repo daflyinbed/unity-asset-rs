@@ -48,7 +48,6 @@ impl crate::Parse for LightmapParameters {
         let mut limit_lightmap_count = None;
         let mut max_lightmap_count = None;
             m_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             resolution = Some(rdr.read_f32()?);
             cluster_resolution = Some(rdr.read_f32()?);
             irradiance_budget = Some(rdr.read_i32()?);

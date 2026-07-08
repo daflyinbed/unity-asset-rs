@@ -15,11 +15,8 @@ impl crate::Parse for HumanBone {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_bone_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_human_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_limit = SkeletonBoneLimit::parse(rdr, ver)?;
-        rdr.align(4)?;
 
         Ok(HumanBone {
             m_bone_name,

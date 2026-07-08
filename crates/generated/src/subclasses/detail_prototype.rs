@@ -1,7 +1,7 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
-use crate::subclasses::color_rgba::ColorRgba;
+use crate::subclasses::color_rgb_af::ColorRgbAf;
 
 #[derive(Debug, Clone)]
 pub struct DetailPrototype {
@@ -15,8 +15,8 @@ pub struct DetailPrototype {
     pub noise_seed: Option<i32>,
     pub bend_factor: Option<f32>,
     pub hole_test_radius: Option<f32>,
-    pub healthy_color: ColorRgba,
-    pub dry_color: ColorRgba,
+    pub healthy_color: ColorRgbAf,
+    pub dry_color: ColorRgbAf,
     pub density: Option<f32>,
     pub lightmap_factor: Option<f32>,
     pub render_mode: i32,
@@ -73,8 +73,8 @@ impl crate::Parse for DetailPrototype {
         } else {
             bend_factor = Some(rdr.read_f32()?);
         }
-            healthy_color = Some(ColorRgba::parse(rdr, ver)?);
-            dry_color = Some(ColorRgba::parse(rdr, ver)?);
+            healthy_color = Some(ColorRgbAf::parse(rdr, ver)?);
+            dry_color = Some(ColorRgbAf::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2021, 2, 0) {
         } else {
             lightmap_factor = Some(rdr.read_f32()?);

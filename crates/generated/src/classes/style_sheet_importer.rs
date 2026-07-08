@@ -16,11 +16,8 @@ impl crate::Parse for StyleSheetImporter {
         let m_name = rdr.read_aligned_string()?;
         rdr.align(4)?;
         let m_user_data = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_asset_bundle_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_asset_bundle_variant = rdr.read_aligned_string()?;
-        rdr.align(4)?;
 
         Ok(StyleSheetImporter {
             m_name,

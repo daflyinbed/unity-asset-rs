@@ -36,7 +36,6 @@ impl crate::Parse for BuiltAssetBundleInfo {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let bundle_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let bundle_archive_file = rdr.read_u32()?;
         let packaged_file_indices = BuiltAssetBundleInfoPackagedFileIndicesVariant::parse(rdr, ver)?;
 

@@ -13,7 +13,6 @@ impl crate::Parse for SubstanceEnumItem {
     ) -> Result<Self, R::Error> {
         let value = rdr.read_i32()?;
         let text = rdr.read_aligned_string()?;
-        rdr.align(4)?;
 
         Ok(SubstanceEnumItem {
             value,

@@ -130,7 +130,6 @@ impl crate::Parse for TrailModule {
         }
             ratio = Some(rdr.read_f32()?);
             lifetime = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             min_vertex_distance = Some(rdr.read_f32()?);
             texture_mode = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2022, 1, 0) {
@@ -162,11 +161,8 @@ impl crate::Parse for TrailModule {
         } else {
         }
             color_over_lifetime = Some(MinMaxGradient::parse(rdr, ver)?);
-            rdr.align(4)?;
             width_over_trail = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             color_over_trail = Some(MinMaxGradient::parse(rdr, ver)?);
-            rdr.align(4)?;
 
         Ok(TrailModule {
             enabled: enabled.unwrap(),

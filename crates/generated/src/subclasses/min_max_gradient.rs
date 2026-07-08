@@ -1,33 +1,9 @@
 //! 自动生成。请勿手动修改。
 
-use crate::subclasses::color_rgba::ColorRgba;
+use crate::subclasses::color_rgb_af::ColorRgbAf;
+use crate::subclasses::color_rgba32::ColorRgba32;
 use crate::subclasses::gradient::Gradient;
-use crate::subclasses::gradient_new::GradientNew;
 
-
-/// 版本枚举：MinMaxGradientMaxGradientVariant 的类型跨版本变化。
-#[derive(Debug, Clone)]
-pub enum MinMaxGradientMaxGradientVariant {
-    Default(Box<GradientNew>),
-    V5_5(Box<Gradient>),
-}
-
-impl crate::Parse for MinMaxGradientMaxGradientVariant {
-    fn parse<R: crate::EndianReader>(
-        rdr: &mut R,
-        ver: &crate::UnityVersion,
-    ) -> Result<Self, R::Error> {
-        if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = ( { Ok(Box::new(Gradient::parse(rdr, ver)?)) } )?;
-            rdr.align(4)?;
-            Ok(Self::V5_5(v))
-        } else {
-            let v = ( { Ok(Box::new(GradientNew::parse(rdr, ver)?)) } )?;
-            rdr.align(4)?;
-            Ok(Self::Default(v))
-        }
-    }
-}
 
 /// 版本枚举：MinMaxGradientMinMaxStateVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
@@ -53,36 +29,56 @@ impl crate::Parse for MinMaxGradientMinMaxStateVariant {
     }
 }
 
-/// 版本枚举：MinMaxGradientMinGradientVariant 的类型跨版本变化。
+/// 版本枚举：MinMaxGradientMinColorVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
-pub enum MinMaxGradientMinGradientVariant {
-    Default(Box<GradientNew>),
-    V5_5(Box<Gradient>),
+pub enum MinMaxGradientMinColorVariant {
+    Default(Box<ColorRgba32>),
+    V5_4(Box<ColorRgbAf>),
 }
 
-impl crate::Parse for MinMaxGradientMinGradientVariant {
+impl crate::Parse for MinMaxGradientMinColorVariant {
     fn parse<R: crate::EndianReader>(
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = ( { Ok(Box::new(Gradient::parse(rdr, ver)?)) } )?;
-            rdr.align(4)?;
-            Ok(Self::V5_5(v))
+        if *ver >= crate::UnityVersion::new(5, 4, 0) {
+            let v = ( { Ok(Box::new(ColorRgbAf::parse(rdr, ver)?)) } )?;
+            Ok(Self::V5_4(v))
         } else {
-            let v = ( { Ok(Box::new(GradientNew::parse(rdr, ver)?)) } )?;
-            rdr.align(4)?;
+            let v = ( { Ok(Box::new(ColorRgba32::parse(rdr, ver)?)) } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：MinMaxGradientMaxColorVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum MinMaxGradientMaxColorVariant {
+    Default(Box<ColorRgba32>),
+    V5_4(Box<ColorRgbAf>),
+}
+
+impl crate::Parse for MinMaxGradientMaxColorVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(5, 4, 0) {
+            let v = ( { Ok(Box::new(ColorRgbAf::parse(rdr, ver)?)) } )?;
+            Ok(Self::V5_4(v))
+        } else {
+            let v = ( { Ok(Box::new(ColorRgba32::parse(rdr, ver)?)) } )?;
             Ok(Self::Default(v))
         }
     }
 }
 #[derive(Debug, Clone)]
 pub struct MinMaxGradient {
-    pub max_gradient: MinMaxGradientMaxGradientVariant,
+    pub max_gradient: Gradient,
     pub min_max_state: MinMaxGradientMinMaxStateVariant,
-    pub min_gradient: MinMaxGradientMinGradientVariant,
-    pub min_color: ColorRgba,
-    pub max_color: ColorRgba,
+    pub min_gradient: Gradient,
+    pub min_color: MinMaxGradientMinColorVariant,
+    pub max_color: MinMaxGradientMaxColorVariant,
 }
 
 impl crate::Parse for MinMaxGradient {
@@ -99,17 +95,17 @@ impl crate::Parse for MinMaxGradient {
             min_max_state = Some(MinMaxGradientMinMaxStateVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
             min_max_state = Some(MinMaxGradientMinMaxStateVariant::parse(rdr, ver)?);
-            max_gradient = Some(MinMaxGradientMaxGradientVariant::parse(rdr, ver)?);
-            min_gradient = Some(MinMaxGradientMinGradientVariant::parse(rdr, ver)?);
+            max_gradient = Some(Gradient::parse(rdr, ver)?);
+            min_gradient = Some(Gradient::parse(rdr, ver)?);
         } else {
-            max_gradient = Some(MinMaxGradientMaxGradientVariant::parse(rdr, ver)?);
-            min_gradient = Some(MinMaxGradientMinGradientVariant::parse(rdr, ver)?);
+            max_gradient = Some(Gradient::parse(rdr, ver)?);
+            min_gradient = Some(Gradient::parse(rdr, ver)?);
         }
-            min_color = Some(ColorRgba::parse(rdr, ver)?);
-            max_color = Some(ColorRgba::parse(rdr, ver)?);
+            min_color = Some(MinMaxGradientMinColorVariant::parse(rdr, ver)?);
+            max_color = Some(MinMaxGradientMaxColorVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 6, 1) {
-            max_gradient = Some(MinMaxGradientMaxGradientVariant::parse(rdr, ver)?);
-            min_gradient = Some(MinMaxGradientMinGradientVariant::parse(rdr, ver)?);
+            max_gradient = Some(Gradient::parse(rdr, ver)?);
+            min_gradient = Some(Gradient::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
         } else {
             min_max_state = Some(MinMaxGradientMinMaxStateVariant::parse(rdr, ver)?);

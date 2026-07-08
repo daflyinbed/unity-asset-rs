@@ -13,7 +13,6 @@ impl crate::Parse for StreamedResource {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_source = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_offset = rdr.read_u64()?;
         let m_size = rdr.read_u64()?;
 

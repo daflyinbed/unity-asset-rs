@@ -51,7 +51,6 @@ impl crate::Parse for MovieTexture {
         let mut m_movie_data = None;
         let mut m_color_space = None;
             m_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
             m_is_alpha_channel_optional = Some(rdr.read_bool()?);
             rdr.align(4)?;

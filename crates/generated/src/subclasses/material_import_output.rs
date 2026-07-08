@@ -1,10 +1,10 @@
 //! 自动生成。请勿手动修改。
 
-use crate::subclasses::build_target_settings::BuildTargetSettings;
+use crate::subclasses::material_build_target_settings::MaterialBuildTargetSettings;
 
 #[derive(Debug, Clone)]
 pub struct MaterialImportOutput {
-    pub current_settings: BuildTargetSettings,
+    pub current_settings: MaterialBuildTargetSettings,
     pub baked: i32,
 }
 
@@ -13,8 +13,7 @@ impl crate::Parse for MaterialImportOutput {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let current_settings = BuildTargetSettings::parse(rdr, ver)?;
-        rdr.align(4)?;
+        let current_settings = MaterialBuildTargetSettings::parse(rdr, ver)?;
         let baked = rdr.read_i32()?;
 
         Ok(MaterialImportOutput {

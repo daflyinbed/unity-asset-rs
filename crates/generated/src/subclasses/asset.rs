@@ -7,6 +7,29 @@ use crate::subclasses::library_representation::LibraryRepresentation;
 use crate::subclasses::md_four::MdFour;
 
 
+/// 版本枚举：AssetRepresentationsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum AssetRepresentationsVariant {
+    Default(Vec<LibraryRepresentation>),
+    V2017_1(Vec<LibraryRepresentation>),
+}
+
+impl crate::Parse for AssetRepresentationsVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { LibraryRepresentation::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { LibraryRepresentation::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
 /// 版本枚举：AssetChildrenVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AssetChildrenVariant {
@@ -47,7 +70,6 @@ impl crate::Parse for AssetHashVariant {
             Ok(Self::V5_0(v))
         } else {
             let v = ( { Ok(Box::new(MdFour::parse(rdr, ver)?)) } )?;
-            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -67,11 +89,9 @@ impl crate::Parse for AssetGuidOfPathLocationDependenciesVariant {
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2018, 3, 0) {
             let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = Guid::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-            rdr.align(4)?;
             Ok(Self::V2018_3(v))
         } else {
             let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = Guid::parse(rdr, ver)?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -81,7 +101,7 @@ pub struct Asset {
     pub modification_date_0: Option<u32>,
     pub main_representation: LibraryRepresentation,
     pub modification_date_1: Option<u32>,
-    pub representations: Vec<LibraryRepresentation>,
+    pub representations: AssetRepresentationsVariant,
     pub meta_modification_date_0: Option<u32>,
     pub children: AssetChildrenVariant,
     pub meta_modification_date_1: Option<u32>,
@@ -131,23 +151,18 @@ impl crate::Parse for Asset {
             meta_modification_date_1 = Some(rdr.read_u32()?);
         }
             main_representation = Some(LibraryRepresentation::parse(rdr, ver)?);
-            rdr.align(4)?;
-            representations = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { LibraryRepresentation::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            representations = Some(AssetRepresentationsVariant::parse(rdr, ver)?);
             children = Some(AssetChildrenVariant::parse(rdr, ver)?);
             parent = Some(Guid::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(3, 5, 0) {
         } else {
             digest = Some(MdFour::parse(rdr, ver)?);
-            rdr.align(4)?;
         }
             r#type = Some(rdr.read_i32()?);
             labels = Some(AssetLabels::parse(rdr, ver)?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2018, 1, 0) {
             importer_class_id = Some(rdr.read_i32()?);
             scripted_importer_class_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             importer_version_hash = Some(rdr.read_u32()?);
             hash = Some(AssetHashVariant::parse(rdr, ver)?);
             asset_bundle_index = Some(rdr.read_i32()?);
@@ -159,7 +174,6 @@ impl crate::Parse for Asset {
         } else if *ver >= crate::UnityVersion::new(2017, 4, 14) {
             importer_class_id = Some(rdr.read_i32()?);
             scripted_importer_class_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             importer_version_hash = Some(rdr.read_u32()?);
             hash = Some(AssetHashVariant::parse(rdr, ver)?);
             asset_bundle_index = Some(rdr.read_i32()?);
@@ -171,7 +185,6 @@ impl crate::Parse for Asset {
         } else if *ver >= crate::UnityVersion::new(2017, 2, 4) {
             importer_class_id = Some(rdr.read_i32()?);
             scripted_importer_class_id = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             importer_version_hash = Some(rdr.read_u32()?);
             hash = Some(AssetHashVariant::parse(rdr, ver)?);
             asset_bundle_index = Some(rdr.read_i32()?);

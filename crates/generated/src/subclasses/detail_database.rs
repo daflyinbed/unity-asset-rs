@@ -1,13 +1,36 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
-use crate::subclasses::color_rgba::ColorRgba;
+use crate::subclasses::color_rgb_af::ColorRgbAf;
 use crate::subclasses::detail_patch::DetailPatch;
 use crate::subclasses::detail_prototype::DetailPrototype;
 use crate::subclasses::tree_instance::TreeInstance;
 use crate::subclasses::tree_prototype::TreePrototype;
 use crate::subclasses::vector3f::Vector3f;
 
+
+/// 版本枚举：DetailDatabaseMPatchesVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum DetailDatabaseMPatchesVariant {
+    Default(Vec<DetailPatch>),
+    V2017_1(Vec<DetailPatch>),
+}
+
+impl crate::Parse for DetailDatabaseMPatchesVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { DetailPatch::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { DetailPatch::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 
 /// 版本枚举：DetailDatabaseMDetailPrototypesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
@@ -125,12 +148,12 @@ impl crate::Parse for DetailDatabaseMPreloadTextureAtlasDataVariant {
 }
 #[derive(Debug, Clone)]
 pub struct DetailDatabase {
-    pub m_patches: Vec<DetailPatch>,
+    pub m_patches: DetailDatabaseMPatchesVariant,
     pub m_detail_prototypes: DetailDatabaseMDetailPrototypesVariant,
     pub m_patch_count: i32,
     pub m_patch_samples: i32,
     pub m_random_rotations: Option<DetailDatabaseMRandomRotationsVariant>,
-    pub waving_grass_tint: ColorRgba,
+    pub waving_grass_tint: ColorRgbAf,
     pub m_waving_grass_strength: f32,
     pub m_waving_grass_amount: f32,
     pub m_waving_grass_speed: f32,
@@ -170,8 +193,7 @@ impl crate::Parse for DetailDatabase {
         let mut m_default_shaders_0 = None;
         let mut m_default_shaders_1 = None;
         let mut m_default_shaders_2 = None;
-            m_patches = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { DetailPatch::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_patches = Some(DetailDatabaseMPatchesVariant::parse(rdr, ver)?);
             m_detail_prototypes = Some(DetailDatabaseMDetailPrototypesVariant::parse(rdr, ver)?);
             m_patch_count = Some(rdr.read_i32()?);
             m_patch_samples = Some(rdr.read_i32()?);
@@ -179,7 +201,7 @@ impl crate::Parse for DetailDatabase {
         } else {
             m_random_rotations = Some(DetailDatabaseMRandomRotationsVariant::parse(rdr, ver)?);
         }
-            waving_grass_tint = Some(ColorRgba::parse(rdr, ver)?);
+            waving_grass_tint = Some(ColorRgbAf::parse(rdr, ver)?);
             m_waving_grass_strength = Some(rdr.read_f32()?);
             m_waving_grass_amount = Some(rdr.read_f32()?);
             m_waving_grass_speed = Some(rdr.read_f32()?);

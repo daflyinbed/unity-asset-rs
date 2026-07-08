@@ -2,32 +2,9 @@
 
 use crate::subclasses::vfx_renderer_settings::VfxRendererSettings;
 
-
-/// 版本枚举：VisualEffectSettingsMRendererSettingsVariant 的类型跨版本变化。
-#[derive(Debug, Clone)]
-pub enum VisualEffectSettingsMRendererSettingsVariant {
-    Default(Box<VfxRendererSettings>),
-    V6000_3(Box<VfxRendererSettings>),
-}
-
-impl crate::Parse for VisualEffectSettingsMRendererSettingsVariant {
-    fn parse<R: crate::EndianReader>(
-        rdr: &mut R,
-        ver: &crate::UnityVersion,
-    ) -> Result<Self, R::Error> {
-        if *ver >= crate::UnityVersion::new(6000, 3, 0) {
-            let v = ( { Ok(Box::new(VfxRendererSettings::parse(rdr, ver)?)) } )?;
-            Ok(Self::V6000_3(v))
-        } else {
-            let v = ( { Ok(Box::new(VfxRendererSettings::parse(rdr, ver)?)) } )?;
-            rdr.align(4)?;
-            Ok(Self::Default(v))
-        }
-    }
-}
 #[derive(Debug, Clone)]
 pub struct VisualEffectSettings {
-    pub m_renderer_settings: VisualEffectSettingsMRendererSettingsVariant,
+    pub m_renderer_settings: VfxRendererSettings,
     pub m_culling_flags: i32,
     pub m_update_mode: i32,
     pub m_pre_warm_delta_time: f32,
@@ -42,13 +19,12 @@ impl crate::Parse for VisualEffectSettings {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_renderer_settings = VisualEffectSettingsMRendererSettingsVariant::parse(rdr, ver)?;
+        let m_renderer_settings = VfxRendererSettings::parse(rdr, ver)?;
         let m_culling_flags = rdr.read_i32()?;
         let m_update_mode = rdr.read_i32()?;
         let m_pre_warm_delta_time = rdr.read_f32()?;
         let m_pre_warm_step_count = rdr.read_u32()?;
         let m_initial_event_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_instancing_mode = if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             Some(rdr.read_i32()?)
         } else {

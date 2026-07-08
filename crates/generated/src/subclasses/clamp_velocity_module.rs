@@ -82,13 +82,9 @@ impl crate::Parse for ClampVelocityModule {
             enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
             x = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             y = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             z = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             magnitude = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             separate_axis = Some(ClampVelocityModuleSeparateAxisVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             in_world_space = Some(ClampVelocityModuleInWorldSpaceVariant::parse(rdr, ver)?);
@@ -102,7 +98,6 @@ impl crate::Parse for ClampVelocityModule {
             dampen = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             drag = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else {
         }
 

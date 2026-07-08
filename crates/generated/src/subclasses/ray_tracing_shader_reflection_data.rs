@@ -23,9 +23,7 @@ impl crate::Parse for RayTracingShaderReflectionData {
         let functions = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { RayTracingShaderFunctionDesc::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
         rdr.align(4)?;
         let local_resources = RayTracingShaderResources::parse(rdr, ver)?;
-        rdr.align(4)?;
         let global_resources = RayTracingShaderResources::parse(rdr, ver)?;
-        rdr.align(4)?;
         let has_errors = rdr.read_bool()?;
         rdr.align(4)?;
         let code = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;

@@ -2,7 +2,7 @@
 
 use crate::PPtr;
 use crate::subclasses::bit_field::BitField;
-use crate::subclasses::color_rgba::ColorRgba;
+use crate::subclasses::color_rgb_af::ColorRgbAf;
 use crate::subclasses::vector3f::Vector3f;
 
 
@@ -68,7 +68,7 @@ pub struct ReflectionProbe {
     pub m_far_clip: f32,
     pub m_shadow_distance: f32,
     pub m_clear_flags: u32,
-    pub m_back_ground_color: ColorRgba,
+    pub m_back_ground_color: ColorRgbAf,
     pub m_culling_mask: BitField,
     pub m_intensity_multiplier: f32,
     pub m_blend_distance: Option<f32>,
@@ -129,7 +129,7 @@ impl crate::Parse for ReflectionProbe {
             m_far_clip = Some(rdr.read_f32()?);
             m_shadow_distance = Some(rdr.read_f32()?);
             m_clear_flags = Some(rdr.read_u32()?);
-            m_back_ground_color = Some(ColorRgba::parse(rdr, ver)?);
+            m_back_ground_color = Some(ColorRgbAf::parse(rdr, ver)?);
             m_culling_mask = Some(BitField::parse(rdr, ver)?);
             m_intensity_multiplier = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(5, 2, 0) {

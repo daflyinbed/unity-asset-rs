@@ -75,7 +75,6 @@ impl crate::Parse for AudioClip {
         let mut m_resource = None;
         let mut m_compression_format = None;
             m_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             m_load_type = Some(rdr.read_i32()?);
             m_channels = Some(rdr.read_i32()?);
@@ -91,7 +90,6 @@ impl crate::Parse for AudioClip {
             m_legacy3_d = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_resource = Some(StreamedResource::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_compression_format = Some(rdr.read_i32()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
@@ -107,7 +105,6 @@ impl crate::Parse for AudioClip {
             m_legacy3_d = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_resource = Some(StreamedResource::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_compression_format = Some(rdr.read_i32()?);
             rdr.align(4)?;
         } else {

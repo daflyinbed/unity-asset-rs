@@ -14,7 +14,6 @@ impl crate::Parse for ShaderError {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let message = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let line = rdr.read_i32()?;
         let warning = rdr.read_bool()?;
         let program_error = rdr.read_bool()?;

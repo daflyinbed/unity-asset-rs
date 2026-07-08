@@ -33,6 +33,7 @@ use crate::subclasses::velocity_module::VelocityModule;
 pub enum ParticleSystemStartDelayVariant {
     Default(f32),
     V5_3(Box<MinMaxCurve>),
+    V5_5(Box<MinMaxCurve>),
 }
 
 impl crate::Parse for ParticleSystemStartDelayVariant {
@@ -40,9 +41,12 @@ impl crate::Parse for ParticleSystemStartDelayVariant {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        if *ver >= crate::UnityVersion::new(5, 3, 0) {
+        if *ver >= crate::UnityVersion::new(5, 5, 0) {
             let v = ( { Ok(Box::new(MinMaxCurve::parse(rdr, ver)?)) } )?;
             rdr.align(4)?;
+            Ok(Self::V5_5(v))
+        } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
+            let v = ( { Ok(Box::new(MinMaxCurve::parse(rdr, ver)?)) } )?;
             Ok(Self::V5_3(v))
         } else {
             let v = rdr.read_f32()?;
@@ -280,72 +284,46 @@ impl crate::Parse for ParticleSystem {
         } else {
         }
             initial_module = Some(InitialModule::parse(rdr, ver)?);
-            rdr.align(4)?;
             shape_module = Some(ShapeModule::parse(rdr, ver)?);
-            rdr.align(4)?;
             emission_module = Some(EmissionModule::parse(rdr, ver)?);
-            rdr.align(4)?;
             size_module = Some(SizeModule::parse(rdr, ver)?);
-            rdr.align(4)?;
             rotation_module = Some(RotationModule::parse(rdr, ver)?);
-            rdr.align(4)?;
             color_module = Some(ColorModule::parse(rdr, ver)?);
-            rdr.align(4)?;
             uv_module = Some(UvModule::parse(rdr, ver)?);
-            rdr.align(4)?;
             velocity_module = Some(VelocityModule::parse(rdr, ver)?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2020, 1, 0) {
             inherit_velocity_module = Some(InheritVelocityModule::parse(rdr, ver)?);
-            rdr.align(4)?;
             lifetime_by_emitter_speed_module = Some(LifetimeByEmitterSpeedModule::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
             inherit_velocity_module = Some(InheritVelocityModule::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else {
         }
             force_module = Some(ForceModule::parse(rdr, ver)?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(4, 0, 0) {
             external_forces_module = Some(ExternalForcesModule::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else {
         }
             clamp_velocity_module = Some(ClampVelocityModule::parse(rdr, ver)?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
             noise_module = Some(NoiseModule::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else {
         }
             size_by_speed_module = Some(SizeBySpeedModule::parse(rdr, ver)?);
-            rdr.align(4)?;
             rotation_by_speed_module = Some(RotationBySpeedModule::parse(rdr, ver)?);
-            rdr.align(4)?;
             color_by_speed_module = Some(ColorBySpeedModule::parse(rdr, ver)?);
-            rdr.align(4)?;
             collision_module = Some(CollisionModule::parse(rdr, ver)?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
             trigger_module = Some(TriggerModule::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else {
         }
             sub_module = Some(SubModule::parse(rdr, ver)?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
             lights_module = Some(LightsModule::parse(rdr, ver)?);
-            rdr.align(4)?;
             trail_module = Some(TrailModule::parse(rdr, ver)?);
-            rdr.align(4)?;
             custom_data_module = Some(CustomDataModule::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
             lights_module = Some(LightsModule::parse(rdr, ver)?);
-            rdr.align(4)?;
             trail_module = Some(TrailModule::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else {
         }
 

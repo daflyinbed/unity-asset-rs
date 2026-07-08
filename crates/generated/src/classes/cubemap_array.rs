@@ -66,7 +66,6 @@ impl crate::Parse for CubemapArray {
         let mut m_usage_mode = None;
         let mut m_stream_data = None;
             m_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
             m_is_alpha_channel_optional = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -110,7 +109,6 @@ impl crate::Parse for CubemapArray {
             rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
             m_stream_data = Some(StreamingInfo::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else {
         }
 

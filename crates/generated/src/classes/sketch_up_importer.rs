@@ -125,6 +125,52 @@ impl crate::Parse for SketchUpImporterMImportAnimatedCustomPropertiesVariant {
     }
 }
 
+/// 版本枚举：SketchUpImporterMExtraExposedTransformPathsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum SketchUpImporterMExtraExposedTransformPathsVariant {
+    Default(Vec<String>),
+    V2017_1(Vec<String>),
+}
+
+impl crate::Parse for SketchUpImporterMExtraExposedTransformPathsVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：SketchUpImporterMClipAnimationsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum SketchUpImporterMClipAnimationsVariant {
+    Default(Vec<ClipAnimationInfo>),
+    V2017_1(Vec<ClipAnimationInfo>),
+}
+
+impl crate::Parse for SketchUpImporterMClipAnimationsVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ClipAnimationInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ClipAnimationInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
 /// 版本枚举：SketchUpImporterMLodScreenPercentagesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum SketchUpImporterMLodScreenPercentagesVariant {
@@ -235,6 +281,29 @@ impl crate::Parse for SketchUpImporterTangentImportModeVariant {
         } else {
             let v = rdr.read_i32()?;
             rdr.align(4)?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：SketchUpImporterMImportedTakeInfosVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum SketchUpImporterMImportedTakeInfosVariant {
+    Default(Vec<TakeInfo>),
+    V2017_1(Vec<TakeInfo>),
+}
+
+impl crate::Parse for SketchUpImporterMImportedTakeInfosVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TakeInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TakeInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -526,8 +595,8 @@ pub struct SketchUpImporter {
     pub m_animation_position_error: f32,
     pub m_animation_scale_error: f32,
     pub m_animation_wrap_mode: i32,
-    pub m_extra_exposed_transform_paths: Vec<String>,
-    pub m_clip_animations: Vec<ClipAnimationInfo>,
+    pub m_extra_exposed_transform_paths: SketchUpImporterMExtraExposedTransformPathsVariant,
+    pub m_clip_animations: SketchUpImporterMClipAnimationsVariant,
     pub m_extra_user_properties: Option<Vec<String>>,
     pub m_is_readable: bool,
     pub m_lod_screen_percentages: SketchUpImporterMLodScreenPercentagesVariant,
@@ -564,7 +633,7 @@ pub struct SketchUpImporter {
     pub max_bones_per_vertex: Option<i32>,
     pub tangent_import_mode: SketchUpImporterTangentImportModeVariant,
     pub min_bone_weight: Option<f32>,
-    pub m_imported_take_infos: Vec<TakeInfo>,
+    pub m_imported_take_infos: SketchUpImporterMImportedTakeInfosVariant,
     pub mesh_optimization_flags: Option<i32>,
     pub m_referenced_clips: SketchUpImporterMReferencedClipsVariant,
     pub index_format: Option<i32>,
@@ -748,17 +817,13 @@ impl crate::Parse for SketchUpImporter {
             m_file_unit = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_sketch_up_import_data = Some(SketchUpImportData::parse(rdr, ver)?);
-            rdr.align(4)?;
         }
             m_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2019, 3, 0) {
             m_internal_id_to_name_table = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = ( { let a = rdr.read_i32()?; let b = rdr.read_i64()?; Ok((a, b)) } )?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_supports_embedded_materials = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_material_import_mode = Some(rdr.read_i32()?);
@@ -766,23 +831,18 @@ impl crate::Parse for SketchUpImporter {
             m_internal_id_to_name_table = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = ( { let a = rdr.read_i32()?; let b = rdr.read_i64()?; Ok((a, b)) } )?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_import_materials = Some(SketchUpImporterMImportMaterialsVariant::parse(rdr, ver)?);
             m_supports_embedded_materials = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             m_file_id_to_recycle_name = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i64()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_import_materials = Some(SketchUpImporterMImportMaterialsVariant::parse(rdr, ver)?);
             m_supports_embedded_materials = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else {
             m_file_id_to_recycle_name = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i64()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             m_import_materials = Some(SketchUpImporterMImportMaterialsVariant::parse(rdr, ver)?);
         }
             m_material_name = Some(rdr.read_i32()?);
@@ -790,17 +850,14 @@ impl crate::Parse for SketchUpImporter {
         if *ver >= crate::UnityVersion::new(6000, 6, 0) {
             m_material_location = Some(rdr.read_i32()?);
             m_materials = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(6000, 5, 0) {
             m_material_location = Some(rdr.read_i32()?);
             m_search_textures_globally = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_materials = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             m_material_location = Some(rdr.read_i32()?);
             m_materials = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
         } else {
         }
             m_legacy_generate_animations = Some(rdr.read_i32()?);
@@ -818,21 +875,15 @@ impl crate::Parse for SketchUpImporter {
         } else {
         }
             m_motion_node_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2023, 1, 0) {
         } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
             m_rig_import_errors = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_rig_import_warnings = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else {
         }
             m_animation_import_errors = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_import_warnings = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_retargeting_warnings = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_animation_do_retargeting_warnings = Some(SketchUpImporterMAnimationDoRetargetingWarningsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2018, 1, 0) {
             m_import_animated_custom_properties = Some(SketchUpImporterMImportAnimatedCustomPropertiesVariant::parse(rdr, ver)?);
@@ -847,15 +898,13 @@ impl crate::Parse for SketchUpImporter {
             m_animation_position_error = Some(rdr.read_f32()?);
             m_animation_scale_error = Some(rdr.read_f32()?);
             m_animation_wrap_mode = Some(rdr.read_i32()?);
-            m_extra_exposed_transform_paths = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_extra_exposed_transform_paths = Some(SketchUpImporterMExtraExposedTransformPathsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             m_extra_user_properties = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
         } else {
         }
-            m_clip_animations = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ClipAnimationInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_clip_animations = Some(SketchUpImporterMClipAnimationsVariant::parse(rdr, ver)?);
             m_is_readable = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_lod_screen_percentages = Some(SketchUpImporterMLodScreenPercentagesVariant::parse(rdr, ver)?);
@@ -984,19 +1033,16 @@ impl crate::Parse for SketchUpImporter {
             m_file_scale = Some(SketchUpImporterMFileScaleVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2021, 3, 36) {
             m_file_scale_unit = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_file_scale_factor = Some(rdr.read_f32()?);
             rdr.align(4)?;
             m_strict_vertex_data_checks = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             m_file_scale_unit = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_file_scale_factor = Some(rdr.read_f32()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
             m_file_scale_unit = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_file_scale_factor = Some(rdr.read_f32()?);
             rdr.align(4)?;
             m_previous_calculated_global_scale = Some(rdr.read_f32()?);
@@ -1034,8 +1080,7 @@ impl crate::Parse for SketchUpImporter {
             normal_calculation_mode = Some(SketchUpImporterNormalCalculationModeVariant::parse(rdr, ver)?);
         } else {
         }
-            m_imported_take_infos = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TakeInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+            m_imported_take_infos = Some(SketchUpImporterMImportedTakeInfosVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
         } else {
             m_referenced_clips = Some(SketchUpImporterMReferencedClipsVariant::parse(rdr, ver)?);
@@ -1061,7 +1106,6 @@ impl crate::Parse for SketchUpImporter {
             rdr.align(4)?;
         }
             m_human_description = Some(HumanDescription::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_last_human_description_avatar_source = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2019, 3, 0) {
             m_auto_generate_avatar_mapping_if_unspecified = Some(rdr.read_bool()?);
@@ -1111,11 +1155,8 @@ impl crate::Parse for SketchUpImporter {
             m_additional_bone = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_user_data = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_asset_bundle_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2019, 2, 0) {
             m_generate_back_face = Some(rdr.read_bool()?);
             m_merge_coplanar_faces = Some(rdr.read_bool()?);
@@ -1128,7 +1169,6 @@ impl crate::Parse for SketchUpImporter {
             m_file_unit = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_sketch_up_import_data = Some(SketchUpImportData::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else {
         }
 

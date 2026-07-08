@@ -15,9 +15,7 @@ impl crate::Parse for Error {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let message = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let file_path = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let start_line = rdr.read_u32()?;
         let start_char = rdr.read_u32()?;
         let severity = rdr.read_i32()?;

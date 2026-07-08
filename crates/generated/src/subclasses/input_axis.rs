@@ -25,19 +25,12 @@ impl crate::Parse for InputAxis {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let descriptive_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let descriptive_negative_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let negative_button = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let positive_button = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let alt_negative_button = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let alt_positive_button = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let gravity = rdr.read_f32()?;
         let dead = rdr.read_f32()?;
         let sensitivity = rdr.read_f32()?;

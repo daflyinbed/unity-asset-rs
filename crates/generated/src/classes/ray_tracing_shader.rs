@@ -64,7 +64,6 @@ impl crate::Parse for RayTracingShader {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let variants = RayTracingShaderVariantsVariant::parse(rdr, ver)?;
         let m_max_recursion_depth = rdr.read_u32()?;
         let m_enable_ray_payload_size_checks = if *ver >= crate::UnityVersion::new(6000, 0, 17) {

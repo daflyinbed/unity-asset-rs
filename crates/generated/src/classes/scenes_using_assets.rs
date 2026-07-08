@@ -16,7 +16,6 @@ impl crate::Parse for ScenesUsingAssets {
         let m_scenes_using_assets = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { BuildReportScenesUsingAsset::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
         rdr.align(4)?;
         let m_list_of_scenes_using_each_asset = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-        rdr.align(4)?;
 
         Ok(ScenesUsingAssets {
             m_scenes_using_assets,

@@ -15,7 +15,6 @@ impl crate::Parse for DefaultPresetList {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let r#type = PresetType::parse(rdr, ver)?;
-        rdr.align(4)?;
         let default_presets = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { DefaultPreset::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
         rdr.align(4)?;
 

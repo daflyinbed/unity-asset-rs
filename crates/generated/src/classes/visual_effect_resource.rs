@@ -21,11 +21,9 @@ impl crate::Parse for VisualEffectResourceMInfosVariant {
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2020, 1, 0) {
             let v = ( { Ok(Box::new(VisualEffectSettings::parse(rdr, ver)?)) } )?;
-            rdr.align(4)?;
             Ok(Self::V2020_1(v))
         } else {
             let v = ( { Ok(Box::new(VisualEffectInfo::parse(rdr, ver)?)) } )?;
-            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -50,7 +48,6 @@ impl crate::Parse for VisualEffectResource {
         let mut m_infos = None;
         let mut m_systems = None;
             m_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_graph = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2020, 1, 0) {
         } else {

@@ -21,13 +21,10 @@ impl crate::Parse for ReflectedFunction {
         let m_namespace = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
         rdr.align(4)?;
         let m_return_type_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_parameters = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ReflectedParameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
         rdr.align(4)?;
         let m_body = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_hints = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Hint::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
         rdr.align(4)?;
 

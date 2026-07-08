@@ -30,9 +30,7 @@ impl crate::Parse for TakeInfo {
         let mut sample_rate = None;
         let mut clip = None;
             name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             default_clip_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             internal_id = Some(rdr.read_i64()?);
         } else {

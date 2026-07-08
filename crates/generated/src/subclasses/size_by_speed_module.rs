@@ -27,12 +27,9 @@ impl crate::Parse for SizeBySpeedModule {
             enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
             curve = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
             y = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
             z = Some(MinMaxCurve::parse(rdr, ver)?);
-            rdr.align(4)?;
         } else {
         }
             range = Some(Vector2f::parse(rdr, ver)?);

@@ -1,6 +1,6 @@
 //! 自动生成。请勿手动修改。
 
-use crate::subclasses::color_rgba::ColorRgba;
+use crate::subclasses::color_rgb_af::ColorRgbAf;
 
 #[derive(Debug, Clone)]
 pub struct LightmapEditorSettings {
@@ -10,7 +10,7 @@ pub struct LightmapEditorSettings {
     pub m_texture_height: i32,
     pub m_bounce_boost: f32,
     pub m_bounce_intensity: f32,
-    pub m_sky_light_color: ColorRgba,
+    pub m_sky_light_color: ColorRgbAf,
     pub m_sky_light_intensity: f32,
     pub m_quality: i32,
     pub m_bounces: i32,
@@ -36,7 +36,7 @@ impl crate::Parse for LightmapEditorSettings {
         let m_texture_height = rdr.read_i32()?;
         let m_bounce_boost = rdr.read_f32()?;
         let m_bounce_intensity = rdr.read_f32()?;
-        let m_sky_light_color = ColorRgba::parse(rdr, ver)?;
+        let m_sky_light_color = ColorRgbAf::parse(rdr, ver)?;
         let m_sky_light_intensity = rdr.read_f32()?;
         let m_quality = rdr.read_i32()?;
         let m_bounces = rdr.read_i32()?;

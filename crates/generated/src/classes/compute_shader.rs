@@ -2,7 +2,6 @@
 
 use crate::subclasses::compute_shader_cb::ComputeShaderCb;
 use crate::subclasses::compute_shader_kernel::ComputeShaderKernel;
-use crate::subclasses::compute_shader_platform_variant::ComputeShaderPlatformVariant;
 use crate::subclasses::compute_shader_variant::ComputeShaderVariant;
 
 
@@ -10,7 +9,7 @@ use crate::subclasses::compute_shader_variant::ComputeShaderVariant;
 #[derive(Debug, Clone)]
 pub enum ComputeShaderVariantsVariant {
     Default(Vec<ComputeShaderVariant>),
-    V2020_1(Vec<ComputeShaderPlatformVariant>),
+    V2017_1(Vec<ComputeShaderVariant>),
 }
 
 impl crate::Parse for ComputeShaderVariantsVariant {
@@ -18,13 +17,12 @@ impl crate::Parse for ComputeShaderVariantsVariant {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderPlatformVariant::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            rdr.align(4)?;
-            Ok(Self::V2020_1(v))
-        } else {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderVariant::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             rdr.align(4)?;
+            Ok(Self::V2017_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderVariant::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -47,14 +45,11 @@ impl crate::Parse for ComputeShader {
         let mut variants = None;
         let mut constant_buffers = None;
             m_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             variants = Some(ComputeShaderVariantsVariant::parse(rdr, ver)?);
         } else {
             kernels = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderKernel::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
             constant_buffers = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderCb::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
         }
 
         Ok(ComputeShader {

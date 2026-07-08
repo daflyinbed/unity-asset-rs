@@ -31,9 +31,7 @@ impl crate::Parse for LightsModule {
         let range = rdr.read_bool()?;
         let intensity = rdr.read_bool()?;
         let range_curve = MinMaxCurve::parse(rdr, ver)?;
-        rdr.align(4)?;
         let intensity_curve = MinMaxCurve::parse(rdr, ver)?;
-        rdr.align(4)?;
         let max_lights = rdr.read_i32()?;
 
         Ok(LightsModule {

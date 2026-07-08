@@ -13,7 +13,6 @@ impl crate::Parse for TestObjectWithSerializedAnimationCurve {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_curve = AnimationCurve::parse(rdr, ver)?;
-        rdr.align(4)?;
 
         Ok(TestObjectWithSerializedAnimationCurve {
             m_curve,

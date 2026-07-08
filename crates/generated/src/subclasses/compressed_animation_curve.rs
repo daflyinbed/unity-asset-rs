@@ -1,13 +1,15 @@
 //! 自动生成。请勿手动修改。
 
-use crate::subclasses::packed_bit_vector::PackedBitVector;
+use crate::subclasses::packed_bit_vector_int32::PackedBitVector_Int32;
+use crate::subclasses::packed_bit_vector_quaternionf::PackedBitVector_Quaternionf;
+use crate::subclasses::packed_bit_vector_single::PackedBitVector_Single;
 
 #[derive(Debug, Clone)]
 pub struct CompressedAnimationCurve {
     pub m_path: String,
-    pub m_times: PackedBitVector,
-    pub m_values: PackedBitVector,
-    pub m_slopes: PackedBitVector,
+    pub m_times: PackedBitVector_Int32,
+    pub m_values: PackedBitVector_Quaternionf,
+    pub m_slopes: PackedBitVector_Single,
     pub m_pre_infinity: i32,
     pub m_post_infinity: i32,
 }
@@ -18,13 +20,9 @@ impl crate::Parse for CompressedAnimationCurve {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_path = rdr.read_aligned_string()?;
-        rdr.align(4)?;
-        let m_times = PackedBitVector::parse(rdr, ver)?;
-        rdr.align(4)?;
-        let m_values = PackedBitVector::parse(rdr, ver)?;
-        rdr.align(4)?;
-        let m_slopes = PackedBitVector::parse(rdr, ver)?;
-        rdr.align(4)?;
+        let m_times = PackedBitVector_Int32::parse(rdr, ver)?;
+        let m_values = PackedBitVector_Quaternionf::parse(rdr, ver)?;
+        let m_slopes = PackedBitVector_Single::parse(rdr, ver)?;
         let m_pre_infinity = rdr.read_i32()?;
         let m_post_infinity = rdr.read_i32()?;
 

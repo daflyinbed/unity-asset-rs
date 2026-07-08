@@ -1,12 +1,11 @@
 //! 自动生成。请勿手动修改。
 
-use crate::subclasses::platform_shader_settings::PlatformShaderSettings;
-
 #[derive(Debug, Clone)]
 pub struct BuildTargetShaderSettings {
     pub m_build_target: String,
-    pub m_shader_settings: PlatformShaderSettings,
-    pub m_automatic: bool,
+    pub m_chunk_size_in_mb: u32,
+    pub m_max_chunks: u32,
+    pub m_override_default_settings: bool,
 }
 
 impl crate::Parse for BuildTargetShaderSettings {
@@ -15,16 +14,16 @@ impl crate::Parse for BuildTargetShaderSettings {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_build_target = rdr.read_aligned_string()?;
-        rdr.align(4)?;
-        let m_shader_settings = PlatformShaderSettings::parse(rdr, ver)?;
-        rdr.align(4)?;
-        let m_automatic = rdr.read_bool()?;
+        let m_chunk_size_in_mb = rdr.read_u32()?;
+        let m_max_chunks = rdr.read_u32()?;
+        let m_override_default_settings = rdr.read_bool()?;
         rdr.align(4)?;
 
         Ok(BuildTargetShaderSettings {
             m_build_target,
-            m_shader_settings,
-            m_automatic,
+            m_chunk_size_in_mb,
+            m_max_chunks,
+            m_override_default_settings,
         })
     }
 }

@@ -18,9 +18,7 @@ impl crate::Parse for Message {
         let m_severity = rdr.read_i32()?;
         let m_code = rdr.read_i32()?;
         let m_location = SourceLocation::parse(rdr, ver)?;
-        rdr.align(4)?;
         let m_text = rdr.read_aligned_string()?;
-        rdr.align(4)?;
 
         Ok(Message {
             m_severity,

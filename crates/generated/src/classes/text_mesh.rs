@@ -1,7 +1,7 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
-use crate::subclasses::color_rgba::ColorRgba;
+use crate::subclasses::color_rgba32::ColorRgba32;
 
 #[derive(Debug, Clone)]
 pub struct TextMesh {
@@ -17,7 +17,7 @@ pub struct TextMesh {
     pub m_font_style: i32,
     pub m_font: PPtr,
     pub m_rich_text: Option<bool>,
-    pub m_color: Option<ColorRgba>,
+    pub m_color: Option<ColorRgba32>,
 }
 
 impl crate::Parse for TextMesh {
@@ -40,7 +40,6 @@ impl crate::Parse for TextMesh {
         let mut m_color = None;
             m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
             m_text = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_offset_z = Some(rdr.read_f32()?);
             m_character_size = Some(rdr.read_f32()?);
             m_line_spacing = Some(rdr.read_f32()?);
@@ -56,7 +55,7 @@ impl crate::Parse for TextMesh {
         }
             m_font = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(4, 2, 0) {
-            m_color = Some(ColorRgba::parse(rdr, ver)?);
+            m_color = Some(ColorRgba32::parse(rdr, ver)?);
         } else {
         }
 

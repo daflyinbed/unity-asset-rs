@@ -55,7 +55,6 @@ impl crate::Parse for BuildReportPackedAssetInfo {
             source_asset_guid = Some(Guid::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 4, 2) {
             build_time_asset_path = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else {
         }
 

@@ -54,7 +54,6 @@ impl crate::Parse for AudioMixerController {
         let mut m_mixer_constant = None;
         let mut m_update_mode = None;
             m_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_output_group = Some(crate::PPtr::parse(rdr, ver)?);
             m_master_group = Some(crate::PPtr::parse(rdr, ver)?);
             m_snapshots = Some(AudioMixerControllerMSnapshotsVariant::parse(rdr, ver)?);

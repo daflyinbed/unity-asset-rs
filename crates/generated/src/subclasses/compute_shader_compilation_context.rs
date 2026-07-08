@@ -27,11 +27,8 @@ impl crate::Parse for ComputeShaderCompilationContext {
     ) -> Result<Self, R::Error> {
         let build_target = BuildTargetSelection::parse(rdr, ver)?;
         let source_file_name = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let source = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let source_file = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let kernels = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
         rdr.align(4)?;
         let kernel_macros = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?;

@@ -1,20 +1,641 @@
 //! 自动生成。请勿手动修改。
 
-use crate::subclasses::vfx_field::VfxField;
+use crate::subclasses::vfx_field_vfx_entry_exposed_animation_curve::VfxField_VfxEntryExposed_AnimationCurve;
+use crate::subclasses::vfx_field_vfx_entry_exposed_bool::VfxField_VfxEntryExposed_bool;
+use crate::subclasses::vfx_field_vfx_entry_exposed_float::VfxField_VfxEntryExposed_float;
+use crate::subclasses::vfx_field_vfx_entry_exposed_gradient::VfxField_VfxEntryExposed_Gradient;
+use crate::subclasses::vfx_field_vfx_entry_exposed_matrix4x4f::VfxField_VfxEntryExposed_Matrix4x4f;
+use crate::subclasses::vfx_field_vfx_entry_exposed_p_ptr_named_object_::VfxField_VfxEntryExposed_PPtr_NamedObject_;
+use crate::subclasses::vfx_field_vfx_entry_exposed_p_ptr_object_::VfxField_VfxEntryExposed_PPtr_Object_;
+use crate::subclasses::vfx_field_vfx_entry_exposed_s_int32::VfxField_VfxEntryExposed_SInt32;
+use crate::subclasses::vfx_field_vfx_entry_exposed_u_int32::VfxField_VfxEntryExposed_UInt32;
+use crate::subclasses::vfx_field_vfx_entry_exposed_vector2f::VfxField_VfxEntryExposed_Vector2f;
+use crate::subclasses::vfx_field_vfx_entry_exposed_vector3f::VfxField_VfxEntryExposed_Vector3f;
+use crate::subclasses::vfx_field_vfx_entry_exposed_vector4f::VfxField_VfxEntryExposed_Vector4f;
+use crate::subclasses::vfx_field_vfx_entry_expression_value_animation_curve::VfxField_VfxEntryExpressionValue_AnimationCurve;
+use crate::subclasses::vfx_field_vfx_entry_expression_value_bool::VfxField_VfxEntryExpressionValue_bool;
+use crate::subclasses::vfx_field_vfx_entry_expression_value_float::VfxField_VfxEntryExpressionValue_float;
+use crate::subclasses::vfx_field_vfx_entry_expression_value_gradient::VfxField_VfxEntryExpressionValue_Gradient;
+use crate::subclasses::vfx_field_vfx_entry_expression_value_matrix4x4f::VfxField_VfxEntryExpressionValue_Matrix4x4f;
+use crate::subclasses::vfx_field_vfx_entry_expression_value_p_ptr_named_object_::VfxField_VfxEntryExpressionValue_PPtr_NamedObject_;
+use crate::subclasses::vfx_field_vfx_entry_expression_value_p_ptr_object_::VfxField_VfxEntryExpressionValue_PPtr_Object_;
+use crate::subclasses::vfx_field_vfx_entry_expression_value_s_int32::VfxField_VfxEntryExpressionValue_SInt32;
+use crate::subclasses::vfx_field_vfx_entry_expression_value_u_int32::VfxField_VfxEntryExpressionValue_UInt32;
+use crate::subclasses::vfx_field_vfx_entry_expression_value_vector2f::VfxField_VfxEntryExpressionValue_Vector2f;
+use crate::subclasses::vfx_field_vfx_entry_expression_value_vector3f::VfxField_VfxEntryExpressionValue_Vector3f;
+use crate::subclasses::vfx_field_vfx_entry_expression_value_vector4f::VfxField_VfxEntryExpressionValue_Vector4f;
 
+
+/// 版本枚举：VfxPropertySheetSerializedBaseMFloatVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum VfxPropertySheetSerializedBaseMFloatVariant {
+    Default(Box<VfxField_VfxEntryExposed_float>),
+    V2018_4_13(Box<VfxField_VfxEntryExpressionValue_float>),
+    V2019_3(Box<VfxField_VfxEntryExposed_float>),
+    V2020_1(Box<VfxField_VfxEntryExpressionValue_float>),
+    V2020_2(Box<VfxField_VfxEntryExposed_float>),
+    V2021_2(Box<VfxField_VfxEntryExpressionValue_float>),
+    V2022_2(Box<VfxField_VfxEntryExposed_float>),
+    V2022_3_6(Box<VfxField_VfxEntryExpressionValue_float>),
+    V6000_5(Box<VfxField_VfxEntryExposed_float>),
+    V6000_6(Box<VfxField_VfxEntryExpressionValue_float>),
+}
+
+impl crate::Parse for VfxPropertySheetSerializedBaseMFloatVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(6000, 6, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_float::parse(rdr, ver)?)) } )?;
+            Ok(Self::V6000_6(v))
+        } else if *ver >= crate::UnityVersion::new(6000, 5, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_float::parse(rdr, ver)?)) } )?;
+            Ok(Self::V6000_5(v))
+        } else if *ver >= crate::UnityVersion::new(2022, 3, 6) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_float::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2022_3_6(v))
+        } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_float::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2022_2(v))
+        } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_float::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2021_2(v))
+        } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_float::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2020_2(v))
+        } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_float::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2020_1(v))
+        } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_float::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2019_3(v))
+        } else if *ver >= crate::UnityVersion::new(2018, 4, 13) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_float::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2018_4_13(v))
+        } else {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_float::parse(rdr, ver)?)) } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：VfxPropertySheetSerializedBaseMVector2fVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum VfxPropertySheetSerializedBaseMVector2fVariant {
+    Default(Box<VfxField_VfxEntryExposed_Vector2f>),
+    V2018_4_13(Box<VfxField_VfxEntryExpressionValue_Vector2f>),
+    V2019_3(Box<VfxField_VfxEntryExposed_Vector2f>),
+    V2020_1(Box<VfxField_VfxEntryExpressionValue_Vector2f>),
+    V2020_2(Box<VfxField_VfxEntryExposed_Vector2f>),
+    V2021_2(Box<VfxField_VfxEntryExpressionValue_Vector2f>),
+    V2022_2(Box<VfxField_VfxEntryExposed_Vector2f>),
+    V2022_3_6(Box<VfxField_VfxEntryExpressionValue_Vector2f>),
+    V6000_5(Box<VfxField_VfxEntryExposed_Vector2f>),
+    V6000_6(Box<VfxField_VfxEntryExpressionValue_Vector2f>),
+}
+
+impl crate::Parse for VfxPropertySheetSerializedBaseMVector2fVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(6000, 6, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector2f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V6000_6(v))
+        } else if *ver >= crate::UnityVersion::new(6000, 5, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Vector2f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V6000_5(v))
+        } else if *ver >= crate::UnityVersion::new(2022, 3, 6) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector2f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2022_3_6(v))
+        } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Vector2f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2022_2(v))
+        } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector2f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2021_2(v))
+        } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Vector2f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2020_2(v))
+        } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector2f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2020_1(v))
+        } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Vector2f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2019_3(v))
+        } else if *ver >= crate::UnityVersion::new(2018, 4, 13) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector2f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2018_4_13(v))
+        } else {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Vector2f::parse(rdr, ver)?)) } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：VfxPropertySheetSerializedBaseMVector3fVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum VfxPropertySheetSerializedBaseMVector3fVariant {
+    Default(Box<VfxField_VfxEntryExposed_Vector3f>),
+    V2018_4_13(Box<VfxField_VfxEntryExpressionValue_Vector3f>),
+    V2019_3(Box<VfxField_VfxEntryExposed_Vector3f>),
+    V2020_1(Box<VfxField_VfxEntryExpressionValue_Vector3f>),
+    V2020_2(Box<VfxField_VfxEntryExposed_Vector3f>),
+    V2021_2(Box<VfxField_VfxEntryExpressionValue_Vector3f>),
+    V2022_2(Box<VfxField_VfxEntryExposed_Vector3f>),
+    V2022_3_6(Box<VfxField_VfxEntryExpressionValue_Vector3f>),
+    V6000_5(Box<VfxField_VfxEntryExposed_Vector3f>),
+    V6000_6(Box<VfxField_VfxEntryExpressionValue_Vector3f>),
+}
+
+impl crate::Parse for VfxPropertySheetSerializedBaseMVector3fVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(6000, 6, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector3f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V6000_6(v))
+        } else if *ver >= crate::UnityVersion::new(6000, 5, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Vector3f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V6000_5(v))
+        } else if *ver >= crate::UnityVersion::new(2022, 3, 6) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector3f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2022_3_6(v))
+        } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Vector3f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2022_2(v))
+        } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector3f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2021_2(v))
+        } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Vector3f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2020_2(v))
+        } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector3f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2020_1(v))
+        } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Vector3f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2019_3(v))
+        } else if *ver >= crate::UnityVersion::new(2018, 4, 13) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector3f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2018_4_13(v))
+        } else {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Vector3f::parse(rdr, ver)?)) } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：VfxPropertySheetSerializedBaseMVector4fVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum VfxPropertySheetSerializedBaseMVector4fVariant {
+    Default(Box<VfxField_VfxEntryExposed_Vector4f>),
+    V2018_4_13(Box<VfxField_VfxEntryExpressionValue_Vector4f>),
+    V2019_3(Box<VfxField_VfxEntryExposed_Vector4f>),
+    V2020_1(Box<VfxField_VfxEntryExpressionValue_Vector4f>),
+    V2020_2(Box<VfxField_VfxEntryExposed_Vector4f>),
+    V2021_2(Box<VfxField_VfxEntryExpressionValue_Vector4f>),
+    V2022_2(Box<VfxField_VfxEntryExposed_Vector4f>),
+    V2022_3_6(Box<VfxField_VfxEntryExpressionValue_Vector4f>),
+    V6000_5(Box<VfxField_VfxEntryExposed_Vector4f>),
+    V6000_6(Box<VfxField_VfxEntryExpressionValue_Vector4f>),
+}
+
+impl crate::Parse for VfxPropertySheetSerializedBaseMVector4fVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(6000, 6, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector4f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V6000_6(v))
+        } else if *ver >= crate::UnityVersion::new(6000, 5, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Vector4f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V6000_5(v))
+        } else if *ver >= crate::UnityVersion::new(2022, 3, 6) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector4f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2022_3_6(v))
+        } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Vector4f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2022_2(v))
+        } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector4f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2021_2(v))
+        } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Vector4f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2020_2(v))
+        } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector4f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2020_1(v))
+        } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Vector4f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2019_3(v))
+        } else if *ver >= crate::UnityVersion::new(2018, 4, 13) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector4f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2018_4_13(v))
+        } else {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Vector4f::parse(rdr, ver)?)) } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：VfxPropertySheetSerializedBaseMUintVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum VfxPropertySheetSerializedBaseMUintVariant {
+    Default(Box<VfxField_VfxEntryExposed_UInt32>),
+    V2018_4_13(Box<VfxField_VfxEntryExpressionValue_UInt32>),
+    V2019_3(Box<VfxField_VfxEntryExposed_UInt32>),
+    V2020_1(Box<VfxField_VfxEntryExpressionValue_UInt32>),
+    V2020_2(Box<VfxField_VfxEntryExposed_UInt32>),
+    V2021_2(Box<VfxField_VfxEntryExpressionValue_UInt32>),
+    V2022_2(Box<VfxField_VfxEntryExposed_UInt32>),
+    V2022_3_6(Box<VfxField_VfxEntryExpressionValue_UInt32>),
+    V6000_5(Box<VfxField_VfxEntryExposed_UInt32>),
+    V6000_6(Box<VfxField_VfxEntryExpressionValue_UInt32>),
+}
+
+impl crate::Parse for VfxPropertySheetSerializedBaseMUintVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(6000, 6, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_UInt32::parse(rdr, ver)?)) } )?;
+            Ok(Self::V6000_6(v))
+        } else if *ver >= crate::UnityVersion::new(6000, 5, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_UInt32::parse(rdr, ver)?)) } )?;
+            Ok(Self::V6000_5(v))
+        } else if *ver >= crate::UnityVersion::new(2022, 3, 6) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_UInt32::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2022_3_6(v))
+        } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_UInt32::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2022_2(v))
+        } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_UInt32::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2021_2(v))
+        } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_UInt32::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2020_2(v))
+        } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_UInt32::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2020_1(v))
+        } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_UInt32::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2019_3(v))
+        } else if *ver >= crate::UnityVersion::new(2018, 4, 13) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_UInt32::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2018_4_13(v))
+        } else {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_UInt32::parse(rdr, ver)?)) } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：VfxPropertySheetSerializedBaseMIntVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum VfxPropertySheetSerializedBaseMIntVariant {
+    Default(Box<VfxField_VfxEntryExposed_SInt32>),
+    V2018_4_13(Box<VfxField_VfxEntryExpressionValue_SInt32>),
+    V2019_3(Box<VfxField_VfxEntryExposed_SInt32>),
+    V2020_1(Box<VfxField_VfxEntryExpressionValue_SInt32>),
+    V2020_2(Box<VfxField_VfxEntryExposed_SInt32>),
+    V2021_2(Box<VfxField_VfxEntryExpressionValue_SInt32>),
+    V2022_2(Box<VfxField_VfxEntryExposed_SInt32>),
+    V2022_3_6(Box<VfxField_VfxEntryExpressionValue_SInt32>),
+    V6000_5(Box<VfxField_VfxEntryExposed_SInt32>),
+    V6000_6(Box<VfxField_VfxEntryExpressionValue_SInt32>),
+}
+
+impl crate::Parse for VfxPropertySheetSerializedBaseMIntVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(6000, 6, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_SInt32::parse(rdr, ver)?)) } )?;
+            Ok(Self::V6000_6(v))
+        } else if *ver >= crate::UnityVersion::new(6000, 5, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_SInt32::parse(rdr, ver)?)) } )?;
+            Ok(Self::V6000_5(v))
+        } else if *ver >= crate::UnityVersion::new(2022, 3, 6) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_SInt32::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2022_3_6(v))
+        } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_SInt32::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2022_2(v))
+        } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_SInt32::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2021_2(v))
+        } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_SInt32::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2020_2(v))
+        } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_SInt32::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2020_1(v))
+        } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_SInt32::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2019_3(v))
+        } else if *ver >= crate::UnityVersion::new(2018, 4, 13) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_SInt32::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2018_4_13(v))
+        } else {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_SInt32::parse(rdr, ver)?)) } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：VfxPropertySheetSerializedBaseMMatrix4x4fVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum VfxPropertySheetSerializedBaseMMatrix4x4fVariant {
+    Default(Box<VfxField_VfxEntryExposed_Matrix4x4f>),
+    V2018_4_13(Box<VfxField_VfxEntryExpressionValue_Matrix4x4f>),
+    V2019_3(Box<VfxField_VfxEntryExposed_Matrix4x4f>),
+    V2020_1(Box<VfxField_VfxEntryExpressionValue_Matrix4x4f>),
+    V2020_2(Box<VfxField_VfxEntryExposed_Matrix4x4f>),
+    V2021_2(Box<VfxField_VfxEntryExpressionValue_Matrix4x4f>),
+    V2022_2(Box<VfxField_VfxEntryExposed_Matrix4x4f>),
+    V2022_3_6(Box<VfxField_VfxEntryExpressionValue_Matrix4x4f>),
+    V6000_5(Box<VfxField_VfxEntryExposed_Matrix4x4f>),
+    V6000_6(Box<VfxField_VfxEntryExpressionValue_Matrix4x4f>),
+}
+
+impl crate::Parse for VfxPropertySheetSerializedBaseMMatrix4x4fVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(6000, 6, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Matrix4x4f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V6000_6(v))
+        } else if *ver >= crate::UnityVersion::new(6000, 5, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Matrix4x4f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V6000_5(v))
+        } else if *ver >= crate::UnityVersion::new(2022, 3, 6) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Matrix4x4f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2022_3_6(v))
+        } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Matrix4x4f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2022_2(v))
+        } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Matrix4x4f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2021_2(v))
+        } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Matrix4x4f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2020_2(v))
+        } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Matrix4x4f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2020_1(v))
+        } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Matrix4x4f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2019_3(v))
+        } else if *ver >= crate::UnityVersion::new(2018, 4, 13) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Matrix4x4f::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2018_4_13(v))
+        } else {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Matrix4x4f::parse(rdr, ver)?)) } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：VfxPropertySheetSerializedBaseMAnimationCurveVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum VfxPropertySheetSerializedBaseMAnimationCurveVariant {
+    Default(Box<VfxField_VfxEntryExposed_AnimationCurve>),
+    V2018_4_13(Box<VfxField_VfxEntryExpressionValue_AnimationCurve>),
+    V2019_3(Box<VfxField_VfxEntryExposed_AnimationCurve>),
+    V2020_1(Box<VfxField_VfxEntryExpressionValue_AnimationCurve>),
+    V2020_2(Box<VfxField_VfxEntryExposed_AnimationCurve>),
+    V2021_2(Box<VfxField_VfxEntryExpressionValue_AnimationCurve>),
+    V2022_2(Box<VfxField_VfxEntryExposed_AnimationCurve>),
+    V2022_3_6(Box<VfxField_VfxEntryExpressionValue_AnimationCurve>),
+    V6000_5(Box<VfxField_VfxEntryExposed_AnimationCurve>),
+    V6000_6(Box<VfxField_VfxEntryExpressionValue_AnimationCurve>),
+}
+
+impl crate::Parse for VfxPropertySheetSerializedBaseMAnimationCurveVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(6000, 6, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_AnimationCurve::parse(rdr, ver)?)) } )?;
+            Ok(Self::V6000_6(v))
+        } else if *ver >= crate::UnityVersion::new(6000, 5, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_AnimationCurve::parse(rdr, ver)?)) } )?;
+            Ok(Self::V6000_5(v))
+        } else if *ver >= crate::UnityVersion::new(2022, 3, 6) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_AnimationCurve::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2022_3_6(v))
+        } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_AnimationCurve::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2022_2(v))
+        } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_AnimationCurve::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2021_2(v))
+        } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_AnimationCurve::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2020_2(v))
+        } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_AnimationCurve::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2020_1(v))
+        } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_AnimationCurve::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2019_3(v))
+        } else if *ver >= crate::UnityVersion::new(2018, 4, 13) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_AnimationCurve::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2018_4_13(v))
+        } else {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_AnimationCurve::parse(rdr, ver)?)) } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：VfxPropertySheetSerializedBaseMGradientVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum VfxPropertySheetSerializedBaseMGradientVariant {
+    Default(Box<VfxField_VfxEntryExposed_Gradient>),
+    V2018_4_13(Box<VfxField_VfxEntryExpressionValue_Gradient>),
+    V2019_3(Box<VfxField_VfxEntryExposed_Gradient>),
+    V2020_1(Box<VfxField_VfxEntryExpressionValue_Gradient>),
+    V2020_2(Box<VfxField_VfxEntryExposed_Gradient>),
+    V2021_2(Box<VfxField_VfxEntryExpressionValue_Gradient>),
+    V2022_2(Box<VfxField_VfxEntryExposed_Gradient>),
+    V2022_3_6(Box<VfxField_VfxEntryExpressionValue_Gradient>),
+    V6000_5(Box<VfxField_VfxEntryExposed_Gradient>),
+    V6000_6(Box<VfxField_VfxEntryExpressionValue_Gradient>),
+}
+
+impl crate::Parse for VfxPropertySheetSerializedBaseMGradientVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(6000, 6, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Gradient::parse(rdr, ver)?)) } )?;
+            Ok(Self::V6000_6(v))
+        } else if *ver >= crate::UnityVersion::new(6000, 5, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Gradient::parse(rdr, ver)?)) } )?;
+            Ok(Self::V6000_5(v))
+        } else if *ver >= crate::UnityVersion::new(2022, 3, 6) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Gradient::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2022_3_6(v))
+        } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Gradient::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2022_2(v))
+        } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Gradient::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2021_2(v))
+        } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Gradient::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2020_2(v))
+        } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Gradient::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2020_1(v))
+        } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Gradient::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2019_3(v))
+        } else if *ver >= crate::UnityVersion::new(2018, 4, 13) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Gradient::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2018_4_13(v))
+        } else {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Gradient::parse(rdr, ver)?)) } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：VfxPropertySheetSerializedBaseMNamedObjectVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum VfxPropertySheetSerializedBaseMNamedObjectVariant {
+    Default(Box<VfxField_VfxEntryExposed_PPtr_NamedObject_>),
+    V2018_4_13(Box<VfxField_VfxEntryExpressionValue_PPtr_NamedObject_>),
+    V2019_3(Box<VfxField_VfxEntryExposed_PPtr_NamedObject_>),
+    V2020_1(Box<VfxField_VfxEntryExpressionValue_PPtr_NamedObject_>),
+    V2020_2(Box<VfxField_VfxEntryExposed_PPtr_NamedObject_>),
+    V2021_1(Box<VfxField_VfxEntryExposed_PPtr_Object_>),
+    V2021_2(Box<VfxField_VfxEntryExpressionValue_PPtr_Object_>),
+    V2022_2(Box<VfxField_VfxEntryExposed_PPtr_Object_>),
+    V2022_3_6(Box<VfxField_VfxEntryExpressionValue_PPtr_Object_>),
+    V6000_5(Box<VfxField_VfxEntryExposed_PPtr_Object_>),
+    V6000_6(Box<VfxField_VfxEntryExpressionValue_PPtr_Object_>),
+}
+
+impl crate::Parse for VfxPropertySheetSerializedBaseMNamedObjectVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(6000, 6, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_PPtr_Object_::parse(rdr, ver)?)) } )?;
+            Ok(Self::V6000_6(v))
+        } else if *ver >= crate::UnityVersion::new(6000, 5, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_PPtr_Object_::parse(rdr, ver)?)) } )?;
+            Ok(Self::V6000_5(v))
+        } else if *ver >= crate::UnityVersion::new(2022, 3, 6) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_PPtr_Object_::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2022_3_6(v))
+        } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_PPtr_Object_::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2022_2(v))
+        } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_PPtr_Object_::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2021_2(v))
+        } else if *ver >= crate::UnityVersion::new(2021, 1, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_PPtr_Object_::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2021_1(v))
+        } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_PPtr_NamedObject_::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2020_2(v))
+        } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_PPtr_NamedObject_::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2020_1(v))
+        } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_PPtr_NamedObject_::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2019_3(v))
+        } else if *ver >= crate::UnityVersion::new(2018, 4, 13) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_PPtr_NamedObject_::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2018_4_13(v))
+        } else {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_PPtr_NamedObject_::parse(rdr, ver)?)) } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
+/// 版本枚举：VfxPropertySheetSerializedBaseMBoolVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum VfxPropertySheetSerializedBaseMBoolVariant {
+    Default(Box<VfxField_VfxEntryExposed_bool>),
+    V2018_4_13(Box<VfxField_VfxEntryExpressionValue_bool>),
+    V2019_3(Box<VfxField_VfxEntryExposed_bool>),
+    V2020_1(Box<VfxField_VfxEntryExpressionValue_bool>),
+    V2020_2(Box<VfxField_VfxEntryExposed_bool>),
+    V2021_2(Box<VfxField_VfxEntryExpressionValue_bool>),
+    V2022_2(Box<VfxField_VfxEntryExposed_bool>),
+    V2022_3_6(Box<VfxField_VfxEntryExpressionValue_bool>),
+    V6000_5(Box<VfxField_VfxEntryExposed_bool>),
+    V6000_6(Box<VfxField_VfxEntryExpressionValue_bool>),
+}
+
+impl crate::Parse for VfxPropertySheetSerializedBaseMBoolVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(6000, 6, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_bool::parse(rdr, ver)?)) } )?;
+            Ok(Self::V6000_6(v))
+        } else if *ver >= crate::UnityVersion::new(6000, 5, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_bool::parse(rdr, ver)?)) } )?;
+            Ok(Self::V6000_5(v))
+        } else if *ver >= crate::UnityVersion::new(2022, 3, 6) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_bool::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2022_3_6(v))
+        } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_bool::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2022_2(v))
+        } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_bool::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2021_2(v))
+        } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_bool::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2020_2(v))
+        } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_bool::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2020_1(v))
+        } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_bool::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2019_3(v))
+        } else if *ver >= crate::UnityVersion::new(2018, 4, 13) {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_bool::parse(rdr, ver)?)) } )?;
+            Ok(Self::V2018_4_13(v))
+        } else {
+            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_bool::parse(rdr, ver)?)) } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct VfxPropertySheetSerializedBase {
-    pub m_float: VfxField,
-    pub m_vector2f: VfxField,
-    pub m_vector3f: VfxField,
-    pub m_vector4f: VfxField,
-    pub m_uint: VfxField,
-    pub m_int: VfxField,
-    pub m_matrix4x4f: VfxField,
-    pub m_animation_curve: VfxField,
-    pub m_gradient: VfxField,
-    pub m_named_object: VfxField,
-    pub m_bool: VfxField,
+    pub m_float: VfxPropertySheetSerializedBaseMFloatVariant,
+    pub m_vector2f: VfxPropertySheetSerializedBaseMVector2fVariant,
+    pub m_vector3f: VfxPropertySheetSerializedBaseMVector3fVariant,
+    pub m_vector4f: VfxPropertySheetSerializedBaseMVector4fVariant,
+    pub m_uint: VfxPropertySheetSerializedBaseMUintVariant,
+    pub m_int: VfxPropertySheetSerializedBaseMIntVariant,
+    pub m_matrix4x4f: VfxPropertySheetSerializedBaseMMatrix4x4fVariant,
+    pub m_animation_curve: VfxPropertySheetSerializedBaseMAnimationCurveVariant,
+    pub m_gradient: VfxPropertySheetSerializedBaseMGradientVariant,
+    pub m_named_object: VfxPropertySheetSerializedBaseMNamedObjectVariant,
+    pub m_bool: VfxPropertySheetSerializedBaseMBoolVariant,
 }
 
 impl crate::Parse for VfxPropertySheetSerializedBase {
@@ -22,28 +643,17 @@ impl crate::Parse for VfxPropertySheetSerializedBase {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_float = VfxField::parse(rdr, ver)?;
-        rdr.align(4)?;
-        let m_vector2f = VfxField::parse(rdr, ver)?;
-        rdr.align(4)?;
-        let m_vector3f = VfxField::parse(rdr, ver)?;
-        rdr.align(4)?;
-        let m_vector4f = VfxField::parse(rdr, ver)?;
-        rdr.align(4)?;
-        let m_uint = VfxField::parse(rdr, ver)?;
-        rdr.align(4)?;
-        let m_int = VfxField::parse(rdr, ver)?;
-        rdr.align(4)?;
-        let m_matrix4x4f = VfxField::parse(rdr, ver)?;
-        rdr.align(4)?;
-        let m_animation_curve = VfxField::parse(rdr, ver)?;
-        rdr.align(4)?;
-        let m_gradient = VfxField::parse(rdr, ver)?;
-        rdr.align(4)?;
-        let m_named_object = VfxField::parse(rdr, ver)?;
-        rdr.align(4)?;
-        let m_bool = VfxField::parse(rdr, ver)?;
-        rdr.align(4)?;
+        let m_float = VfxPropertySheetSerializedBaseMFloatVariant::parse(rdr, ver)?;
+        let m_vector2f = VfxPropertySheetSerializedBaseMVector2fVariant::parse(rdr, ver)?;
+        let m_vector3f = VfxPropertySheetSerializedBaseMVector3fVariant::parse(rdr, ver)?;
+        let m_vector4f = VfxPropertySheetSerializedBaseMVector4fVariant::parse(rdr, ver)?;
+        let m_uint = VfxPropertySheetSerializedBaseMUintVariant::parse(rdr, ver)?;
+        let m_int = VfxPropertySheetSerializedBaseMIntVariant::parse(rdr, ver)?;
+        let m_matrix4x4f = VfxPropertySheetSerializedBaseMMatrix4x4fVariant::parse(rdr, ver)?;
+        let m_animation_curve = VfxPropertySheetSerializedBaseMAnimationCurveVariant::parse(rdr, ver)?;
+        let m_gradient = VfxPropertySheetSerializedBaseMGradientVariant::parse(rdr, ver)?;
+        let m_named_object = VfxPropertySheetSerializedBaseMNamedObjectVariant::parse(rdr, ver)?;
+        let m_bool = VfxPropertySheetSerializedBaseMBoolVariant::parse(rdr, ver)?;
 
         Ok(VfxPropertySheetSerializedBase {
             m_float,

@@ -2,14 +2,14 @@
 
 use crate::PPtr;
 use crate::subclasses::bit_field::BitField;
-use crate::subclasses::color_rgba::ColorRgba;
+use crate::subclasses::color_rgb_af::ColorRgbAf;
 
 #[derive(Debug, Clone)]
 pub struct LensFlare {
     pub m_game_object: PPtr,
     pub m_enabled: u8,
     pub m_flare: PPtr,
-    pub m_color: ColorRgba,
+    pub m_color: ColorRgbAf,
     pub m_brightness: f32,
     pub m_ignore_layers: BitField,
     pub m_fade_speed: Option<f32>,
@@ -33,7 +33,7 @@ impl crate::Parse for LensFlare {
             m_enabled = Some(rdr.read_u8()?);
             rdr.align(4)?;
             m_flare = Some(crate::PPtr::parse(rdr, ver)?);
-            m_color = Some(ColorRgba::parse(rdr, ver)?);
+            m_color = Some(ColorRgbAf::parse(rdr, ver)?);
             m_brightness = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(4, 3, 0) {
             m_fade_speed = Some(rdr.read_f32()?);

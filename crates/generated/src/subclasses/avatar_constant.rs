@@ -50,7 +50,6 @@ impl crate::Parse for AvatarConstant {
             m_skeleton_pose = Some(OffsetPtr::parse(rdr, ver)?);
         }
             m_human = Some(OffsetPtr::parse(rdr, ver)?);
-            rdr.align(4)?;
             m_human_skeleton_index_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
         if *ver >= crate::UnityVersion::new(4, 3, 0) {
             m_human_skeleton_reverse_index_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
@@ -62,7 +61,6 @@ impl crate::Parse for AvatarConstant {
             m_root_motion_skeleton = Some(OffsetPtr::parse(rdr, ver)?);
             m_root_motion_skeleton_pose = Some(OffsetPtr::parse(rdr, ver)?);
             m_root_motion_skeleton_index_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
         } else {
         }
 

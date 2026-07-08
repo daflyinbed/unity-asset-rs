@@ -17,7 +17,6 @@ impl crate::Parse for SerializedPackageRequirements {
         let m_requirements = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SerializedPackageRequirement::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
         rdr.align(4)?;
         let m_status_message = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_combined_status = rdr.read_i8()?;
 
         Ok(SerializedPackageRequirements {

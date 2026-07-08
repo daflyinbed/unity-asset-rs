@@ -17,9 +17,7 @@ impl crate::Parse for PropertyModification {
     ) -> Result<Self, R::Error> {
         let target = crate::PPtr::parse(rdr, ver)?;
         let property_path = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let value = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let object_reference = crate::PPtr::parse(rdr, ver)?;
 
         Ok(PropertyModification {

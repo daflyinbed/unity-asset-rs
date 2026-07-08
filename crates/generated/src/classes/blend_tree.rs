@@ -1,14 +1,13 @@
 //! 自动生成。请勿手动修改。
 
-use crate::subclasses::child::Child;
 use crate::subclasses::child_motion::ChildMotion;
 
 
 /// 版本枚举：BlendTreeMChildsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum BlendTreeMChildsVariant {
-    Default(Vec<Child>),
-    V5_0(Vec<ChildMotion>),
+    Default(Vec<ChildMotion>),
+    V2017_1(Vec<ChildMotion>),
 }
 
 impl crate::Parse for BlendTreeMChildsVariant {
@@ -16,13 +15,12 @@ impl crate::Parse for BlendTreeMChildsVariant {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        if *ver >= crate::UnityVersion::new(5, 0, 0) {
+        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ChildMotion::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             rdr.align(4)?;
-            Ok(Self::V5_0(v))
+            Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Child::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            rdr.align(4)?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ChildMotion::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -104,21 +102,15 @@ impl crate::Parse for BlendTree {
         let mut m_blend_type = None;
         let mut m_normalized_blend_values = None;
             m_name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_childs = Some(BlendTreeMChildsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(4, 2, 0) {
             m_blend_parameter = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_blend_parameter_y = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 1, 0) {
             m_blend_event = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
             m_blend_event_y = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         } else {
             m_blend_event = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
         }
             m_min_threshold = Some(rdr.read_f32()?);
             m_max_threshold = Some(rdr.read_f32()?);

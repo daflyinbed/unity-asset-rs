@@ -20,7 +20,6 @@ impl crate::Parse for Annotation {
         rdr.align(4)?;
         let m_class_id = rdr.read_i32()?;
         let m_script_class = rdr.read_aligned_string()?;
-        rdr.align(4)?;
         let m_flags = rdr.read_i32()?;
 
         Ok(Annotation {
