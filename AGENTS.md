@@ -21,10 +21,37 @@ layer (PPtr deref + `.resS` streaming_data) are all **implemented**:
   里的扁平 struct + parser（366 main class + 571 subclass）。
 - **聚合层**（Environment）：`src/environment.rs` + `src/names.rs`。eager parse 全部
   对象 + `.resS` 资源 + PPtr 解引用（`dependencies[file_id]` 约定对齐 AssetRipper）+
-  streaming_data 零拷贝取数。入口 `load_environment(path)`。
+  streaming_data 零拷贝取数。**跨 bundle 已落地**：`EnvironmentBuilder` 累积多 bundle 后
+  `build()` 一次性全局依赖解析；入口 `load_environment`（单 bundle）/ `load_environment_multi`
+  （多路径）/ `load_environment_dir`（递归目录嗅探）。`src/detect.rs` 做 UnityFS 签名嗅探。
 
-**未实现**：跨 bundle Environment（多 bundle 聚合）、bumpalo arena（路线图）、
-Python 绑定（ADR-0002，未开始）。
+**未实现**：gzip/brotli bundle 嗅探（目录扫描只认 `UnityFS`，gzip 静默跳过）、
+`DependencyProvider`/`ResourceProvider` trait 的实际回调（API 面已留，eager 模型暂不调）、
+bumpalo arena（路线图）、Python 绑定（ADR-0002，未开始）。
+
+## 父目录 workspace（参考实现 + 跨项目文档）
+
+本仓库的父目录 `/home/xwbx/Documents/unity/` 是一个**多项目 workspace**（本身非 git
+repo），里面除了本仓库外还有一整套 Unity 资产解析的参考实现和跨项目分析文档。遇到拿不准
+的格式/语义时，**优先去父目录 grep 参考实现**，而不是自己发明逻辑。
+
+- **[`../AGENTS.md`](../AGENTS.md)** — workspace 级指引，列清了各子项目角色、构建命令、
+  以及 PPtr/`.resS` 等跨项目语义差异。**做非平凡的跨项目对照前先读它。**
+- **[`../docs/`](../docs/)** — workspace 级跨项目分析文档（中文），与本仓库 `docs/` 互补：
+  - `ress-file-handling.md` — `.resS` streaming：UnityPy vs AssetRipper 对照。
+  - `tpk-class-parser-generation.md` — AssetRipper 完整 TPK → class + parser 生成管线。
+  - `assetripper-monobehaviour-handling.md` — AssetRipper MonoBehaviour 处理细节。
+- **参考实现仓库**（多数只读，用作 ground truth）：
+  | 目录 | 语言 | 用途 |
+  |---|---|---|
+  | `../AssetRipper/` | C# (.NET 10) | 全功能 importer/exporter；TPK 管线 + 运行时消费的权威实现。本仓库的 PPtr/`.resS`/命名约定**刻意对齐 AssetRipper**。 |
+  | `../AssetStudio/` | C# | UnityPy 的原型；AssetBundle/SerializedFile/TypeTree 读取逻辑可参考。 |
+  | `../UnityPy/` | Python | 成熟 extractor/patcher；本仓库 byte-level parity 的默认对照目标。 |
+  | `../Tpk/` | C# | TPK（Type tree PacKage）库 + console app，打包 TypeTreeDumps 成 `.tpk`。 |
+  | `../TypeTreeDumps/` | bash + data | 全 Unity 版本（≥3.4）struct dump，Tpk 的原始输入。 |
+
+> 注意：参考仓库多为 upstream 镜像，**改动前先与用户确认**。git 操作须定向到具体子目录
+> （workspace 根非 git repo）。
 
 ## docs/ 已与代码对齐
 
@@ -32,7 +59,7 @@ Python 绑定（ADR-0002，未开始）。
 
 - [`docs/io-layer.md`](docs/io-layer.md) — UnityFS + 解压 registry（现状 + 路线图）
 - [`docs/object-layer.md`](docs/object-layer.md) — SerializedFile + TypeTree + dispatch/fallback（现状 + 路线图）
-- [`docs/environment-layer.md`](docs/environment-layer.md) — Environment 聚合层（PPtr 解引用 + streaming_data，已落地）
+- [`docs/environment-layer.md`](docs/environment-layer.md) — Environment 聚合层（PPtr 解引用 + streaming_data + 跨 bundle 聚合，已落地）
 - [`docs/codegen.md`](docs/codegen.md) — codegen 单一权威（已落地）
 - [`docs/adr/`](docs/adr/) — ADR 正文记原始决策，文末「修订」附录记实现偏差
 
@@ -41,9 +68,10 @@ Python 绑定（ADR-0002，未开始）。
 ```bash
 cargo build                       # build lib + bin
 cargo build --workspace           # build 全部 crate（含 codegen / generated / unity-core）
-cargo test                        # all tests（io 层：tests/parse_bundle.rs）
+cargo test                        # all tests（io 层：tests/parse_bundle.rs；聚合层：tests/environment.rs）
 cargo test load_from_path         # run a single test by name
 cargo test --test parse_bundle    # run just the integration test file
+cargo test --test environment     # run just the environment 聚合层 tests
 cargo run                         # bin 默认 example/char_002_amiya.ab，dump 全部对象
 cargo run -- path/to/x.bundle     # parse a specific bundle
 cargo run --bin verify_codegen    # 端到端：默认遍历 example/ 下全部 bundle，跑 typed/TypeTree，统计成败
@@ -113,11 +141,14 @@ Edition is `2024` → requires Rust >= 1.85.
   fallback 到 AB 内嵌 TypeTree。两条路径各自 `Cursor::new(data, endian)`，zero-cost fallback。
 - codegen 生成**扁平 struct**（**无 parent 字段**——TPK release_root 已含全部继承链字段），
   不生成 MonoBehaviour / 抽象父类。字段类型跨版本变化用 `VersionedEnum`。
-- **`src/environment.rs`** 是聚合层：`Environment::from_bundle` eager parse 全部对象，
-  构建 `AssetCollection.dependencies`（`[0]=self` 约定对齐 AssetRipper `AssetCollection.Dependencies`），
-  PPtr 解引用经 `dependencies[file_id]` → target collection → `assets[path_id]`。
-  `.resS` 流数据走 `streaming_data`（空路径→`None`，对齐 AssetRipper，非 UnityPy stem 推导）。
-  命名归一化 `src/names.rs::fix_file_identifier` 对齐 `SpecialFileNames.FixFileIdentifier`。
+- **`src/environment.rs`** 是聚合层：`Environment::from_bundle`（单 bundle）/ `EnvironmentBuilder`
+  （多 bundle，累积后 `build()`）eager parse 全部对象，构建 `AssetCollection.dependencies`
+  （`[0]=self` 约定对齐 AssetRipper `AssetCollection.Dependencies`），PPtr 解引用经
+  `dependencies[file_id]` → target collection → `assets[path_id]`。**跨 bundle 已落地**：
+  数据模型本就全局扁平，Phase B 全局扫描 `collections`，多 bundle 灌进同一 Environment 即
+  自动 resolve。`.resS` 流数据走 `streaming_data`（空路径→`None`，对齐 AssetRipper，非
+  UnityPy stem 推导）。命名归一化 `src/names.rs::fix_file_identifier` 对齐
+  `SpecialFileNames.FixFileIdentifier`。`src/detect.rs` 做 UnityFS 签名嗅探（目录扫描用）。
 - 错误用 `snafu`。在 `src/error.rs` 加变体时遵循既有 `#[snafu(display(...))]` +
   `#[snafu(visibility(pub))]` 模式。
 
@@ -125,16 +156,18 @@ Edition is `2024` → requires Rust >= 1.85.
 
 - **Docstrings 和内联注释用中文。** 编辑既有文件时保持一致；新代码与邻居风格一致。
 - 公共 API 刻意保持精简（`src/lib.rs`）：io 入口（`load`/`load_with`/`load_bytes`/
-  `load_bytes_with`/`load_environment` + `Bundle`/`BundleFile`/`Registry`/`Decompressor*`）
+  `load_bytes_with` + `Bundle`/`BundleFile`/`Registry`/`Decompressor*`）
   + 对象解析（`parse_object`/`ParsedObject`/`SerializedFile`/`SerializedType`/
   `ObjectInfo`/`FileIdentifier`/`UnityObject`/`ClassIDType` + typetree 类型 + `unity_core`
-  的 `Endian`/`PPtr`/`UnityVersion`）+ 聚合层（`Environment`/`EnvironmentObject`/
-  `AssetCollection`/`ResourceFile`/`ParseFailure`/`PPtrLike`）。
+  的 `Endian`/`PPtr`/`UnityVersion`）+ 聚合层（`load_environment`/`load_environment_multi`/
+  `load_environment_dir` + `Environment`/`EnvironmentBuilder`/`EnvironmentObject`/
+  `AssetCollection`/`ResourceFile`/`ParseFailure`/`PPtrLike`/`DependencyProvider`/
+  `ResourceProvider`）。
 
 ## Reference docs (read before non-trivial work)
 
 - [`docs/io-layer.md`](docs/io-layer.md) — io 层现状（UnityFS + registry）。
 - [`docs/object-layer.md`](docs/object-layer.md) — 对象解析现状（SerializedFile + TypeTree + dispatch）。
-- [`docs/environment-layer.md`](docs/environment-layer.md) — 聚合层现状（Environment + PPtr 解引用 + streaming_data）。
+- [`docs/environment-layer.md`](docs/environment-layer.md) — 聚合层现状（Environment + Builder + PPtr 解引用 + streaming_data + 跨 bundle 聚合）。
 - [`docs/codegen.md`](docs/codegen.md) — codegen 现状（扁平 struct + VersionedEnum）。
 - [`docs/adr/`](docs/adr/) — 架构决策记录（0001 codegen / 0002 pyo3 / 0003 io 层）。
