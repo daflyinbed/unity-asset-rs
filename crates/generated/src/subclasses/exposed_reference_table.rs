@@ -21,15 +21,19 @@ impl crate::Parse for ExposedReferenceTableMReferencesVariant {
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2019, 4, 3) {
             let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = PropertyNameNested::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2019_4_3(v))
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = PropertyName32::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2019_1(v))
         } else if *ver >= crate::UnityVersion::new(2018, 4, 25) {
             let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = PropertyNameNested::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::V2018_4_25(v))
         } else {
             let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = PropertyName32::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }

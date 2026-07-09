@@ -12,6 +12,7 @@ impl crate::Parse for AttachmentIndexArray {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let attachments = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
         let active_attachments = rdr.read_i32()?;
 
         Ok(AttachmentIndexArray {

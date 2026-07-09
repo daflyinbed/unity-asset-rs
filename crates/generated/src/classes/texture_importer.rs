@@ -34,6 +34,29 @@ impl crate::Parse for TextureImporterMFileIdToRecycleNameVariant {
     }
 }
 
+/// 版本枚举：TextureImporterMExternalObjectsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum TextureImporterMExternalObjectsVariant {
+    Default(Vec<(SourceAssetIdentifier, PPtr)>),
+    V2019_1(Vec<(SourceAssetIdentifier, PPtr)>),
+}
+
+impl crate::Parse for TextureImporterMExternalObjectsVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2019, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2019_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
 /// 版本枚举：TextureImporterMIsReadableVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TextureImporterMIsReadableVariant {
@@ -284,7 +307,7 @@ pub struct TextureImporter {
     pub m_internal_id_to_name_table: Option<Vec<((i32, i64), String)>>,
     pub m_old_hash_identity: Option<MdFour>,
     pub m_enable_mip_map: i32,
-    pub m_external_objects: Option<Vec<(SourceAssetIdentifier, PPtr)>>,
+    pub m_external_objects: Option<TextureImporterMExternalObjectsVariant>,
     pub m_new_hash_identity: Option<MdFour>,
     pub m_linear_texture: Option<i32>,
     pub m_used_file_i_ds: Option<Vec<i64>>,
@@ -447,11 +470,12 @@ impl crate::Parse for TextureImporter {
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             m_internal_id_to_name_table = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = ( { let a = rdr.read_i32()?; let b = rdr.read_i64()?; Ok((a, b)) } )?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
-            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_external_objects = Some(TextureImporterMExternalObjectsVariant::parse(rdr, ver)?);
             m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             m_file_id_to_recycle_name = Some(TextureImporterMFileIdToRecycleNameVariant::parse(rdr, ver)?);
-            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_external_objects = Some(TextureImporterMExternalObjectsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 5, 2) {
             m_file_id_to_recycle_name = Some(TextureImporterMFileIdToRecycleNameVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {

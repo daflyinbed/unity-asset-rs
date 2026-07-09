@@ -61,12 +61,15 @@ impl crate::Parse for TextScriptImporter {
             m_name = Some(TextScriptImporterMNameVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_user_data = Some(rdr.read_aligned_string()?);
             m_asset_bundle_name = Some(rdr.read_aligned_string()?);
             m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_user_data = Some(rdr.read_aligned_string()?);
             m_asset_bundle_name = Some(rdr.read_aligned_string()?);
             m_asset_bundle_variant = Some(rdr.read_aligned_string()?);

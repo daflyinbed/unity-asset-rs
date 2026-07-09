@@ -32,6 +32,7 @@ impl crate::Parse for AnimatorControllerMNameVariant {
 #[derive(Debug, Clone)]
 pub enum AnimatorControllerMAnimationClipsVariant {
     Default(Vec<PPtr>),
+    V5_0(Vec<PPtr>),
     V2017_1(Vec<PPtr>),
 }
 
@@ -44,8 +45,12 @@ impl crate::Parse for AnimatorControllerMAnimationClipsVariant {
             let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
+        } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::V5_0(v))
         } else {
             let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }
@@ -55,6 +60,9 @@ impl crate::Parse for AnimatorControllerMAnimationClipsVariant {
 #[derive(Debug, Clone)]
 pub enum AnimatorControllerMStateMachineBehavioursVariant {
     Default(Vec<PPtr>),
+    V5_1(Vec<PPtr>),
+    V5_2(Vec<PPtr>),
+    V5_4(Vec<PPtr>),
     V2017_1(Vec<PPtr>),
 }
 
@@ -67,8 +75,19 @@ impl crate::Parse for AnimatorControllerMStateMachineBehavioursVariant {
             let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
+        } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::V5_4(v))
+        } else if *ver >= crate::UnityVersion::new(5, 2, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V5_2(v))
+        } else if *ver >= crate::UnityVersion::new(5, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::V5_1(v))
         } else {
             let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }

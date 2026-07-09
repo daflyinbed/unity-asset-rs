@@ -32,24 +32,24 @@ impl crate::Parse for ShaderImporterMNameVariant {
     }
 }
 
-/// 版本枚举：ShaderImporterMDefaultTexturesVariant 的类型跨版本变化。
+/// 版本枚举：ShaderImporterMExternalObjectsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
-pub enum ShaderImporterMDefaultTexturesVariant {
-    Default(Vec<(String, PPtr)>),
-    V2017_1(Vec<(String, PPtr)>),
+pub enum ShaderImporterMExternalObjectsVariant {
+    Default(Vec<(SourceAssetIdentifier, PPtr)>),
+    V2019_1(Vec<(SourceAssetIdentifier, PPtr)>),
 }
 
-impl crate::Parse for ShaderImporterMDefaultTexturesVariant {
+impl crate::Parse for ShaderImporterMExternalObjectsVariant {
     fn parse<R: crate::EndianReader>(
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        if *ver >= crate::UnityVersion::new(2019, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
             rdr.align(4)?;
-            Ok(Self::V2017_1(v))
+            Ok(Self::V2019_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -59,8 +59,8 @@ pub struct ShaderImporter {
     pub m_name: ShaderImporterMNameVariant,
     pub m_file_id_to_recycle_name: Option<Vec<(i32, String)>>,
     pub m_user_data: Option<String>,
-    pub m_default_textures: Option<ShaderImporterMDefaultTexturesVariant>,
-    pub m_external_objects: Option<Vec<(SourceAssetIdentifier, PPtr)>>,
+    pub m_default_textures: Option<Vec<(String, PPtr)>>,
+    pub m_external_objects: Option<ShaderImporterMExternalObjectsVariant>,
     pub m_old_hash_identity: Option<MdFour>,
     pub m_used_file_i_ds: Option<Vec<i64>>,
     pub m_new_hash_identity: Option<MdFour>,
@@ -89,18 +89,22 @@ impl crate::Parse for ShaderImporter {
         let mut m_preprocessor_override = None;
             m_name = Some(ShaderImporterMNameVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2022, 1, 0) {
-            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_external_objects = Some(ShaderImporterMExternalObjectsVariant::parse(rdr, ver)?);
             m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
-            m_default_textures = Some(ShaderImporterMDefaultTexturesVariant::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_default_textures = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_non_modifiable_textures = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             m_user_data = Some(rdr.read_aligned_string()?);
             m_asset_bundle_name = Some(rdr.read_aligned_string()?);
             m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
         } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_external_objects = Some(ShaderImporterMExternalObjectsVariant::parse(rdr, ver)?);
             m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
-            m_default_textures = Some(ShaderImporterMDefaultTexturesVariant::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_default_textures = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_non_modifiable_textures = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             m_preprocessor_override = Some(rdr.read_i32()?);
@@ -109,35 +113,41 @@ impl crate::Parse for ShaderImporter {
             m_asset_bundle_name = Some(rdr.read_aligned_string()?);
             m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_external_objects = Some(ShaderImporterMExternalObjectsVariant::parse(rdr, ver)?);
             m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
-            m_default_textures = Some(ShaderImporterMDefaultTexturesVariant::parse(rdr, ver)?);
+            rdr.align(4)?;
+            m_default_textures = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_non_modifiable_textures = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             m_user_data = Some(rdr.read_aligned_string()?);
             m_asset_bundle_name = Some(rdr.read_aligned_string()?);
             m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
         } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_default_textures = Some(ShaderImporterMDefaultTexturesVariant::parse(rdr, ver)?);
+            m_external_objects = Some(ShaderImporterMExternalObjectsVariant::parse(rdr, ver)?);
+            m_default_textures = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_non_modifiable_textures = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             m_user_data = Some(rdr.read_aligned_string()?);
             m_asset_bundle_name = Some(rdr.read_aligned_string()?);
             m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_default_textures = Some(ShaderImporterMDefaultTexturesVariant::parse(rdr, ver)?);
+            m_external_objects = Some(ShaderImporterMExternalObjectsVariant::parse(rdr, ver)?);
+            m_default_textures = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_user_data = Some(rdr.read_aligned_string()?);
             m_asset_bundle_name = Some(rdr.read_aligned_string()?);
             m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_default_textures = Some(ShaderImporterMDefaultTexturesVariant::parse(rdr, ver)?);
+            m_default_textures = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_user_data = Some(rdr.read_aligned_string()?);
             m_asset_bundle_name = Some(rdr.read_aligned_string()?);
             m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
         } else if *ver >= crate::UnityVersion::new(4, 2, 0) {
-            m_default_textures = Some(ShaderImporterMDefaultTexturesVariant::parse(rdr, ver)?);
+            m_default_textures = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_user_data = Some(rdr.read_aligned_string()?);
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
             m_user_data = Some(rdr.read_aligned_string()?);

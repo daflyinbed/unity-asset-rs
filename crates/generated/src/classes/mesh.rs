@@ -262,6 +262,7 @@ impl crate::Parse for Mesh {
             m_root_bone_name_hash = Some(rdr.read_u32()?);
         } else if *ver >= crate::UnityVersion::new(4, 1, 0) {
             m_shapes_list = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MeshBlendShape::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_shape_vertices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MeshBlendShapeVertex::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
         } else {
         }
@@ -307,6 +308,7 @@ impl crate::Parse for Mesh {
             m_uv1 = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             m_tangents = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector4f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             m_normals = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector3f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         }
             m_compressed_mesh = Some(CompressedMesh::parse(rdr, ver)?);
             m_local_aabb = Some(Aabb::parse(rdr, ver)?);

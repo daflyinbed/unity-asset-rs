@@ -5,6 +5,29 @@ use crate::subclasses::gl_texture_settings::GlTextureSettings;
 use crate::subclasses::source_asset_identifier::SourceAssetIdentifier;
 
 
+/// 版本枚举：IhvImageFormatImporterMExternalObjectsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum IhvImageFormatImporterMExternalObjectsVariant {
+    Default(Vec<(SourceAssetIdentifier, PPtr)>),
+    V2019_1(Vec<(SourceAssetIdentifier, PPtr)>),
+}
+
+impl crate::Parse for IhvImageFormatImporterMExternalObjectsVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2019, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2019_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
 /// 版本枚举：IhvImageFormatImporterMIsReadableVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum IhvImageFormatImporterMIsReadableVariant {
@@ -77,7 +100,7 @@ impl crate::Parse for IhvImageFormatImporterMStreamingMipmapsPriorityVariant {
 pub struct IhvImageFormatImporter {
     pub m_name: String,
     pub m_texture_settings: GlTextureSettings,
-    pub m_external_objects: Option<Vec<(SourceAssetIdentifier, PPtr)>>,
+    pub m_external_objects: Option<IhvImageFormatImporterMExternalObjectsVariant>,
     pub m_is_readable: IhvImageFormatImporterMIsReadableVariant,
     pub m_used_file_i_ds: Option<Vec<i64>>,
     pub m_user_data: String,
@@ -110,10 +133,11 @@ impl crate::Parse for IhvImageFormatImporter {
         let mut m_mipmap_limit_group_name = None;
             m_name = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_external_objects = Some(IhvImageFormatImporterMExternalObjectsVariant::parse(rdr, ver)?);
             m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_external_objects = Some(IhvImageFormatImporterMExternalObjectsVariant::parse(rdr, ver)?);
         } else {
         }
             m_texture_settings = Some(GlTextureSettings::parse(rdr, ver)?);

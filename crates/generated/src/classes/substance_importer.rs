@@ -7,47 +7,24 @@ use crate::subclasses::md_four::MdFour;
 use crate::subclasses::source_asset_identifier::SourceAssetIdentifier;
 
 
-/// 版本枚举：SubstanceImporterMMaterialInstancesVariant 的类型跨版本变化。
+/// 版本枚举：SubstanceImporterMExternalObjectsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
-pub enum SubstanceImporterMMaterialInstancesVariant {
-    Default(Vec<MaterialInstanceSettings>),
-    V2017_1(Vec<MaterialInstanceSettings>),
+pub enum SubstanceImporterMExternalObjectsVariant {
+    Default(Vec<(SourceAssetIdentifier, PPtr)>),
+    V2018_1(Vec<(SourceAssetIdentifier, PPtr)>),
 }
 
-impl crate::Parse for SubstanceImporterMMaterialInstancesVariant {
+impl crate::Parse for SubstanceImporterMExternalObjectsVariant {
     fn parse<R: crate::EndianReader>(
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MaterialInstanceSettings::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        if *ver >= crate::UnityVersion::new(2018, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
             rdr.align(4)?;
-            Ok(Self::V2017_1(v))
+            Ok(Self::V2018_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MaterialInstanceSettings::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            Ok(Self::Default(v))
-        }
-    }
-}
-
-/// 版本枚举：SubstanceImporterMMaterialImportOutputsVariant 的类型跨版本变化。
-#[derive(Debug, Clone)]
-pub enum SubstanceImporterMMaterialImportOutputsVariant {
-    Default(Vec<MaterialImportOutput>),
-    V2017_1(Vec<MaterialImportOutput>),
-}
-
-impl crate::Parse for SubstanceImporterMMaterialImportOutputsVariant {
-    fn parse<R: crate::EndianReader>(
-        rdr: &mut R,
-        ver: &crate::UnityVersion,
-    ) -> Result<Self, R::Error> {
-        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MaterialImportOutput::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            rdr.align(4)?;
-            Ok(Self::V2017_1(v))
-        } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MaterialImportOutput::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -56,15 +33,15 @@ impl crate::Parse for SubstanceImporterMMaterialImportOutputsVariant {
 pub struct SubstanceImporter {
     pub m_name: String,
     pub m_file_id_to_recycle_name: Option<Vec<(i32, String)>>,
-    pub m_material_instances: Option<SubstanceImporterMMaterialInstancesVariant>,
-    pub m_external_objects: Option<Vec<(SourceAssetIdentifier, PPtr)>>,
+    pub m_material_instances: Option<Vec<MaterialInstanceSettings>>,
+    pub m_external_objects: Option<SubstanceImporterMExternalObjectsVariant>,
     pub m_old_hash_identity: Option<MdFour>,
     pub m_is_first_import: Option<i32>,
     pub m_deleted_prototypes: Option<Vec<String>>,
     pub m_user_data: Option<String>,
     pub m_used_file_i_ds: Option<Vec<i64>>,
     pub m_new_hash_identity: Option<MdFour>,
-    pub m_material_import_outputs: Option<SubstanceImporterMMaterialImportOutputsVariant>,
+    pub m_material_import_outputs: Option<Vec<MaterialImportOutput>>,
     pub m_asset_bundle_name: Option<String>,
     pub m_asset_bundle_variant: Option<String>,
 }
@@ -89,47 +66,57 @@ impl crate::Parse for SubstanceImporter {
         let mut m_asset_bundle_variant = None;
             m_name = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_external_objects = Some(SubstanceImporterMExternalObjectsVariant::parse(rdr, ver)?);
             m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_user_data = Some(rdr.read_aligned_string()?);
             m_asset_bundle_name = Some(rdr.read_aligned_string()?);
             m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
         } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_external_objects = Some(SubstanceImporterMExternalObjectsVariant::parse(rdr, ver)?);
             m_user_data = Some(rdr.read_aligned_string()?);
             m_asset_bundle_name = Some(rdr.read_aligned_string()?);
             m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_material_instances = Some(SubstanceImporterMMaterialInstancesVariant::parse(rdr, ver)?);
+            m_external_objects = Some(SubstanceImporterMExternalObjectsVariant::parse(rdr, ver)?);
+            m_material_instances = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MaterialInstanceSettings::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_deleted_prototypes = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            m_material_import_outputs = Some(SubstanceImporterMMaterialImportOutputsVariant::parse(rdr, ver)?);
+            m_material_import_outputs = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MaterialImportOutput::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_user_data = Some(rdr.read_aligned_string()?);
             m_asset_bundle_name = Some(rdr.read_aligned_string()?);
             m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_material_instances = Some(SubstanceImporterMMaterialInstancesVariant::parse(rdr, ver)?);
+            m_material_instances = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MaterialInstanceSettings::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_deleted_prototypes = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            m_material_import_outputs = Some(SubstanceImporterMMaterialImportOutputsVariant::parse(rdr, ver)?);
+            m_material_import_outputs = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MaterialImportOutput::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_user_data = Some(rdr.read_aligned_string()?);
             m_asset_bundle_name = Some(rdr.read_aligned_string()?);
             m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            m_material_instances = Some(SubstanceImporterMMaterialInstancesVariant::parse(rdr, ver)?);
+            m_material_instances = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MaterialInstanceSettings::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_deleted_prototypes = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
-            m_material_import_outputs = Some(SubstanceImporterMMaterialImportOutputsVariant::parse(rdr, ver)?);
+            m_material_import_outputs = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MaterialImportOutput::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_user_data = Some(rdr.read_aligned_string()?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 2) {
-            m_material_instances = Some(SubstanceImporterMMaterialInstancesVariant::parse(rdr, ver)?);
+            m_material_instances = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MaterialInstanceSettings::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_deleted_prototypes = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            m_material_instances = Some(SubstanceImporterMMaterialInstancesVariant::parse(rdr, ver)?);
+            m_material_instances = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MaterialInstanceSettings::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_is_first_import = Some(rdr.read_i32()?);
         } else {
             m_file_id_to_recycle_name = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i32()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
             m_old_hash_identity = Some(MdFour::parse(rdr, ver)?);
             m_new_hash_identity = Some(MdFour::parse(rdr, ver)?);
-            m_material_instances = Some(SubstanceImporterMMaterialInstancesVariant::parse(rdr, ver)?);
+            m_material_instances = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MaterialInstanceSettings::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_is_first_import = Some(rdr.read_i32()?);
         }
 

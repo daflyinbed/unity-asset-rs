@@ -103,29 +103,6 @@ impl crate::Parse for CubemapMIsReadableVariant {
         }
     }
 }
-
-/// 版本枚举：CubemapMSourceTexturesVariant 的类型跨版本变化。
-#[derive(Debug, Clone)]
-pub enum CubemapMSourceTexturesVariant {
-    Default(Vec<PPtr>),
-    V2017_1(Vec<PPtr>),
-}
-
-impl crate::Parse for CubemapMSourceTexturesVariant {
-    fn parse<R: crate::EndianReader>(
-        rdr: &mut R,
-        ver: &crate::UnityVersion,
-    ) -> Result<Self, R::Error> {
-        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            rdr.align(4)?;
-            Ok(Self::V2017_1(v))
-        } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            Ok(Self::Default(v))
-        }
-    }
-}
 #[derive(Debug, Clone)]
 pub struct Cubemap {
     pub m_name: CubemapMNameVariant,
@@ -154,7 +131,7 @@ pub struct Cubemap {
     pub m_mipmap_limit_group_name: Option<String>,
     pub image_data: Vec<u8>,
     pub m_stream_data: Option<StreamingInfo>,
-    pub m_source_textures: Option<CubemapMSourceTexturesVariant>,
+    pub m_source_textures: Option<Vec<PPtr>>,
     pub m_platform_blob: Option<Vec<u8>>,
 }
 
@@ -274,9 +251,11 @@ impl crate::Parse for Cubemap {
             rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 3, 0) {
             m_stream_data = Some(StreamingInfo::parse(rdr, ver)?);
-            m_source_textures = Some(CubemapMSourceTexturesVariant::parse(rdr, ver)?);
+            m_source_textures = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            m_source_textures = Some(CubemapMSourceTexturesVariant::parse(rdr, ver)?);
+            m_source_textures = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else {
         }
 

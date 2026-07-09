@@ -21,7 +21,9 @@ impl crate::Parse for BlockShaderImporter {
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
         let m_external_objects = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
         let m_used_file_i_ds = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?;
+        rdr.align(4)?;
         let m_embed_blocks_in_generated_shader = rdr.read_bool()?;
         rdr.align(4)?;
         let m_user_data = rdr.read_aligned_string()?;

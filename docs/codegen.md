@@ -448,14 +448,26 @@ TPK 节点的 `(type_name, 子树形态)` → Rust 类型 + parse 代码（`node
 
 ### 对齐
 
-`meta_flag & (0x4000 | 0x8000) != 0` → 该字段 parse 后 emit `r.align(4)?;`。
+某字段 parse 后是否 emit `rdr.align(4)?;` 由 `compute_align_after` 决定（与运行时
+解释器 `src/typetree/interpret.rs` 的 `walk` 及 AssetRipper `Pass100_FillReadMethods.cs`
+对齐口径一致）：
+
+- **非容器字段**（标量 / struct / PPtr / string）：检查自身 `meta_flag & 0x4000`
+- **vector / map / Array**：检查**容器节点自身**与 **Array wrapper 子节点**（`sub_nodes[0]`）
+  **任一**带 `0x4000`（即 `node.AlignBytes || arrayNode.AlignBytes`）
 
 | 位 | 名 | 含义 |
 |---|---|---|
 | `0x4000` | `AlignBytes` | 该字段后对齐到 4 字节 |
-| `0x8000` | `AnyChildUsesAlignBytes` | 子树里某处需对齐 |
+| `0x8000` | `AnyChildUsesAlignBytes` | 子树里某处需对齐（**不参与** align 判定，仅元信息） |
 
-照搬 AssetRipper `SerializablePrimitive.cs:66`，完全信任 MetaFlag，不额外启发式。
+**只认 `0x4000`，不用 `0x8000`**：`0x8000` 仅表示「后代某处有对齐」，不代表此字段本身
+读完后要对齐。AssetRipper 真正的 release parser（`Pass100`，经 `UniversalNode.AlignBytes`）
+也只用 `0x4000`；`0x8000` 仅在 JsonSerializer 工具（`SerializablePrimitive.cs`）出现。
+
+> 容器字段的 `node || wrapper` 是曾遗漏的坑（历史版本只查 wrapper，漏掉容器自身带
+> `0x4000` 的 108 个真实节点，如 `m_Normals`(0x4001)、`m_AnimatorEvents`(0xc001)），
+> 已修正。
 
 ---
 
@@ -550,6 +562,8 @@ https://nightly.link/AssetRipper/Tpk/workflows/type_tree_tpk/master/<compression
 | emit 字符串拼接 | 无语法校验 | 边界 bug 容易引入（fixture 测试 + 主 crate `verify_codegen` 实跑覆盖主要形态） |
 | generated crate warnings | `#![allow(...)]` 在 crate 根统一静音 | codegen 已知副产物（多余括号 / 未用版本参数 / 版本门控默认值覆盖 / 含数字类型名） |
 | 只读 release | editor build 的字段会丢失 | — |
+| **旧版 AudioClip 流式音频（pre-5.0）** | 生成代码无条件按内联数组读 `m_AudioData`（`i32 count + bytes + align`） | pre-5.0 且 `m_Stream==2`（Streaming）时，磁盘实际是 `u32 size; u32 offset;` 指向外部 `.resS`，typed parse 会把 `size` 当 count 导致后续全错位/越界。这是**值相关**特殊 case（对应 AssetRipper `Pass505_FixOldAudioClip` + `AudioClipHelper.ReadOldByteArray`），无法靠 TypeTree 变换解决，且 TypeTree 回退路径同样读错（两条路径都失败）。彻底修复需 `.resS` streaming_data 支持（见 §13 路线图）。example 的 Arknights bundle 不触发（AudioClip 均 5.0+ 或非流式）。 |
+| **string 字段无条件 align** | codegen（`emit.rs` 用 `read_aligned_string`）与运行时解释器（`interpret.rs`）都在读完 string 后**无条件** `align(4)` | AssetRipper release parser（`Pass100`）用不自动 align 的 `ReadUtf8String`，仅在 `node.AlignBytes`(0x4000) 时补 align。真实 TPK 中 924/954 个 string 节点未标 0x4000。差异被 Unity「string 字段惯例标 0x4000」掩盖；若某 release 根 string 字段未标 0x4000 且长度使游标不落 4 字节边界，会比 AssetRipper 多读 0–3 字节。修它要动 cursor/`EndianReader` API（加不自动 align 的 string 读法），影响面较大，暂记此处。 |
 
 ---
 

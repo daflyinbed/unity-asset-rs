@@ -7,6 +7,29 @@ use crate::subclasses::video_clip_importer_output::VideoClipImporterOutput;
 use crate::subclasses::video_clip_importer_target_settings::VideoClipImporterTargetSettings;
 
 
+/// 版本枚举：BuiltAssetBundleInfoSetMExternalObjectsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum BuiltAssetBundleInfoSetMExternalObjectsVariant {
+    Default(Vec<(SourceAssetIdentifier, PPtr)>),
+    V2019_1(Vec<(SourceAssetIdentifier, PPtr)>),
+}
+
+impl crate::Parse for BuiltAssetBundleInfoSetMExternalObjectsVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2019, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2019_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
 /// 版本枚举：BuiltAssetBundleInfoSetMFlipHorizontalVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum BuiltAssetBundleInfoSetMFlipHorizontalVariant {
@@ -56,58 +79,12 @@ impl crate::Parse for BuiltAssetBundleInfoSetMTargetSettingsVariant {
         }
     }
 }
-
-/// 版本枚举：BuiltAssetBundleInfoSetMSourceAudioChannelCountVariant 的类型跨版本变化。
-#[derive(Debug, Clone)]
-pub enum BuiltAssetBundleInfoSetMSourceAudioChannelCountVariant {
-    Default(Vec<u16>),
-    V2017_1(Vec<u16>),
-}
-
-impl crate::Parse for BuiltAssetBundleInfoSetMSourceAudioChannelCountVariant {
-    fn parse<R: crate::EndianReader>(
-        rdr: &mut R,
-        ver: &crate::UnityVersion,
-    ) -> Result<Self, R::Error> {
-        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u16() }).collect::<Result<Vec<_>, _>>() } )?;
-            rdr.align(4)?;
-            Ok(Self::V2017_1(v))
-        } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u16() }).collect::<Result<Vec<_>, _>>() } )?;
-            Ok(Self::Default(v))
-        }
-    }
-}
-
-/// 版本枚举：BuiltAssetBundleInfoSetMSourceAudioSampleRateVariant 的类型跨版本变化。
-#[derive(Debug, Clone)]
-pub enum BuiltAssetBundleInfoSetMSourceAudioSampleRateVariant {
-    Default(Vec<u32>),
-    V2017_1(Vec<u32>),
-}
-
-impl crate::Parse for BuiltAssetBundleInfoSetMSourceAudioSampleRateVariant {
-    fn parse<R: crate::EndianReader>(
-        rdr: &mut R,
-        ver: &crate::UnityVersion,
-    ) -> Result<Self, R::Error> {
-        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
-            rdr.align(4)?;
-            Ok(Self::V2017_1(v))
-        } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
-            Ok(Self::Default(v))
-        }
-    }
-}
 #[derive(Debug, Clone)]
 pub struct BuiltAssetBundleInfoSet {
     pub bundle_infos: Option<Vec<BuiltAssetBundleInfo>>,
     pub m_name: Option<String>,
     pub m_use_legacy_importer: Option<bool>,
-    pub m_external_objects: Option<Vec<(SourceAssetIdentifier, PPtr)>>,
+    pub m_external_objects: Option<BuiltAssetBundleInfoSetMExternalObjectsVariant>,
     pub m_quality: Option<f32>,
     pub m_used_file_i_ds: Option<Vec<i64>>,
     pub m_is_color_linear: Option<bool>,
@@ -131,9 +108,9 @@ pub struct BuiltAssetBundleInfoSet {
     pub m_source_has_alpha: Option<bool>,
     pub m_asset_bundle_name: Option<String>,
     pub m_asset_bundle_variant: Option<String>,
-    pub m_source_audio_channel_count: Option<BuiltAssetBundleInfoSetMSourceAudioChannelCountVariant>,
+    pub m_source_audio_channel_count: Option<Vec<u16>>,
     pub m_pixel_aspect_ratio_numerator: Option<u32>,
-    pub m_source_audio_sample_rate: Option<BuiltAssetBundleInfoSetMSourceAudioSampleRateVariant>,
+    pub m_source_audio_sample_rate: Option<Vec<u32>>,
     pub m_pixel_aspect_ratio_denominator: Option<u32>,
 }
 
@@ -175,8 +152,9 @@ impl crate::Parse for BuiltAssetBundleInfoSet {
         let mut m_pixel_aspect_ratio_denominator = None;
         if *ver >= crate::UnityVersion::new(2019, 3, 0) {
             m_name = Some(rdr.read_aligned_string()?);
-            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_external_objects = Some(BuiltAssetBundleInfoSetMExternalObjectsVariant::parse(rdr, ver)?);
             m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_frame_range = Some(rdr.read_i32()?);
             m_start_frame = Some(rdr.read_i32()?);
             m_end_frame = Some(rdr.read_i32()?);
@@ -195,8 +173,9 @@ impl crate::Parse for BuiltAssetBundleInfoSet {
             m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             m_name = Some(rdr.read_aligned_string()?);
-            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_external_objects = Some(BuiltAssetBundleInfoSetMExternalObjectsVariant::parse(rdr, ver)?);
             m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_use_legacy_importer = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_quality = Some(rdr.read_f32()?);
@@ -220,7 +199,7 @@ impl crate::Parse for BuiltAssetBundleInfoSet {
             m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
         } else if *ver >= crate::UnityVersion::new(2017, 2, 1) {
             m_name = Some(rdr.read_aligned_string()?);
-            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_external_objects = Some(BuiltAssetBundleInfoSetMExternalObjectsVariant::parse(rdr, ver)?);
             m_use_legacy_importer = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_quality = Some(rdr.read_f32()?);
@@ -244,7 +223,7 @@ impl crate::Parse for BuiltAssetBundleInfoSet {
             m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             m_name = Some(rdr.read_aligned_string()?);
-            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_external_objects = Some(BuiltAssetBundleInfoSetMExternalObjectsVariant::parse(rdr, ver)?);
             m_use_legacy_importer = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_quality = Some(rdr.read_f32()?);
@@ -269,8 +248,10 @@ impl crate::Parse for BuiltAssetBundleInfoSet {
             rdr.align(4)?;
             m_import_audio = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_source_audio_channel_count = Some(BuiltAssetBundleInfoSetMSourceAudioChannelCountVariant::parse(rdr, ver)?);
-            m_source_audio_sample_rate = Some(BuiltAssetBundleInfoSetMSourceAudioSampleRateVariant::parse(rdr, ver)?);
+            m_source_audio_channel_count = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u16() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_source_audio_sample_rate = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_target_settings = Some(BuiltAssetBundleInfoSetMTargetSettingsVariant::parse(rdr, ver)?);
             m_output = Some(VideoClipImporterOutput::parse(rdr, ver)?);
             rdr.align(4)?;
@@ -323,8 +304,10 @@ impl crate::Parse for BuiltAssetBundleInfoSet {
             m_flip_horizontal = Some(BuiltAssetBundleInfoSetMFlipHorizontalVariant::parse(rdr, ver)?);
             m_import_audio = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_source_audio_channel_count = Some(BuiltAssetBundleInfoSetMSourceAudioChannelCountVariant::parse(rdr, ver)?);
-            m_source_audio_sample_rate = Some(BuiltAssetBundleInfoSetMSourceAudioSampleRateVariant::parse(rdr, ver)?);
+            m_source_audio_channel_count = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u16() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_source_audio_sample_rate = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_target_settings = Some(BuiltAssetBundleInfoSetMTargetSettingsVariant::parse(rdr, ver)?);
             m_output = Some(VideoClipImporterOutput::parse(rdr, ver)?);
             rdr.align(4)?;

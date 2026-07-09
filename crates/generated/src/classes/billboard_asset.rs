@@ -32,6 +32,7 @@ impl crate::Parse for BillboardAssetImageTexCoordsVariant {
 #[derive(Debug, Clone)]
 pub enum BillboardAssetVerticesVariant {
     Default(Vec<Vector2f>),
+    V5_3(Vec<Vector2f>),
     V2017_1(Vec<Vector2f>),
 }
 
@@ -44,31 +45,12 @@ impl crate::Parse for BillboardAssetVerticesVariant {
             let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
+        } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::V5_3(v))
         } else {
             let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            Ok(Self::Default(v))
-        }
-    }
-}
-
-/// 版本枚举：BillboardAssetIndicesVariant 的类型跨版本变化。
-#[derive(Debug, Clone)]
-pub enum BillboardAssetIndicesVariant {
-    Default(Vec<u16>),
-    V2017_1(Vec<u16>),
-}
-
-impl crate::Parse for BillboardAssetIndicesVariant {
-    fn parse<R: crate::EndianReader>(
-        rdr: &mut R,
-        ver: &crate::UnityVersion,
-    ) -> Result<Self, R::Error> {
-        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u16() }).collect::<Result<Vec<_>, _>>() } )?;
             rdr.align(4)?;
-            Ok(Self::V2017_1(v))
-        } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u16() }).collect::<Result<Vec<_>, _>>() } )?;
             Ok(Self::Default(v))
         }
     }
@@ -82,7 +64,7 @@ pub struct BillboardAsset {
     pub image_tex_coords: BillboardAssetImageTexCoordsVariant,
     pub rotated: Option<Vec<u8>>,
     pub vertices: BillboardAssetVerticesVariant,
-    pub indices: BillboardAssetIndicesVariant,
+    pub indices: Vec<u16>,
     pub material: PPtr,
 }
 
@@ -111,7 +93,8 @@ impl crate::Parse for BillboardAsset {
             rdr.align(4)?;
         }
             vertices = Some(BillboardAssetVerticesVariant::parse(rdr, ver)?);
-            indices = Some(BillboardAssetIndicesVariant::parse(rdr, ver)?);
+            indices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u16() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             material = Some(crate::PPtr::parse(rdr, ver)?);
 
         Ok(BillboardAsset {

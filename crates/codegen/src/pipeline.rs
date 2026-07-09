@@ -697,17 +697,22 @@ struct FlatField {
     rust_name: String,
     rust_type: RustType,
     meta_flag: u32,
-    /// 读完后是否需要 align(4)。对 vector/map 检查 Array wrapper 子节点的 0x4000，
-    /// 对其他类型检查自身 0x4000。**不使用** 0x8000 (AnyChildUsesAlignBytes)——
-    /// 该位仅表示「某后代有 0x4000」，不代表「此字段后需要对齐」。
+    /// 读完后是否需要 align(4)。对 vector/map/Array 检查容器自身**与** Array wrapper
+    /// 子节点任一带 0x4000，对其他类型检查自身 0x4000。详见 `compute_align_after`。
+    /// **不使用** 0x8000 (AnyChildUsesAlignBytes)——该位仅表示「某后代有 0x4000」，
+    /// 不代表「此字段后需要对齐」。
     align_after: bool,
 }
 
 /// 计算字段读完后是否需要 align(4)。
 ///
-/// 对齐判定与 `src/typetree/interpret.rs` 的 `walk` 保持一致：
+/// 对齐判定与 `src/typetree/interpret.rs` 的 `walk` 保持一致（也与 AssetRipper
+/// `Pass100_FillReadMethods.cs:210,229` 的 `node.AlignBytes || arrayNode.AlignBytes`
+/// 一致）：
 /// - 非容器字段（标量 / struct / PPtr / string）：检查自身 `meta_flag & 0x4000`
-/// - vector / map：检查 Array wrapper 子节点（`sub_nodes[0]`）的 `meta_flag & 0x4000`
+/// - vector / map / Array：检查**容器节点自身**与 **Array wrapper 子节点**（`sub_nodes[0]`）
+///   两者**任一**带 `0x4000` 即对齐。只查 wrapper 会漏掉容器自身带 `0x4000` 的情形
+///   （真实 TPK 有 108 个这样的节点，如 `m_Normals`(0x4001)、`m_AnimatorEvents`(0xc001)）。
 /// - **忽略 0x8000**（AnyChildUsesAlignBytes）：该位仅表示后代某处有对齐，
 ///   不代表此字段本身需要额外对齐（如 `stringTagMap` 的 String 元素内部有对齐，
 ///   但 map 本身读完后不需要 align）。
@@ -720,12 +725,14 @@ fn compute_align_after(node: &TpkUnityNode, blob: &TpkTypeTree) -> bool {
     let nt = NodeType::classify(type_name, &node.sub_nodes);
     match nt {
         NodeType::Vector | NodeType::Map | NodeType::Array => {
-            // 容器字段：检查 Array wrapper 子节点的 0x4000
-            if let Some(&array_idx) = node.sub_nodes.first() {
-                blob.node_pool[array_idx as usize].meta_flag & 0x4000 != 0
-            } else {
-                false
-            }
+            // 容器字段：容器自身 || Array wrapper，任一带 0x4000 即对齐
+            let node_has = node.meta_flag & 0x4000 != 0;
+            let wrapper_has = node
+                .sub_nodes
+                .first()
+                .map(|&idx| blob.node_pool[idx as usize].meta_flag & 0x4000 != 0)
+                .unwrap_or(false);
+            node_has || wrapper_has
         }
         _ => {
             // 非容器字段：检查自身 0x4000

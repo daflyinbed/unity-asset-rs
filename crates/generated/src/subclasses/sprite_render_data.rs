@@ -152,9 +152,11 @@ impl crate::Parse for SpriteRenderData {
             alpha_texture = Some(crate::PPtr::parse(rdr, ver)?);
             vertices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SpriteVertex::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             indices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u16() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else {
             vertices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SpriteVertex::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             indices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u16() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         }
             texture_rect = Some(Rectf::parse(rdr, ver)?);
             texture_rect_offset = Some(Vector2f::parse(rdr, ver)?);

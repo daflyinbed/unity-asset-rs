@@ -37,6 +37,7 @@ impl crate::Parse for ComputeShaderVariantKernelsVariant {
 #[derive(Debug, Clone)]
 pub enum ComputeShaderVariantConstantBuffersVariant {
     Default(Vec<ComputeShaderCb>),
+    V5_1(Vec<ComputeShaderCb>),
     V2017_1(Vec<ComputeShaderCb>),
 }
 
@@ -49,8 +50,12 @@ impl crate::Parse for ComputeShaderVariantConstantBuffersVariant {
             let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderCb::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
+        } else if *ver >= crate::UnityVersion::new(5, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderCb::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::V5_1(v))
         } else {
             let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderCb::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
             Ok(Self::Default(v))
         }
     }

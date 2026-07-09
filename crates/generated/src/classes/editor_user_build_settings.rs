@@ -147,29 +147,6 @@ impl crate::Parse for EditorUserBuildSettingsMExportAsGoogleAndroidProjectVarian
     }
 }
 
-/// 版本枚举：EditorUserBuildSettingsMWsaDotNetNativeEnabledVariant 的类型跨版本变化。
-#[derive(Debug, Clone)]
-pub enum EditorUserBuildSettingsMWsaDotNetNativeEnabledVariant {
-    Default(Vec<bool>),
-    V2017_1(Vec<bool>),
-}
-
-impl crate::Parse for EditorUserBuildSettingsMWsaDotNetNativeEnabledVariant {
-    fn parse<R: crate::EndianReader>(
-        rdr: &mut R,
-        ver: &crate::UnityVersion,
-    ) -> Result<Self, R::Error> {
-        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?;
-            rdr.align(4)?;
-            Ok(Self::V2017_1(v))
-        } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?;
-            Ok(Self::Default(v))
-        }
-    }
-}
-
 /// 版本枚举：EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant {
@@ -456,7 +433,7 @@ pub struct EditorUserBuildSettings {
     pub m_selected_xbox_one_deploy_method: Option<i32>,
     pub m_selected_wsa_subtarget: Option<i32>,
     pub m_explicit_array_bounds_checks: Option<bool>,
-    pub m_wsa_dot_net_native_enabled: Option<EditorUserBuildSettingsMWsaDotNetNativeEnabledVariant>,
+    pub m_wsa_dot_net_native_enabled: Option<Vec<bool>>,
     pub m_selected_wsauwpsdk: Option<String>,
     pub m_create_solution_file_for_switch: Option<bool>,
     pub m_create_rom_file_for_switch: Option<bool>,
@@ -2328,7 +2305,8 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
             m_generate_wsa_reference_projects = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_wsa_dot_net_native_enabled = Some(EditorUserBuildSettingsMWsaDotNetNativeEnabledVariant::parse(rdr, ver)?);
+            m_wsa_dot_net_native_enabled = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_drive = Some(rdr.read_i32()?);
@@ -2343,7 +2321,8 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
             m_generate_wsa_reference_projects = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_wsa_dot_net_native_enabled = Some(EditorUserBuildSettingsMWsaDotNetNativeEnabledVariant::parse(rdr, ver)?);
+            m_wsa_dot_net_native_enabled = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_drive = Some(rdr.read_i32()?);
@@ -2358,7 +2337,8 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
             m_generate_wsa_reference_projects = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_wsa_dot_net_native_enabled = Some(EditorUserBuildSettingsMWsaDotNetNativeEnabledVariant::parse(rdr, ver)?);
+            m_wsa_dot_net_native_enabled = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_selected_tizen_subtarget = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
@@ -2373,7 +2353,8 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
             m_generate_wsa_reference_projects = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_wsa_dot_net_native_enabled = Some(EditorUserBuildSettingsMWsaDotNetNativeEnabledVariant::parse(rdr, ver)?);
+            m_wsa_dot_net_native_enabled = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_selected_tizen_subtarget = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
@@ -2391,7 +2372,8 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
             m_generate_wsa_reference_projects = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_wsa_dot_net_native_enabled = Some(EditorUserBuildSettingsMWsaDotNetNativeEnabledVariant::parse(rdr, ver)?);
+            m_wsa_dot_net_native_enabled = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_selected_tizen_subtarget = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
@@ -2410,7 +2392,8 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
             m_generate_wsa_reference_projects = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_wsa_dot_net_native_enabled = Some(EditorUserBuildSettingsMWsaDotNetNativeEnabledVariant::parse(rdr, ver)?);
+            m_wsa_dot_net_native_enabled = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_selected_tizen_subtarget = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
@@ -2426,7 +2409,8 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
             m_generate_wsa_reference_projects = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_wsa_dot_net_native_enabled = Some(EditorUserBuildSettingsMWsaDotNetNativeEnabledVariant::parse(rdr, ver)?);
+            m_wsa_dot_net_native_enabled = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_selected_tizen_subtarget = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
@@ -2441,7 +2425,8 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
             m_generate_wsa_reference_projects = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_wsa_dot_net_native_enabled = Some(EditorUserBuildSettingsMWsaDotNetNativeEnabledVariant::parse(rdr, ver)?);
+            m_wsa_dot_net_native_enabled = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_selected_tizen_subtarget = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
@@ -2456,7 +2441,8 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
             m_generate_wsa_reference_projects = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_wsa_dot_net_native_enabled = Some(EditorUserBuildSettingsMWsaDotNetNativeEnabledVariant::parse(rdr, ver)?);
+            m_wsa_dot_net_native_enabled = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_selected_black_berry_subtarget = Some(rdr.read_i32()?);
             m_selected_black_berry_build_type = Some(EditorUserBuildSettingsMSelectedBlackBerryBuildTypeVariant::parse(rdr, ver)?);
             m_selected_tizen_subtarget = Some(rdr.read_i32()?);

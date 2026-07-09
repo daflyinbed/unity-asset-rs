@@ -49,52 +49,6 @@ impl crate::Parse for VideoPlayerMDirectAudioVolumesVariant {
     }
 }
 
-/// 版本枚举：VideoPlayerMEnabledAudioTracksVariant 的类型跨版本变化。
-#[derive(Debug, Clone)]
-pub enum VideoPlayerMEnabledAudioTracksVariant {
-    Default(Vec<bool>),
-    V2017_1(Vec<bool>),
-}
-
-impl crate::Parse for VideoPlayerMEnabledAudioTracksVariant {
-    fn parse<R: crate::EndianReader>(
-        rdr: &mut R,
-        ver: &crate::UnityVersion,
-    ) -> Result<Self, R::Error> {
-        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?;
-            rdr.align(4)?;
-            Ok(Self::V2017_1(v))
-        } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?;
-            Ok(Self::Default(v))
-        }
-    }
-}
-
-/// 版本枚举：VideoPlayerMDirectAudioMutesVariant 的类型跨版本变化。
-#[derive(Debug, Clone)]
-pub enum VideoPlayerMDirectAudioMutesVariant {
-    Default(Vec<bool>),
-    V2017_1(Vec<bool>),
-}
-
-impl crate::Parse for VideoPlayerMDirectAudioMutesVariant {
-    fn parse<R: crate::EndianReader>(
-        rdr: &mut R,
-        ver: &crate::UnityVersion,
-    ) -> Result<Self, R::Error> {
-        if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?;
-            rdr.align(4)?;
-            Ok(Self::V2017_1(v))
-        } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?;
-            Ok(Self::Default(v))
-        }
-    }
-}
-
 /// 版本枚举：VideoPlayerMFrameReadyEventEnabledVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum VideoPlayerMFrameReadyEventEnabledVariant {
@@ -138,8 +92,8 @@ pub struct VideoPlayer {
     pub m_time_update_mode: Option<i32>,
     pub m_direct_audio_volumes: VideoPlayerMDirectAudioVolumesVariant,
     pub m_url: String,
-    pub m_enabled_audio_tracks: VideoPlayerMEnabledAudioTracksVariant,
-    pub m_direct_audio_mutes: VideoPlayerMDirectAudioMutesVariant,
+    pub m_enabled_audio_tracks: Vec<bool>,
+    pub m_direct_audio_mutes: Vec<bool>,
     pub m_controlled_audio_track_count: u16,
     pub m_play_on_awake: bool,
     pub m_skip_on_drop: bool,
@@ -211,8 +165,10 @@ impl crate::Parse for VideoPlayer {
             m_target_audio_sources = Some(VideoPlayerMTargetAudioSourcesVariant::parse(rdr, ver)?);
             m_direct_audio_volumes = Some(VideoPlayerMDirectAudioVolumesVariant::parse(rdr, ver)?);
             m_url = Some(rdr.read_aligned_string()?);
-            m_enabled_audio_tracks = Some(VideoPlayerMEnabledAudioTracksVariant::parse(rdr, ver)?);
-            m_direct_audio_mutes = Some(VideoPlayerMDirectAudioMutesVariant::parse(rdr, ver)?);
+            m_enabled_audio_tracks = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
+            m_direct_audio_mutes = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
             m_controlled_audio_track_count = Some(rdr.read_u16()?);
             m_play_on_awake = Some(rdr.read_bool()?);
             m_skip_on_drop = Some(rdr.read_bool()?);

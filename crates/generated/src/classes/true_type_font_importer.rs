@@ -7,6 +7,29 @@ use crate::subclasses::output::Output;
 use crate::subclasses::source_asset_identifier::SourceAssetIdentifier;
 
 
+/// 版本枚举：TrueTypeFontImporterMExternalObjectsVariant 的类型跨版本变化。
+#[derive(Debug, Clone)]
+pub enum TrueTypeFontImporterMExternalObjectsVariant {
+    Default(Vec<(SourceAssetIdentifier, PPtr)>),
+    V2019_1(Vec<(SourceAssetIdentifier, PPtr)>),
+}
+
+impl crate::Parse for TrueTypeFontImporterMExternalObjectsVariant {
+    fn parse<R: crate::EndianReader>(
+        rdr: &mut R,
+        ver: &crate::UnityVersion,
+    ) -> Result<Self, R::Error> {
+        if *ver >= crate::UnityVersion::new(2019, 1, 0) {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            rdr.align(4)?;
+            Ok(Self::V2019_1(v))
+        } else {
+            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            Ok(Self::Default(v))
+        }
+    }
+}
+
 /// 版本枚举：TrueTypeFontImporterMIncludeFontDataVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TrueTypeFontImporterMIncludeFontDataVariant {
@@ -135,7 +158,7 @@ pub struct TrueTypeFontImporter {
     pub m_name: String,
     pub m_file_id_to_recycle_name: Option<Vec<(i32, String)>>,
     pub m_font_size: i32,
-    pub m_external_objects: Option<Vec<(SourceAssetIdentifier, PPtr)>>,
+    pub m_external_objects: Option<TrueTypeFontImporterMExternalObjectsVariant>,
     pub m_old_hash_identity: Option<MdFour>,
     pub m_force_texture_case: i32,
     pub m_font_color: Option<ColorRgbAf>,
@@ -195,10 +218,11 @@ impl crate::Parse for TrueTypeFontImporter {
         let mut m_should_round_advance_value = None;
             m_name = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_external_objects = Some(TrueTypeFontImporterMExternalObjectsVariant::parse(rdr, ver)?);
             m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
+            rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_external_objects = Some(TrueTypeFontImporterMExternalObjectsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
         } else {
             m_file_id_to_recycle_name = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i32()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
