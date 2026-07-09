@@ -1,8 +1,5 @@
 //! Environment 层端到端测试：从真实 bundle 构建 Environment，验证对象聚合、
 //! PPtr 解引用、streaming_data。
-//!
-//! 注意：debug 模式下 `interpret` 递归帧较大（5–6MB），测试线程默认 2MB 栈会溢出。
-//! 故 `load_env` 在 8MB 栈线程里跑（release 模式无此问题）。
 
 use std::path::Path;
 
@@ -13,23 +10,18 @@ use unity_asset_rs::{
 /// 默认 fixture（io 层测试同款）。
 const DEFAULT_BUNDLE: &str = "example/char_002_amiya.ab";
 
-/// 在大栈线程里加载 Environment（debug 模式 interpret 递归需要 >5MB 栈）。
+/// 加载 Environment。opt-level=1（见根 Cargo.toml）已让 TypeTree 解释器的递归
+/// 返回值临时被优化掉，2MB 默认栈足够，无需额外线程。
 fn load_env(path: &str) -> Environment {
     let p = Path::new(path);
     if !p.exists() {
         eprintln!("跳过：{path} 不存在");
         std::process::exit(0);
     }
-    let path = path.to_owned();
-    std::thread::Builder::new()
-        .stack_size(8 * 1024 * 1024)
-        .spawn(move || match load_environment(&path) {
-            Ok(e) => e,
-            Err(e) => panic!("加载 {path} 失败: {e}"),
-        })
-        .unwrap()
-        .join()
-        .unwrap()
+    match load_environment(path) {
+        Ok(e) => e,
+        Err(e) => panic!("加载 {path} 失败: {e}"),
+    }
 }
 
 #[test]

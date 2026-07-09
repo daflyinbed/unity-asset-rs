@@ -501,7 +501,7 @@ MonoBehaviour 解析产出一个 `Value::Struct`，含基类字段 + 脚本字�
 | ~~**World 聚合层**~~ → **Environment 聚合层** | eager parse 全部对象 + `.resS` resources + PPtr 解引用。已落地为 `Environment`，详见 [`environment-layer.md`](environment-layer.md) | ✅ |
 | ~~**PPtr 解引用**~~ | `Environment::resolve(source_collection, file_id, path_id)`，按 `dependencies[file_id]` → target collection → `assets[path_id]`。已落地 | ✅ |
 | ~~**streaming_data**~~ | `Environment::streaming_data(&StreamingInfo)` 取零拷贝 `Bytes` slice。已落地 | ✅ |
-| **bumpalo arena** | 对象 arena 分配。当前对象按需 parse、owned | ⬜ |
+| **bumpalo arena** | 对象 arena 分配。当前对象按需 parse、owned。附带收益：TypeTree 解释器 `interpret` 的递归 `Value` 返回值可改为 arena 指针（类似 oxc 的 box+arena），从设计上缩栈，根治 debug build 栈帧膨胀（当前靠 `Cargo.toml` 的 `opt-level=1` 缓解） | ⬜ |
 | **跨 bundle Environment** | 多 bundle 聚合 + 磁盘依赖加载。当前 `Environment` 单 bundle 范围 | ⬜ |
 
 ---

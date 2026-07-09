@@ -74,9 +74,11 @@ Edition is `2024` → requires Rust >= 1.85.
 ## Tests & fixtures
 
 - io 层测试在 `tests/parse_bundle.rs`（integration；无单元测试）。
-- Environment 聚合层测试在 `tests/environment.rs`（integration）。注意：debug 模式下
-  `interpret` 递归帧较大（5–6MB），测试线程默认 2MB 栈会溢出——`tests/environment.rs`
-  的 `load_env` helper 在 8MB 栈线程里跑（release 模式无此问题）。
+- Environment 聚合层测试在 `tests/environment.rs`（integration）。历史问题：debug
+  默认 opt-level=0 不优化 TypeTree 解释器 `interpret` 的递归 `Value` 返回值临时，
+  深嵌套 typetree 下每帧 ~60B 栈消耗累计到 5–6MB，溢出测试线程 2MB 默认栈。现已在
+  根 `Cargo.toml` 设 `[profile.dev]`/`[profile.test] opt-level=1`，触发栈槽复用后 2MB
+  默认栈足够，无需 workaround。备选方案（box+arena，类似 oxc）见路线图，未实现。
 - 它们依赖已提交的 fixture `example/char_002_amiya.ab` —— **不要删除或修改它**。
 - 期望字节值（`EXPECTED_FIRST16`、`EXPECTED_LAST16`、sizes、revision）是
   **bit-for-bit 对照过 UnityPy** 的。改它们意味着改了 parser 语义；只有拿到验证过的参考输出才更新。

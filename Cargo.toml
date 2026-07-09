@@ -24,3 +24,13 @@ generated = { package = "unity-asset-generated", path = "crates/generated" }
 [workspace]
 members = ["crates/codegen", "crates/generated", "crates/unity-core"]
 resolver = "3"
+
+# debug/test 默认 opt-level=0 会让 TypeTree 解释器（src/typetree/interpret.rs）的
+# 递归 Value 返回值临时不被优化掉，深嵌套 typetree 下每层 ~60B 栈消耗累计到 5-6MB，
+# 溢出测试线程 2MB 默认栈。opt-level=1 足以触发栈槽复用 / 临时消除，从根上解决栈溢出
+# （release 无此问题）。
+[profile.dev]
+opt-level = 1
+
+[profile.test]
+opt-level = 1
