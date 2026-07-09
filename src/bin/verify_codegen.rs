@@ -14,7 +14,10 @@ struct Stats {
     bundles: usize,
     total: usize,
     typed_ok: usize,
+    /// MonoBehaviour（classID=114）：typed shell + 动态 structure。
     mono_ok: usize,
+    /// 其他类型的 TypeTree 解释器回退（typed parse 失败后走 dynamic）。
+    dynamic_ok: usize,
     typed_fail: usize,
     skipped_files: usize,
     failures: Vec<(String, i32, String, String)>, // (bundle, classID, type_name, error)
@@ -118,8 +121,14 @@ fn process_bundle(path: &str, stats: &mut Stats) {
                     stats.typed_ok += 1;
                     eprintln!("  [{i}] classID={class_id:>4} {type_name:<28} ✓ typed");
                 }
-                Ok(unity_asset_rs::ParsedObject::Dynamic(_)) => {
+                Ok(unity_asset_rs::ParsedObject::MonoBehaviour(_)) => {
                     stats.mono_ok += 1;
+                    eprintln!(
+                        "  [{i}] classID={class_id:>4} {type_name:<28} ✓ monobehaviour (shell+structure)"
+                    );
+                }
+                Ok(unity_asset_rs::ParsedObject::Dynamic(_)) => {
+                    stats.dynamic_ok += 1;
                     eprintln!("  [{i}] classID={class_id:>4} {type_name:<28} ✓ dynamic (TypeTree)");
                 }
                 Err(e) => {
@@ -143,7 +152,8 @@ fn print_global_summary(stats: &Stats) {
     eprintln!("bundle 数:    {}", stats.bundles);
     eprintln!("总对象数:     {}", stats.total);
     eprintln!("typed 成功:   {}", stats.typed_ok);
-    eprintln!("dynamic:      {}", stats.mono_ok);
+    eprintln!("monobehaviour: {}", stats.mono_ok);
+    eprintln!("dynamic:      {}", stats.dynamic_ok);
     eprintln!("失败:         {}", stats.typed_fail);
     eprintln!("跳过文件:     {}", stats.skipped_files);
     if !stats.failures.is_empty() {

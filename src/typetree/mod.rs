@@ -7,7 +7,7 @@ mod common_string;
 mod interpret;
 
 pub use blob::{build_tree, parse_blob, BlobNode};
-pub use interpret::interpret;
+pub use interpret::{interpret, interpret_mono_behaviour};
 
 const ALIGN_MASK: u32 = 0x4000;
 

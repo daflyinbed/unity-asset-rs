@@ -176,6 +176,18 @@ fn cmd_object(env: &Environment, path_id: i64) -> Result<(), String> {
             println!("\n(dynamic / TypeTree):");
             dump_value(v, 1);
         }
+        ParsedObject::MonoBehaviour(mb) => {
+            println!("\n(mono behaviour):");
+            println!("  m_GameObject: {:?}", mb.m_game_object);
+            println!("  m_Enabled: {}", mb.m_enabled);
+            println!("  m_Script: {:?}", mb.m_script);
+            println!("  m_Name: {:?}", mb.m_name);
+            if let Some(eci) = &mb.m_editor_class_identifier {
+                println!("  m_EditorClassIdentifier: {eci:?}");
+            }
+            println!("  structure:");
+            dump_value(&mb.structure, 2);
+        }
     }
     Ok(())
 }
@@ -183,7 +195,13 @@ fn cmd_object(env: &Environment, path_id: i64) -> Result<(), String> {
 // ── 辅助函数 ──
 
 /// class_id -> 人类可读名（`ClassIDType` 无 Display，用 Debug；unknown id 原样显示）。
+///
+/// 注：codegen 跳过了 classID=114（MonoBehaviour），`ClassIDType::from_i32` 不认识它，
+/// 这里单独映射成 `MonoBehaviour`。
 fn class_name(class_id: i32) -> String {
+    if class_id == 114 {
+        return "MonoBehaviour".to_string();
+    }
     ClassIDType::from_i32(class_id)
         .map(|c| format!("{c:?}"))
         .unwrap_or_else(|| format!("ClassID({class_id})"))
@@ -195,10 +213,12 @@ fn class_name(class_id: i32) -> String {
 ///   未匹配的类型返回空串（不强求全覆盖）。
 /// - dynamic：查 `Value::Struct` 里的 `"m_Name"` 键（typetree/common_string.rs 的
 ///   interned 约定，PascalCase）。
+/// - monobehaviour：直接取 typed shell 的 `m_name`。
 fn obj_display_name(obj: &ParsedObject) -> String {
     match obj {
         ParsedObject::Typed(uo) => typed_name(uo).unwrap_or_default(),
         ParsedObject::Dynamic(v) => dynamic_name(v),
+        ParsedObject::MonoBehaviour(mb) => mb.m_name.clone(),
     }
 }
 

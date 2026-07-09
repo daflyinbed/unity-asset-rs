@@ -315,8 +315,9 @@ impl RefTypeTable {
 
 ```rust
 pub enum ParsedObject {
-    Typed(UnityObject),   // codegen'd typed struct（Texture2D, Mesh, ...）
-    Dynamic(Value),       // TypeTree 解释器产出（MonoBehaviour 或 fallback）
+    Typed(UnityObject),          // codegen'd typed struct（Texture2D, Mesh, ...）
+    Dynamic(Value),              // typed parse 失败回退到 TypeTree
+    MonoBehaviour(MonoBehaviour), // classID=114：typed shell + 动态 structure
 }
 
 pub fn parse_object(
@@ -330,8 +331,9 @@ pub fn parse_object(
 
 1. 取 `data = obj.data(sf)`、`class_id`、`ver`、`endian`、`ab_tree`（该 type 的内嵌
    TypeNode）。
-2. **MonoBehaviour（class_id == 114）**：直接走 TypeTree。无 `ab_tree` →
-   `Error::MonoBehaviourWithoutTypeTree`。
+2. **MonoBehaviour（class_id == 114）**：走 `interpret_mono_behaviour`——shell（引擎
+   基类字段）typed 投影 + structure（用户脚本字段）动态 `Value` 分段。无 `ab_tree` →
+   `Error::MonoBehaviourWithoutTypeTree`。详见 §8。
 3. **其他类型**：`try_typed`：
    - `ClassIDType::from_i32(class_id)` 不认识 → `UnknownClassId`。
    - `UnityObject::parse(class, &mut Cursor, ver)` 失败 → fallback 到 TypeTree（有
@@ -376,8 +378,16 @@ for bf in &bundle.files {
                 println!("{}x{} {}", tex.m_width, tex.m_height, tex.m_name);
             }
             ParsedObject::Typed(UnityObject::Mesh(mesh)) => { /* ... */ }
+            ParsedObject::MonoBehaviour(mb) => {
+                // typed shell：m_game_object / m_enabled / m_script / m_name
+                println!("MonoBehaviour: {}", mb.m_name);
+                // 动态 structure：用户脚本字段，按名字 pattern-match
+                if let Value::Struct(fields) = &mb.structure {
+                    for (name, val) in fields { println!("  {name}: {val:?}"); }
+                }
+            }
             ParsedObject::Dynamic(value) => {
-                // MonoBehaviour 或 fallback
+                // typed parse 失败回退到 TypeTree
                 if let Value::Struct(fields) = value {
                     for (name, val) in fields { println!("  {name}: {val:?}"); }
                 }
@@ -388,8 +398,9 @@ for bf in &bundle.files {
 }
 ```
 
-完整示例见 `src/main.rs`（demo，dump typed/dynamic 字段）和 `src/bin/verify_codegen.rs`
-（端到端验证：对 bundle 里全部对象跑 parse，统计 typed/dynamic/失败）。
+完整示例见 `src/main.rs`（demo，dump typed/dynamic/monobehaviour 字段）和
+`src/bin/verify_codegen.rs`（端到端验证：对 bundle 里全部对象跑 parse，统计
+typed/monobehaviour/dynamic/失败）。
 
 ---
 
@@ -473,8 +484,53 @@ MonoBehaviour **不生成 codegen'd struct**（见 [`codegen.md`](codegen.md) §
 始终走 TypeTree 解释器。原因：用户脚本字段不在 TPK 里（TPK 只有引擎基类字段），脚本字段
 每次都不同；AB 内嵌 TypeTree 是其唯一来源。
 
-MonoBehaviour 解析产出一个 `Value::Struct`，含基类字段 + 脚本字段，全部来自 AB TypeTree。
-没有 AB TypeTree 时（极少见，正常都有）返回 `MonoBehaviourWithoutTypeTree` 错误。
+### 8.1 shell + structure 分段（对齐 AssetRipper）
+
+参考 AssetRipper 的壳子/结构分离设计（见
+`docs/assetripper-monobehaviour-handling.md`）：MonoBehaviour = **shell**（引擎基类
+字段，typed）+ **structure**（用户脚本字段，动态）。
+
+- **shell**：`m_GameObject` / `m_Enabled` / `m_Script` / `m_Name` / `m_EditorClassIdentifier`
+  （可选）。投影成 typed `MonoBehaviour` struct 字段（`PPtrValue`/`bool`/`String`）。
+- **structure**：TypeTree 里 shell 之后的剩余字段，保持动态 `Value`（`Value::Struct`），
+  调用方按名字 pattern-match 访问。
+
+实现：`interpret_mono_behaviour`（`src/typetree/interpret.rs`）在 TypeTree 节点层找
+shell/structure 分界（`find_mono_behaviour_split`：顺序匹配引擎字段名集合，首个不匹配
+节点即 structure 起点），用共享 `Cursor` 分两段 `read_children`——对齐 AssetRipper
+`FindStartingIndexForMonoBehaviour` + `SerializableStructure.Read`。TypeTree 路径下
+MonoScript **不参与**布局推理——布局已在 TypeTree 里；`m_script` 仅作后续解引用到
+MonoScript 资产的寻址入口。
+
+```rust
+pub struct MonoBehaviour {
+    pub m_game_object: PPtrValue,
+    pub m_enabled: bool,
+    pub m_script: PPtrValue,
+    pub m_name: String,
+    pub m_editor_class_identifier: Option<String>,
+    pub structure: Value,   // 用户脚本字段（动态）
+}
+```
+
+### 8.2 错误处理
+
+- 无 AB TypeTree → `Error::MonoBehaviourWithoutTypeTree`（非 TypeTree 路径 = 未来工作，
+  需 MonoScript + 托管 DLL 反射还原布局，本次未实现）。
+- shell 字段缺失/类型错（`m_GameObject`/`m_Script`）→ `Error::MonoBehaviourShell`
+  （强信号，shell 必须存在）。`m_Enabled`/`m_Name`/`m_EditorClassIdentifier` 缺失时
+  取默认值（false / 空串 / None）。
+
+### 8.3 Environment 访问
+
+```rust
+// 按 class_id == 114 过滤（codegen 未生成 ClassIDType::MonoBehaviour，不走 objects_of_class）
+for o in env.mono_behaviours() {
+    let mb = o.as_mono_behaviour().unwrap();
+    // m_script 已实现 PPtrLike，可直接解引用到 MonoScript：
+    let script = env.resolve_from(o, &mb.m_script);
+}
+```
 
 ---
 
@@ -491,6 +547,7 @@ MonoBehaviour 解析产出一个 `Value::Struct`，含基类字段 + 脚本字�
 - `TypedParse { reason }` — generated typed parse 失败。
 - `UnknownClassId { id }` — class_id 不在 `ClassIDType`。
 - `MonoBehaviourWithoutTypeTree` — MonoBehaviour 无内嵌 TypeTree。
+- `MonoBehaviourShell { field, reason }` — MonoBehaviour shell 字段缺失或类型错。
 
 ---
 

@@ -45,6 +45,72 @@ pub fn interpret(
     Ok(v)
 }
 
+/// MonoBehaviour 引擎基类字段名集合（shell）。顺序遍历 TypeTree 子节点时，
+/// 连续命中这些名字的前缀即 shell，之后的首个不匹配节点开始是用户 structure。
+/// 对齐 AssetRipper `FindStartingIndexForMonoBehaviour`（跳过 m_Name/m_EditorClassIdentifier 等）。
+const MONO_BEHAVIOUR_SHELL_FIELDS: &[&str] = &[
+    "m_GameObject",
+    "m_Enabled",
+    "m_Script",
+    "m_Name",
+    "m_EditorClassIdentifier",
+];
+
+/// 在 `root.children` 里找 shell/structure 分界索引。
+///
+/// 顺序遍历子节点，只要名字在 `MONO_BEHAVIOUR_SHELL_FIELDS` 里就继续；遇到第一个
+/// 不在集合里的子节点即返回其索引（= structure 起点）。全部命中时返回 `children.len()`
+/// （structure 为空）。
+fn find_mono_behaviour_split(children: &[TypeNode]) -> usize {
+    children
+        .iter()
+        .position(|c| !MONO_BEHAVIOUR_SHELL_FIELDS.contains(&c.name.as_str()))
+        .unwrap_or(children.len())
+}
+
+/// 按 MonoBehaviour 语义解释：shell 字段 + 用户 structure 字段分段读取。
+///
+/// 对齐 AssetRipper `FindStartingIndexForMonoBehaviour` + `SerializableStructure.Read`：
+/// 先读引擎基类字段（m_GameObject/m_Enabled/m_Script/m_Name/m_EditorClassIdentifier），
+/// 再读剩余用户脚本字段。两段共享同一 `Cursor`（字节连续）。
+///
+/// 返回 `(shell_fields, structure_value)`：
+/// - `shell_fields`：`Vec<(String, Value)>`，按 TypeTree 顺序的引擎基类字段；
+/// - `structure_value`：`Value::Struct`，用户脚本字段（可能为空 struct）。
+///
+/// 走完后校验 `cursor.pos() == data.len()`，不匹配报 `TypeTreeSizeMismatch`。
+pub fn interpret_mono_behaviour(
+    data: &[u8],
+    root: &TypeNode,
+    ver: &UnityVersion,
+    endian: Endian,
+    refs: &RefTypeTable,
+) -> Result<(Vec<(String, Value)>, Value)> {
+    let split = find_mono_behaviour_split(&root.children);
+    let mut r = Cursor::new(data, endian);
+    let ctx = Ctx {
+        ver,
+        refs,
+        has_registry: false,
+    };
+    // shell 段：引擎基类字段
+    let shell_fields = read_children(&mut r, &root.children[..split], ctx)?;
+    // structure 段：用户脚本字段（type/ReferencedObjectData 等兄弟字段天然在此段）
+    let structure_fields = read_children(&mut r, &root.children[split..], ctx)?;
+    // 根结构体尾部对齐（复刻 walk(root) 的 align 语义）
+    if root.meta_flag & ALIGN_MASK != 0 {
+        r.align(4);
+    }
+    if r.pos() != data.len() {
+        return Err(TypeTreeSizeMismatchSnafu {
+            expected: data.len(),
+            actual: r.pos(),
+        }
+        .build());
+    }
+    Ok((shell_fields, Value::Struct(structure_fields)))
+}
+
 fn walk(r: &mut Cursor, node: &TypeNode, ctx: Ctx) -> Result<Value> {
     let mut align = node.meta_flag & ALIGN_MASK != 0;
 
@@ -118,9 +184,18 @@ fn walk(r: &mut Cursor, node: &TypeNode, ctx: Ctx) -> Result<Value> {
 
 /// 读 struct（或含 ReferencedObject / ManagedReferencesRegistry 的特例）。
 fn read_struct(r: &mut Cursor, node: &TypeNode, ctx: Ctx) -> Result<Value> {
-    let mut fields: Vec<(String, Value)> = Vec::with_capacity(node.children.len());
+    Ok(Value::Struct(read_children(r, &node.children, ctx)?))
+}
+
+/// 顺序读取一组子节点为 `Vec<(String, Value)>`。
+///
+/// 抽自原 `read_struct` 循环体，供 `read_struct` 与 `interpret_mono_behaviour` 的
+/// shell/structure 分段共享。处理 `ManagedReferencesRegistry`（去重）与
+/// `ReferencedObjectData`（`[SerializeReference]` 查表）两个特例。
+fn read_children(r: &mut Cursor, children: &[TypeNode], ctx: Ctx) -> Result<Vec<(String, Value)>> {
+    let mut fields: Vec<(String, Value)> = Vec::with_capacity(children.len());
     let mut child_ctx = ctx;
-    for child in &node.children {
+    for child in children {
         match &child.kind {
             // ManagedReferencesRegistry 同一对象只读一次
             TypeKind::Struct(s) if s == "ManagedReferencesRegistry" => {
@@ -148,7 +223,7 @@ fn read_struct(r: &mut Cursor, node: &TypeNode, ctx: Ctx) -> Result<Value> {
         }
         fields.push((child.name.clone(), walk(r, child, child_ctx)?));
     }
-    Ok(Value::Struct(fields))
+    Ok(fields)
 }
 
 /// 从已累积的字段中取 "type" 子结构里的 class/ns/asm。

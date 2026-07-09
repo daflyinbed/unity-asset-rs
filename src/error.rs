@@ -50,6 +50,9 @@ pub enum Error {
 
     #[snafu(display("MonoBehaviour has no embedded TypeTree, cannot parse"))]
     MonoBehaviourWithoutTypeTree,
+
+    #[snafu(display("MonoBehaviour shell field `{field}` missing or wrong type: {reason}"))]
+    MonoBehaviourShell { field: String, reason: String },
 }
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;

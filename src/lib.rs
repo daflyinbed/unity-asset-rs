@@ -4,7 +4,10 @@ pub use cursor::Cursor;
 pub use decompress::{CompressionType, Decompressor, IdentityDecompressor, Lz4Decompressor, LzmaDecompressor, Registry};
 pub use error::{Error, Result};
 pub use serialized_file::{FileIdentifier, ObjectInfo, SerializedFile, SerializedType};
-pub use typetree::{build_tree, interpret, parse_blob, BlobNode, PPtrValue, RefTypeTable, TypeKind, TypeNode, Value};
+pub use typetree::{
+    build_tree, interpret, interpret_mono_behaviour, parse_blob, BlobNode, PPtrValue, RefTypeTable,
+    TypeKind, TypeNode, Value,
+};
 pub use unity_core::{Endian, PPtr, UnityVersion};
 
 mod bundle;
@@ -19,7 +22,7 @@ pub mod typetree;
 
 // ── generated crate 桥接 ──
 pub use generated::{ClassIDType, UnityObject};
-pub use object_parser::{parse_object, ParsedObject};
+pub use object_parser::{parse_object, MonoBehaviour, ParsedObject};
 pub use environment::{
     AssetCollection, Environment, EnvironmentObject, ParseFailure, PPtrLike, ResourceFile,
 };

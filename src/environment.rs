@@ -12,7 +12,7 @@ use generated::subclasses::streaming_info::{StreamingInfo, StreamingInfoOffsetVa
 use generated::ClassIDType;
 
 use crate::names::fix_file_identifier;
-use crate::object_parser::{parse_object, ParsedObject};
+use crate::object_parser::{parse_object, MonoBehaviour, ParsedObject};
 use crate::serialized_file::FileIdentifier;
 use crate::typetree::PPtrValue;
 use crate::{Bundle, Endian, Error, PPtr, SerializedFile, UnityVersion};
@@ -100,6 +100,19 @@ impl PPtrLike for PPtrValue {
     }
     fn path_id(&self) -> i64 {
         self.path_id
+    }
+}
+
+impl EnvironmentObject {
+    /// 若该对象是 MonoBehaviour（classID=114），返回 typed shell + 动态 structure 引用。
+    ///
+    /// shell 字段 `m_script`/`m_game_object` 均为 `PPtrValue`（已实现 `PPtrLike`），
+    /// 可直接用 `env.resolve_from(self, &mb.m_script)` 解引用到目标资产。
+    pub fn as_mono_behaviour(&self) -> Option<&MonoBehaviour> {
+        match &self.object {
+            ParsedObject::MonoBehaviour(mb) => Some(mb),
+            _ => None,
+        }
     }
 }
 
@@ -279,6 +292,15 @@ impl Environment {
     pub fn objects_of_class(&self, cls: ClassIDType) -> impl Iterator<Item = &EnvironmentObject> {
         let target = cls as i32;
         self.objects.iter().filter(move |o| o.class_id == target)
+    }
+
+    /// 全部 MonoBehaviour 对象（classID=114）。
+    ///
+    /// 注：codegen 未生成 `ClassIDType::MonoBehaviour`（跳过 114），故不能走
+    /// `objects_of_class`；用专用方法按 `class_id == 114` 过滤。结果可通过
+    /// `EnvironmentObject::as_mono_behaviour()` 取 typed shell。
+    pub fn mono_behaviours(&self) -> impl Iterator<Item = &EnvironmentObject> {
+        self.objects.iter().filter(|o| o.class_id == 114)
     }
 
     pub fn collections(&self) -> &[AssetCollection] {
