@@ -3,10 +3,7 @@
 
 use std::path::Path;
 
-use unity_asset_rs::{
-    load_environment, load_environment_dir, load_environment_multi, ClassIDType, Environment,
-    ParseFailure, ParsedObject, UnityObject,
-};
+use unity_asset_rs::{ClassIDType, Environment, ParseFailure, ParsedObject, UnityObject};
 
 /// 默认 fixture（io 层测试同款）。
 const DEFAULT_BUNDLE: &str = "example/char_002_amiya.ab";
@@ -26,10 +23,10 @@ fn load_env(path: &str) -> Environment {
         eprintln!("跳过：{path} 不存在");
         std::process::exit(0);
     }
-    match load_environment(path) {
-        Ok(e) => e,
-        Err(e) => panic!("加载 {path} 失败: {e}"),
-    }
+    Environment::builder()
+        .path(path)
+        .unwrap_or_else(|e| panic!("加载 {path} 失败: {e}"))
+        .build()
 }
 
 /// 单独加载一个 bundle 得到的 collection 数（对照组）。
@@ -159,32 +156,15 @@ fn builder_multi_bundle_accumulates_collections() {
 }
 
 #[test]
-fn load_environment_multi_matches_builder() {
-    // load_environment_multi 应与 builder 等价。
-    let via_multi = load_environment_multi(TWO_BUNDLES).expect("multi 加载失败");
-    let via_builder = Environment::builder()
-        .path(TWO_BUNDLES[0])
-        .unwrap()
-        .path(TWO_BUNDLES[1])
-        .unwrap()
-        .build();
-    assert_eq!(
-        via_multi.collections().len(),
-        via_builder.collections().len(),
-    );
-    assert_eq!(
-        via_multi.objects().len(),
-        via_builder.objects().len(),
-    );
-}
-
-#[test]
-fn load_environment_dir_scans_all_bundles() {
+fn scan_dir_scans_all_bundles() {
     if !Path::new(EXAMPLE_DIR).exists() {
         eprintln!("跳过：{EXAMPLE_DIR} 不存在");
         std::process::exit(0);
     }
-    let env = load_environment_dir(EXAMPLE_DIR).expect("目录加载失败");
+    let env = Environment::builder()
+        .scan_dir(EXAMPLE_DIR)
+        .expect("目录加载失败")
+        .build();
     // example/ 下 5 个 bundle，每个至少 1 个 collection。
     assert!(
         env.collections().len() >= 5,
@@ -209,7 +189,12 @@ fn load_environment_dir_scans_all_bundles() {
 fn cross_bundle_pptr_resolution_resolved_count_increases() {
     // 把两个 bundle 一起加载（同一 Environment）时，跨 bundle 依赖能命中；
     // 对照：单独加载时那些外部引用为 None。聚合后「已解析依赖槽」数应 >= 各自单独之和。
-    let together = load_environment_multi(TWO_BUNDLES).expect("multi 加载失败");
+    let together = Environment::builder()
+        .path(TWO_BUNDLES[0])
+        .expect("加载 bundle a 失败")
+        .path(TWO_BUNDLES[1])
+        .expect("加载 bundle b 失败")
+        .build();
     let a_alone = load_env(TWO_BUNDLES[0]);
     let b_alone = load_env(TWO_BUNDLES[1]);
 
@@ -237,7 +222,10 @@ fn cross_bundle_pptr_resolution_resolved_count_increases() {
 
     // 全目录扫描：example/ 下 5 个 bundle 一起加载，确认存在真实跨 bundle 解析。
     if Path::new(EXAMPLE_DIR).exists() {
-        let dir_env = load_environment_dir(EXAMPLE_DIR).expect("目录加载失败");
+        let dir_env = Environment::builder()
+            .scan_dir(EXAMPLE_DIR)
+            .expect("目录加载失败")
+            .build();
         let dir_together = count_resolved(&dir_env);
         let mut dir_apart = 0usize;
         for name in &[

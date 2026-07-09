@@ -14,7 +14,7 @@
 
 ### 解析完成后的生命周期快照
 
-`Environment::from_bundle` 完成后，`Environment` 持有：
+`EnvironmentBuilder::build` 完成后，`Environment` 持有：
 
 | 字段 | 内容 | 引用 blob？ |
 |---|---|---|
@@ -35,7 +35,7 @@ typed struct 和 `Value` 树都是自包含的——解析后不引用原始字�
 全部共享同一 `Arc<[u8]>`。`Bytes::slice` **永远共享底层分配**：只要任何一个
 slice 存活，整个 blob 不会释放。
 
-在 `Environment::from_bundle` 中：
+在 `phase_a`（builder 累积阶段）中：
 - SerializedFile 的 .assets 区域解析成 owned 对象后不再需要
 - .resS 资源文件必须保留（供 `streaming_data()` 零拷贝取数）
 
@@ -69,8 +69,8 @@ pub fn ref_type_table(&self) -> RefTypeTable {
 }
 ```
 
-每次调用都深拷贝 ref type 的 `TypeNode` 树。`Environment::from_bundle` 每个
-SerializedFile 调用一次（`environment.rs:143`），用于该 SF 全部对象解析后即 drop。
+每次调用都深拷贝 ref type 的 `TypeNode` 树。`phase_a` 每个
+SerializedFile 调用一次（`environment.rs`），用于该 SF 全部对象解析后即 drop。
 
 **性质**：瞬态分配，会被释放——非泄漏，但解析期间产生一份重复的树。若
 `[SerializeReference]` 多，解析期短暂内存翻倍。

@@ -5,6 +5,7 @@
 //! `SpecialFileNames`）。详见 `docs/environment-layer.md`。
 
 use std::collections::HashMap;
+use std::path::{Path, PathBuf};
 
 use bytes::Bytes;
 use generated::subclasses::streamed_resource::StreamedResource;
@@ -25,8 +26,8 @@ use crate::{Bundle, Endian, Error, PPtr, SerializedFile, UnityVersion};
 /// Phase B 依赖解析全局扫描 `collections`——只要把多个 bundle 灌进同一个 `Environment`，
 /// 跨 bundle 引用在 Phase B（全部 collection 建好后）自动 resolve。
 ///
-/// 构造见 [`Environment::builder`]（累积多 bundle）或 [`Environment::from_bundle`]（单 bundle）。
-/// 便捷入口见 `load_environment_multi` / `load_environment_dir`。
+/// 构造唯一入口 [`Environment::builder`]：累积阶段（`path`/`bundle`/`scan_dir`）逐 bundle 做
+/// Phase A，`build()` 收尾时跑一次 Phase B 全局依赖解析。
 pub struct Environment {
     /// 跨全部 AssetCollection eager parse 成功的对象。
     objects: Vec<EnvironmentObject>,
@@ -146,51 +147,13 @@ impl EnvironmentObject {
 }
 
 impl Environment {
-    /// 空构造。
-    fn new() -> Environment {
-        Environment {
-            objects: Vec::new(),
-            collections: Vec::new(),
-            resources: Vec::new(),
-            failures: Vec::new(),
-        }
-    }
-
-    /// 从 io 层的 `Bundle` 构建 `Environment`（infallible——错误隔离进 `failures`）。
+    /// 新建 [`EnvironmentBuilder`]——聚合层唯一构造入口。
     ///
-    /// 单 bundle 便捷入口。多 bundle 场景用 [`Environment::builder`]。
-    pub fn from_bundle(bundle: Bundle) -> Environment {
-        let mut env = Environment::new();
-        let mut pending = Vec::new();
-        env.add_bundle_inner(bundle, &mut pending);
-        env.resolve_dependencies(&mut pending);
-        env
-    }
-
-    /// 新建 [`EnvironmentBuilder`]——累积多个 bundle 后 `build()` 一次性做全局依赖解析。
+    /// 累积阶段（`path`/`bundle`/`scan_dir`）逐 bundle 做 Phase A，[`EnvironmentBuilder::build`]
+    /// 收尾时跑一次 Phase B 全局依赖解析（全部 collection 建好后统一匹配 externals，
+    /// 跨 bundle 的前向/后向引用都能命中）。
     pub fn builder() -> EnvironmentBuilder {
         EnvironmentBuilder::new()
-    }
-
-    /// Phase A：读 bundle 的全部文件 + eager parse 对象 + 收集资源。
-    ///
-    /// 把每个 SerializedFile 灌成一个 `AssetCollection`（`dependencies[0]=Some(self)`），
-    /// `.resS` 灌成 `ResourceFile`（`copy_from_slice` detach）。externals 暂存到 `pending`，
-    /// 等 [`resolve_dependencies`] 在全部 collection 建好后统一解析（这样跨 bundle 的
-    /// 前向/后向引用都能命中——对齐 AssetRipper 两阶段加载）。
-    fn add_bundle_inner(
-        &mut self,
-        bundle: Bundle,
-        pending: &mut Vec<(usize, Vec<FileIdentifier>)>,
-    ) {
-        phase_a(
-            bundle,
-            &mut self.objects,
-            &mut self.collections,
-            &mut self.resources,
-            &mut self.failures,
-            pending,
-        );
     }
 
     /// Phase B：初始化依赖列表（全局 name_fixed 精确匹配）。
@@ -209,7 +172,7 @@ impl Environment {
                     .iter()
                     .position(|c| c.name_fixed == identifier.path_name);
                 // TODO(扩展点): target.is_none() 时调 dependency_provider.find_dependency(identifier)
-                //   → 返回 Some(Bundle) 则 add_bundle_inner + 重试查找（懒加载跨 bundle 引用）。
+                //   → 返回 Some(Bundle) 则追加 phase_a + 重试查找（懒加载跨 bundle 引用）。
                 self.collections[*col_idx].dependencies.push(target);
             }
         }
@@ -422,18 +385,40 @@ fn streaming_offset(offset: &StreamingInfoOffsetVariant) -> u64 {
     }
 }
 
-/// [`Environment`] 的 builder——累积多个 bundle 后 `build()` 一次性做全局依赖解析。
+/// [`Environment`] 的 builder——聚合层唯一构造入口。累积多个 bundle 后 `build()` 一次性
+/// 做全局依赖解析。
 ///
-/// 对齐 AssetRipper 两阶段加载：累积阶段（`path`/`bundle`）= Phase A，逐 bundle 读文件 +
-/// eager parse 对象；[`build`] = Phase B，在全部 collection 建好后统一解析 externals，
-/// 因此跨 bundle 的前向/后向 PPtr 引用都能命中。
+/// 对齐 AssetRipper 两阶段加载：累积阶段（`path`/`bundle`/`scan_dir`）= Phase A，逐 bundle
+/// 读文件 + eager parse 对象；[`build`] = Phase B，在全部 collection 建好后统一解析
+/// externals，因此跨 bundle 的前向/后向 PPtr 引用都能命中。
 ///
 /// # 示例
+///
+/// 单 bundle / 多 bundle：
 /// ```no_run
 /// # use unity_asset_rs::Environment;
 /// let env = Environment::builder()
 ///     .path("a.ab")?
 ///     .path("b.ab")?
+///     .build();
+/// # Ok::<(), unity_asset_rs::Error>(())
+/// ```
+///
+/// 递归扫描目录（UnityFS 签名嗅探，跳过非 bundle 文件）：
+/// ```no_run
+/// # use unity_asset_rs::Environment;
+/// let env = Environment::builder()
+///     .scan_dir("example/")?
+///     .build();
+/// # Ok::<(), unity_asset_rs::Error>(())
+/// ```
+///
+/// 自定义解压器（如 Arknights LZ4 变体）：`registry` 设一次，后续 `path`/`scan_dir` 均复用。
+/// ```no_run
+/// # use unity_asset_rs::{Environment, Registry};
+/// let env = Environment::builder()
+///     .registry(&Registry::defaults())
+///     .path("a.ab")?
 ///     .build();
 /// # Ok::<(), unity_asset_rs::Error>(())
 /// ```
@@ -443,6 +428,7 @@ pub struct EnvironmentBuilder {
     resources: Vec<ResourceFile>,
     failures: Vec<ParseFailure>,
     pending_deps: Vec<(usize, Vec<FileIdentifier>)>,
+    registry: Registry,
     dependency_provider: Option<Box<dyn DependencyProvider>>,
     resource_provider: Option<Box<dyn ResourceProvider>>,
 }
@@ -455,17 +441,52 @@ impl EnvironmentBuilder {
             resources: Vec::new(),
             failures: Vec::new(),
             pending_deps: Vec::new(),
+            registry: Registry::defaults(),
             dependency_provider: None,
             resource_provider: None,
         }
     }
 
-    /// 加载一个 bundle 文件路径（`fs::read` + `Registry::defaults`），并入累积区。
-    pub fn path(mut self, path: impl AsRef<std::path::Path>) -> Result<Self, crate::Error> {
+    /// 设定解压器注册表（clone 入驻）。后续 [`path`](Self::path) /
+    /// [`scan_dir`](Self::scan_dir) 均用它解包，而非默认 registry。
+    ///
+    /// 默认为 [`Registry::defaults`]（LZMA + LZ4 + LZ4HC + NONE）。需要自定义 codec（如
+    /// Arknights LZ4 变体占 flag 4/5——见 ADR-0003）时在此注册。
+    pub fn registry(mut self, reg: &Registry) -> Self {
+        self.registry = reg.clone();
+        self
+    }
+
+    /// 加载一个 bundle 文件路径（`fs::read` + 驻留 registry），并入累积区。
+    pub fn path(mut self, path: impl AsRef<Path>) -> Result<Self, crate::Error> {
         let path = path.as_ref();
         let bytes = std::fs::read(path).map_err(|e| crate::Error::Io { source: e })?;
-        let bundle = crate::bundle::parse(Bytes::from(bytes), &Registry::defaults())?;
+        let bundle = crate::bundle::parse(Bytes::from(bytes), &self.registry)?;
         self.add_bundle(bundle);
+        Ok(self)
+    }
+
+    /// 递归扫描目录，对每个 UnityFS bundle（签名嗅探）做 `path`，跳过非 bundle 文件。
+    ///
+    /// 对齐 AssetStudio `LoadFolder`：递归遍历目录树，读头部前 7 字节判断是否为 UnityFS，
+    /// 命中才加载，否则 `log::warn` 静默跳过。gzip/brotli/`UnityWeb` 等当前未嗅探的容器均跳过。
+    pub fn scan_dir(mut self, path: impl AsRef<Path>) -> Result<Self, crate::Error> {
+        let path = path.as_ref();
+        let mut any = false;
+        for entry in walk_files(path)? {
+            if crate::detect::looks_like_unityfs_path(&entry)? {
+                let bytes =
+                    std::fs::read(&entry).map_err(|e| crate::Error::Io { source: e })?;
+                let bundle = crate::bundle::parse(Bytes::from(bytes), &self.registry)?;
+                self.add_bundle(bundle);
+                any = true;
+            } else {
+                log::warn!("scan_dir: 跳过非 UnityFS 文件: {}", entry.display());
+            }
+        }
+        if !any {
+            log::warn!("scan_dir: {} 下未发现任何 UnityFS bundle", path.display());
+        }
         Ok(self)
     }
 
@@ -504,8 +525,7 @@ impl EnvironmentBuilder {
         env
     }
 
-    /// Phase A helper：把 bundle 灌入累积的 Vec + 追加 pending_deps。
-    /// 复用 [`phase_a`]（与 `Environment::add_bundle_inner` 同源）。
+    /// Phase A helper：把 bundle 灌入累积的 Vec + 追加 pending_deps。复用 [`phase_a`]。
     fn add_bundle(&mut self, bundle: Bundle) {
         phase_a(
             bundle,
@@ -522,4 +542,28 @@ impl Default for EnvironmentBuilder {
     fn default() -> Self {
         Self::new()
     }
+}
+
+/// 递归收集目录下全部文件路径（先序）。符号链接子目录跳过（避免循环）。
+fn walk_files(root: &Path) -> Result<Vec<PathBuf>, crate::Error> {
+    let mut out = Vec::new();
+    walk_inner(root, &mut out)?;
+    Ok(out)
+}
+
+fn walk_inner(dir: &Path, out: &mut Vec<PathBuf>) -> Result<(), crate::Error> {
+    for entry in std::fs::read_dir(dir).map_err(|e| crate::Error::Io { source: e })? {
+        let entry = entry.map_err(|e| crate::Error::Io { source: e })?;
+        let path = entry.path();
+        let ft = entry.file_type().map_err(|e| crate::Error::Io { source: e })?;
+        if ft.is_dir() {
+            // 不跟符号链接目录，防循环。
+            if !path.is_symlink() {
+                walk_inner(&path, out)?;
+            }
+        } else {
+            out.push(path);
+        }
+    }
+    Ok(())
 }

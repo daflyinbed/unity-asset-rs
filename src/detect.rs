@@ -15,8 +15,8 @@ const UNITYFS_MAGIC: &[u8] = b"UnityFS";
 
 /// 嗅探字节切片是否以 `UnityFS` 签名开头。
 ///
-/// 保留为字节级原语（`load_environment_dir` 走 [`looks_like_unityfs_path`] 避免全量读文件），
-/// 供未来 `load_environment_bytes`-类入口复用。
+/// 保留为字节级原语（`EnvironmentBuilder::scan_dir` 走 [`looks_like_unityfs_path`] 避免全量读文件），
+/// 供未来字节级扫描入口复用。
 #[allow(dead_code)]
 pub(crate) fn looks_like_unityfs(bytes: &[u8]) -> bool {
     bytes.len() >= UNITYFS_MAGIC.len() && &bytes[..UNITYFS_MAGIC.len()] == UNITYFS_MAGIC

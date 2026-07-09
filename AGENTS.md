@@ -22,8 +22,8 @@ layer (PPtr deref + `.resS` streaming_data) are all **implemented**:
 - **聚合层**（Environment）：`src/environment.rs` + `src/names.rs`。eager parse 全部
   对象 + `.resS` 资源 + PPtr 解引用（`dependencies[file_id]` 约定对齐 AssetRipper）+
   streaming_data 零拷贝取数。**跨 bundle 已落地**：`EnvironmentBuilder` 累积多 bundle 后
-  `build()` 一次性全局依赖解析；入口 `load_environment`（单 bundle）/ `load_environment_multi`
-  （多路径）/ `load_environment_dir`（递归目录嗅探）。`src/detect.rs` 做 UnityFS 签名嗅探。
+  `build()` 一次性全局依赖解析；聚合层唯一构造入口 `Environment::builder()`（`path`/`bundle`/
+  `scan_dir`/`registry`）。`src/detect.rs` 做 UnityFS 签名嗅探。
 
 **未实现**：gzip/brotli bundle 嗅探（目录扫描只认 `UnityFS`，gzip 静默跳过）、
 `DependencyProvider`/`ResourceProvider` trait 的实际回调（API 面已留，eager 模型暂不调）、
@@ -141,8 +141,8 @@ Edition is `2024` → requires Rust >= 1.85.
   fallback 到 AB 内嵌 TypeTree。两条路径各自 `Cursor::new(data, endian)`，zero-cost fallback。
 - codegen 生成**扁平 struct**（**无 parent 字段**——TPK release_root 已含全部继承链字段），
   不生成 MonoBehaviour / 抽象父类。字段类型跨版本变化用 `VersionedEnum`。
-- **`src/environment.rs`** 是聚合层：`Environment::from_bundle`（单 bundle）/ `EnvironmentBuilder`
-  （多 bundle，累积后 `build()`）eager parse 全部对象，构建 `AssetCollection.dependencies`
+- **`src/environment.rs`** 是聚合层：`EnvironmentBuilder`（`Environment::builder()`，累积后
+  `build()`）eager parse 全部对象，构建 `AssetCollection.dependencies`
   （`[0]=self` 约定对齐 AssetRipper `AssetCollection.Dependencies`），PPtr 解引用经
   `dependencies[file_id]` → target collection → `assets[path_id]`。**跨 bundle 已落地**：
   数据模型本就全局扁平，Phase B 全局扫描 `collections`，多 bundle 灌进同一 Environment 即
@@ -159,8 +159,7 @@ Edition is `2024` → requires Rust >= 1.85.
   `load_bytes_with` + `Bundle`/`BundleFile`/`Registry`/`Decompressor*`）
   + 对象解析（`parse_object`/`ParsedObject`/`SerializedFile`/`SerializedType`/
   `ObjectInfo`/`FileIdentifier`/`UnityObject`/`ClassIDType` + typetree 类型 + `unity_core`
-  的 `Endian`/`PPtr`/`UnityVersion`）+ 聚合层（`load_environment`/`load_environment_multi`/
-  `load_environment_dir` + `Environment`/`EnvironmentBuilder`/`EnvironmentObject`/
+  的 `Endian`/`PPtr`/`UnityVersion`）+ 聚合层（`Environment`/`EnvironmentBuilder`/`EnvironmentObject`/
   `AssetCollection`/`ResourceFile`/`ParseFailure`/`PPtrLike`/`DependencyProvider`/
   `ResourceProvider`）。
 

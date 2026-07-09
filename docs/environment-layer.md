@@ -35,8 +35,8 @@ store。
 | `StreamingInfoExtensions.GetContent` | `streaming_data` | 空路径→`None`（与 AssetRipper 一致） |
 
 **跨 bundle 聚合已落地**。bundle 内 SerializedFile 间互引 + `.resS` 流数据在本层解析；
-多个 bundle 一起加载（[`EnvironmentBuilder`] / `load_environment_multi` /
-`load_environment_dir`）时，跨 bundle 引用也能解析——Phase B 全局扫描 `collections`，
+多个 bundle 一起加载（[`EnvironmentBuilder`] 的 `path` / `scan_dir`）时，跨 bundle 引用也
+能解析——Phase B 全局扫描 `collections`，
 跨 bundle 的前向/后向 PPtr 引用都能命中。详见 [§13 跨 bundle Environment](#13-跨-bundle-environment)。
 
 ---
@@ -281,28 +281,28 @@ pub use environment::{
     AssetCollection, DependencyProvider, Environment, EnvironmentBuilder, EnvironmentObject,
     ParseFailure, PPtrLike, ResourceFile, ResourceProvider,
 };
-
-/// 便捷入口：load + from_bundle（单 bundle）。
-pub fn load_environment(path: impl AsRef<Path>) -> Result<Environment>;
-
-/// 多 bundle 路径 → 一个 Environment（跨 bundle 依赖全局解析）。
-pub fn load_environment_multi<I, P>(paths: I) -> Result<Environment>;
-
-/// 递归扫描目录，嗅探 UnityFS 签名，全部加载进一个 Environment。
-pub fn load_environment_dir(path: impl AsRef<Path>) -> Result<Environment>;
 ```
+
+聚合层构造唯一入口是 [`EnvironmentBuilder`]（`Environment::builder()`），无自由函数入口。
+io 层 `load*`（`load`/`load_with`/`load_bytes`/`load_bytes_with`）产出 `Bundle`，是不同层级。
 
 典型用法：
 
 ```rust
 // 单 bundle
-let env = load_environment("char_002_amiya.ab")?;
+let env = Environment::builder().path("char_002_amiya.ab")?.build();
 
 // 多 bundle（跨 bundle PPtr 自动 resolve）
-let env = load_environment_multi(["main.ab", "shared.ab"])?;
+let env = Environment::builder()
+    .path("main.ab")?
+    .path("shared.ab")?
+    .build();
 
-// 整个目录
-let env = load_environment_dir("game/StreamingAssets")?;
+// 整个目录（递归 + UnityFS 签名嗅探）
+let env = Environment::builder().scan_dir("game/StreamingAssets")?.build();
+
+// 自定义 codec（如 Arknights LZ4 变体）
+let env = Environment::builder().registry(&my_reg).path("a.ab")?.build();
 
 for obj in env.objects() {
     if let ParsedObject::Typed(UnityObject::GameObject(go)) = &obj.object {
@@ -316,10 +316,10 @@ for obj in env.objects() {
 
 ## 9. 错误隔离
 
-对齐 ADR-0003 路线图「错误隔离 Failure 叶节点」。`Environment::from_bundle` 是
+对齐 ADR-0003 路线图「错误隔离 Failure 叶节点」。`EnvironmentBuilder::build` 是
 **infallible**（返回 `Environment`，不返回 `Result`）：
 
-- io 层错误（`load`）发生在 `from_bundle` 之前（`load_environment` 的 `?`）。
+- io 层错误（`load`）发生在 build 之前（`builder().path(..)?` 的 `?`）。
 - SerializedFile::parse 失败 → file-level `ParseFailure`，continue。
 - 单对象 `parse_object` 失败 → object-level `ParseFailure`，continue。
 - 用户通过 `env.failures()` 检查；`env.objects()` 只含成功者。
@@ -331,7 +331,7 @@ for obj in env.objects() {
 | 阶段 | 内容 | 状态 |
 |---|---|---|
 | **Phase 1** | 捕获 externals：`src/serialized_file.rs` 新增 `FileIdentifier` + `SerializedFile.externals`；`src/lib.rs` 导出 | ✅ |
-| **Phase 2** | 新建 `src/environment.rs`：全部类型 + `fix_file_identifier`（`src/names.rs`）+ 两阶段构建 + resolve + streaming_data；`src/lib.rs` 导出 + `load_environment` | ✅ |
+| **Phase 2** | 新建 `src/environment.rs`：全部类型 + `fix_file_identifier`（`src/names.rs`）+ 两阶段构建 + resolve + streaming_data；`src/lib.rs` 导出 | ✅ |
 | **Phase 3** | 验证：`tests/environment.rs`（5 个集成测试）+ 全部 `example/` bundle 烟测（0 失败） | ✅ |
 
 ---
@@ -344,7 +344,7 @@ for obj in env.objects() {
   缺失 bundle，无需改公共 API。
 - **磁盘 `.resS` `ResourceProvider`**：trait 已落地，但当前不回调。后续接入跨 bundle
   共享的 loose resource（磁盘现取）时实现即可。
-- **gzip / brotli bundle 嗅探**：`load_environment_dir` 当前只认 `UnityFS` 签名，
+- **gzip / brotli bundle 嗅探**：`EnvironmentBuilder::scan_dir` 当前只认 `UnityFS` 签名，
   gzip(`1f 8b`)/brotli/`UnityWeb`/`UnityRaw` bundle 静默跳过。路线图见 [§13.4](#134-gzip--brotli-路线图)。
 - **`AssetType.Meta`（GUID 匹配）**：外部引用匹配仅按 `name_fixed`（Normal 类）。
   Meta 类（`type_==1`，按 GUID 匹配）罕见，留作后续。
@@ -363,24 +363,25 @@ for obj in env.objects() {
 
 ### 13.1 构造入口
 
-三种入口，覆盖典型场景：
+聚合层唯一构造入口是 [`EnvironmentBuilder`]（`Environment::builder()`）：
 
 ```rust
-// 1. Builder（最灵活）：累积多 bundle，最后一次性依赖解析
+// Builder：累积多 bundle，最后一次性依赖解析
 let env = Environment::builder()
-    .path("a.ab")?          // fs::read + Registry::defaults + Phase A
+    .path("a.ab")?          // fs::read + 驻留 registry + Phase A
     .path("b.ab")?
     .bundle(preloaded)?     // 或喂入已解析的 Bundle（自定义 registry 预加载）
+    .scan_dir("more/")?     // 或递归扫描目录（UnityFS 签名嗅探）
     .build();               // Phase B 全局依赖解析
 
-// 2. 多路径便捷函数
-let env = load_environment_multi(["a.ab", "b.ab"])?;
-
-// 3. 递归扫描目录（UnityFS 签名嗅探，非 bundle 文件静默跳过）
-let env = load_environment_dir("game/StreamingAssets")?;
+// 自定义 codec（如 Arknights LZ4 变体）：registry 设一次，后续 path/scan_dir 均复用
+let env = Environment::builder()
+    .registry(&my_reg)
+    .path("a.ab")?
+    .build();
 ```
 
-`from_bundle`（单 bundle）与 `load_environment` 保留为薄封装，向后兼容。
+`registry()` 默认 `Registry::defaults()`（LZMA + LZ4 + LZ4HC + NONE）。
 
 ### 13.2 Builder 结构
 
@@ -392,13 +393,15 @@ pub struct EnvironmentBuilder {
     resources: Vec<ResourceFile>,
     failures: Vec<ParseFailure>,
     pending_deps: Vec<(usize, Vec<FileIdentifier>)>,
+    // 解压器注册表（默认 Registry::defaults()，registry() 覆盖；path/scan_dir 均复用）
+    registry: Registry,
     // 扩展点（见 §13.3）
     dependency_provider: Option<Box<dyn DependencyProvider>>,
     resource_provider: Option<Box<dyn ResourceProvider>>,
 }
 ```
 
-- `path()` / `bundle()` 各做一次 Phase A（复用 `phase_a` helper，与 `from_bundle` 同源）。
+- `path()` / `scan_dir()` / `bundle()` 各做一次 Phase A（复用 `phase_a` helper）。
 - `build()` 把四个 Vec move 进新 `Environment`，调一次 `resolve_dependencies`（Phase B）。
 
 ### 13.3 扩展点 trait
@@ -419,18 +422,18 @@ pub trait ResourceProvider {
 ```
 
 后续接入懒加载：在 `resolve_dependencies` 的 `target.is_none()` 分支调
-`find_dependency` → 返回 `Some(Bundle)` 则 `add_bundle_inner` + 重试查找。无需改公共 API。
+`find_dependency` → 返回 `Some(Bundle)` 则追加 `phase_a` + 重试查找。无需改公共 API。
 
 ### 13.4 gzip / brotli 路线图
 
-`load_environment_dir` 当前只嗅探 `UnityFS` 签名（`src/detect.rs`）。gzip(`1f 8b`) /
+`EnvironmentBuilder::scan_dir` 当前只嗅探 `UnityFS` 签名（`src/detect.rs`）。gzip(`1f 8b`) /
 brotli（`0x20` 处 magic）/ `UnityWeb` / `UnityRaw` / `UnityArchive` bundle 被静默跳过
 （`log::warn`）。后续若要支持，对齐 AssetStudio `FileReader.CheckFileType` +
 `DecompressGZip`：
 
 1. 加 `flate2` 依赖（gzip）/ 复用 codec crate 的 `brotli`（brotli）。
 2. `detect.rs` 扩 `looks_like_gzip` + `pregunpack_gzip(Bytes) -> Bytes`。
-3. `load_environment_dir` 嗅探顺序：先 gzip magic → 解压 → 再嗅探 `UnityFS`。
+3. `scan_dir` 嗅探顺序：先 gzip magic → 解压 → 再嗅探 `UnityFS`。
 
 AssetStudio 的关键行为：gzip bundle 解压后内层仍是 UnityFS（解压后再嗅探），故嗅探是
 两级的（`1f 8b` → 解压 → `UnityFS`）。

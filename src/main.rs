@@ -43,7 +43,7 @@ enum Cmd {
     },
 }
 
-/// 在 `Environment::from_bundle` move bundle 之前捕获的头信息。
+/// 在 `EnvironmentBuilder::bundle` move bundle 之前捕获的头信息。
 struct BundleHeader {
     format_version: u32,
     unity_revision: String,
@@ -74,7 +74,7 @@ fn run(cli: &Cli) -> Result<(), String> {
 
 /// 加载 bundle 并构建 Environment。返回头信息（在 move 前捕获）+ Environment。
 ///
-/// 注意：`Environment::from_bundle` 会 move bundle，必须在此之前提取
+/// 注意：`EnvironmentBuilder::bundle` 会 move bundle，必须在此之前提取
 /// `format_version` / `unity_revision` / `files` 等字段。
 fn load_env(path: &PathBuf) -> Result<(BundleHeader, Environment), String> {
     let bundle = load(path).map_err(|e| format!("加载 bundle 失败: {e}"))?;
@@ -87,7 +87,7 @@ fn load_env(path: &PathBuf) -> Result<(BundleHeader, Environment), String> {
             .map(|f| (f.name.clone(), f.bytes.len(), f.flags))
             .collect(),
     };
-    let env = Environment::from_bundle(bundle);
+    let env = Environment::builder().bundle(bundle).build();
     Ok((header, env))
 }
 
