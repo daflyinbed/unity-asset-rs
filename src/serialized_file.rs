@@ -20,6 +20,8 @@ pub struct SerializedFile {
     pub types: Vec<SerializedType>,
     /// `[SerializeReference]` 引用类型（version >= 20）。
     pub ref_types: Vec<SerializedType>,
+    /// 外部文件引用（PPtr `file_id > 0` 索引本列表）。
+    pub externals: Vec<FileIdentifier>,
     pub objects: Vec<ObjectInfo>,
     data: Bytes,
 }
@@ -43,6 +45,22 @@ pub struct ObjectInfo {
     pub type_id: i32,
     /// 指向 `SerializedFile.types` 的索引。
     pub type_idx: usize,
+}
+
+/// 外部文件引用。对齐 AssetRipper `FileIdentifier`。
+///
+/// 一个 SerializedFile 可通过 externals 链接到其它 SerializedFile，形成共享依赖。
+/// PPtr 的 `file_id > 0` 索引到本列表（第 `i` 项对应 `file_id == i + 1`）。
+pub struct FileIdentifier {
+    /// 原始路径（磁盘相对路径，如 `archive:/CAB-xxxx/CAB-xxxx.assets`）。
+    pub path_name_origin: String,
+    /// `fix_file_identifier(path_name_origin)`——与 collection / resource 的
+    /// `name_fixed` 精确匹配。
+    pub path_name: String,
+    /// 16 字节 GUID。
+    pub guid: [u8; 16],
+    /// AssetType：`0` = Normal（按 path_name 匹配），`1` = Meta（按 Guid 匹配）。
+    pub type_: i32,
 }
 
 impl ObjectInfo {
@@ -181,15 +199,21 @@ pub fn parse(bytes: Bytes) -> Result<SerializedFile> {
 
     // ReadExternals
     let external_count = r.read_i32("external count")? as usize;
+    let mut externals = Vec::with_capacity(external_count);
     for _ in 0..external_count {
         if version >= 6 {
             let _ = r.read_cstr("external temp")?;
         }
+        let mut guid = [0u8; 16];
+        let mut type_ = 0i32;
         if version >= 5 {
-            let _ = r.read_bytes(16, "external guid")?;
-            let _ = r.read_i32("external type")?;
+            let guid_bytes = r.read_bytes(16, "external guid")?;
+            guid.copy_from_slice(guid_bytes);
+            type_ = r.read_i32("external type")?;
         }
-        let _ = r.read_cstr("external path")?;
+        let path_name_origin = r.read_cstr("external path")?;
+        let path_name = crate::names::fix_file_identifier(&path_name_origin);
+        externals.push(FileIdentifier { path_name_origin, path_name, guid, type_ });
     }
 
     // ReadRefTypes（version >= 20）
@@ -210,6 +234,7 @@ pub fn parse(bytes: Bytes) -> Result<SerializedFile> {
         endian,
         types,
         ref_types,
+        externals,
         objects,
         data: bytes,
     })

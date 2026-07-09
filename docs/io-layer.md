@@ -240,7 +240,7 @@ ADR-0003 描述了一个更完整的「递归再派发 + 三轴差异化扩展�
 | **gzip / brotli 外层包裹** | 外层压缩包住上述任意一种容器 | ⬜ |
 | **CN 加密** | `0x100` flag，Unity CN。concrete `ArchiveStorageDecryptor { index, substitute }` + `CnKey` 配置项，在 UnityFS 解析器内按块 `decrypt_block` 后再解压（N=1，不抽象为 trait） | ⬜ |
 | **Loader / LoaderBuilder** | 配置入口：`.decompressor(ct, codec)` / `.depressors(reg)` / `.cn_key(key)` / `.fallback_version(v)`，内部走 io→对象 | ⬜ |
-| **.resS 分离与 World** | 把 bundle 解压 blob 的 `.resS` node 拷成独立分配、SerializedFile 直接借 parse，eager parse 进对象 arena。当前没有聚合层 | ⬜ |
+| **.resS 分离与 World** | `.resS` node 由聚合层（`Environment`）捕获为 `ResourceFile`，`StreamingInfo` 引用经 `streaming_data` 零拷贝取数。已落地，详见 [`environment-layer.md`](environment-layer.md) | ✅ |
 | **on-demand 逐块解压** | AssetRipper `BundleFileBlockReader` 式：不 concat 整块，按需解压+缓存上一块，峰值压到 ~1× + 几块；但要换 `Cursor<&[u8]>` 为跨块 reader | ⬜ |
 | **SpillPolicy::AutoTempFile** | >2GB bundle 解压溢出临时文件，避免 OOM | ⬜ |
 | **错误隔离 Failure 叶节点** | 单文件失败捕获成 `Failure`，不中断整体加载。当前错误直接向上传播 | ⬜ |

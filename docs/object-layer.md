@@ -498,10 +498,11 @@ MonoBehaviour 解析产出一个 `Value::Struct`，含基类字段 + 脚本字�
 
 | 项 | 设计要点 | 状态 |
 |---|---|---|
-| **World 聚合层** | eager parse 全部对象进 `Vec<UnityObject>` + `.resS` resources + `by_path` PPtr 解引用表。当前需调用方逐个 `parse_object` | ⬜ |
-| **PPtr 解引用** | `World::resolve(pptr) -> Option<&UnityObject>`，按 `(file_id, path_id)` 查 `by_path`。当前 PPtr 只存两个整数 | ⬜ |
-| **streaming_data** | `.resS` backing store；对象按 `StreamingInfo { offset, size, path }` 引用，`world.streaming_data(info)` 取 Arc 切片（零拷贝）。当前 `.resS` 直接跳过 | ⬜ |
+| ~~**World 聚合层**~~ → **Environment 聚合层** | eager parse 全部对象 + `.resS` resources + PPtr 解引用。已落地为 `Environment`，详见 [`environment-layer.md`](environment-layer.md) | ✅ |
+| ~~**PPtr 解引用**~~ | `Environment::resolve(source_collection, file_id, path_id)`，按 `dependencies[file_id]` → target collection → `assets[path_id]`。已落地 | ✅ |
+| ~~**streaming_data**~~ | `Environment::streaming_data(&StreamingInfo)` 取零拷贝 `Bytes` slice。已落地 | ✅ |
 | **bumpalo arena** | 对象 arena 分配。当前对象按需 parse、owned | ⬜ |
+| **跨 bundle Environment** | 多 bundle 聚合 + 磁盘依赖加载。当前 `Environment` 单 bundle 范围 | ⬜ |
 
 ---
 
@@ -513,5 +514,6 @@ MonoBehaviour 解析产出一个 `Value::Struct`，含基类字段 + 脚本字�
 | [ADR-0001](adr/0001-codegen-from-typetree-dumps.md) | typed struct 决策（含修订附录） |
 | [`io-layer.md`](io-layer.md) | 本层输入（`BundleFile.bytes`） |
 | [`codegen.md`](codegen.md) | typed struct 来源（generated crate） |
+| [`environment-layer.md`](environment-layer.md) | 聚合层（`Environment` + PPtr 解引用 + streaming_data） |
 
 冲突时以本文档为准。

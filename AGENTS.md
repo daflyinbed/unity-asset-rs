@@ -9,7 +9,8 @@ goal: a typed, high-performance UnityPy/AssetStudio alternative with Python
 bindings.
 
 **Current state** — the file-loading + decompression layer, SerializedFile /
-TypeTree parsing, and codegen'd typed object parsing are all **implemented**:
+TypeTree parsing, codegen'd typed object parsing, and the Environment aggregation
+layer (PPtr deref + `.resS` streaming_data) are all **implemented**:
 
 - **io 层**（UnityFS 解包 + 解压 registry）：`src/bundle.rs` + `src/decompress.rs`。
   仅支持 UnityFS 容器 + LZMA/LZ4/LZ4HC/NONE 解压；UnityWeb/UnityRaw/gzip/brotli/
@@ -18,8 +19,11 @@ TypeTree parsing, and codegen'd typed object parsing are all **implemented**:
   `src/serialized_file.rs` + `src/typetree/` + `src/object_parser.rs`。
 - **codegen typed structs**：`crates/codegen`（离线工具）从 TPK 生成 `crates/generated`
   里的扁平 struct + parser（366 main class + 571 subclass）。
+- **聚合层**（Environment）：`src/environment.rs` + `src/names.rs`。eager parse 全部
+  对象 + `.resS` 资源 + PPtr 解引用（`dependencies[file_id]` 约定对齐 AssetRipper）+
+  streaming_data 零拷贝取数。入口 `load_environment(path)`。
 
-**未实现**：`World` 聚合层 + PPtr 解引用 + `.resS` streaming_data（路线图）、
+**未实现**：跨 bundle Environment（多 bundle 聚合）、bumpalo arena（路线图）、
 Python 绑定（ADR-0002，未开始）。
 
 ## docs/ 已与代码对齐
@@ -28,6 +32,7 @@ Python 绑定（ADR-0002，未开始）。
 
 - [`docs/io-layer.md`](docs/io-layer.md) — UnityFS + 解压 registry（现状 + 路线图）
 - [`docs/object-layer.md`](docs/object-layer.md) — SerializedFile + TypeTree + dispatch/fallback（现状 + 路线图）
+- [`docs/environment-layer.md`](docs/environment-layer.md) — Environment 聚合层（PPtr 解引用 + streaming_data，已落地）
 - [`docs/codegen.md`](docs/codegen.md) — codegen 单一权威（已落地）
 - [`docs/adr/`](docs/adr/) — ADR 正文记原始决策，文末「修订」附录记实现偏差
 
@@ -69,6 +74,9 @@ Edition is `2024` → requires Rust >= 1.85.
 ## Tests & fixtures
 
 - io 层测试在 `tests/parse_bundle.rs`（integration；无单元测试）。
+- Environment 聚合层测试在 `tests/environment.rs`（integration）。注意：debug 模式下
+  `interpret` 递归帧较大（5–6MB），测试线程默认 2MB 栈会溢出——`tests/environment.rs`
+  的 `load_env` helper 在 8MB 栈线程里跑（release 模式无此问题）。
 - 它们依赖已提交的 fixture `example/char_002_amiya.ab` —— **不要删除或修改它**。
 - 期望字节值（`EXPECTED_FIRST16`、`EXPECTED_LAST16`、sizes、revision）是
   **bit-for-bit 对照过 UnityPy** 的。改它们意味着改了 parser 语义；只有拿到验证过的参考输出才更新。
@@ -103,6 +111,11 @@ Edition is `2024` → requires Rust >= 1.85.
   fallback 到 AB 内嵌 TypeTree。两条路径各自 `Cursor::new(data, endian)`，zero-cost fallback。
 - codegen 生成**扁平 struct**（**无 parent 字段**——TPK release_root 已含全部继承链字段），
   不生成 MonoBehaviour / 抽象父类。字段类型跨版本变化用 `VersionedEnum`。
+- **`src/environment.rs`** 是聚合层：`Environment::from_bundle` eager parse 全部对象，
+  构建 `AssetCollection.dependencies`（`[0]=self` 约定对齐 AssetRipper `AssetCollection.Dependencies`），
+  PPtr 解引用经 `dependencies[file_id]` → target collection → `assets[path_id]`。
+  `.resS` 流数据走 `streaming_data`（空路径→`None`，对齐 AssetRipper，非 UnityPy stem 推导）。
+  命名归一化 `src/names.rs::fix_file_identifier` 对齐 `SpecialFileNames.FixFileIdentifier`。
 - 错误用 `snafu`。在 `src/error.rs` 加变体时遵循既有 `#[snafu(display(...))]` +
   `#[snafu(visibility(pub))]` 模式。
 
@@ -110,13 +123,16 @@ Edition is `2024` → requires Rust >= 1.85.
 
 - **Docstrings 和内联注释用中文。** 编辑既有文件时保持一致；新代码与邻居风格一致。
 - 公共 API 刻意保持精简（`src/lib.rs`）：io 入口（`load`/`load_with`/`load_bytes`/
-  `load_bytes_with` + `Bundle`/`BundleFile`/`Registry`/`Decompressor*`）+ 对象解析
-  （`parse_object`/`ParsedObject`/`SerializedFile`/`SerializedType`/`ObjectInfo`/`UnityObject`/
-  `ClassIDType` + typetree 类型 + `unity_core` 的 `Endian`/`PPtr`/`UnityVersion`）。
+  `load_bytes_with`/`load_environment` + `Bundle`/`BundleFile`/`Registry`/`Decompressor*`）
+  + 对象解析（`parse_object`/`ParsedObject`/`SerializedFile`/`SerializedType`/
+  `ObjectInfo`/`FileIdentifier`/`UnityObject`/`ClassIDType` + typetree 类型 + `unity_core`
+  的 `Endian`/`PPtr`/`UnityVersion`）+ 聚合层（`Environment`/`EnvironmentObject`/
+  `AssetCollection`/`ResourceFile`/`ParseFailure`/`PPtrLike`）。
 
 ## Reference docs (read before non-trivial work)
 
 - [`docs/io-layer.md`](docs/io-layer.md) — io 层现状（UnityFS + registry）。
 - [`docs/object-layer.md`](docs/object-layer.md) — 对象解析现状（SerializedFile + TypeTree + dispatch）。
+- [`docs/environment-layer.md`](docs/environment-layer.md) — 聚合层现状（Environment + PPtr 解引用 + streaming_data）。
 - [`docs/codegen.md`](docs/codegen.md) — codegen 现状（扁平 struct + VersionedEnum）。
 - [`docs/adr/`](docs/adr/) — 架构决策记录（0001 codegen / 0002 pyo3 / 0003 io 层）。
