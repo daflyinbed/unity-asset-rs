@@ -2,6 +2,8 @@
 name = "unity-asset-rs"
 version = "0.1.0"
 edition = "2024"
+# `cargo run` 默认跑这个 bin（src/bin/ 下还有 verify_codegen，否则歧义）。
+default-run = "unity-asset-rs"
 
 [lib]
 name = "unity_asset_rs"
@@ -18,6 +20,7 @@ lzma-rs = "0.3"
 log = "0.4"
 snafu = "0.8"
 env_logger = "0.11"
+clap = { version = "4", features = ["derive"] }
 unity-core = { path = "crates/unity-core" }
 generated = { package = "unity-asset-generated", path = "crates/generated" }
 
