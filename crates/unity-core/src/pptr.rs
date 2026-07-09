@@ -11,11 +11,15 @@ pub struct PPtr {
 }
 
 impl PPtr {
-    pub fn parse<R: EndianReader>(r: &mut R, _ver: &UnityVersion) -> Result<Self, R::Error> {
+    pub fn parse<R: EndianReader>(r: &mut R, ver: &UnityVersion) -> Result<Self, R::Error> {
         let m_file_id = r.read_i32()?;
-        // 简化：m_PathID 永远按 i64 读。
-        // 老版本（ver < 5）实际是 i32，但生成器暂不做版本分支。
-        let m_path_id = r.read_i64()?;
+        // ver >= 5：m_PathID 是 i64；老版本是 i32（对齐运行时解释器
+        // src/typetree/interpret.rs:82-86 的 TypeKind::PPtr 分支）。
+        let m_path_id = if *ver >= UnityVersion::new(5, 0, 0) {
+            r.read_i64()?
+        } else {
+            r.read_i32()? as i64
+        };
         Ok(PPtr { m_file_id, m_path_id })
     }
 }

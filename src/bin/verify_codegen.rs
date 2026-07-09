@@ -1,31 +1,88 @@
 //! 验证：用 codegen 生成的代码解析 bundle 里的全部对象。
 //! MonoBehaviour (classID=114) 走 TypeTree 解释器，其余走 generated typed parse。
 //!
-//! 默认跑 `example/char_002_amiya.ab`；可传任意 bundle 路径作为第 1 参数。
-//! `.resS`（streaming-resource 伴生文件）不是 SerializedFile，跳过。
+//! 默认遍历 `example/` 目录下的全部 bundle；可传一个路径（文件或目录）作为第 1
+//! 参数，只处理它。`.resS`（streaming-resource 伴生文件）不是 SerializedFile，跳过。
+
+use std::path::Path;
 
 use unity_asset_rs::{load, parse_object, Bundle, ClassIDType, SerializedFile};
 
+/// 全局累计统计。
+#[derive(Default)]
+struct Stats {
+    bundles: usize,
+    total: usize,
+    typed_ok: usize,
+    mono_ok: usize,
+    typed_fail: usize,
+    skipped_files: usize,
+    failures: Vec<(String, i32, String, String)>, // (bundle, classID, type_name, error)
+}
+
 fn main() {
     env_logger::init();
-    let path = std::env::args()
+    let target = std::env::args()
         .nth(1)
-        .unwrap_or_else(|| "example/char_002_amiya.ab".into());
+        .unwrap_or_else(|| "example".into());
+    let path = Path::new(&target);
 
-    let bundle: Bundle = load(&path).expect("加载 bundle 失败");
+    // 收集要处理的 bundle 文件列表。
+    let files: Vec<String> = if path.is_dir() {
+        let mut entries: Vec<String> = std::fs::read_dir(path)
+            .unwrap_or_else(|e| {
+                eprintln!("读取目录 {target} 失败: {e}");
+                std::process::exit(1);
+            })
+            .filter_map(|e| e.ok())
+            .filter_map(|e| {
+                let p = e.path();
+                p.is_file().then(|| p.to_string_lossy().into_owned())
+            })
+            .collect();
+        entries.sort();
+        entries
+    } else if path.is_file() {
+        vec![target.clone()]
+    } else {
+        eprintln!("路径不存在: {target}");
+        std::process::exit(1);
+    };
+
+    if files.is_empty() {
+        eprintln!("{target} 下没有文件");
+        std::process::exit(1);
+    }
+
+    let mut stats = Stats::default();
+    for file in &files {
+        eprintln!("\n#################### {file} ####################");
+        process_bundle(file, &mut stats);
+    }
+
+    print_global_summary(&stats);
+    if !stats.failures.is_empty() {
+        std::process::exit(1);
+    }
+}
+
+/// 处理单个 bundle，把统计累加进 `stats`。
+fn process_bundle(path: &str, stats: &mut Stats) {
+    let bundle: Bundle = match load(path) {
+        Ok(b) => b,
+        Err(e) => {
+            eprintln!("✗ 加载 bundle 失败: {e}");
+            stats.failures.push((path.to_string(), -1, String::new(), format!("load: {e}")));
+            return;
+        }
+    };
+    stats.bundles += 1;
     eprintln!("bundle: {} 个内部文件", bundle.files.len());
-
-    let mut typed_ok = 0usize;
-    let mut typed_fail = 0usize;
-    let mut mono_ok = 0usize;
-    let mut total = 0usize;
-    let mut failures: Vec<(i32, String, String)> = Vec::new();
-    let mut skipped = 0usize;
 
     for bf in &bundle.files {
         // .resS 是 streaming-resource 伴生文件（纹理/音频流数据），不是 SerializedFile。
         if bf.name.ends_with(".resS") {
-            skipped += 1;
+            stats.skipped_files += 1;
             eprintln!("\n=== 跳过（streaming resource）: {} ({} bytes) ===", bf.name, bf.bytes.len());
             continue;
         }
@@ -35,7 +92,12 @@ fn main() {
             Ok(sf) => sf,
             Err(e) => {
                 eprintln!("  ✗ 解析 SerializedFile 失败: {e}");
-                failures.push((-1, bf.name.clone(), format!("SerializedFile::parse: {e}")));
+                stats.failures.push((
+                    path.to_string(),
+                    -1,
+                    bf.name.clone(),
+                    format!("SerializedFile::parse: {e}"),
+                ));
                 continue;
             }
         };
@@ -46,40 +108,48 @@ fn main() {
 
         let refs = sf.ref_type_table();
         for (i, obj) in sf.objects.iter().enumerate() {
-            total += 1;
+            stats.total += 1;
             let class_id = obj.class_id(&sf);
             let type_name = ClassIDType::from_i32(class_id)
                 .map(|c| format!("{c:?}"))
                 .unwrap_or_else(|| format!("ClassID({class_id})"));
             match parse_object(&sf, obj, &refs) {
                 Ok(unity_asset_rs::ParsedObject::Typed(_)) => {
-                    typed_ok += 1;
+                    stats.typed_ok += 1;
                     eprintln!("  [{i}] classID={class_id:>4} {type_name:<28} ✓ typed");
                 }
                 Ok(unity_asset_rs::ParsedObject::Dynamic(_)) => {
-                    mono_ok += 1;
+                    stats.mono_ok += 1;
                     eprintln!("  [{i}] classID={class_id:>4} {type_name:<28} ✓ dynamic (TypeTree)");
                 }
                 Err(e) => {
-                    typed_fail += 1;
+                    stats.typed_fail += 1;
                     eprintln!("  [{i}] classID={class_id:>4} {type_name:<28} ✗ {e}");
-                    failures.push((class_id, type_name.to_string(), format!("{e}")));
+                    stats.failures.push((
+                        path.to_string(),
+                        class_id,
+                        type_name,
+                        format!("{e}"),
+                    ));
                 }
             }
         }
     }
+}
 
-    eprintln!("\n========== 汇总 ==========");
-    eprintln!("总对象数:   {total}");
-    eprintln!("typed 成功: {typed_ok}");
-    eprintln!("dynamic:    {mono_ok}");
-    eprintln!("失败:       {typed_fail}");
-    eprintln!("跳过文件:   {skipped}");
-    if !failures.is_empty() {
+/// 打印全部 bundle 跑完后的全局汇总。
+fn print_global_summary(stats: &Stats) {
+    eprintln!("\n========== 全局汇总 ==========");
+    eprintln!("bundle 数:    {}", stats.bundles);
+    eprintln!("总对象数:     {}", stats.total);
+    eprintln!("typed 成功:   {}", stats.typed_ok);
+    eprintln!("dynamic:      {}", stats.mono_ok);
+    eprintln!("失败:         {}", stats.typed_fail);
+    eprintln!("跳过文件:     {}", stats.skipped_files);
+    if !stats.failures.is_empty() {
         eprintln!("\n失败明细:");
-        for (cid, name, err) in &failures {
-            eprintln!("  classID={cid} {name}: {err}");
+        for (bundle, cid, name, err) in &stats.failures {
+            eprintln!("  [{bundle}] classID={cid} {name}: {err}");
         }
-        std::process::exit(1);
     }
 }

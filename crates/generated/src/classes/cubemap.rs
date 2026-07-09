@@ -135,14 +135,14 @@ pub struct Cubemap {
     pub m_height: i32,
     pub m_downscale_fallback: Option<CubemapMDownscaleFallbackVariant>,
     pub m_complete_image_size: CubemapMCompleteImageSizeVariant,
-    pub m_texture_format: i32,
+    pub m_format: i32,
     pub m_mip_map: Option<bool>,
     pub m_mip_count: Option<i32>,
     pub m_mips_stripped: Option<i32>,
     pub m_is_readable: CubemapMIsReadableVariant,
     pub m_read_allowed: Option<bool>,
-    pub m_image_count: i32,
-    pub m_texture_dimension: i32,
+    pub m_depth: i32,
+    pub m_dimension: i32,
     pub m_texture_settings: GlTextureSettings,
     pub m_streaming_mipmaps: Option<bool>,
     pub m_ignore_master_texture_limit: Option<bool>,
@@ -170,14 +170,14 @@ impl crate::Parse for Cubemap {
         let mut m_height = None;
         let mut m_downscale_fallback = None;
         let mut m_complete_image_size = None;
-        let mut m_texture_format = None;
+        let mut m_format = None;
         let mut m_mip_map = None;
         let mut m_mip_count = None;
         let mut m_mips_stripped = None;
         let mut m_is_readable = None;
         let mut m_read_allowed = None;
-        let mut m_image_count = None;
-        let mut m_texture_dimension = None;
+        let mut m_depth = None;
+        let mut m_dimension = None;
         let mut m_texture_settings = None;
         let mut m_streaming_mipmaps = None;
         let mut m_ignore_master_texture_limit = None;
@@ -212,7 +212,7 @@ impl crate::Parse for Cubemap {
             m_mips_stripped = Some(rdr.read_i32()?);
         } else {
         }
-            m_texture_format = Some(rdr.read_i32()?);
+            m_format = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(5, 2, 0) {
             m_mip_count = Some(rdr.read_i32()?);
         } else {
@@ -258,8 +258,8 @@ impl crate::Parse for Cubemap {
             m_read_allowed = Some(rdr.read_bool()?);
             rdr.align(4)?;
         }
-            m_image_count = Some(rdr.read_i32()?);
-            m_texture_dimension = Some(rdr.read_i32()?);
+            m_depth = Some(rdr.read_i32()?);
+            m_dimension = Some(rdr.read_i32()?);
             m_texture_settings = Some(GlTextureSettings::parse(rdr, ver)?);
             m_lightmap_format = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2020, 2, 0) {
@@ -288,14 +288,14 @@ impl crate::Parse for Cubemap {
             m_height: m_height.unwrap(),
             m_downscale_fallback,
             m_complete_image_size: m_complete_image_size.unwrap(),
-            m_texture_format: m_texture_format.unwrap(),
+            m_format: m_format.unwrap(),
             m_mip_map,
             m_mip_count,
             m_mips_stripped,
             m_is_readable: m_is_readable.unwrap(),
             m_read_allowed,
-            m_image_count: m_image_count.unwrap(),
-            m_texture_dimension: m_texture_dimension.unwrap(),
+            m_depth: m_depth.unwrap(),
+            m_dimension: m_dimension.unwrap(),
             m_texture_settings: m_texture_settings.unwrap(),
             m_streaming_mipmaps,
             m_ignore_master_texture_limit,

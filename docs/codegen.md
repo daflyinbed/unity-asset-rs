@@ -295,8 +295,9 @@ void                    →  void_
 | # | Pass | 函数 | 职责 |
 |---|---|---|---|
 | 00 | 过滤引擎类型 | `p00_filter_engine_types` | 移除 classID 100000-100011（`int`/`bool`/`float`/`Vector3f`/... 注册了 classID 但从不序列化，对齐 AssetRipper `Pass000`） |
+| 00b | 合并 moved groups | `p00b_merge_moved_groups` | 把被 Unity 移动过 classID 的类合并到新 ID（194→238 NavMesh、197→258 LightProbes、1011→319 AvatarMask、327→329 VideoClip），对齐 AssetRipper `Pass001`（见 §12.7） |
 | 01 | 类型归一化 | `p01_normalize_types` | 字符串池别名归一化：`int→SInt32`、`short→SInt16` 等 ~10 对 |
-| —  | 重命名 | `rename::run` ★ | 同名异构 type 拆分（对应 AssetRipper `Pass002`） |
+| —  | 重命名 | `rename::run` ★ | 同名异构 type 拆分 + string→PropertyName 特判 + 纯字段重命名归一（对应 AssetRipper `Pass002`，见 §12.8/§12.9） |
 | 02 | 抽 subclass | `p02_extract_subclasses` | 扫整个 `node_pool`，`NodeType::Type` 的 type_name 注册为 subclass（排除非抽象 main class 名字，见 §12.3） |
 | 03 | 收集 PPtr 目标 | `p03_collect_pptr_targets` | 收集所有 `PPtr<X>` 的 target（记录用；PPtr 仍非 generic） |
 | 04 | 创建 class 骨架 | `p04_resolve_inheritance` | 每个 main class 建 `EmitClass`（名字 + `is_abstract`/`is_mono_behaviour`）；**跳过抽象类**；**跳过 MonoBehaviour**；重名加 `_ID` 后缀 |
@@ -546,7 +547,6 @@ https://nightly.link/AssetRipper/Tpk/workflows/type_tree_tpk/master/<compression
 |---|---|---|
 | PPtr 非 generic | 所有 `PPtr<X>` 都生成 `PPtr` | 无类型区分；因 TPK 里有些 target（如 PrefabInstance）被改名/移除，generic 会要占位 struct |
 | `VersionGate` 支持 Since/Range | 不支持 Disjoint | 罕见「消失后重现」字段会落到 Since，老版本可能多读字节 |
-| subclass 无版本并集 | 取第一次出现的子树 | 同 subclass 跨版本变化时会错（罕见） |
 | emit 字符串拼接 | 无语法校验 | 边界 bug 容易引入（fixture 测试 + 主 crate `verify_codegen` 实跑覆盖主要形态） |
 | generated crate warnings | `#![allow(...)]` 在 crate 根统一静音 | codegen 已知副产物（多余括号 / 未用版本参数 / 版本门控默认值覆盖 / 含数字类型名） |
 | 只读 release | editor build 的字段会丢失 | — |
@@ -615,13 +615,61 @@ TPK 里 classID 100000-100011（`int`/`bool`/`float`/`Vector3f`/...）注册为 
 + 空 parser，引用它们的类（如 `Transform` 引用 `Vector3f`）会读 0 字节，导致后续字段
 错位。
 
+### 12.7 合并 moved groups（p00b，对应 AssetRipper Pass001）
+
+Unity 在版本演进里把若干同名类挪到了新 classID：旧 ID 在某版本起变 null/废弃，新 ID
+从该版本起接管。映射（对齐 `Pass001_MergeMovedGroups.cs` 的 `Changes`）：
+
+| 新 ID | 旧 ID | 类 |
+|---|---|---|
+| 238 | 194 | NavMesh → NavMeshData |
+| 258 | 197 | LightProbes |
+| 319 | 1011 | AvatarMask |
+| 329 | 327 | VideoClip |
+
+`p00b_merge_moved_groups` 把旧 ID 的早期版本条目并入新 ID（归并排序 + 同版本去重，
+新 ID 接管），旧 ID 从 `blob.classes` 移除。NavMesh(194) 有特殊预处理：合并前先去掉
+末尾的 `[5.3]null` + `[5.0]NavMeshObsolete`，补 `[5.0]null`（对齐 `Pass001.cs:25-30`）。
+
+合并时还需**统一旧条目的类名为新 ID 规范名**（取新 ID 最新版本的类名），否则 p04
+用最早非 null 条目取名会拿到旧名（如 "NavMesh" 而非 "NavMeshData"）。
+
+### 12.8 string → PropertyName 特判（对应 AssetRipper Pass002 ChangeStringToUtf8String）
+
+绝大多数 `string` 节点的唯一子节点是 `Array`（正常 string：size + bytes + align），
+`NodeType::String` 正确处理。但 TPK 里有 5 个 `string` 节点的子节点**不是 Array**：
+
+- 子节点是 `SInt32`/`int`（4 字节 CRC 哈希）→ 旧 PropertyName 布局（ExposedReferenceTable
+  2017.1+、ExtensionPropertyValue 2017.2+）
+- 子节点是 `string`（嵌套真 string）→ 新 PropertyName 布局（ExposedReferenceTable 2018.4+）
+
+`rename_one` 对这类节点按 AssetRipper `ChangeStringToUtf8String` 逻辑重命名 type_name：
+`SInt32` 子节点 → `PropertyName32`（subclass 读一个 `i32` + align），`string` 子节点 →
+`PropertyNameNested`（subclass 读一个 aligned_string）。p02 把它们当独立 subclass 抽取，
+p05 对 ExposedReferenceTable.m_References 生成 VersionedEnum（旧版/新版两个变体）。
+
+若不处理，`NodeType::classify` 一律当 `String` → `read_aligned_string()`，读错字节。
+
+### 12.9 纯字段重命名归一（对应 AssetRipper Pass002 DoSecondaryRenaming 字段规则）
+
+`rename_one` 末尾补了 AssetRipper Pass002 的纯字段重命名规则（按父 type 分发 + 通用
+前缀规则），如 `m_TextureFormat→m_Format`、`m_ObjectHideFlags→m_HideFlags`、
+`m_PrefabParentObject→m_CorrespondingSourceObject`、`m_Dst→m_Destination` 等。这些虽
+不影响字节布局，但让跨版本的同字段不同名（如旧版 `m_PrefabParentObject` / 新版
+`m_CorrespondingSourceObject`）被 p05 按 `rust_name` 合并为单一字段，而非拆成两个
+`Option<T>`。
+
+**rename 必须遍历整个 node_pool**（而非只从 blob.classes 的 release/editor root 遍历）：
+p02 扫整个 node_pool 抽 subclass（含孤儿子类，如被 MergeMovedGroups 移除的 class 的
+release root 仍会被 p02 当 subclass 抽取），故 rename 也须覆盖每个节点，否则孤儿子类
+的字段重命名会漏。
+
 ---
 
 ## 13. 路线图（未实现）
 
 | 优先级 | 项 | 说明 |
 |---|---|---|
-| 中 | subclass 跨版本并集 | 当前只取第一次出现的子树定义；同 subclass 跨版本变化时未处理 |
 | 低 | PPtr 改回 generic + forward decl | 为 missing target 生成占位 struct；代价是用户需处理 |
 | 低 | 用 `quote!` 替换字符串拼接 | 提高可维护性、加语法校验，但增依赖 |
 | 低 | VersionGate 支持 Disjoint | 处理「消失后重现」字段 |

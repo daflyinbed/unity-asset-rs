@@ -35,7 +35,7 @@ cargo run    -p unity-asset-codegen --example explain_inheritance  # 查看 TPK 
   首版本 3.4）来自 ADR-0001 §9，与真实 AssetRipper brotli TPK 对齐。
 - fixture `tests/fixtures/type_tree.tpk`（brotli 压缩 ~186KB）已提交，勿删改。
 - 没有 emit 阶段的单元测试；emit 正确性靠 `crates/generated` 能否编译 + 主 crate
-  `src/bin/verify_codegen.rs` 实跑 `example/char_002_amiya.ab` 验证。
+  `src/bin/verify_codegen.rs` 实跑 `example/` 下全部 bundle 验证（默认遍历目录）。
 - `pipeline.rs` 的 `merged_order_compatible` 有单元测试（覆盖「新字段插在现有字段
   之间」的核心场景）。
 
@@ -46,8 +46,9 @@ cargo run    -p unity-asset-codegen --example explain_inheritance  # 查看 TPK 
 | pass | 函数 | 职责 |
 |---|---|---|
 | p00 | `p00_filter_engine_types` | 过滤 classID 100000-100011（引擎内部类型，对齐 AssetRipper `Pass000`） |
+| p00b | `p00b_merge_moved_groups` | 合并被 Unity 移动过 classID 的类（194→238、197→258、1011→319、327→329），对齐 AssetRipper `Pass001` |
 | p01 | `p01_normalize_types` | 类型名归一化（`int→SInt32` 等别名） |
-| rename | `rename::run` ★ | 对应 AssetRipper `Pass002`：同名异构 type 拆分（见下），在 p01 后、p02 前 |
+| rename | `rename::run` ★ | 对应 AssetRipper `Pass002`：同名异构 type 拆分 + string→PropertyName 特判 + 字段重命名归一（见下），在 p01 后、p02 前 |
 | p02 | `p02_extract_subclasses` | 扫 `node_pool` 收集 `NodeType::Type` → subclass（排除非抽象 main class 名字，见下） |
 | p03 | `p03_collect_pptr_targets` | 收集 `PPtr<X>` 目标（记录用；PPtr 非 generic） |
 | p04 | `p04_resolve_inheritance` | 为每个 main class 建骨架：名字 + `is_abstract`/`is_mono_behaviour` + 重名加 `_ID` |
@@ -74,14 +75,24 @@ TPK 里若干 type_name 在不同上下文（父类）下布局完全不同，�
 color 少读 12 字节 → `data truncated`）。
 
 **关键偏差**（与 AssetRipper 不一致、有意为之）：
-- **不做 `string → Utf8String` 重命名**。本 codegen 已通过 `NodeType::String` 特判正确
-  处理 `string`（读 size + bytes + align(4)）；若改成 `Utf8String` subclass，会被当作
-  普通 struct，丢失末尾对齐 → 字节错位。
+- **`string` 节点按子节点形态特判**（对应 AssetRipper `ChangeStringToUtf8String`）：
+  绝大多数 `string`（子节点是 Array）由 `NodeType::String` 正常处理（读 size + bytes +
+  align）；但子节点是 `SInt32`/`int`（4 字节 CRC）或 `string`（嵌套）的 5 个节点要重命名
+  为 `PropertyName32`/`PropertyNameNested` subclass，否则 `NodeType::classify` 会把它们
+  当普通 string → `read_aligned_string()` 读错字节。详见 `docs/codegen.md` §12.8。
 - **不做 PPtr 重命名**（`PPtr<X>` → `PPtr_X_`）。本 codegen 直接按 `PPtr<` 前缀解析 PPtr，
-  重命名反而会破坏 `NodeType::classify` 的 PPtr 检测。
-- **不做纯字段重命名**（如 `m_Dst`→`m_Destination`、Hash128 字段排序、`m_Val`→`m_Value`）。
-  这些只改字段名不改字节布局；本 codegen 按 `unity_name` 合并跨版本字段，字段名变化对
-  字节读取无影响。
+  重命名反而会破坏 `NodeType::classify` 的 PPtr 检测。PPtr 内部字段（`m_FileID`/`m_PathID`）
+  由扁平 `PPtr::parse` 直接读，不单独生成，故 AssetRipper 的 `m_FileID→m_FileID_` 重命名
+  对本 codegen 无意义。但 `m_PrefabParentObject→m_CorrespondingSourceObject`（PPtr 字段名
+  归一）会做——让跨版本同字段被 p05 合并。
+- **做纯字段重命名归一**（如 `m_Dst`→`m_Destination`、`m_TextureFormat`→`m_Format`、
+  `m_ObjectHideFlags`→`m_HideFlags` 等，对应 AssetRipper `DoSecondaryRenaming` 的字段规则）。
+  这些虽不影响字节布局，但让跨版本的同字段不同名（如旧版 `m_PrefabParentObject` / 新版
+  `m_CorrespondingSourceObject`）被 p05 按 `rust_name` 合并为单一字段，而非拆成两个
+  `Option<T>`。
+- **rename 遍历整个 `node_pool`**（而非只从 `blob.classes` 的 root 遍历）：p02 扫整个
+  node_pool 抽 subclass（含孤儿子类），故 rename 也须覆盖每个节点。详见
+  `docs/codegen.md` §12.9。
 - 拼名时用 `sanitize_type_for_compound` 把 `PPtr<GameObject>` → `PPtr_GameObject_`
   （对应 AssetRipper `ValidNameGenerator.ReplaceBadCharacters`），否则会生成非法 Rust
   标识符（文件名/模块名）。
@@ -211,7 +222,9 @@ crates/generated/src/
 
 - **TPK 与具体 bundle 仍可能不匹配**：typed parse 失败时，主 crate 的
   `object_parser.rs` 会自动回退到 bundle 内嵌 TypeTree 解释器（设计如此）。
-  曾确认 `CircleCollider2D`/`Rigidbody2D`/`SpriteRenderer`/`AssetBundle` 在
+  `verify_codegen` 默认跑 `example/` 下全部 bundle（char_002_amiya / Combine /
+  DownloadClassIcons / DownloadCommonUI / Prefabs），共 ~2900 对象 0 失败。
+  `CircleCollider2D`/`Rigidbody2D`/`SpriteRenderer`/`AssetBundle` 等在
   `example/char_002_amiya.ab`（Unity 2017.4）上 typed parse 成功（修复了
   `dedup_layouts` 漏检 + version-gated `align_after` 两个 bug 后）。其他 bundle
   如仍回退到 dynamic，说明有未覆盖的版本差异。

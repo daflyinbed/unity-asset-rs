@@ -7,7 +7,7 @@ pub struct AnimatorControllerLayer {
     pub m_name: String,
     pub m_type: i32,
     pub m_state_machine: PPtr,
-    pub m_human_mask: PPtr,
+    pub m_mask: PPtr,
     pub m_skeleton_mask: PPtr,
     pub m_blending_mode: i32,
     pub m_synced_layer_index: i32,
@@ -23,7 +23,7 @@ impl crate::Parse for AnimatorControllerLayer {
         let m_name = rdr.read_aligned_string()?;
         let m_type = rdr.read_i32()?;
         let m_state_machine = crate::PPtr::parse(rdr, ver)?;
-        let m_human_mask = crate::PPtr::parse(rdr, ver)?;
+        let m_mask = crate::PPtr::parse(rdr, ver)?;
         let m_skeleton_mask = crate::PPtr::parse(rdr, ver)?;
         let m_blending_mode = rdr.read_i32()?;
         let m_synced_layer_index = rdr.read_i32()?;
@@ -34,7 +34,7 @@ impl crate::Parse for AnimatorControllerLayer {
             m_name,
             m_type,
             m_state_machine,
-            m_human_mask,
+            m_mask,
             m_skeleton_mask,
             m_blending_mode,
             m_synced_layer_index,

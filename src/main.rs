@@ -70,8 +70,8 @@ fn typed_name(uo: &UnityObject) -> &'static str {
 fn dump_typed(uo: &UnityObject) {
     if let UnityObject::Texture2D(tex) = uo {
         println!("    m_Name: {:?}", tex.m_name);
-        println!("    m_Width={} m_Height={} m_TextureFormat={}",
-            tex.m_width, tex.m_height, tex.m_texture_format);
+        println!("    m_Width={} m_Height={} m_Format={}",
+            tex.m_width, tex.m_height, tex.m_format);
     }
 }
 

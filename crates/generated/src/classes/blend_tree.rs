@@ -74,10 +74,8 @@ impl crate::Parse for BlendTreeMBlendTypeVariant {
 pub struct BlendTree {
     pub m_name: String,
     pub m_childs: BlendTreeMChildsVariant,
-    pub m_blend_event: Option<String>,
-    pub m_blend_parameter: Option<String>,
+    pub m_blend_parameter: String,
     pub m_min_threshold: f32,
-    pub m_blend_event_y: Option<String>,
     pub m_blend_parameter_y: Option<String>,
     pub m_max_threshold: f32,
     pub m_use_automatic_thresholds: BlendTreeMUseAutomaticThresholdsVariant,
@@ -92,10 +90,8 @@ impl crate::Parse for BlendTree {
     ) -> Result<Self, R::Error> {
         let mut m_name = None;
         let mut m_childs = None;
-        let mut m_blend_event = None;
         let mut m_blend_parameter = None;
         let mut m_min_threshold = None;
-        let mut m_blend_event_y = None;
         let mut m_blend_parameter_y = None;
         let mut m_max_threshold = None;
         let mut m_use_automatic_thresholds = None;
@@ -103,14 +99,10 @@ impl crate::Parse for BlendTree {
         let mut m_normalized_blend_values = None;
             m_name = Some(rdr.read_aligned_string()?);
             m_childs = Some(BlendTreeMChildsVariant::parse(rdr, ver)?);
-        if *ver >= crate::UnityVersion::new(4, 2, 0) {
             m_blend_parameter = Some(rdr.read_aligned_string()?);
+        if *ver >= crate::UnityVersion::new(4, 1, 0) {
             m_blend_parameter_y = Some(rdr.read_aligned_string()?);
-        } else if *ver >= crate::UnityVersion::new(4, 1, 0) {
-            m_blend_event = Some(rdr.read_aligned_string()?);
-            m_blend_event_y = Some(rdr.read_aligned_string()?);
         } else {
-            m_blend_event = Some(rdr.read_aligned_string()?);
         }
             m_min_threshold = Some(rdr.read_f32()?);
             m_max_threshold = Some(rdr.read_f32()?);
@@ -127,10 +119,8 @@ impl crate::Parse for BlendTree {
         Ok(BlendTree {
             m_name: m_name.unwrap(),
             m_childs: m_childs.unwrap(),
-            m_blend_event,
-            m_blend_parameter,
+            m_blend_parameter: m_blend_parameter.unwrap(),
             m_min_threshold: m_min_threshold.unwrap(),
-            m_blend_event_y,
             m_blend_parameter_y,
             m_max_threshold: m_max_threshold.unwrap(),
             m_use_automatic_thresholds: m_use_automatic_thresholds.unwrap(),

@@ -41,7 +41,8 @@ cargo test load_from_path         # run a single test by name
 cargo test --test parse_bundle    # run just the integration test file
 cargo run                         # bin 默认 example/char_002_amiya.ab，dump 全部对象
 cargo run -- path/to/x.bundle     # parse a specific bundle
-cargo run --bin verify_codegen    # 端到端：对 bundle 全部对象跑 typed/TypeTree，统计成败
+cargo run --bin verify_codegen    # 端到端：默认遍历 example/ 下全部 bundle，跑 typed/TypeTree，统计成败
+cargo run --bin verify_codegen -- example/Prefabs.unity3d  # 只跑单个 bundle（或单个目录）
 # 重新生成 typed structs（改完 codegen 后必跑）：
 rm -rf crates/generated/src && mkdir -p crates/generated/src
 cargo run -p unity-asset-codegen -- crates/codegen/tests/fixtures/type_tree.tpk crates/generated/src
@@ -71,8 +72,9 @@ Edition is `2024` → requires Rust >= 1.85.
 - 它们依赖已提交的 fixture `example/char_002_amiya.ab` —— **不要删除或修改它**。
 - 期望字节值（`EXPECTED_FIRST16`、`EXPECTED_LAST16`、sizes、revision）是
   **bit-for-bit 对照过 UnityPy** 的。改它们意味着改了 parser 语义；只有拿到验证过的参考输出才更新。
-- `src/bin/verify_codegen.rs` 是对象解析的端到端验证（对 bundle 全部对象跑 typed/
-  TypeTree，统计 typed 成功 / dynamic / 失败）。非测试，手动跑。
+- `src/bin/verify_codegen.rs` 是对象解析的端到端验证：默认遍历 `example/` 下全部
+  bundle，对每个 bundle 的全部对象跑 typed/TypeTree，统计 typed 成功 / dynamic / 失败。
+  可传一个路径（文件或目录）只处理它。非测试，手动跑。
 - codegen 的 TPK reader 黄金测试在 `crates/codegen/tests/tpk_read.rs`，数字（1395 版本
   / 412 class / 首版本 3.4）来自真实 AssetRipper brotli TPK。
 - 测试 init `env_logger` at `debug`；`RUST_LOG=trace` 看详细 block / typetree 解码。

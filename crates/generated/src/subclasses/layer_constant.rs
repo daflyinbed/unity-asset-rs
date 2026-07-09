@@ -56,7 +56,7 @@ impl crate::Parse for LayerConstant {
         let mut m_default_weight = None;
         let mut m_synced_layer_affects_timing = None;
             m_state_machine_index = Some(rdr.read_u32()?);
-        if *ver >= crate::UnityVersion::new(2018, 2, 0) {
+        if *ver >= crate::UnityVersion::new(4, 3, 0) {
             m_state_machine_synchronized_layer_index = Some(rdr.read_u32()?);
         } else {
             m_state_machine_motion_set_index = Some(rdr.read_u32()?);

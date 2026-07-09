@@ -59,7 +59,7 @@ impl crate::Parse for TextureImporterPlatformSettingsMOverriddenVariant {
 pub struct TextureImporterPlatformSettings {
     pub m_build_target: String,
     pub m_max_texture_size: i32,
-    pub m_texture_format: i32,
+    pub m_format: i32,
     pub m_resize_algorithm: Option<i32>,
     pub m_compression_quality: Option<i32>,
     pub m_texture_compression: Option<i32>,
@@ -78,7 +78,7 @@ impl crate::Parse for TextureImporterPlatformSettings {
     ) -> Result<Self, R::Error> {
         let mut m_build_target = None;
         let mut m_max_texture_size = None;
-        let mut m_texture_format = None;
+        let mut m_format = None;
         let mut m_resize_algorithm = None;
         let mut m_compression_quality = None;
         let mut m_texture_compression = None;
@@ -94,7 +94,7 @@ impl crate::Parse for TextureImporterPlatformSettings {
             m_resize_algorithm = Some(rdr.read_i32()?);
         } else {
         }
-            m_texture_format = Some(rdr.read_i32()?);
+            m_format = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
             m_texture_compression = Some(rdr.read_i32()?);
             m_compression_quality = Some(rdr.read_i32()?);
@@ -155,7 +155,7 @@ impl crate::Parse for TextureImporterPlatformSettings {
         Ok(TextureImporterPlatformSettings {
             m_build_target: m_build_target.unwrap(),
             m_max_texture_size: m_max_texture_size.unwrap(),
-            m_texture_format: m_texture_format.unwrap(),
+            m_format: m_format.unwrap(),
             m_resize_algorithm,
             m_compression_quality,
             m_texture_compression,

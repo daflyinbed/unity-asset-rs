@@ -65,28 +65,6 @@ impl crate::Parse for MeshMMeshCompressionVariant {
     }
 }
 
-/// 版本枚举：MeshMShapesVariant 的类型跨版本变化。
-#[derive(Debug, Clone)]
-pub enum MeshMShapesVariant {
-    Default(Vec<MeshBlendShape>),
-    V4_3(Box<BlendShapeData>),
-}
-
-impl crate::Parse for MeshMShapesVariant {
-    fn parse<R: crate::EndianReader>(
-        rdr: &mut R,
-        ver: &crate::UnityVersion,
-    ) -> Result<Self, R::Error> {
-        if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            let v = ( { Ok(Box::new(BlendShapeData::parse(rdr, ver)?)) } )?;
-            Ok(Self::V4_3(v))
-        } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MeshBlendShape::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-            Ok(Self::Default(v))
-        }
-    }
-}
-
 /// 版本枚举：MeshMBindPoseVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum MeshMBindPoseVariant {
@@ -184,7 +162,8 @@ pub struct Mesh {
     pub m_use16_bit_indices: Option<i32>,
     pub m_sub_meshes: MeshMSubMeshesVariant,
     pub m_mesh_compression: MeshMMeshCompressionVariant,
-    pub m_shapes: Option<MeshMShapesVariant>,
+    pub m_shapes_list: Option<Vec<MeshBlendShape>>,
+    pub m_shapes: Option<BlendShapeData>,
     pub m_index_buffer: Vec<u8>,
     pub m_bind_pose: MeshMBindPoseVariant,
     pub m_stream_compression: Option<u8>,
@@ -228,6 +207,7 @@ impl crate::Parse for Mesh {
         let mut m_use16_bit_indices = None;
         let mut m_sub_meshes = None;
         let mut m_mesh_compression = None;
+        let mut m_shapes_list = None;
         let mut m_shapes = None;
         let mut m_index_buffer = None;
         let mut m_bind_pose = None;
@@ -268,7 +248,7 @@ impl crate::Parse for Mesh {
         }
             m_sub_meshes = Some(MeshMSubMeshesVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_shapes = Some(MeshMShapesVariant::parse(rdr, ver)?);
+            m_shapes = Some(BlendShapeData::parse(rdr, ver)?);
             m_bind_pose = Some(MeshMBindPoseVariant::parse(rdr, ver)?);
             m_bone_name_hashes = Some(MeshMBoneNameHashesVariant::parse(rdr, ver)?);
             m_root_bone_name_hash = Some(rdr.read_u32()?);
@@ -276,12 +256,12 @@ impl crate::Parse for Mesh {
             rdr.align(4)?;
             m_variable_bone_count_weights = Some(VariableBoneCountWeights::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            m_shapes = Some(MeshMShapesVariant::parse(rdr, ver)?);
+            m_shapes = Some(BlendShapeData::parse(rdr, ver)?);
             m_bind_pose = Some(MeshMBindPoseVariant::parse(rdr, ver)?);
             m_bone_name_hashes = Some(MeshMBoneNameHashesVariant::parse(rdr, ver)?);
             m_root_bone_name_hash = Some(rdr.read_u32()?);
         } else if *ver >= crate::UnityVersion::new(4, 1, 0) {
-            m_shapes = Some(MeshMShapesVariant::parse(rdr, ver)?);
+            m_shapes_list = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MeshBlendShape::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
             m_shape_vertices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MeshBlendShapeVertex::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
         } else {
         }
@@ -384,6 +364,7 @@ impl crate::Parse for Mesh {
             m_use16_bit_indices,
             m_sub_meshes: m_sub_meshes.unwrap(),
             m_mesh_compression: m_mesh_compression.unwrap(),
+            m_shapes_list,
             m_shapes,
             m_index_buffer: m_index_buffer.unwrap(),
             m_bind_pose: m_bind_pose.unwrap(),

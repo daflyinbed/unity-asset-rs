@@ -4,7 +4,9 @@ use crate::PPtr;
 
 #[derive(Debug, Clone)]
 pub struct ComponentPair {
-    pub component: PPtr,
+    pub first: Option<i32>,
+    pub component: Option<PPtr>,
+    pub second: Option<PPtr>,
 }
 
 impl crate::Parse for ComponentPair {
@@ -12,10 +14,20 @@ impl crate::Parse for ComponentPair {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let component = crate::PPtr::parse(rdr, ver)?;
+        let mut first = None;
+        let mut component = None;
+        let mut second = None;
+        if *ver >= crate::UnityVersion::new(5, 5, 0) {
+            component = Some(crate::PPtr::parse(rdr, ver)?);
+        } else {
+            first = Some(rdr.read_i32()?);
+            second = Some(crate::PPtr::parse(rdr, ver)?);
+        }
 
         Ok(ComponentPair {
+            first,
             component,
+            second,
         })
     }
 }

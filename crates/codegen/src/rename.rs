@@ -7,8 +7,11 @@
 //!
 //! 本 pass 在 p01 之后、p02 之前对 `TpkTypeTree` 原地重命名，把同名异构类型
 //! 拆成独立 subclass（`ColorRGBA` → `ColorRGBAf` / `ColorRGBA32` 等），让 p05
-//! 各自独立处理。只做**结构性拆分**和**类型/类名规范化**；纯字段重命名（如
-//! `m_Dst` → `m_Destination`）不影响字节布局，本 pass 不做。
+//! 各自独立处理。同时做**结构性拆分**、**类型/类名规范化**，以及**纯字段重命名**
+//! （如 `m_Dst` → `m_Destination`、`m_TextureFormat` → `m_Format`）——后者虽不
+//! 影响字节布局，但让跨版本的同字段不同名（如 `m_PrefabParentObject` /
+//! `m_CorrespondingSourceObject`）被 p05 正确合并为单一字段，而非拆成两个
+//! `Option<T>`。对齐 AssetRipper `Pass002_DoSecondaryRenaming` 的全部规则。
 //!
 //! # 遍历顺序
 //!
@@ -91,26 +94,14 @@ pub fn run(blob: &mut TpkTypeTree) {
         }
     }
 
-    // 2. 收集所有需要遍历的 root 索引（release + editor）
-    let mut roots: Vec<u16> = Vec::new();
-    for info in blob.classes.values() {
-        for entry in &info.classes {
-            if let Some(cls) = entry.class.as_ref() {
-                if let Some(r) = cls.release_root {
-                    roots.push(r);
-                }
-                if let Some(r) = cls.editor_root {
-                    roots.push(r);
-                }
-            }
-        }
-    }
-
-    // 3. 自下而上重命名。注意：节点池可能共享（TPK 实测每个 ColorRGBA 出现
-    //    都是独立节点），但保险起见用 visited 集合避免重复处理 + 避免环。
+    // 2. 自下而上重命名整个节点池。
+    //    p02 会扫整个 node_pool 抽 subclass（含 editor-only / 孤儿子类，见 §12.3），
+    //    故 rename 也必须覆盖每个节点，否则孤儿子类的字段重命名会漏（如被
+    //    MergeMovedGroups 移除的 class 的 release root 仍会被 p02 当 subclass 抽取）。
+    //    visited 集合避免重复处理 + 避免环（TPK 节点池实测无环，但保险起见）。
     let mut visited = std::collections::HashSet::new();
-    for root in roots {
-        rename_subtree(blob, root, &mut visited);
+    for idx in 0..blob.node_pool.len() as u16 {
+        rename_subtree(blob, idx, &mut visited);
     }
 }
 
@@ -137,9 +128,35 @@ fn rename_one(blob: &mut TpkTypeTree, idx: u16) {
         return;
     }
 
-    // 注意：AssetRipper 的 `string → Utf8String` 重命名这里**不做**。
-    // 本 codegen 已通过 NodeType::String 特判正确处理 `string`（读 size + bytes + align(4)）；
-    // 若改成 Utf8String subclass，会被当作普通 struct，丢失末尾对齐 → 字节错位。
+    // string 节点：按子节点形态判定。对应 AssetRipper `Pass002::ChangeStringToUtf8String`。
+    //
+    // 绝大多数 string 节点的唯一子节点是 Array（正常 string：size + bytes + align），
+    // NodeType::String 正确处理，不改名。
+    //
+    // 例外（ExposedReferenceTable / ExtensionPropertyValue 等的 PropertyName 字段）：
+    //   - 子节点是 SInt32/int（4 字节 CRC 哈希）→ 旧 PropertyName 布局，重命名为
+    //     `PropertyName32`（subclass 读一个 i32 + align）。
+    //   - 子节点是 string/Utf8String（嵌套真 string）→ 新 PropertyName 布局，重命名
+    //     为 `PropertyNameNested`（subclass 读一个 aligned_string）。
+    //
+    // 若不改名，NodeType::classify 会把这两种非 Array 子节点的 string 一律当
+    // NodeType::String → read_aligned_string()，读错字节（磁盘是 int 而非 len+bytes）。
+    if tn == "string" {
+        if blob.node_pool[idx as usize].sub_nodes.len() == 1 {
+            let child_idx = blob.node_pool[idx as usize].sub_nodes[0];
+            let child_tn = type_str(blob, child_idx);
+            if child_tn == "SInt32" || child_tn == "int" {
+                set_typename(blob, idx, "PropertyName32");
+                return;
+            }
+            if child_tn == "string" || child_tn == "Utf8String" {
+                set_typename(blob, idx, "PropertyNameNested");
+                return;
+            }
+        }
+        // 子节点是 Array 或其他 → 正常 string，不改名
+        return;
+    }
 
     // TypeNameReplacement 字典
     if let Some(rep) = type_name_replacement(&tn) {
@@ -370,12 +387,255 @@ fn rename_one(blob: &mut TpkTypeTree, idx: u16) {
         set_typename(blob, idx, format!("VFXField_{}", sanitize_type_for_compound(&elem)));
     }
 
-    // Xform / ValueArray：按内层 vector 类型给字段加后缀（仅字段重命名，不影响 type）
-    // 这类是字段名后缀化以区分版本，p05 合并按 unity_name，对字节布局无影响，跳过。
-    // （AssetRipper 改的是子节点 name，不是本节点 type。）
+    // Xform：m_T/m_S 按内层类型加后缀（4 → Vector4Float，3 → Vector3Float）
+    if tn == "Xform" {
+        if let Some(t_tn) = get_subnode_typename_by_name(blob, idx, "m_T") {
+            let new = match t_tn.as_str() {
+                "Vector4Float" => "m_T4",
+                "Vector3Float" => "m_T3",
+                _ => &t_tn[..],
+            };
+            try_rename_subnode(blob, idx, "m_T", new);
+        }
+        if let Some(s_tn) = get_subnode_typename_by_name(blob, idx, "m_S") {
+            let new = match s_tn.as_str() {
+                "Vector4Float" => "m_S4",
+                "Vector3Float" => "m_S3",
+                _ => &s_tn[..],
+            };
+            try_rename_subnode(blob, idx, "m_S", new);
+        }
+    }
 
-    // 其余纯字段重命名（m_Dst→m_Destination、Hash128 字段排序、m_Val→m_Value 等）
-    // 不影响字节布局，跳过。
+    // ValueArray：m_PositionValues/m_ScaleValues 按内层 vector data 类型加后缀
+    if tn == "ValueArray" {
+        if let Some(pos_tn) = get_vector_data_typename(blob, idx, "m_PositionValues") {
+            let suffix = match pos_tn.as_str() {
+                "Vector4Float" => "4",
+                "Vector3Float" => "3",
+                _ => "",
+            };
+            if !suffix.is_empty() {
+                try_rename_subnode(blob, idx, "m_PositionValues", &format!("m_PositionValues{suffix}"));
+            }
+        }
+        if let Some(scl_tn) = get_vector_data_typename(blob, idx, "m_ScaleValues") {
+            let suffix = match scl_tn.as_str() {
+                "Vector4Float" => "4",
+                "Vector3Float" => "3",
+                _ => "",
+            };
+            if !suffix.is_empty() {
+                try_rename_subnode(blob, idx, "m_ScaleValues", &format!("m_ScaleValues{suffix}"));
+            }
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // 纯字段重命名（改子节点 name，不影响字节布局）。
+    // 对应 AssetRipper Pass002 DoSecondaryRenaming 里的 TryRenameSubNode 规则。
+    // 按父 type_name 分发。
+    // ──────────────────────────────────────────────────────────────
+    match tn.as_str() {
+        "GraphicsSettings" => {
+            try_rename_subnode(blob, idx, "m_BuildTargetShaderSettings", "m_TierSettings");
+            try_rename_subnode(blob, idx, "m_AlbedoSwatchInfos", "m_AlbedoSwitchInfos");
+        }
+        "LightmapSettings" => {
+            try_rename_subnode(blob, idx, "m_LightmapSnapshot", "m_LightingDataAsset");
+        }
+        "TextureImporter" => {
+            try_rename_subnode(blob, idx, "m_BuildTargetSettings", "m_PlatformSettings");
+        }
+        "Mesh" => {
+            // m_Shapes(vector) → m_ShapesList（避免与 m_ShapesList subclass 混淆）
+            if has_subnode_by_type_and_name(blob, idx, "vector", "m_Shapes") {
+                try_rename_subnode(blob, idx, "m_Shapes", "m_ShapesList");
+            }
+        }
+        "GameObject" => {
+            // 内层 pair(5.5 前) → ComponentPair，m_First→m_ClassID、m_Second→m_Component
+            if let Some(arr_idx) = get_subnode_by_type_and_name(blob, idx, "vector", "m_Component") {
+                let pair_idx = blob.node_pool[arr_idx as usize].sub_nodes.first().copied();
+                if let Some(pi) = pair_idx {
+                    let data_idx = blob.node_pool[pi as usize].sub_nodes.get(1).copied();
+                    if let Some(di) = data_idx {
+                        let d_tn = type_str(blob, di);
+                        if d_tn == "pair" {
+                            set_typename(blob, di, "ComponentPair");
+                            try_rename_subnode(blob, di, "m_First", "m_ClassID");
+                            try_rename_subnode(blob, di, "m_Second", "m_Component");
+                        }
+                    }
+                }
+            }
+            try_rename_subnode(blob, idx, "m_Component", "m_Components");
+        }
+        "Shader" => {
+            try_rename_subnode(blob, idx, "m_SubProgramBlob", "m_CompressedBlob");
+        }
+        "BuildSettings" => {
+            try_rename_subnode(blob, idx, "m_Levels", "m_Scenes");
+        }
+        "ParticleSystem" => {
+            // m_StartDelay 按内层类型改：float → m_StartDelay_Single，否则 m_StartDelay_MinMaxCurve
+            if let Some(t) = get_subnode_typename_by_name(blob, idx, "m_StartDelay") {
+                let new = if t == "float" { "m_StartDelay_Single" } else { "m_StartDelay_MinMaxCurve" };
+                try_rename_subnode(blob, idx, "m_StartDelay", new);
+            }
+        }
+        "BlendTree" => {
+            try_rename_subnode(blob, idx, "m_BlendEvent", "m_BlendParameter");
+            try_rename_subnode(blob, idx, "m_BlendEventY", "m_BlendParameterY");
+        }
+        "AnimatorController" => {
+            try_rename_subnode(blob, idx, "m_AnimatorEvents", "m_AnimatorParameters");
+            try_rename_subnode(blob, idx, "m_Layers", "m_AnimatorLayers");
+        }
+        "AnimatorControllerLayer" => {
+            try_rename_subnode(blob, idx, "m_HumanMask", "m_Mask");
+        }
+        "AnimationClip" => {
+            try_rename_subnode(blob, idx, "m_AnimationClipSettings", "m_MuscleClipInfo");
+        }
+        "GenericBinding" => {
+            try_rename_subnode(blob, idx, "m_TypeID", "m_ClassID");
+        }
+        "MeshRenderer" => {
+            try_rename_subnode(blob, idx, "m_StitchSeams", "m_StitchLightmapSeams");
+        }
+        "VisualEffectResource" => {
+            if has_subnode_by_type_and_name(blob, idx, "VisualEffectSettings", "m_Infos") {
+                try_rename_subnode(blob, idx, "m_Infos", "m_Settings");
+            }
+        }
+        "Prefab" => {
+            try_rename_subnode(blob, idx, "m_IsPrefabParent", "m_IsPrefabAsset");
+            try_rename_subnode(blob, idx, "m_ParentPrefab", "m_SourcePrefab");
+        }
+        "PrefabInstance" => {
+            // m_SourcePrefab 的 type 树错误，应为 PPtr_PrefabInstance 而非 PPtr_Prefab
+            if let Some(sp_idx) = get_subnode_by_name(blob, idx, "m_SourcePrefab") {
+                set_typename(blob, sp_idx, "PPtr_PrefabInstance");
+            }
+        }
+        "VertexData" => {
+            try_rename_subnode(blob, idx, "m_DataSize", "m_Data");
+        }
+        "ControllerConstant" => {
+            try_rename_subnode(blob, idx, "m_HumanLayerArray", "m_LayerArray");
+        }
+        "StateMachineConstant" => {
+            try_rename_subnode(blob, idx, "m_MotionSetCount", "m_SynchronizedLayerCount");
+        }
+        "Heightmap" => {
+            try_rename_subnode(blob, idx, "m_EnableSurfaceMaskTextureCompression", "m_EnableHolesTextureCompression");
+            try_rename_subnode(blob, idx, "m_SurfaceMask", "m_Holes");
+            try_rename_subnode(blob, idx, "m_SurfaceMaskLOD", "m_HolesLOD");
+        }
+        "ShapeModule" => {
+            // m_Arc / m_Radius：非 float 类型时加 Parameter 后缀
+            if let Some(t) = get_subnode_typename_by_name(blob, idx, "m_Arc") {
+                if t != "float" {
+                    try_rename_subnode(blob, idx, "m_Arc", "m_ArcParameter");
+                }
+            }
+            if let Some(t) = get_subnode_typename_by_name(blob, idx, "m_Radius") {
+                if t != "float" {
+                    try_rename_subnode(blob, idx, "m_Radius", "m_RadiusParameter");
+                }
+            }
+        }
+        "Texture3D" => {
+            try_rename_subnode(blob, idx, "m_DataSize", "m_CompleteImageSize");
+            try_rename_subnode(blob, idx, "m_ImageCount", "m_Depth");
+        }
+        "MuscleClipConstant" => {
+            // m_AverageSpeed 按内层类型加后缀（4 → Vector4Float，3 → Vector3Float）
+            if let Some(t) = get_subnode_typename_by_name(blob, idx, "m_AverageSpeed") {
+                let new = match t.as_str() {
+                    "Vector4Float" => "m_AverageSpeed4",
+                    "Vector3Float" => "m_AverageSpeed3",
+                    _ => &t[..],
+                };
+                try_rename_subnode(blob, idx, "m_AverageSpeed", new);
+            }
+        }
+        "LayerConstant" => {
+            try_rename_subnode(blob, idx, "m_StateMachineMotionSetIndex", "m_StateMachineSynchronizedLayerIndex");
+        }
+        _ => {}
+    }
+
+    // LayerConstant 特殊字段名（无 m_ 前缀的带类型名前缀）
+    if tn == "LayerConstant" || tn == "HumanLayerConstant" {
+        try_rename_subnode(blob, idx, "m__int__m_LayerBlendingMode", "m_LayerBlendingMode");
+        // m__SInt32__m_* → 去掉 m__SInt32__ 前缀（AudioClip 3.5–5）
+        rename_sint32_prefixed_children(blob, idx);
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // 通用字段重命名（对所有节点的子节点遍历，不限定父 type）。
+    // ──────────────────────────────────────────────────────────────
+    let child_idxs = blob.node_pool[idx as usize].sub_nodes.clone();
+    for &c in &child_idxs {
+        let cname = name_str(blob, blob.node_pool[c as usize].name_index).to_owned();
+        let ctn = type_str(blob, c).to_owned();
+        let new_name: Option<&str> = if cname == "m_Image_data" {
+            Some("m_ImageData")
+        } else if cname == "m_TextureFormat" {
+            Some("m_Format")
+        } else if cname == "m_TextureDimension" {
+            Some("m_Dimension")
+        } else if cname == "m_ObjectHideFlags" {
+            Some("m_HideFlags")
+        } else if cname == "m_Val" {
+            Some("m_Value")
+        } else {
+            None
+        };
+        if let Some(new) = new_name {
+            set_name(blob, c, new);
+            continue;
+        }
+        // m_Dst* / m_Dest* / m_Src* 前缀归一（第 5/6 字符大写时）
+        if let Some(rest) = cname.strip_prefix("m_Dst") {
+            if rest.chars().next().is_some_and(char::is_uppercase) {
+                set_name(blob, c, &format!("m_Destination{rest}"));
+                continue;
+            }
+        }
+        if let Some(rest) = cname.strip_prefix("m_Dest") {
+            if rest.chars().next().is_some_and(char::is_uppercase) {
+                set_name(blob, c, &format!("m_Destination{rest}"));
+                continue;
+            }
+        }
+        if let Some(rest) = cname.strip_prefix("m_Src") {
+            if rest.chars().next().is_some_and(char::is_uppercase) {
+                set_name(blob, c, &format!("m_Source{rest}"));
+                continue;
+            }
+        }
+        // PPtr<X> 子节点字段重命名：m_PrefabParentObject → m_CorrespondingSourceObject
+        // （3.5–2018.2 旧名归一到新名，使跨版本同字段被 p05 正确合并）。
+        // 注意：AssetRipper 还改 m_FileID→m_FileID_、m_PathID→m_PathID_，但那些是 PPtr
+        // 内部字段，本 codegen 的 PPtr 是扁平 struct（PPtr::parse 直接读两整数），
+        // 内部字段不单独生成，故无需改。
+        if ctn.starts_with("PPtr<") && cname == "m_PrefabParentObject" {
+            set_name(blob, c, "m_CorrespondingSourceObject");
+        }
+    }
+
+    // Hash128 字段排序归一（m_Bytes_N_ → m_Bytes__N 或 m_Bytes_N，使顺序连续）
+    if tn == "Hash128" {
+        for i in 0..10 {
+            try_rename_subnode(blob, idx, &format!("m_Bytes_{i}_"), &format!("m_Bytes__{i}"));
+        }
+        for i in 10..16 {
+            try_rename_subnode(blob, idx, &format!("m_Bytes_{i}_"), &format!("m_Bytes_{i}"));
+        }
+    }
 }
 
 // ────────────────────────────────────────────────────────────────────
@@ -548,6 +808,52 @@ fn try_rename_subnode(blob: &mut TpkTypeTree, idx: u16, cur: &str, new: &str) ->
         }
     }
     false
+}
+
+/// 按 (type_name, field_name) 判断子节点是否存在。
+fn has_subnode_by_type_and_name(
+    blob: &TpkTypeTree,
+    idx: u16,
+    type_name: &str,
+    field_name: &str,
+) -> bool {
+    get_subnode_by_type_and_name(blob, idx, type_name, field_name).is_some()
+}
+
+/// 按字段名找子节点索引（不限类型）。
+fn get_subnode_by_name(blob: &TpkTypeTree, idx: u16, field_name: &str) -> Option<u16> {
+    let node = &blob.node_pool[idx as usize];
+    for &c in &node.sub_nodes {
+        let cn = name_str(blob, blob.node_pool[c as usize].name_index);
+        if cn == field_name {
+            return Some(c);
+        }
+    }
+    None
+}
+
+/// ValueArray 等的 vector 字段内层 data 类型：vector → Array → data。
+fn get_vector_data_typename(
+    blob: &TpkTypeTree,
+    idx: u16,
+    field_name: &str,
+) -> Option<String> {
+    let vec_idx = get_subnode_by_type_and_name(blob, idx, "vector", field_name)?;
+    let array_idx = blob.node_pool[vec_idx as usize].sub_nodes.first().copied()?;
+    let data_idx = blob.node_pool[array_idx as usize].sub_nodes.get(1).copied()?;
+    Some(type_str(blob, data_idx).to_string())
+}
+
+/// 把 LayerConstant/AudioClip 的 `m__SInt32__m_X` 子节点改名去掉类型前缀。
+/// 对应 AssetRipper `m__SInt32__m_` → `m_`（AudioClip 3.5–5 独有）。
+fn rename_sint32_prefixed_children(blob: &mut TpkTypeTree, idx: u16) {
+    let subs = blob.node_pool[idx as usize].sub_nodes.clone();
+    for c in subs {
+        let cn = name_str(blob, blob.node_pool[c as usize].name_index).to_string();
+        if let Some(rest) = cn.strip_prefix("m__SInt32__m_") {
+            set_name(blob, c, &format!("m_{rest}"));
+        }
+    }
 }
 
 /// 把用于拼接新 type_name 的元素类型做 sanitize，对应 AssetRipper

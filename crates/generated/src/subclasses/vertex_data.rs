@@ -54,7 +54,7 @@ pub struct VertexData {
     pub m_vertex_count: u32,
     pub m_channels: Option<VertexDataMChannelsVariant>,
     pub m_streams_0: Option<StreamInfo>,
-    pub m_data_size: Vec<u8>,
+    pub m_data: Vec<u8>,
     pub m_streams_1: Option<StreamInfo>,
     pub m_streams: Option<Vec<StreamInfo>>,
     pub m_streams_2: Option<StreamInfo>,
@@ -70,7 +70,7 @@ impl crate::Parse for VertexData {
         let mut m_vertex_count = None;
         let mut m_channels = None;
         let mut m_streams_0 = None;
-        let mut m_data_size = None;
+        let mut m_data = None;
         let mut m_streams_1 = None;
         let mut m_streams = None;
         let mut m_streams_2 = None;
@@ -91,7 +91,7 @@ impl crate::Parse for VertexData {
             m_streams_2 = Some(StreamInfo::parse(rdr, ver)?);
             m_streams_3 = Some(StreamInfo::parse(rdr, ver)?);
         }
-            m_data_size = Some(( { let n = rdr.read_i32()? as usize; rdr.read_bytes(n) } )?);
+            m_data = Some(( { let n = rdr.read_i32()? as usize; rdr.read_bytes(n) } )?);
             rdr.align(4)?;
 
         Ok(VertexData {
@@ -99,7 +99,7 @@ impl crate::Parse for VertexData {
             m_vertex_count: m_vertex_count.unwrap(),
             m_channels,
             m_streams_0,
-            m_data_size: m_data_size.unwrap(),
+            m_data: m_data.unwrap(),
             m_streams_1,
             m_streams,
             m_streams_2,

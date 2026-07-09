@@ -209,6 +209,7 @@ impl TpkTypeTree {
 }
 
 /// 一个 classID 的所有版本变体。
+#[derive(Clone)]
 pub struct TpkClassInformation {
     pub id: i32,
     /// 按版本升序排列；每段表示"从该版本起，直到下一段开始之前"的布局。
@@ -217,12 +218,14 @@ pub struct TpkClassInformation {
 }
 
 /// `TpkClassInformation.classes[i]`，`(起始版本, 该版本的布局)`。
+#[derive(Clone)]
 pub struct VersionedClass {
     pub version: UnityVersion,
     pub class: Option<TpkUnityClass>,
 }
 
 /// 一个 class 在某版本区间的元数据（不含节点本身，只存索引）。
+#[derive(Clone)]
 pub struct TpkUnityClass {
     /// class 名在 [`TpkTypeTree::string_pool`] 的索引。
     pub name_index: u16,

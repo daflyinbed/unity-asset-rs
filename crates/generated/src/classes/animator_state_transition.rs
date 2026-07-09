@@ -27,14 +27,14 @@ impl crate::Parse for AnimatorStateTransitionMConditionsVariant {
     }
 }
 
-/// 版本枚举：AnimatorStateTransitionMDstStateVariant 的类型跨版本变化。
+/// 版本枚举：AnimatorStateTransitionMDestinationStateVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
-pub enum AnimatorStateTransitionMDstStateVariant {
+pub enum AnimatorStateTransitionMDestinationStateVariant {
     Default(PPtr),
     V5_0(PPtr),
 }
 
-impl crate::Parse for AnimatorStateTransitionMDstStateVariant {
+impl crate::Parse for AnimatorStateTransitionMDestinationStateVariant {
     fn parse<R: crate::EndianReader>(
         rdr: &mut R,
         ver: &crate::UnityVersion,
@@ -74,10 +74,10 @@ impl crate::Parse for AnimatorStateTransitionMHasExitTimeVariant {
 #[derive(Debug, Clone)]
 pub struct AnimatorStateTransition {
     pub m_name: String,
-    pub m_src_state: Option<PPtr>,
+    pub m_source_state: Option<PPtr>,
     pub m_conditions: AnimatorStateTransitionMConditionsVariant,
-    pub m_dst_state: AnimatorStateTransitionMDstStateVariant,
-    pub m_dst_state_machine: Option<PPtr>,
+    pub m_destination_state: AnimatorStateTransitionMDestinationStateVariant,
+    pub m_destination_state_machine: Option<PPtr>,
     pub m_transition_duration: f32,
     pub m_transition_offset: f32,
     pub m_solo: bool,
@@ -98,10 +98,10 @@ impl crate::Parse for AnimatorStateTransition {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let mut m_name = None;
-        let mut m_src_state = None;
+        let mut m_source_state = None;
         let mut m_conditions = None;
-        let mut m_dst_state = None;
-        let mut m_dst_state_machine = None;
+        let mut m_destination_state = None;
+        let mut m_destination_state_machine = None;
         let mut m_transition_duration = None;
         let mut m_transition_offset = None;
         let mut m_solo = None;
@@ -117,15 +117,15 @@ impl crate::Parse for AnimatorStateTransition {
             m_name = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
         } else {
-            m_src_state = Some(crate::PPtr::parse(rdr, ver)?);
-            m_dst_state = Some(AnimatorStateTransitionMDstStateVariant::parse(rdr, ver)?);
+            m_source_state = Some(crate::PPtr::parse(rdr, ver)?);
+            m_destination_state = Some(AnimatorStateTransitionMDestinationStateVariant::parse(rdr, ver)?);
             m_transition_duration = Some(rdr.read_f32()?);
             m_transition_offset = Some(rdr.read_f32()?);
         }
             m_conditions = Some(AnimatorStateTransitionMConditionsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_dst_state_machine = Some(crate::PPtr::parse(rdr, ver)?);
-            m_dst_state = Some(AnimatorStateTransitionMDstStateVariant::parse(rdr, ver)?);
+            m_destination_state_machine = Some(crate::PPtr::parse(rdr, ver)?);
+            m_destination_state = Some(AnimatorStateTransitionMDestinationStateVariant::parse(rdr, ver)?);
         } else {
             m_atomic = Some(rdr.read_bool()?);
         }
@@ -160,10 +160,10 @@ impl crate::Parse for AnimatorStateTransition {
 
         Ok(AnimatorStateTransition {
             m_name: m_name.unwrap(),
-            m_src_state,
+            m_source_state,
             m_conditions: m_conditions.unwrap(),
-            m_dst_state: m_dst_state.unwrap(),
-            m_dst_state_machine,
+            m_destination_state: m_destination_state.unwrap(),
+            m_destination_state_machine,
             m_transition_duration: m_transition_duration.unwrap(),
             m_transition_offset: m_transition_offset.unwrap(),
             m_solo: m_solo.unwrap(),

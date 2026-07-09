@@ -1,7 +1,7 @@
 //! Pass 管线：从 `TpkTypeTree` 到 `Pipeline`（含 `EmitClass` 集合）。
 //!
-//! 顺序：p00 过滤引擎类型 → p01 归一化 → p02 抽 subclass → p03 收 PPtr 目标
-//!     → p04 解析继承 → p05 字段并集 → p06 计算对齐。
+//! 顺序：p00 过滤引擎类型 → p00b 合并 moved groups → p01 归一化 → p02 抽 subclass
+//!     → p03 收 PPtr 目标 → p04 解析继承 → p05 字段并集 → p06 计算对齐。
 //! emit 在 `emit.rs` 里。
 
 use std::collections::{BTreeMap, BTreeSet};
@@ -10,7 +10,7 @@ use heck::ToUpperCamelCase;
 
 use crate::ir::*;
 use crate::names::{to_rust_field_name, to_rust_type_name};
-use crate::tpk::{TpkTypeTree, TpkUnityNode, UnityVersion};
+use crate::tpk::{TpkTypeTree, TpkUnityNode, VersionedClass, UnityVersion};
 
 // ────────────────────────────────────────────────────────────────────
 // 入口
@@ -34,6 +34,7 @@ pub fn run_pipeline(blob: TpkTypeTree) -> Pipeline {
     let mut blob = blob;
 
     p00_filter_engine_types(&mut blob);
+    p00b_merge_moved_groups(&mut blob);
     p01_normalize_types(&mut blob);
     crate::rename::run(&mut blob);
     p02_extract_subclasses(&blob, &mut state);
@@ -70,6 +71,128 @@ fn p00_filter_engine_types(blob: &mut TpkTypeTree) {
     for id in engine_type_ids {
         log::debug!("p00: 移除 classID={id}");
         blob.classes.remove(&id);
+    }
+}
+
+// ────────────────────────────────────────────────────────────────────
+// p00b：合并被 Unity 移动过 classID 的组（MergeMovedGroups）
+// ────────────────────────────────────────────────────────────────────
+
+/// 合并被 Unity 在版本演进中移动过 classID 的类。对齐 AssetRipper
+/// `Pass001_MergeMovedGroups.cs`。
+///
+/// Unity 在不同版本里把若干同名类挪到了新 classID（旧 ID 在某版本起变 null/废弃，
+/// 新 ID 从该版本起接管）。若不合并，codegen 会为旧 ID 和新 ID 各生成一份独立
+/// struct，旧版本的对象（用旧 ID）在新 ID 的 struct 里没有对应，反之亦然。
+/// 合并后新 ID 覆盖从最早到最新的完整版本范围，旧 ID 移除。
+///
+/// 映射 `{ 新ID ← [旧ID...] }`（对应 `Pass001.cs:7-13` 的 `Changes`）：
+/// - 238 ← 194   (NavMesh → NavMeshData)
+/// - 258 ← 197   (LightProbes)
+/// - 319 ← 1011  (AvatarMask)
+/// - 329 ← 327   (VideoClip)
+///
+/// NavMesh(194) 有特殊预处理（`Pass001.cs:18-30`）：合并前先去掉末尾的
+/// `[5.3]null` 和 `[5.0]NavMeshObsolete` 两个条目，补一个 `[5.0]null`，
+/// 避免旧 NavMeshObsolete 与新 NavMeshData 在 5.0 重叠时产生冲突。
+fn p00b_merge_moved_groups(blob: &mut TpkTypeTree) {
+    log::info!("p00b: 合并 moved groups (MergeMovedGroups)");
+
+    // (新 ID, [旧 ID...])
+    let groups: &[(i32, &[i32])] = &[
+        (238, &[194]), // NavMesh → NavMeshData
+        (258, &[197]), // LightProbes
+        (319, &[1011]), // AvatarMask
+        (329, &[327]), // VideoClip
+    ];
+
+    for &(new_id, old_ids) in groups {
+        // 收集所有旧 ID 的 VersionedClass 条目
+        let mut old_entries: Vec<VersionedClass> = Vec::new();
+        for &old_id in old_ids {
+            let Some(old_info) = blob.classes.remove(&old_id) else {
+                log::warn!("p00b: 旧 classID {old_id} 不在 TPK，跳过");
+                continue;
+            };
+            old_entries.extend(old_info.classes);
+        }
+        if old_entries.is_empty() {
+            continue;
+        }
+
+        // NavMesh(194) 特殊预处理：去掉末尾两条（[5.3]null + [5.0]NavMeshObsolete），
+        // 补 [5.0]null。对应 Pass001.cs:25-30 的 Pop/Pop/Add。
+        if new_id == 238 {
+            old_entries.pop();
+            old_entries.pop();
+            old_entries.push(VersionedClass {
+                version: UnityVersion {
+                    major: 5,
+                    minor: 0,
+                    build: 0,
+                    version_type: crate::tpk::UnityVersionType::Final,
+                    type_number: 0,
+                },
+                class: None,
+            });
+        }
+
+        let Some(new_info) = blob.classes.get_mut(&new_id) else {
+            log::warn!("p00b: 新 classID {new_id} 不在 TPK，跳过");
+            continue;
+        };
+
+        // 统一旧条目的类名为新 ID 的规范名（最新版本的类名）。
+        // 合并后 p04 用最早非 null 条目取名，若旧条目类名不同（如 NavMesh vs
+        // NavMeshData）会取错名。此处把旧条目的 name_index 改成新 ID 规范名。
+        // 对应 AssetRipper Pass001 合并后 TypeID/Name 跟随新 ID 的语义。
+        let canonical_name_idx: Option<u16> = new_info
+            .classes
+            .iter()
+            .rev()
+            .find_map(|e| e.class.as_ref().map(|c| c.name_index));
+        if let Some(name_idx) = canonical_name_idx {
+            for old_e in &mut old_entries {
+                if let Some(old_c) = old_e.class.as_mut() {
+                    old_c.name_index = name_idx;
+                }
+            }
+        }
+
+        // 合并：新 ID 条目 + 旧 ID 条目，按版本排序去重。
+        // 同 major.minor.build 时保留新 ID 的条目（新 ID 接管），旧条目被丢弃。
+        // 两侧都已按版本升序 → 归并；归并时同版本让新 ID 优先（<=），去重时丢后者。
+        old_entries.sort_by_key(|e| e.version.major_minor_build());
+
+        let new_entries = std::mem::take(&mut new_info.classes);
+        let mut merged: Vec<VersionedClass> = Vec::with_capacity(new_entries.len() + old_entries.len());
+        let mut i_new = 0usize;
+        let mut i_old = 0usize;
+        while i_new < new_entries.len() || i_old < old_entries.len() {
+            let take_new = if i_new < new_entries.len() && i_old < old_entries.len() {
+                // 都有：取版本较小的；同版本取新 ID（<= 让新 ID 先进）
+                new_entries[i_new].version.major_minor_build()
+                    <= old_entries[i_old].version.major_minor_build()
+            } else {
+                i_new < new_entries.len()
+            };
+            if take_new {
+                merged.push(new_entries[i_new].clone());
+                i_new += 1;
+            } else {
+                merged.push(old_entries[i_old].clone());
+                i_old += 1;
+            }
+        }
+
+        // 去重：相邻同 major_minor_build 保留首个（归并已让新 ID 优先）。
+        merged.dedup_by_key(|e| e.version.major_minor_build());
+
+        log::info!(
+            "p00b: classID {new_id} 合并完成（{} 条目）",
+            merged.len()
+        );
+        new_info.classes = merged;
     }
 }
 

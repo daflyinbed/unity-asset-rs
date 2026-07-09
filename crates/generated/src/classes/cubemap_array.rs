@@ -37,7 +37,7 @@ pub struct CubemapArray {
     pub m_downscale_fallback: Option<CubemapArrayMDownscaleFallbackVariant>,
     pub m_format: i32,
     pub m_mip_count: i32,
-    pub m_data_size: u32,
+    pub m_complete_image_size: u32,
     pub m_texture_settings: GlTextureSettings,
     pub m_is_readable: bool,
     pub image_data: Vec<u8>,
@@ -59,7 +59,7 @@ impl crate::Parse for CubemapArray {
         let mut m_downscale_fallback = None;
         let mut m_format = None;
         let mut m_mip_count = None;
-        let mut m_data_size = None;
+        let mut m_complete_image_size = None;
         let mut m_texture_settings = None;
         let mut m_is_readable = None;
         let mut image_data = None;
@@ -95,7 +95,7 @@ impl crate::Parse for CubemapArray {
             m_format = Some(rdr.read_i32()?);
         }
             m_mip_count = Some(rdr.read_i32()?);
-            m_data_size = Some(rdr.read_u32()?);
+            m_complete_image_size = Some(rdr.read_u32()?);
             m_texture_settings = Some(GlTextureSettings::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2020, 2, 0) {
             m_usage_mode = Some(rdr.read_i32()?);
@@ -122,7 +122,7 @@ impl crate::Parse for CubemapArray {
             m_downscale_fallback,
             m_format: m_format.unwrap(),
             m_mip_count: m_mip_count.unwrap(),
-            m_data_size: m_data_size.unwrap(),
+            m_complete_image_size: m_complete_image_size.unwrap(),
             m_texture_settings: m_texture_settings.unwrap(),
             m_is_readable: m_is_readable.unwrap(),
             image_data: image_data.unwrap(),

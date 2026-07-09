@@ -30,8 +30,8 @@ impl crate::Parse for AnimatorTransitionMConditionsVariant {
 pub struct AnimatorTransition {
     pub m_name: String,
     pub m_conditions: AnimatorTransitionMConditionsVariant,
-    pub m_dst_state_machine: PPtr,
-    pub m_dst_state: PPtr,
+    pub m_destination_state_machine: PPtr,
+    pub m_destination_state: PPtr,
     pub m_solo: bool,
     pub m_mute: bool,
     pub m_is_exit: bool,
@@ -44,8 +44,8 @@ impl crate::Parse for AnimatorTransition {
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
         let m_conditions = AnimatorTransitionMConditionsVariant::parse(rdr, ver)?;
-        let m_dst_state_machine = crate::PPtr::parse(rdr, ver)?;
-        let m_dst_state = crate::PPtr::parse(rdr, ver)?;
+        let m_destination_state_machine = crate::PPtr::parse(rdr, ver)?;
+        let m_destination_state = crate::PPtr::parse(rdr, ver)?;
         let m_solo = rdr.read_bool()?;
         let m_mute = rdr.read_bool()?;
         let m_is_exit = rdr.read_bool()?;
@@ -54,8 +54,8 @@ impl crate::Parse for AnimatorTransition {
         Ok(AnimatorTransition {
             m_name,
             m_conditions,
-            m_dst_state_machine,
-            m_dst_state,
+            m_destination_state_machine,
+            m_destination_state,
             m_solo,
             m_mute,
             m_is_exit,

@@ -52,7 +52,7 @@ impl crate::Parse for AvatarMaskMElementsVariant {
 pub struct AvatarMask {
     pub m_name: String,
     pub m_mask: AvatarMaskMMaskVariant,
-    pub m_elements: AvatarMaskMElementsVariant,
+    pub m_elements: Option<AvatarMaskMElementsVariant>,
 }
 
 impl crate::Parse for AvatarMask {
@@ -62,7 +62,11 @@ impl crate::Parse for AvatarMask {
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
         let m_mask = AvatarMaskMMaskVariant::parse(rdr, ver)?;
-        let m_elements = AvatarMaskMElementsVariant::parse(rdr, ver)?;
+        let m_elements = if *ver >= crate::UnityVersion::new(4, 1, 0) {
+            Some(AvatarMaskMElementsVariant::parse(rdr, ver)?)
+        } else {
+            None
+        };
 
         Ok(AvatarMask {
             m_name,

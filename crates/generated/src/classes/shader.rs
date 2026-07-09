@@ -145,7 +145,7 @@ pub struct Shader {
     pub decompressed_size: Option<u32>,
     pub offsets: Option<ShaderOffsetsVariant>,
     pub m_shader_is_baked: Option<bool>,
-    pub m_sub_program_blob: Option<Vec<u8>>,
+    pub m_compressed_blob: Option<Vec<u8>>,
     pub compressed_lengths: Option<ShaderCompressedLengthsVariant>,
     pub decompressed_lengths: Option<ShaderDecompressedLengthsVariant>,
     pub compressed_blob: Option<Vec<u8>>,
@@ -169,7 +169,7 @@ impl crate::Parse for Shader {
         let mut decompressed_size = None;
         let mut offsets = None;
         let mut m_shader_is_baked = None;
-        let mut m_sub_program_blob = None;
+        let mut m_compressed_blob = None;
         let mut compressed_lengths = None;
         let mut decompressed_lengths = None;
         let mut compressed_blob = None;
@@ -276,7 +276,7 @@ impl crate::Parse for Shader {
             m_script = Some(rdr.read_aligned_string()?);
             m_path_name = Some(rdr.read_aligned_string()?);
             decompressed_size = Some(rdr.read_u32()?);
-            m_sub_program_blob = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_compressed_blob = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
             rdr.align(4)?;
             m_dependencies = Some(ShaderMDependenciesVariant::parse(rdr, ver)?);
             m_shader_is_baked = Some(rdr.read_bool()?);
@@ -302,7 +302,7 @@ impl crate::Parse for Shader {
             decompressed_size,
             offsets,
             m_shader_is_baked,
-            m_sub_program_blob,
+            m_compressed_blob,
             compressed_lengths,
             decompressed_lengths,
             compressed_blob,
