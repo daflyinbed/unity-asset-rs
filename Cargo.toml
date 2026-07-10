@@ -13,6 +13,12 @@ path = "src/lib.rs"
 name = "unity-asset-rs"
 path = "src/main.rs"
 
+[features]
+# 纹理导出（ASTC 解码 + PNG 编码）。默认开启，需要 image / texture-decoder-rs 重依赖；
+# 关闭后主 crate 与 CLI 不引入它们（`export` 子命令在无 feature 时报不可用）。
+default = ["export"]
+export = ["dep:image", "dep:texture-decoder-rs"]
+
 [dependencies]
 bytes = "1"
 lz4_flex = "0.11"
@@ -26,6 +32,9 @@ clap = { version = "4", features = ["derive"] }
 unity-core = { path = "crates/unity-core" }
 generated = { package = "unity-asset-generated", path = "crates/generated" }
 lz4inv = { path = "crates/lz4inv" }
+# ── export feature ──
+image = { version = "0.25", default-features = false, features = ["png"], optional = true }
+texture-decoder-rs = { path = "../../texture-decoder-rs", optional = true }
 
 [workspace]
 members = ["crates/codegen", "crates/generated", "crates/lz4inv", "crates/unity-core"]

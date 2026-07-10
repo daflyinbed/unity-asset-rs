@@ -50,6 +50,15 @@ enum Cmd {
         #[arg(allow_hyphen_values = true)]
         path_id: i64,
     },
+    /// 导出 Texture2D 为 PNG（当前支持全部方形 ASTC LDR：4×4/5×5/6×6/8×8/10×10/12×12）。
+    Export {
+        /// 输出目录（默认当前目录）。
+        #[arg(long, short = 'o', default_value = ".")]
+        out: PathBuf,
+        /// 只导出指定 path_id（可重复）；省略则导出全部 Texture2D。
+        #[arg(long, allow_hyphen_values = true)]
+        only: Vec<i64>,
+    },
 }
 
 /// 在 `EnvironmentBuilder::loaded` move 之前捕获的头信息（仅单文件时有值）。
@@ -79,6 +88,7 @@ fn run(cli: &Cli) -> Result<(), String> {
     match cli.cmd.as_ref().unwrap_or(&Cmd::List) {
         Cmd::List => cmd_list(header.as_ref(), &env),
         Cmd::Object { path_id } => cmd_object(&env, *path_id),
+        Cmd::Export { out, only } => cmd_export(&env, out, only),
     }
 }
 
@@ -269,6 +279,112 @@ fn cmd_object(env: &Environment, path_id: i64) -> Result<(), String> {
         }
     }
     Ok(())
+}
+
+/// 导出 Texture2D 为 PNG。
+///
+/// 遍历全部 Texture2D（或 `only` 指定的 path_id），对 ASTC 格式解码 + 写 PNG；
+/// 不支持的格式（如 ETC_RGB4）记 skip。末尾汇总，有失败时返回 Err（退出码 1）。
+#[cfg(feature = "export")]
+fn cmd_export(env: &Environment, out: &Path, only: &[i64]) -> Result<(), String> {
+    use generated::classes::texture2_d::Texture2D;
+    use unity_asset_rs::texture_export::TextureFormat;
+
+    std::fs::create_dir_all(out).map_err(|e| format!("创建输出目录失败: {e}"))?;
+
+    let mut exported = 0usize;
+    let mut skipped = 0usize;
+    let mut failed = 0usize;
+
+    for obj in env.objects_of_class(ClassIDType::Texture2D) {
+        if !only.is_empty() && !only.contains(&obj.path_id) {
+            continue;
+        }
+        let ParsedObject::Typed(UnityObject::Texture2D(t)) = &obj.object else {
+            // 非 typed（dynamic fallback）的 Texture2D —— 跳过。
+            skipped += 1;
+            continue;
+        };
+        let t: &Texture2D = t;
+        let name = texture_name(&t.m_name).unwrap_or_else(|| format!("tex_{}", obj.path_id));
+
+        let fmt = match TextureFormat::from_i32(t.m_format) {
+            Some(f) if f.is_supported() => f,
+            Some(f) => {
+                println!("⊘ skip  {name}  format={}({f:?}, 不支持)", t.m_format);
+                skipped += 1;
+                continue;
+            }
+            None => {
+                println!("⊘ skip  {name}  format={}(未知)", t.m_format);
+                skipped += 1;
+                continue;
+            }
+        };
+
+        let result = export_one(env, t, &name, fmt, out);
+        match result {
+            Ok(file) => {
+                let bxby = fmt.astc_block().map(|(x, y)| format!("{x}x{y}")).unwrap_or_default();
+                println!(
+                    "✓ ok    {name}  {}x{} astc{bxby} -> {}",
+                    t.m_width, t.m_height, file.display()
+                );
+                exported += 1;
+            }
+            Err(e) => {
+                println!("✗ fail  {name}  {e}");
+                failed += 1;
+            }
+        }
+    }
+
+    println!(
+        "\n汇总: 导出 {exported}, 跳过 {skipped}, 失败 {failed}",
+    );
+    if failed > 0 {
+        Err(format!("有 {failed} 个纹理导出失败"))
+    } else {
+        Ok(())
+    }
+}
+
+/// 解码并写出单个 Texture2D 到 `<out>/<name>.png`，返回实际文件路径。
+#[cfg(feature = "export")]
+fn export_one(
+    env: &Environment,
+    t: &generated::classes::texture2_d::Texture2D,
+    name: &str,
+    fmt: unity_asset_rs::texture_export::TextureFormat,
+    out: &Path,
+) -> Result<PathBuf, unity_asset_rs::texture_export::TextureExportError> {
+    use unity_asset_rs::texture_export::{
+        TextureExportError, decode_astc, texture_pixel_bytes, write_png,
+    };
+
+    let data = texture_pixel_bytes(t, env).ok_or(TextureExportError::NoImageData)?;
+    let (w, h) = (t.m_width.max(0) as u32, t.m_height.max(0) as u32);
+    let rgba = decode_astc(&data, w, h, fmt)?;
+    let file = out.join(sanitize_filename(name)).with_extension("png");
+    let mut f = std::fs::File::create(&file).map_err(|e| TextureExportError::PngIo { source: e })?;
+    write_png(rgba, w, h, &mut f)?;
+    Ok(file)
+}
+
+/// 无 feature 时的占位（避免未使用 import 警告 / 给用户清晰提示）。
+#[cfg(not(feature = "export"))]
+fn cmd_export(_env: &Environment, _out: &Path, _only: &[i64]) -> Result<(), String> {
+    Err("export 子命令需要 `export` feature（默认开启；当前构建关闭了它）".to_string())
+}
+
+/// 把 m_name 里的路径非法字符（`[`, `]`, `/`, `\`, `:` 等）替换为 `_`。
+fn sanitize_filename(name: &str) -> String {
+    name.chars()
+        .map(|c| match c {
+            '/' | '\\' | ':' | '*' | '?' | '"' | '<' | '>' | '|' | '[' | ']' => '_',
+            _ => c,
+        })
+        .collect()
 }
 
 // ── 明日方舟 LZ4 变体适配器 ──

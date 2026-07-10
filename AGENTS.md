@@ -27,6 +27,13 @@ layer (PPtr deref + `.resS` streaming_data) are all **implemented**:
   streaming_data 零拷贝取数。**跨 bundle 已落地**：`EnvironmentBuilder` 累积多 bundle 后
   `build()` 一次性全局依赖解析；聚合层唯一构造入口 `Environment::builder()`（`path`/`loaded`/
   `scan_dir`/`registry`）。`src/detect.rs` 做 UnityFS + gzip 签名嗅探。
+- **纹理导出层**（受 `export` feature 门控，默认开启）：`src/texture_export.rs`。
+  `TextureFormat` 枚举（全部方形 ASTC LDR：4×4/5×5/6×6/8×8/10×10/12×12 × RGB/RGBA 共 12 值）
+  + ASTC LDR 解码（path 依赖 `../../texture-decoder-rs`，零依赖 `#![no_std]`；RGB/RGBA 共用同一解码）
+  + PNG 编码（`image` crate，仅 png feature）。像素来源对齐 UnityPy `_Texture2d_get_image_data`：
+  `image_data` 非空用它，否则走 `Environment::streaming_data` 取 `.resS`；输出做 Y 翻转
+  （Unity bottom-up → PNG top-down）。**ASTC HDR / ETC / BCn / Crunch / PVRTC / ATC 未做**；
+  Sprite Sheet / 多输出格式 / 法线贴图未做。
 
 **未实现**：CN 加密（`0x100` flag）、Loader/LoaderBuilder 配置入口、
 on-demand 逐块解压、SpillPolicy::AutoTempFile、
@@ -72,13 +79,16 @@ repo），里面除了本仓库外还有一整套 Unity 资产解析的参考实
 ```bash
 cargo build                       # build lib + bin
 cargo build --workspace           # build 全部 crate（含 codegen / generated / unity-core）
-cargo test                        # all tests（io 层：tests/parse_bundle.rs；聚合层：tests/environment.rs）
+cargo test                        # all tests（io 层：tests/parse_bundle.rs；聚合层：tests/environment.rs；纹理导出：tests/texture_export.rs）
 cargo test load_from_path         # run a single test by name
 cargo test --test parse_bundle    # run just the integration test file
 cargo test --test environment     # run just the environment 聚合层 tests
+cargo test --test texture_export  # run just the 纹理导出 tests（受 export feature 门控）
 cargo run                         # 默认遍历 example/，列出全部对象 + 解析状态 + 汇总
 cargo run -- path/to/x.bundle     # parse a specific bundle（同上，只处理它）
 cargo run -- example/Prefabs.unity3d  # 单个 bundle
+# 导出 Texture2D 为 PNG（全部方形 ASTC LDR；需 --arknights 解压明日方舟 bundle）：
+cargo run -- --arknights example/chararts/char_002_amiya.ab export -o /tmp/out
 # 重新生成 typed structs（改完 codegen 后必跑）：
 rm -rf crates/generated/src && mkdir -p crates/generated/src
 cargo run -p unity-asset-codegen -- crates/codegen/tests/fixtures/type_tree.tpk crates/generated/src
@@ -94,7 +104,7 @@ Edition is `2024` → requires Rust >= 1.85.
 
 | crate | 职责 |
 |---|---|
-| `unity-asset-rs`（根 crate，`src/`） | io 层（UnityFS 解包）+ 对象解析（SerializedFile/TypeTree/dispatch）+ bin（main.rs，含 list / object 子命令；list 带解析状态 + 汇总统计 + 失败退出码） |
+| `unity-asset-rs`（根 crate，`src/`） | io 层（UnityFS 解包）+ 对象解析（SerializedFile/TypeTree/dispatch）+ 纹理导出（`src/texture_export.rs`，ASTC→PNG，`export` feature 默认开）+ bin（main.rs，含 list / object / export 子命令；list 带解析状态 + 汇总统计 + 失败退出码） |
 | [`crates/unity-core`](crates/unity-core) | 共享原语（~150 行，零依赖）：`UnityVersion` / `Endian` / `EndianReader` / `Parse` / `PPtr` |
 | [`crates/codegen`](crates/codegen) | 离线工具（bin + lib）：TPK → Rust。**不 link** unity-core/generated，只 emit 引用它们的源码 |
 | [`crates/generated`](crates/generated) | codegen 产物（独立 crate，~9.4 万行 / 940 文件）：`UnityObject` enum + 各 class 扁平 struct + `impl Parse` + `ClassIDType` |
@@ -110,7 +120,11 @@ Edition is `2024` → requires Rust >= 1.85.
   深嵌套 typetree 下每帧 ~60B 栈消耗累计到 5–6MB，溢出测试线程 2MB 默认栈。现已在
   根 `Cargo.toml` 设 `[profile.dev]`/`[profile.test] opt-level=1`，触发栈槽复用后 2MB
   默认栈足够，无需 workaround。备选方案（box+arena，类似 oxc）见路线图，未实现。
-- 它们依赖已提交的 fixture `example/char_002_amiya.ab` —— **不要删除或修改它**。
+- 纹理导出测试在 `tests/texture_export.rs`（integration，`export` feature 门控）。用
+  `example/DownloadCommonUI.unity3d`（标准 Unity bundle，2 个 ASTC_RGB_6x6 纹理，像素走
+  `.resS` streaming）端到端验证 streaming 解析 → ASTC 解码 → PNG 编码（输出尺寸 / 非空白 / PNG 签名）。
+  明日方舟 `chararts` bundle 因其 LZ4 变体 codec 在 CLI 层（非库）不在测试覆盖内。
+- 它们依赖已提交的 fixture `example/char_002_amiya.ab` / `example/DownloadCommonUI.unity3d` —— **不要删除或修改它们**。
 - 期望字节值（`EXPECTED_FIRST16`、`EXPECTED_LAST16`、sizes、revision）是
   **bit-for-bit 对照过 UnityPy** 的。改它们意味着改了 parser 语义；只有拿到验证过的参考输出才更新。
 - CLI 的 `list` 子命令（`src/main.rs`）兼做对象解析的端到端验证：默认遍历 `example/`
@@ -160,6 +174,12 @@ Edition is `2024` → requires Rust >= 1.85.
   `phase_a` 用 `leaves()` 展平消费。`.resS` 流数据走 `streaming_data`（空路径→`None`，对齐 AssetRipper，非
   UnityPy stem 推导）。命名归一化 `src/names.rs::fix_file_identifier` 对齐
   `SpecialFileNames.FixFileIdentifier`。`src/detect.rs` 做 UnityFS + gzip 签名嗅探（目录扫描用）。
+- **`src/texture_export.rs`**（`export` feature）：`TextureFormat` 是手写 enum（codegen 不产
+  TextureFormat，`Texture2D.m_format` 是裸 `i32`），数值对照 UnityPy `enums/TextureFormat.py`。
+  ASTC 解码委托 path 依赖 `texture-decoder-rs`（按 footprint 命名函数，运行时 match 分派；
+  自动做块边缘裁剪）。Y 翻转在 `flip_vertical_in_place`（Unity 纹理 bottom-up，PNG top-down，
+  对齐 UnityPy 默认 `FLIP_TOP_BOTTOM`）。**明日方舟 LZ4 变体 codec 放 CLI 层（`AkLz4Decompressor`
+  在 `src/main.rs`）**——遵守「不在库里硬编码游戏 codec」；chararts bundle 需 `--arknights`。
 - 错误用 `snafu`。在 `src/error.rs` 加变体时遵循既有 `#[snafu(display(...))]` +
   `#[snafu(visibility(pub))]` 模式。
 
@@ -172,7 +192,8 @@ Edition is `2024` → requires Rust >= 1.85.
   `ObjectInfo`/`FileIdentifier`/`UnityObject`/`ClassIDType` + typetree 类型 + `unity_core`
   的 `Endian`/`PPtr`/`UnityVersion`）+ 聚合层（`Environment`/`EnvironmentBuilder`/`EnvironmentObject`/
   `AssetCollection`/`ResourceFile`/`ParseFailure`/`PPtrLike`/`DependencyProvider`/
-  `ResourceProvider`）。
+  `ResourceProvider`）+ 纹理导出（`export` feature：`texture_export::TextureFormat`/
+  `decode_astc`/`write_png`/`texture_pixel_bytes`/`TextureExportError`）。
 
 ## Reference docs (read before non-trivial work)
 

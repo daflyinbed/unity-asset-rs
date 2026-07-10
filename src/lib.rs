@@ -22,6 +22,8 @@ pub mod format;
 pub mod names;
 pub mod object_parser;
 mod serialized_file;
+#[cfg(feature = "export")]
+pub mod texture_export;
 pub mod typetree;
 
 // ── generated crate 桥接 ──
