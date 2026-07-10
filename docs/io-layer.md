@@ -285,7 +285,7 @@ enum/sniff + 多容器格式（UnityWeb/UnityRaw/UnityWebData）+ gzip/brotli �
 
 当前 io 层把所有 block 解压并 `extend_from_slice` 拼成一个 `Vec<u8>`，再按 node `slice`
 成 `Bytes`（共享 Arc）。SerializedFile / objects 是**调用方逐个按需 parse**（见
-`src/main.rs` / `src/bin/verify_codegen.rs`），没有 `World` 聚合层。`.resS` 独立拷贝
+`src/main.rs`），没有 `World` 聚合层。`.resS` 独立拷贝
 分离策略由聚合层 `Environment` 完成（`copy_from_slice` detach，详见
 [`environment-layer.md`](environment-layer.md)）。
 

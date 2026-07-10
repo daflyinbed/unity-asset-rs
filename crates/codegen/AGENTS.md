@@ -35,7 +35,7 @@ cargo run    -p unity-asset-codegen --example explain_inheritance  # 查看 TPK 
   首版本 3.4）来自 ADR-0001 §9，与真实 AssetRipper brotli TPK 对齐。
 - fixture `tests/fixtures/type_tree.tpk`（brotli 压缩 ~186KB）已提交，勿删改。
 - 没有 emit 阶段的单元测试；emit 正确性靠 `crates/generated` 能否编译 + 主 crate
-  `src/bin/verify_codegen.rs` 实跑 `example/` 下全部 bundle 验证（默认遍历目录）。
+  `cargo run`（`src/main.rs`）实跑 `example/` 下全部 bundle 验证（默认遍历目录）。
 - `pipeline.rs` 的 `merged_order_compatible` 有单元测试（覆盖「新字段插在现有字段
   之间」的核心场景）。
 
@@ -222,7 +222,7 @@ crates/generated/src/
 
 - **TPK 与具体 bundle 仍可能不匹配**：typed parse 失败时，主 crate 的
   `object_parser.rs` 会自动回退到 bundle 内嵌 TypeTree 解释器（设计如此）。
-  `verify_codegen` 默认跑 `example/` 下全部 bundle（char_002_amiya / Combine /
+  `cargo run`（`src/main.rs`）默认跑 `example/` 下全部 bundle（char_002_amiya / Combine /
   DownloadClassIcons / DownloadCommonUI / Prefabs），共 ~2900 对象 0 失败。
   `CircleCollider2D`/`Rigidbody2D`/`SpriteRenderer`/`AssetBundle` 等在
   `example/char_002_amiya.ab`（Unity 2017.4）上 typed parse 成功（修复了

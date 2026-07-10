@@ -60,7 +60,7 @@ ParsedObject { Typed(UnityObject) | Dynamic(Value) }
 ```
 
 `.resS` 是 streaming-resource 伴生文件（纹理/音频流数据），不是 SerializedFile，跳过
-（见 `src/bin/verify_codegen.rs`）。
+（见 `src/main.rs`）。
 
 ---
 
@@ -398,9 +398,8 @@ for bf in &bundle.files {
 }
 ```
 
-完整示例见 `src/main.rs`（demo，dump typed/dynamic/monobehaviour 字段）和
-`src/bin/verify_codegen.rs`（端到端验证：对 bundle 里全部对象跑 parse，统计
-typed/monobehaviour/dynamic/失败）。
+完整示例见 `src/main.rs`：`list` 子命令对 bundle 里全部对象跑 parse，标注
+typed/monobehaviour/dynamic/失败并统计汇总；`object` 子命令 dump 单个对象的字段。
 
 ---
 

@@ -1,14 +1,17 @@
 //! inspect CLI：浏览 Unity AssetBundle（.ab / .unity3d）。
 //!
 //! 用法：
-//!   unity-asset-rs <path>                 # 列出 bundle 头 + 内部文件 + 对象表（= list）
-//!   unity-asset-rs <path> list            # 同上
+//!   unity-asset-rs [path]                 # 列出对象表 + 解析状态 + 汇总（= list）
+//!   unity-asset-rs [path] list            # 同上
 //!   unity-asset-rs <path> object <path_id># dump 单个对象的字段
+//!
+//! 不传 path 时默认遍历 `example/`；传目录时递归扫描全部 bundle。
+//! list 末尾附解析汇总（typed / dynamic / monobehaviour / fail），有失败时退出码 1。
 //!
 //! 依赖 `Environment` 聚合层（eager parse 全部对象 + collection 分组）。
 //! debug 模式由 `Cargo.toml` 的 `profile.dev opt-level=1` 保证不爆栈。
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 use std::sync::Arc;
 
@@ -17,7 +20,7 @@ use generated::classes::texture2_d::Texture2DMNameVariant;
 
 use unity_asset_rs::{
     load_with, CompressionType, Decompressor, Registry, ClassIDType, Environment, Error, LoadedFile,
-    ParsedObject, UnityObject, Value,
+    ParsedObject, ParseFailure, UnityObject, Value,
 };
 
 #[derive(Parser)]
@@ -26,8 +29,8 @@ use unity_asset_rs::{
     about = "inspect Unity AssetBundle (.ab) 文件"
 )]
 struct Cli {
-    /// AssetBundle 路径。
-    path: PathBuf,
+    /// AssetBundle 路径。省略时默认 `example/`；可为文件或目录。
+    path: Option<PathBuf>,
 
     /// 明日方舟（Arknights）自定义 LZ4 变体（劫持 flag 4/5）。
     #[arg(long, alias = "ak")]
@@ -39,7 +42,7 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Cmd {
-    /// 列出 bundle 头信息 + 内部文件 + 对象表（无子命令时也是默认）。
+    /// 列出对象表（含解析状态）+ 汇总统计（无子命令时也是默认）。
     List,
     /// dump 单个对象的字段（typed 走 Debug，dynamic 走 TypeTree Value 树）。
     Object {
@@ -49,7 +52,7 @@ enum Cmd {
     },
 }
 
-/// 在 `EnvironmentBuilder::loaded` move 之前捕获的头信息。
+/// 在 `EnvironmentBuilder::loaded` move 之前捕获的头信息（仅单文件时有值）。
 struct BundleHeader {
     format_version: Option<u32>,
     unity_revision: Option<String>,
@@ -71,21 +74,17 @@ fn main() -> ExitCode {
 }
 
 fn run(cli: &Cli) -> Result<(), String> {
-    let (header, env) = load_env(&cli.path, cli.arknights)?;
+    let path = cli.path.as_deref().unwrap_or_else(|| Path::new("example"));
+    let (header, env) = build_env(path, cli.arknights)?;
     match cli.cmd.as_ref().unwrap_or(&Cmd::List) {
-        Cmd::List => cmd_list(&header, &env),
+        Cmd::List => cmd_list(header.as_ref(), &env),
         Cmd::Object { path_id } => cmd_object(&env, *path_id),
     }
 }
 
-/// 加载资产文件并构建 Environment。返回头信息（在 move 前捕获）+ Environment。
-///
-/// 注意：`EnvironmentBuilder::loaded` 会 move `LoadedFile`，必须在此之前提取
-/// `unity_revision` / `format_version` / 叶子文件列表等字段。
-///
-/// `arknights=true` 时注册 lz4inv 到 flag 4/5（明日方舟私改 LZ4 变体）。
-fn load_env(path: &PathBuf, arknights: bool) -> Result<(BundleHeader, Environment), String> {
-    let registry = if arknights {
+/// 构建 registry（arknights=true 时注册 lz4inv 到 flag 4/5）。
+fn make_registry(arknights: bool) -> Registry {
+    if arknights {
         let mut r = Registry::defaults();
         let ak: Arc<dyn Decompressor> = Arc::new(AkLz4Decompressor);
         r.register(CompressionType(4), ak.clone());
@@ -93,11 +92,28 @@ fn load_env(path: &PathBuf, arknights: bool) -> Result<(BundleHeader, Environmen
         r
     } else {
         Registry::defaults()
-    };
-    let loaded = load_with(path, &registry).map_err(|e| format!("加载资产文件失败: {e}"))?;
-    let header = capture_header(&loaded);
-    let env = Environment::builder().loaded(loaded).build();
-    Ok((header, env))
+    }
+}
+
+/// 加载资产文件（单个或目录）并构建 Environment。
+///
+/// 单文件时返回 `Some(BundleHeader)`（format_version / unity_revision / 文件列表），
+/// 目录扫描时返回 `None`（多 bundle 时 header 无意义）。
+fn build_env(path: &Path, arknights: bool) -> Result<(Option<BundleHeader>, Environment), String> {
+    let registry = make_registry(arknights);
+    if path.is_dir() {
+        let env = Environment::builder()
+            .registry(&registry)
+            .scan_dir(path)
+            .map_err(|e| format!("扫描目录失败: {e}"))?
+            .build();
+        Ok((None, env))
+    } else {
+        let loaded = load_with(path, &registry).map_err(|e| format!("加载资产文件失败: {e}"))?;
+        let header = capture_header(&loaded);
+        let env = Environment::builder().loaded(loaded).build();
+        Ok((Some(header), env))
+    }
 }
 
 /// 从 `LoadedFile` 树提取展示用头信息（顶层 Container 的 unity_revision / format_version
@@ -125,25 +141,34 @@ fn capture_header(loaded: &LoadedFile) -> BundleHeader {
 
 // ── 子命令 ──
 
-fn cmd_list(header: &BundleHeader, env: &Environment) -> Result<(), String> {
-    let fv = header
-        .format_version
-        .map(|v| format!("v{v}"))
-        .unwrap_or_else(|| "?".to_string());
-    let ur = header
-        .unity_revision
-        .clone()
-        .unwrap_or_else(|| "?".to_string());
-    println!(
-        "bundle: format {fv}, engine {ur}, {} internal files",
-        header.files.len()
-    );
-    println!("\n内部文件:");
-    for (name, size) in &header.files {
-        println!("  {name:<40} {size:>10} bytes");
+/// 列出对象表（每行含 path_id / class / 解析方式 / 展示名）+ 末尾汇总。
+/// 有解析失败时返回 Err（main 据此返回退出码 1）。
+fn cmd_list(header: Option<&BundleHeader>, env: &Environment) -> Result<(), String> {
+    // 单文件时显示 bundle header（format / revision / 内部文件列表）。
+    if let Some(h) = header {
+        let fv = h
+            .format_version
+            .map(|v| format!("v{v}"))
+            .unwrap_or_else(|| "?".to_string());
+        let ur = h
+            .unity_revision
+            .clone()
+            .unwrap_or_else(|| "?".to_string());
+        println!(
+            "bundle: format {fv}, engine {ur}, {} internal files",
+            h.files.len()
+        );
+        println!("\n内部文件:");
+        for (name, size) in &h.files {
+            println!("  {name:<40} {size:>10} bytes");
+        }
     }
 
     println!("\n对象:");
+    let mut typed = 0usize;
+    let mut mono = 0usize;
+    let mut dynamic = 0usize;
+
     for (col_idx, col) in env.collections().iter().enumerate() {
         println!(
             "\n== collection[{col_idx}] {} (unity={}, endian={:?}, {} assets) ==",
@@ -153,27 +178,33 @@ fn cmd_list(header: &BundleHeader, env: &Environment) -> Result<(), String> {
         let mut rows: Vec<(i64, &unity_asset_rs::EnvironmentObject)> = col
             .assets
             .iter()
-            .filter_map(|(&pid, &obj_idx)| {
-                env.objects().get(obj_idx).map(|o| (pid, o))
-            })
+            .filter_map(|(&pid, &obj_idx)| env.objects().get(obj_idx).map(|o| (pid, o)))
             .collect();
         rows.sort_by_key(|(pid, _)| *pid);
         for (pid, obj) in &rows {
             let class = class_name(obj.class_id);
             let name = obj_display_name(&obj.object);
-            println!("  {pid:>20}  {class:<22}  {name}");
+            let (tag, label) = parse_status(&obj.object);
+            match label {
+                "typed" => typed += 1,
+                "mono" => mono += 1,
+                "dynamic" => dynamic += 1,
+                _ => {}
+            }
+            println!("  {pid:>20}  {class:<22}  {tag:<12}  {name}");
         }
     }
 
     let failures = env.failures();
+    let fail_count = failures.len();
     if !failures.is_empty() {
-        println!("\n解析失败（{} 条）:", failures.len());
+        println!("\n解析失败（{fail_count} 条）:");
         for f in failures {
             match f {
-                unity_asset_rs::ParseFailure::File { name, error } => {
+                ParseFailure::File { name, error } => {
                     println!("  [file] {name}: {error}");
                 }
-                unity_asset_rs::ParseFailure::Object {
+                ParseFailure::Object {
                     collection,
                     path_id,
                     class_id,
@@ -188,7 +219,17 @@ fn cmd_list(header: &BundleHeader, env: &Environment) -> Result<(), String> {
         }
     }
 
-    Ok(())
+    println!("\n========== 汇总 ==========");
+    println!("typed 成功:     {typed}");
+    println!("monobehaviour:  {mono}");
+    println!("dynamic:        {dynamic}");
+    println!("失败:           {fail_count}");
+
+    if fail_count > 0 {
+        Err(format!("{fail_count} 个对象/文件解析失败"))
+    } else {
+        Ok(())
+    }
 }
 
 fn cmd_object(env: &Environment, path_id: i64) -> Result<(), String> {
@@ -247,6 +288,15 @@ impl Decompressor for AkLz4Decompressor {
 }
 
 // ── 辅助函数 ──
+
+/// 解析方式 → (展示标签, 分类短名)。
+fn parse_status(obj: &ParsedObject) -> (&'static str, &'static str) {
+    match obj {
+        ParsedObject::Typed(_) => ("✓ typed", "typed"),
+        ParsedObject::MonoBehaviour(_) => ("✓ mono", "mono"),
+        ParsedObject::Dynamic(_) => ("✓ dynamic", "dynamic"),
+    }
+}
 
 /// class_id -> 人类可读名（`ClassIDType` 无 Display，用 Debug；unknown id 原样显示）。
 ///

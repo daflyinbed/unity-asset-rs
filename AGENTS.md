@@ -76,10 +76,9 @@ cargo test                        # all tests（io 层：tests/parse_bundle.rs�
 cargo test load_from_path         # run a single test by name
 cargo test --test parse_bundle    # run just the integration test file
 cargo test --test environment     # run just the environment 聚合层 tests
-cargo run                         # bin 默认 example/char_002_amiya.ab，dump 全部对象
-cargo run -- path/to/x.bundle     # parse a specific bundle
-cargo run --bin verify_codegen    # 端到端：默认遍历 example/ 下全部 bundle，跑 typed/TypeTree，统计成败
-cargo run --bin verify_codegen -- example/Prefabs.unity3d  # 只跑单个 bundle（或单个目录）
+cargo run                         # 默认遍历 example/，列出全部对象 + 解析状态 + 汇总
+cargo run -- path/to/x.bundle     # parse a specific bundle（同上，只处理它）
+cargo run -- example/Prefabs.unity3d  # 单个 bundle
 # 重新生成 typed structs（改完 codegen 后必跑）：
 rm -rf crates/generated/src && mkdir -p crates/generated/src
 cargo run -p unity-asset-codegen -- crates/codegen/tests/fixtures/type_tree.tpk crates/generated/src
@@ -95,7 +94,7 @@ Edition is `2024` → requires Rust >= 1.85.
 
 | crate | 职责 |
 |---|---|
-| `unity-asset-rs`（根 crate，`src/`） | io 层（UnityFS 解包）+ 对象解析（SerializedFile/TypeTree/dispatch）+ bin（main / verify_codegen） |
+| `unity-asset-rs`（根 crate，`src/`） | io 层（UnityFS 解包）+ 对象解析（SerializedFile/TypeTree/dispatch）+ bin（main.rs，含 list / object 子命令；list 带解析状态 + 汇总统计 + 失败退出码） |
 | [`crates/unity-core`](crates/unity-core) | 共享原语（~150 行，零依赖）：`UnityVersion` / `Endian` / `EndianReader` / `Parse` / `PPtr` |
 | [`crates/codegen`](crates/codegen) | 离线工具（bin + lib）：TPK → Rust。**不 link** unity-core/generated，只 emit 引用它们的源码 |
 | [`crates/generated`](crates/generated) | codegen 产物（独立 crate，~9.4 万行 / 940 文件）：`UnityObject` enum + 各 class 扁平 struct + `impl Parse` + `ClassIDType` |
@@ -114,9 +113,9 @@ Edition is `2024` → requires Rust >= 1.85.
 - 它们依赖已提交的 fixture `example/char_002_amiya.ab` —— **不要删除或修改它**。
 - 期望字节值（`EXPECTED_FIRST16`、`EXPECTED_LAST16`、sizes、revision）是
   **bit-for-bit 对照过 UnityPy** 的。改它们意味着改了 parser 语义；只有拿到验证过的参考输出才更新。
-- `src/bin/verify_codegen.rs` 是对象解析的端到端验证：默认遍历 `example/` 下全部
-  bundle，对每个 bundle 的全部对象跑 typed/TypeTree，统计 typed 成功 / dynamic / 失败。
-  可传一个路径（文件或目录）只处理它。非测试，手动跑。
+- CLI 的 `list` 子命令（`src/main.rs`）兼做对象解析的端到端验证：默认遍历 `example/`
+  下全部 bundle，对每个对象标注解析方式（typed / dynamic / monobehaviour / fail）并附汇总
+  统计，有失败时退出码 1。可传一个路径（文件或目录）只处理它。非测试，手动跑。
 - codegen 的 TPK reader 黄金测试在 `crates/codegen/tests/tpk_read.rs`，数字（1395 版本
   / 412 class / 首版本 3.4）来自真实 AssetRipper brotli TPK。
 - 测试 init `env_logger` at `debug`；`RUST_LOG=trace` 看详细 block / typetree 解码。

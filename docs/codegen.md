@@ -559,11 +559,11 @@ https://nightly.link/AssetRipper/Tpk/workflows/type_tree_tpk/master/<compression
 |---|---|---|
 | PPtr 非 generic | 所有 `PPtr<X>` 都生成 `PPtr` | 无类型区分；因 TPK 里有些 target（如 PrefabInstance）被改名/移除，generic 会要占位 struct |
 | `VersionGate` 支持 Since/Range | 不支持 Disjoint | 罕见「消失后重现」字段会落到 Since，老版本可能多读字节 |
-| emit 字符串拼接 | 无语法校验 | 边界 bug 容易引入（fixture 测试 + 主 crate `verify_codegen` 实跑覆盖主要形态） |
+| emit 字符串拼接 | 无语法校验 | 边界 bug 容易引入（fixture 测试 + 主 crate `cargo run` 实跑覆盖主要形态） |
 | generated crate warnings | `#![allow(...)]` 在 crate 根统一静音 | codegen 已知副产物（多余括号 / 未用版本参数 / 版本门控默认值覆盖 / 含数字类型名） |
 | 只读 release | editor build 的字段会丢失 | — |
 | **旧版 AudioClip 流式音频（pre-5.0）** | 生成代码无条件按内联数组读 `m_AudioData`（`i32 count + bytes + align`） | pre-5.0 且 `m_Stream==2`（Streaming）时，磁盘实际是 `u32 size; u32 offset;` 指向外部 `.resS`，typed parse 会把 `size` 当 count 导致后续全错位/越界。这是**值相关**特殊 case（对应 AssetRipper `Pass505_FixOldAudioClip` + `AudioClipHelper.ReadOldByteArray`），无法靠 TypeTree 变换解决，且 TypeTree 回退路径同样读错（两条路径都失败）。彻底修复需 `.resS` streaming_data 支持（见 §13 路线图）。example 的 Arknights bundle 不触发（AudioClip 均 5.0+ 或非流式）。 |
-| **string 字段无条件 align（正确，非 bug）** | codegen（`emit.rs` 用 `read_aligned_string`）与运行时解释器（`interpret.rs`）都在读完 string 后**无条件** `align(4)` | 这是**正确**行为：AssetRipper `EndianSpanReaderExtensions.ReadUtf8StringAligned` 注释明说 "Alignment after strings has happened since 2.1.0"，即磁盘上所有 string 都被 padding 到 4 字节，与 `0x4000` 标志无关。曾疑为 bug（TPK 中 924/954 个 string 节点未标 0x4000），但实测把 align 改为条件式会让 `verify_codegen` 从 0 失败暴涨到 340 失败（1955 个无 0x4000 的 string 节点实际被遍历）。**不要改成条件 align。** |
+| **string 字段无条件 align（正确，非 bug）** | codegen（`emit.rs` 用 `read_aligned_string`）与运行时解释器（`interpret.rs`）都在读完 string 后**无条件** `align(4)` | 这是**正确**行为：AssetRipper `EndianSpanReaderExtensions.ReadUtf8StringAligned` 注释明说 "Alignment after strings has happened since 2.1.0"，即磁盘上所有 string 都被 padding 到 4 字节，与 `0x4000` 标志无关。曾疑为 bug（TPK 中 924/954 个 string 节点未标 0x4000），但实测把 align 改为条件式会让 `cargo run` 从 0 失败暴涨到 340 失败（1955 个无 0x4000 的 string 节点实际被遍历）。**不要改成条件 align。** |
 
 ---
 
