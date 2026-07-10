@@ -41,7 +41,7 @@ fn assert_expected(loaded: &LoadedFile) {
     let leaves = loaded.leaves();
     assert_eq!(leaves.len(), 1, "exactly one inner file");
 
-    let (name, bytes, _) = leaves[0];
+    let (name, bytes, _, _) = leaves[0];
     assert_eq!(name, EXPECTED_NAME, "node name");
     assert_eq!(bytes.len(), EXPECTED_SIZE, "node size");
 
@@ -78,7 +78,7 @@ fn load_from_bytes_matches_path() {
 fn node_offsets_stay_within_blob() {
     init_logger();
     let loaded = load(AB_PATH).expect("parse bundle");
-    for (name, bytes, _) in loaded.leaves() {
+    for (name, bytes, _, _) in loaded.leaves() {
         assert!(!bytes.is_empty(), "file {} is empty", name);
     }
 }
@@ -87,6 +87,6 @@ fn node_offsets_stay_within_blob() {
 fn total_blob_matches_sum_of_node_sizes() {
     init_logger();
     let loaded = load(AB_PATH).expect("parse bundle");
-    let sum: usize = loaded.leaves().iter().map(|(_, bytes, _)| bytes.len()).sum();
+    let sum: usize = loaded.leaves().iter().map(|(_, bytes, _, _)| bytes.len()).sum();
     assert_eq!(sum, EXPECTED_SIZE, "sum of node sizes");
 }

@@ -64,6 +64,8 @@ pub enum LoadedFile {
         bytes: Bytes,
         /// 从父 Container 继承下来的引擎版本（顶层松散文件为 None）。
         unity_revision: Option<String>,
+        /// sniff 结论（SerializedFile / Resource 等），供下游判断是否 parse。
+        format: FileFormat,
     },
 }
 
@@ -71,20 +73,21 @@ impl LoadedFile {
     /// 深度优先展平到叶子列表，返回 `(name, bytes, unity_revision)` 三元组引用。
     ///
     /// 供下游 `phase_a` 等消费——它们只关心最终的叶子文件，不关心 Container 层级。
-    pub fn leaves(&self) -> Vec<(&str, &Bytes, Option<&str>)> {
+    pub fn leaves(&self) -> Vec<(&str, &Bytes, Option<&str>, FileFormat)> {
         let mut out = Vec::new();
         self.collect_leaves(&mut out);
         out
     }
 
-    fn collect_leaves<'a>(&'a self, out: &mut Vec<(&'a str, &'a Bytes, Option<&'a str>)>) {
+    fn collect_leaves<'a>(&'a self, out: &mut Vec<(&'a str, &'a Bytes, Option<&'a str>, FileFormat)>) {
         match self {
             LoadedFile::Leaf {
                 name,
                 bytes,
                 unity_revision,
+                format,
             } => {
-                out.push((name, bytes, unity_revision.as_deref()));
+                out.push((name, bytes, unity_revision.as_deref(), *format));
             }
             LoadedFile::Container { children, .. } => {
                 for child in children {
@@ -281,11 +284,13 @@ pub fn load_recursive(
             name: name.to_string(),
             bytes: src,
             unity_revision: parent_revision.map(|s| s.to_string()),
+            format: fmt,
         }),
         FileFormat::Resource => Ok(LoadedFile::Leaf {
             name: name.to_string(),
             bytes: src,
             unity_revision: parent_revision.map(|s| s.to_string()),
+            format: fmt,
         }),
         FileFormat::ArchiveBundle => Err(UnsupportedFormatSnafu { format: fmt }.build()),
     }
@@ -311,6 +316,7 @@ fn recurse_entries(
                         name,
                         bytes: Bytes::new(),
                         unity_revision: parent_revision.map(|s| s.to_string()),
+                        format: FileFormat::Resource,
                     }
                 }
             }

@@ -114,7 +114,7 @@ fn capture_header(loaded: &LoadedFile) -> BundleHeader {
     let files = loaded
         .leaves()
         .into_iter()
-        .map(|(name, bytes, _)| (name.to_string(), bytes.len()))
+        .map(|(name, bytes, _, _)| (name.to_string(), bytes.len()))
         .collect();
     BundleHeader {
         format_version,

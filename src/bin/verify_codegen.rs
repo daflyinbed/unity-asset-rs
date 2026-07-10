@@ -83,7 +83,7 @@ fn process_bundle(path: &str, stats: &mut Stats) {
     let leaves = loaded.leaves();
     eprintln!("bundle: {} 个内部文件", leaves.len());
 
-    for (name, bytes, _ur) in &leaves {
+    for (name, bytes, _ur, _fmt) in &leaves {
         // .resS 是 streaming-resource 伴生文件（纹理/音频流数据），不是 SerializedFile。
         if name.ends_with(".resS") {
             stats.skipped_files += 1;

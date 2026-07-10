@@ -13,7 +13,7 @@ use generated::subclasses::streaming_info::{StreamingInfo, StreamingInfoOffsetVa
 use generated::ClassIDType;
 
 use crate::decompress::Registry;
-use crate::format::LoadedFile;
+use crate::format::{FileFormat, LoadedFile};
 use crate::names::fix_file_identifier;
 use crate::object_parser::{parse_object, MonoBehaviour, ParsedObject};
 use crate::serialized_file::FileIdentifier;
@@ -314,7 +314,7 @@ fn phase_a(
     failures: &mut Vec<ParseFailure>,
     pending: &mut Vec<(usize, Vec<FileIdentifier>)>,
 ) {
-    for (name, bytes, _unity_revision) in loaded.leaves() {
+    for (name, bytes, _unity_revision, format) in loaded.leaves() {
         if is_resource_file(name) {
             // detach：copy_from_slice 把资源拷到独立分配，断开与 blob Arc 的共享。
             // 这样 SerializedFile 解析完毕后整个解压 blob 可被释放，避免 .assets
@@ -324,6 +324,10 @@ fn phase_a(
                 name: name.to_string(),
                 bytes: Bytes::copy_from_slice(bytes),
             });
+            continue;
+        }
+        if format != FileFormat::SerializedFile {
+            log::debug!("phase_a: 跳过非 SerializedFile 叶子 {name:?}（sniff={format:?}）");
             continue;
         }
         let sf = match SerializedFile::parse(bytes.clone()) {
