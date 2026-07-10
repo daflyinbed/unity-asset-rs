@@ -13,11 +13,12 @@ use generated::subclasses::streaming_info::{StreamingInfo, StreamingInfoOffsetVa
 use generated::ClassIDType;
 
 use crate::decompress::Registry;
+use crate::format::LoadedFile;
 use crate::names::fix_file_identifier;
 use crate::object_parser::{parse_object, MonoBehaviour, ParsedObject};
 use crate::serialized_file::FileIdentifier;
 use crate::typetree::PPtrValue;
-use crate::{Bundle, Endian, Error, PPtr, SerializedFile, UnityVersion};
+use crate::{Endian, Error, PPtr, SerializedFile, UnityVersion};
 
 /// 资产环境：聚合多个 bundle 的全部对象 + `.resS` 资源 + PPtr 依赖解析。
 ///
@@ -116,8 +117,8 @@ impl PPtrLike for PPtrValue {
 /// 当前 eager 模型在 [`EnvironmentBuilder::build`] 中尚未实际回调此 trait；
 /// 后续接入懒加载（按需加载缺失 bundle）时实现即可，无需改公共 API。
 pub trait DependencyProvider {
-    /// 返回 `Some(Bundle)` 则追加加载该依赖；`None` 则该引用留空（resolve 返回 `None`）。
-    fn find_dependency(&self, _id: &FileIdentifier) -> Option<Bundle> {
+    /// 返回 `Some(LoadedFile)` 则追加加载该依赖；`None` 则该引用留空（resolve 返回 `None`）。
+    fn find_dependency(&self, _id: &FileIdentifier) -> Option<LoadedFile> {
         None
     }
 }
@@ -298,44 +299,44 @@ fn is_resource_file(name: &str) -> bool {
     lower.ends_with(".ress") || lower.ends_with(".resource")
 }
 
-/// Phase A：读 bundle 的全部文件 + eager parse 对象 + 收集资源，灌入给定目标。
+/// Phase A：读 `LoadedFile` 的全部叶子 + eager parse 对象 + 收集资源，灌入给定目标。
 ///
-/// 这是 `Environment::add_bundle_inner` 与 `EnvironmentBuilder::add_bundle` 的共享实现
-/// （两者字段同构）。每个 SerializedFile → 一个 `AssetCollection`（`dependencies[0]=Some(self)`），
-/// `.resS` → `ResourceFile`（`copy_from_slice` detach）。externals 暂存到 `pending`，
-/// 等 [`Environment::resolve_dependencies`] 在全部 collection 建好后统一解析（跨 bundle
+/// 这是 `EnvironmentBuilder::add_loaded` 的共享实现。每个 SerializedFile → 一个
+/// `AssetCollection`（`dependencies[0]=Some(self)`），`.resS` → `ResourceFile`
+/// （`copy_from_slice` detach）。externals 暂存到 `pending`，等
+/// [`Environment::resolve_dependencies`] 在全部 collection 建好后统一解析（跨 bundle
 /// 前向/后向引用都能命中——对齐 AssetRipper 两阶段加载）。
 fn phase_a(
-    bundle: Bundle,
+    loaded: LoadedFile,
     objects: &mut Vec<EnvironmentObject>,
     collections: &mut Vec<AssetCollection>,
     resources: &mut Vec<ResourceFile>,
     failures: &mut Vec<ParseFailure>,
     pending: &mut Vec<(usize, Vec<FileIdentifier>)>,
 ) {
-    for bf in bundle.files {
-        if is_resource_file(&bf.name) {
+    for (name, bytes, _unity_revision) in loaded.leaves() {
+        if is_resource_file(name) {
             // detach：copy_from_slice 把资源拷到独立分配，断开与 blob Arc 的共享。
             // 这样 SerializedFile 解析完毕后整个解压 blob 可被释放，避免 .assets
             // 区域因 .resS 切片的 Arc 共享而驻留（详见 docs/memory-notes.md）。
             resources.push(ResourceFile {
-                name_fixed: fix_file_identifier(&bf.name),
-                name: bf.name,
-                bytes: Bytes::copy_from_slice(&bf.bytes),
+                name_fixed: fix_file_identifier(name),
+                name: name.to_string(),
+                bytes: Bytes::copy_from_slice(bytes),
             });
             continue;
         }
-        let sf = match SerializedFile::parse(bf.bytes) {
+        let sf = match SerializedFile::parse(bytes.clone()) {
             Ok(sf) => sf,
             Err(e) => {
-                failures.push(ParseFailure::File { name: bf.name, error: e });
+                failures.push(ParseFailure::File { name: name.to_string(), error: e });
                 continue;
             }
         };
         let col_idx = collections.len();
         let unity_version = sf.unity_version_parsed;
         let endian = sf.endian;
-        let name = bf.name.clone();
+        let name = name.to_string();
         let name_fixed = fix_file_identifier(&name);
         let refs = sf.ref_type_table();
         let mut assets = HashMap::new();
@@ -457,42 +458,52 @@ impl EnvironmentBuilder {
         self
     }
 
-    /// 加载一个 bundle 文件路径（`fs::read` + 驻留 registry），并入累积区。
+    /// 加载一个资产文件路径（`fs::read` + 递归再派发 + 驻留 registry），并入累积区。
     pub fn path(mut self, path: impl AsRef<Path>) -> Result<Self, crate::Error> {
         let path = path.as_ref();
         let bytes = std::fs::read(path).map_err(|e| crate::Error::Io { source: e })?;
-        let bundle = crate::bundle::parse(Bytes::from(bytes), &self.registry)?;
-        self.add_bundle(bundle);
+        let loaded = crate::format::load_recursive(
+            Bytes::from(bytes),
+            &path.to_string_lossy(),
+            &self.registry,
+            None,
+        )?;
+        self.add_loaded(loaded);
         Ok(self)
     }
 
-    /// 递归扫描目录，对每个 UnityFS bundle（签名嗅探）做 `path`，跳过非 bundle 文件。
+    /// 递归扫描目录，对每个可加载文件做递归再派发，跳过不可识别的文件。
     ///
-    /// 对齐 AssetStudio `LoadFolder`：递归遍历目录树，读头部前 7 字节判断是否为 UnityFS，
-    /// 命中才加载，否则 `log::warn` 静默跳过。gzip/brotli/`UnityWeb` 等当前未嗅探的容器均跳过。
+    /// 对齐 AssetStudio `LoadFolder`：递归遍历目录树，读头部嗅探是否为可加载格式
+    /// （UnityFS / gzip 等），命中才加载，否则 `log::warn` 静默跳过。
     pub fn scan_dir(mut self, path: impl AsRef<Path>) -> Result<Self, crate::Error> {
         let path = path.as_ref();
         let mut any = false;
         for entry in walk_files(path)? {
-            if crate::detect::looks_like_unityfs_path(&entry)? {
+            if crate::detect::looks_like_loadable_path(&entry)? {
                 let bytes =
                     std::fs::read(&entry).map_err(|e| crate::Error::Io { source: e })?;
-                let bundle = crate::bundle::parse(Bytes::from(bytes), &self.registry)?;
-                self.add_bundle(bundle);
+                let loaded = crate::format::load_recursive(
+                    Bytes::from(bytes),
+                    &entry.to_string_lossy(),
+                    &self.registry,
+                    None,
+                )?;
+                self.add_loaded(loaded);
                 any = true;
             } else {
-                log::warn!("scan_dir: 跳过非 UnityFS 文件: {}", entry.display());
+                log::warn!("scan_dir: 跳过非可加载文件: {}", entry.display());
             }
         }
         if !any {
-            log::warn!("scan_dir: {} 下未发现任何 UnityFS bundle", path.display());
+            log::warn!("scan_dir: {} 下未发现任何可加载文件", path.display());
         }
         Ok(self)
     }
 
-    /// 并入一个已解析的 `Bundle`（用户可用自定义 registry 预加载后喂入）。
-    pub fn bundle(mut self, bundle: Bundle) -> Self {
-        self.add_bundle(bundle);
+    /// 并入一个已解析的 `LoadedFile`（用户可用自定义 registry 预加载后喂入）。
+    pub fn loaded(mut self, loaded: LoadedFile) -> Self {
+        self.add_loaded(loaded);
         self
     }
 
@@ -525,10 +536,10 @@ impl EnvironmentBuilder {
         env
     }
 
-    /// Phase A helper：把 bundle 灌入累积的 Vec + 追加 pending_deps。复用 [`phase_a`]。
-    fn add_bundle(&mut self, bundle: Bundle) {
+    /// Phase A helper：把 `LoadedFile` 灌入累积的 Vec + 追加 pending_deps。复用 [`phase_a`]。
+    fn add_loaded(&mut self, loaded: LoadedFile) {
         phase_a(
-            bundle,
+            loaded,
             &mut self.objects,
             &mut self.collections,
             &mut self.resources,

@@ -15,6 +15,9 @@ pub enum Error {
     #[snafu(display("unsupported bundle format version: {version}"))]
     UnsupportedVersion { version: u32 },
 
+    #[snafu(display("unsupported file format: {format:?} (recognized but not implemented)"))]
+    UnsupportedFormat { format: crate::format::FileFormat },
+
     #[snafu(display("unsupported compression type: {compression}"))]
     UnsupportedCompression { compression: u16 },
 

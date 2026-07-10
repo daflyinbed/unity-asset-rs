@@ -12,9 +12,12 @@ bindings.
 TypeTree parsing, codegen'd typed object parsing, and the Environment aggregation
 layer (PPtr deref + `.resS` streaming_data) are all **implemented**:
 
-- **io 层**（UnityFS 解包 + 解压 registry）：`src/bundle.rs` + `src/decompress.rs`。
-  仅支持 UnityFS 容器 + LZMA/LZ4/LZ4HC/NONE 解压；UnityWeb/UnityRaw/gzip/brotli/
-  CN 加密 / 递归再派发未做。
+- **io 层**（递归再派发 + 多容器格式 + 解压 registry）：`src/format.rs`（`FileFormat`
+  enum + `sniff` + `load_recursive` 驱动器，产出 `LoadedFile` 树）+ `src/bundle.rs`
+  （UnityFS `parse_unityfs`）+ `src/containers/`（`rawweb.rs` UnityWeb/UnityRaw +
+  `webfile.rs` UnityWebData + `compressed.rs` gzip/brotli）+ `src/decompress.rs`。
+  支持 UnityFS/UnityWeb/UnityRaw/UnityWebData/gzip/brotli 容器 + LZMA/LZ4/LZ4HC/NONE
+  解压；CN 加密 / Loader / on-demand 解压 / SpillPolicy 未做。
 - **对象解析层**（SerializedFile + TypeTree 解释器 + dispatch/fallback）：
   `src/serialized_file.rs` + `src/typetree/` + `src/object_parser.rs`。
 - **codegen typed structs**：`crates/codegen`（离线工具）从 TPK 生成 `crates/generated`
@@ -22,10 +25,11 @@ layer (PPtr deref + `.resS` streaming_data) are all **implemented**:
 - **聚合层**（Environment）：`src/environment.rs` + `src/names.rs`。eager parse 全部
   对象 + `.resS` 资源 + PPtr 解引用（`dependencies[file_id]` 约定对齐 AssetRipper）+
   streaming_data 零拷贝取数。**跨 bundle 已落地**：`EnvironmentBuilder` 累积多 bundle 后
-  `build()` 一次性全局依赖解析；聚合层唯一构造入口 `Environment::builder()`（`path`/`bundle`/
-  `scan_dir`/`registry`）。`src/detect.rs` 做 UnityFS 签名嗅探。
+  `build()` 一次性全局依赖解析；聚合层唯一构造入口 `Environment::builder()`（`path`/`loaded`/
+  `scan_dir`/`registry`）。`src/detect.rs` 做 UnityFS + gzip 签名嗅探。
 
-**未实现**：gzip/brotli bundle 嗅探（目录扫描只认 `UnityFS`，gzip 静默跳过）、
+**未实现**：CN 加密（`0x100` flag）、Loader/LoaderBuilder 配置入口、
+on-demand 逐块解压、SpillPolicy::AutoTempFile、
 `DependencyProvider`/`ResourceProvider` trait 的实际回调（API 面已留，eager 模型暂不调）、
 bumpalo arena（路线图）、Python 绑定（ADR-0002，未开始）。
 
@@ -119,8 +123,15 @@ Edition is `2024` → requires Rust >= 1.85.
 
 ## Architecture notes that aren't obvious from filenames
 
-- **`src/bundle.rs`** 是 UnityFS 解析器。用私有大端 `Cursor` + 显式边界检查——Unity bundle
-  在磁盘上是**大端**。不要换 `byteorder`，内联 cursor 是有意的。
+- **`src/format.rs`** 是递归再派发驱动器：`FileFormat` enum（闭集）+ `sniff(&[u8])`
+  if/else 链 + `load_recursive`（Container → 逐子条目重新 sniff+parse，产出 `LoadedFile`
+  树）。公共 API `load`/`load_bytes` 返回 `LoadedFile`，不是 `Bundle`。`Bundle` 降为
+  UnityFS parse 的中间结果（`parse_unityfs` 产出）。
+- **`src/containers/`** 是多容器格式解析：`rawweb.rs`（UnityWeb/UnityRaw，共用 header
+  + directory 逻辑，UnityWeb 额外做 LZMA 解压 `scenes[last]`）、`webfile.rs`
+  （UnityWebData，**小端**）、`compressed.rs`（gzip/brotli 外层包裹，解压后递归 sniff）。
+- **`src/bundle.rs`** 是 UnityFS 解析器（`parse_unityfs`）。用私有大端 `Cursor` + 显式边界
+  检查——Unity bundle 在磁盘上是**大端**。不要换 `byteorder`，内联 cursor 是有意的。
 - **`src/cursor.rs`** 是公共可切-endian 游标（io 层用 `Endian::Big`，SerializedFile 读到
   endian 字节后切换，TypeTree 继承）。它 `impl unity_core::EndianReader for Cursor`，
   这是 generated 代码能读字节的实际入口。
@@ -146,9 +157,10 @@ Edition is `2024` → requires Rust >= 1.85.
   （`[0]=self` 约定对齐 AssetRipper `AssetCollection.Dependencies`），PPtr 解引用经
   `dependencies[file_id]` → target collection → `assets[path_id]`。**跨 bundle 已落地**：
   数据模型本就全局扁平，Phase B 全局扫描 `collections`，多 bundle 灌进同一 Environment 即
-  自动 resolve。`.resS` 流数据走 `streaming_data`（空路径→`None`，对齐 AssetRipper，非
+  自动 resolve。入口 `path`/`loaded`/`scan_dir` 接收 `LoadedFile`（递归再派发后的树），
+  `phase_a` 用 `leaves()` 展平消费。`.resS` 流数据走 `streaming_data`（空路径→`None`，对齐 AssetRipper，非
   UnityPy stem 推导）。命名归一化 `src/names.rs::fix_file_identifier` 对齐
-  `SpecialFileNames.FixFileIdentifier`。`src/detect.rs` 做 UnityFS 签名嗅探（目录扫描用）。
+  `SpecialFileNames.FixFileIdentifier`。`src/detect.rs` 做 UnityFS + gzip 签名嗅探（目录扫描用）。
 - 错误用 `snafu`。在 `src/error.rs` 加变体时遵循既有 `#[snafu(display(...))]` +
   `#[snafu(visibility(pub))]` 模式。
 
@@ -156,7 +168,7 @@ Edition is `2024` → requires Rust >= 1.85.
 
 - **Docstrings 和内联注释用中文。** 编辑既有文件时保持一致；新代码与邻居风格一致。
 - 公共 API 刻意保持精简（`src/lib.rs`）：io 入口（`load`/`load_with`/`load_bytes`/
-  `load_bytes_with` + `Bundle`/`BundleFile`/`Registry`/`Decompressor*`）
+  `load_bytes_with` + `LoadedFile`/`FileFormat`/`Bundle`/`RawEntry`/`Registry`/`Decompressor*`）
   + 对象解析（`parse_object`/`ParsedObject`/`SerializedFile`/`SerializedType`/
   `ObjectInfo`/`FileIdentifier`/`UnityObject`/`ClassIDType` + typetree 类型 + `unity_core`
   的 `Endian`/`PPtr`/`UnityVersion`）+ 聚合层（`Environment`/`EnvironmentBuilder`/`EnvironmentObject`/

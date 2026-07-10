@@ -252,9 +252,9 @@ fn cross_bundle_pptr_resolution_resolved_count_increases() {
 }
 
 #[test]
-fn bundle_method_accepts_preloaded_bundle() {
-    // 用户可用自定义 registry 预加载 bundle，再喂入 builder（.bundle() 入口）。
+fn loaded_method_accepts_preloaded_file() {
+    // 用户可用自定义 registry 预加载资产文件，再喂入 builder（.loaded() 入口）。
     let raw = unity_asset_rs::load(DEFAULT_BUNDLE).expect("预加载失败");
-    let env = Environment::builder().bundle(raw).build();
-    assert!(!env.collections().is_empty(), ".bundle() 应能并入预加载的 bundle");
+    let env = Environment::builder().loaded(raw).build();
+    assert!(!env.collections().is_empty(), ".loaded() 应能并入预加载的资产文件");
 }

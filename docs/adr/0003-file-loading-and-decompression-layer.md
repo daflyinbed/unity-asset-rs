@@ -1,6 +1,6 @@
 # ADR-0003: 文件加载与解压层 —— 递归再派发 + 三轴差异化扩展
 
-> Status: Accepted（核心解压 registry 已落地；递归再派发 / 多容器格式 / CN 加密未实现，见文末「修订」附录）
+> Status: Accepted（核心解压 registry + 递归再派发 + 多容器格式 + gzip/brotli 已落地；CN 加密 / Loader / 错误隔离未实现，见文末「修订」附录）
 > Date: 2026-06-20
 > Deciders: unity-asset-rs 项目维护者
 
@@ -119,18 +119,22 @@ ADR-0001 解决了"给定 `SerializedFile` 字节如何解析对象"。本决策
 | UnityFS 解析 | ✅ `src/bundle.rs::parse`，format 6/7/8，大端 Cursor |
 | Unity LZMA ≠ 标准 .lzma（UseProvided unpacked size） | ✅ 与 `crates/codegen/src/tpk/compression.rs` 同源 |
 | Arknights LZ4 变体接入扩展点 | ✅ 用户自行实现 + `register(CompressionType(4/5), ...)`，库不内置游戏代码 |
+| 递归再派发（Container → 逐子条目重新 sniff + parse） | ✅ `src/format.rs::load_recursive`，`LoadedFile` 树（Container/Leaf） |
+| `enum FileFormat` 闭集 + `sniff` if/else + `match parse` | ✅ `src/format.rs`（`FileFormat` enum + `sniff` + `load_recursive`） |
+| UnityWeb / UnityRaw / UnityWebData / gzip / brotli | ✅ `src/containers/`（`rawweb.rs` + `webfile.rs` + `compressed.rs`） |
+| `load` / `load_bytes` 返回 `LoadedFile`（树） | ✅ 原 `Bundle`（扁平 files）改为 `LoadedFile`（递归后的树），`Bundle` 降为 UnityFS 中间结果 |
 
 ### 未实现（范围收缩 / 推迟）
 
 | 正文项 | 状态 |
 |---|---|
-| 递归再派发（Container → 逐子条目重新 sniff + parse） | ⬜ 当前只硬判 `signature == "UnityFS"` |
-| `enum FileFormat` 闭集 + `sniff` if/else + `match parse` | ⬜ |
-| UnityWeb / UnityRaw / UnityWebData / gzip / brotli | ⬜ 仅 UnityFS |
+| 递归再派发（Container → 逐子条目重新 sniff + parse） | ✅ `src/format.rs::load_recursive` |
+| `enum FileFormat` 闭集 + `sniff` if/else + `match parse` | ✅ `src/format.rs`（`FileFormat` enum + `sniff` + `load_recursive`） |
+| UnityWeb / UnityRaw / UnityWebData / gzip / brotli | ✅ `src/containers/`（`rawweb.rs` + `webfile.rs` + `compressed.rs`） |
 | CN 加密（concrete `ArchiveStorageDecryptor` + `CnKey`） | ⬜ |
 | `Loader` / `LoaderBuilder` 配置入口 | ⬜ 当前是 `load` / `load_with` 自由函数 |
-| `World` / `Tree` 聚合 + `.resS` 独立拷贝分离策略 | ⬜ 无聚合层；`Bundle` 只是解包后的文件名 + 字节 |
-| 错误隔离 `Failure` 叶节点 | ⬜ 错误直接向上传播 |
-| `SerializedFileMeta.reader() -> Cursor<&[u8]>` 交接 ADR-0001 | 实际交接方式不同：主 crate 直接对 `BundleFile.bytes` 调 `SerializedFile::parse`，见 `docs/object-layer.md` |
+| `World` / `Tree` 聚合 + `.resS` 独立拷贝分离策略 | ⬜ io 层无聚合层；`.resS` 分离已由聚合层 `Environment` 落地（见 `docs/environment-layer.md`） |
+| 错误隔离 `Failure` 叶节点 | ⬜（部分）`load_recursive` 对子条目失败降级为空 Leaf；顶层 parse 失败仍向上传播 |
+| `SerializedFileMeta.reader() -> Cursor<&[u8]>` 交接 ADR-0001 | 实际交接方式不同：主 crate 直接对 `LoadedFile::Leaf.bytes` 调 `SerializedFile::parse`，见 `docs/object-layer.md` |
 
-正文关于「解压开集用 registry、覆盖任意 flag」的核心论证（Arknights 劫持 flag 4/5）与实现一致，仍然成立；其余「递归再派发 + 多容器 + CN 加密」是后续路线图。
+正文关于「解压开集用 registry、覆盖任意 flag」的核心论证（Arknights 劫持 flag 4/5）与实现一致，仍然成立。「递归再派发 + 多容器格式 + gzip/brotli」已落地；CN 加密是后续路线图。

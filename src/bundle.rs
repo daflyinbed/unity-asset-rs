@@ -3,7 +3,7 @@ use bytes::Bytes;
 use crate::cursor::{Cursor, Endian};
 use crate::decompress::{CompressionType, Registry};
 use crate::error::{
-    BadSignatureSnafu, DecompressSnafu, Result, TruncatedSnafu, UnsupportedCompressionSnafu,
+    BadSignatureSnafu, DecompressSnafu, Result, TruncatedSnafu, UnsupportedVersionSnafu,
 };
 
 /// archive flag：低 6 位 = blocks-info 压缩类型。
@@ -36,17 +36,24 @@ struct Node {
     path: String,
 }
 
-/// UnityFS 解析结果（内部文件条目）。
+/// UnityFS 解包中间结果（递归再派发前）。子条目是原始字节，尚未 sniff。
+///
+/// 由 [`parse_unityfs`] 产出；递归驱动器 `load_recursive` 会对每个 [`RawEntry`]
+/// 重新 sniff + parse（见 [`crate::format`]）。
 pub struct Bundle {
     /// 引擎版本（如 "2017.4.39f1"），供后续 SerializedFile 继承。
     pub unity_revision: String,
     /// bundle 版本（format，如 6/7/8）。
     pub format_version: u32,
-    /// 解出的内部文件（.assets / .resS 等），字节已解压。
-    pub files: Vec<BundleFile>,
+    /// 解出的内部文件（.assets / .resS 等），字节已解压但尚未 sniff。
+    pub entries: Vec<RawEntry>,
 }
 
-pub struct BundleFile {
+/// bundle 内的一个原始子条目（解压后字节切片 + 名字 + node flags）。
+///
+/// 尚未经过格式嗅探——可能是 SerializedFile、`.resS` 资源、甚至嵌套 bundle。
+/// 递归驱动器 `load_recursive` 会对其重新 sniff + parse。
+pub struct RawEntry {
     pub name: String,
     pub bytes: Bytes,
     pub flags: u32,
@@ -65,10 +72,13 @@ fn align_up(pos: usize, alignment: usize) -> usize {
     }
 }
 
-/// 解析一个 UnityFS bundle。
+/// 解析一个 UnityFS bundle（format 6/7/8）。
+///
+/// 只解外层结构 + 逐块解压 + 按 node 切片，产出 [`Bundle`]（原始子条目列表）。
+/// 不对子条目做格式嗅探——那是递归驱动器 `load_recursive` 的职责（见 [`crate::format`]）。
 ///
 /// `registry` 决定如何解压各压缩块；默认用 [`Registry::defaults`]。
-pub fn parse(src: Bytes, registry: &Registry) -> Result<Bundle> {
+pub fn parse_unityfs(src: Bytes, registry: &Registry) -> Result<Bundle> {
     let total = src.len();
 
     let mut c = Cursor::new(&src, Endian::Big);
@@ -79,8 +89,8 @@ pub fn parse(src: Bytes, registry: &Registry) -> Result<Bundle> {
     }
     let format_version = c.read_u32("format version")?;
     if format_version < 6 {
-        return Err(UnsupportedCompressionSnafu {
-            compression: format_version as u16,
+        return Err(UnsupportedVersionSnafu {
+            version: format_version,
         }
         .build());
     }
@@ -240,7 +250,7 @@ pub fn parse(src: Bytes, registry: &Registry) -> Result<Bundle> {
 
     // 按 node 切片。
     let blob_bytes = Bytes::from(blob);
-    let mut files = Vec::with_capacity(nodes.len());
+    let mut entries = Vec::with_capacity(nodes.len());
     for nd in nodes {
         let off = nd.offset as usize;
         let sz = nd.size as usize;
@@ -250,7 +260,7 @@ pub fn parse(src: Bytes, registry: &Registry) -> Result<Bundle> {
             }
             .build());
         }
-        files.push(BundleFile {
+        entries.push(RawEntry {
             name: nd.path,
             bytes: blob_bytes.slice(off..off + sz),
             flags: nd.flags,
@@ -260,6 +270,6 @@ pub fn parse(src: Bytes, registry: &Registry) -> Result<Bundle> {
     Ok(Bundle {
         unity_revision,
         format_version,
-        files,
+        entries,
     })
 }

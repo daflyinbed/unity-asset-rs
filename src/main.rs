@@ -10,12 +10,14 @@
 
 use std::path::PathBuf;
 use std::process::ExitCode;
+use std::sync::Arc;
 
 use clap::{Parser, Subcommand};
 use generated::classes::texture2_d::Texture2DMNameVariant;
 
 use unity_asset_rs::{
-    load, ClassIDType, Environment, ParsedObject, UnityObject, Value,
+    load_with, CompressionType, Decompressor, Registry, ClassIDType, Environment, Error, LoadedFile,
+    ParsedObject, UnityObject, Value,
 };
 
 #[derive(Parser)]
@@ -26,6 +28,10 @@ use unity_asset_rs::{
 struct Cli {
     /// AssetBundle 路径。
     path: PathBuf,
+
+    /// 明日方舟（Arknights）自定义 LZ4 变体（劫持 flag 4/5）。
+    #[arg(long, alias = "ak")]
+    arknights: bool,
 
     #[command(subcommand)]
     cmd: Option<Cmd>,
@@ -43,12 +49,12 @@ enum Cmd {
     },
 }
 
-/// 在 `EnvironmentBuilder::bundle` move bundle 之前捕获的头信息。
+/// 在 `EnvironmentBuilder::loaded` move 之前捕获的头信息。
 struct BundleHeader {
-    format_version: u32,
-    unity_revision: String,
-    /// (name, bytes.len, flags)。
-    files: Vec<(String, usize, u32)>,
+    format_version: Option<u32>,
+    unity_revision: Option<String>,
+    /// (name, bytes.len)。
+    files: Vec<(String, usize)>,
 }
 
 fn main() -> ExitCode {
@@ -65,44 +71,76 @@ fn main() -> ExitCode {
 }
 
 fn run(cli: &Cli) -> Result<(), String> {
-    let (header, env) = load_env(&cli.path)?;
+    let (header, env) = load_env(&cli.path, cli.arknights)?;
     match cli.cmd.as_ref().unwrap_or(&Cmd::List) {
         Cmd::List => cmd_list(&header, &env),
         Cmd::Object { path_id } => cmd_object(&env, *path_id),
     }
 }
 
-/// 加载 bundle 并构建 Environment。返回头信息（在 move 前捕获）+ Environment。
+/// 加载资产文件并构建 Environment。返回头信息（在 move 前捕获）+ Environment。
 ///
-/// 注意：`EnvironmentBuilder::bundle` 会 move bundle，必须在此之前提取
-/// `format_version` / `unity_revision` / `files` 等字段。
-fn load_env(path: &PathBuf) -> Result<(BundleHeader, Environment), String> {
-    let bundle = load(path).map_err(|e| format!("加载 bundle 失败: {e}"))?;
-    let header = BundleHeader {
-        format_version: bundle.format_version,
-        unity_revision: bundle.unity_revision.clone(),
-        files: bundle
-            .files
-            .iter()
-            .map(|f| (f.name.clone(), f.bytes.len(), f.flags))
-            .collect(),
+/// 注意：`EnvironmentBuilder::loaded` 会 move `LoadedFile`，必须在此之前提取
+/// `unity_revision` / `format_version` / 叶子文件列表等字段。
+///
+/// `arknights=true` 时注册 lz4inv 到 flag 4/5（明日方舟私改 LZ4 变体）。
+fn load_env(path: &PathBuf, arknights: bool) -> Result<(BundleHeader, Environment), String> {
+    let registry = if arknights {
+        let mut r = Registry::defaults();
+        let ak: Arc<dyn Decompressor> = Arc::new(AkLz4Decompressor);
+        r.register(CompressionType(4), ak.clone());
+        r.register(CompressionType(5), ak);
+        r
+    } else {
+        Registry::defaults()
     };
-    let env = Environment::builder().bundle(bundle).build();
+    let loaded = load_with(path, &registry).map_err(|e| format!("加载资产文件失败: {e}"))?;
+    let header = capture_header(&loaded);
+    let env = Environment::builder().loaded(loaded).build();
     Ok((header, env))
+}
+
+/// 从 `LoadedFile` 树提取展示用头信息（顶层 Container 的 unity_revision / format_version
+/// + 全部叶子的 name/size）。非 Container 顶层（如松散 SerializedFile）则字段为 None。
+fn capture_header(loaded: &LoadedFile) -> BundleHeader {
+    let (format_version, unity_revision) = match loaded {
+        LoadedFile::Container {
+            unity_revision,
+            format_version,
+            ..
+        } => (*format_version, unity_revision.clone()),
+        LoadedFile::Leaf { .. } => (None, None),
+    };
+    let files = loaded
+        .leaves()
+        .into_iter()
+        .map(|(name, bytes, _)| (name.to_string(), bytes.len()))
+        .collect();
+    BundleHeader {
+        format_version,
+        unity_revision,
+        files,
+    }
 }
 
 // ── 子命令 ──
 
 fn cmd_list(header: &BundleHeader, env: &Environment) -> Result<(), String> {
+    let fv = header
+        .format_version
+        .map(|v| format!("v{v}"))
+        .unwrap_or_else(|| "?".to_string());
+    let ur = header
+        .unity_revision
+        .clone()
+        .unwrap_or_else(|| "?".to_string());
     println!(
-        "bundle: format v{}, engine {}, {} internal files",
-        header.format_version,
-        header.unity_revision,
+        "bundle: format {fv}, engine {ur}, {} internal files",
         header.files.len()
     );
     println!("\n内部文件:");
-    for (name, size, flags) in &header.files {
-        println!("  {name:<40} {size:>10} bytes  flags={flags}");
+    for (name, size) in &header.files {
+        println!("  {name:<40} {size:>10} bytes");
     }
 
     println!("\n对象:");
@@ -190,6 +228,22 @@ fn cmd_object(env: &Environment, path_id: i64) -> Result<(), String> {
         }
     }
     Ok(())
+}
+
+// ── 明日方舟 LZ4 变体适配器 ──
+
+/// 明日方舟自定义 LZ4 变体解压器（nibble 对调 + BE offset）。
+///
+/// 放在 CLI 层而非库里——遵守 AGENTS.md「不要在库里硬编码游戏特定 codec」。
+struct AkLz4Decompressor;
+
+impl Decompressor for AkLz4Decompressor {
+    fn decompress(&self, input: &[u8], expected: usize) -> Result<Vec<u8>, Error> {
+        let mut out = vec![0u8; expected];
+        lz4inv::decompress(input, &mut out)
+            .map_err(|e| Error::Decompress { reason: e.to_string() })?;
+        Ok(out)
+    }
 }
 
 // ── 辅助函数 ──

@@ -34,6 +34,12 @@ UnityFS 归档与压缩块，交付一组 `BundleFile { name, bytes }`。它**�
 | 默认 codec：LZMA / LZ4 / LZ4HC / NONE（flag 0–3） | ✅ |
 | 大端 Cursor + 显式边界检查 | ✅ |
 | 用户自定义 codec 接入（如 Arknights LZ4 变体） | ✅（扩展点） |
+| 格式闭集 enum + sniff（`FileFormat` + `sniff(&[u8])`） | ✅ |
+| 递归再派发（`load_recursive`：Container → 逐子条目重新 sniff + parse） | ✅ |
+| UnityWeb / UnityRaw（旧版容器，LZMA / 裸读） | ✅ |
+| UnityWebData（WebGL 数据格式，小端） | ✅ |
+| gzip / brotli 外层包裹（解压后递归 sniff 内层） | ✅ |
+| SerializedFile 弱嗅探（头部尺寸一致性校验） | ✅ |
 
 未实现的容器格式与能力见 §6 路线图。
 
@@ -41,46 +47,75 @@ UnityFS 归档与压缩块，交付一组 `BundleFile { name, bytes }`。它**�
 
 ## 3. 公共 API
 
-实现位置：`src/lib.rs`（re-export）+ `src/bundle.rs` + `src/decompress.rs`。
+实现位置：`src/lib.rs`（re-export）+ `src/format.rs` + `src/bundle.rs` + `src/decompress.rs`。
 
 ```rust
-/// 从文件路径加载 UnityFS bundle。
-pub fn load(path: impl AsRef<Path>) -> Result<Bundle>;
+/// 从文件路径加载 Unity 资产文件（递归再派发）。
+pub fn load(path: impl AsRef<Path>) -> Result<LoadedFile>;
 
-/// 用自定义解压器注册表加载。
-pub fn load_with(path: impl AsRef<Path>, registry: &Registry) -> Result<Bundle>;
+/// 用自定义解压器注册表加载（递归再派发）。
+pub fn load_with(path: impl AsRef<Path>, registry: &Registry) -> Result<LoadedFile>;
 
-/// 从内存字节加载 UnityFS bundle。
-pub fn load_bytes(src: Bytes) -> Result<Bundle>;
+/// 从内存字节加载（递归再派发）。
+pub fn load_bytes(src: Bytes) -> Result<LoadedFile>;
 
-/// 用自定义解压器注册表从内存字节加载。
-pub fn load_bytes_with(src: Bytes, registry: &Registry) -> Result<Bundle>;
+/// 用自定义解压器注册表从内存字节加载（递归再派发）。
+pub fn load_bytes_with(src: Bytes, registry: &Registry) -> Result<LoadedFile>;
 ```
 
 `load` / `load_bytes` 内部用 `Registry::defaults()`；`*_with` 接用户 registry。最终都
-走 `bundle::parse(src, registry)`。
+走 `format::load_recursive(src, name, registry, None)`。
 
 ### 结果类型
 
 ```rust
-pub struct Bundle {
-    /// 引擎版本（如 "2017.4.39f1"），供后续 SerializedFile 继承。
-    pub unity_revision: String,
-    /// bundle 版本（format，如 6/7/8）。
-    pub format_version: u32,
-    /// 解出的内部文件（.assets / .resS 等），字节已解压。
-    pub files: Vec<BundleFile>,
+/// io 层递归再派发的产物：一棵可能嵌套的文件树。
+pub enum LoadedFile {
+    Container {
+        unity_revision: Option<String>,   // bundle 有；webfile/compressed 无
+        format_version: Option<u32>,      // bundle 的 format（6/7/8）；非 bundle 为 None
+        format: FileFormat,               // 本层的格式（调试/日志用）
+        children: Vec<LoadedFile>,        // 递归后的子树
+    },
+    Leaf {
+        name: String,
+        bytes: Bytes,
+        unity_revision: Option<String>,   // 从父 Container 继承
+    },
 }
 
-pub struct BundleFile {
-    pub name: String,
-    pub bytes: Bytes,
-    pub flags: u32,
+impl LoadedFile {
+    /// 深度优先展平到叶子列表（供下游消费）。
+    pub fn leaves(&self) -> Vec<(&str, &Bytes, Option<&str>)>;
 }
+
+/// 闭集格式 enum（无 trait、无 Vec）。
+pub enum FileFormat {
+    SerializedFile, FileStreamBundle, WebBundle, RawBundle,
+    WebFile, GZip, Brotli, ArchiveBundle, Resource,
+}
+
+/// 嗅探字节切片的格式（if/else 链）。
+pub fn sniff(bytes: &[u8]) -> FileFormat;
+
+/// 递归再派发驱动器。
+pub fn load_recursive(src: Bytes, name: &str, registry: &Registry,
+                      parent_revision: Option<&str>) -> Result<LoadedFile>;
 ```
 
-> 这里的 `Bundle` 是**解包后的归档**（文件名 + 解压字节），**不是**设计稿里的对象图
-> `World`——对象解析不存在于本层（见 `object-layer.md`）。
+`Bundle` 仍存在但语义变为 **UnityFS parse 的中间结果**（`parse_unityfs` 产出，递归前）：
+
+```rust
+pub struct Bundle {
+    pub unity_revision: String,
+    pub format_version: u32,
+    pub entries: Vec<RawEntry>,  // 原始子字节，尚未 sniff
+}
+pub struct RawEntry { pub name: String, pub bytes: Bytes, pub flags: u32 }
+```
+
+> `load` 返回的 `LoadedFile` 是递归后的**文件树**——Container 内嵌 Container/Leaf，
+> 任意嵌套（如 `brotli(UnityFS(.assets))`）免费获得。下游用 `leaves()` 展平消费。
 
 ---
 
@@ -229,28 +264,30 @@ let bundle = load_with("arknights/ab.bundle", &reg)?;
 
 ## 6. 路线图（未实现）
 
-ADR-0003 描述了一个更完整的「递归再派发 + 三轴差异化扩展」架构。下列项**尚未实现**，
-设计动机保留，实现待做。
+ADR-0003 描述了一个更完整的「递归再派发 + 三轴差异化扩展」架构。递归再派发 + 格式
+enum/sniff + 多容器格式（UnityWeb/UnityRaw/UnityWebData）+ gzip/brotli 外层包裹
+**已落地**，下列项尚未实现。
 
 | 项 | 设计要点 | 状态 |
 |---|---|---|
-| **递归再派发** | 每种格式只「识别 + 解析自身结构 + 列出原始子字节」；驱动器看到 Container 就对每个子条目重新 sniff + parse。同一套派发服务顶层与子条目，任意嵌套（如 `brotli(UnityFS(.assets))`）免费获得 | ⬜ |
-| **格式闭集 enum + sniff** | `enum FileFormat { SerializedFile, FileStreamBundle, WebBundle, RawBundle, WebFile, GZip, Brotli, ArchiveBundle, Resource }` + `sniff(&[u8])` if/else 链 + `match parse`。当前只硬判 `signature == "UnityFS"` | ⬜ |
-| **UnityWeb / UnityRaw / UnityWebData** | 其它容器格式 | ⬜ |
-| **gzip / brotli 外层包裹** | 外层压缩包住上述任意一种容器 | ⬜ |
+| **递归再派发** | 每种格式只「识别 + 解析自身结构 + 列出原始子字节」；驱动器看到 Container 就对每个子条目重新 sniff + parse。同一套派发服务顶层与子条目，任意嵌套（如 `brotli(UnityFS(.assets))`）免费获得 | ✅ |
+| **格式闭集 enum + sniff** | `enum FileFormat { ... }` + `sniff(&[u8])` if/else 链 + `match parse`（`src/format.rs`） | ✅ |
+| **UnityWeb / UnityRaw / UnityWebData** | 旧版容器格式（`src/containers/rawweb.rs` + `src/containers/webfile.rs`） | ✅ |
+| **gzip / brotli 外层包裹** | 外层压缩包住上述任意一种容器，解压后递归 sniff（`src/containers/compressed.rs`） | ✅ |
 | **CN 加密** | `0x100` flag，Unity CN。concrete `ArchiveStorageDecryptor { index, substitute }` + `CnKey` 配置项，在 UnityFS 解析器内按块 `decrypt_block` 后再解压（N=1，不抽象为 trait） | ⬜ |
 | **Loader / LoaderBuilder** | 配置入口：`.decompressor(ct, codec)` / `.depressors(reg)` / `.cn_key(key)` / `.fallback_version(v)`，内部走 io→对象 | ⬜ |
 | **.resS 分离与 World** | `.resS` node 由聚合层（`Environment`）捕获为 `ResourceFile`，`StreamingInfo` 引用经 `streaming_data` 零拷贝取数。已落地，详见 [`environment-layer.md`](environment-layer.md) | ✅ |
 | **on-demand 逐块解压** | AssetRipper `BundleFileBlockReader` 式：不 concat 整块，按需解压+缓存上一块，峰值压到 ~1× + 几块；但要换 `Cursor<&[u8]>` 为跨块 reader | ⬜ |
 | **SpillPolicy::AutoTempFile** | >2GB bundle 解压溢出临时文件，避免 OOM | ⬜ |
-| **错误隔离 Failure 叶节点** | 单文件失败捕获成 `Failure`，不中断整体加载。当前错误直接向上传播 | ⬜ |
+| **错误隔离 Failure 叶节点** | 单文件失败捕获成 `Failure`，不中断整体加载。当前 `load_recursive` 对子条目失败降级为空 Leaf（不中断），但顶层 parse 失败仍向上传播 | ⬜（部分） |
 
 ### 内存模型（当前）
 
 当前 io 层把所有 block 解压并 `extend_from_slice` 拼成一个 `Vec<u8>`，再按 node `slice`
 成 `Bytes`（共享 Arc）。SerializedFile / objects 是**调用方逐个按需 parse**（见
-`src/main.rs` / `src/bin/verify_codegen.rs`），没有 `World` 聚合层，也没有 `.resS`
-独立拷贝策略。
+`src/main.rs` / `src/bin/verify_codegen.rs`），没有 `World` 聚合层。`.resS` 独立拷贝
+分离策略由聚合层 `Environment` 完成（`copy_from_slice` detach，详见
+[`environment-layer.md`](environment-layer.md)）。
 
 ---
 
@@ -263,6 +300,7 @@ io 层错误见 `src/error.rs`，遵循 `#[snafu(display(...))]` + `#[snafu(visi
 - `Truncated { reason }`（数据截断 / 越界）
 - `BadSignature { sig }`（非 "UnityFS"）
 - `UnsupportedVersion { version }`（format < 6）
+- `UnsupportedFormat { format }`（识别但不解析的格式，如 ArchiveBundle）
 - `UnsupportedCompression { compression }`（flag 未注册）
 - `Decompress { reason }`
 - `Lz4SizeMismatch { expected, actual }`

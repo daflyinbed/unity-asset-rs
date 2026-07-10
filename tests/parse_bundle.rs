@@ -3,12 +3,11 @@
 //! 期望值与 UnityPy 实测输出一致（首尾 16 字节 bit-for-bit 对照过）。
 
 use bytes::Bytes;
-use unity_asset_rs::{load, load_bytes, Bundle};
+use unity_asset_rs::{load, load_bytes, FileFormat, LoadedFile};
 
 const AB_PATH: &str = "example/char_002_amiya.ab";
 const EXPECTED_NAME: &str = "CAB-374c777ce38840c47301d29986e9f61f";
 const EXPECTED_SIZE: usize = 57416;
-const EXPECTED_FLAGS: u32 = 4;
 const EXPECTED_FIRST16: [u8; 16] = [
     0x00, 0x00, 0xb6, 0xd1, 0x00, 0x00, 0xe0, 0x48, 0x00, 0x00, 0x00, 0x11, 0x00, 0x00, 0xb6, 0xf0,
 ];
@@ -22,18 +21,32 @@ fn init_logger() {
         .try_init();
 }
 
-fn assert_expected(b: &Bundle) {
-    assert_eq!(b.format_version, 6, "format version");
-    assert_eq!(b.unity_revision, "2017.4.39f1", "unity revision");
-    assert_eq!(b.files.len(), 1, "exactly one inner file");
+/// 从 `LoadedFile` 提取 UnityFS bundle 的 unity_revision + 首个叶子。
+fn assert_expected(loaded: &LoadedFile) {
+    let (unity_revision, format) = match loaded {
+        LoadedFile::Container {
+            unity_revision,
+            format,
+            ..
+        } => (unity_revision.clone(), *format),
+        _ => panic!("expected Container, got Leaf"),
+    };
+    assert_eq!(format, FileFormat::FileStreamBundle, "format");
+    assert_eq!(
+        unity_revision.as_deref(),
+        Some("2017.4.39f1"),
+        "unity revision"
+    );
 
-    let f = &b.files[0];
-    assert_eq!(f.name, EXPECTED_NAME, "node name");
-    assert_eq!(f.bytes.len(), EXPECTED_SIZE, "node size");
-    assert_eq!(f.flags, EXPECTED_FLAGS, "node flags");
+    let leaves = loaded.leaves();
+    assert_eq!(leaves.len(), 1, "exactly one inner file");
 
-    let first16 = &f.bytes[..16];
-    let last16 = &f.bytes[f.bytes.len() - 16..];
+    let (name, bytes, _) = leaves[0];
+    assert_eq!(name, EXPECTED_NAME, "node name");
+    assert_eq!(bytes.len(), EXPECTED_SIZE, "node size");
+
+    let first16 = &bytes[..16];
+    let last16 = &bytes[bytes.len() - 16..];
     assert_eq!(first16, EXPECTED_FIRST16, "first 16 bytes");
     assert_eq!(last16, EXPECTED_LAST16, "last 16 bytes");
 }
@@ -41,8 +54,8 @@ fn assert_expected(b: &Bundle) {
 #[test]
 fn load_from_path() {
     init_logger();
-    let bundle = load(AB_PATH).expect("parse bundle");
-    assert_expected(&bundle);
+    let loaded = load(AB_PATH).expect("parse bundle");
+    assert_expected(&loaded);
 }
 
 #[test]
@@ -53,27 +66,27 @@ fn load_from_bytes_matches_path() {
 
     let from_path = load(AB_PATH).expect("parse from path");
 
-    assert_eq!(from_bytes.files.len(), from_path.files.len());
-    let a = &from_bytes.files[0];
-    let b = &from_path.files[0];
-    assert_eq!(a.name, b.name);
-    assert_eq!(a.bytes.len(), b.bytes.len());
-    assert_eq!(&a.bytes[..], &b.bytes[..], "byte content identical");
+    let a = from_bytes.leaves();
+    let b = from_path.leaves();
+    assert_eq!(a.len(), b.len());
+    assert_eq!(a[0].0, b[0].0, "name");
+    assert_eq!(a[0].1.len(), b[0].1.len(), "size");
+    assert_eq!(a[0].1[..], b[0].1[..], "byte content identical");
 }
 
 #[test]
 fn node_offsets_stay_within_blob() {
     init_logger();
-    let bundle = load(AB_PATH).expect("parse bundle");
-    for f in &bundle.files {
-        assert!(!f.bytes.is_empty(), "file {} is empty", f.name);
+    let loaded = load(AB_PATH).expect("parse bundle");
+    for (name, bytes, _) in loaded.leaves() {
+        assert!(!bytes.is_empty(), "file {} is empty", name);
     }
 }
 
 #[test]
 fn total_blob_matches_sum_of_node_sizes() {
     init_logger();
-    let bundle = load(AB_PATH).expect("parse bundle");
-    let sum: usize = bundle.files.iter().map(|f| f.bytes.len()).sum();
+    let loaded = load(AB_PATH).expect("parse bundle");
+    let sum: usize = loaded.leaves().iter().map(|(_, bytes, _)| bytes.len()).sum();
     assert_eq!(sum, EXPECTED_SIZE, "sum of node sizes");
 }

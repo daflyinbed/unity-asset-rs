@@ -6,7 +6,7 @@
 
 use std::path::Path;
 
-use unity_asset_rs::{load, parse_object, Bundle, ClassIDType, SerializedFile};
+use unity_asset_rs::{load, parse_object, ClassIDType, LoadedFile, SerializedFile};
 
 /// 全局累计统计。
 #[derive(Default)]
@@ -69,36 +69,37 @@ fn main() {
     }
 }
 
-/// 处理单个 bundle，把统计累加进 `stats`。
+/// 处理单个资产文件，把统计累加进 `stats`。
 fn process_bundle(path: &str, stats: &mut Stats) {
-    let bundle: Bundle = match load(path) {
+    let loaded: LoadedFile = match load(path) {
         Ok(b) => b,
         Err(e) => {
-            eprintln!("✗ 加载 bundle 失败: {e}");
+            eprintln!("✗ 加载资产文件失败: {e}");
             stats.failures.push((path.to_string(), -1, String::new(), format!("load: {e}")));
             return;
         }
     };
     stats.bundles += 1;
-    eprintln!("bundle: {} 个内部文件", bundle.files.len());
+    let leaves = loaded.leaves();
+    eprintln!("bundle: {} 个内部文件", leaves.len());
 
-    for bf in &bundle.files {
+    for (name, bytes, _ur) in &leaves {
         // .resS 是 streaming-resource 伴生文件（纹理/音频流数据），不是 SerializedFile。
-        if bf.name.ends_with(".resS") {
+        if name.ends_with(".resS") {
             stats.skipped_files += 1;
-            eprintln!("\n=== 跳过（streaming resource）: {} ({} bytes) ===", bf.name, bf.bytes.len());
+            eprintln!("\n=== 跳过（streaming resource）: {} ({} bytes) ===", name, bytes.len());
             continue;
         }
 
-        eprintln!("\n=== 内部文件: {} ({} bytes) ===", bf.name, bf.bytes.len());
-        let sf = match SerializedFile::parse(bf.bytes.clone()) {
+        eprintln!("\n=== 内部文件: {} ({} bytes) ===", name, bytes.len());
+        let sf = match SerializedFile::parse((*bytes).clone()) {
             Ok(sf) => sf,
             Err(e) => {
                 eprintln!("  ✗ 解析 SerializedFile 失败: {e}");
                 stats.failures.push((
                     path.to_string(),
                     -1,
-                    bf.name.clone(),
+                    name.to_string(),
                     format!("SerializedFile::parse: {e}"),
                 ));
                 continue;
