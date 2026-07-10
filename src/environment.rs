@@ -8,9 +8,10 @@ use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 
 use bytes::Bytes;
+use generated::classes::audio_clip::AudioClipMAudioData;
 use generated::subclasses::streamed_resource::StreamedResource;
 use generated::subclasses::streaming_info::{StreamingInfo, StreamingInfoOffsetVariant};
-use generated::ClassIDType;
+use generated::{ClassIDType, UnityObject};
 
 use crate::decompress::Registry;
 use crate::format::{FileFormat, LoadedFile};
@@ -242,6 +243,58 @@ impl Environment {
             return None;
         }
         Some(file.bytes.slice(res.m_offset as usize..end as usize))
+    }
+
+    /// 取 AudioClip 的音频字节（零拷贝 `Bytes` slice）。
+    ///
+    /// 对齐 AssetRipper `AudioClipExtensions.GetAudioData` 的三路分发：
+    /// - pre-5.0 `m_audio_data` 为 `Inline` → 返回内联字节（parse 时已读）。
+    /// - pre-5.0 `m_audio_data` 为 `Streamed`（`m_Stream==2`）→ 按 `{size, offset}`
+    ///   从 `<collection.name>.resS` 取。resource 名 = `collection.name + ".resS"`
+    ///   （对齐 AssetRipper `AudioClipHelper.ReadStreamedByteArray`）。
+    /// - post-5.0 无 `m_audio_data` 但有 `m_resource` → 走 [`streamed_resource_data`]。
+    ///
+    /// 非 AudioClip 或取不到 → `None`。
+    pub fn audio_data(&self, obj: &EnvironmentObject) -> Option<Bytes> {
+        let ParsedObject::Typed(UnityObject::AudioClip(ac)) = &obj.object else {
+            return None;
+        };
+        if let Some(data) = &ac.m_audio_data {
+            return match data {
+                AudioClipMAudioData::Inline(v) => Some(Bytes::from(v.clone())),
+                AudioClipMAudioData::Streamed { size, offset } => {
+                    self.read_old_streamed_audio(obj.collection, *offset, *size)
+                }
+            };
+        }
+        // post-5.0：走 StreamedResource（m_resource）。
+        ac.m_resource
+            .as_ref()
+            .and_then(|res| self.streamed_resource_data(res))
+    }
+
+    /// pre-5.0 AudioClip streaming：按 `{offset, size}` 从 `<collection.name>.resS` 取。
+    ///
+    /// 对齐 AssetRipper `AudioClipHelper.ReadStreamedByteArray`：
+    /// `resourceFileName = audioClip.Collection.Name + ".resS"`，在 bundle 内
+    /// `ResolveResource`（经 `fix_file_identifier` 精确匹配）。越界 → `None`。
+    fn read_old_streamed_audio(
+        &self,
+        collection: usize,
+        offset: u32,
+        size: u32,
+    ) -> Option<Bytes> {
+        if size == 0 {
+            return None;
+        }
+        let col = self.collections.get(collection)?;
+        let resource_name = format!("{}.resS", col.name);
+        let file = self.resolve_resource(&resource_name)?;
+        let end = (offset as u64).checked_add(size as u64)?;
+        if (file.bytes.len() as u64) < end {
+            return None;
+        }
+        Some(file.bytes.slice(offset as usize..end as usize))
     }
 
     /// 对齐 `Bundle.ResolveResource`：空名 → `None`，否则 `name_fixed` 精确匹配。

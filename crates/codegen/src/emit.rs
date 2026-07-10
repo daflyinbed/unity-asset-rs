@@ -119,6 +119,13 @@ fn emit_class_file(class: &EmitClass, main_names: &BTreeSet<String>) -> String {
     // 版本枚举定义 + impl Parse（在 struct 之前，因为 struct 引用枚举类型）
     emit_versioned_enums(&mut out, class);
 
+    // 值依赖特判枚举（目前仅 pre-5.0 AudioClip.m_AudioData）。
+    // 与 VersionedEnum 不同：这类枚举的读取依赖宿主此前读入的兄弟字段值，
+    // 不能独立 `impl Parse`，由宿主 parse 直接 emit 构造。
+    if class.name == "AudioClip" {
+        emit_audio_data_enum(&mut out);
+    }
+
     // struct 定义
     emit_struct(&mut out, class);
 
@@ -271,7 +278,33 @@ fn emit_versioned_enum(out: &mut String, name: &str, variants: &[EnumVariant]) {
     out.push_str("}\n");
 }
 
-/// 版本枚举变体名：按版本号命名（如 `V5_6`、`V2017_4_39`），Always → `Default`。
+/// emit `AudioClipMAudioData` 枚举：pre-5.0 AudioClip.m_AudioData 的值依赖读取结果。
+///
+/// 对齐 AssetRipper `Pass505_FixOldAudioClip` + `AudioClipHelper.ReadOldByteArray`：
+/// - `m_Stream != 2`（DecompressInMemory / LoadFromMemory）：内联 `i32 count + bytes + align`
+///   → `Inline(Vec<u8>)`
+/// - `m_Stream == 2`（Streaming）：磁盘是 `u32 size; u32 offset;` 指向
+///   `<collection.name>.resS`，字节在 Environment 层按 offset/size 取
+///   → `Streamed { size, offset }`
+///
+/// 不生成 `impl Parse`——读取依赖宿主已读到的 `m_stream` 值，由宿主 parse 直接构造
+/// （见 `set_field_none` 的 `m_audio_data` 特判）。
+fn emit_audio_data_enum(out: &mut String) {
+    out.push_str(
+        "\n/// pre-5.0 AudioClip.m_AudioData 的值依赖读取结果。\n\
+/// 对齐 AssetRipper `Pass505_FixOldAudioClip` + `AudioClipHelper.ReadOldByteArray`：\n\
+/// `m_Stream==2`（Streaming）时磁盘是 `u32 size; u32 offset;` 指向\n\
+/// `<collection.name>.resS`，由 Environment 按 offset/size 回填字节。\n",
+    );
+    out.push_str("#[derive(Debug, Clone)]\n");
+    out.push_str("pub enum AudioClipMAudioData {\n");
+    out.push_str("    /// 内联（pre-5.0 且 m_Stream != 2）：i32 count + bytes + align。\n");
+    out.push_str("    Inline(Vec<u8>),\n");
+    out.push_str("    /// 流式（pre-5.0 且 m_Stream == 2）：u32 size; u32 offset;\n");
+    out.push_str("    /// 指向 `<collection.name>.resS`，字节由 Environment 取。\n");
+    out.push_str("    Streamed { size: u32, offset: u32 },\n");
+    out.push_str("}\n");
+}
 /// build 非 0 时附加 build 号，避免同 major.minor 不同 build 的变体重名。
 /// 参见 §12.6：避免用 Legacy/Modern，改用版本号。
 fn variant_name(gate: &VersionGate) -> String {
@@ -307,7 +340,12 @@ fn emit_struct(out: &mut String, class: &EmitClass) {
 
     // own fields
     for f in &class.own_fields {
-        let ty_str = f.rust_type.to_rust_src();
+        // 值依赖特判：pre-5.0 AudioClip.m_AudioData 用专用 enum（见 set_field_none）。
+        let ty_str = if class.name == "AudioClip" && f.rust_name == "m_audio_data" {
+            "Option<AudioClipMAudioData>".into()
+        } else {
+            f.rust_type.to_rust_src()
+        };
         out.push_str(&format!("    pub {}: {},\n", f.rust_name, ty_str));
     }
     out.push_str("}\n");
@@ -417,13 +455,13 @@ fn emit_versioned_field_reads(out: &mut String, class: &EmitClass) {
             .map(|(l, segs)| (l.since, segs[slot].clone()))
             .collect();
 
-        emit_slot_segment(out, &slot_entries, &own_map, &version_field_maps);
+        emit_slot_segment(out, &class.name, &slot_entries, &own_map, &version_field_maps);
 
         // 锚点（slot 之后、下一个 slot 之前）线性读
         // 锚点在所有版本中都有且相对顺序一致，用 own_map 的 align_after 即可。
         if slot < anchors.len() {
             let fname = &anchors[slot];
-            set_field_none(out, fname, &own_map, None);
+            set_field_none(out, &class.name, fname, &own_map, None);
         }
     }
 }
@@ -441,6 +479,7 @@ type SlotVariant<'a> = ((u16, u16, u16), &'a Vec<String>);
 /// 的 m_used_by_effector 在 v5.6 无 align，在 v2023.1 有 align）。
 fn emit_slot_segment(
     out: &mut String,
+    class_name: &str,
     slot_entries: &[SlotEntry],
     own_map: &BTreeMap<&str, &EmitField>,
     version_field_maps: &BTreeMap<(u16, u16, u16), BTreeMap<&str, &EmitField>>,
@@ -459,7 +498,7 @@ fn emit_slot_segment(
         if let Some((since, fields)) = distinct.first() {
             let vmap = version_field_maps.get(since);
             for fname in fields.iter() {
-                set_field_none(out, fname, own_map, vmap);
+                set_field_none(out, class_name, fname, own_map, vmap);
             }
         }
         return;
@@ -482,7 +521,7 @@ fn emit_slot_segment(
         }
         let vmap = version_field_maps.get(since);
         for fname in fields.iter() {
-            set_field_none(out, fname, own_map, vmap);
+            set_field_none(out, class_name, fname, own_map, vmap);
         }
     }
     out.push_str("        }\n");
@@ -511,7 +550,7 @@ fn emit_full_versioned_branches(
         }
         let vmap = version_field_maps.get(&layout.since);
         for lf in &layout.fields {
-            set_field_none(out, &lf.rust_name, own_map, vmap);
+            set_field_none(out, &class.name, &lf.rust_name, own_map, vmap);
         }
     }
     out.push_str("        }\n");
@@ -521,13 +560,36 @@ fn emit_full_versioned_branches(
 ///
 /// **type 来自 own_map**（与 struct 字段类型一致，避免版本类型不匹配）。
 /// **align_after 优先取 version_map**（per-version 的对齐可能不同），找不到时回退 own_map。
+///
+/// `class_name` 用于单字段值依赖特判（目前仅 `AudioClip.m_audio_data`）。
 fn set_field_none(
     out: &mut String,
+    class_name: &str,
     fname: &str,
     own_map: &BTreeMap<&str, &EmitField>,
     version_map: Option<&BTreeMap<&str, &EmitField>>,
 ) {
     let Some(ef) = own_map.get(fname) else { return };
+
+    // ── 值依赖特判：pre-5.0 AudioClip.m_AudioData ──
+    // 对齐 AssetRipper `Pass505_FixOldAudioClip` + `AudioClipHelper.ReadOldByteArray`：
+    // m_Stream==2（Streaming）时磁盘是 `u32 size; u32 offset;` 指向 <collection>.resS，
+    // 而非内联 `i32 count + bytes`。此分支依赖宿主此前已读入的局部 `m_stream`（Option<i32>）。
+    // 仅 pre-5.0 分支有 m_audio_data，故只在那个 else 分支命中。
+    if class_name == "AudioClip" && fname == "m_audio_data" {
+        out.push_str("            m_audio_data = Some(if m_stream == Some(2) {\n");
+        out.push_str("                // Streaming：u32 size; u32 offset; 指向 <collection>.resS\n");
+        out.push_str("                let size = rdr.read_u32()?;\n");
+        out.push_str("                let offset = rdr.read_u32()?;\n");
+        out.push_str("                crate::classes::audio_clip::AudioClipMAudioData::Streamed { size, offset }\n");
+        out.push_str("            } else {\n");
+        out.push_str("                let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;\n");
+        out.push_str("                crate::classes::audio_clip::AudioClipMAudioData::Inline(v)\n");
+        out.push_str("            });\n");
+        out.push_str("            rdr.align(4)?;\n");
+        return;
+    }
+
     let expr = field_read_expr(&ef.rust_type);
     out.push_str(&format!("            {fname} = Some({expr}?);\n"));
     // VersionedEnum 自己处理 align，宿主 class 不再额外对齐（§12.5）。

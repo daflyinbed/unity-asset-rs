@@ -562,8 +562,66 @@ https://nightly.link/AssetRipper/Tpk/workflows/type_tree_tpk/master/<compression
 | emit 字符串拼接 | 无语法校验 | 边界 bug 容易引入（fixture 测试 + 主 crate `cargo run` 实跑覆盖主要形态） |
 | generated crate warnings | `#![allow(...)]` 在 crate 根统一静音 | codegen 已知副产物（多余括号 / 未用版本参数 / 版本门控默认值覆盖 / 含数字类型名） |
 | 只读 release | editor build 的字段会丢失 | — |
-| **旧版 AudioClip 流式音频（pre-5.0）** | 生成代码无条件按内联数组读 `m_AudioData`（`i32 count + bytes + align`） | pre-5.0 且 `m_Stream==2`（Streaming）时，磁盘实际是 `u32 size; u32 offset;` 指向外部 `.resS`，typed parse 会把 `size` 当 count 导致后续全错位/越界。这是**值相关**特殊 case（对应 AssetRipper `Pass505_FixOldAudioClip` + `AudioClipHelper.ReadOldByteArray`），无法靠 TypeTree 变换解决，且 TypeTree 回退路径同样读错（两条路径都失败）。彻底修复需 `.resS` streaming_data 支持（见 §13 路线图）。example 的 Arknights bundle 不触发（AudioClip 均 5.0+ 或非流式）。 |
 | **string 字段无条件 align（正确，非 bug）** | codegen（`emit.rs` 用 `read_aligned_string`）与运行时解释器（`interpret.rs`）都在读完 string 后**无条件** `align(4)` | 这是**正确**行为：AssetRipper `EndianSpanReaderExtensions.ReadUtf8StringAligned` 注释明说 "Alignment after strings has happened since 2.1.0"，即磁盘上所有 string 都被 padding 到 4 字节，与 `0x4000` 标志无关。曾疑为 bug（TPK 中 924/954 个 string 节点未标 0x4000），但实测把 align 改为条件式会让 `cargo run` 从 0 失败暴涨到 340 失败（1955 个无 0x4000 的 string 节点实际被遍历）。**不要改成条件 align。** |
+
+### 11.1 值依赖读特判：pre-5.0 AudioClip.m_AudioData（Pass505 Rust 移植）
+
+这是 codegen **唯一**的值依赖读特例，对应 AssetRipper `Pass505_FixOldAudioClip` +
+`AudioClipHelper.ReadOldByteArray`。其余所有字段的读取只由版本号决定；此字段的读取
+布局还取决于同一对象此前读到的兄弟字段 `m_Stream` 的值。
+
+**背景**：pre-5.0（`ver < 5.0`）AudioClip 的 `m_AudioData` 字段在磁盘上的布局取决于
+`m_Stream`（`AudioClipLoadType`）：
+
+- `m_Stream != 2`（DecompressInMemory / LoadFromMemory）：内联数组 `i32 count + bytes + align(4)`。
+- `m_Stream == 2`（Streaming）：**不是**数组，而是 `u32 size; u32 offset;`，指向外部
+  `<collection.name>.resS`（真正的音频字节存在 `.resS` 里）。此时若按内联数组读，
+  `size` 会被当成 `count`，后续全错位/越界。
+
+TypeTree 本身描述错了（说成 `UInt8` 数组），TypeTree 回退路径同样读错——这是 codegen
+**无法靠 IR / 版本门控解决**的 case（读取布局依赖运行时兄弟字段值），故 emit 层直接
+特判 `(class.name=="AudioClip", field=="m_audio_data")`。
+
+**实现**（`crates/codegen/src/emit.rs`）：
+
+1. **生成专用枚举 `AudioClipMAudioData`**（`emit_audio_data_enum`，仅 AudioClip 类触发）：
+
+   ```rust
+   pub enum AudioClipMAudioData {
+       Inline(Vec<u8>),                     // m_Stream != 2：内联已读
+       Streamed { size: u32, offset: u32 }, // m_Stream == 2：流式指针
+   }
+   ```
+
+   不生成 `impl Parse`——读取依赖宿主已读到的 `m_stream` 值，由宿主 parse 直接构造。
+
+2. **struct 字段类型改 `Option<AudioClipMAudioData>`**（`emit_struct` 同名特判）。
+3. **pre-5.0 分支值依赖读**（`set_field_none` 同名特判）：
+
+   ```rust
+   m_audio_data = Some(if m_stream == Some(2) {
+       let size = rdr.read_u32()?;
+       let offset = rdr.read_u32()?;
+       AudioClipMAudioData::Streamed { size, offset }
+   } else {
+       let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| rdr.read_u8()).collect::<Result<Vec<_>,_>>() } )?;
+       AudioClipMAudioData::Inline(v)
+   });
+   rdr.align(4)?;
+   ```
+
+   `m_stream` 在同一 pre-5.0 分支里**先于** `m_audio_data` 读入局部（`Option<i32>`），
+   故此处可直接引用。
+
+**字节回填在聚合层**：`Streamed` 变体只存指针，真正的 `.resS` 字节由
+`Environment::audio_data` 在访问时按 `<collection.name>.resS` + `{offset, size}` 取
+（对齐 AssetRipper `ReadStreamedByteArray`）。详见
+[`environment-layer.md`](environment-layer.md) streaming_data 小节。
+
+**范围**：严格限定在单字段特判，不引入泛化的「值依赖读」机制（不碰 `RustType` IR /
+`node_to_rust_type`）。example 的 bundle 不触发 pre-5.0 streaming（AudioClip 均 5.0+ 或
+非流式），回归靠 codegen snapshot 测试（`crates/codegen/tests/audio_clip_pass505.rs`）
++ AssetRipper 语义对齐保证。
 
 ---
 

@@ -269,6 +269,25 @@ impl Environment {
 `StreamingInfo.offset` 是版本枚举（`Default(u32)` / `V2020_1(u64)`），由内部 helper
 `streaming_offset` 统一提取为 `u64`——对齐 `StreamingInfoExtensions.GetOffset`。
 
+### 7.1 AudioClip 音频字节（pre-5.0 流式回填）
+
+`Environment::audio_data(obj)` 对齐 AssetRipper `AudioClipExtensions.GetAudioData` 的三路
+分发，覆盖 pre-5.0 与 post-5.0 两种流式布局：
+
+| 来源 | 触发条件 | 取数路径 |
+|---|---|---|
+| **内联**（pre-5.0，`m_Stream != 2`） | `m_audio_data == Inline(v)` | 直接返回 `v`（parse 时已读） |
+| **流式指针**（pre-5.0，`m_Stream == 2`） | `m_audio_data == Streamed { size, offset }` | 从 `<collection.name>.resS` 按 `{offset, size}` slice |
+| **StreamedResource**（post-5.0） | `m_resource` 有、`m_audio_data == None` | `streamed_resource_data`（上文） |
+
+pre-5.0 流式路径对齐 AssetRipper `AudioClipHelper.ReadStreamedByteArray`：
+`resourceFileName = Collection.Name + ".resS"`，经 `resolve_resource`（`fix_file_identifier`
+精确匹配）找到 bundle 内同名 `.resS`，再 `offset..offset+size` 零拷贝 slice。
+
+pre-5.0 的 `m_audio_data` 字段类型是 codegen 生成的 `AudioClipMAudioData` 枚举
+（`Inline` / `Streamed`），把值依赖读取封装在枚举变体里——详见
+[codegen §11.1](codegen.md#111-值依赖读特判pre-50-audioclipmaudiodatapass505-rust-移植)。
+
 ---
 
 ## 8. 公共 API
@@ -348,7 +367,10 @@ for obj in env.objects() {
   gzip(`1f 8b`)/brotli/`UnityWeb`/`UnityRaw` bundle 静默跳过。路线图见 [§13.4](#134-gzip--brotli-路线图)。
 - **`AssetType.Meta`（GUID 匹配）**：外部引用匹配仅按 `name_fixed`（Normal 类）。
   Meta 类（`type_==1`，按 GUID 匹配）罕见，留作后续。
-- **旧版 AudioClip pre-5.0 流式**（codegen §11 已记的值依赖特殊 case，需单独处理）。
+
+> 旧版 AudioClip pre-5.0 流式**已处理**（原在此处列为待办）：codegen 生成
+> `AudioClipMAudioData` 枚举 + 值依赖读（见 [codegen §11.1](codegen.md#111-值依赖读特判pre-50-audioclipmaudiodatapass505-rust-移植)），
+> 聚合层用 `Environment::audio_data` 回填 `.resS` 字节（见下文 streaming_data 小节）。
 
 ---
 

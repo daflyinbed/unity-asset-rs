@@ -25,6 +25,19 @@ impl crate::Parse for AudioClipMIsTrackerFormatVariant {
         }
     }
 }
+
+/// pre-5.0 AudioClip.m_AudioData 的值依赖读取结果。
+/// 对齐 AssetRipper `Pass505_FixOldAudioClip` + `AudioClipHelper.ReadOldByteArray`：
+/// `m_Stream==2`（Streaming）时磁盘是 `u32 size; u32 offset;` 指向
+/// `<collection.name>.resS`，由 Environment 按 offset/size 回填字节。
+#[derive(Debug, Clone)]
+pub enum AudioClipMAudioData {
+    /// 内联（pre-5.0 且 m_Stream != 2）：i32 count + bytes + align。
+    Inline(Vec<u8>),
+    /// 流式（pre-5.0 且 m_Stream == 2）：u32 size; u32 offset;
+    /// 指向 `<collection.name>.resS`，字节由 Environment 取。
+    Streamed { size: u32, offset: u32 },
+}
 #[derive(Debug, Clone)]
 pub struct AudioClip {
     pub m_name: String,
@@ -38,7 +51,7 @@ pub struct AudioClip {
     pub m_bits_per_sample: Option<i32>,
     pub m_stream: Option<i32>,
     pub m_length: Option<f32>,
-    pub m_audio_data: Option<Vec<u8>>,
+    pub m_audio_data: Option<AudioClipMAudioData>,
     pub m_is_tracker_format: Option<AudioClipMIsTrackerFormatVariant>,
     pub m_subsound_index: Option<i32>,
     pub m_ambisonic: Option<bool>,
@@ -114,7 +127,15 @@ impl crate::Parse for AudioClip {
             m_use_hardware = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_stream = Some(rdr.read_i32()?);
-            m_audio_data = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_audio_data = Some(if m_stream == Some(2) {
+                // Streaming：u32 size; u32 offset; 指向 <collection>.resS
+                let size = rdr.read_u32()?;
+                let offset = rdr.read_u32()?;
+                crate::classes::audio_clip::AudioClipMAudioData::Streamed { size, offset }
+            } else {
+                let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
+                crate::classes::audio_clip::AudioClipMAudioData::Inline(v)
+            });
             rdr.align(4)?;
         }
 
