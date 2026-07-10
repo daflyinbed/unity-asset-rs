@@ -8,7 +8,18 @@
 //! `FLIP_TOP_BOTTOM`）。通道顺序：`texture_decoder_rs` 输出 RGBA，UnityPy ASTC 路径
 //! 也是 RGBA swizzle，一致无需重排。
 //!
-//! 路线图：ETC/BCn/Crunch/PVRTC + Sprite Sheet + 多输出格式。
+//! # ASTC HDR 未做
+//!
+//! Unity 的 `ASTC_HDR_*`（format 66-71）暂不支持，遇之报 unsupported。根因：ASTC 的
+//! HDR block（CEM 2/3/7/11/14/15）里 alpha 通道语义**不在 16 字节 block 内**，要由
+//! 外部 decode profile（LDR / LDR_SRGB / HDR）补全——block 自己无从得知。`texture_decoder_rs`
+//! 是 LDR-only：CEM 2/3/7/11 无条件硬编码 alpha=0x780（等价永远假设 HDR profile），
+//! 且缺 LDR profile 的 error 色分支，输出也恒为 RGBA8（`floor(f*255)` 把 fp16 量化掉）。
+//! 要做真 HDR 需重写整个插值/输出路径（统一 16-bit 域插值 + per-lane mask 分流 LNS/unorm +
+//! fp16/fp32 输出 + EXR 编码）。**以后再说。**详见
+//! [`../docs/astc-hdr-alpha-handling.md`](../../docs/astc-hdr-alpha-handling.md)。
+//!
+//! 路线图：ETC/BCn/Crunch/PVRTC + ASTC HDR + Sprite Sheet + 多输出格式。
 
 use std::io::Write;
 

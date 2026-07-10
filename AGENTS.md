@@ -32,8 +32,12 @@ layer (PPtr deref + `.resS` streaming_data) are all **implemented**:
   + ASTC LDR 解码（path 依赖 `../../texture-decoder-rs`，零依赖 `#![no_std]`；RGB/RGBA 共用同一解码）
   + PNG 编码（`image` crate，仅 png feature）。像素来源对齐 UnityPy `_Texture2d_get_image_data`：
   `image_data` 非空用它，否则走 `Environment::streaming_data` 取 `.resS`；输出做 Y 翻转
-  （Unity bottom-up → PNG top-down）。**ASTC HDR / ETC / BCn / Crunch / PVRTC / ATC 未做**；
-  Sprite Sheet / 多输出格式 / 法线贴图未做。
+  （Unity bottom-up → PNG top-down）。**ETC / BCn / Crunch / PVRTC / ATC 未做**；
+  **ASTC HDR（format 66-71）也暂缓**——根因是 HDR block 的 alpha 通道语义不在 16 字节 block
+  内、要由外部 decode profile 补全，而 `texture-decoder-rs` 是 LDR-only（CEM 2/3/7/11 无条件
+  假设 HDR profile、缺 LDR error 色分支、输出恒为 RGBA8）。要做真 HDR 需重写插值/输出路径，
+  详见 [`../docs/astc-hdr-alpha-handling.md`](../docs/astc-hdr-alpha-handling.md)。Sprite Sheet /
+  多输出格式 / 法线贴图未做。
 
 **未实现**：CN 加密（`0x100` flag）、Loader/LoaderBuilder 配置入口、
 on-demand 逐块解压、SpillPolicy::AutoTempFile、
