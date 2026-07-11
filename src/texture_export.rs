@@ -1,12 +1,13 @@
 //! Texture2D → 图片导出（受 `export` feature 门控）。
 //!
-//! 现状：仅支持 ASTC LDR（通过 path 依赖 [`texture_decoder_rs`]），输出 PNG。
+//! 现状：支持 ASTC LDR + ETC1/ETC2/EAC（通过 path 依赖 [`texture_decoder_rs`]），输出 PNG。
 //! 像素数据来源选择对齐 UnityPy `_Texture2d_get_image_data`：
 //! `image_data` 非空用它，否则走 `Environment::streaming_data` 取 `.resS` 流数据。
 //!
 //! Y 翻转：Unity 纹理原点在左下、PNG 在左上，导出时垂直翻转（对齐 UnityPy 默认
-//! `FLIP_TOP_BOTTOM`）。通道顺序：`texture_decoder_rs` 输出 RGBA，UnityPy ASTC 路径
-//! 也是 RGBA swizzle，一致无需重排。
+//! `FLIP_TOP_BOTTOM`）。通道顺序：`texture_decoder_rs` 的 ASTC 与 ETC 解码器均输出 RGBA
+//! （ASTC 走 RGBA swizzle；ETC `write_pixel` 直接写 `[R,G,B]`+alpha），与 UnityPy 的
+//! `texture2ddecoder`(C++) BGRA 输出不同——这里**不做** B/R 交换。
 //!
 //! # ASTC HDR 未做
 //!
@@ -19,7 +20,7 @@
 //! fp16/fp32 输出 + EXR 编码）。**以后再说。**详见
 //! [`../docs/astc-hdr-alpha-handling.md`](../../docs/astc-hdr-alpha-handling.md)。
 //!
-//! 路线图：ETC/BCn/Crunch/PVRTC + ASTC HDR + Sprite Sheet + 多输出格式。
+//! 路线图：BCn/Crunch/PVRTC/ATC + ASTC HDR + Sprite Sheet + 多输出格式。
 
 use std::io::Write;
 
@@ -34,12 +35,28 @@ use generated::classes::texture2_d::Texture2D;
 /// 数字值来自 `UnityPy/enums/TextureFormat.py`（权威对照，bit-for-bit）。
 /// ASTC 覆盖全部 6 个方形 footprint（4×4/5×5/6×6/8×8/10×10/12×12）× RGB/RGBA
 /// 共 12 个值；RGB 与 RGBA 共用同一解码（ASTC block 头携带 alpha）。HDR ASTC（66-71）
-/// 不支持（decoder 为 LDR-only）。其余格式按需扩展。
+/// 不支持（decoder 为 LDR-only）。
+/// ETC1/ETC2/EAC（34/41-47）通过 `texture_decoder_rs` 的 `etc_decoder` 模块解码。
 #[repr(i32)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TextureFormat {
-    /// ETC1（ETC_RGB4 = 34）。本模块不支持，列出供清晰报错。
+    // ── ETC1 / ETC2 / EAC（34, 41-47）──
+    /// ETC1（ETC_RGB4 = 34）。
     EtcRgb4 = 34,
+    /// EAC R11 unsigned（EAC_R = 41）。
+    EacR = 41,
+    /// EAC R11 signed（EAC_R_SIGNED = 42）。
+    EacRSigned = 42,
+    /// EAC RG11 unsigned（EAC_RG = 43）。
+    EacRg = 43,
+    /// EAC RG11 signed（EAC_RG_SIGNED = 44）。
+    EacRgSigned = 44,
+    /// ETC2 RGB（ETC2_RGB = 45）。
+    Etc2Rgb = 45,
+    /// ETC2 RGB + 1-bit alpha punch-through（ETC2_RGBA1 = 46）。
+    Etc2Rgba1 = 46,
+    /// ETC2 RGBA8（ETC2_RGBA8 = 47），color + EAC alpha。
+    Etc2Rgba8 = 47,
     // ── ASTC RGB（48-53）──
     AstcRgb4x4 = 48,
     AstcRgb5x5 = 49,
@@ -61,6 +78,13 @@ impl TextureFormat {
     pub fn from_i32(v: i32) -> Option<Self> {
         match v {
             34 => Some(Self::EtcRgb4),
+            41 => Some(Self::EacR),
+            42 => Some(Self::EacRSigned),
+            43 => Some(Self::EacRg),
+            44 => Some(Self::EacRgSigned),
+            45 => Some(Self::Etc2Rgb),
+            46 => Some(Self::Etc2Rgba1),
+            47 => Some(Self::Etc2Rgba8),
             48 => Some(Self::AstcRgb4x4),
             49 => Some(Self::AstcRgb5x5),
             50 => Some(Self::AstcRgb6x6),
@@ -77,9 +101,47 @@ impl TextureFormat {
         }
     }
 
-    /// 是否为本模块支持的格式（全部 ASTC LDR）。
+    /// 是否为本模块支持的格式（ASTC LDR 或 ETC1/ETC2/EAC）。
     pub fn is_supported(self) -> bool {
-        self.astc_block().is_some()
+        self.astc_block().is_some() || self.is_etc()
+    }
+
+    /// 是否为 ETC/EAC 家族（4×4 块，由 `etc_decoder` 处理）。
+    pub fn is_etc(self) -> bool {
+        matches!(
+            self,
+            Self::EtcRgb4
+                | Self::EacR
+                | Self::EacRSigned
+                | Self::EacRg
+                | Self::EacRgSigned
+                | Self::Etc2Rgb
+                | Self::Etc2Rgba1
+                | Self::Etc2Rgba8
+        )
+    }
+
+    /// CLI 展示用的短码（如 `astc6x6` / `etc1` / `etc2rgba8` / `eac_r11`）。
+    /// ASTC 的 label 与历史输出 `astc{bxby}` 一致，保持向后兼容。
+    pub fn label(self) -> &'static str {
+        match self {
+            // ETC / EAC
+            Self::EtcRgb4 => "etc1",
+            Self::Etc2Rgb => "etc2rgb",
+            Self::Etc2Rgba1 => "etc2rgba1",
+            Self::Etc2Rgba8 => "etc2rgba8",
+            Self::EacR => "eac_r11",
+            Self::EacRSigned => "eac_r11_signed",
+            Self::EacRg => "eac_rg11",
+            Self::EacRgSigned => "eac_rg11_signed",
+            // ASTC：复用 footprint 拼成 `astc{w}x{h}`
+            Self::AstcRgb4x4 | Self::AstcRgba4x4 => "astc4x4",
+            Self::AstcRgb5x5 | Self::AstcRgba5x5 => "astc5x5",
+            Self::AstcRgb6x6 | Self::AstcRgba6x6 => "astc6x6",
+            Self::AstcRgb8x8 | Self::AstcRgba8x8 => "astc8x8",
+            Self::AstcRgb10x10 | Self::AstcRgba10x10 => "astc10x10",
+            Self::AstcRgb12x12 | Self::AstcRgba12x12 => "astc12x12",
+        }
     }
 
     /// ASTC block footprint（仅 ASTC 格式有意义；RGB/RGBA 同尺寸返回同一值）。
@@ -113,10 +175,11 @@ pub enum TextureExportError {
     #[snafu(display("纹理无像素数据（image_data 空 + streaming 失败）"))]
     NoImageData,
 
-    /// ASTC 解码失败（输入过短 / 非法块等）。`texture_decoder_rs` 不返回 `std::error::Error`，
-    /// 故作为字段携带而非 source。
-    #[snafu(display("ASTC 解码失败: {err:?}"))]
-    AstcDecode { err: texture_decoder_rs::DecodeError },
+    /// ASTC / ETC 解码失败（输入过短 / 非法块等）。`texture_decoder_rs` 不返回
+    /// `std::error::Error`，故作为字段携带而非 source。两族解码器共用同一
+    /// `DecodeError` 类型。
+    #[snafu(display("解码失败: {err:?}"))]
+    Decode { err: texture_decoder_rs::DecodeError },
 
     /// PNG 编码 / 写入失败。
     #[snafu(display("写 PNG 失败: {source}"))]
@@ -181,7 +244,47 @@ pub fn decode_astc(
         }
         _ => return UnsupportedFormatSnafu { fmt }.fail(),
     };
-    res.map_err(|err| TextureExportError::AstcDecode { err })?;
+    res.map_err(|err| TextureExportError::Decode { err })?;
+
+    // Unity bottom-up → PNG top-down。
+    flip_vertical_in_place(&mut out, w, h);
+    Ok(out)
+}
+
+/// 解码 ETC1/ETC2/EAC 纹理为 top-down RGBA8（已垂直翻转，可直接喂 PNG）。
+///
+/// 与 [`decode_astc`] 同构：`data` 为裸块流（Unity 的 `image_data`/streaming
+/// 不带 PKM/KTX 容器头，直接喂），4×4 block，输出尺寸 = `width * height * 4`。
+/// 块边缘裁剪由 `texture_decoder_rs` 的 `decode_image` 内部处理（非 4 倍数尺寸安全）。
+///
+/// 通道顺序：`texture_decoder_rs` 的 ETC 解码器 `write_pixel` 直接写 `[R,G,B]`+alpha
+/// （RGBA），与 ASTC 路径一致，无需 B/R 交换（注意 UnityPy 的 ETC 路径用 `"BGRA"` 是
+/// 因 Python 端 `texture2ddecoder`(C++) 输出 BGRA，与本 crate 无关）。
+pub fn decode_etc(
+    data: &[u8],
+    width: u32,
+    height: u32,
+    fmt: TextureFormat,
+) -> Result<Vec<u8>, TextureExportError> {
+    let (w, h) = (width as usize, height as usize);
+    let mut out = vec![0u8; w * h * 4];
+
+    let res = match fmt {
+        TextureFormat::EtcRgb4 => texture_decoder_rs::decode_etc1_rgb8(data, w, h, &mut out),
+        TextureFormat::Etc2Rgb => texture_decoder_rs::decode_etc2_rgb8(data, w, h, &mut out),
+        TextureFormat::Etc2Rgba1 => texture_decoder_rs::decode_etc2_rgb8a1(data, w, h, &mut out),
+        TextureFormat::Etc2Rgba8 => texture_decoder_rs::decode_etc2_rgba8(data, w, h, &mut out),
+        TextureFormat::EacR => texture_decoder_rs::decode_eac_r11(data, w, h, &mut out),
+        TextureFormat::EacRSigned => {
+            texture_decoder_rs::decode_eac_signed_r11(data, w, h, &mut out)
+        }
+        TextureFormat::EacRg => texture_decoder_rs::decode_eac_rg11(data, w, h, &mut out),
+        TextureFormat::EacRgSigned => {
+            texture_decoder_rs::decode_eac_signed_rg11(data, w, h, &mut out)
+        }
+        _ => return UnsupportedFormatSnafu { fmt }.fail(),
+    };
+    res.map_err(|err| TextureExportError::Decode { err })?;
 
     // Unity bottom-up → PNG top-down。
     flip_vertical_in_place(&mut out, w, h);

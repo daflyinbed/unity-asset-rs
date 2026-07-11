@@ -28,11 +28,13 @@ layer (PPtr deref + `.resS` streaming_data) are all **implemented**:
   `build()` 一次性全局依赖解析；聚合层唯一构造入口 `Environment::builder()`（`path`/`loaded`/
   `scan_dir`/`registry`）。`src/detect.rs` 做 UnityFS + gzip 签名嗅探。
 - **纹理导出层**（受 `export` feature 门控，默认开启）：`src/texture_export.rs`。
-  `TextureFormat` 枚举（全部方形 ASTC LDR：4×4/5×5/6×6/8×8/10×10/12×12 × RGB/RGBA 共 12 值）
-  + ASTC LDR 解码（path 依赖 `../../texture-decoder-rs`，零依赖 `#![no_std]`；RGB/RGBA 共用同一解码）
+  `TextureFormat` 枚举（全部方形 ASTC LDR：4×4/5×5/6×6/8×8/10×10/12×12 × RGB/RGBA 共 12 值
+  + ETC1/ETC2/EAC：format 34/41-47 共 8 值）
+  + ASTC LDR 解码 + ETC1/ETC2/EAC 解码（path 依赖 `../../texture-decoder-rs`，零依赖 `#![no_std]`；
+  ASTC RGB/RGBA 共用同一解码；ETC 4×4 block）
   + PNG 编码（`image` crate，仅 png feature）。像素来源对齐 UnityPy `_Texture2d_get_image_data`：
   `image_data` 非空用它，否则走 `Environment::streaming_data` 取 `.resS`；输出做 Y 翻转
-  （Unity bottom-up → PNG top-down）。**ETC / BCn / Crunch / PVRTC / ATC 未做**；
+  （Unity bottom-up → PNG top-down）。**BCn / Crunch / PVRTC / ATC 未做**；
   **ASTC HDR（format 66-71）也暂缓**——根因是 HDR block 的 alpha 通道语义不在 16 字节 block
   内、要由外部 decode profile 补全，而 `texture-decoder-rs` 是 LDR-only（CEM 2/3/7/11 无条件
   假设 HDR profile、缺 LDR error 色分支、输出恒为 RGBA8）。要做真 HDR 需重写插值/输出路径，
@@ -180,8 +182,10 @@ Edition is `2024` → requires Rust >= 1.85.
   `SpecialFileNames.FixFileIdentifier`。`src/detect.rs` 做 UnityFS + gzip 签名嗅探（目录扫描用）。
 - **`src/texture_export.rs`**（`export` feature）：`TextureFormat` 是手写 enum（codegen 不产
   TextureFormat，`Texture2D.m_format` 是裸 `i32`），数值对照 UnityPy `enums/TextureFormat.py`。
-  ASTC 解码委托 path 依赖 `texture-decoder-rs`（按 footprint 命名函数，运行时 match 分派；
-  自动做块边缘裁剪）。Y 翻转在 `flip_vertical_in_place`（Unity 纹理 bottom-up，PNG top-down，
+  ASTC 解码（`decode_astc`）+ ETC1/ETC2/EAC 解码（`decode_etc`）均委托 path 依赖
+  `texture-decoder-rs`（ASTC 按 footprint 命名函数、ETC 按 `etc_decoder` 模块函数，运行时 match 分派；
+  自动做块边缘裁剪）。CLI 层按 `fmt.astc_block().is_some()` 选 `decode_astc` / `decode_etc`。
+  Y 翻转在 `flip_vertical_in_place`（Unity 纹理 bottom-up，PNG top-down，
   对齐 UnityPy 默认 `FLIP_TOP_BOTTOM`）。**明日方舟 LZ4 变体 codec 放 CLI 层（`AkLz4Decompressor`
   在 `src/main.rs`）**——遵守「不在库里硬编码游戏 codec」；chararts bundle 需 `--arknights`。
 - 错误用 `snafu`。在 `src/error.rs` 加变体时遵循既有 `#[snafu(display(...))]` +
@@ -197,7 +201,7 @@ Edition is `2024` → requires Rust >= 1.85.
   的 `Endian`/`PPtr`/`UnityVersion`）+ 聚合层（`Environment`/`EnvironmentBuilder`/`EnvironmentObject`/
   `AssetCollection`/`ResourceFile`/`ParseFailure`/`PPtrLike`/`DependencyProvider`/
   `ResourceProvider`）+ 纹理导出（`export` feature：`texture_export::TextureFormat`/
-  `decode_astc`/`write_png`/`texture_pixel_bytes`/`TextureExportError`）。
+  `decode_astc`/`decode_etc`/`write_png`/`texture_pixel_bytes`/`TextureExportError`）。
 
 ## Reference docs (read before non-trivial work)
 
