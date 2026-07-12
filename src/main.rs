@@ -50,7 +50,7 @@ enum Cmd {
         #[arg(allow_hyphen_values = true)]
         path_id: i64,
     },
-    /// 导出 Texture2D 为 PNG（当前支持全部方形 ASTC LDR：4×4/5×5/6×6/8×8/10×10/12×12）。
+    /// 导出 Texture2D 为 PNG（支持 ASTC LDR / ETC1/ETC2/EAC / BCn/DXT / 未压缩格式）。
     Export {
         /// 输出目录（默认当前目录）。
         #[arg(long, short = 'o', default_value = ".")]
@@ -283,8 +283,8 @@ fn cmd_object(env: &Environment, path_id: i64) -> Result<(), String> {
 
 /// 导出 Texture2D 为 PNG。
 ///
-/// 遍历全部 Texture2D（或 `only` 指定的 path_id），对 ASTC LDR / ETC1 / ETC2 / EAC
-/// 格式解码 + 写 PNG；不支持的格式记 skip。末尾汇总，有失败时返回 Err（退出码 1）。
+/// 遍历全部 Texture2D（或 `only` 指定的 path_id），对 ASTC LDR / ETC1/ETC2/EAC /
+/// BCn/DXT / 未压缩格式解码 + 写 PNG；不支持的格式记 skip。末尾汇总，有失败时返回 Err（退出码 1）。
 #[cfg(feature = "export")]
 fn cmd_export(env: &Environment, out: &Path, only: &[i64]) -> Result<(), String> {
     use generated::classes::texture2_d::Texture2D;
@@ -361,15 +361,20 @@ fn export_one(
     out: &Path,
 ) -> Result<PathBuf, unity_asset_rs::texture_export::TextureExportError> {
     use unity_asset_rs::texture_export::{
-        TextureExportError, decode_astc, decode_etc, texture_pixel_bytes, write_png,
+        TextureExportError, decode_astc, decode_bcn, decode_etc, decode_uncompressed,
+        texture_pixel_bytes, write_png,
     };
 
     let data = texture_pixel_bytes(t, env).ok_or(TextureExportError::NoImageData)?;
     let (w, h) = (t.m_width.max(0) as u32, t.m_height.max(0) as u32);
     let rgba = if fmt.astc_block().is_some() {
         decode_astc(&data, w, h, fmt)?
-    } else {
+    } else if fmt.is_bcn() {
+        decode_bcn(&data, w, h, fmt)?
+    } else if fmt.is_etc() {
         decode_etc(&data, w, h, fmt)?
+    } else {
+        decode_uncompressed(&data, w, h, fmt)?
     };
     let file = out.join(sanitize_filename(name)).with_extension("png");
     let mut f = std::fs::File::create(&file).map_err(|e| TextureExportError::PngIo { source: e })?;

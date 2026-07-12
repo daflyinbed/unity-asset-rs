@@ -29,13 +29,19 @@ layer (PPtr deref + `.resS` streaming_data) are all **implemented**:
   `scan_dir`/`registry`）。`src/detect.rs` 做 UnityFS + gzip 签名嗅探。
 - **纹理导出层**（受 `export` feature 门控，默认开启）：`src/texture_export.rs`。
   `TextureFormat` 枚举（全部方形 ASTC LDR：4×4/5×5/6×6/8×8/10×10/12×12 × RGB/RGBA 共 12 值
-  + ETC1/ETC2/EAC：format 34/41-47 共 8 值）
-  + ASTC LDR 解码 + ETC1/ETC2/EAC 解码（path 依赖 `../../texture-decoder-rs`，零依赖 `#![no_std]`；
-  ASTC RGB/RGBA 共用同一解码；ETC 4×4 block）
+  + ETC1/ETC2/EAC：format 34/41-47 共 8 值
+  + BCn/DXT：format 10/11/12/24-27 共 7 值
+  + 未压缩：format 1/2/3/4/5/7/8/9/13/14/62/63/75-82 共 21 值）
+  + ASTC LDR 解码 + ETC1/ETC2/EAC 解码 + BCn/DXT 解码（path 依赖 `../../texture-decoder-rs`，零依赖 `#![no_std]`；
+  ASTC RGB/RGBA 共用同一解码；ETC/BCn 4×4 block）
+  + 未压缩解码（`decode_uncompressed`，**不经 `texture-decoder-rs`**，纯字节重排/位宽转换；
+  字节布局对齐 AssetStudio `Texture2DConverter.cs` 的逐像素 Decode 函数；4-bit 通道 `nibble*17` 扩展、
+  RGB565 位复制（非 `*255//31` 缩放）、16-bit 通道走 `(v*255+32895)>>16` downscale、
+  SIGNED 变体重 interpret cast）
   + PNG 编码（`image` crate，仅 png feature）。像素来源对齐 UnityPy `_Texture2d_get_image_data`：
   `image_data` 非空用它，否则走 `Environment::streaming_data` 取 `.resS`；输出做 Y 翻转
-  （Unity bottom-up → PNG top-down）。**BCn / Crunch / PVRTC / ATC 未做**；
-  **ASTC HDR（format 66-71）也暂缓**——根因是 HDR block 的 alpha 通道语义不在 16 字节 block
+  （Unity bottom-up → PNG top-down）。**Crunch / PVRTC / ATC 未做**；
+  BC6H 走无符号 UF16 路径（Unity 不区分 SF16）。**ASTC HDR（format 66-71）也暂缓**——根因是 HDR block 的 alpha 通道语义不在 16 字节 block
   内、要由外部 decode profile 补全，而 `texture-decoder-rs` 是 LDR-only（CEM 2/3/7/11 无条件
   假设 HDR profile、缺 LDR error 色分支、输出恒为 RGBA8）。要做真 HDR 需重写插值/输出路径，
   详见 [`../docs/astc-hdr-alpha-handling.md`](../docs/astc-hdr-alpha-handling.md)。Sprite Sheet /
@@ -129,6 +135,7 @@ Edition is `2024` → requires Rust >= 1.85.
 - 纹理导出测试在 `tests/texture_export.rs`（integration，`export` feature 门控）。用
   `example/DownloadCommonUI.unity3d`（标准 Unity bundle，2 个 ASTC_RGB_6x6 纹理，像素走
   `.resS` streaming）端到端验证 streaming 解析 → ASTC 解码 → PNG 编码（输出尺寸 / 非空白 / PNG 签名）。
+  未压缩格式走纯字节级单测（不依赖 fixture，构造确定性输入断言 RGBA 精确匹配）。
   明日方舟 `chararts` bundle 因其 LZ4 变体 codec 在 CLI 层（非库）不在测试覆盖内。
 - 它们依赖已提交的 fixture `example/char_002_amiya.ab` / `example/DownloadCommonUI.unity3d` —— **不要删除或修改它们**。
 - 期望字节值（`EXPECTED_FIRST16`、`EXPECTED_LAST16`、sizes、revision）是
@@ -182,9 +189,11 @@ Edition is `2024` → requires Rust >= 1.85.
   `SpecialFileNames.FixFileIdentifier`。`src/detect.rs` 做 UnityFS + gzip 签名嗅探（目录扫描用）。
 - **`src/texture_export.rs`**（`export` feature）：`TextureFormat` 是手写 enum（codegen 不产
   TextureFormat，`Texture2D.m_format` 是裸 `i32`），数值对照 UnityPy `enums/TextureFormat.py`。
-  ASTC 解码（`decode_astc`）+ ETC1/ETC2/EAC 解码（`decode_etc`）均委托 path 依赖
-  `texture-decoder-rs`（ASTC 按 footprint 命名函数、ETC 按 `etc_decoder` 模块函数，运行时 match 分派；
-  自动做块边缘裁剪）。CLI 层按 `fmt.astc_block().is_some()` 选 `decode_astc` / `decode_etc`。
+  ASTC 解码（`decode_astc`）+ ETC1/ETC2/EAC 解码（`decode_etc`）+ BCn/DXT 解码（`decode_bcn`）均委托 path 依赖
+  `texture-decoder-rs`（ASTC 按 footprint 命名函数、ETC 按 `etc` 模块函数、BCn 按 `bcn` 模块函数，运行时 match 分派；
+  自动做块边缘裁剪）。未压缩格式走 `decode_uncompressed`（纯字节重排，不经 decoder；字节布局对齐
+  AssetStudio `Texture2DConverter.cs`）。CLI 层按 `fmt.astc_block().is_some()` / `fmt.is_bcn()` /
+  `fmt.is_etc()` / `fmt.is_uncompressed()` 四路分派。
   Y 翻转在 `flip_vertical_in_place`（Unity 纹理 bottom-up，PNG top-down，
   对齐 UnityPy 默认 `FLIP_TOP_BOTTOM`）。**明日方舟 LZ4 变体 codec 放 CLI 层（`AkLz4Decompressor`
   在 `src/main.rs`）**——遵守「不在库里硬编码游戏 codec」；chararts bundle 需 `--arknights`。
@@ -201,7 +210,7 @@ Edition is `2024` → requires Rust >= 1.85.
   的 `Endian`/`PPtr`/`UnityVersion`）+ 聚合层（`Environment`/`EnvironmentBuilder`/`EnvironmentObject`/
   `AssetCollection`/`ResourceFile`/`ParseFailure`/`PPtrLike`/`DependencyProvider`/
   `ResourceProvider`）+ 纹理导出（`export` feature：`texture_export::TextureFormat`/
-  `decode_astc`/`decode_etc`/`write_png`/`texture_pixel_bytes`/`TextureExportError`）。
+  `decode_astc`/`decode_etc`/`decode_bcn`/`write_png`/`texture_pixel_bytes`/`TextureExportError`）。
 
 ## Reference docs (read before non-trivial work)
 

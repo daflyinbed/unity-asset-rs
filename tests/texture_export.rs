@@ -12,7 +12,7 @@ use std::io::Cursor;
 use std::path::Path;
 
 use unity_asset_rs::texture_export::{
-    TextureFormat, decode_astc, texture_pixel_bytes, write_png,
+    TextureFormat, decode_astc, decode_uncompressed, texture_pixel_bytes, write_png,
 };
 use unity_asset_rs::{ClassIDType, Environment, ParsedObject, UnityObject};
 
@@ -139,4 +139,187 @@ fn write_png_produces_valid_signature() {
             "输出应以 PNG 签名开头",
         );
     }
+}
+
+// ── 未压缩格式字节级单测 ──
+//
+// 不依赖 fixture，构造确定性输入字节 → 断言输出 RGBA 精确匹配。
+// 公式对齐 AssetStudio `Texture2DConverter.cs`（其输出 BGRA，这里期望 RGBA）。
+// 每个测试用 1×1 图像，避免 Y 翻转干扰（单行翻转是 no-op）。
+
+#[test]
+fn uncompressed_alpha8() {
+    // 输入 1 字节 alpha=0x80 → RGBA [0,0,0,0x80]
+    let out = decode_uncompressed(&[0x80], 1, 1, TextureFormat::Alpha8).unwrap();
+    assert_eq!(out, [0, 0, 0, 0x80]);
+}
+
+#[test]
+fn uncompressed_r8() {
+    // 输入 1 字节 R=0x80 → RGBA [0x80,0,0,255]
+    let out = decode_uncompressed(&[0x80], 1, 1, TextureFormat::R8).unwrap();
+    assert_eq!(out, [0x80, 0, 0, 255]);
+}
+
+#[test]
+fn uncompressed_rg16() {
+    // 输入 [R=0x11, G=0x22] → RGBA [0x11,0x22,0,255]
+    let out = decode_uncompressed(&[0x11, 0x22], 1, 1, TextureFormat::Rg16).unwrap();
+    assert_eq!(out, [0x11, 0x22, 0, 255]);
+}
+
+#[test]
+fn uncompressed_rgb24() {
+    // 输入 [R,G,B]=[0x11,0x22,0x33] → RGBA [0x11,0x22,0x33,255]（原序 + A=255）
+    let out = decode_uncompressed(&[0x11, 0x22, 0x33], 1, 1, TextureFormat::Rgb24).unwrap();
+    assert_eq!(out, [0x11, 0x22, 0x33, 255]);
+}
+
+#[test]
+fn uncompressed_bgr24() {
+    // 输入 [B,G,R]=[0x33,0x22,0x11] → RGBA [0x11,0x22,0x33,255]（R/B 交换）
+    let out = decode_uncompressed(&[0x33, 0x22, 0x11], 1, 1, TextureFormat::Bgr24).unwrap();
+    assert_eq!(out, [0x11, 0x22, 0x33, 255]);
+}
+
+#[test]
+fn uncompressed_rgba32() {
+    // 输入 [R,G,B,A]=[0x11,0x22,0x33,0x44] → RGBA 原序
+    let out = decode_uncompressed(&[0x11, 0x22, 0x33, 0x44], 1, 1, TextureFormat::Rgba32).unwrap();
+    assert_eq!(out, [0x11, 0x22, 0x33, 0x44]);
+}
+
+#[test]
+fn uncompressed_argb32() {
+    // 输入 [A,R,G,B]=[0x44,0x11,0x22,0x33] → RGBA [0x11,0x22,0x33,0x44]
+    let out = decode_uncompressed(&[0x44, 0x11, 0x22, 0x33], 1, 1, TextureFormat::Argb32).unwrap();
+    assert_eq!(out, [0x11, 0x22, 0x33, 0x44]);
+}
+
+#[test]
+fn uncompressed_bgra32() {
+    // 输入 [B,G,R,A]=[0x11,0x22,0x33,0x44] → RGBA [0x33,0x22,0x11,0x44]
+    let out = decode_uncompressed(&[0x11, 0x22, 0x33, 0x44], 1, 1, TextureFormat::Bgra32).unwrap();
+    assert_eq!(out, [0x33, 0x22, 0x11, 0x44]);
+}
+
+#[test]
+fn uncompressed_rgb565_bit_replication() {
+    // 16-bit 布局 RRRRRGGGGGGBBBBB（LE）。位复制扩展（非 *255//31 缩放）。
+    // 0xF800 LE = bytes [0x00, 0xF8] → R=31→255, G=0, B=0
+    let out = decode_uncompressed(&[0x00, 0xF8], 1, 1, TextureFormat::Rgb565).unwrap();
+    assert_eq!(out, [255, 0, 0, 255], "0xF800 应为纯红");
+    // 0x07E0 LE = bytes [0xE0, 0x07] → G=63→255
+    let out = decode_uncompressed(&[0xE0, 0x07], 1, 1, TextureFormat::Rgb565).unwrap();
+    assert_eq!(out, [0, 255, 0, 255], "0x07E0 应为纯绿");
+    // 0x001F LE = bytes [0x1F, 0x00] → B=31→255
+    let out = decode_uncompressed(&[0x1F, 0x00], 1, 1, TextureFormat::Rgb565).unwrap();
+    assert_eq!(out, [0, 0, 255, 255], "0x001F 应为纯蓝");
+    // 0xFFFF → 全白
+    let out = decode_uncompressed(&[0xFF, 0xFF], 1, 1, TextureFormat::Rgb565).unwrap();
+    assert_eq!(out, [255, 255, 255, 255], "0xFFFF 应为白");
+}
+
+#[test]
+fn uncompressed_argb4444_nibble_expand() {
+    // LE bytes [0xCD, 0xAB] → u16 = 0xABCD。
+    // 16-bit = AAAARRRRGGGGBBBB（A=15-12, R=11-8, G=7-4, B=3-0）。
+    // RGBA = [R=v>>8, G=v>>4, B=v, A=v>>12]，nibble×17。
+    // v=0xABCD: A=0xA→0xAA=170, R=0xB→0xBB=187, G=0xC→0xCC=204, B=0xD→0xDD=221
+    let out = decode_uncompressed(&[0xCD, 0xAB], 1, 1, TextureFormat::Argb4444).unwrap();
+    assert_eq!(out, [187, 204, 221, 170]);
+}
+
+#[test]
+fn uncompressed_rgba4444_nibble_expand() {
+    // v=0xABCD: 16-bit = RRRRGGGGBBBBAAAA（R=15-12, G=11-8, B=7-4, A=3-0）。
+    // RGBA = [R=v>>12, G=v>>8, B=v>>4, A=v]，nibble×17。
+    let out = decode_uncompressed(&[0xCD, 0xAB], 1, 1, TextureFormat::Rgba4444).unwrap();
+    assert_eq!(out, [170, 187, 204, 221]);
+}
+
+#[test]
+fn uncompressed_r16_downscale() {
+    // downscale16 = (v*255+32895)>>16。LE bytes。
+    // v=0x00FF=255 → (255*255+32895)>>16 = (65025+32895)>>16 = 97920>>16 = 1
+    let out = decode_uncompressed(&[0xFF, 0x00], 1, 1, TextureFormat::R16).unwrap();
+    assert_eq!(out, [1, 0, 0, 255]);
+    // v=0xFFFF=65535 → (65535*255+32895)>>16 = 255
+    let out = decode_uncompressed(&[0xFF, 0xFF], 1, 1, TextureFormat::R16).unwrap();
+    assert_eq!(out, [255, 0, 0, 255]);
+    // v=0x8000=32768 → ≈ 128
+    let out = decode_uncompressed(&[0x00, 0x80], 1, 1, TextureFormat::R16).unwrap();
+    assert_eq!(out, [128, 0, 0, 255]);
+}
+
+#[test]
+fn uncompressed_signed_reinterpret() {
+    // R8_SIGNED: byte 0xFF (i8=-1) → reinterpret as u8 = 255
+    let out = decode_uncompressed(&[0xFF], 1, 1, TextureFormat::R8Signed).unwrap();
+    assert_eq!(out, [255, 0, 0, 255]);
+    // RG16_SIGNED: [0xFF, 0x80] → [255, 128, 0, 255]
+    let out = decode_uncompressed(&[0xFF, 0x80], 1, 1, TextureFormat::Rg16Signed).unwrap();
+    assert_eq!(out, [255, 128, 0, 255]);
+    // RGBA32_SIGNED: 全 4 字节 reinterpret
+    let out = decode_uncompressed(&[0xFF, 0x80, 0x01, 0x7F], 1, 1, TextureFormat::Rgba32Signed).unwrap();
+    assert_eq!(out, [255, 128, 1, 127]);
+    // RGB24_SIGNED: 3 字节 reinterpret + A=255
+    let out = decode_uncompressed(&[0xFF, 0x80, 0x01], 1, 1, TextureFormat::Rgb24Signed).unwrap();
+    assert_eq!(out, [255, 128, 1, 255]);
+}
+
+#[test]
+fn uncompressed_signed_16bit_reinterpret() {
+    // R16_SIGNED: i16 bits reinterpret 后走 downscale16。
+    // bytes [0xFF,0xFF] = 0xFFFF → downscale16(65535) = 255（同 R16 的 0xFFFF）
+    let out = decode_uncompressed(&[0xFF, 0xFF], 1, 1, TextureFormat::R16Signed).unwrap();
+    assert_eq!(out, [255, 0, 0, 255]);
+    // RGBA64_SIGNED: 4× LE i16 reinterpret + downscale16。全 0xFFFF → RGBA(255,255,255,255)
+    let out = decode_uncompressed(&[0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF], 1, 1, TextureFormat::Rgba64Signed).unwrap();
+    assert_eq!(out, [255, 255, 255, 255]);
+    // RGB48_SIGNED: 3× LE i16。0xFFFF×3 → (255,255,255,255)
+    let out = decode_uncompressed(&[0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF], 1, 1, TextureFormat::Rgb48Signed).unwrap();
+    assert_eq!(out, [255, 255, 255, 255]);
+}
+
+#[test]
+fn uncompressed_input_too_short_errors() {
+    // RGB24 需要 3 字节/像素；给 2 字节应报 InputTooShort。
+    let res = decode_uncompressed(&[0x11, 0x22], 1, 1, TextureFormat::Rgb24);
+    assert!(res.is_err(), "输入过短应报错");
+    let err = res.unwrap_err();
+    assert!(
+        matches!(
+            err,
+            unity_asset_rs::texture_export::TextureExportError::Decode {
+                err: texture_decoder_rs::DecodeError::InputTooShort
+            }
+        ),
+        "应为 InputTooShort，实得 {err:?}"
+    );
+}
+
+#[test]
+fn uncompressed_multi_row_y_flip() {
+    // 2×2 RGB24，验证 Y 翻转：输入底行(R1)应出现在输出顶行。
+    // 行序（Unity bottom-up）：[B1,G1,R1, B2,G2,R2, B3,G3,R3, B4,G4,R4]
+    //                    = 像素 (0,1),(1,1) 在前，(0,0),(1,0) 在后
+    // 输出 top-down：像素 (0,0),(1,0),(0,1),(1,1)
+    let input = [
+        0x00, 0x00, 0xFF, // 像素(0,1) 蓝
+        0x00, 0xFF, 0x00, // 像素(1,1) 绿
+        0xFF, 0x00, 0x00, // 像素(0,0) 红
+        0xFF, 0xFF, 0xFF, // 像素(1,0) 白
+    ];
+    let out = decode_uncompressed(&input, 2, 2, TextureFormat::Rgb24).unwrap();
+    // 输出顺序：行0=[红,白]，行1=[蓝,绿]
+    assert_eq!(
+        out,
+        [
+            0xFF, 0x00, 0x00, 0xFF, // 红
+            0xFF, 0xFF, 0xFF, 0xFF, // 白
+            0x00, 0x00, 0xFF, 0xFF, // 蓝
+            0x00, 0xFF, 0x00, 0xFF, // 绿
+        ]
+    );
 }
