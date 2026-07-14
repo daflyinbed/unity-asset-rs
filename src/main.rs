@@ -361,24 +361,27 @@ fn export_one(
     out: &Path,
 ) -> Result<PathBuf, unity_asset_rs::texture_export::TextureExportError> {
     use unity_asset_rs::texture_export::{
-        TextureExportError, decode_astc, decode_bcn, decode_etc, decode_uncompressed,
-        texture_pixel_bytes, write_png,
+        TextureExportError, decode_astc, decode_bcn, decode_crunch, decode_etc,
+        decode_uncompressed, texture_pixel_bytes, write_png,
     };
 
     let data = texture_pixel_bytes(t, env).ok_or(TextureExportError::NoImageData)?;
     let (w, h) = (t.m_width.max(0) as u32, t.m_height.max(0) as u32);
-    let rgba = if fmt.astc_block().is_some() {
-        decode_astc(&data, w, h, fmt)?
+    // decode_crunch 自带输出尺寸（cubemap 纵向拼接会改变高度），其余路径尺寸 = (w, h)。
+    let (rgba, ow, oh) = if fmt.astc_block().is_some() {
+        (decode_astc(&data, w, h, fmt)?, w, h)
     } else if fmt.is_bcn() {
-        decode_bcn(&data, w, h, fmt)?
+        (decode_bcn(&data, w, h, fmt)?, w, h)
+    } else if fmt.is_crunch() {
+        decode_crunch(&data)?
     } else if fmt.is_etc() {
-        decode_etc(&data, w, h, fmt)?
+        (decode_etc(&data, w, h, fmt)?, w, h)
     } else {
-        decode_uncompressed(&data, w, h, fmt)?
+        (decode_uncompressed(&data, w, h, fmt)?, w, h)
     };
     let file = out.join(sanitize_filename(name)).with_extension("png");
     let mut f = std::fs::File::create(&file).map_err(|e| TextureExportError::PngIo { source: e })?;
-    write_png(rgba, w, h, &mut f)?;
+    write_png(rgba, ow, oh, &mut f)?;
     Ok(file)
 }
 

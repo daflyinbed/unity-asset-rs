@@ -17,7 +17,7 @@ path = "src/main.rs"
 # 纹理导出（ASTC 解码 + PNG 编码）。默认开启，需要 image / texture-decoder-rs 重依赖；
 # 关闭后主 crate 与 CLI 不引入它们（`export` 子命令在无 feature 时报不可用）。
 default = ["export"]
-export = ["dep:image", "dep:texture-decoder-rs"]
+export = ["dep:image", "dep:texture-decoder-rs", "dep:half"]
 
 [dependencies]
 bytes = "1"
@@ -34,7 +34,15 @@ generated = { package = "unity-asset-generated", path = "crates/generated" }
 lz4inv = { path = "crates/lz4inv" }
 # ── export feature ──
 image = { version = "0.25", default-features = false, features = ["png"], optional = true }
-texture-decoder-rs = { path = "../../texture-decoder-rs", optional = true }
+# features = ["crn"]：启用 crunch（CRN v1.04 → BC1/BC3 block）解码模块（拉 alloc，本主 crate 无影响）。
+texture-decoder-rs = { path = "../../texture-decoder-rs", optional = true, features = ["crn"] }
+# half（fp16 → fp32）：HDR 浮点未压缩格式（RHalf/RGHalf/RGBAHalf）解码用；
+# 与 texture-decoder-rs 同源（后者也依赖 half），不引入新外部 crate。
+half = { version = "2", default-features = false, features = ["bytemuck"], optional = true }
+
+[dev-dependencies]
+# 测试里构造 fp16 字面量（HDR 浮点格式单测）用；version/feature 对齐 export feature 的 half。
+half = { version = "2", default-features = false, features = ["bytemuck"] }
 
 [workspace]
 members = ["crates/codegen", "crates/generated", "crates/lz4inv", "crates/unity-core"]
