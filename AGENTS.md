@@ -31,18 +31,18 @@ layer (PPtr deref + `.resS` streaming_data) are all **implemented**:
   `TextureFormat` 枚举（全部方形 ASTC LDR：4×4/5×5/6×6/8×8/10×10/12×12 × RGB/RGBA 共 12 值
   + ETC1/ETC2/EAC：format 34/41-47 共 8 值
   + BCn/DXT：format 10/11/12/24-27 共 7 值
-  + Crunch：format 28/29 共 2 值（原始 CRN v1.04，sig `0x4878`；非 Unity 变体 64/65）
+  + Crunch：format 28/29/64/65 共 4 值（sig `0x4878`；原始 vs Unity 变体由版本分水岭决定）
   + 未压缩：format 1/2/3/4/5/7/8/9/13/14/62/63/72/73/74/75-82/6/15-20/22/23 共 33 值）
   + ASTC LDR 解码 + ETC1/ETC2/EAC 解码 + BCn/DXT 解码（path 依赖 `../../texture-decoder-rs`，零依赖 `#![no_std]`；
   ASTC RGB/RGBA 共用同一解码；ETC/BCn 4×4 block）
-  + Crunch 解码（`decode_crunch`，依赖 `texture-decoder-rs` 的 `crn` feature）：两段式——
-  先 `crn::decode` 把原始 CRN（sig `0x4878`）解成 level 0 的原始 BC1/BC3 block 字节（`crn`
-  模块**不输出 RGBA**，只输出 block，仅 level 0、无 cubemap/mip 树），再经 `bcn::decode_bc1`/
-  `decode_bc3` 转 RGBA。对应 UnityPy `unpack_crunch`（**原始** Crunch，非 Unity 变体）。输出做 Y
-  翻转，与其他路径一致。**版本分水岭**：Unity ≥2017.3 的 DXT1Crunched/DXT5Crunched 是 **Unity
-  变体 crunch**（`unpack_unity_crunch`），数据也以 `0x4878` 开头但块编码不同——原始路径能跑完却
-  输出乱码。Unity 变体 + ETC crunch（64/65）待做。**实测**：2017.2（<2017.3）原始 Crunch 正确
-  （lena 与 UnityPy golden 仅 1-LSB 舍入差 Δ∈{1}）；2017.4 Unity 变体输出乱码。）
+  + Crunch 解码（`decode_crunch(data, fmt, ver)`，依赖 `texture-decoder-rs` 的 `crn` + `crn-unity`
+  feature）：**统一入口 + 版本分水岭分派**（对齐 AssetRipper `CrunchHandler.IsUseUnityCrunch`）——
+  `ver >= 2017.3` 或 format ∈{64,65} → Unity 变体（`crn_unity::decode`，对齐 UnityPy `unpack_unity_crunch`）；
+  否则 → 原始 crunch（`crn::decode`，对齐 `unpack_crunch`）。两路径同构两段式：第一段把 CRN 解成含
+  全部 face × mip 的 `Crn*Texture`（每 mip 持原始 BC1/BC3/ETC1/ETC2_RGBA8 block，模块**不输出 RGBA**），
+  第二段对 level 0 走 `bcn`/`etc` 转 RGBA。block 格式分派由 CRN 头 `format` 字段决定（权威）。sig 都是
+  `0x4878` 但 bitstream 不兼容——原始解码器能跑完 Unity 变体却输出乱码，故靠版本+format 分派。
+  输出做 Y 翻转（2D 翻、cubemap 不翻），与其他路径一致。）
   + 未压缩解码（`decode_uncompressed`，**不经 `texture-decoder-rs`**，纯字节重排/位宽转换/标量映射；
   数值映射对齐 **AssetRipper `NumericConversion`**（非 AssetStudio——后者仅 BGRA 输出，无 signed/HDR 公式）：
   4-bit 通道 `nibble*17` 扩展、RGB565 位复制（非 `*255//31` 缩放）、16-bit 通道走 `(v*255+32895)>>16`
@@ -51,8 +51,8 @@ layer (PPtr deref + `.resS` streaming_data) are all **implemented**:
   fp16 经 `half` crate 转 f32）
   + PNG 编码（`image` crate，仅 png feature）。像素来源对齐 UnityPy `_Texture2d_get_image_data`：
   `image_data` 非空用它，否则走 `Environment::streaming_data` 取 `.resS`；输出做 Y 翻转
-  （Unity bottom-up → PNG top-down）。**原始** Crunch（DXT1/DXT5 Crunched，format 28/29，<
-  2017.3）已支持；**Unity 变体 crunch**（≥2017.3 的 DXT crunched + ETC crunch 64/65）+ PVRTC / ATC 未做；
+  （Unity bottom-up → PNG top-down）。Crunch 全覆盖（原始 28/29 + Unity 变体 28/29/64/65，版本分水岭
+  自动分派）；PVRTC / ATC 未做；
   BC6H 走无符号 UF16 路径（Unity 不区分 SF16）。**ASTC HDR（format 66-71）也暂缓**——根因是 HDR block 的 alpha 通道语义不在 16 字节 block
   内、要由外部 decode profile 补全，而 `texture-decoder-rs` 是 LDR-only（CEM 2/3/7/11 无条件
   假设 HDR profile、缺 LDR error 色分支、输出恒为 RGBA8）。要做真 HDR 需重写插值/输出路径，
@@ -207,11 +207,13 @@ Edition is `2024` → requires Rust >= 1.85.
   自动做块边缘裁剪）。未压缩格式走 `decode_uncompressed`（不经 decoder；数值映射对齐
   **AssetRipper `NumericConversion`**：8/16-bit signed 走 XOR 符号位、16-bit downscale、
   HDR 浮点走线性 `v*255` 饱和（无 tone mapping），fp16 经 `half` crate）。Crunch 走
-  `decode_crunch`（两段式：`crn::decode` 把原始 CRN 解成 level 0 的 BC1/BC3 block 字节 → 再走
-  `bcn::decode_bc1/bc3` 转 RGBA；**仅原始 Crunch**（UnityPy `unpack_crunch`），Unity 变体 crunch
-  （≥2017.3 的 DXT crunched + ETC crunch 64/65，`unpack_unity_crunch`）输出乱码、待做。Y 翻转同其他
-  路径）。CLI 层按 `fmt.astc_block().is_some()` / `fmt.is_bcn()` / `fmt.is_crunch()` /
-  `fmt.is_etc()` / `fmt.is_uncompressed()` 五路分派。
+  `decode_crunch(data, fmt, ver)`（**统一入口 + 版本分水岭分派**，对齐 AssetRipper
+  `CrunchHandler.IsUseUnityCrunch`：`ver >= 2017.3` 或 format ∈{64,65} → `crn_unity` 模块
+  （UnityPy `unpack_unity_crunch`），否则 → `crn` 模块（`unpack_crunch`）。两路径同构两段式：
+  第一段把 CRN 解成含全部 face × mip 的 `Crn*Texture`（每 mip 持原始 BC1/BC3/ETC1/ETC2_RGBA8 block），
+  第二段对 level 0 走 `bcn`/`etc` 转 RGBA。sig 都是 `0x4878` 但 bitstream 不兼容，靠版本+format
+  分派。覆盖 28/29/64/65 四值；Y 翻转同其他路径）。CLI 层按 `fmt.astc_block().is_some()` /
+  `fmt.is_bcn()` / `fmt.is_crunch()` / `fmt.is_etc()` / `fmt.is_uncompressed()` 五路分派。
   Y 翻转在 `flip_vertical_in_place`（Unity 纹理 bottom-up，PNG top-down，
   对齐 UnityPy 默认 `FLIP_TOP_BOTTOM`）。**明日方舟 LZ4 变体 codec 放 CLI 层（`AkLz4Decompressor`
   在 `src/main.rs`）**——遵守「不在库里硬编码游戏 codec」；chararts bundle 需 `--arknights`。

@@ -1,9 +1,9 @@
 //! Texture2D → 图片导出（受 `export` feature 门控）。
 //!
-//! 现状：支持 ASTC LDR + ETC1/ETC2/EAC + BCn/DXT + Crunch（DXT1/DXT5 crunched；
-//! 通过 path 依赖 [`texture_decoder_rs`]，后者需 `crn` feature）+ 全部未压缩格式
-//! （纯字节重排，不经 decoder），输出 PNG。Crunch 路径额外支持 cubemap（6 面纵向
-//! 拼接，对齐 AssetRipper）+ 多 mip（只导出 level 0），详见 [`decode_crunch`]。
+//! 现状：支持 ASTC LDR + ETC1/ETC2/EAC + BCn/DXT + Crunch（DXT1/DXT5/ETC1/ETC2A crunched，
+//! 原始 + Unity 变体；通过 path 依赖 [`texture_decoder_rs`]，后者需 `crn` + `crn-unity`
+//! feature）+ 全部未压缩格式（纯字节重排，不经 decoder），输出 PNG。Crunch 路径额外支持
+//! cubemap（6 面纵向拼接，对齐 AssetRipper）+ 多 mip（只导出 level 0），详见 [`decode_crunch`]。
 //! 像素数据来源选择对齐 UnityPy `_Texture2d_get_image_data`：`image_data` 非空用它，否则
 //! 走 `Environment::streaming_data` 取 `.resS` 流数据。
 //!
@@ -40,21 +40,27 @@
 //! fp16/fp32 输出 + EXR 编码）。**以后再说。**详见
 //! [`../docs/astc-hdr-alpha-handling.md`](../../docs/astc-hdr-alpha-handling.md)。
 //!
-//! 路线图：PVRTC/ATC + **Unity 变体 Crunch** + ASTC HDR + Sprite Sheet + 多输出格式。
+//! 路线图：PVRTC/ATC + ASTC HDR + Sprite Sheet + 多输出格式。
 //!
-//! # Crunch（原始 vs Unity 变体）
+//! # Crunch（原始 + Unity 变体）
 //!
-//! 支持**原始** Crunch（CRN v1.04，sig `0x4878` "Hx"）——DXT1Crunched / DXT5Crunched
-//! 两值，经 `texture_decoder_rs::crn` 两段式解码（CRN → 原始 BC1/BC3 block → RGBA）。
-//! 对应 UnityPy `unpack_crunch`。
+//! 支持 **原始 Crunch**（CRN v1.04，`crn` 模块，对齐 UnityPy `unpack_crunch`）与
+//! **Unity 变体 Crunch**（Unity fork，`crn_unity` 模块，对齐 UnityPy `unpack_unity_crunch`）
+//! 两条路径，由 [`TextureFormat::is_unity_crunch`]（版本分水岭）在 [`decode_crunch`] 内
+//! 自动分派。覆盖 DXT1Crunched(28) / DXT5Crunched(29) / ETC_RGB4Crunched(64) /
+//! ETC2_RGBA8Crunched(65) 四值。
 //!
-//! **注意版本分水岭**：Unity ≥2017.3 产出的 DXT1Crunched/DXT5Crunched 走的是 **Unity
-//! 变体 crunch**（对齐 UnityPy `unpack_unity_crunch`，`Texture2DConverter.py:297-306`），
-//! 数据虽也以 `0x4878` 开头、原始 crunch 解码器能跑完不报错，但解出的块是错的（图像
-//! 乱码）。Unity 变体 crunch 与 ETC_RGB4Crunched(64)/ETC2_RGBA8Crunched(65) 同属待做，
-//! 需 `texture_decoder_rs` 加 unity crunch 解码模块。**实测**：Unity 2017.2.5f1（<2017.3）
-//! 产的 DXT crunched 是原始 Crunch，本路径正确（lena 512×512 与 UnityPy golden 仅 1-LSB
-//! 舍入差，Δ∈{1}）；2017.4 产的是 Unity 变体，本路径输出乱码。
+//! **版本分水岭**（对齐 AssetRipper `CrunchHandler.IsUseUnityCrunch`）：`version >= 2017.3`
+//! → Unity 变体（Unity 在 2017.3 切换了 Crunch fork，bitstream 从「chunk encoding」改成
+//! 不兼容的「reference encoding」）；或 format 为 ETC crunch（64/65，任意版本都走 Unity
+//! 变体——ETC crunch 无原始变体）；否则（<2017.3 的 DXT crunched）走原始 crunch。两者 sig
+//! 都是 `0x4878` "Hx"——原始解码器能跑完 Unity 变体数据却输出乱码，故**不能**靠 sig 区分，
+//! 必须按版本 + format 分派。
+//!
+//! 两条路径结构同构：第一段（crn / crn_unity）把 CRN 解成含全部 face × mip 的 `Crn*Texture`
+//! （每 mip 持原始 BC1/BC3/ETC1/ETC2_RGBA8 block），第二段对 level 0 走 `bcn`/`etc` 转
+//! RGBA8。block 格式分派由 CRN 头的 `format` 字段决定（权威）。cubemap 纵向拼接 + level-0-only
+//! + Y 翻转规则（2D 翻、cubemap 不翻）两路径共用。
 
 use std::io::Write;
 
@@ -161,13 +167,22 @@ pub enum TextureFormat {
     Bc4 = 26,
     /// BC5（UNORM，16 字节块；双通道 `[R, G, 0, 255]`）。
     Bc5 = 27,
-    // ── Crunch（28, 29；原始 CRN v1.04，sig 0x4878，非 Unity 变体）──
-    /// DXT1Crunched（format 28，原始 crunch）→ crn 解出 BC1 block 再转 RGBA。
+    // ── Crunch（28, 29, 64, 65；sig 0x4878，原始/Unity 变体由版本分水岭决定）──
+    /// DXT1Crunched（format 28）→ crunch 解出 BC1 block 再转 RGBA。
+    /// 版本分水岭（对齐 AssetRipper `IsUseUnityCrunch`）：Unity <2017.3 走**原始** crunch
+    /// （`crn` 模块），≥2017.3 走 **Unity 变体**（`crn_unity` 模块）——两者 sig 都是 `0x4878`
+    /// 但 bitstream 不兼容，原始解码器能跑完 Unity 变体却输出乱码。
     /// 支持 cubemap（6 面纵向拼接）+ 多 mip（只导出 level 0），见 [`decode_crunch`]。
     Dxt1Crunched = 28,
-    /// DXT5Crunched（format 29，原始 crunch）→ crn 解出 BC3 block 再转 RGBA。
-    /// 支持 cubemap（6 面纵向拼接）+ 多 mip（只导出 level 0），见 [`decode_crunch`]。
+    /// DXT5Crunched（format 29）→ crunch 解出 BC3 block 再转 RGBA。版本分水岭同
+    /// [`Dxt1Crunched`]。支持 cubemap + level-0-only，见 [`decode_crunch`]。
     Dxt5Crunched = 29,
+    /// ETC_RGB4Crunched（format 64）→ **恒走 Unity 变体**（`crn_unity`），解出 ETC1 block
+    /// 再转 RGBA。ETC crunch 无原始变体。支持 cubemap + level-0-only，见 [`decode_crunch`]。
+    EtcRgb4Crunched = 64,
+    /// ETC2_RGBA8Crunched（format 65）→ **恒走 Unity 变体**（`crn_unity`），解出 ETC2_RGBA8
+    /// block 再转 RGBA。支持 cubemap + level-0-only，见 [`decode_crunch`]。
+    Etc2Rgba8Crunched = 65,
     // ── ETC1 / ETC2 / EAC（34, 41-47）──
     /// ETC1（ETC_RGB4 = 34）。
     EtcRgb4 = 34,
@@ -246,9 +261,11 @@ impl TextureFormat {
             10 => Some(Self::Dxt1),
             11 => Some(Self::Dxt3),
             12 => Some(Self::Dxt5),
-            // Crunch（原始 CRN v1.04）
+            // Crunch（原始 / Unity 变体由 is_unity_crunch 按版本判定）
             28 => Some(Self::Dxt1Crunched),
             29 => Some(Self::Dxt5Crunched),
+            64 => Some(Self::EtcRgb4Crunched),
+            65 => Some(Self::Etc2Rgba8Crunched),
             24 => Some(Self::Bc6H),
             25 => Some(Self::Bc7),
             26 => Some(Self::Bc4),
@@ -339,15 +356,30 @@ impl TextureFormat {
         )
     }
 
-    /// 是否为 Crunch 压缩（原始 CRN v1.04，sig `0x4878`，非 Unity 变体）。
+    /// 是否为 Crunch 压缩（sig `0x4878`；原始或 Unity 变体由 [`Self::is_unity_crunch`]
+    /// 按版本判定）。
     ///
-    /// 经 `texture_decoder_rs::crn::decode` 两段式解码：先解出含全部 face / mip 的
-    /// `CrnTexture`（每 mip 持原始 BC1/BC3 block），再对 level 0 走 `bcn` 转 RGBA。
-    /// cubemap（6 面）纵向拼接成一张图、只导出最大 mip——详见 [`decode_crunch`]。
-    /// Unity 变体 crunch（ETC_RGB4Crunched=64 / ETC2_RGBA8Crunched=65，及部分
-    /// ≥2017.3 的 DXT crunched 边界情况）数据 sig 不同，不支持。
+    /// 覆盖 DXT1Crunched(28) / DXT5Crunched(29) / ETC_RGB4Crunched(64) /
+    /// ETC2_RGBA8Crunched(65)。两段式解码：先解出含全部 face / mip 的 `Crn*Texture`
+    /// （每 mip 持原始 BC1/BC3/ETC1/ETC2_RGBA8 block），再对 level 0 走 `bcn`/`etc`
+    /// 转 RGBA。cubemap（6 面）纵向拼接成一张图、只导出最大 mip——详见 [`decode_crunch`]。
     pub fn is_crunch(self) -> bool {
-        matches!(self, Self::Dxt1Crunched | Self::Dxt5Crunched)
+        matches!(
+            self,
+            Self::Dxt1Crunched | Self::Dxt5Crunched | Self::EtcRgb4Crunched | Self::Etc2Rgba8Crunched
+        )
+    }
+
+    /// 是否走 **Unity 变体** crunch（对齐 AssetRipper `CrunchHandler.IsUseUnityCrunch`）。
+    ///
+    /// 版本分水岭：`version >= 2017.3` → Unity 变体（含该版本的 DXT crunched，因 Unity
+    /// 在 2017.3 切换了 Crunch fork）；或 format 为 ETC crunch（64/65，任意版本都走 Unity
+    /// 变体——ETC crunch 无原始变体）。否则（<2017.3 的 DXT crunched）走**原始** crunch。
+    /// 两者 sig 都是 `0x4878` 但 bitstream 不兼容，[`decode_crunch`] 据此分派到 `crn`
+    /// / `crn_unity` 模块。
+    pub fn is_unity_crunch(self, ver: crate::UnityVersion) -> bool {
+        ver >= crate::UnityVersion::new(2017, 3, 0)
+            || matches!(self, Self::EtcRgb4Crunched | Self::Etc2Rgba8Crunched)
     }
 
     /// 是否为 ETC/EAC 家族（4×4 块，由 `etc_decoder` 处理）。
@@ -411,6 +443,10 @@ impl TextureFormat {
             Self::Dxt5 => "bc3",
             Self::Dxt1Crunched => "bc1crn",
             Self::Dxt5Crunched => "bc3crn",
+            // ETC crunch 恒为 Unity 变体（无原始变体），label 带 `u` 与 DXT 的原始/Unity
+            // 通用 `crn` 区分（DXT 的原始 vs Unity 由版本分水岭决定，label 不区分）。
+            Self::EtcRgb4Crunched => "etc1crnu",
+            Self::Etc2Rgba8Crunched => "etc2a8crnu",
             Self::Bc4 => "bc4",
             Self::Bc5 => "bc5",
             Self::Bc6H => "bc6h",
@@ -476,6 +512,12 @@ pub enum TextureExportError {
     /// 但各自独立），故单独成变体。BC1/BC3 第二段解码失败仍走 [`Decode`]。
     #[snafu(display("Crunch 解码失败: {err:?}"))]
     CrunchDecode { err: texture_decoder_rs::crn::CrnDecodeError },
+
+    /// Unity 变体 Crunch 第一段解码失败（Unity fork 的 reference-encoding bitstream
+    /// 解析失败）。`CrnUnityDecodeError` 又是另一独立类型，故单独成变体。第二段 BC/ETC
+    /// 解码失败仍走 [`Decode`]。
+    #[snafu(display("Unity Crunch 解码失败: {err:?}"))]
+    CrunchUnityDecode { err: texture_decoder_rs::crn_unity::CrnUnityDecodeError },
 
     /// PNG 编码 / 写入失败。
     #[snafu(display("写 PNG 失败: {source}"))]
@@ -626,13 +668,28 @@ pub fn decode_bcn(
     Ok(out)
 }
 
-/// 解码 Crunch（DXT1Crunched / DXT5Crunched）纹理为 top-down RGBA8。
+/// 解码 Crunch 纹理（DXT1/DXT5/ETC1/ETC2A crunched）为 top-down RGBA8。
 ///
-/// **两段式**：先 `texture_decoder_rs::crn::decode` 把原始 CRN（sig `0x4878`）解成
-/// 含全部 face / mip 的 `CrnTexture`（每 mip 持有原始 BC1/BC3 block 字节，crn 模块
-/// **不输出 RGBA**），再对目标 mip 的 block 走 `bcn::decode_bc1`/`decode_bc3` 转
-/// RGBA8。BC1 vs BC3 的分派由 **CRN 头的 `format` 字段决定**（权威，无需外部传
-/// `TextureFormat`），块边缘裁剪由 bcn 解码器内部处理（非 4 倍数尺寸安全）。
+/// **统一入口 + 版本分水岭**：内部按 AssetRipper `CrunchHandler.IsUseUnityCrunch`
+/// （即 [`TextureFormat::is_unity_crunch`]）分派到两条同构的两段式路径：
+///
+/// - **原始 Crunch**（`texture_decoder_rs::crn`，对齐 UnityPy `unpack_crunch`）：
+///   Unity <2017.3 的 DXT1Crunched/DXT5Crunched。CRN v1.04「chunk encoding」bitstream。
+/// - **Unity 变体 Crunch**（`texture_decoder_rs::crn_unity`，对齐 UnityPy `unpack_unity_crunch`）：
+///   Unity ≥2017.3 的 DXT crunched（Unity 在 2017.3 切换了 Crunch fork，bitstream 改成
+///   不兼容的「reference encoding」）+ **任意版本**的 ETC_RGB4Crunched/ETC2_RGBA8Crunched
+///   （ETC crunch 无原始变体）。
+///
+/// 两者 sig 都是 `0x4878` "Hx"——原始解码器能跑完 Unity 变体数据却输出乱码，故**不能**靠
+/// sig 区分，必须按版本 + format 分派（`fmt` 与 `ver` 共同决定走哪条路）。
+///
+/// # 两段式
+///
+/// 第一段（crn / crn_unity）把 CRN 解成含全部 face × mip 的 `Crn*Texture`（每 mip 持有
+/// **原始 BC1/BC3/ETC1/ETC2_RGBA8 block 字节**，两模块都**不输出 RGBA**）；第二段对目标
+/// mip 的 block 走 `bcn`/`etc` 转 RGBA8。block 格式（BC1/BC3/ETC1/ETC2_RGBA8）分派由
+/// **CRN 头的 `format` 字段决定**（权威，无需外部传 `TextureFormat`），块边缘裁剪由第二段
+/// 解码器内部处理（非 4 倍数尺寸安全）。
 ///
 /// # Mipmap
 ///
@@ -654,47 +711,43 @@ pub fn decode_bcn(
 /// 用返回的尺寸喂 [`write_png`]，而非 Texture2D 声明的 `m_width`/`m_height`（cubemap
 /// 下后者只是单面尺寸）。
 ///
-/// 仅支持**原始** Crunch（对齐 UnityPy `unpack_crunch`，sig `0x4878` "Hx"）。Unity
-/// 变体 crunch（`ETC_RGB4Crunched`=64 / `ETC2_RGBA8Crunched`=65，以及 ≥2017.3 的
-/// 部分 DXT crunched 边界情况）走 `unpack_unity_crunch`，数据 sig 不同，本 crate 不支持。
+/// 通道顺序：第二段 BCn/ETC 解码均输出 RGBA，与 [`decode_bcn`] / [`decode_etc`] 路径
+/// 一致，无需 B/R 交换。
+pub fn decode_crunch(
+    data: &[u8],
+    fmt: TextureFormat,
+    ver: crate::UnityVersion,
+) -> Result<(Vec<u8>, u32, u32), TextureExportError> {
+    if fmt.is_unity_crunch(ver) {
+        decode_crunch_unity(data)
+    } else {
+        decode_crunch_legacy(data)
+    }
+}
+
+/// 第二段 block → RGBA8 解码器签名（bcn / etc 家族共用同一签名）。
+type BlockDecode = fn(&[u8], usize, usize, &mut [u8]) -> Result<(), texture_decoder_rs::DecodeError>;
+
+/// 把每面 level-0 的 block 字节逐面解 RGBA8、纵向拼接、按 cubemap 规则决定是否 Y 翻转。
 ///
-/// 通道顺序：第二段 BCn 解码输出 RGBA，与 [`decode_bcn`] 路径一致，无需 B/R 交换。
-pub fn decode_crunch(data: &[u8]) -> Result<(Vec<u8>, u32, u32), TextureExportError> {
-    use texture_decoder_rs::crn::{CrnDecodeError, CrnFormat};
-
-    // 第一段：CRN → CrnTexture（含全部 face × mip，每 mip 持有原始 BC block 字节）。
-    let tex = texture_decoder_rs::crn::decode(data)
-        .map_err(|err| TextureExportError::CrunchDecode { err })?;
-
-    // CRN 解码器契约：faces ∈ {1, 6}，每面 levels ≥ 1（header.levels 至少为 1）。
-    // 仍做防御性检查，避免 contract 变化时 panic。取 faces[0].levels[0] 作基准面尺寸
-    // ——同 mip 的所有面尺寸一致（解码器对 level 0 用 max(header.w/h, 1)）。
-    let missing = || TextureExportError::CrunchDecode {
-        err: CrnDecodeError::InvalidHeader,
-    };
-    let base_mip = tex.faces.first().and_then(|f| f.levels.first()).ok_or_else(missing)?;
-    let (face_w, face_h) = (base_mip.width as usize, base_mip.height as usize);
-    let n_faces = tex.faces.len();
+/// `face_mips[face]` 为该面的 level-0 block 字节；`face_w`/`face_h` 为单面像素尺寸。
+/// 原始 crunch 与 Unity 变体共用此尾部管线（两路径只在前段 decode + format 分派不同）。
+fn stitch_crunch_faces(
+    face_mips: &[&[u8]],
+    face_w: usize,
+    face_h: usize,
+    block_decode: BlockDecode,
+) -> Result<(Vec<u8>, u32, u32), TextureExportError> {
+    let n_faces = face_mips.len();
     let is_cubemap = n_faces == 6;
-
-    // 第二段：BC block → RGBA8。BC1/BC3 分派由 CRN 头 format 决定（权威）。
-    type BcDecode = fn(&[u8], usize, usize, &mut [u8]) -> Result<(), texture_decoder_rs::DecodeError>;
-    let bc_decode: BcDecode = match tex.format {
-        CrnFormat::Bc1 => texture_decoder_rs::bcn::decode_bc1,
-        CrnFormat::Bc3 => texture_decoder_rs::bcn::decode_bc3,
-    };
-
-    // 逐面解 level 0（最大 mip）→ RGBA8，按面顺序纵向拼接进单个输出缓冲。
     let out_w = face_w;
     let out_h = face_h * n_faces;
     let mut out = vec![0u8; out_w * out_h * 4];
     let face_stride = face_w * face_h * 4;
 
-    for (i, face) in tex.faces.iter().enumerate() {
-        // 只取 level 0（最大分辨率 mip），丢弃其余 mip。
-        let mip = face.levels.first().ok_or_else(missing)?;
+    for (i, blocks) in face_mips.iter().enumerate() {
         let slot = &mut out[i * face_stride..(i + 1) * face_stride];
-        bc_decode(&mip.data, face_w, face_h, slot)
+        block_decode(blocks, face_w, face_h, slot)
             .map_err(|err| TextureExportError::Decode { err })?;
     }
 
@@ -705,6 +758,66 @@ pub fn decode_crunch(data: &[u8]) -> Result<(Vec<u8>, u32, u32), TextureExportEr
     }
 
     Ok((out, out_w as u32, out_h as u32))
+}
+
+/// 原始 Crunch（`crn` 模块）解码：CRN v1.04 → BC1/BC3 block → RGBA8。
+fn decode_crunch_legacy(data: &[u8]) -> Result<(Vec<u8>, u32, u32), TextureExportError> {
+    use texture_decoder_rs::crn::{CrnDecodeError, CrnFormat};
+
+    let tex = texture_decoder_rs::crn::decode(data)
+        .map_err(|err| TextureExportError::CrunchDecode { err })?;
+
+    let missing = || TextureExportError::CrunchDecode {
+        err: CrnDecodeError::InvalidHeader,
+    };
+    let base_mip = tex.faces.first().and_then(|f| f.levels.first()).ok_or_else(missing)?;
+    let (face_w, face_h) = (base_mip.width as usize, base_mip.height as usize);
+
+    // BC1/BC3 分派由 CRN 头 format 决定（权威）。原始 crunch 只产 BC1/BC3。
+    let block_decode: BlockDecode = match tex.format {
+        CrnFormat::Bc1 => texture_decoder_rs::bcn::decode_bc1,
+        CrnFormat::Bc3 => texture_decoder_rs::bcn::decode_bc3,
+    };
+
+    // 逐面取 level-0 block 字节（只导出最大 mip，丢弃其余）。
+    let face_mips: Vec<&[u8]> = tex
+        .faces
+        .iter()
+        .map(|f| f.levels.first().map(|m| m.data.as_slice()).ok_or_else(missing))
+        .collect::<Result<_, _>>()?;
+
+    stitch_crunch_faces(&face_mips, face_w, face_h, block_decode)
+}
+
+/// Unity 变体 Crunch（`crn_unity` 模块）解码：Unity fork CRN →
+/// BC1/BC3/ETC1/ETC2_RGBA8 block → RGBA8。
+fn decode_crunch_unity(data: &[u8]) -> Result<(Vec<u8>, u32, u32), TextureExportError> {
+    use texture_decoder_rs::crn_unity::{CrnUnityDecodeError, CrnUnityFormat};
+
+    let tex = texture_decoder_rs::crn_unity::decode(data)
+        .map_err(|err| TextureExportError::CrunchUnityDecode { err })?;
+
+    let missing = || TextureExportError::CrunchUnityDecode {
+        err: CrnUnityDecodeError::InvalidHeader,
+    };
+    let base_mip = tex.faces.first().and_then(|f| f.levels.first()).ok_or_else(missing)?;
+    let (face_w, face_h) = (base_mip.width as usize, base_mip.height as usize);
+
+    // block 格式分派由 CRN 头 format 决定（权威）。Unity 变体覆盖 BC1/BC3/ETC1/ETC2_RGBA8。
+    let block_decode: BlockDecode = match tex.format {
+        CrnUnityFormat::Bc1 => texture_decoder_rs::bcn::decode_bc1,
+        CrnUnityFormat::Bc3 => texture_decoder_rs::bcn::decode_bc3,
+        CrnUnityFormat::Etc1Rgb4 => texture_decoder_rs::etc::decode_etc1_rgb8,
+        CrnUnityFormat::Etc2Rgba8 => texture_decoder_rs::etc::decode_etc2_rgba8,
+    };
+
+    let face_mips: Vec<&[u8]> = tex
+        .faces
+        .iter()
+        .map(|f| f.levels.first().map(|m| m.data.as_slice()).ok_or_else(missing))
+        .collect::<Result<_, _>>()?;
+
+    stitch_crunch_faces(&face_mips, face_w, face_h, block_decode)
 }
 
 /// 解码未压缩纹理格式为 top-down RGBA8（已垂直翻转，可直接喂 PNG）。

@@ -15,7 +15,7 @@ use unity_asset_rs::texture_export::{
     TextureFormat, decode_astc, decode_crunch, decode_uncompressed, texture_pixel_bytes,
     write_png,
 };
-use unity_asset_rs::{ClassIDType, Environment, ParsedObject, UnityObject};
+use unity_asset_rs::{ClassIDType, Environment, ParsedObject, UnityObject, UnityVersion};
 
 /// 含 ASTC 纹理的标准 Unity bundle fixture。
 const UI_BUNDLE: &str = "example/DownloadCommonUI.unity3d";
@@ -530,17 +530,20 @@ fn uncompressed_multi_row_y_flip() {
     );
 }
 
-// ── Crunch（原始 CRN v1.04，DXT1/DXT5 crunched）解码测试 ──
+// ── Crunch（原始 CRN v1.04 + Unity 变体；DXT1/DXT5/ETC1/ETC2A crunched）解码测试 ──
 //
-// 用 sibling crate `../texture-decoder-rs/tests/data/crunch/` 下的 golden fixture
-// （由参考 C++ `crn_decomp.h` transcoder 生成的 `.crn`/`.bc` 对）验证 `decode_crunch`：
-// level-0 选取 + BC1/BC3 分派（由 CRN 头 format 决定）+ cubemap 6 面纵向拼接 +
-// Y 翻转规则（2D 翻、cubemap 不翻，对齐 AssetRipper）。golden `.bc` 是独立 ground truth。
+// 用 sibling crate `../texture-decoder-rs/tests/data/{crunch,crunch_unity}/` 下的 golden
+// fixture（由参考 C++ transcoder 生成的 `.crn`/`.bc` 对）验证 `decode_crunch`：版本分水岭
+// 分派（原始 vs Unity 变体）+ level-0 选取 + BC1/BC3/ETC1/ETC2_RGBA8 分派（由 CRN 头 format
+// 决定）+ cubemap 6 面纵向拼接 + Y 翻转规则（2D 翻、cubemap 不翻，对齐 AssetRipper）。
+// golden `.bc` 是独立 ground truth（crunch 走 `crn_decomp.h`，crunch_unity 走 Unity fork）。
 
 /// 读 sibling crate 的 crunch fixture（`.crn` + `.bc`）；不存在返回 None（测试跳过）。
-fn crunch_fixture(name: &str) -> Option<(Vec<u8>, Vec<u8>)> {
+/// `subdir` = `crunch`（原始）或 `crunch_unity`（Unity 变体）。
+fn crunch_fixture(subdir: &str, name: &str) -> Option<(Vec<u8>, Vec<u8>)> {
     let base = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../../texture-decoder-rs/tests/data/crunch");
+        .join("../../texture-decoder-rs/tests/data")
+        .join(subdir);
     let crn = std::fs::read(base.join(format!("{name}.crn"))).ok()?;
     let bc = std::fs::read(base.join(format!("{name}.bc"))).ok()?;
     Some((crn, bc))
@@ -556,35 +559,44 @@ fn flip_rows(rgba: &mut [u8], w: usize, h: usize) {
     }
 }
 
-type BcDecode = fn(&[u8], usize, usize, &mut [u8]) -> Result<(), texture_decoder_rs::DecodeError>;
+/// 第二段 block → RGBA8 解码器签名（bcn / etc 家族共用同一签名）。
+type BlockDecode = fn(&[u8], usize, usize, &mut [u8]) -> Result<(), texture_decoder_rs::DecodeError>;
 
-/// 2D（单面）crunch：decode_crunch 应等于 golden `.bc` 经 bc_decode 后 Y 翻转。
-fn check_crunch_2d(name: &str, bc_decode: BcDecode) {
-    let (crn, bc) = match crunch_fixture(name) {
+/// 2D（单面）crunch：decode_crunch(data, fmt, ver) 应等于 golden `.bc` 经 block_decode 后
+/// Y 翻转。`fmt`+`ver` 决定走原始还是 Unity 变体路径（由调用方按 fixture 来源配对）。
+fn check_crunch_2d(subdir: &str, name: &str, block_decode: BlockDecode, fmt: TextureFormat, ver: UnityVersion) {
+    let (crn, bc) = match crunch_fixture(subdir, name) {
         Some(x) => x,
         None => {
-            eprintln!("跳过：crunch fixture {name} 不存在（sibling crate 缺失）");
+            eprintln!("跳过：crunch fixture {subdir}/{name} 不存在（sibling crate 缺失）");
             return;
         }
     };
     let (w, h) = (6usize, 6usize);
     let mut expected = vec![0u8; w * h * 4];
-    bc_decode(&bc, w, h, &mut expected).unwrap();
+    block_decode(&bc, w, h, &mut expected).unwrap();
     flip_rows(&mut expected, w, h); // 2D 走 Y 翻转。
 
-    let (rgba, ow, oh) = decode_crunch(&crn).expect("2D crunch decode");
+    let (rgba, ow, oh) = decode_crunch(&crn, fmt, ver).expect("2D crunch decode");
     assert_eq!((ow, oh), (w as u32, h as u32), "2D 输出尺寸 = 单面尺寸");
     assert_eq!(rgba, expected, "2D crunch 应 = golden bc 解码 + Y 翻转");
 }
 
 /// Cubemap（6 面）crunch：decode_crunch 应纵向拼接 6 个面，每面 = golden 该面 level-0
-/// block 经 bc_decode；不 Y 翻转。golden `.bc` 布局 = face-major、每面 mip-major，
+/// block 经 block_decode；不 Y 翻转。golden `.bc` 布局 = face-major、每面 mip-major，
 /// 3 mip [(6,6),(3,3),(1,1)]，故 level 0 是每面前 `level0_len` 字节。
-fn check_crunch_cubemap(name: &str, bc_decode: BcDecode, block_bytes: usize) {
-    let (crn, bc) = match crunch_fixture(name) {
+fn check_crunch_cubemap(
+    subdir: &str,
+    name: &str,
+    block_decode: BlockDecode,
+    block_bytes: usize,
+    fmt: TextureFormat,
+    ver: UnityVersion,
+) {
+    let (crn, bc) = match crunch_fixture(subdir, name) {
         Some(x) => x,
         None => {
-            eprintln!("跳过：crunch fixture {name} 不存在（sibling crate 缺失）");
+            eprintln!("跳过：crunch fixture {subdir}/{name} 不存在（sibling crate 缺失）");
             return;
         }
     };
@@ -600,31 +612,156 @@ fn check_crunch_cubemap(name: &str, bc_decode: BcDecode, block_bytes: usize) {
     for i in 0..6 {
         let face_blocks = &bc[i * face_total..i * face_total + level0_len];
         let slot = &mut expected[i * fw * fh * 4..(i + 1) * fw * fh * 4];
-        bc_decode(face_blocks, fw, fh, slot).unwrap();
+        block_decode(face_blocks, fw, fh, slot).unwrap();
     }
     // cubemap 不 Y 翻转。
 
-    let (rgba, ow, oh) = decode_crunch(&crn).expect("cubemap crunch decode");
+    let (rgba, ow, oh) = decode_crunch(&crn, fmt, ver).expect("cubemap crunch decode");
     assert_eq!((ow, oh), (out_w as u32, out_h as u32), "cubemap 输出高 = 面高×6");
     assert_eq!(rgba, expected, "cubemap 应 6 面纵向拼接 + 不 Y 翻转");
 }
 
+// ── 原始 Crunch（CRN v1.04；Unity <2017.3 的 DXT crunched）──
+// 版本 <2017.3 触发 is_unity_crunch=false → 走 crn 模块。
+
 #[test]
 fn crunch_dxt1_2d_matches_golden() {
-    check_crunch_2d("dxt1-6x6", texture_decoder_rs::bcn::decode_bc1);
+    check_crunch_2d(
+        "crunch",
+        "dxt1-6x6",
+        texture_decoder_rs::bcn::decode_bc1,
+        TextureFormat::Dxt1Crunched,
+        UnityVersion::new(2017, 2, 0),
+    );
 }
 
 #[test]
 fn crunch_dxt5_2d_matches_golden() {
-    check_crunch_2d("dxt5-6x6", texture_decoder_rs::bcn::decode_bc3);
+    check_crunch_2d(
+        "crunch",
+        "dxt5-6x6",
+        texture_decoder_rs::bcn::decode_bc3,
+        TextureFormat::Dxt5Crunched,
+        UnityVersion::new(2017, 2, 0),
+    );
 }
 
 #[test]
 fn crunch_dxt1_cubemap_stitches_six_faces() {
-    check_crunch_cubemap("dxt1-cubemap-6x6", texture_decoder_rs::bcn::decode_bc1, 8);
+    check_crunch_cubemap(
+        "crunch",
+        "dxt1-cubemap-6x6",
+        texture_decoder_rs::bcn::decode_bc1,
+        8,
+        TextureFormat::Dxt1Crunched,
+        UnityVersion::new(2017, 2, 0),
+    );
 }
 
 #[test]
 fn crunch_dxt5_cubemap_stitches_six_faces() {
-    check_crunch_cubemap("dxt5-cubemap-6x6", texture_decoder_rs::bcn::decode_bc3, 16);
+    check_crunch_cubemap(
+        "crunch",
+        "dxt5-cubemap-6x6",
+        texture_decoder_rs::bcn::decode_bc3,
+        16,
+        TextureFormat::Dxt5Crunched,
+        UnityVersion::new(2017, 2, 0),
+    );
+}
+
+// ── Unity 变体 Crunch（Unity fork；Unity ≥2017.3 的 DXT crunched + 任意版本 ETC crunch）──
+// 版本 ≥2017.3（DXT）或 ETC 格式（64/65）触发 is_unity_crunch=true → 走 crn_unity 模块。
+
+#[test]
+fn unity_crunch_dxt1_2d_matches_golden() {
+    check_crunch_2d(
+        "crunch_unity",
+        "dxt1-6x6",
+        texture_decoder_rs::bcn::decode_bc1,
+        TextureFormat::Dxt1Crunched,
+        UnityVersion::new(2017, 3, 0),
+    );
+}
+
+#[test]
+fn unity_crunch_dxt5_2d_matches_golden() {
+    check_crunch_2d(
+        "crunch_unity",
+        "dxt5-6x6",
+        texture_decoder_rs::bcn::decode_bc3,
+        TextureFormat::Dxt5Crunched,
+        UnityVersion::new(2017, 3, 0),
+    );
+}
+
+#[test]
+fn unity_crunch_etc1_2d_matches_golden() {
+    check_crunch_2d(
+        "crunch_unity",
+        "etc1-6x6",
+        texture_decoder_rs::etc::decode_etc1_rgb8,
+        // ETC crunch 任意版本都走 Unity 变体；用 <2017.3 验证 format 触发分支。
+        TextureFormat::EtcRgb4Crunched,
+        UnityVersion::new(2017, 2, 0),
+    );
+}
+
+#[test]
+fn unity_crunch_etc2a_2d_matches_golden() {
+    check_crunch_2d(
+        "crunch_unity",
+        "etc2a-6x6",
+        texture_decoder_rs::etc::decode_etc2_rgba8,
+        TextureFormat::Etc2Rgba8Crunched,
+        UnityVersion::new(2017, 2, 0),
+    );
+}
+
+#[test]
+fn unity_crunch_dxt1_cubemap_stitches_six_faces() {
+    check_crunch_cubemap(
+        "crunch_unity",
+        "dxt1-cubemap-6x6",
+        texture_decoder_rs::bcn::decode_bc1,
+        8,
+        TextureFormat::Dxt1Crunched,
+        UnityVersion::new(2017, 3, 0),
+    );
+}
+
+#[test]
+fn unity_crunch_dxt5_cubemap_stitches_six_faces() {
+    check_crunch_cubemap(
+        "crunch_unity",
+        "dxt5-cubemap-6x6",
+        texture_decoder_rs::bcn::decode_bc3,
+        16,
+        TextureFormat::Dxt5Crunched,
+        UnityVersion::new(2017, 3, 0),
+    );
+}
+
+#[test]
+fn unity_crunch_etc1_cubemap_stitches_six_faces() {
+    check_crunch_cubemap(
+        "crunch_unity",
+        "etc1-cubemap-6x6",
+        texture_decoder_rs::etc::decode_etc1_rgb8,
+        8,
+        TextureFormat::EtcRgb4Crunched,
+        UnityVersion::new(2017, 2, 0),
+    );
+}
+
+#[test]
+fn unity_crunch_etc2a_cubemap_stitches_six_faces() {
+    check_crunch_cubemap(
+        "crunch_unity",
+        "etc2a-cubemap-6x6",
+        texture_decoder_rs::etc::decode_etc2_rgba8,
+        16,
+        TextureFormat::Etc2Rgba8Crunched,
+        UnityVersion::new(2017, 2, 0),
+    );
 }

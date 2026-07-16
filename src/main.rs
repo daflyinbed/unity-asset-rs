@@ -20,7 +20,7 @@ use generated::classes::texture2_d::Texture2DMNameVariant;
 
 use unity_asset_rs::{
     load_with, CompressionType, Decompressor, Registry, ClassIDType, Environment, Error, LoadedFile,
-    ParsedObject, ParseFailure, UnityObject, Value,
+    ParsedObject, ParseFailure, UnityObject, UnityVersion, Value,
 };
 
 #[derive(Parser)]
@@ -322,7 +322,7 @@ fn cmd_export(env: &Environment, out: &Path, only: &[i64]) -> Result<(), String>
             }
         };
 
-        let result = export_one(env, t, &name, fmt, out);
+        let result = export_one(env, t, &name, fmt, env.collections()[obj.collection].unity_version, out);
         match result {
             Ok(file) => {
                 println!(
@@ -358,6 +358,7 @@ fn export_one(
     t: &generated::classes::texture2_d::Texture2D,
     name: &str,
     fmt: unity_asset_rs::texture_export::TextureFormat,
+    ver: UnityVersion,
     out: &Path,
 ) -> Result<PathBuf, unity_asset_rs::texture_export::TextureExportError> {
     use unity_asset_rs::texture_export::{
@@ -373,7 +374,7 @@ fn export_one(
     } else if fmt.is_bcn() {
         (decode_bcn(&data, w, h, fmt)?, w, h)
     } else if fmt.is_crunch() {
-        decode_crunch(&data)?
+        decode_crunch(&data, fmt, ver)?
     } else if fmt.is_etc() {
         (decode_etc(&data, w, h, fmt)?, w, h)
     } else {
