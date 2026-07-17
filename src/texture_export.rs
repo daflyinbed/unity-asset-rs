@@ -1331,7 +1331,9 @@ pub fn decode_uncompressed(
 }
 
 /// 逐行 reverse 实现垂直翻转（in-place，无额外分配）。
-fn flip_vertical_in_place(buf: &mut [u8], width: usize, height: usize) {
+///
+/// `pub(crate)` 以便 [`crate::sprite_export`] 在裁剪/旋转时复用（外部不暴露）。
+pub(crate) fn flip_vertical_in_place(buf: &mut [u8], width: usize, height: usize) {
     let stride = width * 4;
     let mut top = 0;
     let mut bottom = height.saturating_sub(1);

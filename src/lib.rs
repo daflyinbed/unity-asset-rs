@@ -23,6 +23,8 @@ pub mod names;
 pub mod object_parser;
 mod serialized_file;
 #[cfg(feature = "export")]
+pub mod sprite_export;
+#[cfg(feature = "export")]
 pub mod texture_export;
 pub mod typetree;
 

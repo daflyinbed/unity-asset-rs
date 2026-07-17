@@ -56,8 +56,25 @@ layer (PPtr deref + `.resS` streaming_data) are all **implemented**:
   BC6H 走无符号 UF16 路径（Unity 不区分 SF16）。**ASTC HDR（format 66-71）也暂缓**——根因是 HDR block 的 alpha 通道语义不在 16 字节 block
   内、要由外部 decode profile 补全，而 `texture-decoder-rs` 是 LDR-only（CEM 2/3/7/11 无条件
   假设 HDR profile、缺 LDR error 色分支、输出恒为 RGBA8）。要做真 HDR 需重写插值/输出路径，
-  详见 [`../docs/astc-hdr-alpha-handling.md`](../docs/astc-hdr-alpha-handling.md)。Sprite Sheet /
-  多输出格式 / 法线贴图未做。
+  详见 [`../docs/astc-hdr-alpha-handling.md`](../docs/astc-hdr-alpha-handling.md)。多输出格式 / 法线贴图未做。
+- **Sprite 导出层**（受 `export` feature 门控，默认开启）：`src/sprite_export.rs`。把 Sprite 从其
+  所在 atlas Texture2D 上裁下 `textureRect` 子区域，可选应用 packing rotation + downscale multiplier，
+  输出 PNG。算法对齐 AssetStudio `SpriteHelper.CutImage` + UnityPy `SpriteHelper.get_image_from_sprite`。
+  **第一阶段覆盖**：Rectangle packing（`SpriteRenderData.texture_rect` / `SpriteAtlasData.texture_rect` 裁剪）
+  + standalone（`Sprite.m_rd`）+ SpriteAtlas 解析（`m_sprite_atlas` PPtr → `m_render_data_map[m_render_data_key]`，
+  PPtr 空但 `m_atlas_tags` 非空时按名称扫同 Environment 的 SpriteAtlas 兜底）+ packing rotation
+  （`settings_raw` bits 2-5：None/FlipH/FlipV/Rotate180/Rotate90）+ downscale multiplier（最近邻整图 resize）。
+  **Y 翻转策略（top-down 空间裁剪）**：我们的 `decode_*` 已内置翻转返回 top-down（= `flipV ∘ decode_bu`），
+  故采用**共轭**策略——所有计算在 top-down 空间进行，把 Unity bottom-up 的 `textureRect.y` 一次性换算成
+  top-down 行号（`crop_y = atlas_h - ceil(y+h)`，`crop_bottom = atlas_h - floor(y)`）；packing rotation 在
+  top-down 空间应用，共轭 `R' = flipV ∘ R ∘ flipV`（None/FlipH/FlipV/Rotate180 不变，**Rotate90 翻方向**：
+  bottom-up 空间的 rot90cw = top-down 空间的 rot90ccw，已用 2×2 位置编码矩阵独立验证 `[[0,1],[2,3]] → [[1,3],[0,2]]`）。
+  越界 rect clamp 到边界（Unity 偶有浮点 rect 超出 1 像素，对齐参考实现），完全越界报 `RectOutOfBounds`。
+  复用 `texture_export` 的 5 路解码原语（astc/bcn/crunch/etc/uncompressed）+ `texture_pixel_bytes` + `write_png`；
+  `flip_vertical_in_place` 提升为 `pub(crate)` 供 rotation 复用。**暂不做**：Tight mesh packing
+  （`packingMode == Tight`，需移植 UnityPy `MeshHelper` + 三角光栅化，报 `UnsupportedTight`）、alpha texture
+  合并（`m_rd.alpha_texture` / `SpriteAtlasData.alpha_texture`，第一阶段忽略 alpha 输出 RGB 部分）。
+  CLI：`export` 子命令扩展 `--no-sprites` / `--only-sprites`（默认两者都导，纹理与 Sprite 分别汇总）。
 
 **未实现**：CN 加密（`0x100` flag）、Loader/LoaderBuilder 配置入口、
 on-demand 逐块解压、SpillPolicy::AutoTempFile、
@@ -108,6 +125,7 @@ cargo test load_from_path         # run a single test by name
 cargo test --test parse_bundle    # run just the integration test file
 cargo test --test environment     # run just the environment 聚合层 tests
 cargo test --test texture_export  # run just the 纹理导出 tests（受 export feature 门控）
+cargo test sprite_export          # run just the Sprite 导出 tests（字节级单测在 src/sprite_export.rs 内）
 cargo run                         # 默认遍历 example/，列出全部对象 + 解析状态 + 汇总
 cargo run -- path/to/x.bundle     # parse a specific bundle（同上，只处理它）
 cargo run -- example/Prefabs.unity3d  # 单个 bundle
@@ -128,7 +146,7 @@ Edition is `2024` → requires Rust >= 1.85.
 
 | crate | 职责 |
 |---|---|
-| `unity-asset-rs`（根 crate，`src/`） | io 层（UnityFS 解包）+ 对象解析（SerializedFile/TypeTree/dispatch）+ 纹理导出（`src/texture_export.rs`，ASTC→PNG，`export` feature 默认开）+ bin（main.rs，含 list / object / export 子命令；list 带解析状态 + 汇总统计 + 失败退出码） |
+| `unity-asset-rs`（根 crate，`src/`） | io 层（UnityFS 解包）+ 对象解析（SerializedFile/TypeTree/dispatch）+ 纹理导出（`src/texture_export.rs`，ASTC/ETC/BCn/Crunch/未压缩→PNG，`export` feature 默认开）+ Sprite 导出（`src/sprite_export.rs`，atlas 裁剪 + packing rotation + downscale→PNG）+ bin（main.rs，含 list / object / export 子命令；list 带解析状态 + 汇总统计 + 失败退出码；export 含 `--no-sprites`/`--only-sprites`） |
 | [`crates/unity-core`](crates/unity-core) | 共享原语（~150 行，零依赖）：`UnityVersion` / `Endian` / `EndianReader` / `Parse` / `PPtr` |
 | [`crates/codegen`](crates/codegen) | 离线工具（bin + lib）：TPK → Rust。**不 link** unity-core/generated，只 emit 引用它们的源码 |
 | [`crates/generated`](crates/generated) | codegen 产物（独立 crate，~9.4 万行 / 940 文件）：`UnityObject` enum + 各 class 扁平 struct + `impl Parse` + `ClassIDType` |
@@ -150,6 +168,12 @@ Edition is `2024` → requires Rust >= 1.85.
   未压缩格式走纯字节级单测（不依赖 fixture，构造确定性输入断言 RGBA 精确匹配；signed
   公式对齐 AssetRipper `ChangeSign`，HDR 浮点对齐 `ConvertSingle<byte>` 线性饱和）。
   明日方舟 `chararts` bundle 因其 LZ4 变体 codec 在 CLI 层（非库）不在测试覆盖内。
+- Sprite 导出测试：字节级单测在 `src/sprite_export.rs` 的 `#[cfg(test)] mod tests`（crop /
+  rotation / downscale / clamp / settings bitfield，不依赖 fixture，构造确定性 RGBA 断言精确
+  匹配）；`tests/sprite_export.rs` 仅做公共 API 表面冒烟。端到端（含 Sprite classID 213 的
+  bundle → `export_sprite` → 校验 PNG）暂缺——现有 `example/` 不含 Sprite 资产（只有
+  SpriteRenderer 引用 + GameObject），按约定不新增 fixture，TODO 待补。Rotate90 共轭方向
+  用 Python 独立验证过参考管线（`flipV ∘ rot90cw ∘ flipV`）输出与 `rot90ccw` 一致。
 - 它们依赖已提交的 fixture `example/char_002_amiya.ab` / `example/DownloadCommonUI.unity3d` —— **不要删除或修改它们**。
 - 期望字节值（`EXPECTED_FIRST16`、`EXPECTED_LAST16`、sizes、revision）是
   **bit-for-bit 对照过 UnityPy** 的。改它们意味着改了 parser 语义；只有拿到验证过的参考输出才更新。
@@ -217,6 +241,16 @@ Edition is `2024` → requires Rust >= 1.85.
   Y 翻转在 `flip_vertical_in_place`（Unity 纹理 bottom-up，PNG top-down，
   对齐 UnityPy 默认 `FLIP_TOP_BOTTOM`）。**明日方舟 LZ4 变体 codec 放 CLI 层（`AkLz4Decompressor`
   在 `src/main.rs`）**——遵守「不在库里硬编码游戏 codec」；chararts bundle 需 `--arknights`。
+- **`src/sprite_export.rs`**（`export` feature）：Sprite → PNG。从 atlas Texture2D 裁 `textureRect`，
+  可选 packing rotation + downscale。render data 解析三级兜底：`m_sprite_atlas` PPtr →
+  `m_render_data_map[m_render_data_key]`（`Guid` 未派生 `PartialEq`，按 4 个 u32 字段手动比对）；
+  PPtr 空但 `m_atlas_tags` 非空 → 按名称扫同 Environment 的 SpriteAtlas；否则 standalone `m_rd`。
+  **Y 翻转共轭**：`decode_*` 已内置翻转返回 top-down，故 crop 在 top-down 空间做（`textureRect.y` 换算
+  行号），packing rotation 用共轭 `R' = flipV ∘ R ∘ flipV`（Rotate90 翻方向，已 Python 独立验证）。
+  `SpriteSettings(u32)` bitfield：bit0=packed / bit1=packingMode(0=Tight,1=Rectangle) /
+  bits2-5=packingRotation / bit6=meshType。复用 `texture_export` 全部解码原语 + `texture_pixel_bytes`
+  + `write_png`；`flip_vertical_in_place` 提升为 `pub(crate)` 供 rotation 复用。
+  **暂不做**：Tight mesh（报 `UnsupportedTight`）、alpha texture 合并。
 - 错误用 `snafu`。在 `src/error.rs` 加变体时遵循既有 `#[snafu(display(...))]` +
   `#[snafu(visibility(pub))]` 模式。
 
@@ -230,7 +264,9 @@ Edition is `2024` → requires Rust >= 1.85.
   的 `Endian`/`PPtr`/`UnityVersion`）+ 聚合层（`Environment`/`EnvironmentBuilder`/`EnvironmentObject`/
   `AssetCollection`/`ResourceFile`/`ParseFailure`/`PPtrLike`/`DependencyProvider`/
   `ResourceProvider`）+ 纹理导出（`export` feature：`texture_export::TextureFormat`/
-  `decode_astc`/`decode_etc`/`decode_bcn`/`decode_crunch`/`write_png`/`texture_pixel_bytes`/`TextureExportError`）。
+  `decode_astc`/`decode_etc`/`decode_bcn`/`decode_crunch`/`decode_uncompressed`/`write_png`/
+  `texture_pixel_bytes`/`TextureExportError`）+ Sprite 导出（`export` feature：`sprite_export::export_sprite`/
+  `sprite_pixel_bytes`/`SpriteExportError`）。
 
 ## Reference docs (read before non-trivial work)
 
