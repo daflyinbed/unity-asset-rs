@@ -31,7 +31,7 @@ pub mod typetree;
 pub use generated::{ClassIDType, UnityObject};
 pub use object_parser::{parse_object, MonoBehaviour, ParsedObject};
 pub use environment::{
-    AssetCollection, CollectionId, DependencyProvider, Environment, EnvironmentBuilder,
+    AssetCollection, ClassId, CollectionId, DependencyProvider, Environment, EnvironmentBuilder,
     EnvironmentObject, ObjectId, ObjectRef, ParseFailure, PPtrLike, ResourceFile,
     ResourceProvider,
 };

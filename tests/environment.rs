@@ -4,7 +4,7 @@
 use std::path::Path;
 
 use unity_asset_rs::{
-    Bytes, ClassIDType, DependencyProvider, Environment, FileFormat, LoadedFile, ObjectId,
+    Bytes, ClassIDType, ClassId, DependencyProvider, Environment, FileFormat, LoadedFile, ObjectId,
     ParseFailure, ParsedObject, ResourceFile, ResourceProvider, UnityObject,
 };
 
@@ -132,12 +132,39 @@ fn objects_of_class_filter_works() {
     for o in env.objects() {
         let is_new = seen.insert(o.class_id);
         if is_new {
-            if let Some(cls) = ClassIDType::from_i32(o.class_id) {
+            if let Some(cls) = o.class_id.known() {
                 sum += env.objects_of_class(cls).count();
             }
         }
     }
     assert!(sum <= total, "objects_of_class 求和 {sum} 不应超过总数 {total}");
+}
+
+#[test]
+fn class_id_open_set_supports_mono_behaviour() {
+    // ClassId 是开集:114 MonoBehaviour 虽然 codegen 跳过(ClassIDType 无此变体),
+    // 但 ClassId 能表示;objects_of_class_id / mono_behaviours 都能查到。
+    let env = load_env(DEFAULT_BUNDLE);
+    // 114 不在 ClassIDType 中。
+    assert!(ClassIDType::from_i32(114).is_none(), "codegen 应跳过 114");
+    // ClassId::known() 对 114 返回 None。
+    assert!(ClassId::MONO_BEHAVIOUR.known().is_none());
+    // 但 objects_of_class_id(ClassId::MONO_BEHAVIOUR) 能查到 MonoBehaviour 对象。
+    let via_open = env.objects_of_class_id(ClassId::MONO_BEHAVIOUR).count();
+    let via_method = env.mono_behaviours().count();
+    assert_eq!(via_open, via_method, "mono_behaviours() 应等价于 objects_of_class_id(MONO_BEHAVIOUR)");
+    assert!(via_open > 0, "char_002_amiya.ab 应含 MonoBehaviour");
+
+    // known() 对 Texture2D 应命中。
+    let tex = ClassId::from(ClassIDType::Texture2D);
+    assert!(tex.known().is_some());
+    assert!(tex.is_typed_parseable());
+    // From<i32> / get() 互逆。
+    assert_eq!(ClassId::from(28).get(), 28);
+    // Display 含已知变体名。
+    assert!(format!("{tex}").contains("Texture2D"));
+    // Display 未知 id 只显示数字。
+    assert_eq!(format!("{}", ClassId::from(99999)), "99999");
 }
 
 #[test]

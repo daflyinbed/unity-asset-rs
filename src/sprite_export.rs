@@ -53,7 +53,7 @@ use crate::texture_export::{
     decode_astc, decode_bcn, decode_crunch, decode_etc, decode_uncompressed, texture_pixel_bytes,
     flip_vertical_in_place, write_png, TextureExportError, TextureFormat,
 };
-use crate::{ClassIDType, Environment, PPtr, ParsedObject, UnityObject, UnityVersion};
+use crate::{ClassIDType, ClassId, Environment, PPtr, ParsedObject, UnityObject, UnityVersion};
 use generated::classes::sprite::Sprite;
 use generated::classes::sprite_atlas::SpriteAtlas;
 use generated::classes::texture2_d::Texture2D;
@@ -235,7 +235,7 @@ fn scan_atlas_by_name<'e>(
     key: Option<&(Guid, i64)>,
 ) -> Option<&'e SpriteAtlasData> {
     env.objects().iter().find_map(|obj| {
-        if obj.class_id != ClassIDType::SpriteAtlas as i32 {
+        if obj.class_id != ClassId::from(ClassIDType::SpriteAtlas) {
             return None;
         }
         let ParsedObject::Typed(UnityObject::SpriteAtlas(atlas)) = &obj.object else {

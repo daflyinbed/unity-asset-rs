@@ -19,8 +19,8 @@ use clap::{Parser, Subcommand};
 use generated::classes::texture2_d::Texture2DMNameVariant;
 
 use unity_asset_rs::{
-    load_with, CompressionType, Decompressor, Registry, ClassIDType, Environment, Error, LoadedFile,
-    ParsedObject, ParseFailure, UnityObject, UnityVersion, Value,
+    load_with, ClassId, ClassIDType, CompressionType, Decompressor, Environment, Error, LoadedFile,
+    ParsedObject, ParseFailure, Registry, UnityObject, UnityVersion, Value,
 };
 
 #[derive(Parser)]
@@ -514,13 +514,14 @@ fn parse_status(obj: &ParsedObject) -> (&'static str, &'static str) {
 ///
 /// 注：codegen 跳过了 classID=114（MonoBehaviour），`ClassIDType::from_i32` 不认识它，
 /// 这里单独映射成 `MonoBehaviour`。
-fn class_name(class_id: i32) -> String {
-    if class_id == 114 {
+fn class_name(class_id: ClassId) -> String {
+    if class_id == ClassId::MONO_BEHAVIOUR {
         return "MonoBehaviour".to_string();
     }
-    ClassIDType::from_i32(class_id)
+    class_id
+        .known()
         .map(|c| format!("{c:?}"))
-        .unwrap_or_else(|| format!("ClassID({class_id})"))
+        .unwrap_or_else(|| format!("ClassID({})", class_id.get()))
 }
 
 /// 从对象取展示名。

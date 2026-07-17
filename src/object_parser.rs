@@ -66,7 +66,8 @@ pub fn parse_object(
     // ── MonoBehaviour (classID=114)：shell typed + structure 动态分段 ──
     // 对齐 AssetRipper：先读引擎基类字段（m_GameObject/m_Enabled/m_Script/m_Name），
     // 再读用户脚本字段。无内嵌 TypeTree 时硬错误（非 TypeTree 路径 = 未来工作）。
-    if class_id == 114 {
+    // 注:codegen 跳过 114,故无法走 ClassIDType;用 ClassId::MONO_BEHAVIOUR 显式比较。
+    if class_id == crate::environment::ClassId::MONO_BEHAVIOUR.get() {
         let tree = ab_tree.ok_or(Error::MonoBehaviourWithoutTypeTree)?;
         let (shell_fields, structure) = interpret_mono_behaviour(data, tree, ver, endian, refs)?;
         let mb = build_mono_behaviour(shell_fields, structure)?;

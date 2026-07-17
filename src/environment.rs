@@ -51,6 +51,61 @@ impl std::fmt::Display for CollectionId {
     }
 }
 
+/// 开集 class id newtype。承载**任何** Unity class id(包括 codegen 跳过的 114
+/// MonoBehaviour),不与\"是否可 typed parse\"耦合。
+///
+/// - [`ClassId::known`] → 可选映射到 codegen 生成的 [`ClassIDType`](generated::ClassIDType)
+///   (人类可读枚举;codegen 主动跳过 114,故 MonoBehaviour 只能经此 newtype 表示)。
+/// - \"是否可 typed parse\" 由 [`Environment::objects_of_class_id`] / parse dispatch
+///   另行判断,不在本类型上硬编码。
+///
+/// 与裸 `i32` 区分,避免把内部存储/分发细节泄漏成 API。
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, PartialOrd, Ord)]
+pub struct ClassId(pub i32);
+
+impl ClassId {
+    /// MonoBehaviour 的 class id。codegen 不生成 typed struct,但 class id 本身有效。
+    pub const MONO_BEHAVIOUR: ClassId = ClassId(114);
+
+    pub const fn new(id: i32) -> Self {
+        Self(id)
+    }
+    pub const fn get(self) -> i32 {
+        self.0
+    }
+
+    /// 映射到 codegen 生成的 [`ClassIDType`](generated::ClassIDType)。
+    /// `None` = codegen 未覆盖(如 114 MonoBehaviour,或未知 class id)。
+    pub fn known(self) -> Option<ClassIDType> {
+        ClassIDType::from_i32(self.0)
+    }
+
+    /// codegen 是否为该 class 生成了 typed parse 路径。
+    /// (等价于 `self.known().is_some()`,语义独立命名便于读代码。)
+    pub fn is_typed_parseable(self) -> bool {
+        ClassIDType::from_i32(self.0).is_some()
+    }
+}
+
+impl From<i32> for ClassId {
+    fn from(id: i32) -> Self {
+        Self(id)
+    }
+}
+impl From<ClassIDType> for ClassId {
+    fn from(c: ClassIDType) -> Self {
+        Self(c as i32)
+    }
+}
+impl std::fmt::Display for ClassId {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self.known() {
+            Some(c) => write!(f, "{}({:?})", self.0, c),
+            None => write!(f, "{}", self.0),
+        }
+    }
+}
+
 /// 对象的全局身份:`collection` 句柄 + `path_id`。
 ///
 /// 可由 [`EnvironmentObject::id`] 取得,经 [`Environment::resolve_ref`] 解引用。
@@ -118,7 +173,8 @@ pub struct EnvironmentObject {
     /// 所属 AssetCollection 句柄。
     pub collection: CollectionId,
     pub path_id: i64,
-    pub class_id: i32,
+    /// class id(开集 newtype;含 MonoBehaviour 等codegen 跳过的 class)。
+    pub class_id: ClassId,
     pub object: ParsedObject,
 }
 
@@ -165,7 +221,7 @@ pub enum ParseFailure {
     Object {
         collection: CollectionId,
         path_id: i64,
-        class_id: i32,
+        class_id: ClassId,
         error: Error,
     },
     /// io 层子容器/子条目递归 parse 失败（container-level）。
@@ -572,19 +628,32 @@ impl Environment {
         &self.objects
     }
 
-    /// 按 classID 过滤对象（typed 与 dynamic 均含）。
-    pub fn objects_of_class(&self, cls: ClassIDType) -> impl Iterator<Item = &EnvironmentObject> {
-        let target = cls as i32;
+    /// 按 [`ClassIDType`] 过滤对象(typed 与 dynamic 均含)。
+    ///
+    /// 常见场景入口。**无法**查 MonoBehaviour(114)——codegen 跳过 114,
+    /// `ClassIDType` 无此变体;用 [`Environment::objects_of_class_id`] 配
+    /// [`ClassId::MONO_BEHAVIOUR`] 查,或用便捷的 [`Environment::mono_behaviours`]。
+    pub fn objects_of_class(
+        &self,
+        cls: ClassIDType,
+    ) -> impl Iterator<Item = &EnvironmentObject> {
+        let target = ClassId::from(cls);
         self.objects.iter().filter(move |o| o.class_id == target)
     }
 
-    /// 全部 MonoBehaviour 对象（classID=114）。
+    /// 按开集 [`ClassId`] 过滤对象(可表示 codegen 跳过的 class,如 MonoBehaviour)。
+    pub fn objects_of_class_id(
+        &self,
+        cls: ClassId,
+    ) -> impl Iterator<Item = &EnvironmentObject> {
+        self.objects.iter().filter(move |o| o.class_id == cls)
+    }
+
+    /// 全部 MonoBehaviour 对象(`class_id == 114`)。
     ///
-    /// 注：codegen 未生成 `ClassIDType::MonoBehaviour`（跳过 114），故不能走
-    /// `objects_of_class`；用专用方法按 `class_id == 114` 过滤。结果可通过
-    /// `EnvironmentObject::as_mono_behaviour()` 取 typed shell。
+    /// 结果可通过 [`EnvironmentObject::as_mono_behaviour`] 取 typed shell。
     pub fn mono_behaviours(&self) -> impl Iterator<Item = &EnvironmentObject> {
-        self.objects.iter().filter(|o| o.class_id == 114)
+        self.objects_of_class_id(ClassId::MONO_BEHAVIOUR)
     }
 
     pub fn collections(&self) -> &[AssetCollection] {
@@ -676,7 +745,7 @@ fn process_leaves(
         let refs = sf.ref_type_table();
         let mut assets = HashMap::new();
         for obj in &sf.objects {
-            let class_id = obj.class_id(&sf);
+            let class_id = ClassId::from(obj.class_id(&sf));
             match parse_object(&sf, obj, &refs) {
                 Ok(parsed) => {
                     let obj_idx = objects.len();
