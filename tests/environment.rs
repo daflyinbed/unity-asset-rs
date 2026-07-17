@@ -3,7 +3,10 @@
 
 use std::path::Path;
 
-use unity_asset_rs::{ClassIDType, Environment, ParseFailure, ParsedObject, UnityObject};
+use unity_asset_rs::{
+    Bytes, ClassIDType, DependencyProvider, Environment, FileFormat, LoadedFile, ParseFailure,
+    ParsedObject, ResourceFile, ResourceProvider, UnityObject,
+};
 
 /// 默认 fixture（io 层测试同款）。
 const DEFAULT_BUNDLE: &str = "example/char_002_amiya.ab";
@@ -257,4 +260,287 @@ fn loaded_method_accepts_preloaded_file() {
     let raw = unity_asset_rs::load(DEFAULT_BUNDLE).expect("预加载失败");
     let env = Environment::builder().loaded(raw).build();
     assert!(!env.collections().is_empty(), ".loaded() 应能并入预加载的资产文件");
+}
+
+
+// ── DependencyProvider / ResourceProvider 扩展点测试 ──
+//
+// 数据背景（已用 io 层 SerializedFile.externals 探查确认）：
+//   Prefabs.unity3d (collection cab-3f1af86a...) 有 4 个 external：
+//     - cab-da81ad817a790a545a5e2c603fe62ad5  ← DownloadClassIcons.unity3d 的 collection
+//     - cab-6ec58657aa6ee704cff1feb25c6ab42c  ← 不在任何 example bundle 中（真缺失）
+//     - unity default resources                ← 内建，不在 example bundle 中（真缺失）
+//     - cab-2872263b14181ced2800d40fa34406c6  ← DownloadCommonUI.unity3d 的 collection
+// 故单独加载 Prefabs 时，这 4 个 external 全为 None；用 provider 对其中 2 个按需加载
+// 目标 bundle 后，对应的依赖槽应被 resolve 成 Some。
+
+/// Prefabs 引用的、可在 example 中找到的 external（2 个）。
+const PREFABS_EXT_CLASSICONS: &str = "cab-da81ad817a790a545a5e2c603fe62ad5";
+const PREFABS_EXT_COMMONUI: &str = "cab-2872263b14181ced2800d40fa34406c6";
+
+/// 统计 env 中 resolved（Some）依赖槽总数（跨全部 collection，含 [0]=self）。
+fn count_resolved_deps(env: &Environment) -> usize {
+    env.collections()
+        .iter()
+        .map(|c| c.dependencies.iter().filter(|d| d.is_some()).count())
+        .sum()
+}
+
+/// stub DependencyProvider：按 path_name 映射到磁盘 bundle 路径，命中则重新 load。
+///
+/// 调用计数走 `Arc<Mutex<HashMap>>`（外部 clone 共享），这样 provider 被 builder
+/// 消费后测试仍能查询 `find_dependency` 的实际调用情况。
+struct StubDependencyProvider {
+    calls: std::sync::Arc<std::sync::Mutex<std::collections::HashMap<String, usize>>>,
+}
+
+impl StubDependencyProvider {
+    fn new() -> Self {
+        Self {
+            calls: std::sync::Arc::new(std::sync::Mutex::new(
+                std::collections::HashMap::new(),
+            )),
+        }
+    }
+    /// 返回共享计数句柄（provider 注册后用它查询）。
+    fn counter(&self) -> std::sync::Arc<std::sync::Mutex<std::collections::HashMap<String, usize>>> {
+        self.calls.clone()
+    }
+    /// 根据 query 的 path_name 决定加载哪个 example bundle（模拟「磁盘现取」）。
+    fn bundle_for(name: &str) -> Option<&'static str> {
+        match name {
+            PREFABS_EXT_CLASSICONS => Some("example/DownloadClassIcons.unity3d"),
+            PREFABS_EXT_COMMONUI => Some("example/DownloadCommonUI.unity3d"),
+            _ => None,
+        }
+    }
+}
+
+impl DependencyProvider for StubDependencyProvider {
+    fn find_dependency(
+        &self,
+        id: &unity_asset_rs::FileIdentifier,
+    ) -> Option<unity_asset_rs::LoadedFile> {
+        *self.calls.lock().unwrap().entry(id.path_name.clone()).or_insert(0) += 1;
+        Self::bundle_for(&id.path_name)
+            .map(unity_asset_rs::load)
+            .and_then(|r| r.ok())
+    }
+}
+
+#[test]
+fn dependency_provider_lazy_loads_missing_bundles() {
+    // 前置：Prefabs + 两个 target bundle 都存在。
+    for b in &[
+        "example/Prefabs.unity3d",
+        "example/DownloadClassIcons.unity3d",
+        "example/DownloadCommonUI.unity3d",
+    ] {
+        if !Path::new(b).exists() {
+            eprintln!("跳过：缺少 fixture {b}");
+            return;
+        }
+    }
+
+    // 对照组：无 provider，单独加载 Prefabs —— 4 个 external 全 None。
+    let baseline = Environment::builder().path("example/Prefabs.unity3d").unwrap().build();
+    let baseline_resolved = count_resolved_deps(&baseline);
+
+    // 实验组：注册 provider，对 2 个 external 按需加载目标 bundle。
+    let stub = StubDependencyProvider::new();
+    let counter = stub.counter();
+    let env = Environment::builder()
+        .path("example/Prefabs.unity3d")
+        .unwrap()
+        .dependency_provider(stub)
+        .build();
+
+    let with_provider_resolved = count_resolved_deps(&env);
+    eprintln!("baseline resolved = {baseline_resolved}, with provider = {with_provider_resolved}");
+
+    // provider 应对 2 个可加载的 external 各被调用（tried 去重后各 1 次）。
+    let classic_calls = *counter.lock().unwrap().get(PREFABS_EXT_CLASSICONS).unwrap_or(&0);
+    let ui_calls = *counter.lock().unwrap().get(PREFABS_EXT_COMMONUI).unwrap_or(&0);
+    assert!(classic_calls >= 1, "provider 应对 DownloadClassIcons 的 external 被调用");
+    assert!(ui_calls >= 1, "provider 应对 DownloadCommonUI 的 external 被调用");
+
+    // resolved 槽应比 baseline 至少多 2（2 个 external 被 resolve）。
+    // 注意：懒加载并入的 bundle 自己也有 [0]=self 槽，故增量 >= 2 + 并入 collection 数。
+    assert!(
+        with_provider_resolved >= baseline_resolved + 2,
+        "provider 懒加载后 resolved 槽 ({with_provider_resolved}) 应 >= baseline ({baseline_resolved}) + 2"
+    );
+    // 并入的 2 个 bundle 应作为新 collection 出现。
+    let names: Vec<String> = env
+        .collections()
+        .iter()
+        .map(|c| c.name_fixed.clone())
+        .collect();
+    assert!(
+        names.iter().any(|n| n == PREFABS_EXT_CLASSICONS),
+        "DownloadClassIcons 的 collection 应被并入"
+    );
+    assert!(
+        names.iter().any(|n| n == PREFABS_EXT_COMMONUI),
+        "DownloadCommonUI 的 collection 应被并入"
+    );
+}
+
+#[test]
+fn no_dependency_provider_leaves_externals_unresolved() {
+    // 回归保护：未注册 provider 时，行为退化为纯 eager —— 真缺失的 external 留 None。
+    if !Path::new("example/Prefabs.unity3d").exists() {
+        eprintln!("跳过：缺少 fixture example/Prefabs.unity3d");
+        return;
+    }
+    let env = Environment::builder().path("example/Prefabs.unity3d").unwrap().build();
+    let any_none = env
+        .collections()
+        .iter()
+        .flat_map(|c| c.dependencies.iter())
+        .any(|d| d.is_none());
+    assert!(any_none, "无 provider 时真缺失的 external 应留 None");
+}
+
+// ── ResourceProvider 测试 ──
+//
+// 场景：Combine.unity3d 含 1 个 SerializedFile + 1 个 .resS（Texture2D 的 streaming
+// 数据）。正常加载时 resS 在 bundle 内，resolve_resource 命中、provider 不触发。
+// 为制造「resS 缺失」场景，测试用 io 层 load Combine 后**过滤掉 resS leaf**，只把
+// SerializedFile leaf 重新喂入 builder——这样 prefetch_resources 扫到 Texture2D 的
+// streaming 引用却找不到 resS，触发 ResourceProvider 回调。
+
+/// Combine 的 resS 经 fix_file_identifier 后的归一化名（小写 basename）。
+const COMBINE_RESS_NAME_FIXED: &str = "cab-2f6c851076a27266ce7d23d6e02ddafe.ress";
+
+/// 从 `load(path)` 结果中挑出第一个 SerializedFile leaf，丢弃 resS / 其它叶子，
+/// 重新包装成单叶 `LoadedFile`（制造「bundle 内无 resS」场景）。
+fn load_serialized_only(path: &str) -> Option<LoadedFile> {
+    let loaded = unity_asset_rs::load(path).ok()?;
+    for (name, bytes, rev, fmt) in loaded.leaves() {
+        if fmt == FileFormat::SerializedFile {
+            return Some(LoadedFile::Leaf {
+                name: name.to_string(),
+                bytes: bytes.clone(),
+                unity_revision: rev.map(|s| s.to_string()),
+                format: FileFormat::SerializedFile,
+            });
+        }
+    }
+    None
+}
+
+/// stub ResourceProvider：对**任意** name 返回一个确定性合成 ResourceFile
+/// （内容是 `[0xAB; N]`），通过共享 `Arc<AtomicBool>` 记录是否被调用。
+struct StubResourceProvider {
+    called: std::sync::Arc<std::sync::atomic::AtomicBool>,
+}
+
+impl StubResourceProvider {
+    fn new() -> Self {
+        Self {
+            called: std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false)),
+        }
+    }
+    fn flag(&self) -> std::sync::Arc<std::sync::atomic::AtomicBool> {
+        self.called.clone()
+    }
+}
+
+impl ResourceProvider for StubResourceProvider {
+    fn find_resource(&self, _name: &str) -> Option<ResourceFile> {
+        self.called.store(true, std::sync::atomic::Ordering::Relaxed);
+        // 合成足够大的资源覆盖 Combine 的 Texture2D streaming size（1MB），
+        // 使 streaming_data 的 bounds 校验通过。首字节用 0xAB 标记便于断言。
+        let mut buf = vec![0xABu8; 1 << 20];
+        if !buf.is_empty() {
+            buf[0] = 0xAB;
+        }
+        Some(ResourceFile {
+            // name 固定为归一化后的值（绕过 fix_file_identifier，仅供测试）。
+            name: String::new(),
+            name_fixed: COMBINE_RESS_NAME_FIXED.to_string(),
+            bytes: Bytes::from(buf),
+        })
+    }
+}
+
+#[test]
+fn resource_provider_prefetches_missing_ress() {
+    if !Path::new("example/Combine.unity3d").exists() {
+        eprintln!("跳过：缺少 fixture example/Combine.unity3d");
+        return;
+    }
+    let standalone = match load_serialized_only("example/Combine.unity3d") {
+        Some(f) => f,
+        None => {
+            eprintln!("跳过：Combine.unity3d 未解出 SerializedFile leaf");
+            return;
+        }
+    };
+
+    let stub = StubResourceProvider::new();
+    let flag = stub.flag();
+    let env = Environment::builder()
+        .loaded(standalone)
+        .resource_provider(stub)
+        .build();
+
+    // provider 应被 prefetch_resources 调用过（Combine 的 Texture2D 引用了缺失 resS）。
+    assert!(
+        flag.load(std::sync::atomic::Ordering::Relaxed),
+        "ResourceProvider 应被 prefetch_resources 回调"
+    );
+    // 合成 resS 应被注册进 resources。
+    assert!(
+        env.resources()
+            .iter()
+            .any(|r| r.name_fixed == COMBINE_RESS_NAME_FIXED),
+        "合成 resS 应被注册进 resources"
+    );
+    // streaming_data 应能命中（走 provider 注册的资源），且返回合成的确定性字节。
+    let tex_stream = env.objects().iter().find_map(|o| {
+        if let ParsedObject::Typed(UnityObject::Texture2D(t)) = &o.object {
+            return t.m_stream_data.clone();
+        }
+        None
+    });
+    let Some(sd) = tex_stream else {
+        eprintln!("跳过：Combine 中无带 streaming 的 Texture2D");
+        return;
+    };
+    let data = env.streaming_data(&sd);
+    assert!(data.is_some(), "streaming_data 应命中（经 provider 注册的 resS）");
+    let data = data.unwrap();
+    assert!(
+        !data.is_empty(),
+        "streaming_data 取到的字节非空"
+    );
+    // 合成资源是 [0xAB; 32]，offset=0 处应为 0xAB（只要 size>0）。
+    assert_eq!(data[0], 0xAB, "streaming_data 首字节应为合成资源标记 0xAB");
+}
+
+#[test]
+fn no_resource_provider_keeps_ress_unresolved_when_missing() {
+    // 回归保护：无 provider 且 bundle 内无 resS 时，streaming_data 返回 None（不 panic）。
+    if !Path::new("example/Combine.unity3d").exists() {
+        eprintln!("跳过：缺少 fixture example/Combine.unity3d");
+        return;
+    }
+    let standalone = match load_serialized_only("example/Combine.unity3d") {
+        Some(f) => f,
+        None => return,
+    };
+    let env = Environment::builder().loaded(standalone).build();
+    let tex_stream = env.objects().iter().find_map(|o| {
+        if let ParsedObject::Typed(UnityObject::Texture2D(t)) = &o.object {
+            return t.m_stream_data.clone();
+        }
+        None
+    });
+    let Some(sd) = tex_stream else { return; };
+    assert!(
+        env.streaming_data(&sd).is_none(),
+        "无 provider 且 bundle 内无 resS 时 streaming_data 应返回 None"
+    );
 }

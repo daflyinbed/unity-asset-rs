@@ -26,7 +26,7 @@ layer (PPtr deref + `.resS` streaming_data) are all **implemented**:
   对象 + `.resS` 资源 + PPtr 解引用（`dependencies[file_id]` 约定对齐 AssetRipper）+
   streaming_data 零拷贝取数。**跨 bundle 已落地**：`EnvironmentBuilder` 累积多 bundle 后
   `build()` 一次性全局依赖解析；聚合层唯一构造入口 `Environment::builder()`（`path`/`loaded`/
-  `scan_dir`/`registry`）。`src/detect.rs` 做 UnityFS + gzip 签名嗅探。
+  `scan_dir`/`registry`）。`src/detect.rs` 做 UnityFS + gzip + brotli 签名嗅探（目录扫描入口）。
 - **纹理导出层**（受 `export` feature 门控，默认开启）：`src/texture_export.rs`。
   `TextureFormat` 枚举（全部方形 ASTC LDR：4×4/5×5/6×6/8×8/10×10/12×12 × RGB/RGBA 共 12 值
   + ETC1/ETC2/EAC：format 34/41-47 共 8 值
@@ -78,8 +78,11 @@ layer (PPtr deref + `.resS` streaming_data) are all **implemented**:
 
 **未实现**：CN 加密（`0x100` flag）、Loader/LoaderBuilder 配置入口、
 on-demand 逐块解压、SpillPolicy::AutoTempFile、
-`DependencyProvider`/`ResourceProvider` trait 的实际回调（API 面已留，eager 模型暂不调）、
 bumpalo arena（路线图）、Python 绑定（ADR-0002，未开始）。
+
+> 注：`DependencyProvider`/`ResourceProvider` 的实际回调**已落地**（Phase B 懒加载 +
+> 传递依赖递归 + `prefetch_resources` 预拉取，详见 `docs/environment-layer.md` §13.3）；
+> `scan_dir` 的 gzip/brotli 嗅探**已落地**（`src/detect.rs` 嗅探 UnityFS+gzip+brotli）。
 
 ## 父目录 workspace（参考实现 + 跨项目文档）
 
@@ -223,7 +226,7 @@ Edition is `2024` → requires Rust >= 1.85.
   自动 resolve。入口 `path`/`loaded`/`scan_dir` 接收 `LoadedFile`（递归再派发后的树），
   `phase_a` 用 `leaves()` 展平消费。`.resS` 流数据走 `streaming_data`（空路径→`None`，对齐 AssetRipper，非
   UnityPy stem 推导）。命名归一化 `src/names.rs::fix_file_identifier` 对齐
-  `SpecialFileNames.FixFileIdentifier`。`src/detect.rs` 做 UnityFS + gzip 签名嗅探（目录扫描用）。
+  `SpecialFileNames.FixFileIdentifier`。`src/detect.rs` 做 UnityFS + gzip + brotli 签名嗅探（目录扫描用）。
 - **`src/texture_export.rs`**（`export` feature）：`TextureFormat` 是手写 enum（codegen 不产
   TextureFormat，`Texture2D.m_format` 是裸 `i32`），数值对照 UnityPy `enums/TextureFormat.py`。
   ASTC 解码（`decode_astc`）+ ETC1/ETC2/EAC 解码（`decode_etc`）+ BCn/DXT 解码（`decode_bcn`）均委托 path 依赖

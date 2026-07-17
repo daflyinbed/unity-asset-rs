@@ -358,16 +358,26 @@ for obj in env.objects() {
 ## 11. 不在本次范围
 
 - **bumpalo arena**（profiling 驱动后再说）。
-- **懒加载 `DependencyProvider`**：trait 已落地，但当前 eager 模型不实际回调它（所有
-  bundle 在 build 前就已加载）。后续在 Phase B `target.is_none()` 分支接入即可按需加载
-  缺失 bundle，无需改公共 API。
-- **磁盘 `.resS` `ResourceProvider`**：trait 已落地，但当前不回调。后续接入跨 bundle
-  共享的 loose resource（磁盘现取）时实现即可。
-- **gzip / brotli bundle 嗅探**：`EnvironmentBuilder::scan_dir` 当前只认 `UnityFS` 签名，
-  gzip(`1f 8b`)/brotli/`UnityWeb`/`UnityRaw` bundle 静默跳过。路线图见 [§13.4](#134-gzip--brotli-路线图)。
 - **`AssetType.Meta`（GUID 匹配）**：外部引用匹配仅按 `name_fixed`（Normal 类）。
   Meta 类（`type_==1`，按 GUID 匹配）罕见，留作后续。
+- **`ResourceProvider` 对非 Texture2D/AudioClip 的 streaming 引用**：`prefetch_resources`
+  当前只扫 Texture2D（`m_stream_data.path`）+ AudioClip（`m_resource.m_source` / pre-5.0
+  隐式 `.resS` 名）。其他对象类型若有 streaming 引用会漏，`resolve_resource` 仍返回 `None`
+  （与无 provider 时一致，不回归）。
 
+> **`DependencyProvider` / `ResourceProvider` 已实际回调**（原在此处列为待办）：
+> build 时 Phase B 在 `target.is_none()` 分支调 `find_dependency`，返回 `Some(LoadedFile)`
+> 则追加 `phase_a` 并重试匹配，**传递依赖递归直到不动点**（`tried` 去重 + `MAX_LAZY_LOADS=4096`
+> 上限防恶意循环）；build 末尾 `prefetch_resources` 扫 Texture2D/AudioClip streaming 引用，
+> 对未命中的 name 调 `find_resource` 注册进 `resources`。两 provider 以
+> `Arc<dyn Trait + Send + Sync>` 从 builder move 入 `Environment`（`Send + Sync` 对齐
+> 未来 pyo3/async）。详见 [§6 PPtr 解引用](#6-pptr-解引用) + [§7 streaming_data](#7-streaming_data)。
+>
+> **gzip / brotli bundle 嗅探已支持**（原在此处列为待办）：`EnvironmentBuilder::scan_dir`
+> 经 `detect::looks_like_loadable_path` 现嗅探 UnityFS + gzip + brotli 三种外层格式
+> （io 层 `load_recursive` 本就透明解压，只是目录扫描入口的预过滤此前漏了 brotli）。
+> 详见 [`docs/io-layer.md`](io-layer.md) §6。
+>
 > 旧版 AudioClip pre-5.0 流式**已处理**（原在此处列为待办）：codegen 生成
 > `AudioClipMAudioData` 枚举 + 值依赖读（见 [codegen §11.1](codegen.md#111-值依赖读特判pre-50-audioclipmaudiodatapass505-rust-移植)），
 > 聚合层用 `Environment::audio_data` 回填 `.resS` 字节（见下文 streaming_data 小节）。
@@ -418,44 +428,60 @@ pub struct EnvironmentBuilder {
     // 解压器注册表（默认 Registry::defaults()，registry() 覆盖；path/scan_dir 均复用）
     registry: Registry,
     // 扩展点（见 §13.3）
-    dependency_provider: Option<Box<dyn DependencyProvider>>,
-    resource_provider: Option<Box<dyn ResourceProvider>>,
+    dependency_provider: Option<Arc<dyn DependencyProvider>>,
+    resource_provider: Option<Arc<dyn ResourceProvider>>,
 }
 ```
 
 - `path()` / `scan_dir()` / `bundle()` 各做一次 Phase A（复用 `phase_a` helper）。
-- `build()` 把四个 Vec move 进新 `Environment`，调一次 `resolve_dependencies`（Phase B）。
+- `build()` 把四个 Vec + 两个 provider move 进新 `Environment`，调一次
+  `resolve_dependencies`（Phase B，含 `DependencyProvider` 懒加载），再 `prefetch_resources`
+  （`ResourceProvider` 预拉取缺失 `.resS`）。
 
 ### 13.3 扩展点 trait
 
-对齐 AssetRipper `IDependencyProvider` / `IResourceProvider`，为懒加载 / 磁盘 resS 预留
-API 面。**默认 no-op；当前 eager 模型不实际回调它们**（trait + builder setter 已落地，
-实现在 Phase B 接入）：
+对齐 AssetRipper `IDependencyProvider` / `IResourceProvider`。**已实际回调**（非预留 API 面），
+两 trait 均 `Send + Sync`，以 `Arc<dyn Trait>` 从 builder move 入 `Environment`：
 
 ```rust
-pub trait DependencyProvider {
-    /// 外部引用未命中时回调。Some(Bundle) → 追加加载；None → 留空。
-    fn find_dependency(&self, _id: &FileIdentifier) -> Option<Bundle> { None }
+pub trait DependencyProvider: Send + Sync {
+    /// 外部引用未命中时回调。Some(LoadedFile) → 追加加载；None → 留空。
+    fn find_dependency(&self, _id: &FileIdentifier) -> Option<LoadedFile> { None }
 }
-pub trait ResourceProvider {
+pub trait ResourceProvider: Send + Sync {
     /// `.resS` 未命中时回调。Some(ResourceFile) → 注册进 resources。
     fn find_resource(&self, _name: &str) -> Option<ResourceFile> { None }
 }
 ```
 
-后续接入懒加载：在 `resolve_dependencies` 的 `target.is_none()` 分支调
-`find_dependency` → 返回 `Some(Bundle)` 则追加 `phase_a` + 重试查找。无需改公共 API。
+**`DependencyProvider` 懒加载**（Phase B `resolve_dependencies`）：某 collection 的 external
+按 `name_fixed` 在全部 collection 中查不到（`target.is_none()`）时，调 `find_dependency`：
+- 返回 `Some(LoadedFile)` → `phase_a` 灌入 `Environment` 的各 Vec + 重试匹配。
+- **传递依赖递归**：新加载 bundle 引入的 externals 也加入 pending 队列，继续尝试解析，
+  直到不动点。
+- 防恶意循环：`tried: HashSet<String>` 去重（同一 `path_name` 只触发一次懒加载）+
+  `MAX_LAZY_LOADS = 4096` 上限（超限 `log::warn` 停止）。
 
-### 13.4 gzip / brotli 路线图
+**`ResourceProvider` 预拉取**（`build` 末尾 `prefetch_resources`，`resolve_dependencies` 之后）：
+扫描已加载 Texture2D（`m_stream_data.path`）+ AudioClip（`m_resource.m_source` / pre-5.0
+隐式 `collection.name + ".resS"`）的 streaming 引用，对未在 `resources` 命中的 name 调
+`find_resource`，命中则 push 进 `resources`——之后 `streaming_data` 等只读查找即能命中。
+覆盖范围见 [§11](#11-不在本次范围)。
 
-`EnvironmentBuilder::scan_dir` 当前只嗅探 `UnityFS` 签名（`src/detect.rs`）。gzip(`1f 8b`) /
-brotli（`0x20` 处 magic）/ `UnityWeb` / `UnityRaw` / `UnityArchive` bundle 被静默跳过
-（`log::warn`）。后续若要支持，对齐 AssetStudio `FileReader.CheckFileType` +
-`DecompressGZip`：
+### 13.4 gzip / brotli 嗅探
 
-1. 加 `flate2` 依赖（gzip）/ 复用 codec crate 的 `brotli`（brotli）。
-2. `detect.rs` 扩 `looks_like_gzip` + `pregunpack_gzip(Bytes) -> Bytes`。
-3. `scan_dir` 嗅探顺序：先 gzip magic → 解压 → 再嗅探 `UnityFS`。
+`EnvironmentBuilder::scan_dir` 经 `src/detect.rs::looks_like_loadable_path` 嗅探 **UnityFS +
+gzip + brotli** 三种外层格式。io 层 `format::load_recursive` 本就透明解压 gzip/brotli（解压后
+递归 sniff 内层），故 `scan_dir` 下游无需改——只需预过滤阶段识别这三种 magic：
+
+- UnityFS：前 7 字节 `b"UnityFS"`。
+- gzip：前 2 字节 `0x1F 0x8B`。
+- brotli：`compressed::looks_like_brotli` 解析帧头 + 35 字节签名
+  `b"UnityWeb Compressed Content (brotli)"`（需 ~40 字节头部，`detect.rs` 读 64 字节缓冲）。
+
+`UnityWeb` / `UnityRaw` / `UnityArchive` bundle 仍静默跳过（`log::warn`）——这些需全量读后
+`format::sniff`，目录扫描为避免全量读大文件暂不支持。`path()` 入口（非目录扫描）则透明
+支持全部 io 层格式。
 
 AssetStudio 的关键行为：gzip bundle 解压后内层仍是 UnityFS（解压后再嗅探），故嗅探是
 两级的（`1f 8b` → 解压 → `UnityFS`）。

@@ -4,8 +4,10 @@
 //! 设计与命名参照 AssetRipper（`GameBundle` / `AssetCollection` / `ResourceFile` /
 //! `SpecialFileNames`）。详见 `docs/environment-layer.md`。
 
+use std::collections::HashSet;
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
+use std::sync::Arc;
 
 use bytes::Bytes;
 use generated::classes::audio_clip::AudioClipMAudioData;
@@ -39,6 +41,9 @@ pub struct Environment {
     resources: Vec<ResourceFile>,
     /// 解析失败记录（错误隔离，不中断整体）。
     failures: Vec<ParseFailure>,
+    /// 运行时扩展点（build 时从 builder move 入）。`None` 时无懒加载/资源现取。
+    dependency_provider: Option<Arc<dyn DependencyProvider>>,
+    resource_provider: Option<Arc<dyn ResourceProvider>>,
 }
 
 /// 一个已解析的对象。
@@ -114,10 +119,16 @@ impl PPtrLike for PPtrValue {
 
 /// 扩展点：外部引用（`FileIdentifier`）在已加载 collection 中未命中时的回调。
 ///
-/// 对齐 AssetRipper `IDependencyProvider`。默认实现 no-op（返回 `None`，依赖留空）。
-/// 当前 eager 模型在 [`EnvironmentBuilder::build`] 中尚未实际回调此 trait；
-/// 后续接入懒加载（按需加载缺失 bundle）时实现即可，无需改公共 API。
-pub trait DependencyProvider {
+/// 对齐 AssetRipper `IDependencyProvider`。在 [`EnvironmentBuilder::build`] 的 Phase B
+/// 中实际回调：当某个 collection 的 external（按 `name_fixed` 匹配）在已加载的全部
+/// collection 中找不到时，调 `find_dependency`；返回 `Some(LoadedFile)` 则追加 phase_a
+/// 加载该依赖并重试匹配，**新依赖引入的 externals 也会递归处理**（传递依赖，直到
+/// 不动点；上限 `MAX_LAZY_LOADS = 4096` 防恶意循环）。默认实现 no-op（返回 `None`，
+/// 依赖留空）。
+///
+/// `Send + Sync` 约束对齐未来 pyo3 / async 场景：provider 以 `Arc<dyn Trait>` 形式
+/// 存入 [`Environment`]。
+pub trait DependencyProvider: Send + Sync {
     /// 返回 `Some(LoadedFile)` 则追加加载该依赖；`None` 则该引用留空（resolve 返回 `None`）。
     fn find_dependency(&self, _id: &FileIdentifier) -> Option<LoadedFile> {
         None
@@ -126,9 +137,14 @@ pub trait DependencyProvider {
 
 /// 扩展点：`.resS` 在已加载 resources 中未命中时的回调。
 ///
-/// 对齐 AssetRipper `IResourceProvider`。默认实现 no-op。
-/// 后续接入磁盘 `.resS` 现取（跨 bundle 共享的 loose resource）时实现即可。
-pub trait ResourceProvider {
+/// 对齐 AssetRipper `IResourceProvider`。在 [`EnvironmentBuilder::build`] 末尾的
+/// `prefetch_resources` 中实际回调：扫描已加载 Texture2D（`m_stream_data.path`）与
+/// AudioClip（`m_resource.m_source` / pre-5.0 隐式 `collection.name + ".resS"`）的
+/// streaming 引用，对未命中的 name 调 `find_resource`，返回 `Some(ResourceFile)` 则
+/// 注册进 `resources`（之后 `streaming_data` 等只读查找命中）。默认实现 no-op。
+///
+/// `Send + Sync` 约束同 [`DependencyProvider`]。
+pub trait ResourceProvider: Send + Sync {
     /// 返回 `Some(ResourceFile)` 则注册进全局 resources；`None` 则 streaming 取数返回 `None`。
     fn find_resource(&self, _name: &str) -> Option<ResourceFile> {
         None
@@ -158,24 +174,145 @@ impl Environment {
         EnvironmentBuilder::new()
     }
 
-    /// Phase B：初始化依赖列表（全局 name_fixed 精确匹配）。
+    /// Phase B：初始化依赖列表（全局 name_fixed 精确匹配 + [`DependencyProvider`] 懒加载）。
     ///
     /// 遍历 `pending` 中每个 collection 的 externals，按 `name_fixed` 在**全部**
-    /// `self.collections` 中查找目标——跨 bundle 引用因此能命中。未命中的外部引用留 `None`
-    /// （resolve 时返回 `None`）。对齐 AssetRipper `InitializeAllDependencyLists`。
+    /// `self.collections` 中查找目标——跨 bundle 引用因此能命中。未命中的外部引用：
+    /// - 无 `dependency_provider` → 留 `None`（resolve 返回 `None`）。
+    /// - 有 provider → 调 `find_dependency`，返回 `Some(LoadedFile)` 则追加 `phase_a` 加载
+    ///   并重试匹配；**新加载 bundle 引入的 externals 也加入 pending 继续处理**（传递
+    ///   依赖，递归直到不动点）。
     ///
-    /// 当前 eager 模型不回调 [`DependencyProvider`]（TODO：在 `target.is_none()` 分支按需
-    /// 加载缺失 bundle），故此方法只接收 `pending`。
-    fn resolve_dependencies(&mut self, pending: &mut [(usize, Vec<FileIdentifier>)]) {
-        for (col_idx, externals) in pending.iter() {
-            for identifier in externals {
-                let target = self
-                    .collections
+    /// 防恶意循环：`tried` 去重（同一 `path_name` 只触发一次懒加载）+ `MAX_LAZY_LOADS`
+    /// 上限（4096，远超任何真实场景）。对齐 AssetRipper `InitializeAllDependencyLists`。
+    fn resolve_dependencies(&mut self, pending: &mut Vec<(usize, Vec<FileIdentifier>)>) {
+        /// 懒加载次数上限（防恶意/损坏数据导致无限递归）。真实 bundle 依赖图远小于此。
+        const MAX_LAZY_LOADS: usize = 4096;
+
+        let has_provider = self.dependency_provider.is_some();
+        let mut tried: HashSet<String> = HashSet::new();
+        let mut lazy_loads = 0usize;
+
+        let mut i = 0;
+        while i < pending.len() {
+            // 取出当前 collection 的 externals 快照（owned path_name 列表）+ col_idx，
+            // 随即结束对 `pending` 的不可变借用，以便后续 phase_a 可 &mut pending（push
+            // 传递依赖）。
+            let (col_idx, names) = {
+                let (col_idx, externals) = &pending[i];
+                let names: Vec<String> =
+                    externals.iter().map(|id| id.path_name.clone()).collect();
+                (*col_idx, names)
+            };
+
+            for name in names {
+                let mut target =
+                    self.collections.iter().position(|c| c.name_fixed == name);
+
+                // 懒加载：未命中 + 有 provider + 该 name 尚未尝试过 + 未超上限。
+                if target.is_none() && has_provider && tried.insert(name.clone()) {
+                    if lazy_loads >= MAX_LAZY_LOADS {
+                        log::warn!(
+                            "resolve_dependencies: 懒加载次数达上限 {MAX_LAZY_LOADS}，停止懒加载"
+                        );
+                    } else {
+                        // 构造查询用 FileIdentifier（provider 只需 path_name 匹配）。
+                        let query = FileIdentifier {
+                            path_name_origin: String::new(),
+                            path_name: name.clone(),
+                            guid: [0u8; 16],
+                            type_: 0,
+                        };
+                        let provider = self.dependency_provider.clone(); // Arc clone，廉价
+                        if let Some(loaded) =
+                            provider.as_ref().and_then(|p| p.find_dependency(&query))
+                        {
+                            lazy_loads += 1;
+                            // phase_a 把新 bundle 灌进 self 的各 Vec；
+                            // 新 collection 的 externals 被 push 进 pending（传递依赖入队）。
+                            phase_a(
+                                loaded,
+                                &mut self.objects,
+                                &mut self.collections,
+                                &mut self.resources,
+                                &mut self.failures,
+                                pending,
+                            );
+                            target =
+                                self.collections.iter().position(|c| c.name_fixed == name);
+                        }
+                    }
+                }
+                self.collections[col_idx].dependencies.push(target);
+            }
+            i += 1;
+        }
+    }
+
+    /// 预拉取缺失的 `.resS` 资源（[`ResourceProvider`] 回调）。
+    ///
+    /// 在 [`resolve_dependencies`] 之后、`build` 返回前调用。扫描已加载对象的
+    /// streaming 引用，对未在 `resources` 命中的 name 调 `find_resource`，命中则
+    /// 注册进 `resources`——之后 `streaming_data` / `streamed_resource_data` /
+    /// `read_old_streamed_audio` 等只读查找即能命中。
+    ///
+    /// 覆盖的 streaming 引用来源（对齐聚合层取数路径）：
+    /// - **Texture2D** `m_stream_data.path`（`streaming_data` 入口）。
+    /// - **AudioClip** `m_resource.m_source`（post-5.0，`streamed_resource_data` 入口）。
+    /// - **AudioClip** pre-5.0 `m_audio_data == Streamed`（`read_old_streamed_audio`
+    ///   用 `collection.name + ".resS"` 隐式名）。
+    ///
+    /// 无 provider 时 no-op。其他对象类型若有 streaming 引用会漏（`resolve_resource`
+    /// 仍返回 `None`，与现状一致，不回归）。
+    fn prefetch_resources(&mut self) {
+        let Some(provider) = &self.resource_provider else {
+            return;
+        };
+        // 先收集全部 wanted name（不可变借 objects），再释放借用后 mutate resources。
+        let mut wanted: Vec<String> = Vec::new();
+        for o in &self.objects {
+            match &o.object {
+                ParsedObject::Typed(UnityObject::Texture2D(t)) => {
+                    if let Some(sd) = &t.m_stream_data
+                        && !sd.path.is_empty()
+                    {
+                        wanted.push(sd.path.clone());
+                    }
+                }
+                ParsedObject::Typed(UnityObject::AudioClip(a)) => {
+                    if let Some(r) = &a.m_resource
+                        && !r.m_source.is_empty()
+                    {
+                        wanted.push(r.m_source.clone());
+                    }
+                    // pre-5.0 隐式 .resS 名 = collection.name + ".resS"
+                    if matches!(a.m_audio_data, Some(AudioClipMAudioData::Streamed { .. }))
+                        && let Some(col) = self.collections.get(o.collection)
+                    {
+                        wanted.push(format!("{}.resS", col.name));
+                    }
+                }
+                _ => {}
+            }
+        }
+        // provider 调用：对每个未命中的 name 查一次（去重 + name_fixed 归一化匹配）。
+        // 克隆 Arc 以释放对 self 的借用，便于后续 self.resources.push。
+        let provider = provider.clone();
+        for name in wanted {
+            let fixed = fix_file_identifier(&name);
+            let already = self.resources.iter().any(|r| r.name_fixed == fixed);
+            if already {
+                continue;
+            }
+            if let Some(rf) = provider.find_resource(&name) {
+                // 防御：若 provider 返回的 name_fixed 与已存在重复，跳过（不覆盖）。
+                let dup = self
+                    .resources
                     .iter()
-                    .position(|c| c.name_fixed == identifier.path_name);
-                // TODO(扩展点): target.is_none() 时调 dependency_provider.find_dependency(identifier)
-                //   → 返回 Some(Bundle) 则追加 phase_a + 重试查找（懒加载跨 bundle 引用）。
-                self.collections[*col_idx].dependencies.push(target);
+                    .any(|r| r.name_fixed == rf.name_fixed);
+                if !dup {
+                    self.resources.push(rf);
+                }
             }
         }
     }
@@ -487,8 +624,8 @@ pub struct EnvironmentBuilder {
     failures: Vec<ParseFailure>,
     pending_deps: Vec<(usize, Vec<FileIdentifier>)>,
     registry: Registry,
-    dependency_provider: Option<Box<dyn DependencyProvider>>,
-    resource_provider: Option<Box<dyn ResourceProvider>>,
+    dependency_provider: Option<Arc<dyn DependencyProvider>>,
+    resource_provider: Option<Arc<dyn ResourceProvider>>,
 }
 
 impl EnvironmentBuilder {
@@ -565,31 +702,44 @@ impl EnvironmentBuilder {
     }
 
     /// 注册扩展点：外部引用未命中时回调（对齐 AssetRipper `IDependencyProvider`）。
-    /// 当前 eager 模型在 build 中尚未实际回调；为后续懒加载预留 API 面。
-    pub fn dependency_provider(mut self, provider: impl DependencyProvider + 'static) -> Self {
-        self.dependency_provider = Some(Box::new(provider));
+    /// build 时 Phase B 在 `target.is_none()` 分支实际回调 `find_dependency`，
+    /// 返回 `Some(LoadedFile)` 则追加加载并重试匹配（传递依赖递归直到不动点）。
+    pub fn dependency_provider(
+        mut self,
+        provider: impl DependencyProvider + 'static,
+    ) -> Self {
+        self.dependency_provider = Some(Arc::new(provider));
         self
     }
 
     /// 注册扩展点：`.resS` 未命中时回调（对齐 AssetRipper `IResourceProvider`）。
-    /// 当前 eager 模型在 build 中尚未实际回调；为后续磁盘 resS 现取预留 API 面。
-    pub fn resource_provider(mut self, provider: impl ResourceProvider + 'static) -> Self {
-        self.resource_provider = Some(Box::new(provider));
+    /// build 末尾 `prefetch_resources` 扫描 Texture2D / AudioClip 的 streaming 引用，
+    /// 对未命中的 name 实际回调 `find_resource`，命中则注册进 `resources`。
+    pub fn resource_provider(
+        mut self,
+        provider: impl ResourceProvider + 'static,
+    ) -> Self {
+        self.resource_provider = Some(Arc::new(provider));
         self
     }
 
-    /// 收尾：把累积的四个 Vec move 进新 `Environment`，跑一次全局依赖解析。
+    /// 收尾：把累积的四个 Vec + 两个 provider move 进新 `Environment`，跑一次全局
+    /// 依赖解析（Phase B），再预拉取缺失的 `.resS` 资源。
     ///
-    /// `dependency_provider` / `resource_provider` 当前不被回调（eager 模型）；
-    /// 保留在 builder 上供未来懒加载实现使用（见 [`DependencyProvider`] TODO）。
+    /// Phase B 顺序：先 `resolve_dependencies`（含 [`DependencyProvider`] 懒加载 +
+    /// 传递依赖递归），再 `prefetch_resources`（[`ResourceProvider`] 预拉取 streaming
+    /// 引用）。两者均在 provider 为 `None` 时 no-op，退化为纯 eager 模型。
     pub fn build(mut self) -> Environment {
         let mut env = Environment {
             objects: self.objects,
             collections: self.collections,
             resources: self.resources,
             failures: self.failures,
+            dependency_provider: self.dependency_provider,
+            resource_provider: self.resource_provider,
         };
         env.resolve_dependencies(&mut self.pending_deps);
+        env.prefetch_resources();
         env
     }
 
