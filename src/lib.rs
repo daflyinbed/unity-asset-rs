@@ -31,8 +31,9 @@ pub mod typetree;
 pub use generated::{ClassIDType, UnityObject};
 pub use object_parser::{parse_object, MonoBehaviour, ParsedObject};
 pub use environment::{
-    AssetCollection, DependencyProvider, Environment, EnvironmentBuilder, EnvironmentObject,
-    ParseFailure, PPtrLike, ResourceFile, ResourceProvider,
+    AssetCollection, CollectionId, DependencyProvider, Environment, EnvironmentBuilder,
+    EnvironmentObject, ObjectId, ObjectRef, ParseFailure, PPtrLike, ResourceFile,
+    ResourceProvider,
 };
 
 /// 从文件路径加载 Unity 资产文件（递归再派发）。

@@ -23,6 +23,73 @@ use crate::serialized_file::FileIdentifier;
 use crate::typetree::PPtrValue;
 use crate::{Endian, Error, PPtr, SerializedFile, UnityVersion};
 
+/// 稳定的 collection 句柄。包装 `Environment.collections` 的 Vec 下标,
+/// 避免把内部存储布局(裸 `usize`)暴露成 API。未来调整存储、做按需解析或
+/// Python handle 时,只要保持 `CollectionId` 语义不变,API 不必破坏。
+///
+/// 调用方不应自行构造;从 [`Environment::collection_id`] / [`EnvironmentObject::collection`]
+/// / [`Environment::collections`] 获取。
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+pub struct CollectionId(u32);
+
+impl CollectionId {
+    /// 内部构造(仅 crate 内)。
+    pub(crate) fn new(idx: usize) -> Self {
+        Self(idx.try_into().expect("collection 索引超过 u32::MAX"))
+    }
+    /// 暴露底层 Vec 下标。**仅为与 Vec-backed 访问器互操作的 escape hatch**,
+    /// 不要用来跨 `Environment` 实例传递(不同实例的下标不通用)。
+    pub fn to_index(self) -> usize {
+        self.0 as usize
+    }
+}
+
+impl std::fmt::Display for CollectionId {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        // 显示底层下标(调试/日志友好;不暴露 newtype 包装)。
+        write!(f, "{}", self.0)
+    }
+}
+
+/// 对象的全局身份:`collection` 句柄 + `path_id`。
+///
+/// 可由 [`EnvironmentObject::id`] 取得,经 [`Environment::resolve_ref`] 解引用。
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+pub struct ObjectId {
+    pub collection: CollectionId,
+    pub path_id: i64,
+}
+
+impl ObjectId {
+    pub fn new(collection: CollectionId, path_id: i64) -> Self {
+        Self { collection, path_id }
+    }
+}
+
+/// `Environment` 中对象的借用引用。由 [`Environment::resolve_ref`] / [`Environment::object_ref`]
+/// 产出,绑定了 `&Environment` 生命周期,经 [`ObjectRef::get`] 取回 [`EnvironmentObject`]。
+#[derive(Clone, Copy)]
+pub struct ObjectRef<'env> {
+    env: &'env Environment,
+    id: ObjectId,
+}
+
+impl<'env> ObjectRef<'env> {
+    pub fn id(&self) -> ObjectId {
+        self.id
+    }
+    pub fn collection(&self) -> CollectionId {
+        self.id.collection
+    }
+    pub fn path_id(&self) -> i64 {
+        self.id.path_id
+    }
+    /// 取回引用的对象。若底层存储中已不存在(如 lazy 解析未实现时被驱逐)返回 `None`。
+    pub fn get(&self) -> Option<&'env EnvironmentObject> {
+        self.env.resolve(self.id.collection, 0, self.id.path_id)
+    }
+}
+
 /// 资产环境：聚合多个 bundle 的全部对象 + `.resS` 资源 + PPtr 依赖解析。
 ///
 /// 等价于 AssetRipper 的 `GameBundle` + 全部 `AssetCollection`。数据模型天然支持跨 bundle：
@@ -48,11 +115,21 @@ pub struct Environment {
 
 /// 一个已解析的对象。
 pub struct EnvironmentObject {
-    /// 所属 AssetCollection 索引。
-    pub collection: usize,
+    /// 所属 AssetCollection 句柄。
+    pub collection: CollectionId,
     pub path_id: i64,
     pub class_id: i32,
     pub object: ParsedObject,
+}
+
+impl EnvironmentObject {
+    /// 该对象的全局身份(`collection` + `path_id`)。
+    pub fn id(&self) -> ObjectId {
+        ObjectId {
+            collection: self.collection,
+            path_id: self.path_id,
+        }
+    }
 }
 
 /// 一个 SerializedFile 的逻辑分组。对齐 AssetRipper `AssetCollection`。
@@ -63,12 +140,12 @@ pub struct AssetCollection {
     pub name_fixed: String,
     pub unity_version: UnityVersion,
     pub endian: Endian,
-    /// 依赖列表。`[0]` = 自身索引；`[1..]` = 解析出的外部 collection 索引。
+    /// 依赖列表。`[0]` = 自身句柄；`[1..]` = 解析出的外部 collection 句柄。
     ///
     /// PPtr.FileID 直接索引此列表（`0` = 自身）——与 AssetRipper
     /// `AssetCollection.Dependencies` 约定一致。`None` = 未解析的跨 bundle 引用。
-    pub dependencies: Vec<Option<usize>>,
-    /// `path_id` → `Environment.objects` 索引。
+    pub dependencies: Vec<Option<CollectionId>>,
+    /// `path_id` → `Environment.objects` 索引(内部存储细节,非身份)。
     pub assets: HashMap<i64, usize>,
 }
 
@@ -86,7 +163,7 @@ pub enum ParseFailure {
     File { name: String, error: Error },
     /// 单个对象解析失败（object-level）。
     Object {
-        collection: usize,
+        collection: CollectionId,
         path_id: i64,
         class_id: i32,
         error: Error,
@@ -191,7 +268,7 @@ impl Environment {
     ///
     /// 防恶意循环：`tried` 去重（同一 `path_name` 只触发一次懒加载）+ `MAX_LAZY_LOADS`
     /// 上限（4096，远超任何真实场景）。对齐 AssetRipper `InitializeAllDependencyLists`。
-    fn resolve_dependencies(&mut self, pending: &mut Vec<(usize, Vec<FileIdentifier>)>) {
+    fn resolve_dependencies(&mut self, pending: &mut Vec<(CollectionId, Vec<FileIdentifier>)>) {
         /// 懒加载次数上限（防恶意/损坏数据导致无限递归）。真实 bundle 依赖图远小于此。
         const MAX_LAZY_LOADS: usize = 4096;
 
@@ -201,19 +278,22 @@ impl Environment {
 
         let mut i = 0;
         while i < pending.len() {
-            // 取出当前 collection 的 externals 快照（owned path_name 列表）+ col_idx，
-            // 随即结束对 `pending` 的不可变借用，以便后续 phase_a 可 &mut pending（push
-            // 传递依赖）。
-            let (col_idx, names) = {
-                let (col_idx, externals) = &pending[i];
+            // 取出当前 collection 的 externals 快照（owned path_name 列表）+ col_id,
+            // 随即结束对 `pending` 的不可变借用,以便后续 phase_a 可 &mut pending(push
+            // 传递依赖)。
+            let (col_id, names) = {
+                let (col_id, externals) = &pending[i];
                 let names: Vec<String> =
                     externals.iter().map(|id| id.path_name.clone()).collect();
-                (*col_idx, names)
+                (*col_id, names)
             };
 
             for name in names {
-                let mut target =
-                    self.collections.iter().position(|c| c.name_fixed == name);
+                let mut target = self
+                    .collections
+                    .iter()
+                    .position(|c| c.name_fixed == name)
+                    .map(CollectionId::new);
 
                 // 懒加载：未命中 + 有 provider + 该 name 尚未尝试过 + 未超上限。
                 if target.is_none() && has_provider && tried.insert(name.clone()) {
@@ -244,12 +324,15 @@ impl Environment {
                                 &mut self.failures,
                                 pending,
                             );
-                            target =
-                                self.collections.iter().position(|c| c.name_fixed == name);
+                            target = self
+                                .collections
+                                .iter()
+                                .position(|c| c.name_fixed == name)
+                                .map(CollectionId::new);
                         }
                     }
                 }
-                self.collections[col_idx].dependencies.push(target);
+                self.collections[col_id.to_index()].dependencies.push(target);
             }
             i += 1;
         }
@@ -293,7 +376,7 @@ impl Environment {
                     }
                     // pre-5.0 隐式 .resS 名 = collection.name + ".resS"
                     if matches!(a.m_audio_data, Some(AudioClipMAudioData::Streamed { .. }))
-                        && let Some(col) = self.collections.get(o.collection)
+                        && let Some(col) = self.collections.get(o.collection.to_index())
                     {
                         wanted.push(format!("{}.resS", col.name));
                     }
@@ -331,13 +414,13 @@ impl Environment {
     /// `file_id == 0` 天然落到 `dependencies[0] = Some(self)`。
     pub fn resolve(
         &self,
-        source_collection: usize,
+        source_collection: CollectionId,
         file_id: i32,
         path_id: i64,
     ) -> Option<&EnvironmentObject> {
-        let col = self.collections.get(source_collection)?;
+        let col = self.collections.get(source_collection.to_index())?;
         let target_idx = *col.dependencies.get(file_id as usize)?.as_ref()?;
-        let target = self.collections.get(target_idx)?;
+        let target = self.collections.get(target_idx.to_index())?;
         let &obj_idx = target.assets.get(&path_id)?;
         self.objects.get(obj_idx)
     }
@@ -352,8 +435,42 @@ impl Environment {
     }
 
     /// `file_id == 0` 的便捷场景：同 collection 内 `path_id` 查找。
-    pub fn resolve_local(&self, collection: usize, path_id: i64) -> Option<&EnvironmentObject> {
+    pub fn resolve_local(
+        &self,
+        collection: CollectionId,
+        path_id: i64,
+    ) -> Option<&EnvironmentObject> {
         self.resolve(collection, 0, path_id)
+    }
+
+    /// 用 [`ObjectId`] 解引用,返回绑定了 `&Environment` 生命周期的 [`ObjectRef`]。
+    ///
+    /// 仅校验该 id 在环境内可解析(`collection` 合法 + `path_id` 命中其 assets),
+    /// 实际对象取回在 [`ObjectRef::get`] 时做。
+    pub fn resolve_ref(&self, id: ObjectId) -> Option<ObjectRef<'_>> {
+        let exists = self
+            .collections
+            .get(id.collection.to_index())
+            .and_then(|c| c.assets.get(&id.path_id))
+            .is_some();
+        if exists {
+            Some(ObjectRef { env: self, id })
+        } else {
+            None
+        }
+    }
+
+    /// 由 `&EnvironmentObject` 构造 [`ObjectRef`]。
+    pub fn object_ref(&self, obj: &EnvironmentObject) -> ObjectRef<'_> {
+        ObjectRef {
+            env: self,
+            id: obj.id(),
+        }
+    }
+
+    /// 由下标构造 [`CollectionId`](仅供调用方从 `collections()` 迭代时取句柄)。
+    pub fn collection_id(&self, index: usize) -> Option<CollectionId> {
+        (index < self.collections.len()).then_some(CollectionId::new(index))
     }
 
     // ── streaming_data ──
@@ -423,14 +540,14 @@ impl Environment {
     /// `ResolveResource`（经 `fix_file_identifier` 精确匹配）。越界 → `None`。
     fn read_old_streamed_audio(
         &self,
-        collection: usize,
+        collection: CollectionId,
         offset: u32,
         size: u32,
     ) -> Option<Bytes> {
         if size == 0 {
             return None;
         }
-        let col = self.collections.get(collection)?;
+        let col = self.collections.get(collection.to_index())?;
         let resource_name = format!("{}.resS", col.name);
         let file = self.resolve_resource(&resource_name)?;
         let end = (offset as u64).checked_add(size as u64)?;
@@ -508,7 +625,7 @@ fn phase_a(
     collections: &mut Vec<AssetCollection>,
     resources: &mut Vec<ResourceFile>,
     failures: &mut Vec<ParseFailure>,
-    pending: &mut Vec<(usize, Vec<FileIdentifier>)>,
+    pending: &mut Vec<(CollectionId, Vec<FileIdentifier>)>,
 ) {
     // Error 未实现 Clone(含 io::Error),所以先借 leaves 处理 SerializedFile/Resource,
     // 再 consume 整棵树取 Failed 节点的 owning Error。两次遍历都不修改树,顺序无依赖。
@@ -526,7 +643,7 @@ fn process_leaves(
     collections: &mut Vec<AssetCollection>,
     resources: &mut Vec<ResourceFile>,
     failures: &mut Vec<ParseFailure>,
-    pending: &mut Vec<(usize, Vec<FileIdentifier>)>,
+    pending: &mut Vec<(CollectionId, Vec<FileIdentifier>)>,
 ) {
     for (name, bytes, _unity_revision, format) in loaded.leaves() {
         if is_resource_file(name) {
@@ -551,7 +668,7 @@ fn process_leaves(
                 continue;
             }
         };
-        let col_idx = collections.len();
+        let col_id = CollectionId::new(collections.len());
         let unity_version = sf.unity_version_parsed;
         let endian = sf.endian;
         let name = name.to_string();
@@ -564,7 +681,7 @@ fn process_leaves(
                 Ok(parsed) => {
                     let obj_idx = objects.len();
                     objects.push(EnvironmentObject {
-                        collection: col_idx,
+                        collection: col_id,
                         path_id: obj.path_id,
                         class_id,
                         object: parsed,
@@ -573,7 +690,7 @@ fn process_leaves(
                 }
                 Err(e) => {
                     failures.push(ParseFailure::Object {
-                        collection: col_idx,
+                        collection: col_id,
                         path_id: obj.path_id,
                         class_id,
                         error: e,
@@ -588,10 +705,10 @@ fn process_leaves(
             name_fixed,
             unity_version,
             endian,
-            dependencies: vec![Some(col_idx)], // [0] = self
+            dependencies: vec![Some(col_id)], // [0] = self
             assets,
         });
-        pending.push((col_idx, externals));
+        pending.push((col_id, externals));
     }
 }
 
@@ -646,7 +763,7 @@ pub struct EnvironmentBuilder {
     collections: Vec<AssetCollection>,
     resources: Vec<ResourceFile>,
     failures: Vec<ParseFailure>,
-    pending_deps: Vec<(usize, Vec<FileIdentifier>)>,
+    pending_deps: Vec<(CollectionId, Vec<FileIdentifier>)>,
     registry: Registry,
     dependency_provider: Option<Arc<dyn DependencyProvider>>,
     resource_provider: Option<Arc<dyn ResourceProvider>>,

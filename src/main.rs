@@ -354,7 +354,7 @@ fn cmd_export(
                 t,
                 &name,
                 fmt,
-                env.collections()[obj.collection].unity_version,
+                env.collections()[obj.collection.to_index()].unity_version,
                 out,
             );
             match result {
@@ -400,7 +400,7 @@ fn cmd_export(
             } else {
                 s.m_name.clone()
             };
-            let ver = env.collections()[obj.collection].unity_version;
+            let ver = env.collections()[obj.collection.to_index()].unity_version;
             match export_sprite(env, obj, s, &name, ver, out) {
                 Ok(file) => {
                     println!("✓ ok    {name}  sprite -> {}", file.display());

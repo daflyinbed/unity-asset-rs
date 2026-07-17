@@ -4,8 +4,8 @@
 use std::path::Path;
 
 use unity_asset_rs::{
-    Bytes, ClassIDType, DependencyProvider, Environment, FileFormat, LoadedFile, ParseFailure,
-    ParsedObject, ResourceFile, ResourceProvider, UnityObject,
+    Bytes, ClassIDType, DependencyProvider, Environment, FileFormat, LoadedFile, ObjectId,
+    ParseFailure, ParsedObject, ResourceFile, ResourceProvider, UnityObject,
 };
 
 /// 默认 fixture（io 层测试同款）。
@@ -52,17 +52,18 @@ fn dependencies_zero_is_self() {
     // dependencies[0] = self 约定：对每个 collection，resolve_local(自身 path_id) 应命中。
     let env = load_env(DEFAULT_BUNDLE);
     for (col_idx, col) in env.collections().iter().enumerate() {
+        let col_id = env.collection_id(col_idx).expect("col_idx 合法");
         assert_eq!(
             col.dependencies.first().copied().flatten(),
-            Some(col_idx),
+            Some(col_id),
             "collection[{col_idx}] dependencies[0] 应为自身"
         );
         for (&path_id, &obj_idx) in &col.assets {
-            let resolved = env.resolve_local(col_idx, path_id);
+            let resolved = env.resolve_local(col_id, path_id);
             assert_eq!(
                 resolved.map(|o| o as *const _),
                 Some(&env.objects()[obj_idx] as *const _),
-                "resolve_local({col_idx}, {path_id}) 应命中 objects[{obj_idx}]"
+                "resolve_local({col_id}, {path_id}) 应命中 objects[{obj_idx}]"
             );
         }
     }
@@ -83,6 +84,42 @@ fn no_unexpected_failures() {
             }
         }
     }
+}
+
+#[test]
+fn object_id_and_ref_roundtrip() {
+    // CollectionId/ObjectId/ObjectRef 三件套:从对象取 id,经 resolve_ref 回到同一对象。
+    let env = load_env(DEFAULT_BUNDLE);
+    let first = env
+        .objects()
+        .first()
+        .expect("应至少有一个对象");
+    let id = first.id();
+    assert_eq!(id.path_id, first.path_id);
+    assert_eq!(id.collection, first.collection);
+
+    // resolve_ref 命中 → ObjectRef.get() 取回同一对象(指针相等)。
+    let r = env.resolve_ref(id).expect("合法 id 应可解析");
+    assert_eq!(r.get().map(|o| o as *const _), Some(first as *const _));
+    assert_eq!(r.id(), id);
+    assert_eq!(r.collection(), first.collection);
+    assert_eq!(r.path_id(), first.path_id);
+
+    // object_ref 直接从 &EnvironmentObject 构造。
+    let r2 = env.object_ref(first);
+    assert_eq!(r2.get().map(|o| o as *const _), Some(first as *const _));
+
+    // 不存在的 path_id → None。
+    assert!(env
+        .resolve_ref(ObjectId {
+            collection: first.collection,
+            path_id: i64::MAX
+        })
+        .is_none());
+
+    // to_index/collection_id 互为逆运算(escape hatch 可用)。
+    let idx = first.collection.to_index();
+    assert_eq!(env.collection_id(idx), Some(first.collection));
 }
 
 #[test]
@@ -185,7 +222,7 @@ fn scan_dir_scans_all_bundles() {
     for (col_idx, col) in env.collections().iter().enumerate() {
         assert_eq!(
             col.dependencies.first().copied().flatten(),
-            Some(col_idx),
+            env.collection_id(col_idx),
             "目录加载后 collection[{col_idx}] dependencies[0] 应仍为自身"
         );
     }
