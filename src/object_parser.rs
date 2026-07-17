@@ -55,7 +55,7 @@ pub fn parse_object(
     obj: &ObjectInfo,
     refs: &RefTypeTable,
 ) -> Result<ParsedObject> {
-    let data = obj.data(sf);
+    let data = obj.data(sf)?;
     let class_id = obj.class_id(sf);
     let ver = &sf.unity_version_parsed;
     let endian = sf.endian;

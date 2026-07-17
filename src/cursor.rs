@@ -38,12 +38,19 @@ impl<'a> Cursor<'a> {
     }
 
     pub fn remaining(&self) -> usize {
-        self.buf.len() - self.pos
+        self.buf.len().saturating_sub(self.pos)
     }
 
-    /// 将游标跳到 `pos`（不做边界检查；调用方负责）。
-    pub fn seek(&mut self, pos: usize) {
+    /// 将游标跳到 `pos`。`pos > buf.len()` 视为截断错误而非 panic。
+    pub fn seek(&mut self, pos: usize) -> Result<()> {
+        if pos > self.buf.len() {
+            return Err(TruncatedSnafu {
+                reason: format!("seek({pos}) 越界（buf len {}）", self.buf.len()),
+            }
+            .build());
+        }
         self.pos = pos;
+        Ok(())
     }
 
     fn need(&self, n: usize, what: &str) -> Result<()> {
@@ -166,16 +173,36 @@ impl<'a> Cursor<'a> {
             }
             .build())?
             .to_owned();
-        self.align(4);
+        self.align(4)?;
         Ok(s)
     }
 
-    /// 把游标对齐到 `alignment` 的倍数。
-    pub fn align(&mut self, alignment: usize) {
+    /// 把游标对齐到 `alignment` 的倍数。对齐后越过 buf 末端视为截断错误。
+    ///
+    /// `alignment == 0` 视为错误（避免 `% 0` panic）。
+    pub fn align(&mut self, alignment: usize) -> Result<()> {
+        if alignment == 0 {
+            return Err(TruncatedSnafu {
+                reason: "align(0)".to_string(),
+            }
+            .build());
+        }
         let r = self.pos % alignment;
         if r != 0 {
-            self.pos += alignment - r;
+            self.pos = self
+                .pos
+                .checked_add(alignment - r)
+                .filter(|&p| p <= self.buf.len())
+                .ok_or_else(|| TruncatedSnafu {
+                    reason: format!(
+                        "align({alignment}) 越界（pos {} → buf len {}）",
+                        self.pos,
+                        self.buf.len()
+                    ),
+                }
+                .build())?;
         }
+        Ok(())
     }
 }
 
@@ -239,8 +266,7 @@ impl unity_core::EndianReader for Cursor<'_> {
     }
 
     fn align(&mut self, n: usize) -> Result<(), Self::Error> {
-        Cursor::align(self, n);
-        Ok(())
+        Cursor::align(self, n)
     }
 
     fn make_error(&self, msg: &str) -> Self::Error {
@@ -259,7 +285,7 @@ mod tests {
         let buf = [0x01u8, 0x02, 0x03, 0x04];
         let mut r = Cursor::new(&buf, Endian::Big);
         assert_eq!(r.read_u32("t").unwrap(), 0x01020304);
-        r.seek(0);
+        r.seek(0).unwrap();
         r.set_endian(Endian::Little);
         assert_eq!(r.read_u32("t").unwrap(), 0x04030201);
     }
@@ -271,7 +297,24 @@ mod tests {
         let mut r = Cursor::new(&buf, Endian::Big);
         assert_eq!(r.read_cstr("cstr").unwrap(), "ab");
         assert_eq!(r.pos(), 3);
-        r.align(4);
+        r.align(4).unwrap();
         assert_eq!(r.pos(), 4);
+    }
+
+    #[test]
+    fn seek_and_align_reject_out_of_bounds() {
+        let buf = [0u8; 4];
+        let mut r = Cursor::new(&buf, Endian::Big);
+        assert!(r.seek(5).is_err());
+        r.seek(3).unwrap();
+        // align(4) 会把 pos 推到 4（恰好等于 len，OK）
+        r.align(4).unwrap();
+        assert_eq!(r.pos(), 4);
+        // 再 align(4) 不会越界（已对齐）
+        r.align(4).unwrap();
+        // 构造一个会越界的场景：pos=1, align(4) → 4
+        r.seek(1).unwrap();
+        assert!(r.align(8).is_err()); // 1 + (8-1) = 8 > 4
+        assert!(r.align(0).is_err());
     }
 }

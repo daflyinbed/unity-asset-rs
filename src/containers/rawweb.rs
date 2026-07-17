@@ -70,7 +70,7 @@ pub fn parse_rawweb(src: Bytes, fmt: FileFormat, _registry: &Registry) -> Result
     };
 
     // header 末尾对齐到 4
-    c.align(4);
+    c.align(4)?;
 
     log::debug!(
         "rawweb: signature={signature} version={version} unity_revision={unity_revision} \
@@ -164,7 +164,7 @@ fn read_directory_and_data(
         nodes.push((path, offset, size));
     }
     // directory 末尾对齐到 4
-    c.align(4);
+    c.align(4)?;
 
     if metadata_size > 0 {
         let actual = c.pos() - metadata_start;

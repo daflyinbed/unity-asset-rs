@@ -6,7 +6,7 @@
 use bytes::Bytes;
 
 use crate::cursor::{Cursor, Endian};
-use crate::error::{Result, SerializedFileSnafu};
+use crate::error::{Result, SerializedFileSnafu, TruncatedSnafu};
 use crate::typetree::{self, RefTypeTable, TypeNode, Value};
 use crate::UnityVersion;
 
@@ -68,11 +68,23 @@ impl ObjectInfo {
         sf.types.get(self.type_idx).map(|t| t.class_id).unwrap_or(0)
     }
 
-    /// 对象的原始字节切片。
-    pub fn data<'a>(&self, sf: &'a SerializedFile) -> &'a [u8] {
+    /// 对象的原始字节切片。`byte_start + byte_size` 越界视为截断错误而非 panic。
+    pub fn data<'a>(&self, sf: &'a SerializedFile) -> Result<&'a [u8]> {
+        let data = sf.data.as_ref();
         let s = self.byte_start as usize;
-        let e = s + self.byte_size as usize;
-        &sf.data.as_ref()[s..e]
+        let e = self.byte_size as usize;
+        let end = s.checked_add(e).filter(|&end| end <= data.len() && s <= end).ok_or_else(|| {
+            TruncatedSnafu {
+                reason: format!(
+                    "object {} bytes [{s}..{}] 越界（buf len {}）",
+                    self.path_id,
+                    s.saturating_add(e),
+                    data.len()
+                ),
+            }
+            .build()
+        })?;
+        Ok(&data[s..end])
     }
 }
 
@@ -86,7 +98,7 @@ impl SerializedFile {
         };
         let refs = self.ref_type_table();
         let v = typetree::interpret(
-            obj.data(self),
+            obj.data(self)?,
             node,
             &self.unity_version_parsed,
             self.endian,
@@ -142,7 +154,7 @@ pub fn parse(bytes: Bytes) -> Result<SerializedFile> {
     } else {
         // version < 9：endian 字节在文件末尾（file_size - metadata_size 处）
         let pos = file_size.saturating_sub(metadata_size) as usize;
-        r.seek(pos);
+        r.seek(pos)?;
         let e = r.read_u8()?;
         if e == 0 {
             Endian::Little
@@ -191,7 +203,7 @@ pub fn parse(bytes: Bytes) -> Result<SerializedFile> {
             if version < 14 {
                 let _ = r.read_i32("script local id")?;
             } else {
-                r.align(4);
+                r.align(4)?;
                 let _ = r.read_i64("script local id")?;
             }
         }
@@ -320,7 +332,7 @@ fn read_object_info(
     } else if version < 14 {
         r.read_i32("path id")? as i64
     } else {
-        r.align(4);
+        r.align(4)?;
         r.read_i64("path id")?
     };
 

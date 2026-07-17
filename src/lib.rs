@@ -1,6 +1,5 @@
 pub use bytes::Bytes;
 pub use bundle::{Bundle, RawEntry};
-pub use cursor::Cursor;
 pub use decompress::{CompressionType, Decompressor, IdentityDecompressor, Lz4Decompressor, LzmaDecompressor, Registry};
 pub use error::{Error, Result};
 pub use format::{FileFormat, LoadedFile, load_recursive, sniff};
@@ -12,7 +11,7 @@ pub use typetree::{
 pub use unity_core::{Endian, PPtr, UnityVersion};
 
 mod bundle;
-pub mod cursor;
+mod cursor;
 mod containers;
 mod detect;
 pub mod decompress;

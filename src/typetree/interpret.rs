@@ -99,7 +99,7 @@ pub fn interpret_mono_behaviour(
     let structure_fields = read_children(&mut r, &root.children[split..], ctx)?;
     // 根结构体尾部对齐（复刻 walk(root) 的 align 语义）
     if root.meta_flag & ALIGN_MASK != 0 {
-        r.align(4);
+        r.align(4)?;
     }
     if r.pos() != data.len() {
         return Err(TypeTreeSizeMismatchSnafu {
@@ -131,7 +131,7 @@ fn walk(r: &mut Cursor, node: &TypeNode, ctx: Ctx) -> Result<Value> {
             let n = r.read_i32("string len")? as usize;
             let b = r.read_bytes(n, "string data")?;
             let s = String::from_utf8_lossy(b).into_owned();
-            r.align(4);
+            r.align(4)?;
             Value::String(s)
         }
         TypeKind::TypelessData => {
@@ -177,7 +177,7 @@ fn walk(r: &mut Cursor, node: &TypeNode, ctx: Ctx) -> Result<Value> {
     };
 
     if align {
-        r.align(4);
+        r.align(4)?;
     }
     Ok(v)
 }
