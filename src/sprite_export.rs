@@ -53,7 +53,8 @@ use crate::texture_export::{
     decode_astc, decode_bcn, decode_crunch, decode_etc, decode_uncompressed, texture_pixel_bytes,
     flip_vertical_in_place, write_png, TextureExportError, TextureFormat,
 };
-use crate::{ClassIDType, ClassId, Environment, PPtr, ParsedObject, UnityObject, UnityVersion};
+use crate::{ClassId, Environment, PPtr, ParsedObject, UnityVersion};
+use generated::{ClassIDType, UnityObject};
 use generated::classes::sprite::Sprite;
 use generated::classes::sprite_atlas::SpriteAtlas;
 use generated::classes::texture2_d::Texture2D;

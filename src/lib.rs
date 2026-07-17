@@ -1,63 +1,90 @@
+//! Unity AssetBundle (UnityFS) 解析库 + CLI。
+//!
+//! # 推荐入口
+//!
+//! ```no_run
+//! # use unity_asset_rs::{Loader, Environment};
+//! let report = Loader::builder()
+//!     .path("main.ab")
+//!     .build()?; // 顶层 IO 错误在此返回
+//! let env: &Environment = report.environment();
+//! for d in report.diagnostics() {
+//!     eprintln!("{d}");
+//! }
+//! # Ok::<(), unity_asset_rs::Error>(())
+//! ```
+//!
+//! 高级底层入口(非默认):[`io`](mod@io) 模块(裸 [`LoadedFile`] 树)、
+//! [`typetree`] 模块(TypeTree 解释器)、[`types`] 模块(codegen typed struct 出口)。
+
 pub use bytes::Bytes;
-pub use bundle::{Bundle, RawEntry};
-pub use decompress::{CompressionType, Decompressor, IdentityDecompressor, Lz4Decompressor, LzmaDecompressor, Registry};
 pub use error::{Error, Result};
-pub use format::{FileFormat, LoadedFile, load_recursive, sniff};
-pub use serialized_file::{FileIdentifier, ObjectInfo, SerializedFile, SerializedType};
-pub use typetree::{
-    build_tree, interpret, interpret_mono_behaviour, parse_blob, BlobNode, PPtrValue, RefTypeTable,
-    TypeKind, TypeNode, Value,
-};
 pub use unity_core::{Endian, PPtr, UnityVersion};
 
+// ── 模块树 ──
 mod bundle;
-mod cursor;
 mod containers;
+mod cursor;
 mod detect;
 pub mod decompress;
 pub mod environment;
 mod error;
 pub mod format;
+pub mod loader;
 pub mod names;
 pub mod object_parser;
 mod serialized_file;
+pub mod typetree;
+
+// ── 高级门面模块 ──
+pub mod io;
+pub mod types;
+#[cfg(feature = "export")]
+pub mod export;
+
 #[cfg(feature = "export")]
 pub mod sprite_export;
 #[cfg(feature = "export")]
 pub mod texture_export;
-pub mod typetree;
 
-// ── generated crate 桥接 ──
-pub use generated::{ClassIDType, UnityObject};
-pub use object_parser::{parse_object, MonoBehaviour, ParsedObject};
+// ── 顶层 re-export:常用类型直转,避免用户写全路径 ──
+pub use loader::{Diagnostic, DiagnosticKind, LoadReport, Loader, LoaderBuilder, Severity};
 pub use environment::{
     AssetCollection, ClassId, CollectionId, DependencyProvider, DependencyRequest, Environment,
-    EnvironmentBuilder, EnvironmentObject, NamedBytes, ObjectId, ObjectRef, ParseFailure,
-    PPtrLike, ProviderError, ResourceFile, ResourceProvider, ResourceRequest,
+    EnvironmentObject, NamedBytes, ObjectId, ObjectRef, ParseFailure, PPtrLike, ProviderError,
+    ResourceFile, ResourceProvider, ResourceRequest,
 };
+pub use object_parser::{MonoBehaviour, ParsedObject};
+pub use format::{FileFormat, LoadedFile, load_recursive, sniff};
+pub use typetree::{Value, RefTypeTable, PPtrValue};
 
-/// 从文件路径加载 Unity 资产文件（递归再派发）。
+/// 从文件路径加载 Unity 资产文件(递归再派发)。
 ///
-/// 自动嗅探格式（UnityFS / UnityWeb / UnityRaw / UnityWebData / gzip / brotli /
-/// 松散 SerializedFile），递归解包到叶子文件。返回 [`LoadedFile`] 树。
+/// 自动嗅探格式(UnityFS / UnityWeb / UnityRaw / UnityWebData / gzip / brotli /
+/// 松散 SerializedFile),递归解包到叶子文件。返回 [`LoadedFile`] 树。
+///
+/// 这是 **io 层**入口(不解对象);构造聚合 [`Environment`] 用 [`Loader::builder`]。
 pub fn load(path: impl AsRef<std::path::Path>) -> Result<LoadedFile> {
     load_with(path, &Registry::defaults())
 }
 
-/// 用自定义解压器注册表加载（递归再派发）。
+/// 用自定义解压器注册表加载(递归再派发)。
 pub fn load_with(path: impl AsRef<std::path::Path>, registry: &Registry) -> Result<LoadedFile> {
     let path = path.as_ref();
     let bytes = std::fs::read(path).map_err(|e| Error::Io { source: e })?;
     load_bytes_with(Bytes::from(bytes), registry)
 }
 
-/// 从内存字节加载（递归再派发）。
+/// 从内存字节加载(递归再派发)。
 pub fn load_bytes(src: Bytes) -> Result<LoadedFile> {
     load_bytes_with(src, &Registry::defaults())
 }
 
-/// 用自定义解压器注册表从内存字节加载（递归再派发）。
+/// 用自定义解压器注册表从内存字节加载(递归再派发)。
 pub fn load_bytes_with(src: Bytes, registry: &Registry) -> Result<LoadedFile> {
     let name = "root";
     load_recursive(src, name, registry, None)
 }
+
+// Registry/Decompressor 经 decompress 模块导出,但顶层也直转(常用)。
+pub use decompress::{CompressionType, Decompressor, IdentityDecompressor, Lz4Decompressor, LzmaDecompressor, Registry};

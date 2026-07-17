@@ -4,9 +4,10 @@
 use std::path::Path;
 
 use unity_asset_rs::{
-    Bytes, ClassIDType, ClassId, DependencyProvider, Environment, FileFormat, LoadedFile, ObjectId,
-    ParseFailure, ParsedObject, ResourceProvider, UnityObject,
+    Bytes, ClassId, DependencyProvider, Environment, FileFormat, LoadedFile, Loader, ObjectId,
+    ParseFailure, ParsedObject, ResourceProvider,
 };
+use generated::{ClassIDType, UnityObject};
 
 /// 默认 fixture（io 层测试同款）。
 const DEFAULT_BUNDLE: &str = "example/char_002_amiya.ab";
@@ -26,10 +27,11 @@ fn load_env(path: &str) -> Environment {
         eprintln!("跳过：{path} 不存在");
         std::process::exit(0);
     }
-    Environment::builder()
+    Loader::builder()
         .path(path)
-        .unwrap_or_else(|e| panic!("加载 {path} 失败: {e}"))
         .build()
+        .unwrap_or_else(|e| panic!("加载 {path} 失败: {e}"))
+        .into_environment()
 }
 
 /// 单独加载一个 bundle 得到的 collection 数（对照组）。
@@ -205,12 +207,12 @@ fn streaming_data_on_texture2d() {
 fn builder_multi_bundle_accumulates_collections() {
     // Builder 喂入两个 bundle，collections / objects 数应不少于各自单独加载之和
     // （跨 bundle 依赖解析不减少已有对象，只可能让 resolve 命中更多）。
-    let env = Environment::builder()
+    let env = Loader::builder()
         .path(TWO_BUNDLES[0])
-        .unwrap()
         .path(TWO_BUNDLES[1])
+        .build()
         .unwrap()
-        .build();
+        .into_environment();
 
     let a = single_bundle_collection_count(TWO_BUNDLES[0]);
     let b = single_bundle_collection_count(TWO_BUNDLES[1]);
@@ -231,10 +233,11 @@ fn scan_dir_scans_all_bundles() {
         eprintln!("跳过：{EXAMPLE_DIR} 不存在");
         std::process::exit(0);
     }
-    let env = Environment::builder()
+    let env = Loader::builder()
         .scan_dir(EXAMPLE_DIR)
+        .build()
         .expect("目录加载失败")
-        .build();
+        .into_environment();
     // example/ 下 5 个 bundle，每个至少 1 个 collection。
     assert!(
         env.collections().len() >= 5,
@@ -259,12 +262,12 @@ fn scan_dir_scans_all_bundles() {
 fn cross_bundle_pptr_resolution_resolved_count_increases() {
     // 把两个 bundle 一起加载（同一 Environment）时，跨 bundle 依赖能命中；
     // 对照：单独加载时那些外部引用为 None。聚合后「已解析依赖槽」数应 >= 各自单独之和。
-    let together = Environment::builder()
+    let together = Loader::builder()
         .path(TWO_BUNDLES[0])
-        .expect("加载 bundle a 失败")
         .path(TWO_BUNDLES[1])
-        .expect("加载 bundle b 失败")
-        .build();
+        .build()
+        .unwrap()
+        .into_environment();
     let a_alone = load_env(TWO_BUNDLES[0]);
     let b_alone = load_env(TWO_BUNDLES[1]);
 
@@ -292,10 +295,11 @@ fn cross_bundle_pptr_resolution_resolved_count_increases() {
 
     // 全目录扫描：example/ 下 5 个 bundle 一起加载，确认存在真实跨 bundle 解析。
     if Path::new(EXAMPLE_DIR).exists() {
-        let dir_env = Environment::builder()
+        let dir_env = Loader::builder()
             .scan_dir(EXAMPLE_DIR)
+            .build()
             .expect("目录加载失败")
-            .build();
+            .into_environment();
         let dir_together = count_resolved(&dir_env);
         let mut dir_apart = 0usize;
         for name in &[
@@ -325,7 +329,7 @@ fn cross_bundle_pptr_resolution_resolved_count_increases() {
 fn loaded_method_accepts_preloaded_file() {
     // 用户可用自定义 registry 预加载资产文件，再喂入 builder（.loaded() 入口）。
     let raw = unity_asset_rs::load(DEFAULT_BUNDLE).expect("预加载失败");
-    let env = Environment::builder().loaded(raw).build();
+    let env = Loader::builder().loaded(raw).build().unwrap().into_environment();
     assert!(!env.collections().is_empty(), ".loaded() 应能并入预加载的资产文件");
 }
 
@@ -423,17 +427,18 @@ fn dependency_provider_lazy_loads_missing_bundles() {
     }
 
     // 对照组：无 provider，单独加载 Prefabs —— 4 个 external 全 None。
-    let baseline = Environment::builder().path("example/Prefabs.unity3d").unwrap().build();
+    let baseline = Loader::builder().path("example/Prefabs.unity3d").build().unwrap().into_environment();
     let baseline_resolved = count_resolved_deps(&baseline);
 
     // 实验组：注册 provider，对 2 个 external 按需加载目标 bundle。
     let stub = StubDependencyProvider::new();
     let counter = stub.counter();
-    let env = Environment::builder()
+    let env = Loader::builder()
         .path("example/Prefabs.unity3d")
-        .unwrap()
         .dependency_provider(stub)
-        .build();
+        .build()
+        .unwrap()
+        .into_environment();
 
     let with_provider_resolved = count_resolved_deps(&env);
     eprintln!("baseline resolved = {baseline_resolved}, with provider = {with_provider_resolved}");
@@ -473,7 +478,7 @@ fn no_dependency_provider_leaves_externals_unresolved() {
         eprintln!("跳过：缺少 fixture example/Prefabs.unity3d");
         return;
     }
-    let env = Environment::builder().path("example/Prefabs.unity3d").unwrap().build();
+    let env = Loader::builder().path("example/Prefabs.unity3d").build().unwrap().into_environment();
     let any_none = env
         .collections()
         .iter()
@@ -560,10 +565,12 @@ fn resource_provider_prefetches_missing_ress() {
 
     let stub = StubResourceProvider::new();
     let flag = stub.flag();
-    let env = Environment::builder()
+    let env = Loader::builder()
         .loaded(standalone)
         .resource_provider(stub)
-        .build();
+        .build()
+        .unwrap()
+        .into_environment();
 
     // provider 应被 prefetch_resources 调用过（Combine 的 Texture2D 引用了缺失 resS）。
     assert!(
@@ -610,7 +617,7 @@ fn no_resource_provider_keeps_ress_unresolved_when_missing() {
         Some(f) => f,
         None => return,
     };
-    let env = Environment::builder().loaded(standalone).build();
+    let env = Loader::builder().loaded(standalone).build().unwrap().into_environment();
     let tex_stream = env.objects().iter().find_map(|o| {
         if let ParsedObject::Typed(UnityObject::Texture2D(t)) = &o.object {
             return t.m_stream_data.clone();

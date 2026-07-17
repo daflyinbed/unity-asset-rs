@@ -19,9 +19,10 @@ use clap::{Parser, Subcommand};
 use generated::classes::texture2_d::Texture2DMNameVariant;
 
 use unity_asset_rs::{
-    load_with, ClassId, ClassIDType, CompressionType, Decompressor, Environment, Error, LoadedFile,
-    ParsedObject, ParseFailure, Registry, UnityObject, UnityVersion, Value,
+    load_with, ClassId, CompressionType, Decompressor, Environment, Error, LoadedFile, Loader,
+    ParsedObject, ParseFailure, Registry, UnityVersion, Value,
 };
+use generated::{ClassIDType, UnityObject};
 
 #[derive(Parser)]
 #[command(
@@ -123,17 +124,25 @@ fn make_registry(arknights: bool) -> Registry {
 fn build_env(path: &Path, arknights: bool) -> Result<(Option<BundleHeader>, Environment), String> {
     let registry = make_registry(arknights);
     if path.is_dir() {
-        let env = Environment::builder()
+        let report = Loader::builder()
             .registry(&registry)
             .scan_dir(path)
-            .map_err(|e| format!("扫描目录失败: {e}"))?
-            .build();
-        Ok((None, env))
+            .build()
+            .map_err(|e| format!("扫描目录失败: {e}"))?;
+        // 扫描目录场景下 header 无意义;诊断打印到 stderr。
+        for d in report.diagnostics() {
+            eprintln!("{d}");
+        }
+        Ok((None, report.into_environment()))
     } else {
         let loaded = load_with(path, &registry).map_err(|e| format!("加载资产文件失败: {e}"))?;
         let header = capture_header(&loaded);
-        let env = Environment::builder().loaded(loaded).build();
-        Ok((Some(header), env))
+        let report = Loader::builder()
+            .registry(&registry)
+            .loaded(loaded)
+            .build()
+            .map_err(|e| format!("构建 Environment 失败: {e}"))?;
+        Ok((Some(header), report.into_environment()))
     }
 }
 

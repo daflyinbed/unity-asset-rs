@@ -6,7 +6,6 @@
 
 use std::collections::HashSet;
 use std::collections::HashMap;
-use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use bytes::Bytes;
@@ -21,7 +20,8 @@ use crate::names::fix_file_identifier;
 use crate::object_parser::{parse_object, MonoBehaviour, ParsedObject};
 use crate::serialized_file::FileIdentifier;
 use crate::typetree::PPtrValue;
-use crate::{Endian, Error, PPtr, SerializedFile, UnityVersion};
+use crate::{Endian, Error, PPtr, UnityVersion};
+use crate::serialized_file::SerializedFile;
 
 /// 稳定的 collection 句柄。包装 `Environment.collections` 的 Vec 下标,
 /// 避免把内部存储布局(裸 `usize`)暴露成 API。未来调整存储、做按需解析或
@@ -152,20 +152,20 @@ impl<'env> ObjectRef<'env> {
 /// Phase B 依赖解析全局扫描 `collections`——只要把多个 bundle 灌进同一个 `Environment`，
 /// 跨 bundle 引用在 Phase B（全部 collection 建好后）自动 resolve。
 ///
-/// 构造唯一入口 [`Environment::builder`]：累积阶段（`path`/`bundle`/`scan_dir`）逐 bundle 做
-/// Phase A，`build()` 收尾时跑一次 Phase B 全局依赖解析。
+/// 构造唯一入口 [`crate::Loader::builder`]:累积阶段(`path`/`bytes`/`scan_dir`)逐 bundle 做
+/// Phase A,`build()` 收尾时跑一次 Phase B 全局依赖解析。
 pub struct Environment {
     /// 跨全部 AssetCollection eager parse 成功的对象。
-    objects: Vec<EnvironmentObject>,
+    pub(crate) objects: Vec<EnvironmentObject>,
     /// 每个 SerializedFile 的逻辑分组（含依赖解析表）。
-    collections: Vec<AssetCollection>,
+    pub(crate) collections: Vec<AssetCollection>,
     /// `.resS` / `.resource` 流数据。
-    resources: Vec<ResourceFile>,
+    pub(crate) resources: Vec<ResourceFile>,
     /// 解析失败记录（错误隔离，不中断整体）。
-    failures: Vec<ParseFailure>,
+    pub(crate) failures: Vec<ParseFailure>,
     /// 运行时扩展点（build 时从 builder move 入）。`None` 时无懒加载/资源现取。
-    dependency_provider: Option<Arc<dyn DependencyProvider>>,
-    resource_provider: Option<Arc<dyn ResourceProvider>>,
+    pub(crate) dependency_provider: Option<Arc<dyn DependencyProvider>>,
+    pub(crate) resource_provider: Option<Arc<dyn ResourceProvider>>,
 }
 
 /// 一个已解析的对象。
@@ -355,15 +355,6 @@ impl EnvironmentObject {
 }
 
 impl Environment {
-    /// 新建 [`EnvironmentBuilder`]——聚合层唯一构造入口。
-    ///
-    /// 累积阶段（`path`/`bundle`/`scan_dir`）逐 bundle 做 Phase A，[`EnvironmentBuilder::build`]
-    /// 收尾时跑一次 Phase B 全局依赖解析（全部 collection 建好后统一匹配 externals，
-    /// 跨 bundle 的前向/后向引用都能命中）。
-    pub fn builder() -> EnvironmentBuilder {
-        EnvironmentBuilder::new()
-    }
-
     /// Phase B：初始化依赖列表（全局 name_fixed 精确匹配 + [`DependencyProvider`] 懒加载）。
     ///
     /// 遍历 `pending` 中每个 collection 的 externals，按 `name_fixed` 在**全部**
@@ -375,7 +366,10 @@ impl Environment {
     ///
     /// 防恶意循环：`tried` 去重（同一 `path_name` 只触发一次懒加载）+ `MAX_LAZY_LOADS`
     /// 上限（4096，远超任何真实场景）。对齐 AssetRipper `InitializeAllDependencyLists`。
-    fn resolve_dependencies(&mut self, pending: &mut Vec<(CollectionId, Vec<FileIdentifier>)>) {
+    pub(crate) fn resolve_dependencies(
+        &mut self,
+        pending: &mut Vec<(CollectionId, Vec<FileIdentifier>)>,
+    ) {
         /// 懒加载次数上限（防恶意/损坏数据导致无限递归）。真实 bundle 依赖图远小于此。
         const MAX_LAZY_LOADS: usize = 4096;
 
@@ -488,7 +482,7 @@ impl Environment {
     ///
     /// 无 provider 时 no-op。其他对象类型若有 streaming 引用会漏（`resolve_resource`
     /// 仍返回 `None`，与现状一致，不回归）。
-    fn prefetch_resources(&mut self) {
+    pub(crate) fn prefetch_resources(&mut self) {
         let Some(provider) = &self.resource_provider else {
             return;
         };
@@ -781,12 +775,12 @@ fn is_resource_file(name: &str) -> bool {
 
 /// Phase A：读 `LoadedFile` 的全部叶子 + eager parse 对象 + 收集资源，灌入给定目标。
 ///
-/// 这是 `EnvironmentBuilder::add_loaded` 的共享实现。每个 SerializedFile → 一个
+/// 这是 [`crate::Loader`] 的共享实现。每个 SerializedFile → 一个
 /// `AssetCollection`（`dependencies[0]=Some(self)`），`.resS` → `ResourceFile`
 /// （`copy_from_slice` detach）。externals 暂存到 `pending`，等
 /// [`Environment::resolve_dependencies`] 在全部 collection 建好后统一解析（跨 bundle
 /// 前向/后向引用都能命中——对齐 AssetRipper 两阶段加载）。
-fn phase_a(
+pub(crate) fn phase_a(
     loaded: LoadedFile,
     objects: &mut Vec<EnvironmentObject>,
     collections: &mut Vec<AssetCollection>,
@@ -886,210 +880,4 @@ fn streaming_offset(offset: &StreamingInfoOffsetVariant) -> u64 {
         StreamingInfoOffsetVariant::Default(o) => *o as u64,
         StreamingInfoOffsetVariant::V2020_1(o) => *o,
     }
-}
-
-/// [`Environment`] 的 builder——聚合层唯一构造入口。累积多个 bundle 后 `build()` 一次性
-/// 做全局依赖解析。
-///
-/// 对齐 AssetRipper 两阶段加载：累积阶段（`path`/`bundle`/`scan_dir`）= Phase A，逐 bundle
-/// 读文件 + eager parse 对象；[`build`] = Phase B，在全部 collection 建好后统一解析
-/// externals，因此跨 bundle 的前向/后向 PPtr 引用都能命中。
-///
-/// # 示例
-///
-/// 单 bundle / 多 bundle：
-/// ```no_run
-/// # use unity_asset_rs::Environment;
-/// let env = Environment::builder()
-///     .path("a.ab")?
-///     .path("b.ab")?
-///     .build();
-/// # Ok::<(), unity_asset_rs::Error>(())
-/// ```
-///
-/// 递归扫描目录（UnityFS 签名嗅探，跳过非 bundle 文件）：
-/// ```no_run
-/// # use unity_asset_rs::Environment;
-/// let env = Environment::builder()
-///     .scan_dir("example/")?
-///     .build();
-/// # Ok::<(), unity_asset_rs::Error>(())
-/// ```
-///
-/// 自定义解压器（如 Arknights LZ4 变体）：`registry` 设一次，后续 `path`/`scan_dir` 均复用。
-/// ```no_run
-/// # use unity_asset_rs::{Environment, Registry};
-/// let env = Environment::builder()
-///     .registry(&Registry::defaults())
-///     .path("a.ab")?
-///     .build();
-/// # Ok::<(), unity_asset_rs::Error>(())
-/// ```
-pub struct EnvironmentBuilder {
-    objects: Vec<EnvironmentObject>,
-    collections: Vec<AssetCollection>,
-    resources: Vec<ResourceFile>,
-    failures: Vec<ParseFailure>,
-    pending_deps: Vec<(CollectionId, Vec<FileIdentifier>)>,
-    registry: Registry,
-    dependency_provider: Option<Arc<dyn DependencyProvider>>,
-    resource_provider: Option<Arc<dyn ResourceProvider>>,
-}
-
-impl EnvironmentBuilder {
-    fn new() -> EnvironmentBuilder {
-        EnvironmentBuilder {
-            objects: Vec::new(),
-            collections: Vec::new(),
-            resources: Vec::new(),
-            failures: Vec::new(),
-            pending_deps: Vec::new(),
-            registry: Registry::defaults(),
-            dependency_provider: None,
-            resource_provider: None,
-        }
-    }
-
-    /// 设定解压器注册表（clone 入驻）。后续 [`path`](Self::path) /
-    /// [`scan_dir`](Self::scan_dir) 均用它解包，而非默认 registry。
-    ///
-    /// 默认为 [`Registry::defaults`]（LZMA + LZ4 + LZ4HC + NONE）。需要自定义 codec（如
-    /// Arknights LZ4 变体占 flag 4/5——见 ADR-0003）时在此注册。
-    pub fn registry(mut self, reg: &Registry) -> Self {
-        self.registry = reg.clone();
-        self
-    }
-
-    /// 加载一个资产文件路径（`fs::read` + 递归再派发 + 驻留 registry），并入累积区。
-    pub fn path(mut self, path: impl AsRef<Path>) -> Result<Self, crate::Error> {
-        let path = path.as_ref();
-        let bytes = std::fs::read(path).map_err(|e| crate::Error::Io { source: e })?;
-        let loaded = crate::format::load_recursive(
-            Bytes::from(bytes),
-            &path.to_string_lossy(),
-            &self.registry,
-            None,
-        )?;
-        self.add_loaded(loaded);
-        Ok(self)
-    }
-
-    /// 递归扫描目录，对每个可加载文件做递归再派发，跳过不可识别的文件。
-    ///
-    /// 对齐 AssetStudio `LoadFolder`：递归遍历目录树，读头部嗅探是否为可加载格式
-    /// （UnityFS / gzip 等），命中才加载，否则 `log::warn` 静默跳过。
-    pub fn scan_dir(mut self, path: impl AsRef<Path>) -> Result<Self, crate::Error> {
-        let path = path.as_ref();
-        let mut any = false;
-        for entry in walk_files(path)? {
-            if crate::detect::looks_like_loadable_path(&entry)? {
-                let bytes =
-                    std::fs::read(&entry).map_err(|e| crate::Error::Io { source: e })?;
-                let loaded = crate::format::load_recursive(
-                    Bytes::from(bytes),
-                    &entry.to_string_lossy(),
-                    &self.registry,
-                    None,
-                )?;
-                self.add_loaded(loaded);
-                any = true;
-            } else {
-                log::warn!("scan_dir: 跳过非可加载文件: {}", entry.display());
-            }
-        }
-        if !any {
-            log::warn!("scan_dir: {} 下未发现任何可加载文件", path.display());
-        }
-        Ok(self)
-    }
-
-    /// 并入一个已解析的 `LoadedFile`（用户可用自定义 registry 预加载后喂入）。
-    pub fn loaded(mut self, loaded: LoadedFile) -> Self {
-        self.add_loaded(loaded);
-        self
-    }
-
-    /// 注册扩展点：外部引用未命中时回调（对齐 AssetRipper `IDependencyProvider`）。
-    /// build 时 Phase B 在 `target.is_none()` 分支实际回调 `find_dependency`，
-    /// 返回 `Some(LoadedFile)` 则追加加载并重试匹配（传递依赖递归直到不动点）。
-    pub fn dependency_provider(
-        mut self,
-        provider: impl DependencyProvider + 'static,
-    ) -> Self {
-        self.dependency_provider = Some(Arc::new(provider));
-        self
-    }
-
-    /// 注册扩展点：`.resS` 未命中时回调（对齐 AssetRipper `IResourceProvider`）。
-    /// build 末尾 `prefetch_resources` 扫描 Texture2D / AudioClip 的 streaming 引用，
-    /// 对未命中的 name 实际回调 `find_resource`，命中则注册进 `resources`。
-    pub fn resource_provider(
-        mut self,
-        provider: impl ResourceProvider + 'static,
-    ) -> Self {
-        self.resource_provider = Some(Arc::new(provider));
-        self
-    }
-
-    /// 收尾：把累积的四个 Vec + 两个 provider move 进新 `Environment`，跑一次全局
-    /// 依赖解析（Phase B），再预拉取缺失的 `.resS` 资源。
-    ///
-    /// Phase B 顺序：先 `resolve_dependencies`（含 [`DependencyProvider`] 懒加载 +
-    /// 传递依赖递归），再 `prefetch_resources`（[`ResourceProvider`] 预拉取 streaming
-    /// 引用）。两者均在 provider 为 `None` 时 no-op，退化为纯 eager 模型。
-    pub fn build(mut self) -> Environment {
-        let mut env = Environment {
-            objects: self.objects,
-            collections: self.collections,
-            resources: self.resources,
-            failures: self.failures,
-            dependency_provider: self.dependency_provider,
-            resource_provider: self.resource_provider,
-        };
-        env.resolve_dependencies(&mut self.pending_deps);
-        env.prefetch_resources();
-        env
-    }
-
-    /// Phase A helper：把 `LoadedFile` 灌入累积的 Vec + 追加 pending_deps。复用 [`phase_a`]。
-    fn add_loaded(&mut self, loaded: LoadedFile) {
-        phase_a(
-            loaded,
-            &mut self.objects,
-            &mut self.collections,
-            &mut self.resources,
-            &mut self.failures,
-            &mut self.pending_deps,
-        );
-    }
-}
-
-impl Default for EnvironmentBuilder {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-/// 递归收集目录下全部文件路径（先序）。符号链接子目录跳过（避免循环）。
-fn walk_files(root: &Path) -> Result<Vec<PathBuf>, crate::Error> {
-    let mut out = Vec::new();
-    walk_inner(root, &mut out)?;
-    Ok(out)
-}
-
-fn walk_inner(dir: &Path, out: &mut Vec<PathBuf>) -> Result<(), crate::Error> {
-    for entry in std::fs::read_dir(dir).map_err(|e| crate::Error::Io { source: e })? {
-        let entry = entry.map_err(|e| crate::Error::Io { source: e })?;
-        let path = entry.path();
-        let ft = entry.file_type().map_err(|e| crate::Error::Io { source: e })?;
-        if ft.is_dir() {
-            // 不跟符号链接目录，防循环。
-            if !path.is_symlink() {
-                walk_inner(&path, out)?;
-            }
-        } else {
-            out.push(path);
-        }
-    }
-    Ok(())
 }

@@ -15,7 +15,8 @@ use unity_asset_rs::texture_export::{
     TextureFormat, decode_astc, decode_crunch, decode_uncompressed, texture_pixel_bytes,
     write_png,
 };
-use unity_asset_rs::{ClassIDType, Environment, ParsedObject, UnityObject, UnityVersion};
+use unity_asset_rs::{Environment, Loader, ParsedObject, UnityVersion};
+use generated::{ClassIDType, UnityObject};
 
 /// 含 ASTC 纹理的标准 Unity bundle fixture。
 const UI_BUNDLE: &str = "example/DownloadCommonUI.unity3d";
@@ -26,10 +27,11 @@ fn load_env(path: &str) -> Environment {
         eprintln!("跳过：{path} 不存在");
         std::process::exit(0);
     }
-    Environment::builder()
+    Loader::builder()
         .path(path)
-        .unwrap_or_else(|e| panic!("加载 {path} 失败: {e}"))
         .build()
+        .unwrap_or_else(|e| panic!("加载 {path} 失败: {e}"))
+        .into_environment()
 }
 
 /// 取该 bundle 里全部 typed Texture2D（path_id, 宽, 高, 格式）。
