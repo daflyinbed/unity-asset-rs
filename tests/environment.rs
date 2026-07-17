@@ -5,7 +5,7 @@ use std::path::Path;
 
 use unity_asset_rs::{
     Bytes, ClassIDType, ClassId, DependencyProvider, Environment, FileFormat, LoadedFile, ObjectId,
-    ParseFailure, ParsedObject, ResourceFile, ResourceProvider, UnityObject,
+    ParseFailure, ParsedObject, ResourceProvider, UnityObject,
 };
 
 /// 默认 fixture（io 层测试同款）。
@@ -384,14 +384,27 @@ impl StubDependencyProvider {
 }
 
 impl DependencyProvider for StubDependencyProvider {
-    fn find_dependency(
+    fn open(
         &self,
-        id: &unity_asset_rs::FileIdentifier,
-    ) -> Option<unity_asset_rs::LoadedFile> {
-        *self.calls.lock().unwrap().entry(id.path_name.clone()).or_insert(0) += 1;
-        Self::bundle_for(&id.path_name)
-            .map(unity_asset_rs::load)
-            .and_then(|r| r.ok())
+        req: &unity_asset_rs::DependencyRequest<'_>,
+    ) -> Result<Option<unity_asset_rs::NamedBytes>, unity_asset_rs::ProviderError> {
+        *self
+            .calls
+            .lock()
+            .unwrap()
+            .entry(req.identifier.path_name.clone())
+            .or_insert(0) += 1;
+        match Self::bundle_for(&req.identifier.path_name) {
+            Some(path) => std::fs::read(path)
+                .map(|b| {
+                    Some(unity_asset_rs::NamedBytes {
+                        name: path.to_string(),
+                        bytes: unity_asset_rs::Bytes::from(b),
+                    })
+                })
+                .map_err(|e| unity_asset_rs::ProviderError(e.to_string())),
+            None => Ok(None),
+        }
     }
 }
 
@@ -515,20 +528,19 @@ impl StubResourceProvider {
 }
 
 impl ResourceProvider for StubResourceProvider {
-    fn find_resource(&self, _name: &str) -> Option<ResourceFile> {
+    fn open(
+        &self,
+        _req: &unity_asset_rs::ResourceRequest<'_>,
+    ) -> Result<Option<Bytes>, unity_asset_rs::ProviderError> {
         self.called.store(true, std::sync::atomic::Ordering::Relaxed);
         // 合成足够大的资源覆盖 Combine 的 Texture2D streaming size（1MB），
         // 使 streaming_data 的 bounds 校验通过。首字节用 0xAB 标记便于断言。
+        // Provider 只返回 Bytes;Loader 自己算 name_fixed 并注册。
         let mut buf = vec![0xABu8; 1 << 20];
         if !buf.is_empty() {
             buf[0] = 0xAB;
         }
-        Some(ResourceFile {
-            // name 固定为归一化后的值（绕过 fix_file_identifier，仅供测试）。
-            name: String::new(),
-            name_fixed: COMBINE_RESS_NAME_FIXED.to_string(),
-            bytes: Bytes::from(buf),
-        })
+        Ok(Some(Bytes::from(buf)))
     }
 }
 

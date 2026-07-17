@@ -256,39 +256,90 @@ impl PPtrLike for PPtrValue {
     }
 }
 
-/// 扩展点：外部引用（`FileIdentifier`）在已加载 collection 中未命中时的回调。
+/// 扩展点:外部引用(`FileIdentifier`)在已加载 collection 中未命中时的回调。
 ///
-/// 对齐 AssetRipper `IDependencyProvider`。在 [`EnvironmentBuilder::build`] 的 Phase B
-/// 中实际回调：当某个 collection 的 external（按 `name_fixed` 匹配）在已加载的全部
-/// collection 中找不到时，调 `find_dependency`；返回 `Some(LoadedFile)` 则追加 phase_a
-/// 加载该依赖并重试匹配，**新依赖引入的 externals 也会递归处理**（传递依赖，直到
-/// 不动点；上限 `MAX_LAZY_LOADS = 4096` 防恶意循环）。默认实现 no-op（返回 `None`，
-/// 依赖留空）。
+/// 对齐 AssetRipper `IDependencyProvider`,但**只负责\"打开字节\"**——Loader/
+/// `resolve_dependencies` 接到 [`NamedBytes`] 后自己跑 `load_recursive` + `phase_a`
+/// (sniff、递归解析、`name_fixed` 归一化都在内部,不劳 Provider 构造)。旧实现要求
+/// Provider 返回已解析的 `LoadedFile` 并自备 `Registry`/命名规则,职责过重。
 ///
-/// `Send + Sync` 约束对齐未来 pyo3 / async 场景：provider 以 `Arc<dyn Trait>` 形式
+/// 在 `build` 的 Phase B 中实际回调:某个 collection 的 external(按 `name_fixed`
+/// 匹配)在已加载的全部 collection 中找不到时,调 `open`;返回 `Ok(Some(_))` 则
+/// 追加加载该依赖并重试匹配,**新依赖引入的 externals 也会递归处理**(传递依赖,
+/// 直到不动点;上限 `MAX_LAZY_LOADS = 4096` 防恶意循环)。默认 no-op。
+///
+/// `Send + Sync` 约束对齐未来 pyo3 / async 场景:provider 以 `Arc<dyn Trait>` 形式
 /// 存入 [`Environment`]。
 pub trait DependencyProvider: Send + Sync {
-    /// 返回 `Some(LoadedFile)` 则追加加载该依赖；`None` 则该引用留空（resolve 返回 `None`）。
-    fn find_dependency(&self, _id: &FileIdentifier) -> Option<LoadedFile> {
-        None
+    /// 返回 `Ok(Some(NamedBytes))` 则 Loader 内部加载该依赖;`Ok(None)` 则该引用
+    /// 留空(`resolve` 返回 `None`);`Err` 记录为 `ParseFailure::Container`。
+    fn open(&self, _req: &DependencyRequest<'_>) -> Result<Option<NamedBytes>, ProviderError> {
+        Ok(None)
     }
 }
 
-/// 扩展点：`.resS` 在已加载 resources 中未命中时的回调。
+/// 扩展点:`.resS` 在已加载 resources 中未命中时的回调。
 ///
-/// 对齐 AssetRipper `IResourceProvider`。在 [`EnvironmentBuilder::build`] 末尾的
-/// `prefetch_resources` 中实际回调：扫描已加载 Texture2D（`m_stream_data.path`）与
-/// AudioClip（`m_resource.m_source` / pre-5.0 隐式 `collection.name + ".resS"`）的
-/// streaming 引用，对未命中的 name 调 `find_resource`，返回 `Some(ResourceFile)` 则
-/// 注册进 `resources`（之后 `streaming_data` 等只读查找命中）。默认实现 no-op。
+/// 对齐 AssetRipper `IResourceProvider`,**只负责\"打开字节\"**——Loader/
+/// `prefetch_resources` 接到 `Bytes` 后自己算 `name_fixed` 并注册进 `resources`
+/// (旧实现要求 Provider 构造带 `name_fixed` 的 `ResourceFile`,职责过重)。
+///
+/// 在 `build` 末尾 `prefetch_resources` 中实际回调:扫描已加载 Texture2D
+/// (`m_stream_data.path`)与 AudioClip(`m_resource.m_source` / pre-5.0 隐式
+/// `collection.name + ".resS"`)的 streaming 引用,对未命中的 name 调 `open`,
+/// 返回 `Ok(Some(_))` 则注册进 `resources`。默认 no-op。
 ///
 /// `Send + Sync` 约束同 [`DependencyProvider`]。
 pub trait ResourceProvider: Send + Sync {
-    /// 返回 `Some(ResourceFile)` 则注册进全局 resources；`None` 则 streaming 取数返回 `None`。
-    fn find_resource(&self, _name: &str) -> Option<ResourceFile> {
-        None
+    /// 返回 `Ok(Some(Bytes))` 则注册进全局 resources;`Ok(None)` 则 streaming 取数
+    /// 返回 `None`;`Err` 记录为 `ParseFailure::Container`。
+    fn open(&self, _req: &ResourceRequest<'_>) -> Result<Option<Bytes>, ProviderError> {
+        Ok(None)
     }
 }
+
+/// Provider 打开依赖时返回的原始字节 + 名称。Loader 内部据此跑 `load_recursive`。
+#[derive(Debug, Clone)]
+pub struct NamedBytes {
+    /// 建议的来源名(日志/诊断用)。Loader 不依赖此值做匹配——匹配走
+    /// `fix_file_identifier` 归一化后的 name(由 Loader 自己算)。
+    pub name: String,
+    pub bytes: Bytes,
+}
+
+/// Provider 打开依赖时传入的请求:来源 collection + 原始 FileIdentifier + 归一化名。
+#[derive(Debug, Clone)]
+pub struct DependencyRequest<'a> {
+    /// 发起该依赖的 collection。
+    pub source_collection: CollectionId,
+    /// 原始 FileIdentifier(含 `path_name_origin` / `guid` / `type_`)。
+    pub identifier: &'a FileIdentifier,
+    /// `fix_file_identifier(identifier.path_name)`——已归一化的 name,
+    /// Provider 可直接按此查表。
+    pub normalized_name: &'a str,
+}
+
+/// Provider 打开 `.resS` 时传入的请求:来源 collection + 原始路径 + 归一化名。
+#[derive(Debug, Clone)]
+pub struct ResourceRequest<'a> {
+    /// 发起该 streaming 引用的对象所在 collection。
+    pub source_collection: CollectionId,
+    /// 原始路径(如 `archive:/CAB-xxx/CAB-xxx.resS` 或裸 `xxx.resS`)。
+    pub original_path: &'a str,
+    /// `fix_file_identifier(original_path)`——已归一化的 name。
+    pub normalized_name: &'a str,
+}
+
+/// Provider 错误。记录为 `ParseFailure::Container` 不中断整体 build。
+#[derive(Debug, Clone)]
+pub struct ProviderError(pub String);
+
+impl std::fmt::Display for ProviderError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(&self.0)
+    }
+}
+impl std::error::Error for ProviderError {}
 
 impl EnvironmentObject {
     /// 若该对象是 MonoBehaviour（classID=114），返回 typed shell + 动态 structure 引用。
@@ -334,17 +385,15 @@ impl Environment {
 
         let mut i = 0;
         while i < pending.len() {
-            // 取出当前 collection 的 externals 快照（owned path_name 列表）+ col_id,
-            // 随即结束对 `pending` 的不可变借用,以便后续 phase_a 可 &mut pending(push
-            // 传递依赖)。
-            let (col_id, names) = {
+            // 取出当前 collection 的 externals 快照(owned clone,含 path_name + guid 等)
+            // + col_id,随即结束对 `pending` 的不可变借用,以便后续 phase_a 可 &mut pending。
+            let (col_id, externals_snap): (CollectionId, Vec<FileIdentifier>) = {
                 let (col_id, externals) = &pending[i];
-                let names: Vec<String> =
-                    externals.iter().map(|id| id.path_name.clone()).collect();
-                (*col_id, names)
+                (*col_id, externals.clone())
             };
 
-            for name in names {
+            for id in &externals_snap {
+                let name = id.path_name.clone();
                 let mut target = self
                     .collections
                     .iter()
@@ -358,33 +407,63 @@ impl Environment {
                             "resolve_dependencies: 懒加载次数达上限 {MAX_LAZY_LOADS}，停止懒加载"
                         );
                     } else {
-                        // 构造查询用 FileIdentifier（provider 只需 path_name 匹配）。
-                        let query = FileIdentifier {
-                            path_name_origin: String::new(),
-                            path_name: name.clone(),
-                            guid: [0u8; 16],
-                            type_: 0,
+                        // Provider 只负责"打开字节"。Loader 自己跑 load_recursive。
+                        let req = DependencyRequest {
+                            source_collection: col_id,
+                            identifier: id,
+                            normalized_name: &name,
                         };
                         let provider = self.dependency_provider.clone(); // Arc clone，廉价
-                        if let Some(loaded) =
-                            provider.as_ref().and_then(|p| p.find_dependency(&query))
-                        {
-                            lazy_loads += 1;
-                            // phase_a 把新 bundle 灌进 self 的各 Vec；
-                            // 新 collection 的 externals 被 push 进 pending（传递依赖入队）。
-                            phase_a(
-                                loaded,
-                                &mut self.objects,
-                                &mut self.collections,
-                                &mut self.resources,
-                                &mut self.failures,
-                                pending,
-                            );
-                            target = self
-                                .collections
-                                .iter()
-                                .position(|c| c.name_fixed == name)
-                                .map(CollectionId::new);
+                        // provider 一定存在(has_provider 已校验);直接调 open。
+                        let opened = provider
+                            .as_ref()
+                            .expect("has_provider 已校验")
+                            .open(&req);
+                        match opened {
+                            Ok(Some(named)) => {
+                                lazy_loads += 1;
+                                // 用 Provider 返回的原始字节跑 load_recursive。
+                                let registry = Registry::defaults();
+                                match crate::format::load_recursive(
+                                    named.bytes,
+                                    &named.name,
+                                    &registry,
+                                    None,
+                                ) {
+                                    Ok(loaded) => {
+                                        // phase_a 把新 bundle 灌进 self 的各 Vec;
+                                        // 新 collection 的 externals 被 push 进 pending(传递依赖入队)。
+                                        phase_a(
+                                            loaded,
+                                            &mut self.objects,
+                                            &mut self.collections,
+                                            &mut self.resources,
+                                            &mut self.failures,
+                                            pending,
+                                        );
+                                        target = self
+                                            .collections
+                                            .iter()
+                                            .position(|c| c.name_fixed == name)
+                                            .map(CollectionId::new);
+                                    }
+                                    Err(e) => {
+                                        self.failures.push(ParseFailure::Container {
+                                            name: named.name.clone(),
+                                            error: e,
+                                        });
+                                    }
+                                }
+                            }
+                            Ok(None) => {} // provider 无此依赖,留 None
+                            Err(pe) => {
+                                self.failures.push(ParseFailure::Container {
+                                    name: name.clone(),
+                                    error: Error::Decompress {
+                                        reason: format!("dependency provider: {pe}"),
+                                    },
+                                });
+                            }
                         }
                     }
                 }
@@ -397,8 +476,8 @@ impl Environment {
     /// 预拉取缺失的 `.resS` 资源（[`ResourceProvider`] 回调）。
     ///
     /// 在 [`resolve_dependencies`] 之后、`build` 返回前调用。扫描已加载对象的
-    /// streaming 引用，对未在 `resources` 命中的 name 调 `find_resource`，命中则
-    /// 注册进 `resources`——之后 `streaming_data` / `streamed_resource_data` /
+    /// streaming 引用,对未在 `resources` 命中的 name 调 `open`,命中则注册进
+    /// `resources`——之后 `streaming_data` / `streamed_resource_data` /
     /// `read_old_streamed_audio` 等只读查找即能命中。
     ///
     /// 覆盖的 streaming 引用来源（对齐聚合层取数路径）：
@@ -413,50 +492,69 @@ impl Environment {
         let Some(provider) = &self.resource_provider else {
             return;
         };
-        // 先收集全部 wanted name（不可变借 objects），再释放借用后 mutate resources。
-        let mut wanted: Vec<String> = Vec::new();
+        // 先收集全部 wanted (原始 path, 来源 collection)——不可变借 objects,再释放借用后
+        // mutate resources。
+        let mut wanted: Vec<(String, CollectionId)> = Vec::new();
         for o in &self.objects {
             match &o.object {
                 ParsedObject::Typed(UnityObject::Texture2D(t)) => {
                     if let Some(sd) = &t.m_stream_data
                         && !sd.path.is_empty()
                     {
-                        wanted.push(sd.path.clone());
+                        wanted.push((sd.path.clone(), o.collection));
                     }
                 }
                 ParsedObject::Typed(UnityObject::AudioClip(a)) => {
                     if let Some(r) = &a.m_resource
                         && !r.m_source.is_empty()
                     {
-                        wanted.push(r.m_source.clone());
+                        wanted.push((r.m_source.clone(), o.collection));
                     }
                     // pre-5.0 隐式 .resS 名 = collection.name + ".resS"
                     if matches!(a.m_audio_data, Some(AudioClipMAudioData::Streamed { .. }))
                         && let Some(col) = self.collections.get(o.collection.to_index())
                     {
-                        wanted.push(format!("{}.resS", col.name));
+                        wanted.push((format!("{}.resS", col.name), o.collection));
                     }
                 }
                 _ => {}
             }
         }
-        // provider 调用：对每个未命中的 name 查一次（去重 + name_fixed 归一化匹配）。
-        // 克隆 Arc 以释放对 self 的借用，便于后续 self.resources.push。
+        // provider 调用:对每个未命中的 name 查一次(去重 + name_fixed 归一化匹配)。
+        // 克隆 Arc 以释放对 self 的借用,便于后续 self.resources.push。
         let provider = provider.clone();
-        for name in wanted {
-            let fixed = fix_file_identifier(&name);
+        for (path, source_collection) in wanted {
+            let fixed = fix_file_identifier(&path);
             let already = self.resources.iter().any(|r| r.name_fixed == fixed);
             if already {
                 continue;
             }
-            if let Some(rf) = provider.find_resource(&name) {
-                // 防御：若 provider 返回的 name_fixed 与已存在重复，跳过（不覆盖）。
-                let dup = self
-                    .resources
-                    .iter()
-                    .any(|r| r.name_fixed == rf.name_fixed);
-                if !dup {
-                    self.resources.push(rf);
+            // Provider 只返回 Bytes;Loader 自己算 name_fixed 并构造 ResourceFile。
+            let req = ResourceRequest {
+                source_collection,
+                original_path: &path,
+                normalized_name: &fixed,
+            };
+            match provider.open(&req) {
+                Ok(Some(bytes)) => {
+                    // 防御:若 name_fixed 与已存在重复,跳过(不覆盖)。
+                    let dup = self.resources.iter().any(|r| r.name_fixed == fixed);
+                    if !dup {
+                        self.resources.push(ResourceFile {
+                            name: path.clone(),
+                            name_fixed: fixed,
+                            bytes,
+                        });
+                    }
+                }
+                Ok(None) => {} // provider 无此资源,留空
+                Err(pe) => {
+                    self.failures.push(ParseFailure::Container {
+                        name: path.clone(),
+                        error: Error::Decompress {
+                            reason: format!("resource provider: {pe}"),
+                        },
+                    });
                 }
             }
         }

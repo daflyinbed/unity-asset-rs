@@ -51,6 +51,7 @@ pub struct ObjectInfo {
 ///
 /// 一个 SerializedFile 可通过 externals 链接到其它 SerializedFile，形成共享依赖。
 /// PPtr 的 `file_id > 0` 索引到本列表（第 `i` 项对应 `file_id == i + 1`）。
+#[derive(Debug, Clone)]
 pub struct FileIdentifier {
     /// 原始路径（磁盘相对路径，如 `archive:/CAB-xxxx/CAB-xxxx.assets`）。
     pub path_name_origin: String,
