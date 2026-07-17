@@ -78,6 +78,9 @@ fn no_unexpected_failures() {
             ParseFailure::Object { collection, path_id, class_id, error } => panic!(
                 "object 失败: col={collection} pid={path_id} cid={class_id}: {error}"
             ),
+            ParseFailure::Container { name, error } => {
+                panic!("container 失败: {name}: {error}")
+            }
         }
     }
 }

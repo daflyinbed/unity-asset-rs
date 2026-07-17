@@ -91,6 +91,12 @@ pub enum ParseFailure {
         class_id: i32,
         error: Error,
     },
+    /// io 层子容器/子条目递归 parse 失败（container-level）。
+    ///
+    /// 对应 [`crate::format::LoadedFile::Failed`]:保留了原始字节与错误,
+    /// 但 `phase_a` 无法把它当作 SerializedFile/Resource 处理,故记录为失败。
+    /// `name` 是原始 node 名(如 `CAB-xxxx.assets`)。
+    Container { name: String, error: Error },
 }
 
 /// PPtr 引用的抽象：typed `PPtr`（unity-core）与 dynamic `PPtrValue`（typetree）统一。
@@ -498,6 +504,24 @@ fn is_resource_file(name: &str) -> bool {
 /// 前向/后向引用都能命中——对齐 AssetRipper 两阶段加载）。
 fn phase_a(
     loaded: LoadedFile,
+    objects: &mut Vec<EnvironmentObject>,
+    collections: &mut Vec<AssetCollection>,
+    resources: &mut Vec<ResourceFile>,
+    failures: &mut Vec<ParseFailure>,
+    pending: &mut Vec<(usize, Vec<FileIdentifier>)>,
+) {
+    // Error 未实现 Clone(含 io::Error),所以先借 leaves 处理 SerializedFile/Resource,
+    // 再 consume 整棵树取 Failed 节点的 owning Error。两次遍历都不修改树,顺序无依赖。
+    process_leaves(&loaded, objects, collections, resources, failures, pending);
+    for (name, error) in loaded.into_failures() {
+        failures.push(ParseFailure::Container { name, error });
+    }
+}
+
+/// `phase_a` 的 leaf 处理:对每个 `SerializedFile` 叶子 eager parse 全部对象,
+/// 对 `.resS`/`.resource` 叶子 detach 成 `ResourceFile`。
+fn process_leaves(
+    loaded: &LoadedFile,
     objects: &mut Vec<EnvironmentObject>,
     collections: &mut Vec<AssetCollection>,
     resources: &mut Vec<ResourceFile>,

@@ -146,7 +146,8 @@ fn capture_header(loaded: &LoadedFile) -> BundleHeader {
             format_version,
             ..
         } => (*format_version, unity_revision.clone()),
-        LoadedFile::Leaf { .. } => (None, None),
+        LoadedFile::Leaf { unity_revision, .. } => (None, unity_revision.clone()),
+        LoadedFile::Failed { unity_revision, .. } => (None, unity_revision.clone()),
     };
     let files = loaded
         .leaves()
@@ -235,6 +236,9 @@ fn cmd_list(header: Option<&BundleHeader>, env: &Environment) -> Result<(), Stri
                         "  [object] col={collection} pid={path_id} cid={class_id} ({}): {error}",
                         class_name(*class_id)
                     );
+                }
+                ParseFailure::Container { name, error } => {
+                    println!("  [container] {name}: {error}");
                 }
             }
         }

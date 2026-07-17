@@ -13,7 +13,7 @@ use bytes::Bytes;
 use crate::bundle::{parse_unityfs, RawEntry};
 use crate::containers::{compressed, rawweb, webfile};
 use crate::decompress::Registry;
-use crate::error::{Result, UnsupportedFormatSnafu};
+use crate::error::{Error, Result, UnsupportedFormatSnafu};
 
 /// io 层支持的全部文件格式（闭集）。
 ///
@@ -46,6 +46,7 @@ pub enum FileFormat {
 /// Container（bundle / webfile / 压缩壳）持有元信息 + 递归后的子树；
 /// Leaf（SerializedFile 或裸资源）携带名字 + 解压后字节 + 可选引擎版本（供
 /// `SerializedFile::parse` 继承）。
+/// Failed（子条目递归 parse 失败）保留**原始字节** + 错误，不伪装成空 Resource。
 #[derive(Debug)]
 pub enum LoadedFile {
     Container {
@@ -67,12 +68,33 @@ pub enum LoadedFile {
         /// sniff 结论（SerializedFile / Resource 等），供下游判断是否 parse。
         format: FileFormat,
     },
+    /// 子条目递归 parse 失败。携带**原始字节**(可供诊断/重试)与错误。
+    ///
+    /// 旧实现把失败伪装成 `Leaf { format: Resource, bytes: Bytes::new() }`,
+    /// 丢弃原始字节且只写日志——下游既看不到失败也拿不回字节。本变体让失败成为
+    /// 显式 API 结果。
+    Failed {
+        name: String,
+        bytes: Bytes,
+        error: Error,
+        /// 从父 Container 继承的引擎版本。
+        unity_revision: Option<String>,
+    },
+}
+
+/// 失败节点引用(view),由 [`LoadedFile::failures`] 产出。
+#[derive(Debug, Clone, Copy)]
+pub struct LoadedFailure<'a> {
+    pub name: &'a str,
+    pub bytes: &'a Bytes,
+    pub error: &'a Error,
 }
 
 impl LoadedFile {
     /// 深度优先展平到叶子列表，返回 `(name, bytes, unity_revision)` 三元组引用。
     ///
     /// 供下游 `phase_a` 等消费——它们只关心最终的叶子文件，不关心 Container 层级。
+    /// **不含** [`LoadedFile::Failed`] 节点(用 [`LoadedFile::failures`] 单独查)。
     pub fn leaves(&self) -> Vec<(&str, &Bytes, Option<&str>, FileFormat)> {
         let mut out = Vec::new();
         self.collect_leaves(&mut out);
@@ -94,7 +116,53 @@ impl LoadedFile {
                     child.collect_leaves(out);
                 }
             }
+            LoadedFile::Failed { .. } => {}
         }
+    }
+
+    /// 深度优先收集所有 [`LoadedFile::Failed`] 节点。
+    pub fn failures(&self) -> Vec<LoadedFailure<'_>> {
+        let mut out = Vec::new();
+        self.collect_failures(&mut out);
+        out
+    }
+
+    fn collect_failures<'a>(&'a self, out: &mut Vec<LoadedFailure<'a>>) {
+        match self {
+            LoadedFile::Failed {
+                name,
+                bytes,
+                error,
+                ..
+            } => out.push(LoadedFailure { name, bytes, error }),
+            LoadedFile::Container { children, .. } => {
+                for child in children {
+                    child.collect_failures(out);
+                }
+            }
+            LoadedFile::Leaf { .. } => {}
+        }
+    }
+
+    /// 消费整棵树,把所有 [`LoadedFile::Failed`] 节点的 `name`/`error` 按值取出。
+    ///
+    /// `Error` 未实现 `Clone`(含 `io::Error`),借用版本 [`LoadedFile::failures`]
+    /// 只能返回引用;调用方若需要拥有(如塞进 `ParseFailure`)用此版本。
+    pub fn into_failures(self) -> Vec<(String, Error)> {
+        fn go(f: LoadedFile, out: &mut Vec<(String, Error)>) {
+            match f {
+                LoadedFile::Failed { name, error, .. } => out.push((name, error)),
+                LoadedFile::Container { children, .. } => {
+                    for c in children {
+                        go(c, out);
+                    }
+                }
+                LoadedFile::Leaf { .. } => {}
+            }
+        }
+        let mut out = Vec::new();
+        go(self, &mut out);
+        out
     }
 }
 
@@ -296,9 +364,11 @@ pub fn load_recursive(
     }
 }
 
-/// 对 `entries` 逐个递归 sniff + parse，错误隔离。
+/// 对 `entries` 逐个递归 sniff + parse,错误隔离。
 ///
-/// 单个 entry 失败不中断——产出一个标记为 Resource 的 Leaf 携带原始字节。
+/// 单个 entry 失败不中断——产出 [`LoadedFile::Failed`],**保留原始字节** + 错误,
+/// 让下游([`LoadedFile::failures`] / `Environment::failures`)能显式看到失败原因
+/// 并(可选)取回字节重试。不再伪装成空 Resource、也不再只写 log。
 fn recurse_entries(
     entries: Vec<RawEntry>,
     registry: &Registry,
@@ -308,18 +378,94 @@ fn recurse_entries(
         .into_iter()
         .map(|e| {
             let name = e.name.clone();
+            // Bytes 是 Arc 共享 slice,clone 廉价;失败时保留原始字节供诊断。
+            let original = e.bytes.clone();
             match load_recursive(e.bytes, &name, registry, parent_revision) {
                 Ok(loaded) => loaded,
-                Err(err) => {
-                    log::warn!("load_recursive: 子条目 {name:?} 解析失败，降级为 Resource: {err}");
-                    LoadedFile::Leaf {
-                        name,
-                        bytes: Bytes::new(),
-                        unity_revision: parent_revision.map(|s| s.to_string()),
-                        format: FileFormat::Resource,
-                    }
-                }
+                Err(err) => LoadedFile::Failed {
+                    name,
+                    bytes: original,
+                    error: err,
+                    unity_revision: parent_revision.map(|s| s.to_string()),
+                },
             }
         })
         .collect()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Failed 节点保留原始字节 + 错误;failures()/into_failures()/leaves() 行为正确。
+    #[test]
+    fn failed_node_preserves_bytes_and_error() {
+        let archive_bytes = Bytes::from(b"UnityArchive\0garbage".to_vec());
+        let tree = LoadedFile::Container {
+            unity_revision: None,
+            format_version: None,
+            format: FileFormat::ArchiveBundle,
+            children: vec![
+                LoadedFile::Failed {
+                    name: "bad.child".to_string(),
+                    bytes: archive_bytes.clone(),
+                    error: Error::UnsupportedFormat {
+                        format: FileFormat::ArchiveBundle,
+                    },
+                    unity_revision: None,
+                },
+                LoadedFile::Leaf {
+                    name: "ok.child".to_string(),
+                    bytes: Bytes::new(),
+                    unity_revision: None,
+                    format: FileFormat::Resource,
+                },
+            ],
+        };
+
+        // failures() 借用,返回原始字节引用 + 错误引用。
+        let fails = tree.failures();
+        assert_eq!(fails.len(), 1, "应有 1 个 Failed 节点");
+        assert_eq!(fails[0].name, "bad.child");
+        assert_eq!(fails[0].bytes.as_ref(), archive_bytes.as_ref());
+
+        // leaves() 不含 Failed,只含 ok.child。
+        let leaves = tree.leaves();
+        assert_eq!(leaves.len(), 1);
+        assert_eq!(leaves[0].0, "ok.child");
+
+        // into_failures() 消费树,取走 owning Error(Error 未实现 Clone)。
+        let owned = tree.into_failures();
+        assert_eq!(owned.len(), 1);
+        assert_eq!(owned[0].0, "bad.child");
+        assert!(matches!(
+            owned[0].1,
+            Error::UnsupportedFormat {
+                format: FileFormat::ArchiveBundle
+            }
+        ));
+    }
+
+    /// `recurse_entries` 子条目失败时产 Failed,字节非空(回归旧实现丢字节的 bug)。
+    #[test]
+    fn recurse_entries_produces_failed_with_original_bytes() {
+        // ArchiveBundle 是 sniff 能识别但 load_recursive 显式 Err 的唯一格式,
+        // 经 recurse_entries 包装后应得到 Failed(而非顶层 Err)。
+        let archive_bytes = Bytes::from(b"UnityArchive\0garbage".to_vec());
+        let entry = RawEntry {
+            name: "inner.archive".to_string(),
+            bytes: archive_bytes.clone(),
+            flags: 0,
+        };
+        let children = recurse_entries(vec![entry], &Registry::defaults(), None);
+        assert_eq!(children.len(), 1);
+        match &children[0] {
+            LoadedFile::Failed { name, bytes, .. } => {
+                assert_eq!(name, "inner.archive");
+                // 关键回归断言:旧实现这里会是 Bytes::new()。
+                assert_eq!(bytes.as_ref(), archive_bytes.as_ref());
+            }
+            other => panic!("期望 Failed,得到 {other:?}"),
+        }
+    }
 }
