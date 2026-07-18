@@ -16,7 +16,7 @@
 /// clippy `type_complexity`。
 #[test]
 fn public_api_surface_compiles() {
-    use unity_asset_rs::sprite_export::{SpriteExportError, export_sprite, sprite_pixel_bytes};
+    use unity_asset::sprite_export::{SpriteExportError, export_sprite, sprite_pixel_bytes};
 
     // 触达符号，确保未被 rename / 移除；取地址强转为函数项类型即可。
     let _ = sprite_pixel_bytes as fn(_, _, _, _) -> Result<(Vec<u8>, u32, u32), SpriteExportError>;

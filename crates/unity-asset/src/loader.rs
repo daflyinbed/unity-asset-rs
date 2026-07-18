@@ -10,7 +10,7 @@
 //! # 示例
 //!
 //! ```no_run
-//! # use unity_asset_rs::{Loader, Registry};
+//! # use unity_asset::{Loader, Registry};
 //! let report = Loader::builder()
 //!     .registry(&Registry::defaults())
 //!     .path("main.ab")
@@ -20,7 +20,7 @@
 //! for d in report.diagnostics() {
 //!     eprintln!("{d}");
 //! }
-//! # Ok::<(), unity_asset_rs::Error>(())
+//! # Ok::<(), unity_asset::Error>(())
 //! ```
 
 use std::path::{Path, PathBuf};

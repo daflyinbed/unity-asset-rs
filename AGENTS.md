@@ -20,13 +20,13 @@ bindings.
 
 依赖 `unity-core ← generated ← src`（主 crate）；`codegen` / `lz4inv` 独立。各 crate 有自己的 `AGENTS.md`。
 
-| crate | 职责 |
-|---|---|
+| crate                          | 职责                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `unity-asset-rs`（根，`src/`） | io + 对象解析 + 纹理/Sprite 导出 + bin（`main.rs`：`list`/`object`/`export`/`serve`，含 `--no-sprites`/`--only-sprites`/`--arknights`）。根 `lib.rs` 分 `pub mod io`/`typetree`/`types`/`export` 门面 + 顶层直转推荐入口(`Loader`/`Environment`/`CollectionId`/`ClassId`/`DecodedImage`)。`serve` 子命令在 `src/server/` 下,用 axum 0.8 把 list/object/export 能力通过 REST 暴露 + utoipa 自动生成 OpenApi 3.1(Scalar UI 挂 `/`,JSON 在 `/openapi.json`)。`main.rs` `#[tokio::main]` async;阻塞 IO/CPU 走 `spawn_blocking`;bundle 运行时按请求加载,`Arc<RwLock<HashMap<id, Arc<Environment>>>>` 共享;路径参数用 `{bid}` 语法(axum 0.8 + utoipa 一致);DTO 手写 + `#[derive(ToSchema)]`,错误响应 `ApiErrorBody` 带 schema,零 serde 侵入库 |
-| `crates/unity-core` | 共享原语（零依赖）：`UnityVersion`/`Endian`/`EndianReader`/`Parse`/`PPtr` |
-| `crates/codegen` | 离线工具：TPK→Rust，只 emit 引用，不 link |
-| `crates/generated` | codegen 产物：`UnityObject` enum + 扁平 struct + `ClassIDType` |
-| `crates/lz4inv` | Arknights LZ4 变体(逆序)解压——供 CLI `AkLz4Decompressor` 用,不进库 |
+| `crates/unity-core`            | 共享原语（零依赖）：`UnityVersion`/`Endian`/`EndianReader`/`Parse`/`PPtr`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `crates/codegen`               | 离线工具：TPK→Rust，只 emit 引用，不 link                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `crates/generated`             | codegen 产物：`UnityObject` enum + 扁平 struct + `ClassIDType`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `crates/lz4inv`                | Arknights LZ4 变体(逆序)解压——供 CLI `AkLz4Decompressor` 用,不进库                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 
 ## Commands
 
@@ -69,12 +69,12 @@ cargo clippy --all-targets
 
 参考实现（多数只读 upstream 镜像，**改动前先与用户确认**；git 操作定向到具体子目录）：
 
-| 目录 | 角色 |
-|---|---|
-| `../AssetRipper/` (C# .NET 10) | 全功能 importer/exporter；本仓库 PPtr/`.resS`/命名**刻意对齐**它 |
-| `../UnityPy/` (Python) | byte-level parity 默认对照目标 |
-| `../AssetStudio/` (C#) | UnityPy 原型，读取逻辑可参考 |
-| `../Tpk/` + `../TypeTreeDumps/` | TPK 库 + 全 Unity 版本 struct dump |
+| 目录                            | 角色                                                             |
+| ------------------------------- | ---------------------------------------------------------------- |
+| `../AssetRipper/` (C# .NET 10)  | 全功能 importer/exporter；本仓库 PPtr/`.resS`/命名**刻意对齐**它 |
+| `../UnityPy/` (Python)          | byte-level parity 默认对照目标                                   |
+| `../AssetStudio/` (C#)          | UnityPy 原型，读取逻辑可参考                                     |
+| `../Tpk/` + `../TypeTreeDumps/` | TPK 库 + 全 Unity 版本 struct dump                               |
 
 **本仓库 `docs/`（中文，权威现状，冲突时以它们为准）**：
 [`architecture.md`](docs/architecture.md)（架构+约定） /

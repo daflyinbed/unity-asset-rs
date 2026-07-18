@@ -12,12 +12,12 @@ path = "src/main.rs"
 [features]
 # 纹理导出：透传到库 `unity-asset` 的 export feature。
 # 关闭后 CLI 的 `export` 子命令报不可用（见 main.rs 的 cfg 分支）。
-default = ["export"]
-export = ["unity-asset/export"]
+default = [ "export" ]
+export = [ "unity-asset/export" ]
 
 [dependencies]
 unity-asset = { path = "crates/unity-asset" }
-clap = { version = "4", features = ["derive"] }
+clap = { version = "4", features = [ "derive" ] }
 env_logger = "0.11"
 log = "0.4"
 # main.rs 直接 `use generated::...`（Texture2D/Sprite 类型）。
@@ -26,22 +26,33 @@ generated = { package = "unity-asset-generated", path = "crates/generated" }
 lz4inv = { path = "crates/lz4inv" }
 # serve 子命令:axum HTTP 服务暴露 list/object/export 能力。
 axum = "0.8"
-tokio = { version = "1", features = ["rt-multi-thread", "macros", "fs", "net"] }
-serde = { version = "1", features = ["derive"] }
+tokio = { version = "1", features = [
+  "rt-multi-thread",
+  "macros",
+  "fs",
+  "net" 
+] }
+serde = { version = "1", features = [ "derive" ] }
 serde_json = "1"
 # serve 状态共享(非 async 锁——读锁不跨 await,标准 sync 锁即可,更轻量)。
 parking_lot = "0.12"
 # OpenAPI 自动生成 + Scalar UI(utoipa-axum 0.2 锁 axum 0.8,故 axum 必须升到 0.8)。
-utoipa = { version = "5", features = ["axum_extras"] }
+utoipa = { version = "5", features = [ "axum_extras" ] }
 utoipa-axum = "0.2"
-utoipa-scalar = { version = "0.3", features = ["axum"] }
+utoipa-scalar = { version = "0.3", features = [ "axum" ] }
 
 [dev-dependencies]
 # server 模块单元测试用 oneshot 直接打 router(无需真实 TCP)。
-tower = { version = "0.5", features = ["util"] }
+tower = { version = "0.5", features = [ "util" ] }
 
 [workspace]
-members = ["crates/codegen", "crates/generated", "crates/lz4inv", "crates/unity-core", "crates/unity-asset"]
+members = [
+  "crates/codegen",
+  "crates/generated",
+  "crates/lz4inv",
+  "crates/unity-core",
+  "crates/unity-asset" 
+]
 resolver = "3"
 
 # debug/test 默认 opt-level=0 会让 TypeTree 解释器（unity-asset/src/typetree/interpret.rs）的
