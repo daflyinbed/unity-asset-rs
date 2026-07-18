@@ -49,6 +49,8 @@ pub mod texture_export;
 
 // ── 顶层 re-export:常用类型直转,避免用户写全路径 ──
 pub use loader::{Diagnostic, DiagnosticKind, LoadReport, Loader, LoaderBuilder, Severity};
+#[cfg(feature = "export")]
+pub use export::{decode_texture, DecodeImageError, DecodeOptions, DecodedImage};
 pub use environment::{
     AssetCollection, ClassId, CollectionId, DependencyProvider, DependencyRequest, Environment,
     EnvironmentObject, NamedBytes, ObjectId, ObjectRef, ParseFailure, PPtrLike, ProviderError,

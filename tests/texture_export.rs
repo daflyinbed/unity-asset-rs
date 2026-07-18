@@ -144,6 +144,50 @@ fn write_png_produces_valid_signature() {
     }
 }
 
+// ── 统一入口 decode_texture / Environment::decode_image ──
+
+#[test]
+fn decode_texture_and_env_decode_image_produce_same_pixels() {
+    // 阶段 7b:export::decode_texture(统一 5 路分派)与 Environment::decode_image
+    // (高层入口)对同一 Texture2D 应产出一致像素。
+    if !Path::new(UI_BUNDLE).exists() {
+        eprintln!("跳过：缺少 fixture {UI_BUNDLE}");
+        return;
+    }
+    let env = load_env(UI_BUNDLE);
+    let tex_obj = env
+        .objects_of_class(ClassIDType::Texture2D)
+        .next()
+        .expect("应含 Texture2D");
+    let ParsedObject::Typed(UnityObject::Texture2D(t)) = &tex_obj.object else {
+        panic!("应为 Texture2D");
+    };
+    let ver = env.collections()[tex_obj.collection.to_index()].unity_version;
+
+    // 底层统一入口。
+    let img_direct = unity_asset_rs::export::decode_texture(t, &env, ver)
+        .expect("decode_texture 应成功");
+    // 高层入口(自动取版本)。
+    let img_high = env
+        .decode_image(tex_obj, &unity_asset_rs::export::DecodeOptions::default())
+        .expect("decode_image 应成功");
+
+    assert_eq!(img_direct.width, img_high.width);
+    assert_eq!(img_direct.height, img_high.height);
+    assert_eq!(img_direct.rgba, img_high.rgba, "两入口像素应一致");
+    assert_eq!(
+        img_direct.rgba.len(),
+        (img_direct.width as usize) * (img_direct.height as usize) * 4
+    );
+
+    // DecodedImage::write_png 落盘应产出有效 PNG。
+    let tmp = std::env::temp_dir().join("unity_stage7b_decode_image_test.png");
+    img_direct.write_png_path(&tmp).expect("write_png_path 应成功");
+    let bytes = std::fs::read(&tmp).expect("应能读回");
+    assert_eq!(&bytes[..4], &[0x89, 0x50, 0x4E, 0x47], "应以 PNG 签名开头");
+    let _ = std::fs::remove_file(&tmp);
+}
+
 // ── 未压缩格式字节级单测 ──
 //
 // 不依赖 fixture，构造确定性输入字节 → 断言输出 RGBA 精确匹配。

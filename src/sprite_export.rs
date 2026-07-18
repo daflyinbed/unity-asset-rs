@@ -49,15 +49,11 @@ use std::path::{Path, PathBuf};
 use snafu::Snafu;
 
 use crate::environment::EnvironmentObject;
-use crate::texture_export::{
-    decode_astc, decode_bcn, decode_crunch, decode_etc, decode_uncompressed, texture_pixel_bytes,
-    flip_vertical_in_place, write_png, TextureExportError, TextureFormat,
-};
+use crate::texture_export::{flip_vertical_in_place, write_png, TextureExportError};
 use crate::{ClassId, Environment, PPtr, ParsedObject, UnityVersion};
 use generated::{ClassIDType, UnityObject};
 use generated::classes::sprite::Sprite;
 use generated::classes::sprite_atlas::SpriteAtlas;
-use generated::classes::texture2_d::Texture2D;
 use generated::subclasses::guid::Guid;
 use generated::subclasses::rectf::Rectf;
 use generated::subclasses::sprite_atlas_data::SpriteAtlasData;
@@ -253,7 +249,7 @@ fn scan_atlas_by_name<'e>(
 
 /// 解引用 PPtr → Texture2D → 解码整图为 top-down RGBA8。
 ///
-/// 复用 `texture_export` 的 5 路分派（astc / bcn / crunch / etc / uncompressed）。
+/// 复用 `export::decode_texture` 的统一 5 路分派(astc / bcn / crunch / etc / uncompressed)。
 fn decode_atlas_texture(
     env: &Environment,
     sprite_obj: &EnvironmentObject,
@@ -266,29 +262,9 @@ fn decode_atlas_texture(
     let ParsedObject::Typed(UnityObject::Texture2D(t)) = &tex_obj.object else {
         return Err(SpriteExportError::TextureNotFound);
     };
-    let t: &Texture2D = t;
-
-    let fmt = TextureFormat::from_i32(t.m_format).filter(|f| f.is_supported());
-    let fmt = fmt.ok_or(SpriteExportError::UnsupportedAtlasFormat {
-        format_id: t.m_format,
-    })?;
-
-    let data = texture_pixel_bytes(t, env).ok_or(TextureExportError::NoImageData)?;
-    let (w, h) = (t.m_width.max(0) as u32, t.m_height.max(0) as u32);
-
-    // decode_crunch 自带输出尺寸（cubemap 纵向拼接会改变高度），其余路径尺寸 = (w, h)。
-    let (rgba, ow, oh) = if fmt.astc_block().is_some() {
-        (decode_astc(&data, w, h, fmt)?, w, h)
-    } else if fmt.is_bcn() {
-        (decode_bcn(&data, w, h, fmt)?, w, h)
-    } else if fmt.is_crunch() {
-        decode_crunch(&data, fmt, ver)?
-    } else if fmt.is_etc() {
-        (decode_etc(&data, w, h, fmt)?, w, h)
-    } else {
-        (decode_uncompressed(&data, w, h, fmt)?, w, h)
-    };
-    Ok((rgba, ow, oh))
+    // 统一调 export::decode_texture(消除与 main.rs / texture_export 的 5 路分派重复)。
+    let img = crate::export::decode_texture(t, env, ver)?;
+    Ok((img.rgba, img.width, img.height))
 }
 
 // ── 像素变换（downscale / crop / rotation）──────────────────────────────────

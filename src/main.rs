@@ -362,7 +362,6 @@ fn cmd_export(
                 env,
                 t,
                 &name,
-                fmt,
                 env.collections()[obj.collection.to_index()].unity_version,
                 out,
             );
@@ -435,38 +434,19 @@ fn cmd_export(
     }
 }
 
-/// 解码并写出单个 Texture2D 到 `<out>/<name>.png`，返回实际文件路径。
+/// 解码并写出单个 Texture2D 到 `<out>/<name>.png`,返回实际文件路径。
 #[cfg(feature = "export")]
 fn export_one(
     env: &Environment,
     t: &generated::classes::texture2_d::Texture2D,
     name: &str,
-    fmt: unity_asset_rs::texture_export::TextureFormat,
     ver: UnityVersion,
     out: &Path,
 ) -> Result<PathBuf, unity_asset_rs::texture_export::TextureExportError> {
-    use unity_asset_rs::texture_export::{
-        TextureExportError, decode_astc, decode_bcn, decode_crunch, decode_etc,
-        decode_uncompressed, texture_pixel_bytes, write_png,
-    };
-
-    let data = texture_pixel_bytes(t, env).ok_or(TextureExportError::NoImageData)?;
-    let (w, h) = (t.m_width.max(0) as u32, t.m_height.max(0) as u32);
-    // decode_crunch 自带输出尺寸（cubemap 纵向拼接会改变高度），其余路径尺寸 = (w, h)。
-    let (rgba, ow, oh) = if fmt.astc_block().is_some() {
-        (decode_astc(&data, w, h, fmt)?, w, h)
-    } else if fmt.is_bcn() {
-        (decode_bcn(&data, w, h, fmt)?, w, h)
-    } else if fmt.is_crunch() {
-        decode_crunch(&data, fmt, ver)?
-    } else if fmt.is_etc() {
-        (decode_etc(&data, w, h, fmt)?, w, h)
-    } else {
-        (decode_uncompressed(&data, w, h, fmt)?, w, h)
-    };
+    // 统一调 export::decode_texture(消除与 sprite_export 的 5 路分派重复)。
+    let img = unity_asset_rs::export::decode_texture(t, env, ver)?;
     let file = out.join(sanitize_filename(name)).with_extension("png");
-    let mut f = std::fs::File::create(&file).map_err(|e| TextureExportError::PngIo { source: e })?;
-    write_png(rgba, ow, oh, &mut f)?;
+    img.write_png_path(&file)?;
     Ok(file)
 }
 
