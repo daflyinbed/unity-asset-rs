@@ -1,0 +1,44 @@
+[package]
+name = "unity-asset"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[lib]
+name = "unity_asset"
+path = "src/lib.rs"
+
+[features]
+# 纹理导出（ASTC 解码 + PNG 编码）。默认开启，需要 image / texture-decoder-rs 重依赖；
+# 关闭后库不引入它们（CLI `export` 子命令在无 feature 时报不可用）。
+default = ["export"]
+export = ["dep:image", "dep:texture-decoder-rs", "dep:half"]
+
+[dependencies]
+bytes = "1"
+lz4_flex = "0.11"
+lzma-rs = "0.3"
+flate2 = "1"
+brotli = "8"
+log = "0.4"
+snafu = "0.8"
+unity-core = { path = "../unity-core" }
+generated = { package = "unity-asset-generated", path = "../generated" }
+# ── export feature ──
+image = { version = "0.25", default-features = false, features = ["png"], optional = true }
+# features = ["crn", "crn-unity"]：
+# - `crn`：原始 crunch（CRN v1.04 → BC1/BC3 block），Unity <2017.3 的 DXT crunched。
+# - `crn-unity`：Unity 变体 crunch（→ BC1/BC3/ETC1/ETC2_RGBA8 block），Unity ≥2017.3 的
+#   DXT crunched + 任意版本的 ETC_RGB4Crunched/ETC2_RGBA8Crunched。两模块各自拉 alloc，
+#   本库无影响。版本分水岭对齐 AssetRipper `CrunchHandler.IsUseUnityCrunch`。
+# 路径：crates/unity-asset → crates → unity-asset-rs → unity(dir) → texture-decoder-rs（4 级）
+texture-decoder-rs = { path = "../../../../texture-decoder-rs", optional = true, features = ["crn", "crn-unity"] }
+# half（fp16 → fp32）：HDR 浮点未压缩格式（RHalf/RGHalf/RGBAHalf）解码用；
+# 与 texture-decoder-rs 同源（后者也依赖 half），不引入新外部 crate。
+half = { version = "2", default-features = false, features = ["bytemuck"], optional = true }
+
+[dev-dependencies]
+# 测试里构造 fp16 字面量（HDR 浮点格式单测）用；version/feature 对齐 export feature 的 half。
+half = { version = "2", default-features = false, features = ["bytemuck"] }
+# parse_bundle 集成测试的 init_logger() 用（库本身不依赖）。
+env_logger = "0.11"

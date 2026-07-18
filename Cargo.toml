@@ -5,54 +5,31 @@ edition = "2024"
 # `cargo run` 默认跑这个 bin。
 default-run = "unity-asset-rs"
 
-[lib]
-name = "unity_asset_rs"
-path = "src/lib.rs"
-
 [[bin]]
 name = "unity-asset-rs"
 path = "src/main.rs"
 
 [features]
-# 纹理导出（ASTC 解码 + PNG 编码）。默认开启，需要 image / texture-decoder-rs 重依赖；
-# 关闭后主 crate 与 CLI 不引入它们（`export` 子命令在无 feature 时报不可用）。
+# 纹理导出：透传到库 `unity-asset` 的 export feature。
+# 关闭后 CLI 的 `export` 子命令报不可用（见 main.rs 的 cfg 分支）。
 default = ["export"]
-export = ["dep:image", "dep:texture-decoder-rs", "dep:half"]
+export = ["unity-asset/export"]
 
 [dependencies]
-bytes = "1"
-lz4_flex = "0.11"
-lzma-rs = "0.3"
-flate2 = "1"
-brotli = "8"
-log = "0.4"
-snafu = "0.8"
-env_logger = "0.11"
+unity-asset = { path = "crates/unity-asset" }
 clap = { version = "4", features = ["derive"] }
-unity-core = { path = "crates/unity-core" }
+env_logger = "0.11"
+log = "0.4"
+# main.rs 直接 `use generated::...`（Texture2D/Sprite 类型）。
 generated = { package = "unity-asset-generated", path = "crates/generated" }
+# AkLz4Decompressor 用（明日方舟 LZ4 变体，刻意放 CLI 层，不进库）。
 lz4inv = { path = "crates/lz4inv" }
-# ── export feature ──
-image = { version = "0.25", default-features = false, features = ["png"], optional = true }
-# features = ["crn", "crn-unity"]：
-# - `crn`：原始 crunch（CRN v1.04 → BC1/BC3 block），Unity <2017.3 的 DXT crunched。
-# - `crn-unity`：Unity 变体 crunch（→ BC1/BC3/ETC1/ETC2_RGBA8 block），Unity ≥2017.3 的
-#   DXT crunched + 任意版本的 ETC_RGB4Crunched/ETC2_RGBA8Crunched。两模块各自拉 alloc，
-#   本主 crate 无影响。版本分水岭对齐 AssetRipper `CrunchHandler.IsUseUnityCrunch`。
-texture-decoder-rs = { path = "../../texture-decoder-rs", optional = true, features = ["crn", "crn-unity"] }
-# half（fp16 → fp32）：HDR 浮点未压缩格式（RHalf/RGHalf/RGBAHalf）解码用；
-# 与 texture-decoder-rs 同源（后者也依赖 half），不引入新外部 crate。
-half = { version = "2", default-features = false, features = ["bytemuck"], optional = true }
-
-[dev-dependencies]
-# 测试里构造 fp16 字面量（HDR 浮点格式单测）用；version/feature 对齐 export feature 的 half。
-half = { version = "2", default-features = false, features = ["bytemuck"] }
 
 [workspace]
-members = ["crates/codegen", "crates/generated", "crates/lz4inv", "crates/unity-core"]
+members = ["crates/codegen", "crates/generated", "crates/lz4inv", "crates/unity-core", "crates/unity-asset"]
 resolver = "3"
 
-# debug/test 默认 opt-level=0 会让 TypeTree 解释器（src/typetree/interpret.rs）的
+# debug/test 默认 opt-level=0 会让 TypeTree 解释器（unity-asset/src/typetree/interpret.rs）的
 # 递归 Value 返回值临时不被优化掉，深嵌套 typetree 下每层 ~60B 栈消耗累计到 5-6MB，
 # 溢出测试线程 2MB 默认栈。opt-level=1 足以触发栈槽复用 / 临时消除，从根上解决栈溢出
 # （release 无此问题）。
