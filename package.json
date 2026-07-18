@@ -12,9 +12,11 @@
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
-    "vue": "^3.5.39"
+    "vue": "^3.5.39",
+    "vue-router": "^5.2.0"
   },
   "devDependencies": {
+    "@iconify-json/lucide": "^1.2.118",
     "@types/node": "^24.13.2",
     "@unocss/eslint-plugin": "^66.7.5",
     "@vitejs/plugin-vue": "^6.0.7",
@@ -24,6 +26,7 @@
     "prettier": "^3.9.5",
     "typescript": "~6.0.2",
     "unocss": "^66.7.5",
+    "unplugin-icons": "^23.0.1",
     "vite": "^8.1.1",
     "vue-tsc": "^3.3.5"
   }

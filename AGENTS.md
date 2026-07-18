@@ -1,34 +1,28 @@
 # AGENTS.md
 
-Compact guidance for sessions working on `unity-asset-rs`.
-
 ## What this repo is
 
-A Rust library + CLI for parsing Unity AssetBundles (UnityFS format). Long-term
-goal: a typed, high-performance UnityPy/AssetStudio alternative with Python
-bindings.
+A Rust library + CLI for parsing Unity AssetBundles (UnityFS format)。长期目标：typed、高性能的 UnityPy/AssetStudio 替代，含 Python 绑定。**现为混合仓库**：Rust workspace（`src/` + `crates/`）+ Vue 3 前端（`app/`，pnpm/Vite），前端将来消费 CLI `serve` 子命令暴露的 REST/OpenAPI（目前前端尚未对接后端）。
 
-**5 层已实现**：io（UnityFS 解包）→ 对象解析（SerializedFile/TypeTree/dispatch）→ codegen typed structs → 聚合层（Environment，PPtr 解引用 + `.resS` streaming + 跨 bundle）→ 导出（纹理 + Sprite→PNG，`export` feature 默认开）。
+架构细节、设计理由、非显然约定见 [`docs/architecture.md`](docs/architecture.md);各层现状见 `docs/*-layer.md`。
 
-构造入口是声明式 `Loader::builder()`(`path`/`bytes`/`scan_dir` 累积)→ `build() -> Result<LoadReport>`(顶层 IO 错误 → `Err`,局部失败 → `diagnostics`)。对象身份用 `CollectionId`/`ObjectId` newtype;class id 用 `ClassId` 开集。
+## Workspace 结构（5 crate + 前端）
 
-**未实现**：CN 加密、on-demand 解压、SpillPolicy::AutoTempFile、bumpalo arena、Python 绑定。
+Rust 依赖 `unity-core ← generated ← unity-asset`；`codegen` / `lz4inv` 独立。各 Rust crate 有自己的 `AGENTS.md`，改某 crate 前先读对应文件。
 
-架构细节、设计理由、非显然约定见 [`docs/architecture.md`](docs/architecture.md)；各层现状见 `docs/*-layer.md`。
-
-## Workspace 结构（5 crate）
-
-依赖 `unity-core ← generated ← src`（主 crate）；`codegen` / `lz4inv` 独立。各 crate 有自己的 `AGENTS.md`。
-
-| crate                          | 职责                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `unity-asset-rs`（根，`src/`） | io + 对象解析 + 纹理/Sprite 导出 + bin（`main.rs`：`list`/`object`/`export`/`serve`，含 `--no-sprites`/`--only-sprites`/`--arknights`）。根 `lib.rs` 分 `pub mod io`/`typetree`/`types`/`export` 门面 + 顶层直转推荐入口(`Loader`/`Environment`/`CollectionId`/`ClassId`/`DecodedImage`)。`serve` 子命令在 `src/server/` 下,用 axum 0.8 把 list/object/export 能力通过 REST 暴露 + utoipa 自动生成 OpenApi 3.1(Scalar UI 挂 `/`,JSON 在 `/openapi.json`)。`main.rs` `#[tokio::main]` async;阻塞 IO/CPU 走 `spawn_blocking`;bundle 运行时按请求加载,`Arc<RwLock<HashMap<id, Arc<Environment>>>>` 共享;路径参数用 `{bid}` 语法(axum 0.8 + utoipa 一致);DTO 手写 + `#[derive(ToSchema)]`,错误响应 `ApiErrorBody` 带 schema,零 serde 侵入库 |
-| `crates/unity-core`            | 共享原语（零依赖）：`UnityVersion`/`Endian`/`EndianReader`/`Parse`/`PPtr`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| `crates/codegen`               | 离线工具：TPK→Rust，只 emit 引用，不 link                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| `crates/generated`             | codegen 产物：`UnityObject` enum + 扁平 struct + `ClassIDType`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `crates/lz4inv`                | Arknights LZ4 变体(逆序)解压——供 CLI `AkLz4Decompressor` 用,不进库                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| crate / 目录                      | 职责                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/`（根 bin `unity-asset-rs`） | io + 对象解析 + 纹理/Sprite 导出 + bin（`main.rs`：`list`/`object`/`export`/`serve`，含 `--no-sprites`/`--only-sprites`/`--arknights`）。根 `lib.rs` 分 `pub mod io`/`typetree`/`types`/`export` 门面 + 顶层直转推荐入口(`Loader`/`Environment`/`CollectionId`/`ClassId`/`DecodedImage`)。`serve` 子命令在 `src/server/` 下,用 axum 0.8 把 list/object/export 能力通过 REST 暴露 + utoipa 自动生成 OpenApi 3.1(Scalar UI 挂 `/`,JSON 在 `/openapi.json`)。`main.rs` `#[tokio::main]` async;阻塞 IO/CPU 走 `spawn_blocking`;bundle 运行时按请求加载,`Arc<RwLock<HashMap<id, Arc<Environment>>>>` 共享;路径参数用 `{bid}` 语法(axum 0.8 + utoipa 一致);DTO 手写 + `#[derive(ToSchema)]`,错误响应 `ApiErrorBody` 带 schema,零 serde 侵入库 |
+| `crates/unity-asset`              | 主库：解析 + Environment + 导出（`lib.rs` 门面 + `tests/`）                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `crates/unity-core`               | 共享原语（零依赖）：`UnityVersion`/`Endian`/`EndianReader`/`Parse`/`PPtr`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `crates/codegen`                  | 离线工具：TPK→Rust，只 emit 引用，不 link                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `crates/generated`                | codegen 产物：`UnityObject` enum + 扁平 struct + `ClassIDType`（勿手改，codegen 重生）                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `crates/lz4inv`                   | Arknights LZ4 变体(逆序)解压——供 CLI `AkLz4Decompressor` 用,不进库                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `app/`（前端，pnpm）              | Vue 3 + Vite + UnoCSS + vue-router 文件路由。入口 `index.html`→`app/main.ts`→`app/App.vue`（仅 `<RouterView/>`）。页面在 `app/pages/`，组件在 `app/components/`，路由实例在 `app/router/index.ts`。详见下方「前端」节                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 
 ## Commands
+
+### Rust
 
 ```bash
 cargo build --workspace           # 全部 crate
@@ -47,9 +41,34 @@ cargo run -p unity-asset-codegen -- crates/codegen/tests/fixtures/type_tree.tpk 
 cargo clippy --all-targets
 ```
 
-无 CI / pre-commit / rustfmt.toml / task runner。Edition `2024` → Rust >= 1.85。
+Edition `2024` → Rust >= 1.85。Rust 侧无 CI / pre-commit / rustfmt.toml。
+
+### 前端（`app/`，pnpm）
+
+```bash
+pnpm install        # 装依赖
+pnpm dev            # Vite dev server（HMR，文件路由自动注册）
+pnpm build          # vue-tsc -b 类型检查 && vite build → dist/
+pnpm preview        # 预览构建产物
+pnpm lint           # eslint .（只扫前端，见下）
+pnpm lint:fix       # eslint . --fix
+```
+
+## 前端（Vue 3 + Vite，`app/`）
+
+独立于 Rust 构建，但定位是消费 `serve` 子命令的 REST/OpenAPI（目前只是静态页面，**尚未对接后端**，无 fetch/axios）。
+
+- **文件路由**：`vite.config.ts` 用 `VueRouter({ routesFolder: "app/pages" })`，页面即 `app/pages/*.vue`（文件名→路由：`index.vue`→`/`、`color-palette.vue`→`/color-palette`）。`app/router/index.ts` 用 `vue-router` v5 的 `vue-router/auto-routes` 实验性 API + `handleHotUpdate`。**改路由 = 增删 `app/pages/` 下文件**，不要手写路由表。
+- **`typed-router.d.ts` 是自动生成的**（`@ts-nocheck`、标 `DO NOT MODIFY`、需提交）。改页面文件后 `pnpm dev`/`pnpm build` 会重生；勿手改。
+- **UnoCSS**（`uno.config.ts`）：语义色组 `accent`/`neutral`（各 1..10 + `contrast`），全部指向 CSS 变量 `--my-color-{group}-{n}`（值定义在 `app/style.css` `:root`，前端唯一主题源头）。**动态拼接的类名（如 `bg-accent-5`、`text-neutral-10`）必须在 `SAFELIST` 里登记**，否则 UnoCSS 扫描器漏检类不生效——新增动态类模式时记得扩 `SAFELIST`。另有独立背景色 `background`/`panel`/`surface`/`overlay`。
+- **图标**：`unplugin-icons`（`compiler: "vue3"`、`defaultClass: "icon"`、`autoInstall: false`）+ `@iconify-json/lucide`。用法 `<i-lucide-xxx />`，类型由 `app/icons.d.ts`（`/// <reference types="unplugin-icons/types/vue3" />`）提供。要新图标集需装对应 `@iconify-json/*`。
+- **ESLint**：`eslint.config.ts` 用 `@xwbx/eslint-config`（`type: "app"`，开 vue/typescript/unocss/formatters）。**只管前端**——`crates`/`src`/`docs`/`target`/`example`/`dist`/`public` 都在 `ignores` 里；Rust 走 `cargo clippy`，别用 ESLint 之外的 prettier 单独跑（formatter 已并入 eslint 配置）。
+- **TS**（`tsconfig.app.json`，extends `@vue/tsconfig/tsconfig.dom.json`）：严格项 `noUnusedLocals`/`noUnusedParameters`/`erasableSyntaxOnly`/`noFallthroughCasesInSwitch` 全开，`include` 仅 `app/**` + `typed-router.d.ts`。
+- 约定：SFC 用 `<script setup lang="ts">`；属性传递走 `defineProps<{...}>()`（参考 `app/components/Swatch.vue`）；颜色优先用语义类（`bg-accent-6` 等），不要硬编码十六进制（主题色统一在 `app/style.css` 的 CSS 变量里）。
 
 ## ⚠️ 硬性规则（改代码前必读）
+
+**Rust**
 
 - **不在库里硬编码游戏特定 codec**——走 `Registry` 扩展点（`src/decompress.rs`），如 Arknights LZ4 变体放 CLI 层 `AkLz4Decompressor`。
 - **大端 cursor 不要换 `byteorder`**——`src/bundle.rs` 内联 cursor 是有意的。
@@ -59,6 +78,14 @@ cargo clippy --all-targets
 - **代码为准**——`Registry`/`Decompressor` vs ADR-0003 的 `DecompressorRegistry` 命名漂移，不迁就文档改名。
 - **拿不准格式/语义**：先看 `docs/`，再 grep 父目录参考实现（尤其 AssetRipper），不要自创逻辑。
 - 公共 API 刻意精简（`src/lib.rs`），export 遵循既有范围，勿随意扩 `pub`。
+- **改了 codegen 必须重生 `crates/generated/`**（见 Commands），不要手改生成产物。
+
+**前端**
+
+- 不要手改 `typed-router.d.ts`（自动生成）。
+- 新增动态拼接的 UnoCSS 类名必须同步登记到 `uno.config.ts` 的 `SAFELIST`。
+- 主题色统一在 `app/style.css` 的 CSS 变量里，组件用语义类引用，勿散落硬编码颜色。
+- ESLint 只扫 `app/`；Rust 目录勿加 ESLint 例外或 prettier 配置。
 
 ## 参考实现 & 跨项目文档
 
