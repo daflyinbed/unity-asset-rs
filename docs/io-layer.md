@@ -1,27 +1,40 @@
 # 文件加载与解压层（io 层）
 
-> 范围：从用户输入（路径 / 字节）到 `Bundle`（解压后的内部文件 + 字节）。
-> 状态：**本文档描述已落地的实现**（与 `src/bundle.rs` + `src/decompress.rs` 一致）。
-> 上游：[ADR-0003](adr/0003-file-loading-and-decompression-layer.md)（io 层决策，含修订附录）、[`object-layer.md`](object-layer.md)（本层产出的 `BundleFile.bytes` 交给对象解析）。
+> 范围：从用户输入（路径 / 字节）到 `LoadedFile`（递归再派发后的内部文件树 + 字节）。
+> 状态：**本文档描述已落地的实现**（与 `src/bundle.rs` + `src/format.rs` +
+> `src/decompress.rs` 一致）。
+> 上游：[ADR-0003](adr/0003-file-loading-and-decompression-layer.md)（io 层决策，含修订附录）、
+> [`object-layer.md`](object-layer.md)（本层产出的 `LoadedFile::Leaf.bytes` 交给对象解析）、
+> [`environment-layer.md`](environment-layer.md)（`Loader` 消费 `LoadedFile` 树跑聚合层）。
 
 ---
 
 ## 1. 概述
 
 io 层负责 Unity **容器格式解析 + 解压**：读一个 `.bundle` / `.assets` 文件，剥掉外层
-UnityFS 归档与压缩块，交付一组 `BundleFile { name, bytes }`。它**不理解对象语义**——
-解出的字节是 SerializedFile 还是 `.resS` 由上层判断（见 `object-layer.md`）。
+UnityFS 归档与压缩块，递归再派发后交付一棵 `LoadedFile` 文件树（Container / Leaf /
+Failed）。它**不理解对象语义**——解出的叶子字节是 SerializedFile 还是 `.resS` 由上层
+判断（见 `object-layer.md`）。
 
 **输入**：文件路径 / `bytes::Bytes`。
-**输出**：`Bundle`（engine revision + format version + 解出的内部文件列表）。
+**输出**：`LoadedFile`（Container 含 engine revision + format version + 递归子树；
+Leaf 含 name + bytes + sniff 结论；Failed 保留原始字节 + 错误）。
 
 **核心设计取舍**（详见 ADR-0003）：
 - 解压 codec = 开集 → `Decompressor` trait + `Registry`（用户可覆盖任意 flag）。
 - 字节运输 = `bytes::Bytes`（Arc 共享切片，`slice()` 共享分配，无生命周期污染）。
 - 同步、纯内存（无 spill、无 async）。
+- 错误隔离：子条目 parse 失败产 `LoadedFile::Failed`（保留原始字节 + 错误），
+  不中断整体加载；顶层 parse 失败仍向上传播（`load_recursive` 返回 `Err`）。
 
 > **命名约定**：代码实际类型名是 `Registry` / `Decompressor`。ADR-0003 正文写的
 > `DecompressorRegistry` 是早期设计稿用名——**以代码为准**。这是已知的命名漂移。
+>
+> **导出口**：顶层 `lib.rs` 直转常用入口（`load` / `load_bytes` / `LoadedFile` /
+> `FileFormat` / `sniff` / `load_recursive`）；`Bundle` / `RawEntry` / `SerializedFile` /
+> `ObjectInfo` / `FileIdentifier` 等中间体归入 [`io`](`crate::io`) 门面模块（高级用户用）。
+> 聚合层构造入口是 `Loader`（见 [`environment-layer.md`](environment-layer.md)），它内部
+> 自动调 `load_recursive`——普通用户不需要直接调 io 层。
 
 ---
 
@@ -32,7 +45,7 @@ UnityFS 归档与压缩块，交付一组 `BundleFile { name, bytes }`。它**�
 | UnityFS（现代主流容器，format 6/7/8）解包 | ✅ |
 | 解压器 registry（`CompressionType` open 枚举 + 可覆盖任意 flag） | ✅ |
 | 默认 codec：LZMA / LZ4 / LZ4HC / NONE（flag 0–3） | ✅ |
-| 大端 Cursor + 显式边界检查 | ✅ |
+| 大端 Cursor + 显式边界检查（crate-private，见 §4） | ✅ |
 | 用户自定义 codec 接入（如 Arknights LZ4 变体） | ✅（扩展点） |
 | 格式闭集 enum + sniff（`FileFormat` + `sniff(&[u8])`） | ✅ |
 | 递归再派发（`load_recursive`：Container → 逐子条目重新 sniff + parse） | ✅ |
@@ -77,16 +90,46 @@ pub enum LoadedFile {
         format: FileFormat,               // 本层的格式（调试/日志用）
         children: Vec<LoadedFile>,        // 递归后的子树
     },
+    /// 叶子：SerializedFile 或裸资源。
     Leaf {
         name: String,
         bytes: Bytes,
         unity_revision: Option<String>,   // 从父 Container 继承
+        format: FileFormat,               // sniff 结论（SerializedFile / Resource 等）
+    },
+    /// 子条目递归 parse 失败。携带**原始字节**（可供诊断/重试）与错误。
+    ///
+    /// 旧实现把失败伪装成 `Leaf { format: Resource, bytes: Bytes::new() }`，
+    /// 丢弃原始字节且只写日志——下游既看不到失败也拿不回字节。本变体让失败成为
+    /// 显式 API 结果（对齐 ADR-0003「错误隔离 Failure 叶节点」）。
+    Failed {
+        name: String,
+        bytes: Bytes,
+        error: Error,
+        unity_revision: Option<String>,   // 从父 Container 继承
     },
 }
 
+/// 失败节点引用（view），由 `LoadedFile::failures` 产出。
+pub struct LoadedFailure<'a> {
+    pub name: &'a str,
+    pub bytes: &'a Bytes,
+    pub error: &'a Error,
+}
+
 impl LoadedFile {
-    /// 深度优先展平到叶子列表（供下游消费）。
-    pub fn leaves(&self) -> Vec<(&str, &Bytes, Option<&str>)>;
+    /// 深度优先展平到叶子列表（供下游消费）。**不含** `Failed` 节点
+    ///（用 `failures()` 单独查）。每个叶子返回
+    /// `(name, bytes, unity_revision, format)` 四元组。
+    pub fn leaves(&self) -> Vec<(&str, &Bytes, Option<&str>, FileFormat)>;
+
+    /// 深度优先收集所有 `Failed` 节点的引用 view。
+    pub fn failures(&self) -> Vec<LoadedFailure<'_>>;
+
+    /// 消费整棵树，把所有 `Failed` 节点的 `name`/`error` 按值取出。
+    /// `Error` 未实现 `Clone`（含 `io::Error`），借用版本 `failures()` 只能返回引用；
+    /// 调用方若需要拥有（如塞进聚合层 `ParseFailure::Container`）用此版本。
+    pub fn into_failures(self) -> Vec<(String, Error)>;
 }
 
 /// 闭集格式 enum（无 trait、无 Vec）。
@@ -103,7 +146,8 @@ pub fn load_recursive(src: Bytes, name: &str, registry: &Registry,
                       parent_revision: Option<&str>) -> Result<LoadedFile>;
 ```
 
-`Bundle` 仍存在但语义变为 **UnityFS parse 的中间结果**（`parse_unityfs` 产出，递归前）：
+`Bundle` 仍存在但语义为 **UnityFS parse 的中间结果**（`parse_unityfs` 产出，递归前）。
+经 [`io`](`crate::io`) 门面模块导出（顶层不再直转）：
 
 ```rust
 pub struct Bundle {
@@ -114,15 +158,28 @@ pub struct Bundle {
 pub struct RawEntry { pub name: String, pub bytes: Bytes, pub flags: u32 }
 ```
 
-> `load` 返回的 `LoadedFile` 是递归后的**文件树**——Container 内嵌 Container/Leaf，
-> 任意嵌套（如 `brotli(UnityFS(.assets))`）免费获得。下游用 `leaves()` 展平消费。
+> `load` 返回的 `LoadedFile` 是递归后的**文件树**——Container 内嵌 Container/Leaf/Failed，
+> 任意嵌套（如 `brotli(UnityFS(.assets))`）免费获得。下游用 `leaves()` 展平消费、
+> `failures()` / `into_failures()` 单独查失败节点。
+>
+> **重新导出口**：顶层 `lib.rs` 只直转面向普通用户的入口（`load`/`load_bytes`/`LoadedFile`/
+> `FileFormat`/`sniff`/`load_recursive` 等）；`Bundle`/`RawEntry`/`SerializedFile`/
+> `ObjectInfo`/`FileIdentifier` 等中间体归入 [`io`](`crate::io`) 门面模块（高级用户用），
+> 不再在顶层暴露。
 
 ---
 
 ## 4. UnityFS 解析流程
 
-实现位置：`src/bundle.rs::parse`。UnityFS 在磁盘上是**大端**，用私有 `Cursor`
-（`Endian::Big`，显式边界检查）。**不要**换 `byteorder`，内联 cursor 是有意的。
+实现位置：`src/bundle.rs::parse`。UnityFS 在磁盘上是**大端**，用 **crate-private** 大端
+`Cursor`（`src/cursor.rs`，`mod cursor`——不再 `pub`）。`Cursor` 的 `seek` / `align` /
+`remaining` 全做边界检查：`seek`/`align` 越界返回 `Truncated` 错误（不 panic），
+`remaining()` 用 `saturating_sub`（下溢归零）。**不要**换 `byteorder`，内联 cursor 是有意的，
+新增功能也不要重新 `pub` Cursor——用户面只通过 `EndianReader` trait 与高级解析入口
+（`Loader` / `Environment` / `SerializedFile`）交互。
+
+`Cursor` 经 `impl unity_core::EndianReader for Cursor` 桥接 generated crate 的 `Parse`
+trait，是 generated 代码读字节的实际入口（见 [`object-layer.md`](object-layer.md) §6.1）。
 
 ### 4.1 Header
 
@@ -183,7 +240,9 @@ u32  node_count
 ### 4.5 按 node 切片
 
 拼接出的 blob 按 node 的 `(offset, size)` `slice`（共享分配的 Arc 切片），产出
-`Vec<BundleFile>`。越界 → `Truncated`。
+`Bundle { unity_revision, format_version, entries: Vec<RawEntry> }`。越界 → `Truncated`。
+`RawEntry` 是原始子字节（尚未 sniff）；递归驱动器 `load_recursive` 会对每个 entry 重新
+sniff + parse，最终产出 `LoadedFile` 树。
 
 ---
 
@@ -275,19 +334,19 @@ enum/sniff + 多容器格式（UnityWeb/UnityRaw/UnityWebData）+ gzip/brotli �
 | **UnityWeb / UnityRaw / UnityWebData** | 旧版容器格式（`src/containers/rawweb.rs` + `src/containers/webfile.rs`） | ✅ |
 | **gzip / brotli 外层包裹** | 外层压缩包住上述任意一种容器，解压后递归 sniff（`src/containers/compressed.rs`） | ✅ |
 | **CN 加密** | `0x100` flag，Unity CN。concrete `ArchiveStorageDecryptor { index, substitute }` + `CnKey` 配置项，在 UnityFS 解析器内按块 `decrypt_block` 后再解压（N=1，不抽象为 trait） | ⬜ |
-| **Loader / LoaderBuilder** | 配置入口：`.decompressor(ct, codec)` / `.depressors(reg)` / `.cn_key(key)` / `.fallback_version(v)`，内部走 io→对象 | ⬜ |
+| **Loader / LoaderBuilder** | 高级门面：声明式 `.path()`/`.bytes()`/`.loaded()`/`.scan_dir()`/`.registry()`/`.dependency_provider()`/`.resource_provider()` 累积，`build() -> Result<LoadReport>` 统一跑 io + 对象 + 聚合层 Phase A/B；顶层 IO 错误 → `Err`，局部失败 → `LoadReport::diagnostics`。已落地，详见 [`environment-layer.md`](environment-layer.md) §8/§13 | ✅ |
 | **.resS 分离与 World** | `.resS` node 由聚合层（`Environment`）捕获为 `ResourceFile`，`StreamingInfo` 引用经 `streaming_data` 零拷贝取数。已落地，详见 [`environment-layer.md`](environment-layer.md) | ✅ |
 | **on-demand 逐块解压** | AssetRipper `BundleFileBlockReader` 式：不 concat 整块，按需解压+缓存上一块，峰值压到 ~1× + 几块；但要换 `Cursor<&[u8]>` 为跨块 reader | ⬜ |
 | **SpillPolicy::AutoTempFile** | >2GB bundle 解压溢出临时文件，避免 OOM | ⬜ |
-| **错误隔离 Failure 叶节点** | 单文件失败捕获成 `Failure`，不中断整体加载。当前 `load_recursive` 对子条目失败降级为空 Leaf（不中断），但顶层 parse 失败仍向上传播 | ⬜（部分） |
+| **错误隔离 Failure 叶节点** | 单文件失败捕获成 `Failure`，不中断整体加载。`load_recursive` 子条目失败产 `LoadedFile::Failed { name, bytes, error }`（**保留原始字节**）；聚合层把它投影成 `ParseFailure::Container` + `Diagnostic`（`DiagnosticKind::Container`）。顶层 parse 失败仍向上传播（`load_recursive` 返回 `Err`） | ✅ |
 
 ### 内存模型（当前）
 
 当前 io 层把所有 block 解压并 `extend_from_slice` 拼成一个 `Vec<u8>`，再按 node `slice`
-成 `Bytes`（共享 Arc）。SerializedFile / objects 是**调用方逐个按需 parse**（见
-`src/main.rs`），没有 `World` 聚合层。`.resS` 独立拷贝
-分离策略由聚合层 `Environment` 完成（`copy_from_slice` detach，详见
-[`environment-layer.md`](environment-layer.md)）。
+成 `Bytes`（共享 Arc）。SerializedFile / objects 默认由聚合层 `Environment`（经 `Loader`）
+eager parse；`.resS` 独立拷贝分离策略由聚合层完成（`Bytes::copy_from_slice` detach，详见
+[`environment-layer.md`](environment-layer.md)）。直接调 io 层 `load`/`load_bytes` 的高级
+用户拿到 `LoadedFile` 树后，可按需自己 parse（`SerializedFile::parse` + `ObjectInfo::parse`）。
 
 ---
 
@@ -311,8 +370,9 @@ io 层错误见 `src/error.rs`，遵循 `#[snafu(display(...))]` + `#[snafu(visi
 
 | 文档 | 角色 |
 |---|---|
-| **本文档** | io 层**现状权威**（UnityFS + Registry，已落地） |
+| **本文档** | io 层**现状权威**（UnityFS + Registry + LoadedFile 树，已落地） |
 | [ADR-0003](adr/0003-file-loading-and-decompression-layer.md) | io 层决策（含修订附录：已落地 vs 未实现） |
-| [`object-layer.md`](object-layer.md) | 本层产出的 `BundleFile.bytes` 交给 SerializedFile / 对象解析 |
+| [`object-layer.md`](object-layer.md) | 本层产出的 `LoadedFile::Leaf.bytes` 交给 SerializedFile / 对象解析 |
+| [`environment-layer.md`](environment-layer.md) | 聚合层（`Loader` 消费 `LoadedFile` 树，跑 Phase A/B + Provider） |
 
 冲突时以本文档为准。

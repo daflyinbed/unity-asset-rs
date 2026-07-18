@@ -1,12 +1,13 @@
 # 对象解析层（core 层）
 
-> 范围：从 io 层的 `BundleFile.bytes` 解析 SerializedFile（header / types[含内嵌
+> 范围：从 io 层的 `LoadedFile::Leaf.bytes` 解析 SerializedFile（header / types[含内嵌
 > typetree] / objects / ref_types），并把每个对象解码——codegen'd typed struct 或
 > TypeTree 解释器，含 fallback。
 > 状态：**本文档描述已落地的实现**（与 `src/serialized_file.rs` + `src/typetree/` +
 > `src/object_parser.rs` + `crates/generated/` 一致）。
 > 上游：[ADR-0001](adr/0001-codegen-from-typetree-dumps.md)（codegen 决策）、
-> [`io-layer.md`](io-layer.md)（本层输入）、[`codegen.md`](codegen.md)（typed struct 来源）。
+> [`io-layer.md`](io-layer.md)（本层输入）、[`codegen.md`](codegen.md)（typed struct 来源）、
+> [`environment-layer.md`](environment-layer.md)（聚合层，eager 调用本层）。
 
 ---
 
@@ -44,23 +45,24 @@ parse_object(sf, obj, refs)
 ## 2. 流水线
 
 ```
-load(path) → Bundle { files: Vec<BundleFile{ name, bytes }> }     [io 层]
+load(path) → LoadedFile（递归再派发后的文件树）                   [io 层]
    │
-   ▼  对每个 BundleFile（.assets / CAB-*）；跳过 .resS
+   ▼  对每个 LoadedFile::Leaf（.assets / CAB-*，format=SerializedFile）；跳过 .resS
 SerializedFile::parse(bytes)                                       [§3]
    │  BE prologue → endian 字节 → 切 endian → 读 types[+typetree] / objects / ref_types
    ▼
 SerializedFile { version, unity_version, endian, types, ref_types, objects }
    │  每个 SerializedType.node = 内嵌 TypeNode 树
    ▼
-parse_object(&sf, obj, &refs)                                      [§5]
+ObjectInfo::parse(&sf)        （常规入口，自动取 refs/版本/endian）   [§5]
+   或自由函数 parse_object(&sf, obj, &refs)   （已知 refs 复用，高级）
    │  dispatch：MonoBehaviour → TypeTree；其他 → typed → fallback
    ▼
-ParsedObject { Typed(UnityObject) | Dynamic(Value) }
+ParsedObject { Typed(UnityObject) | Dynamic(Value) | MonoBehaviour(_) }
 ```
 
 `.resS` 是 streaming-resource 伴生文件（纹理/音频流数据），不是 SerializedFile，跳过
-（见 `src/main.rs`）。
+（聚合层 `Loader` 内部 `phase_a` 自动判后缀；直接调 io 层的高级用户自行跳过）。
 
 ---
 
@@ -146,6 +148,7 @@ pub struct SerializedFile {
     pub endian: Endian,
     pub types: Vec<SerializedType>,   // 可能带内嵌 typetree 根节点
     pub ref_types: Vec<SerializedType>,  // [SerializeReference]，version >= 20
+    pub externals: Vec<FileIdentifier>,  // 外部文件引用（PPtr file_id > 0 索引本列表）
     pub objects: Vec<ObjectInfo>,
     data: Bytes,                      // 原始字节（对象切片来源）
 }
@@ -159,6 +162,15 @@ pub struct SerializedType {
     pub ref_assembly: Option<String>,
 }
 
+/// 外部文件引用。对齐 AssetRipper `FileIdentifier`。
+/// PPtr 的 `file_id > 0` 索引到本列表（第 i 项对应 file_id == i + 1）。
+pub struct FileIdentifier {
+    pub path_name_origin: String,     // 原始路径（磁盘相对路径）
+    pub path_name: String,            // fix_file_identifier(path_name_origin)
+    pub guid: [u8; 16],
+    pub type_: i32,                   // AssetType：0=Normal（按 path_name 匹配），1=Meta
+}
+
 pub struct ObjectInfo {
     pub path_id: i64,
     pub byte_start: u64,              // 已含 data_offset
@@ -169,15 +181,26 @@ pub struct ObjectInfo {
 
 impl ObjectInfo {
     pub fn class_id(&self, sf: &SerializedFile) -> i32;
-    pub fn data<'a>(&self, sf: &'a SerializedFile) -> &'a [u8];
+    /// 对象的原始字节切片。`byte_start + byte_size` 越界视为截断错误而非 panic
+    ///（返回 `Err(Error::Truncated)`）。
+    pub fn data<'a>(&self, sf: &'a SerializedFile) -> Result<&'a [u8]>;
+    /// 解析该对象为 `ParsedObject`。**常规用户的推荐入口**——自动从 `sf` 取
+    /// refs / 版本 / endian，内部 dispatch（typed parse → TypeTree fallback /
+    /// MonoBehaviour 分流）。不需要手动构造 `RefTypeTable`。
+    pub fn parse(&self, sf: &SerializedFile) -> Result<ParsedObject>;
 }
 
 impl SerializedFile {
     pub fn parse(bytes: Bytes) -> Result<SerializedFile>;
-    pub fn parse_object(&self, idx: usize) -> Result<Option<Value>>;  // 用内嵌 typetree
     pub fn ref_type_table(&self) -> RefTypeTable;
 }
 ```
+
+> **对象解析入口收敛**：旧的 `SerializedFile::parse_object(&self, idx) -> Result<Option<Value>>`
+>（用内嵌 typetree 解释单对象）**已删除**。常规用户用 `ObjectInfo::parse(&self, sf)`
+>（自动取 refs/版本/endian）；需要复用已知 refs 的高级场景调自由函数
+> `parse_object(sf, obj, refs)`（见 §5）。两条路径都自动走 MonoBehaviour 分流 +
+> typed→fallback。
 
 ---
 
@@ -320,6 +343,8 @@ pub enum ParsedObject {
     MonoBehaviour(MonoBehaviour), // classID=114：typed shell + 动态 structure
 }
 
+/// 解析单个对象（**高级**入口，需已知 `refs`）。
+/// 常规用户用 `ObjectInfo::parse(&self, sf)`（自动取 refs/版本/endian）。
 pub fn parse_object(
     sf: &SerializedFile,
     obj: &ObjectInfo,
@@ -327,13 +352,18 @@ pub fn parse_object(
 ) -> Result<ParsedObject>;
 ```
 
+> **两入口分工**：`ObjectInfo::parse(&sf)` 是常规推荐入口（内部 `sf.ref_type_table()`
+> 后调 `parse_object`）；自由函数 `parse_object(sf, obj, refs)` 供需要复用 refs 的高级
+> 场景（如批量解析同一 `sf` 的多个对象，复用一份 `RefTypeTable`）。两条路径行为一致。
+
 ### 5.1 dispatch 逻辑
 
-1. 取 `data = obj.data(sf)`、`class_id`、`ver`、`endian`、`ab_tree`（该 type 的内嵌
-   TypeNode）。
-2. **MonoBehaviour（class_id == 114）**：走 `interpret_mono_behaviour`——shell（引擎
-   基类字段）typed 投影 + structure（用户脚本字段）动态 `Value` 分段。无 `ab_tree` →
-   `Error::MonoBehaviourWithoutTypeTree`。详见 §8。
+1. 取 `data = obj.data(sf)?`（`data` 返回 `Result`，越界 → `Truncated`）、`class_id`、
+   `ver`、`endian`、`ab_tree`（该 type 的内嵌 TypeNode）。
+2. **MonoBehaviour（`class_id == ClassId::MONO_BEHAVIOUR.get()`，即 114）**：走
+   `interpret_mono_behaviour`——shell（引擎基类字段）typed 投影 + structure（用户脚本
+   字段）动态 `Value` 分段。无 `ab_tree` → `Error::MonoBehaviourWithoutTypeTree`。详见 §8。
+   > codegen 跳过 114，故无法走 `ClassIDType`；用 `ClassId::MONO_BEHAVIOUR` 显式比较。
 3. **其他类型**：`try_typed`：
    - `ClassIDType::from_i32(class_id)` 不认识 → `UnknownClassId`。
    - `UnityObject::parse(class, &mut Cursor, ver)` 失败 → fallback 到 TypeTree（有
@@ -352,7 +382,8 @@ fn try_typed(class_id: i32, data: &[u8], ver: &UnityVersion, endian: Endian)
 }
 ```
 
-两条路径各自 `Cursor::new(data, endian)` 创建独立 cursor。typed parse 失败后 `data`
+两条路径各自 `Cursor::new(data, endian)` 创建独立 cursor（`Cursor` crate-private，
+`EndianReader` 是 generated 代码的抽象入口）。typed parse 失败后 `data`
 切片完好，直接喂给 `interpret`。**zero-cost fallback**。
 
 ### 5.3 Fallback 触发条件
@@ -366,14 +397,18 @@ fn try_typed(class_id: i32, data: &[u8], ver: &UnityVersion, endian: Endian)
 
 ### 5.4 用户调用端
 
+**常规推荐**：直接用聚合层 `Loader`（内部 eager parse 全部对象，无需手写循环——见
+[`environment-layer.md`](environment-layer.md)）。下面只展示直接调 io + 对象解析层的
+高级用法（手动控制 SerializedFile / 对象迭代）：
+
 ```rust
-let bundle = load("char_002_amiya.ab")?;
-for bf in &bundle.files {
-    if bf.name.ends_with(".resS") { continue; }   // 跳过 streaming resource
-    let sf = SerializedFile::parse(bf.bytes.clone())?;
-    let refs = sf.ref_type_table();
+let loaded = load("char_002_amiya.ab")?;             // io 层 → LoadedFile 树
+for (name, bytes, _rev, format) in loaded.leaves() {
+    if name.ends_with(".resS") { continue; }          // 跳过 streaming resource
+    if format != FileFormat::SerializedFile { continue; }
+    let sf = SerializedFile::parse(bytes.clone())?;
     for obj in &sf.objects {
-        match parse_object(&sf, obj, &refs)? {
+        match obj.parse(&sf)? {                       // ← 推荐入口（自动取 refs/版本/endian）
             ParsedObject::Typed(UnityObject::Texture2D(tex)) => {
                 println!("{}x{} {}", tex.m_width, tex.m_height, tex.m_name);
             }
@@ -392,14 +427,23 @@ for bf in &bundle.files {
                     for (name, val) in fields { println!("  {name}: {val:?}"); }
                 }
             }
-            _ => {}
         }
     }
 }
 ```
 
+批量解析同一 `sf` 的多个对象时，可复用 `RefTypeTable` 调自由函数 `parse_object`：
+
+```rust
+let refs = sf.ref_type_table();                       // 复用一份
+for obj in &sf.objects {
+    let parsed = parse_object(&sf, obj, &refs)?;      // 高级入口（已知 refs）
+}
+```
+
 完整示例见 `src/main.rs`：`list` 子命令对 bundle 里全部对象跑 parse，标注
 typed/monobehaviour/dynamic/失败并统计汇总；`object` 子命令 dump 单个对象的字段。
+聚合层 `Loader` 是更省事的入口（自动做上面这一切）。
 
 ---
 
@@ -445,35 +489,59 @@ pub trait Parse: Sized {
 
 ### 6.1 Cursor 桥接
 
-主 crate 的 `Cursor`（`src/cursor.rs`）`impl unity_core::EndianReader for Cursor`，
-把各 `read_*` 委托给 Cursor 现有方法。这是 generated 代码能读字节的实际入口。
+主 crate 的 `Cursor`（`src/cursor.rs`，**crate-private**——`mod cursor`，不再 `pub`）
+`impl unity_core::EndianReader for Cursor`，把各 `read_*` 委托给 Cursor 现有方法。
+这是 generated 代码能读字节的实际入口。
 
 `Cursor` 本身：可切-endian、带边界检查、`read_*` + `align` + `read_cstr` +
-`read_aligned_string`。io 层用 `Endian::Big`（UnityFS 大端），SerializedFile 读到 endian
-字节后切换，TypeTree 解释器继承 SerializedFile 的 endian。
+`read_aligned_string`。`seek` / `align` / `remaining` 全做边界检查：`seek`/`align` 越界
+返回 `Truncated` 错误（不 panic），`remaining()` 用 `saturating_sub`（下溢归零）。io 层
+用 `Endian::Big`（UnityFS 大端），SerializedFile 读到 endian 字节后切换，TypeTree 解释器
+继承 SerializedFile 的 endian。
+
+> `Cursor` 不暴露给用户——新增功能不要重新 `pub`。用户面只通过 `EndianReader` trait
+> 与高级解析入口（`Loader` / `Environment` / `SerializedFile` / `ObjectInfo::parse`）交互。
 
 ---
 
 ## 7. 公共 API
 
-主 crate `src/lib.rs` 暴露的对象解析相关类型：
+主 crate `src/lib.rs` 的导出分为**顶层直转**（面向普通用户）和**门面模块**
+（高级用户走全路径）：
 
 ```rust
-pub use serialized_file::{ObjectInfo, SerializedFile, SerializedType};
-pub use typetree::{build_tree, interpret, parse_blob, BlobNode, PPtrValue,
-                   RefTypeTable, TypeKind, TypeNode, Value};
+// 顶层直转（src/lib.rs）——常用类型免写全路径
+pub use object_parser::{MonoBehaviour, ParsedObject};
+pub use format::{FileFormat, LoadedFile, load_recursive, sniff};
+pub use typetree::{Value, RefTypeTable, PPtrValue};
 pub use unity_core::{Endian, PPtr, UnityVersion};
-pub use generated::{ClassIDType, UnityObject};
-pub use object_parser::{parse_object, ParsedObject};
+// Loader / Environment / CollectionId / ClassId / DecodedImage 等见 environment-layer.md
+
+// 门面模块（高级用户用全路径）
+pub mod io;        // SerializedFile / ObjectInfo / SerializedType / FileIdentifier /
+                   // Bundle / RawEntry / LoadedFile / sniff / load_recursive / Registry
+pub mod typetree;  // build_tree / interpret / parse_blob / BlobNode / TypeKind / TypeNode
+pub mod types;     // generated::{ClassIDType, UnityObject}（codegen typed struct 出口）
+pub mod object_parser;  // parse_object（高级）/ MonoBehaviour / ParsedObject
 ```
 
-- `SerializedFile::parse` / `parse_object(idx)` / `ref_type_table()` — SerializedFile 解析。
-- `parse_object(sf, obj, refs)` / `ParsedObject` — dispatch 入口。
+- `ObjectInfo::parse(&self, sf)` — **常规推荐**的对象 dispatch 入口（自动取 refs/版本/endian）。
+- `parse_object(sf, obj, refs)`（`object_parser` 模块） — 高级入口，已知 refs 复用。
+- `SerializedFile::parse` / `ref_type_table()` — SerializedFile 解析（经 `io` 模块）。
 - `interpret(data, root, ver, endian, refs)` / `Value` — TypeTree 解释器（可独立使用）。
-- `UnityObject` / `ClassIDType` — 来自 `crates/generated`（见 [`codegen.md`](codegen.md)）。
+- `UnityObject` / `ClassIDType` — 来自 `crates/generated`，经 [`types`](`crate::types`)
+  门面模块出口（见 [`codegen.md`](codegen.md)）。
+- `Cursor` — **crate-private**（`mod cursor`），不再 `pub`；用户面经 `EndianReader` trait。
 
-io 层入口（`load` / `load_bytes` / `load_with` / `load_bytes_with` / `Bundle` /
-`BundleFile` / `Registry` / `Decompressor*`）见 [`io-layer.md`](io-layer.md)。
+> 顶层不再导出 `ClassIDType`/`UnityObject`（改走 `types` 模块或 `generated::`）、
+> `SerializedFile`/`ObjectInfo`/`Bundle`/`RawEntry`（改走 `io` 模块）。这是有意的分层：
+> 普通用户走 `Loader` → `Environment` → `EnvironmentObject` → `ParsedObject`，
+> 中间体（SerializedFile / Cursor / Bundle）归入门面模块供高级用户按需访问。
+
+io 层入口（`load` / `load_bytes` / `load_with` / `load_bytes_with` / `LoadedFile` /
+`Bundle` / `RawEntry` / `Registry` / `Decompressor*`）见 [`io-layer.md`](io-layer.md)；
+聚合层入口（`Loader` / `Environment` / `ObjectInfo::parse` 在 eager parse 中的角色）
+见 [`environment-layer.md`](environment-layer.md)。
 
 ---
 
@@ -554,11 +622,11 @@ for o in env.mono_behaviours() {
 
 | 项 | 设计要点 | 状态 |
 |---|---|---|
-| ~~**World 聚合层**~~ → **Environment 聚合层** | eager parse 全部对象 + `.resS` resources + PPtr 解引用。已落地为 `Environment`，详见 [`environment-layer.md`](environment-layer.md) | ✅ |
-| ~~**PPtr 解引用**~~ | `Environment::resolve(source_collection, file_id, path_id)`，按 `dependencies[file_id]` → target collection → `assets[path_id]`。已落地 | ✅ |
+| ~~**World 聚合层**~~ → **Environment 聚合层** | eager parse 全部对象 + `.resS` resources + PPtr 解引用。已落地为 `Environment`（经 `Loader` 构造），详见 [`environment-layer.md`](environment-layer.md) | ✅ |
+| ~~**PPtr 解引用**~~ | `Environment::resolve(source_collection: CollectionId, file_id, path_id)`，按 `dependencies[file_id]` → target collection → `assets[path_id]`。已落地 | ✅ |
 | ~~**streaming_data**~~ | `Environment::streaming_data(&StreamingInfo)` 取零拷贝 `Bytes` slice。已落地 | ✅ |
-| **bumpalo arena** | 对象 arena 分配。当前对象按需 parse、owned。附带收益：TypeTree 解释器 `interpret` 的递归 `Value` 返回值可改为 arena 指针（类似 oxc 的 box+arena），从设计上缩栈，根治 debug build 栈帧膨胀（当前靠 `Cargo.toml` 的 `opt-level=1` 缓解） | ⬜ |
-| **跨 bundle Environment** | 多 bundle 聚合 + 磁盘依赖加载。当前 `Environment` 单 bundle 范围 | ⬜ |
+| **bumpalo arena** | 对象 arena 分配。当前对象 eager parse、owned。附带收益：TypeTree 解释器 `interpret` 的递归 `Value` 返回值可改为 arena 指针（类似 oxc 的 box+arena），从设计上缩栈，根治 debug build 栈帧膨胀（当前靠 `Cargo.toml` 的 `opt-level=1` 缓解） | ⬜ |
+| ~~**跨 bundle Environment**~~ | 多 bundle 聚合 + 磁盘依赖加载。`Loader` 支持多 `path`/`scan_dir`/`loaded`，Phase B 全局依赖解析；`DependencyProvider`/`ResourceProvider` 处理磁盘外部依赖。已落地，详见 [`environment-layer.md`](environment-layer.md) §13 | ✅ |
 
 ---
 
@@ -568,8 +636,8 @@ for o in env.mono_behaviours() {
 |---|---|
 | **本文档** | 对象解析层**现状权威**（SerializedFile + TypeTree + dispatch + fallback，已落地） |
 | [ADR-0001](adr/0001-codegen-from-typetree-dumps.md) | typed struct 决策（含修订附录） |
-| [`io-layer.md`](io-layer.md) | 本层输入（`BundleFile.bytes`） |
+| [`io-layer.md`](io-layer.md) | 本层输入（`LoadedFile::Leaf.bytes`） |
 | [`codegen.md`](codegen.md) | typed struct 来源（generated crate） |
-| [`environment-layer.md`](environment-layer.md) | 聚合层（`Environment` + PPtr 解引用 + streaming_data） |
+| [`environment-layer.md`](environment-layer.md) | 聚合层（`Loader` / `Environment` + PPtr 解引用 + streaming_data，eager 调 `ObjectInfo::parse`） |
 
 冲突时以本文档为准。
