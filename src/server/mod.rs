@@ -1,0 +1,502 @@
+//! HTTP serve 子命令入口:axum router 装配 + OpenAPI 文档生成。
+//!
+//! 端点总览(路径参数用 `{}` 语法,axum 0.8 + utoipa 一致):
+//!
+//! | Method | Path                                            | 作用                      |
+//! |--------|-------------------------------------------------|---------------------------|
+//! | GET    | `/health`                                       | 存活检查                  |
+//! | GET    | `/bundles`                                      | 列出已加载 bundle         |
+//! | POST   | `/bundles`                                      | body `{path,id?,arknights?}` 加载 |
+//! | GET    | `/bundles/{bid}`                                | bundle 详情               |
+//! | DELETE | `/bundles/{bid}`                                | 卸载 bundle               |
+//! | GET    | `/bundles/{bid}/collections`                    | 列 collection             |
+//! | GET    | `/bundles/{bid}/collections/{cid}/objects`      | 列对象(元数据)          |
+//! | GET    | `/bundles/{bid}/collections/{cid}/objects/{pid}` | 对象详情(?detail=full)   |
+//! | GET    | `/bundles/{bid}/collections/{cid}/objects/{pid}/png` | 导出 PNG(Texture2D/Sprite) |
+//! | GET    | `/`                                             | Scalar UI(OpenApi 文档页) |
+//! | GET    | `/openapi.json`                                 | OpenApi JSON 文档         |
+//!
+//! 寻址用复合路由 `/collections/{cid}/objects/{pid}`:path_id 全局不唯一,
+//! 只在 collection 内唯一(`Environment::resolve_local` 要 collection+path_id)。
+//!
+//! 库 `unity-asset` 零 serde、完全同步,所有 DTO 在本模块手写,阻塞操作走 spawn_blocking。
+//! OpenAPI 文档由 `#[utoipa::path]`(handler 上)+ `#[derive(ToSchema)]`(DTO 上)
+//! 自动生成,经 `OpenApiRouter`(utoipa-axum)收集,Scalar UI 挂在 `/`。
+
+use std::net::SocketAddr;
+use std::path::PathBuf;
+
+use axum::Router;
+use axum::routing::get;
+use parking_lot::RwLock;
+use utoipa::OpenApi;
+use utoipa_axum::{router::OpenApiRouter, routes};
+use utoipa_scalar::{Scalar, Servable};
+
+pub mod dto;
+pub mod error;
+pub mod routes;
+pub mod state;
+
+use state::{AppState, Bundles};
+
+/// OpenAPI 文档定义。tag 分组对齐资源(bundle/collection/object);
+/// `components(schemas(...))` 列出无法经 `#[utoipa::path]` 自动收集的 schema
+/// (此处 `ApiErrorBody` 用于错误响应 body 标注)。
+#[derive(OpenApi)]
+#[openapi(
+    tags(
+        (name = "bundle", description = "Bundle 加载/卸载/查询"),
+        (
+            name = "collection",
+            description = "AssetCollection(SerializedFile 逻辑分组)列表"
+        ),
+        (
+            name = "object",
+            description = "对象元数据/详情(?detail=full)/PNG 导出"
+        ),
+    ),
+    components(schemas(error::ApiErrorBody))
+)]
+pub struct ApiDoc;
+
+/// 启动 HTTP 服务,阻塞直到 server 退出。
+///
+/// `root` 为 POST /bundles 的 `path` 相对基准(已校验存在,不存在则报错)。
+pub async fn serve(addr: SocketAddr, root: PathBuf) -> Result<(), String> {
+    // root 启动时校验存在性(canonicalize),不存在直接报错退出。
+    let root_canon = root
+        .canonicalize()
+        .map_err(|e| format!("根目录无效 {}: {e}", root.display()))?;
+
+    let state = make_state(root_canon);
+    let app = build_app(state);
+
+    let listener = tokio::net::TcpListener::bind(addr)
+        .await
+        .map_err(|e| format!("绑定 {addr} 失败: {e}"))?;
+    log::info!("serve: http://{addr}  (Scalar UI: http://{addr}/  OpenApi JSON: http://{addr}/openapi.json)");
+    axum::serve(listener, app)
+        .await
+        .map_err(|e| format!("server 退出: {e}"))?;
+    Ok(())
+}
+
+/// 构造默认状态(空 bundles + 指定 root)。
+fn make_state(root_canon: PathBuf) -> AppState {
+    AppState {
+        bundles: std::sync::Arc::new(RwLock::new(Bundles::default())),
+        root: std::sync::Arc::new(root_canon),
+    }
+}
+
+/// 装配 router:OpenApiRouter 收集带 `#[utoipa::path]` 的 handler → `(Router, OpenApi)`,
+/// 再把 Scalar UI(`/`)和 OpenApi JSON(`/openapi.json`)合入主 router。
+///
+/// 抽出 `pub(crate)` 以便单元测试用 `tower::ServiceExt::oneshot` 直接打。
+pub(crate) fn build_app(state: AppState) -> Router {
+    let (api_routes, openapi) = OpenApiRouter::with_openapi(ApiDoc::openapi())
+        .routes(routes!(routes::health))
+        .routes(routes!(routes::list_bundles))
+        .routes(routes!(routes::load_bundle))
+        .routes(routes!(routes::get_bundle))
+        .routes(routes!(routes::unload_bundle))
+        .routes(routes!(routes::list_collections))
+        .routes(routes!(routes::list_objects))
+        .routes(routes!(routes::get_object))
+        .routes(routes!(routes::export_object_png))
+        .split_for_parts();
+
+    Router::new()
+        .merge(api_routes)
+        .merge(Scalar::with_url("/", openapi.clone()))
+        .route("/openapi.json", get(|| async move { axum::Json(openapi) }))
+        .with_state(state)
+}
+
+#[cfg(test)]
+mod tests {
+    //! server 模块单元测试:用 `tower::ServiceExt::oneshot` 直接对 router 发请求,
+    //! 无需起真实 TCP listener。fixture 走 `CARGO_MANIFEST_DIR`(根 crate = 仓库根)。
+
+    use super::*;
+    use axum::body::{to_bytes, Body};
+    use axum::http::{Request, StatusCode};
+    use serde_json::{json, Value};
+    use tower::ServiceExt;
+
+    /// example/ 目录(仓库根 + "example")。
+    const EXAMPLE_DIR: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/example");
+
+    fn app() -> Router {
+        let state = make_state(PathBuf::from(EXAMPLE_DIR));
+        build_app(state)
+    }
+
+    async fn body_json(resp: axum::response::Response) -> Value {
+        let bytes = to_bytes(resp.into_body(), 1024 * 1024 * 16)
+            .await
+            .unwrap();
+        serde_json::from_slice(&bytes).unwrap()
+    }
+
+    #[tokio::test]
+    async fn health_ok() {
+        let resp = app()
+            .oneshot(Request::builder().uri("/health").body(Body::empty()).unwrap())
+            .await
+            .unwrap();
+        assert_eq!(resp.status(), StatusCode::OK);
+        let bytes = to_bytes(resp.into_body(), 64).await.unwrap();
+        assert_eq!(&bytes[..], b"ok");
+    }
+
+    #[tokio::test]
+    async fn empty_bundles_list() {
+        let resp = app()
+            .oneshot(Request::builder().uri("/bundles").body(Body::empty()).unwrap())
+            .await
+            .unwrap();
+        assert_eq!(resp.status(), StatusCode::OK);
+        let v = body_json(resp).await;
+        assert!(v.as_array().unwrap().is_empty());
+    }
+
+    #[tokio::test]
+    async fn load_and_list_amiya() {
+        let app = app();
+        // POST /bundles 加载 char_002_amiya.ab。
+        let resp = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/bundles")
+                    .header("content-type", "application/json")
+                    .body(Body::from(
+                        serde_json::to_vec(&json!({
+                            "path": "char_002_amiya.ab",
+                            "id": "amiya"
+                        }))
+                        .unwrap(),
+                    ))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(resp.status(), StatusCode::CREATED);
+        let load = body_json(resp).await;
+        assert_eq!(load["id"], "amiya");
+        assert_eq!(load["loaded"], true);
+        assert!(load["objects"].as_u64().unwrap() > 0);
+
+        // GET /bundles 现在应有 1 条。
+        let resp = app
+            .clone()
+            .oneshot(Request::builder().uri("/bundles").body(Body::empty()).unwrap())
+            .await
+            .unwrap();
+        let list = body_json(resp).await;
+        assert_eq!(list.as_array().unwrap().len(), 1);
+        assert_eq!(list[0]["id"], "amiya");
+
+        // GET /bundles/amiya/collections。
+        let resp = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .uri("/bundles/amiya/collections")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        let cols = body_json(resp).await;
+        assert!(!cols.as_array().unwrap().is_empty());
+        assert_eq!(cols[0]["index"], 0);
+
+        // GET collection 0 的对象列表,应含 MonoBehaviour。
+        let resp = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .uri("/bundles/amiya/collections/0/objects")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        let objs = body_json(resp).await;
+        let arr = objs.as_array().unwrap();
+        assert!(!arr.is_empty());
+        let has_mono = arr
+            .iter()
+            .any(|o| o["class_name"].as_str().unwrap() == "MonoBehaviour");
+        assert!(has_mono, "应有 MonoBehaviour 对象");
+    }
+
+    #[tokio::test]
+    async fn object_detail_full() {
+        let app = app();
+        // 先加载。
+        let _ = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/bundles")
+                    .header("content-type", "application/json")
+                    .body(Body::from(
+                        serde_json::to_vec(&json!({
+                            "path": "char_002_amiya.ab",
+                            "id": "amiya2"
+                        }))
+                        .unwrap(),
+                    ))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+
+        // 取第一个对象 path_id。
+        let resp = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .uri("/bundles/amiya2/collections/0/objects")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        let objs = body_json(resp).await;
+        let first_pid = objs[0]["path_id"].as_i64().unwrap();
+
+        // 不带 detail:无 detail 字段。
+        let resp = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .uri(format!("/bundles/amiya2/collections/0/objects/{first_pid}"))
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        let obj = body_json(resp).await;
+        assert_eq!(obj["path_id"], first_pid);
+        assert!(obj.get("detail").is_none() || obj["detail"].is_null());
+
+        // 带 detail=full:有 detail。
+        let resp = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .uri(format!("/bundles/amiya2/collections/0/objects/{first_pid}?detail=full"))
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        let obj = body_json(resp).await;
+        assert!(obj["detail"].is_object());
+        let kind = obj["detail"]["kind"].as_str().unwrap();
+        assert!(matches!(kind, "typed" | "dynamic" | "mono"));
+    }
+
+    #[cfg(feature = "export")]
+    #[tokio::test]
+    async fn export_png_texture() {
+        let app = app();
+        // 加载有 Texture2D 的 bundle。
+        let _ = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/bundles")
+                    .header("content-type", "application/json")
+                    .body(Body::from(
+                        serde_json::to_vec(&json!({
+                            "path": "DownloadCommonUI.unity3d",
+                            "id": "ui"
+                        }))
+                        .unwrap(),
+                    ))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+
+        // 找一个 Texture2D 的 path_id。
+        let resp = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .uri("/bundles/ui/collections/0/objects")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        let objs = body_json(resp).await;
+        let tex_pid = objs
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|o| o["class_name"].as_str() == Some("Texture2D"))
+            .map(|o| o["path_id"].as_i64().unwrap())
+            .expect("DownloadCommonUI 应有 Texture2D");
+
+        // 导出 PNG。
+        let resp = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .uri(format!("/bundles/ui/collections/0/objects/{tex_pid}/png"))
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(resp.status(), StatusCode::OK);
+        assert_eq!(
+            resp.headers().get("content-type").unwrap(),
+            "image/png"
+        );
+        let bytes = to_bytes(resp.into_body(), 1024 * 1024 * 16)
+            .await
+            .unwrap();
+        // PNG magic header。
+        assert_eq!(
+            &bytes[..8],
+            &[0x89, b'P', b'N', b'G', 0x0D, 0x0A, 0x1A, 0x0A]
+        );
+        assert!(bytes.len() > 100);
+    }
+
+    #[tokio::test]
+    async fn load_nonexistent_returns_400() {
+        let app = app();
+        let resp = app
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/bundles")
+                    .header("content-type", "application/json")
+                    .body(Body::from(
+                        serde_json::to_vec(&json!({
+                            "path": "does_not_exist.ab",
+                            "id": "x"
+                        }))
+                        .unwrap(),
+                    ))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(resp.status(), StatusCode::BAD_REQUEST);
+        let v = body_json(resp).await;
+        assert!(v["error"].as_str().unwrap().contains("路径不存在"));
+    }
+
+    #[tokio::test]
+    async fn path_traversal_blocked() {
+        let app = app();
+        let resp = app
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/bundles")
+                    .header("content-type", "application/json")
+                    .body(Body::from(
+                        serde_json::to_vec(&json!({
+                            "path": "../../../etc/passwd",
+                            "id": "evil"
+                        }))
+                        .unwrap(),
+                    ))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(resp.status(), StatusCode::BAD_REQUEST);
+    }
+
+    #[tokio::test]
+    async fn not_found_routes() {
+        let app = app();
+        // 未加载的 bundle。
+        let resp = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .uri("/bundles/nonexistent")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(resp.status(), StatusCode::NOT_FOUND);
+
+        // DELETE 已卸载的。
+        let resp = app
+            .oneshot(
+                Request::builder()
+                    .method("DELETE")
+                    .uri("/bundles/nonexistent")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(resp.status(), StatusCode::NOT_FOUND);
+    }
+
+    #[tokio::test]
+    async fn openapi_json_accessible() {
+        let resp = app()
+            .oneshot(
+                Request::builder()
+                    .uri("/openapi.json")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(resp.status(), StatusCode::OK);
+        let v = body_json(resp).await;
+        // OpenApi 3.0 文档结构:paths + components + info + openapi 版本字段。
+        assert!(v.get("paths").is_some(), "缺 paths 字段");
+        assert!(v.get("components").is_some(), "缺 components 字段");
+        assert!(v.get("info").is_some(), "缺 info 字段");
+        // 应包含已注册的路径。
+        let paths = v["paths"].as_object().unwrap();
+        assert!(
+            paths.contains_key("/bundles"),
+            "paths 应含 /bundles, 实际: {:?}",
+            paths.keys().collect::<Vec<_>>()
+        );
+        assert!(paths.contains_key("/health"));
+        assert!(paths.contains_key("/bundles/{bid}/collections/{cid}/objects/{pid}"));
+    }
+
+    #[tokio::test]
+    async fn scalar_ui_accessible() {
+        let resp = app()
+            .oneshot(Request::builder().uri("/").body(Body::empty()).unwrap())
+            .await
+            .unwrap();
+        assert_eq!(resp.status(), StatusCode::OK);
+        let ct = resp
+            .headers()
+            .get("content-type")
+            .unwrap()
+            .to_str()
+            .unwrap();
+        assert!(
+            ct.contains("text/html"),
+            "Scalar 应返回 HTML, 实际 content-type: {ct}"
+        );
+    }
+}

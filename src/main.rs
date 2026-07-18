@@ -18,7 +18,9 @@ use std::sync::Arc;
 use clap::{Parser, Subcommand};
 use generated::classes::texture2_d::Texture2DMNameVariant;
 
-use unity_asset_rs::{
+mod server;
+
+use unity_asset::{
     load_with, ClassId, CompressionType, Decompressor, Environment, Error, LoadedFile, Loader,
     ParsedObject, ParseFailure, Registry, UnityVersion, Value,
 };
@@ -66,6 +68,18 @@ enum Cmd {
         #[arg(long)]
         only_sprites: bool,
     },
+    /// 启动 HTTP 服务，把 list / object / export 能力通过 REST 接口暴露。
+    ///
+    /// bundle 在运行时按请求加载（POST /bundles），支持多 bundle 并存。
+    /// 端点总览见 `src/server/mod.rs`。
+    Serve {
+        /// 监听地址，默认 127.0.0.1:8080。
+        #[arg(long, short = 'a', default_value = "127.0.0.1:8080")]
+        addr: std::net::SocketAddr,
+        /// bundle 文件根目录（POST /bundles 的 `path` 相对它解析），默认当前目录。
+        #[arg(long, short = 'd', default_value = ".")]
+        root: PathBuf,
+    },
 }
 
 /// 在 `EnvironmentBuilder::loaded` move 之前捕获的头信息（仅单文件时有值）。
@@ -76,11 +90,12 @@ struct BundleHeader {
     files: Vec<(String, usize)>,
 }
 
-fn main() -> ExitCode {
+#[tokio::main]
+async fn main() -> ExitCode {
     env_logger::init();
     let cli = Cli::parse();
 
-    match run(&cli) {
+    match run(&cli).await {
         Ok(()) => ExitCode::SUCCESS,
         Err(e) => {
             eprintln!("错误: {e}");
@@ -89,23 +104,31 @@ fn main() -> ExitCode {
     }
 }
 
-fn run(cli: &Cli) -> Result<(), String> {
-    let path = cli.path.as_deref().unwrap_or_else(|| Path::new("example"));
-    let (header, env) = build_env(path, cli.arknights)?;
+async fn run(cli: &Cli) -> Result<(), String> {
     match cli.cmd.as_ref().unwrap_or(&Cmd::List) {
-        Cmd::List => cmd_list(header.as_ref(), &env),
-        Cmd::Object { path_id } => cmd_object(&env, *path_id),
-        Cmd::Export {
-            out,
-            only,
-            no_sprites,
-            only_sprites,
-        } => cmd_export(&env, out, only, *no_sprites, *only_sprites),
+        // serve 走自己的加载路径（运行时按请求加载），不预加载 path。
+        Cmd::Serve { addr, root } => crate::server::serve(*addr, root.clone()).await,
+        // 其余子命令:启动时一次性加载 path（短任务，直接在当前 worker 跑）。
+        Cmd::List | Cmd::Object { .. } | Cmd::Export { .. } => {
+            let path = cli.path.as_deref().unwrap_or_else(|| Path::new("example"));
+            let (header, env) = build_env(path, cli.arknights)?;
+            match cli.cmd.as_ref().unwrap() {
+                Cmd::List => cmd_list(header.as_ref(), &env),
+                Cmd::Object { path_id } => cmd_object(&env, *path_id),
+                Cmd::Export {
+                    out,
+                    only,
+                    no_sprites,
+                    only_sprites,
+                } => cmd_export(&env, out, only, *no_sprites, *only_sprites),
+                Cmd::Serve { .. } => unreachable!(),
+            }
+        }
     }
 }
 
 /// 构建 registry（arknights=true 时注册 lz4inv 到 flag 4/5）。
-fn make_registry(arknights: bool) -> Registry {
+pub(crate) fn make_registry(arknights: bool) -> Registry {
     if arknights {
         let mut r = Registry::defaults();
         let ak: Arc<dyn Decompressor> = Arc::new(AkLz4Decompressor);
@@ -206,7 +229,7 @@ fn cmd_list(header: Option<&BundleHeader>, env: &Environment) -> Result<(), Stri
             col.name, col.unity_version, col.endian, col.assets.len()
         );
         // 收集本 collection 的对象并按 path_id 排序，便于人眼定位。
-        let mut rows: Vec<(i64, &unity_asset_rs::EnvironmentObject)> = col
+        let mut rows: Vec<(i64, &unity_asset::EnvironmentObject)> = col
             .assets
             .iter()
             .filter_map(|(&pid, &obj_idx)| env.objects().get(obj_idx).map(|o| (pid, o)))
@@ -321,8 +344,8 @@ fn cmd_export(
 ) -> Result<(), String> {
     use generated::classes::sprite::Sprite;
     use generated::classes::texture2_d::Texture2D;
-    use unity_asset_rs::sprite_export::export_sprite;
-    use unity_asset_rs::texture_export::TextureFormat;
+    use unity_asset::sprite_export::export_sprite;
+    use unity_asset::texture_export::TextureFormat;
 
     std::fs::create_dir_all(out).map_err(|e| format!("创建输出目录失败: {e}"))?;
 
@@ -442,9 +465,9 @@ fn export_one(
     name: &str,
     ver: UnityVersion,
     out: &Path,
-) -> Result<PathBuf, unity_asset_rs::texture_export::TextureExportError> {
+) -> Result<PathBuf, unity_asset::texture_export::TextureExportError> {
     // 统一调 export::decode_texture(消除与 sprite_export 的 5 路分派重复)。
-    let img = unity_asset_rs::export::decode_texture(t, env, ver)?;
+    let img = unity_asset::export::decode_texture(t, env, ver)?;
     let file = out.join(sanitize_filename(name)).with_extension("png");
     img.write_png_path(&file)?;
     Ok(file)
@@ -463,7 +486,7 @@ fn cmd_export(
 }
 
 /// 把 m_name 里的路径非法字符（`[`, `]`, `/`, `\`, `:` 等）替换为 `_`。
-fn sanitize_filename(name: &str) -> String {
+pub(crate) fn sanitize_filename(name: &str) -> String {
     name.chars()
         .map(|c| match c {
             '/' | '\\' | ':' | '*' | '?' | '"' | '<' | '>' | '|' | '[' | ']' => '_',
@@ -477,7 +500,7 @@ fn sanitize_filename(name: &str) -> String {
 /// 明日方舟自定义 LZ4 变体解压器（nibble 对调 + BE offset）。
 ///
 /// 放在 CLI 层而非库里——遵守 AGENTS.md「不要在库里硬编码游戏特定 codec」。
-struct AkLz4Decompressor;
+pub(crate) struct AkLz4Decompressor;
 
 impl Decompressor for AkLz4Decompressor {
     fn decompress(&self, input: &[u8], expected: usize) -> Result<Vec<u8>, Error> {
@@ -491,7 +514,7 @@ impl Decompressor for AkLz4Decompressor {
 // ── 辅助函数 ──
 
 /// 解析方式 → (展示标签, 分类短名)。
-fn parse_status(obj: &ParsedObject) -> (&'static str, &'static str) {
+pub(crate) fn parse_status(obj: &ParsedObject) -> (&'static str, &'static str) {
     match obj {
         ParsedObject::Typed(_) => ("✓ typed", "typed"),
         ParsedObject::MonoBehaviour(_) => ("✓ mono", "mono"),
@@ -503,7 +526,7 @@ fn parse_status(obj: &ParsedObject) -> (&'static str, &'static str) {
 ///
 /// 注：codegen 跳过了 classID=114（MonoBehaviour），`ClassIDType::from_i32` 不认识它，
 /// 这里单独映射成 `MonoBehaviour`。
-fn class_name(class_id: ClassId) -> String {
+pub(crate) fn class_name(class_id: ClassId) -> String {
     if class_id == ClassId::MONO_BEHAVIOUR {
         return "MonoBehaviour".to_string();
     }
@@ -520,7 +543,7 @@ fn class_name(class_id: ClassId) -> String {
 /// - dynamic：查 `Value::Struct` 里的 `"m_Name"` 键（typetree/common_string.rs 的
 ///   interned 约定，PascalCase）。
 /// - monobehaviour：直接取 typed shell 的 `m_name`。
-fn obj_display_name(obj: &ParsedObject) -> String {
+pub(crate) fn obj_display_name(obj: &ParsedObject) -> String {
     match obj {
         ParsedObject::Typed(uo) => typed_name(uo).unwrap_or_default(),
         ParsedObject::Dynamic(v) => dynamic_name(v),

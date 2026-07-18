@@ -22,7 +22,7 @@ bindings.
 
 | crate | 职责 |
 |---|---|
-| `unity-asset-rs`（根，`src/`） | io + 对象解析 + 纹理/Sprite 导出 + bin（`main.rs`：`list`/`object`/`export`，含 `--no-sprites`/`--only-sprites`/`--arknights`）。根 `lib.rs` 分 `pub mod io`/`typetree`/`types`/`export` 门面 + 顶层直转推荐入口(`Loader`/`Environment`/`CollectionId`/`ClassId`/`DecodedImage`) |
+| `unity-asset-rs`（根，`src/`） | io + 对象解析 + 纹理/Sprite 导出 + bin（`main.rs`：`list`/`object`/`export`/`serve`，含 `--no-sprites`/`--only-sprites`/`--arknights`）。根 `lib.rs` 分 `pub mod io`/`typetree`/`types`/`export` 门面 + 顶层直转推荐入口(`Loader`/`Environment`/`CollectionId`/`ClassId`/`DecodedImage`)。`serve` 子命令在 `src/server/` 下,用 axum 0.8 把 list/object/export 能力通过 REST 暴露 + utoipa 自动生成 OpenApi 3.1(Scalar UI 挂 `/`,JSON 在 `/openapi.json`)。`main.rs` `#[tokio::main]` async;阻塞 IO/CPU 走 `spawn_blocking`;bundle 运行时按请求加载,`Arc<RwLock<HashMap<id, Arc<Environment>>>>` 共享;路径参数用 `{bid}` 语法(axum 0.8 + utoipa 一致);DTO 手写 + `#[derive(ToSchema)]`,错误响应 `ApiErrorBody` 带 schema,零 serde 侵入库 |
 | `crates/unity-core` | 共享原语（零依赖）：`UnityVersion`/`Endian`/`EndianReader`/`Parse`/`PPtr` |
 | `crates/codegen` | 离线工具：TPK→Rust，只 emit 引用，不 link |
 | `crates/generated` | codegen 产物：`UnityObject` enum + 扁平 struct + `ClassIDType` |
@@ -39,6 +39,8 @@ cargo test --test texture_export  # 纹理导出（export feature）
 cargo test sprite_export          # Sprite（字节级单测在 src/sprite_export.rs）
 cargo run                         # 遍历 example/，对象 + 解析状态 + 汇总（失败退出码 1）
 cargo run -- --arknights example/chararts/char_002_amiya.ab export -o /tmp/out
+cargo run -- serve -a 127.0.0.1:8080 -d example/   # axum HTTP 服务(POST /bundles 加载,GET .../objects/{pid}/png 导出 PNG,Scalar UI 在 /,OpenApi JSON 在 /openapi.json)
+cargo test --bin unity-asset-rs server::           # serve 子命令单元测试(含 OpenApi/Scalar 可达性,oneshot 打 router)
 # 重新生成 typed structs（改完 codegen 后必跑）：
 rm -rf crates/generated/src && mkdir -p crates/generated/src
 cargo run -p unity-asset-codegen -- crates/codegen/tests/fixtures/type_tree.tpk crates/generated/src

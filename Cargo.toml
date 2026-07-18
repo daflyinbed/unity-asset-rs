@@ -24,6 +24,21 @@ log = "0.4"
 generated = { package = "unity-asset-generated", path = "crates/generated" }
 # AkLz4Decompressor 用（明日方舟 LZ4 变体，刻意放 CLI 层，不进库）。
 lz4inv = { path = "crates/lz4inv" }
+# serve 子命令:axum HTTP 服务暴露 list/object/export 能力。
+axum = "0.8"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "fs", "net"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# serve 状态共享(非 async 锁——读锁不跨 await,标准 sync 锁即可,更轻量)。
+parking_lot = "0.12"
+# OpenAPI 自动生成 + Scalar UI(utoipa-axum 0.2 锁 axum 0.8,故 axum 必须升到 0.8)。
+utoipa = { version = "5", features = ["axum_extras"] }
+utoipa-axum = "0.2"
+utoipa-scalar = { version = "0.3", features = ["axum"] }
+
+[dev-dependencies]
+# server 模块单元测试用 oneshot 直接打 router(无需真实 TCP)。
+tower = { version = "0.5", features = ["util"] }
 
 [workspace]
 members = ["crates/codegen", "crates/generated", "crates/lz4inv", "crates/unity-core", "crates/unity-asset"]
