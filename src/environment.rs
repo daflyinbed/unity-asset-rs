@@ -17,7 +17,7 @@ use generated::{ClassIDType, UnityObject};
 use crate::decompress::Registry;
 use crate::format::{FileFormat, LoadedFile};
 use crate::names::fix_file_identifier;
-use crate::object_parser::{parse_object, MonoBehaviour, ParsedObject};
+use crate::object_parser::{MonoBehaviour, ParsedObject};
 use crate::serialized_file::FileIdentifier;
 use crate::typetree::PPtrValue;
 use crate::{Endian, Error, PPtr, UnityVersion};
@@ -834,11 +834,10 @@ fn process_leaves(
         let endian = sf.endian;
         let name = name.to_string();
         let name_fixed = fix_file_identifier(&name);
-        let refs = sf.ref_type_table();
         let mut assets = HashMap::new();
         for obj in &sf.objects {
             let class_id = ClassId::from(obj.class_id(&sf));
-            match parse_object(&sf, obj, &refs) {
+            match obj.parse(&sf) {
                 Ok(parsed) => {
                     let obj_idx = objects.len();
                     objects.push(EnvironmentObject {

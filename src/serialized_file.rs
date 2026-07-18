@@ -7,7 +7,7 @@ use bytes::Bytes;
 
 use crate::cursor::{Cursor, Endian};
 use crate::error::{Result, SerializedFileSnafu, TruncatedSnafu};
-use crate::typetree::{self, RefTypeTable, TypeNode, Value};
+use crate::typetree::{self, RefTypeTable, TypeNode};
 use crate::UnityVersion;
 
 /// 解析后的 SerializedFile。
@@ -87,27 +87,19 @@ impl ObjectInfo {
         })?;
         Ok(&data[s..end])
     }
+
+    /// 解析该对象为 [`ParsedObject`]。自动从 `sf` 取版本/endian/RefTypeTable,
+    /// 内部 dispatch(typed parse → TypeTree fallback / MonoBehaviour 分流)。
+    ///
+    /// 这是常规用户的推荐入口——不需要手动构造 `RefTypeTable`。需要复用 refs
+    /// 的高级场景仍可直接调自由函数 [`crate::object_parser::parse_object`]。
+    pub fn parse(&self, sf: &SerializedFile) -> Result<crate::object_parser::ParsedObject> {
+        let refs = sf.ref_type_table();
+        crate::object_parser::parse_object(sf, self, &refs)
+    }
 }
 
 impl SerializedFile {
-    /// 用 AB 内嵌 typetree 解码第 `idx` 个对象。无内嵌 typetree 时返回 `None`。
-    pub fn parse_object(&self, idx: usize) -> Result<Option<Value>> {
-        let obj = &self.objects[idx];
-        let node = self.types.get(obj.type_idx).and_then(|t| t.node.as_ref());
-        let Some(node) = node else {
-            return Ok(None);
-        };
-        let refs = self.ref_type_table();
-        let v = typetree::interpret(
-            obj.data(self)?,
-            node,
-            &self.unity_version_parsed,
-            self.endian,
-            &refs,
-        )?;
-        Ok(Some(v))
-    }
-
     /// 由 `ref_types` 构建引用类型查表。
     pub fn ref_type_table(&self) -> RefTypeTable {
         let mut t = RefTypeTable::empty();
