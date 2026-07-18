@@ -11,5 +11,11 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true
   },
-  "include": ["app/**/*.ts", "app/**/*.tsx", "app/**/*.vue"]
+  "include": [
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "app/**/*.d.ts",
+    "app/**/*.vue",
+    "typed-router.d.ts"
+  ]
 }
