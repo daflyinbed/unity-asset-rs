@@ -11,6 +11,38 @@
   --shadow:
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 
+  /* ===== 独立背景色 ===== */
+  --my-color-background: #ffffff;
+  --my-color-panel: #f7f7f9;
+  --my-color-surface: #ffffff;
+  --my-color-overlay: rgba(0, 0, 0, 0.5);
+
+  /* ===== Accent 语义色组 (紫色系) ===== */
+  --my-color-accent-1: #f6f0ff;
+  --my-color-accent-2: #ece0ff;
+  --my-color-accent-3: #ddc9ff;
+  --my-color-accent-4: #c9a9ff;
+  --my-color-accent-5: #b488ff;
+  --my-color-accent-6: #9a63ff;
+  --my-color-accent-7: #7c3aed;
+  --my-color-accent-8: #6d28d9;
+  --my-color-accent-9: #5b21b6;
+  --my-color-accent-10: #3b0f7a;
+  --my-color-accent-contrast: #ffffff;
+
+  /* ===== Neutral 语义色组 (灰系) ===== */
+  --my-color-neutral-1: #f8f8f9;
+  --my-color-neutral-2: #eeeff1;
+  --my-color-neutral-3: #e2e3e7;
+  --my-color-neutral-4: #d1d3d9;
+  --my-color-neutral-5: #b0b3bd;
+  --my-color-neutral-6: #8a8e99;
+  --my-color-neutral-7: #6b6f7a;
+  --my-color-neutral-8: #4a4d56;
+  --my-color-neutral-9: #313336;
+  --my-color-neutral-10: #1c1d20;
+  --my-color-neutral-contrast: #ffffff;
+
   --sans: system-ui, "Segoe UI", Roboto, sans-serif;
   --heading: system-ui, "Segoe UI", Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
