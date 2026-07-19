@@ -16,6 +16,8 @@
     "app/**/*.tsx",
     "app/**/*.d.ts",
     "app/**/*.vue",
-    "typed-router.d.ts"
+    "shared/**/*.ts",
+    "typed-router.d.ts",
+    "components.d.ts"
   ]
 }

@@ -1,0 +1,914 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "unity-asset-rs",
+    "description": "",
+    "license": {
+      "name": ""
+    },
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/bundles": {
+      "get": {
+        "tags": [
+          "bundle"
+        ],
+        "summary": "列出全部已加载 bundle。",
+        "operationId": "list_bundles",
+        "responses": {
+          "200": {
+            "description": "已加载 bundle 列表",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BundleListItem"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "bundle"
+        ],
+        "summary": "加载 bundle 文件为 Environment(阻塞 IO + eager parse 全部对象)。",
+        "description": "`path` 相对 serve 的 `--root` 解析,已做路径穿越防护。",
+        "operationId": "load_bundle",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoadBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "加载成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoadResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "路径不存在 / 超出根目录 / body 非法",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "build 失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "bundle"
+        ],
+        "summary": "清空当前服务内存中的全部 Environment。",
+        "description": "Electron 切换项目时复用同一个 Rust 服务：先调用本接口，再按新项目记录重新加载\nbundle，避免仅因项目切换而重启子进程。",
+        "operationId": "clear_bundles",
+        "responses": {
+          "200": {
+            "description": "全部 bundle 已清空",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClearBundlesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bundles/{bid}": {
+      "get": {
+        "tags": [
+          "bundle"
+        ],
+        "summary": "取单个 bundle 的摘要。",
+        "operationId": "get_bundle",
+        "parameters": [
+          {
+            "name": "bid",
+            "in": "path",
+            "description": "bundle id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "bundle 摘要",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BundleListItem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "bundle 未加载",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "bundle"
+        ],
+        "summary": "卸载 bundle(从内存移除 Environment)。",
+        "operationId": "unload_bundle",
+        "parameters": [
+          {
+            "name": "bid",
+            "in": "path",
+            "description": "bundle id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "卸载成功",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "bundle 未加载",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bundles/{bid}/collections": {
+      "get": {
+        "tags": [
+          "collection"
+        ],
+        "summary": "列出 bundle 内全部 collection。",
+        "operationId": "list_collections",
+        "parameters": [
+          {
+            "name": "bid",
+            "in": "path",
+            "description": "bundle id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "collection 列表",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CollectionItem"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "bundle 未加载",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bundles/{bid}/collections/{cid}/objects": {
+      "get": {
+        "tags": [
+          "object"
+        ],
+        "summary": "列出 collection 内全部对象的元数据(按 path_id 排序)。",
+        "operationId": "list_objects",
+        "parameters": [
+          {
+            "name": "bid",
+            "in": "path",
+            "description": "bundle id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cid",
+            "in": "path",
+            "description": "collection 下标(见 list_collections 的 index)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "对象元数据列表",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ObjectMeta"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "bundle/collection 不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bundles/{bid}/collections/{cid}/objects/{pid}": {
+      "get": {
+        "tags": [
+          "object"
+        ],
+        "summary": "取单个对象的元数据 + 可选 detail。",
+        "description": "path_id 只在 collection 内唯一,故寻址用复合 `{cid}/{pid}`。",
+        "operationId": "get_object",
+        "parameters": [
+          {
+            "name": "bid",
+            "in": "path",
+            "description": "bundle id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cid",
+            "in": "path",
+            "description": "collection 下标",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "pid",
+            "in": "path",
+            "description": "对象 path_id(collection 内唯一)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "detail",
+            "in": "query",
+            "description": "传 `\"full\"` 附带原始 dump(typed → Debug 字符串,dynamic/mono → Value 递归 JSON)。",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "对象元数据(+可选 detail)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObjectDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "bundle/collection/object 不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bundles/{bid}/collections/{cid}/objects/{pid}/png": {
+      "get": {
+        "tags": [
+          "object"
+        ],
+        "summary": "导出 Texture2D / Sprite 为 PNG(`export` feature 下可用)。",
+        "operationId": "export_object_png",
+        "parameters": [
+          {
+            "name": "bid",
+            "in": "path",
+            "description": "bundle id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cid",
+            "in": "path",
+            "description": "collection 下标",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "pid",
+            "in": "path",
+            "description": "对象 path_id(须为 Texture2D/Sprite)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "PNG 图像字节",
+            "content": {
+              "image/png": {}
+            }
+          },
+          "400": {
+            "description": "非 Texture2D/Sprite",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "bundle/collection/object 不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "解码/编码失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bundles/{bid}/containers": {
+      "get": {
+        "tags": [
+          "container"
+        ],
+        "summary": "列出 bundle 内全部 container 条目(AssetBundle.m_Container + ResourceManager.m_Container 聚合)。",
+        "description": "path 可重复(multidict),每条独立返回。可用 `?path=` / `?kind=` 过滤。",
+        "operationId": "list_containers",
+        "parameters": [
+          {
+            "name": "bid",
+            "in": "path",
+            "description": "bundle id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "path",
+            "in": "query",
+            "description": "按 path 精确匹配过滤(multidict 场景下返回该 path 的全部条目)。",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "description": "按宿主类型过滤:`\"AssetBundle\"` / `\"ResourceManager\"`。",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "container 条目列表",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ContainerEntryDto"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "bundle 未加载",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "bundle"
+        ],
+        "summary": "存活检查,返回纯文本 `\"ok\"`。",
+        "operationId": "health",
+        "responses": {
+          "200": {
+            "description": "服务存活",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApiErrorBody": {
+        "type": "object",
+        "description": "错误响应体(所有非 2xx 响应统一是 `{ \"error\": <msg> }`)。\n\n仅用于 OpenApi 文档标注(`#[utoipa::path] responses(... body = ApiErrorBody)`);\n实际序列化由 [`ApiError::into_response`] 用 `json!` 完成结构相同。",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string"
+          }
+        }
+      },
+      "BundleListItem": {
+        "type": "object",
+        "description": "已加载 bundle 的摘要(出现在 [`list_bundles`] 列表与 [`get_bundle`] 详情)。",
+        "required": [
+          "id",
+          "collections",
+          "objects",
+          "resources",
+          "failures"
+        ],
+        "properties": {
+          "collections": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "failures": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "id": {
+            "type": "string"
+          },
+          "objects": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "resources": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "ClearBundlesResponse": {
+        "type": "object",
+        "description": "清空全部已加载 bundle 的响应。",
+        "required": [
+          "cleared"
+        ],
+        "properties": {
+          "cleared": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "CollectionItem": {
+        "type": "object",
+        "description": "AssetCollection(SerializedFile 逻辑分组)摘要。",
+        "required": [
+          "index",
+          "name",
+          "name_fixed",
+          "unity_version",
+          "endian",
+          "assets"
+        ],
+        "properties": {
+          "assets": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "endian": {
+            "type": "string"
+          },
+          "index": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "name": {
+            "type": "string"
+          },
+          "name_fixed": {
+            "type": "string"
+          },
+          "unity_version": {
+            "type": "string"
+          }
+        }
+      },
+      "ContainerEntryDto": {
+        "type": "object",
+        "description": "container 条目(AssetBundle.m_Container / ResourceManager.m_Container 聚合后的一条)。\n\n详见 `unity_asset::ContainerEntry`。path 可重复(multidict),每条都独立返回。",
+        "required": [
+          "path",
+          "kind",
+          "host"
+        ],
+        "properties": {
+          "asset": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ObjectRefDto",
+                "description": "主对象引用(`{collection, path_id}`)。解引用失败(跨 bundle 失效引用)时为 `null`。"
+              }
+            ]
+          },
+          "host": {
+            "$ref": "#/components/schemas/ObjectRefDto",
+            "description": "宿主对象引用(AssetBundle / ResourceManager 对象本身)。"
+          },
+          "kind": {
+            "type": "string",
+            "description": "`\"AssetBundle\"`(服务于 `bundle.LoadAsset` / Addressables)\n或 `\"ResourceManager\"`(服务于 `Resources.Load`)。"
+          },
+          "path": {
+            "type": "string",
+            "description": "path 字符串(原文,未归一化)。\nAssetBundle:形如 `\"assets/ui/mainmenu.prefab\"`。\nResourceManager:形如 `\"Prefabs/MainMenu\"`(无扩展名)。"
+          },
+          "preload": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/components/schemas/ObjectRefDto"
+                }
+              ]
+            },
+            "description": "AssetBundle entry 的 preload 切片预解析引用(`[preload_index, +preload_size)`)。\nResourceManager 为 `null`。切片内解引用失败的位置为 `null`(保留下标对应关系)。"
+          }
+        }
+      },
+      "LoadBody": {
+        "type": "object",
+        "description": "POST /bundles 的 body。",
+        "required": [
+          "path"
+        ],
+        "properties": {
+          "arknights": {
+            "type": "boolean",
+            "description": "明日方舟 LZ4 变体(劫持 flag 4/5)。"
+          },
+          "id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "bundle id(缺省用文件名 stem)。"
+          },
+          "path": {
+            "type": "string",
+            "description": "bundle 文件路径(相对 serve `--root` 或绝对)。"
+          }
+        }
+      },
+      "LoadResponse": {
+        "type": "object",
+        "description": "[`load_bundle`] 的响应。",
+        "required": [
+          "id",
+          "loaded",
+          "collections",
+          "objects",
+          "failures"
+        ],
+        "properties": {
+          "collections": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "failures": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "id": {
+            "type": "string"
+          },
+          "loaded": {
+            "type": "boolean"
+          },
+          "objects": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "MonoShell": {
+        "type": "object",
+        "description": "MonoBehaviour typed shell 字段(engine 基类:m_GameObject 等)。",
+        "required": [
+          "m_game_object",
+          "m_enabled",
+          "m_script",
+          "m_name"
+        ],
+        "properties": {
+          "m_editor_class_identifier": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "m_enabled": {
+            "type": "boolean"
+          },
+          "m_game_object": {
+            "$ref": "#/components/schemas/PPtrJson"
+          },
+          "m_name": {
+            "type": "string"
+          },
+          "m_script": {
+            "$ref": "#/components/schemas/PPtrJson"
+          }
+        }
+      },
+      "ObjectDetail": {
+        "type": "object",
+        "description": "`?detail=full` 的原始 dump。typed/dynamic/mono 三路不同表示。",
+        "required": [
+          "kind"
+        ],
+        "properties": {
+          "debug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "typed 路径:`{:#?}` Debug 字符串(codegen 大枚举,手写 DTO 成本过高,统一 Debug)。"
+          },
+          "kind": {
+            "type": "string",
+            "description": "\"typed\" / \"dynamic\" / \"mono\"。"
+          },
+          "mono_shell": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/MonoShell",
+                "description": "MonoBehaviour 的 typed shell 字段(仅 mono 路径)。"
+              }
+            ]
+          },
+          "value": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/Value",
+                "description": "dynamic/MonoBehaviour structure 路径:递归 JSON。\n\n**Schema 限制**:动态 Value 树结构不固定(每个 MonoBehaviour 用户字段都不同),\n这里用 `serde_json::Value`(自由 object)而非具体 schema。"
+              }
+            ]
+          }
+        }
+      },
+      "ObjectDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ObjectMeta"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "detail": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ObjectDetail"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "description": "完整对象响应:元数据 + 可选 detail。"
+      },
+      "ObjectMeta": {
+        "type": "object",
+        "description": "对象元数据。列表项和详情头部共用。",
+        "required": [
+          "path_id",
+          "class_id",
+          "class_name",
+          "parse_status",
+          "name"
+        ],
+        "properties": {
+          "class_id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "class_name": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "description": "对象展示名(取 m_Name;无则空串)。"
+          },
+          "parse_status": {
+            "type": "string",
+            "description": "\"typed\" / \"mono\" / \"dynamic\"。"
+          },
+          "path_id": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "ObjectRefDto": {
+        "type": "object",
+        "description": "对象引用(collection 下标 + path_id)。寻址需带 collection,因 path_id 全局不唯一。",
+        "required": [
+          "collection",
+          "path_id"
+        ],
+        "properties": {
+          "collection": {
+            "type": "integer",
+            "description": "collection 下标(见 `list_collections` 的 index)。",
+            "minimum": 0
+          },
+          "path_id": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "PPtrJson": {
+        "type": "object",
+        "required": [
+          "file_id",
+          "path_id"
+        ],
+        "properties": {
+          "file_id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "path_id": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "Value": {}
+    }
+  },
+  "tags": [
+    {
+      "name": "bundle",
+      "description": "Bundle 加载/卸载/查询"
+    },
+    {
+      "name": "collection",
+      "description": "AssetCollection(SerializedFile 逻辑分组)列表"
+    },
+    {
+      "name": "object",
+      "description": "对象元数据/详情(?detail=full)/PNG 导出"
+    },
+    {
+      "name": "container",
+      "description": "AssetBundle/ResourceManager 的 container(path -> 对象命名索引)"
+    }
+  ]
+}

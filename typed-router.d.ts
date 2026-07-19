@@ -38,9 +38,9 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    '/color-palette': RouteRecordInfo<
-      '/color-palette',
-      '/color-palette',
+    '/zed': RouteRecordInfo<
+      '/zed',
+      '/zed',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -66,9 +66,9 @@ declare module 'vue-router/auto-routes' {
       pathParamNames:
         | never
     }
-    'app/pages/color-palette.vue': {
+    'app/pages/zed.vue': {
       routes:
-        | '/color-palette'
+        | '/zed'
       views:
         | never
       pathParamNames:

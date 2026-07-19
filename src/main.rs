@@ -92,6 +92,12 @@ enum Cmd {
         #[arg(long, short = 'd', default_value = ".")]
         root: PathBuf,
     },
+    /// 输出 serve 使用的 OpenAPI JSON，供前端生成类型。
+    Openapi {
+        /// 写入文件；省略时输出到 stdout。
+        #[arg(long, short = 'o')]
+        output: Option<PathBuf>,
+    },
 }
 
 /// 在 `EnvironmentBuilder::loaded` move 之前捕获的头信息（仅单文件时有值）。
@@ -120,6 +126,16 @@ async fn run(cli: &Cli) -> Result<(), String> {
     match cli.cmd.as_ref().unwrap_or(&Cmd::List) {
         // serve 走自己的加载路径（运行时按请求加载），不预加载 path。
         Cmd::Serve { addr, root } => crate::server::serve(*addr, root.clone()).await,
+        Cmd::Openapi { output } => {
+            let json = crate::server::openapi_json()?;
+            if let Some(path) = output {
+                std::fs::write(path, json)
+                    .map_err(|e| format!("写 OpenAPI JSON {} 失败: {e}", path.display()))?;
+            } else {
+                println!("{json}");
+            }
+            Ok(())
+        }
         // 其余子命令:启动时一次性加载 path（短任务，直接在当前 worker 跑）。
         Cmd::List | Cmd::Object { .. } | Cmd::Export { .. } | Cmd::Containers { .. } => {
             let path = cli.path.as_deref().unwrap_or_else(|| Path::new("example"));
@@ -137,6 +153,7 @@ async fn run(cli: &Cli) -> Result<(), String> {
                     cmd_containers(&env, *reverse, kind.as_deref())
                 }
                 Cmd::Serve { .. } => unreachable!(),
+                Cmd::Openapi { .. } => unreachable!(),
             }
         }
     }

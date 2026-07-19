@@ -1,0 +1,6 @@
+[mcp_servers.electron-debug]
+command = "node"
+args = ["/home/xwbx/Documents/electron-mcp-server/build/index.js"]
+
+[mcp_servers.electron-debug.env]
+ELECTRON_MCP_NO_SANDBOX = "1"

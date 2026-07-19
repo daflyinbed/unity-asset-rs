@@ -19,5 +19,5 @@
     "erasableSyntaxOnly": true,
     "skipLibCheck": true
   },
-  "include": ["vite.config.ts"]
+  "include": ["electron/**/*.ts", "shared/**/*.ts", "vite.config.ts"]
 }

@@ -7,6 +7,7 @@
 //! | GET    | `/health`                                       | 存活检查                  |
 //! | GET    | `/bundles`                                      | 列出已加载 bundle         |
 //! | POST   | `/bundles`                                      | body `{path,id?,arknights?}` 加载 |
+//! | DELETE | `/bundles`                                      | 清空全部已加载 bundle     |
 //! | GET    | `/bundles/{bid}`                                | bundle 详情               |
 //! | DELETE | `/bundles/{bid}`                                | 卸载 bundle               |
 //! | GET    | `/bundles/{bid}/collections`                    | 列 collection             |
@@ -65,6 +66,13 @@ use state::{AppState, Bundles};
 )]
 pub struct ApiDoc;
 
+/// 返回与 `/openapi.json` 完全相同的 OpenAPI 文档，供前端离线生成类型。
+pub fn openapi_json() -> Result<String, String> {
+    let (_, openapi) = api_router().split_for_parts();
+    serde_json::to_string_pretty(&openapi)
+        .map_err(|e| format!("OpenAPI JSON 序列化失败: {e}"))
+}
+
 /// 启动 HTTP 服务,阻塞直到 server 退出。
 ///
 /// `root` 为 POST /bundles 的 `path` 相对基准(已校验存在,不存在则报错)。
@@ -100,10 +108,22 @@ fn make_state(root_canon: PathBuf) -> AppState {
 ///
 /// 抽出 `pub(crate)` 以便单元测试用 `tower::ServiceExt::oneshot` 直接打。
 pub(crate) fn build_app(state: AppState) -> Router {
-    let (api_routes, openapi) = OpenApiRouter::with_openapi(ApiDoc::openapi())
+    let (api_routes, openapi) = api_router().split_for_parts();
+
+    Router::new()
+        .merge(api_routes)
+        .merge(Scalar::with_url("/", openapi.clone()))
+        .route("/openapi.json", get(|| async move { axum::Json(openapi) }))
+        .with_state(state)
+}
+
+/// REST 路由与 OpenAPI 收集的唯一装配点，运行时文档和离线 codegen 共用。
+fn api_router() -> OpenApiRouter<AppState> {
+    OpenApiRouter::with_openapi(ApiDoc::openapi())
         .routes(routes!(routes::health))
         .routes(routes!(routes::list_bundles))
         .routes(routes!(routes::load_bundle))
+        .routes(routes!(routes::clear_bundles))
         .routes(routes!(routes::get_bundle))
         .routes(routes!(routes::unload_bundle))
         .routes(routes!(routes::list_collections))
@@ -111,13 +131,6 @@ pub(crate) fn build_app(state: AppState) -> Router {
         .routes(routes!(routes::get_object))
         .routes(routes!(routes::export_object_png))
         .routes(routes!(routes::list_containers))
-        .split_for_parts();
-
-    Router::new()
-        .merge(api_routes)
-        .merge(Scalar::with_url("/", openapi.clone()))
-        .route("/openapi.json", get(|| async move { axum::Json(openapi) }))
-        .with_state(state)
 }
 
 #[cfg(test)]
@@ -166,6 +179,50 @@ mod tests {
         assert_eq!(resp.status(), StatusCode::OK);
         let v = body_json(resp).await;
         assert!(v.as_array().unwrap().is_empty());
+    }
+
+    #[tokio::test]
+    async fn clear_all_bundles() {
+        let app = app();
+        let _ = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/bundles")
+                    .header("content-type", "application/json")
+                    .body(Body::from(
+                        serde_json::to_vec(&json!({
+                            "path": "char_002_amiya.ab",
+                            "id": "to-clear"
+                        }))
+                        .unwrap(),
+                    ))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+
+        let response = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("DELETE")
+                    .uri("/bundles")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = body_json(response).await;
+        assert_eq!(body["cleared"], 1);
+
+        let response = app
+            .oneshot(Request::builder().uri("/bundles").body(Body::empty()).unwrap())
+            .await
+            .unwrap();
+        assert_eq!(body_json(response).await, json!([]));
     }
 
     #[tokio::test]

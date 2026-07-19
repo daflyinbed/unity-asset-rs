@@ -1,0 +1,16 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "electron-debug": {
+      "type": "local",
+      "command": [
+        "node",
+        "/home/xwbx/Documents/electron-mcp-server/build/index.js"
+      ],
+      "enabled": true,
+      "environment": {
+        "ELECTRON_MCP_NO_SANDBOX": "1"
+      }
+    }
+  }
+}

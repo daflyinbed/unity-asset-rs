@@ -70,6 +70,31 @@ pub async fn list_bundles(
     Ok(Json(out))
 }
 
+/// 清空全部已加载 bundle 的响应。
+#[derive(Serialize, utoipa::ToSchema)]
+pub struct ClearBundlesResponse {
+    pub cleared: usize,
+}
+
+/// 清空当前服务内存中的全部 Environment。
+///
+/// Electron 切换项目时复用同一个 Rust 服务：先调用本接口，再按新项目记录重新加载
+/// bundle，避免仅因项目切换而重启子进程。
+#[utoipa::path(
+    delete,
+    path = "/bundles",
+    tag = "bundle",
+    responses((status = 200, description = "全部 bundle 已清空", body = ClearBundlesResponse))
+)]
+pub async fn clear_bundles(
+    State(s): State<AppState>,
+) -> Result<Json<ClearBundlesResponse>, ApiError> {
+    let mut lock = s.bundles.write();
+    let cleared = lock.map.len();
+    lock.map.clear();
+    Ok(Json(ClearBundlesResponse { cleared }))
+}
+
 /// POST /bundles 的 body。
 #[derive(Deserialize, utoipa::ToSchema)]
 pub struct LoadBody {
