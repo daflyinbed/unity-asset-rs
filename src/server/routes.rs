@@ -17,7 +17,7 @@ use serde::{Deserialize, Serialize};
 use unity_asset::{Environment, Loader};
 use utoipa::IntoParams;
 
-use super::dto::{is_image_class, ObjectDetail, ObjectDto, ObjectMeta};
+use super::dto::{is_image_class, ContainerEntryDto, ObjectDetail, ObjectDto, ObjectMeta};
 use super::error::{ApiError, ApiErrorBody};
 use super::state::AppState;
 
@@ -270,6 +270,64 @@ pub async fn list_objects(
         .collect();
     rows.sort_by_key(|m| m.path_id);
     Ok(Json(rows))
+}
+
+// ── container 索引 ──
+
+/// [`list_containers`] 的查询参数。
+#[derive(Deserialize, IntoParams)]
+pub struct ContainerQuery {
+    /// 按 path 精确匹配过滤(multidict 场景下返回该 path 的全部条目)。
+    pub path: Option<String>,
+    /// 按宿主类型过滤:`"AssetBundle"` / `"ResourceManager"`。
+    pub kind: Option<String>,
+}
+
+/// 列出 bundle 内全部 container 条目(AssetBundle.m_Container + ResourceManager.m_Container 聚合)。
+///
+/// path 可重复(multidict),每条独立返回。可用 `?path=` / `?kind=` 过滤。
+#[utoipa::path(
+    get,
+    path = "/bundles/{bid}/containers",
+    tag = "container",
+    params(
+        ("bid" = String, Path, description = "bundle id"),
+        ContainerQuery,
+    ),
+    responses(
+        (status = 200, description = "container 条目列表", body = [ContainerEntryDto]),
+        (status = 404, description = "bundle 未加载", body = ApiErrorBody),
+    )
+)]
+pub async fn list_containers(
+    State(s): State<AppState>,
+    AxumPath(bid): AxumPath<String>,
+    Query(q): Query<ContainerQuery>,
+) -> Result<Json<Vec<ContainerEntryDto>>, ApiError> {
+    let env = s.get_bundle(&bid).ok_or(ApiError::NotFound)?;
+    let collections_len = env.collections().len();
+    // kind 字符串 → ContainerKind 预编译,避免热循环里每条都比较。
+    let kind_filter = q.kind.as_deref().and_then(|k| match k {
+        "AssetBundle" => Some(unity_asset::ContainerKind::AssetBundle),
+        "ResourceManager" => Some(unity_asset::ContainerKind::ResourceManager),
+        _ => None,
+    });
+    // kind 不识别 → 显式报错(避免静默返回空列表误导用户)。
+    if q.kind.is_some() && kind_filter.is_none() {
+        return Err(ApiError::BadRequest(
+            "kind 仅支持 \"AssetBundle\" / \"ResourceManager\"".into(),
+        ));
+    }
+
+    let out = env
+        .containers()
+        .entries()
+        .iter()
+        .filter(|e| q.path.as_deref().is_none_or(|p| e.path == p))
+        .filter(|e| kind_filter.is_none_or(|k| e.kind == k))
+        .map(|e| ContainerEntryDto::from_entry(e, collections_len))
+        .collect();
+    Ok(Json(out))
 }
 
 // ── 单个对象 ──

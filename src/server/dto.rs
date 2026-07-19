@@ -12,7 +12,7 @@
 use generated::UnityObject;
 use serde::Serialize;
 use serde_json::{json, Map, Value as JsonValue};
-use unity_asset::{EnvironmentObject, MonoBehaviour, ParsedObject, Value};
+use unity_asset::{ContainerEntry, ContainerKind, EnvironmentObject, MonoBehaviour, ParsedObject, Value};
 use utoipa::ToSchema;
 
 /// bytes/string 在 JSON 里截断到此长度(与 CLI `dump_value` 思路一致,防超大字段刷屏)。
@@ -196,4 +196,64 @@ fn truncate_bytes(b: &[u8]) -> JsonValue {
 /// `UnityObject` 是否是可导出 PNG 的类(Texture2D / Sprite)。
 pub fn is_image_class(uo: &UnityObject) -> bool {
     matches!(uo, UnityObject::Texture2D(_) | UnityObject::Sprite(_))
+}
+
+// ── container DTO ──
+
+/// container 条目(AssetBundle.m_Container / ResourceManager.m_Container 聚合后的一条)。
+///
+/// 详见 `unity_asset::ContainerEntry`。path 可重复(multidict),每条都独立返回。
+#[derive(Serialize, ToSchema)]
+pub struct ContainerEntryDto {
+    /// path 字符串(原文,未归一化)。
+    /// AssetBundle:形如 `"assets/ui/mainmenu.prefab"`。
+    /// ResourceManager:形如 `"Prefabs/MainMenu"`(无扩展名)。
+    pub path: String,
+    /// `"AssetBundle"`(服务于 `bundle.LoadAsset` / Addressables)
+    /// 或 `"ResourceManager"`(服务于 `Resources.Load`)。
+    pub kind: &'static str,
+    /// 主对象引用(`{collection, path_id}`)。解引用失败(跨 bundle 失效引用)时为 `null`。
+    pub asset: Option<ObjectRefDto>,
+    /// 宿主对象引用(AssetBundle / ResourceManager 对象本身)。
+    pub host: ObjectRefDto,
+    /// AssetBundle entry 的 preload 切片预解析引用(`[preload_index, +preload_size)`)。
+    /// ResourceManager 为 `null`。切片内解引用失败的位置为 `null`(保留下标对应关系)。
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub preload: Option<Vec<Option<ObjectRefDto>>>,
+}
+
+/// 对象引用(collection 下标 + path_id)。寻址需带 collection,因 path_id 全局不唯一。
+#[derive(Serialize, ToSchema)]
+pub struct ObjectRefDto {
+    /// collection 下标(见 `list_collections` 的 index)。
+    pub collection: usize,
+    pub path_id: i64,
+}
+
+impl ContainerEntryDto {
+    /// 由 [`ContainerEntry`] 构造。`env_collections_len` 仅用于校验 collection 下标合法
+    /// (跨 bundle 失效引用理论不会越界,但防御性跳过)。
+    pub fn from_entry(e: &ContainerEntry, env_collections_len: usize) -> Self {
+        let ref_dto = |id: unity_asset::ObjectId| {
+            (id.collection.to_index() < env_collections_len).then_some(ObjectRefDto {
+                collection: id.collection.to_index(),
+                path_id: id.path_id,
+            })
+        };
+        Self {
+            path: e.path.clone(),
+            kind: match e.kind {
+                ContainerKind::AssetBundle => "AssetBundle",
+                ContainerKind::ResourceManager => "ResourceManager",
+            },
+            asset: e.asset.and_then(ref_dto),
+            host: ref_dto(e.host).unwrap_or(ObjectRefDto {
+                collection: e.host.collection.to_index(),
+                path_id: e.host.path_id,
+            }),
+            preload: e.preload.as_ref().map(|slice| {
+                slice.iter().map(|p| p.and_then(ref_dto)).collect()
+            }),
+        }
+    }
 }

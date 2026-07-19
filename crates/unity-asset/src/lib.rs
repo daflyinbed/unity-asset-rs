@@ -23,6 +23,7 @@ pub use unity_core::{Endian, PPtr, UnityVersion};
 
 // ── 模块树 ──
 mod bundle;
+mod container;
 mod containers;
 mod cursor;
 mod detect;
@@ -56,6 +57,7 @@ pub use environment::{
     EnvironmentObject, NamedBytes, ObjectId, ObjectRef, ParseFailure, PPtrLike, ProviderError,
     ResourceFile, ResourceProvider, ResourceRequest,
 };
+pub use container::{ContainerEntry, ContainerIndex, ContainerKind};
 pub use object_parser::{MonoBehaviour, ParsedObject};
 pub use format::{FileFormat, LoadedFile, load_recursive, sniff};
 pub use typetree::{Value, RefTypeTable, PPtrValue};

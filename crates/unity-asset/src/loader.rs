@@ -267,9 +267,11 @@ impl Loader {
             failures,
             dependency_provider: self.dependency_provider,
             resource_provider: self.resource_provider,
+            containers: crate::container::ContainerIndex::default(),
         };
         env.resolve_dependencies(&mut pending);
         env.prefetch_resources();
+        env.build_container_index();
 
         // 把所有 Environment.failures(Phase A + Phase B 的结构化失败)投影成 Diagnostic,
         // 追加在 scan_dir 等非结构化诊断之后。

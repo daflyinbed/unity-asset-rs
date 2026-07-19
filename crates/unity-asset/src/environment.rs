@@ -166,6 +166,9 @@ pub struct Environment {
     /// 运行时扩展点（build 时从 builder move 入）。`None` 时无懒加载/资源现取。
     pub(crate) dependency_provider: Option<Arc<dyn DependencyProvider>>,
     pub(crate) resource_provider: Option<Arc<dyn ResourceProvider>>,
+    /// 全局 container 索引(AssetBundle.m_Container + ResourceManager.m_Container 聚合)。
+    /// 在 [`crate::Loader::build`] 末尾、Phase B 依赖解析完成后 eager 构建。
+    pub(crate) containers: crate::container::ContainerIndex,
 }
 
 /// 一个已解析的对象。
@@ -763,6 +766,43 @@ impl Environment {
 
     pub fn failures(&self) -> &[ParseFailure] {
         &self.failures
+    }
+
+    // ── container 索引 ──
+
+    /// 全局 container 索引(`AssetBundle.m_Container` + `ResourceManager.m_Container` 聚合)。
+    ///
+    /// 在 `Loader::build` 末尾 eager 构建,跨 bundle PPtr 此时已全部能 resolve。
+    /// 详见 [`crate::container::ContainerIndex`]。
+    pub fn containers(&self) -> &crate::container::ContainerIndex {
+        &self.containers
+    }
+
+    /// 某对象所属的 container path(反向查询,线性扫描;含 preload 派生条目)。
+    ///
+    /// 先扫各 entry 的主 asset,再扫 AssetBundle 的 preload 切片。同对象若被
+    /// 多个 path 引用,返回遍历顺序的第一个(multidict 场景下用户应自行遍历
+    /// [`containers()`](Environment::containers) 的 entries 取全部)。
+    /// ResourceManager 不做取最长路径特例——按 entries 原始顺序返回首个命中。
+    pub fn path_of(&self, obj: &EnvironmentObject) -> Option<&str> {
+        let id = obj.id();
+        self.containers.entries().iter().find_map(|e| {
+            if e.asset == Some(id) {
+                return Some(e.path.as_str());
+            }
+            // preload 切片里的对象也算"属于该 path"(对齐 UnityPy path_dict 的
+            // setdefault 回填语义)。
+            e.preload
+                .as_ref()
+                .map(|slice| slice.contains(&Some(id)))
+                .unwrap_or(false)
+                .then_some(e.path.as_str())
+        })
+    }
+
+    /// Phase B 完成后构建 container 索引(`Loader::build` 末尾调用)。
+    pub(crate) fn build_container_index(&mut self) {
+        self.containers = crate::container::ContainerIndex::build(self);
     }
 }
 

@@ -13,6 +13,7 @@
 //! | GET    | `/bundles/{bid}/collections/{cid}/objects`      | 列对象(元数据)          |
 //! | GET    | `/bundles/{bid}/collections/{cid}/objects/{pid}` | 对象详情(?detail=full)   |
 //! | GET    | `/bundles/{bid}/collections/{cid}/objects/{pid}/png` | 导出 PNG(Texture2D/Sprite) |
+//! | GET    | `/bundles/{bid}/containers`                    | 列 container 条目(?path=/?kind=) |
 //! | GET    | `/`                                             | Scalar UI(OpenApi 文档页) |
 //! | GET    | `/openapi.json`                                 | OpenApi JSON 文档         |
 //!
@@ -54,6 +55,10 @@ use state::{AppState, Bundles};
         (
             name = "object",
             description = "对象元数据/详情(?detail=full)/PNG 导出"
+        ),
+        (
+            name = "container",
+            description = "AssetBundle/ResourceManager 的 container(path -> 对象命名索引)"
         ),
     ),
     components(schemas(error::ApiErrorBody))
@@ -105,6 +110,7 @@ pub(crate) fn build_app(state: AppState) -> Router {
         .routes(routes!(routes::list_objects))
         .routes(routes!(routes::get_object))
         .routes(routes!(routes::export_object_png))
+        .routes(routes!(routes::list_containers))
         .split_for_parts();
 
     Router::new()
@@ -445,6 +451,134 @@ mod tests {
                 Request::builder()
                     .method("DELETE")
                     .uri("/bundles/nonexistent")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(resp.status(), StatusCode::NOT_FOUND);
+    }
+
+    #[tokio::test]
+    async fn containers_list_and_filter() {
+        let app = app();
+        // 加载 char_002_amiya.ab —— 必有 AssetBundle object,故 container 非空。
+        let _ = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/bundles")
+                    .header("content-type", "application/json")
+                    .body(Body::from(
+                        serde_json::to_vec(&json!({
+                            "path": "char_002_amiya.ab",
+                            "id": "amiya"
+                        }))
+                        .unwrap(),
+                    ))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+
+        // GET /bundles/amiya/containers —— 应非空,且全部 kind=AssetBundle。
+        let resp = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .uri("/bundles/amiya/containers")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(resp.status(), StatusCode::OK);
+        let arr = body_json(resp).await;
+        let entries = arr.as_array().unwrap();
+        assert!(!entries.is_empty(), "amiya bundle 应有 container 条目");
+        assert!(
+            entries.iter().all(|e| e["kind"].as_str() == Some("AssetBundle")),
+            "此 bundle 只应有 AssetBundle 类型的 container"
+        );
+        // host 字段必有,collection 在合法范围。
+        for e in entries {
+            let host_col = e["host"]["collection"].as_u64().unwrap();
+            assert!(host_col < 100, "host.collection 应在合法范围");
+        }
+        let total = entries.len();
+
+        // 过滤 kind=AssetBundle —— 条数不变(此 bundle 全是 AssetBundle)。
+        let resp = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .uri("/bundles/amiya/containers?kind=AssetBundle")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        let arr = body_json(resp).await;
+        assert_eq!(arr.as_array().unwrap().len(), total);
+
+        // 过滤 kind=ResourceManager —— 此 bundle 应为 0 条。
+        let resp = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .uri("/bundles/amiya/containers?kind=ResourceManager")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        let arr = body_json(resp).await;
+        assert!(arr.as_array().unwrap().is_empty());
+
+        // 非法 kind 值 —— 400。
+        let resp = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .uri("/bundles/amiya/containers?kind=Foo")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(resp.status(), StatusCode::BAD_REQUEST);
+
+        // path 过滤 —— 用第一条 entry 的 path 反查,应至少命中 1 条(multidict 可多条)。
+        // 注:fixture 的 path 含 `/`(如 `assets/...`),`/` 在 query string 里合法
+        // (RFC 3986),axum 能正确解析,无需转义。
+        let first_path = entries[0]["path"].as_str().unwrap();
+        let resp = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .uri(format!("/bundles/amiya/containers?path={first_path}"))
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        let arr = body_json(resp).await;
+        let filtered = arr.as_array().unwrap();
+        assert!(!filtered.is_empty(), "?path= 过滤应至少命中 1 条");
+        assert!(
+            filtered.iter().all(|e| e["path"].as_str() == Some(first_path)),
+            "?path= 过滤后所有条目 path 应一致"
+        );
+    }
+
+    #[tokio::test]
+    async fn containers_on_unloaded_bundle_is_404() {
+        let app = app();
+        let resp = app
+            .oneshot(
+                Request::builder()
+                    .uri("/bundles/nope/containers")
                     .body(Body::empty())
                     .unwrap(),
             )

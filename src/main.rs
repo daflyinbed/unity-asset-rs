@@ -21,8 +21,8 @@ use generated::classes::texture2_d::Texture2DMNameVariant;
 mod server;
 
 use unity_asset::{
-    load_with, ClassId, CompressionType, Decompressor, Environment, Error, LoadedFile, Loader,
-    ParsedObject, ParseFailure, Registry, UnityVersion, Value,
+    load_with, ClassId, CompressionType, ContainerEntry, ContainerKind, Decompressor, Environment,
+    Error, LoadedFile, Loader, ObjectId, ParsedObject, ParseFailure, Registry, UnityVersion, Value,
 };
 use generated::{ClassIDType, UnityObject};
 
@@ -68,6 +68,18 @@ enum Cmd {
         #[arg(long)]
         only_sprites: bool,
     },
+    /// 列出 container 索引(AssetBundle.m_Container + ResourceManager.m_Container 聚合)。
+    ///
+    /// 默认正向视图(path → asset);`--reverse` 反向(object → path)。
+    /// multidict(同 path 多条)全部保留。
+    Containers {
+        /// 反向视图:按对象归类,显示 obj -> path(线性扫描;含 preload 派生)。
+        #[arg(long)]
+        reverse: bool,
+        /// 按宿主类型过滤:`AssetBundle` / `ResourceManager`。
+        #[arg(long)]
+        kind: Option<String>,
+    },
     /// 启动 HTTP 服务，把 list / object / export 能力通过 REST 接口暴露。
     ///
     /// bundle 在运行时按请求加载（POST /bundles），支持多 bundle 并存。
@@ -109,7 +121,7 @@ async fn run(cli: &Cli) -> Result<(), String> {
         // serve 走自己的加载路径（运行时按请求加载），不预加载 path。
         Cmd::Serve { addr, root } => crate::server::serve(*addr, root.clone()).await,
         // 其余子命令:启动时一次性加载 path（短任务，直接在当前 worker 跑）。
-        Cmd::List | Cmd::Object { .. } | Cmd::Export { .. } => {
+        Cmd::List | Cmd::Object { .. } | Cmd::Export { .. } | Cmd::Containers { .. } => {
             let path = cli.path.as_deref().unwrap_or_else(|| Path::new("example"));
             let (header, env) = build_env(path, cli.arknights)?;
             match cli.cmd.as_ref().unwrap() {
@@ -121,6 +133,9 @@ async fn run(cli: &Cli) -> Result<(), String> {
                     no_sprites,
                     only_sprites,
                 } => cmd_export(&env, out, only, *no_sprites, *only_sprites),
+                Cmd::Containers { reverse, kind } => {
+                    cmd_containers(&env, *reverse, kind.as_deref())
+                }
                 Cmd::Serve { .. } => unreachable!(),
             }
         }
@@ -326,6 +341,132 @@ fn cmd_object(env: &Environment, path_id: i64) -> Result<(), String> {
         }
     }
     Ok(())
+}
+
+/// 列出 container 索引(AssetBundle.m_Container + ResourceManager.m_Container 聚合)。
+///
+/// 默认正向视图(path → asset);`--reverse` 切到反向视图(object → path)。
+/// `--kind` 按宿主类型过滤(非法值报错退出)。multidict(同 path 多条)全部保留。
+fn cmd_containers(
+    env: &Environment,
+    reverse: bool,
+    kind: Option<&str>,
+) -> Result<(), String> {
+    // kind 字符串 → ContainerKind;非法值显式报错(避免静默返回空列表误导用户)。
+    let kind_filter: Option<ContainerKind> = match kind {
+        None => None,
+        Some("AssetBundle") => Some(ContainerKind::AssetBundle),
+        Some("ResourceManager") => Some(ContainerKind::ResourceManager),
+        Some(other) => {
+            return Err(format!(
+                "非法 --kind {other:?},应为 \"AssetBundle\" 或 \"ResourceManager\""
+            ));
+        }
+    };
+
+    let entries: Vec<&ContainerEntry> = env
+        .containers()
+        .entries()
+        .iter()
+        .filter(|e| kind_filter.is_none_or(|k| e.kind == k))
+        .collect();
+
+    if entries.is_empty() {
+        println!("(无 container 条目)");
+        return Ok(());
+    }
+
+    if !reverse {
+        // 正向视图:path → asset
+        println!(
+            "{:<12}  {:<50}  {:<24}  preload",
+            "kind", "path", "asset"
+        );
+        println!("{}", "-".repeat(100));
+        for e in &entries {
+            let kind_str = kind_label(e.kind);
+            let asset_str = match e.asset {
+                Some(id) => format_ref(env, id),
+                None => "(unresolved)".to_string(),
+            };
+            let preload_count = e
+                .preload
+                .as_ref()
+                .map(|s| {
+                    let total = s.len();
+                    let resolved = s.iter().filter(|p| p.is_some()).count();
+                    format!("{resolved}/{total}")
+                })
+                .unwrap_or_else(|| "-".to_string());
+            println!(
+                "{:<12}  {:<50}  {:<24}  {}",
+                kind_str, e.path, asset_str, preload_count
+            );
+        }
+        println!("\n共 {} 条", entries.len());
+    } else {
+        // 反向视图:object → path。
+        // 收集每个对象的所有 path(multidict),含 preload 派生条目。
+        // ObjectId 未 impl Ord,故用 HashMap 累积后转 Vec 按 (collection, path_id) 排序。
+        // 单条 (path, kind, via_preload):via_preload=false 表示对象是 main asset。
+        type RevRow = (String, ContainerKind, bool);
+        let mut by_obj: std::collections::HashMap<ObjectId, Vec<RevRow>> =
+            std::collections::HashMap::new();
+        for e in &entries {
+            if let Some(id) = e.asset {
+                by_obj
+                    .entry(id)
+                    .or_default()
+                    .push((e.path.clone(), e.kind, false));
+            }
+            if let Some(slice) = &e.preload {
+                for id in slice.iter().flatten() {
+                    by_obj
+                        .entry(*id)
+                        .or_default()
+                        .push((e.path.clone(), e.kind, true));
+                }
+            }
+        }
+        // 按 (collection 下标, path_id) 排序输出,便于人眼定位。
+        let mut flat: Vec<(ObjectId, Vec<RevRow>)> = by_obj.into_iter().collect();
+        flat.sort_by_key(|(id, _)| (id.collection.to_index(), id.path_id));
+        println!(
+            "{:<24}  {:<12}  {:<8}  path",
+            "object", "kind", "via"
+        );
+        println!("{}", "-".repeat(100));
+        for (id, paths) in &flat {
+            let obj_str = format_ref(env, *id);
+            for (path, kind, via_preload) in paths {
+                let kind_str = kind_label(*kind);
+                let via = if *via_preload { "preload" } else { "main" };
+                println!("{:<24}  {:<12}  {:<8}  {}", obj_str, kind_str, via, path);
+            }
+        }
+        let total_refs: usize = flat.iter().map(|(_, v)| v.len()).sum();
+        println!("\n共 {} 个对象, {} 条引用", flat.len(), total_refs);
+    }
+    Ok(())
+}
+
+/// container kind → 展示标签。
+fn kind_label(k: ContainerKind) -> &'static str {
+    match k {
+        ContainerKind::AssetBundle => "AssetBundle",
+        ContainerKind::ResourceManager => "ResourceMgr",
+    }
+}
+
+/// ObjectId → 紧凑展示字符串(`<col>:<path_id> [ClassName]`)。
+/// 解析失败的对象只显示 id(理论上不会发生,因 id 来自已 resolve 的引用)。
+fn format_ref(env: &Environment, id: ObjectId) -> String {
+    let class = env
+        .resolve_ref(id)
+        .and_then(|r| r.get())
+        .map(|o| class_name(o.class_id))
+        .unwrap_or_else(|| "?".to_string());
+    format!("{}:{} [{}]", id.collection.to_index(), id.path_id, class)
 }
 
 /// 导出 Texture2D 为 PNG。
