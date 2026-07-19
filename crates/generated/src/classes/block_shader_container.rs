@@ -20,11 +20,26 @@ impl crate::Parse for BlockShaderContainer {
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
         let guid = Guid::parse(rdr, ver)?;
-        let dependencies = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let dependencies = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| crate::PPtr::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
-        let generated_paths = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+        let generated_paths = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| rdr.read_aligned_string())
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
-        let blob = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+        let blob = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| rdr.read_u32())
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
         let state = rdr.read_i32()?;
 

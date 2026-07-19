@@ -11,7 +11,6 @@ use crate::subclasses::splash_screen_logo::SplashScreenLogo;
 use crate::subclasses::vector2f::Vector2f;
 use crate::subclasses::vr_settings::VrSettings;
 
-
 /// 版本枚举：PlayerSettingsAndroidProfilerVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum PlayerSettingsAndroidProfilerVariant {
@@ -232,11 +231,21 @@ impl crate::Parse for PlayerSettingsMStackTraceTypesVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_i32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_i32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -255,11 +264,21 @@ impl crate::Parse for PlayerSettingsMSplashScreenLogosVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SplashScreenLogo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| SplashScreenLogo::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SplashScreenLogo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| SplashScreenLogo::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -618,11 +637,21 @@ impl crate::Parse for PlayerSettingsPreloadedAssetsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -1049,7 +1078,8 @@ pub struct PlayerSettings {
     pub product_guid: Option<Guid>,
     pub default_screen_orientation: i32,
     pub target_device: i32,
-    pub android_filter_touches_when_obscured: Option<PlayerSettingsAndroidFilterTouchesWhenObscuredVariant>,
+    pub android_filter_touches_when_obscured:
+        Option<PlayerSettingsAndroidFilterTouchesWhenObscuredVariant>,
     pub target_platform: Option<i32>,
     pub target_resolution: Option<PlayerSettingsTargetResolutionVariant>,
     pub target_gles_graphics: Option<i32>,
@@ -1118,7 +1148,8 @@ pub struct PlayerSettings {
     pub m_supported_aspect_ratios: Option<AspectRatios>,
     pub m_unity_splash_logo: Option<PPtr>,
     pub default_is_native_resolution: Option<bool>,
-    pub disable_depth_and_stencil_buffers: Option<PlayerSettingsDisableDepthAndStencilBuffersVariant>,
+    pub disable_depth_and_stencil_buffers:
+        Option<PlayerSettingsDisableDepthAndStencilBuffersVariant>,
     pub enable_hw_statistics: Option<bool>,
     pub m_stereo_rendering_path: Option<i32>,
     pub xbox_enable_avatar: Option<bool>,
@@ -1175,9 +1206,11 @@ pub struct PlayerSettings {
     pub xbox_one_resolution: Option<PlayerSettingsXboxOneResolutionVariant>,
     pub n3ds_disable_stereoscopic_view: Option<bool>,
     pub defer_system_gestures_mode: Option<i32>,
-    pub force_ios_speakers_when_recording: Option<PlayerSettingsForceIosSpeakersWhenRecordingVariant>,
+    pub force_ios_speakers_when_recording:
+        Option<PlayerSettingsForceIosSpeakersWhenRecordingVariant>,
     pub android_default_window_width: Option<i32>,
-    pub metro_enable_low_latency_presentation_api: Option<PlayerSettingsMetroEnableLowLatencyPresentationApiVariant>,
+    pub metro_enable_low_latency_presentation_api:
+        Option<PlayerSettingsMetroEnableLowLatencyPresentationApiVariant>,
     pub ps3_splash_screen: Option<PPtr>,
     pub n3ds_enable_shared_list_opt: Option<bool>,
     pub hide_home_button: Option<bool>,
@@ -1207,7 +1240,8 @@ pub struct PlayerSettings {
     pub android_system_bars_behavior: Option<i32>,
     pub wii_u_supports_nunchuk: Option<bool>,
     pub android_auto_rotation_behavior: Option<i32>,
-    pub xbox_one_disable_kinect_gpu_reservation: Option<PlayerSettingsXboxOneDisableKinectGpuReservationVariant>,
+    pub xbox_one_disable_kinect_gpu_reservation:
+        Option<PlayerSettingsXboxOneDisableKinectGpuReservationVariant>,
     pub wii_u_supports_classic_controller: Option<bool>,
     pub xbox_one_mono_logging_level: Option<i32>,
     pub android_predictive_back_support: Option<PlayerSettingsAndroidPredictiveBackSupportVariant>,
@@ -1244,7 +1278,8 @@ pub struct PlayerSettings {
     pub switch_queue_compute_memory: Option<i32>,
     pub switch_nvn_shader_pools_granularity: Option<i32>,
     pub switch_nvn_default_pools_granularity: Option<i32>,
-    pub switch_nvn_other_pools_granularity: Option<PlayerSettingsSwitchNvnOtherPoolsGranularityVariant>,
+    pub switch_nvn_other_pools_granularity:
+        Option<PlayerSettingsSwitchNvnOtherPoolsGranularityVariant>,
     pub metro_input_source: Option<i32>,
     pub vulkan_num_swapchain_buffers: Option<u32>,
     pub wsa_transparent_swapchain: Option<bool>,
@@ -1252,13 +1287,15 @@ pub struct PlayerSettings {
     pub switch_nvn_max_public_texture_id_count: Option<i32>,
     pub stadia_present_mode: Option<i32>,
     pub m_holographic_pause_on_tracking_loss: Option<bool>,
-    pub switch_nvn_max_public_sampler_id_count: Option<PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant>,
+    pub switch_nvn_max_public_sampler_id_count:
+        Option<PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant>,
     pub stadia_target_framerate: Option<i32>,
     pub xbox_one_enable7th_core: Option<bool>,
     pub is_wsa_holographic_remoting_enabled: Option<bool>,
     pub vr_settings: Option<VrSettings>,
     pub metal_use_metal_display_link: Option<bool>,
-    pub vulkan_enable_late_acquire_next_image: Option<PlayerSettingsVulkanEnableLateAcquireNextImageVariant>,
+    pub vulkan_enable_late_acquire_next_image:
+        Option<PlayerSettingsVulkanEnableLateAcquireNextImageVariant>,
     pub use_hdr_display: Option<bool>,
     pub enable_frame_timing_stats: Option<PlayerSettingsEnableFrameTimingStatsVariant>,
     pub m_color_gamuts: Option<Vec<i32>>,
@@ -1273,7 +1310,8 @@ pub struct PlayerSettings {
     pub switch_max_worker_multiple: Option<i32>,
     pub android_max_aspect_ratio: Option<PlayerSettingsAndroidMaxAspectRatioVariant>,
     pub d3dhdr_bit_depth: Option<i32>,
-    pub switch_nvn_graphics_firmware_memory: Option<PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant>,
+    pub switch_nvn_graphics_firmware_memory:
+        Option<PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant>,
     pub framebuffer_depth_memoryless_mode: Option<i32>,
     pub enable_native_platform_backends_for_new_input_system: Option<bool>,
     pub disable_old_input_manager_support: Option<bool>,
@@ -1285,7 +1323,8 @@ pub struct PlayerSettings {
     pub enable_open_gl_profiler_gpu_recorders: Option<bool>,
     pub vision_os_bundle_version: Option<String>,
     pub tv_os_bundle_version: Option<String>,
-    pub virtual_texturing_support_enabled: Option<PlayerSettingsVirtualTexturingSupportEnabledVariant>,
+    pub virtual_texturing_support_enabled:
+        Option<PlayerSettingsVirtualTexturingSupportEnabledVariant>,
     pub quality_settings_names: Option<Vec<String>>,
     pub reset_resolution_on_window_resize: Option<bool>,
     pub hdr_bit_depth: Option<i32>,
@@ -1574,17 +1613,19 @@ impl crate::Parse for PlayerSettings {
             product_guid = Some(Guid::parse(rdr, ver)?);
         } else {
         }
-            android_profiler = Some(PlayerSettingsAndroidProfilerVariant::parse(rdr, ver)?);
+        android_profiler = Some(PlayerSettingsAndroidProfilerVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            android_filter_touches_when_obscured = Some(PlayerSettingsAndroidFilterTouchesWhenObscuredVariant::parse(rdr, ver)?);
+            android_filter_touches_when_obscured =
+                Some(PlayerSettingsAndroidFilterTouchesWhenObscuredVariant::parse(rdr, ver)?);
             android_enable_sustained_performance_mode = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            android_filter_touches_when_obscured = Some(PlayerSettingsAndroidFilterTouchesWhenObscuredVariant::parse(rdr, ver)?);
+            android_filter_touches_when_obscured =
+                Some(PlayerSettingsAndroidFilterTouchesWhenObscuredVariant::parse(rdr, ver)?);
         } else {
         }
-            default_screen_orientation = Some(rdr.read_i32()?);
-            target_device = Some(rdr.read_i32()?);
+        default_screen_orientation = Some(rdr.read_i32()?);
+        target_device = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(5, 3, 0) {
             use_on_demand_resources = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -1620,13 +1661,15 @@ impl crate::Parse for PlayerSettings {
             target_platform = Some(rdr.read_i32()?);
             target_resolution = Some(PlayerSettingsTargetResolutionVariant::parse(rdr, ver)?);
         }
-            company_name = Some(rdr.read_aligned_string()?);
-            product_name = Some(rdr.read_aligned_string()?);
+        company_name = Some(rdr.read_aligned_string()?);
+        product_name = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(6000, 4, 0) {
             default_cursor = Some(crate::PPtr::parse(rdr, ver)?);
             cursor_hotspot = Some(Vector2f::parse(rdr, ver)?);
             m_splash_screen_background_color = Some(ColorRgbAf::parse(rdr, ver)?);
-            m_show_unity_splash_screen = Some(PlayerSettingsMShowUnitySplashScreenVariant::parse(rdr, ver)?);
+            m_show_unity_splash_screen = Some(PlayerSettingsMShowUnitySplashScreenVariant::parse(
+                rdr, ver,
+            )?);
             m_show_unity_splash_logo = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_splash_screen_overlay_opacity = Some(rdr.read_f32()?);
@@ -1644,12 +1687,16 @@ impl crate::Parse for PlayerSettings {
             m_splash_screen_background_landscape = Some(crate::PPtr::parse(rdr, ver)?);
             m_splash_screen_background_portrait = Some(crate::PPtr::parse(rdr, ver)?);
             m_unity_splash_logo = Some(crate::PPtr::parse(rdr, ver)?);
-            m_virtual_reality_splash_screen = Some(PlayerSettingsMVirtualRealitySplashScreenVariant::parse(rdr, ver)?);
+            m_virtual_reality_splash_screen = Some(
+                PlayerSettingsMVirtualRealitySplashScreenVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             default_cursor = Some(crate::PPtr::parse(rdr, ver)?);
             cursor_hotspot = Some(Vector2f::parse(rdr, ver)?);
             m_splash_screen_background_color = Some(ColorRgbAf::parse(rdr, ver)?);
-            m_show_unity_splash_screen = Some(PlayerSettingsMShowUnitySplashScreenVariant::parse(rdr, ver)?);
+            m_show_unity_splash_screen = Some(PlayerSettingsMShowUnitySplashScreenVariant::parse(
+                rdr, ver,
+            )?);
             m_show_unity_splash_logo = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_splash_screen_overlay_opacity = Some(rdr.read_f32()?);
@@ -1667,13 +1714,17 @@ impl crate::Parse for PlayerSettings {
             m_splash_screen_background_landscape = Some(crate::PPtr::parse(rdr, ver)?);
             m_splash_screen_background_portrait = Some(crate::PPtr::parse(rdr, ver)?);
             m_unity_splash_logo = Some(crate::PPtr::parse(rdr, ver)?);
-            m_virtual_reality_splash_screen = Some(PlayerSettingsMVirtualRealitySplashScreenVariant::parse(rdr, ver)?);
+            m_virtual_reality_splash_screen = Some(
+                PlayerSettingsMVirtualRealitySplashScreenVariant::parse(rdr, ver)?,
+            );
             m_holographic_tracking_loss_screen = Some(crate::PPtr::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
             default_cursor = Some(crate::PPtr::parse(rdr, ver)?);
             cursor_hotspot = Some(Vector2f::parse(rdr, ver)?);
             m_splash_screen_background_color = Some(ColorRgbAf::parse(rdr, ver)?);
-            m_show_unity_splash_screen = Some(PlayerSettingsMShowUnitySplashScreenVariant::parse(rdr, ver)?);
+            m_show_unity_splash_screen = Some(PlayerSettingsMShowUnitySplashScreenVariant::parse(
+                rdr, ver,
+            )?);
             m_show_unity_splash_logo = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_splash_screen_overlay_opacity = Some(rdr.read_f32()?);
@@ -1690,28 +1741,42 @@ impl crate::Parse for PlayerSettings {
             m_splash_screen_logos = Some(PlayerSettingsMSplashScreenLogosVariant::parse(rdr, ver)?);
             m_splash_screen_background_landscape = Some(crate::PPtr::parse(rdr, ver)?);
             m_splash_screen_background_portrait = Some(crate::PPtr::parse(rdr, ver)?);
-            m_virtual_reality_splash_screen = Some(PlayerSettingsMVirtualRealitySplashScreenVariant::parse(rdr, ver)?);
+            m_virtual_reality_splash_screen = Some(
+                PlayerSettingsMVirtualRealitySplashScreenVariant::parse(rdr, ver)?,
+            );
             m_holographic_tracking_loss_screen = Some(crate::PPtr::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
             default_cursor = Some(crate::PPtr::parse(rdr, ver)?);
             cursor_hotspot = Some(Vector2f::parse(rdr, ver)?);
             m_splash_screen_style = Some(rdr.read_i32()?);
-            m_show_unity_splash_screen = Some(PlayerSettingsMShowUnitySplashScreenVariant::parse(rdr, ver)?);
-            m_virtual_reality_splash_screen = Some(PlayerSettingsMVirtualRealitySplashScreenVariant::parse(rdr, ver)?);
+            m_show_unity_splash_screen = Some(PlayerSettingsMShowUnitySplashScreenVariant::parse(
+                rdr, ver,
+            )?);
+            m_virtual_reality_splash_screen = Some(
+                PlayerSettingsMVirtualRealitySplashScreenVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
             default_cursor = Some(crate::PPtr::parse(rdr, ver)?);
             cursor_hotspot = Some(Vector2f::parse(rdr, ver)?);
-            m_show_unity_splash_screen = Some(PlayerSettingsMShowUnitySplashScreenVariant::parse(rdr, ver)?);
-            m_virtual_reality_splash_screen = Some(PlayerSettingsMVirtualRealitySplashScreenVariant::parse(rdr, ver)?);
+            m_show_unity_splash_screen = Some(PlayerSettingsMShowUnitySplashScreenVariant::parse(
+                rdr, ver,
+            )?);
+            m_virtual_reality_splash_screen = Some(
+                PlayerSettingsMVirtualRealitySplashScreenVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(5, 1, 0) {
             default_cursor = Some(crate::PPtr::parse(rdr, ver)?);
             cursor_hotspot = Some(Vector2f::parse(rdr, ver)?);
-            m_show_unity_splash_screen = Some(PlayerSettingsMShowUnitySplashScreenVariant::parse(rdr, ver)?);
+            m_show_unity_splash_screen = Some(PlayerSettingsMShowUnitySplashScreenVariant::parse(
+                rdr, ver,
+            )?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 1) {
             cloud_project_id = Some(rdr.read_aligned_string()?);
             default_cursor = Some(crate::PPtr::parse(rdr, ver)?);
             cursor_hotspot = Some(Vector2f::parse(rdr, ver)?);
-            m_show_unity_splash_screen = Some(PlayerSettingsMShowUnitySplashScreenVariant::parse(rdr, ver)?);
+            m_show_unity_splash_screen = Some(PlayerSettingsMShowUnitySplashScreenVariant::parse(
+                rdr, ver,
+            )?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
             cloud_project_id = Some(rdr.read_aligned_string()?);
             default_cursor = Some(crate::PPtr::parse(rdr, ver)?);
@@ -1722,10 +1787,10 @@ impl crate::Parse for PlayerSettings {
         } else {
             android_license_public_key = Some(rdr.read_aligned_string()?);
         }
-            default_screen_width = Some(rdr.read_i32()?);
-            default_screen_height = Some(rdr.read_i32()?);
-            default_screen_width_web = Some(rdr.read_i32()?);
-            default_screen_height_web = Some(rdr.read_i32()?);
+        default_screen_width = Some(rdr.read_i32()?);
+        default_screen_height = Some(rdr.read_i32()?);
+        default_screen_width_web = Some(rdr.read_i32()?);
+        default_screen_height_web = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(6000, 0, 20) {
             m_stereo_rendering_path = Some(rdr.read_i32()?);
             m_active_color_space = Some(rdr.read_i32()?);
@@ -1733,14 +1798,29 @@ impl crate::Parse for PlayerSettings {
             m_sprite_batch_max_vertex_count = Some(rdr.read_i32()?);
             m_sprite_batch_vertex_threshold = Some(rdr.read_i32()?);
             m_mt_rendering = Some(PlayerSettingsMMtRenderingVariant::parse(rdr, ver)?);
-            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(rdr, ver)?);
+            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(
+                rdr, ver,
+            )?);
             aid = Some(Hash128::parse(rdr, ver)?);
             rdr.align(4)?;
             player_min_open_gles_version = Some(rdr.read_i32()?);
             mip_stripping = Some(rdr.read_bool()?);
             rdr.align(4)?;
             number_of_mips_stripped = Some(rdr.read_i32()?);
-            number_of_mips_stripped_per_mipmap_limit_group = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            number_of_mips_stripped_per_mipmap_limit_group = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = rdr.read_i32()?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_stack_trace_types = Some(PlayerSettingsMStackTraceTypesVariant::parse(rdr, ver)?);
             ios_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
             android_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
@@ -1751,14 +1831,29 @@ impl crate::Parse for PlayerSettings {
             unsupported_msaa_fallback = Some(rdr.read_i32()?);
             m_sprite_batch_vertex_threshold = Some(rdr.read_i32()?);
             m_mt_rendering = Some(PlayerSettingsMMtRenderingVariant::parse(rdr, ver)?);
-            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(rdr, ver)?);
+            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(
+                rdr, ver,
+            )?);
             aid = Some(Hash128::parse(rdr, ver)?);
             rdr.align(4)?;
             player_min_open_gles_version = Some(rdr.read_i32()?);
             mip_stripping = Some(rdr.read_bool()?);
             rdr.align(4)?;
             number_of_mips_stripped = Some(rdr.read_i32()?);
-            number_of_mips_stripped_per_mipmap_limit_group = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            number_of_mips_stripped_per_mipmap_limit_group = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = rdr.read_i32()?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_stack_trace_types = Some(PlayerSettingsMStackTraceTypesVariant::parse(rdr, ver)?);
             ios_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
             android_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
@@ -1768,14 +1863,29 @@ impl crate::Parse for PlayerSettings {
             m_active_color_space = Some(rdr.read_i32()?);
             m_sprite_batch_vertex_threshold = Some(rdr.read_i32()?);
             m_mt_rendering = Some(PlayerSettingsMMtRenderingVariant::parse(rdr, ver)?);
-            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(rdr, ver)?);
+            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(
+                rdr, ver,
+            )?);
             aid = Some(Hash128::parse(rdr, ver)?);
             rdr.align(4)?;
             player_min_open_gles_version = Some(rdr.read_i32()?);
             mip_stripping = Some(rdr.read_bool()?);
             rdr.align(4)?;
             number_of_mips_stripped = Some(rdr.read_i32()?);
-            number_of_mips_stripped_per_mipmap_limit_group = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            number_of_mips_stripped_per_mipmap_limit_group = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = rdr.read_i32()?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_stack_trace_types = Some(PlayerSettingsMStackTraceTypesVariant::parse(rdr, ver)?);
             ios_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
             android_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
@@ -1786,14 +1896,29 @@ impl crate::Parse for PlayerSettings {
             unsupported_msaa_fallback = Some(rdr.read_i32()?);
             m_sprite_batch_vertex_threshold = Some(rdr.read_i32()?);
             m_mt_rendering = Some(PlayerSettingsMMtRenderingVariant::parse(rdr, ver)?);
-            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(rdr, ver)?);
+            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(
+                rdr, ver,
+            )?);
             aid = Some(Hash128::parse(rdr, ver)?);
             rdr.align(4)?;
             player_min_open_gles_version = Some(rdr.read_i32()?);
             mip_stripping = Some(rdr.read_bool()?);
             rdr.align(4)?;
             number_of_mips_stripped = Some(rdr.read_i32()?);
-            number_of_mips_stripped_per_mipmap_limit_group = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            number_of_mips_stripped_per_mipmap_limit_group = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = rdr.read_i32()?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_stack_trace_types = Some(PlayerSettingsMStackTraceTypesVariant::parse(rdr, ver)?);
             ios_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
             android_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
@@ -1803,14 +1928,29 @@ impl crate::Parse for PlayerSettings {
             m_active_color_space = Some(rdr.read_i32()?);
             m_sprite_batch_vertex_threshold = Some(rdr.read_i32()?);
             m_mt_rendering = Some(PlayerSettingsMMtRenderingVariant::parse(rdr, ver)?);
-            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(rdr, ver)?);
+            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(
+                rdr, ver,
+            )?);
             aid = Some(Hash128::parse(rdr, ver)?);
             rdr.align(4)?;
             player_min_open_gles_version = Some(rdr.read_i32()?);
             mip_stripping = Some(rdr.read_bool()?);
             rdr.align(4)?;
             number_of_mips_stripped = Some(rdr.read_i32()?);
-            number_of_mips_stripped_per_mipmap_limit_group = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            number_of_mips_stripped_per_mipmap_limit_group = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = rdr.read_i32()?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_stack_trace_types = Some(PlayerSettingsMStackTraceTypesVariant::parse(rdr, ver)?);
             ios_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
             android_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
@@ -1820,7 +1960,9 @@ impl crate::Parse for PlayerSettings {
             m_active_color_space = Some(rdr.read_i32()?);
             m_sprite_batch_vertex_threshold = Some(rdr.read_i32()?);
             m_mt_rendering = Some(PlayerSettingsMMtRenderingVariant::parse(rdr, ver)?);
-            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(rdr, ver)?);
+            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(
+                rdr, ver,
+            )?);
             aid = Some(Hash128::parse(rdr, ver)?);
             rdr.align(4)?;
             player_min_open_gles_version = Some(rdr.read_i32()?);
@@ -1836,7 +1978,9 @@ impl crate::Parse for PlayerSettings {
             m_active_color_space = Some(rdr.read_i32()?);
             unsupported_msaa_fallback = Some(rdr.read_i32()?);
             m_mt_rendering = Some(PlayerSettingsMMtRenderingVariant::parse(rdr, ver)?);
-            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(rdr, ver)?);
+            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(
+                rdr, ver,
+            )?);
             aid = Some(Hash128::parse(rdr, ver)?);
             rdr.align(4)?;
             player_min_open_gles_version = Some(rdr.read_i32()?);
@@ -1852,7 +1996,9 @@ impl crate::Parse for PlayerSettings {
             m_stereo_rendering_path = Some(rdr.read_i32()?);
             m_active_color_space = Some(rdr.read_i32()?);
             m_mt_rendering = Some(PlayerSettingsMMtRenderingVariant::parse(rdr, ver)?);
-            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(rdr, ver)?);
+            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(
+                rdr, ver,
+            )?);
             aid = Some(Hash128::parse(rdr, ver)?);
             rdr.align(4)?;
             player_min_open_gles_version = Some(rdr.read_i32()?);
@@ -1868,7 +2014,9 @@ impl crate::Parse for PlayerSettings {
             m_stereo_rendering_path = Some(rdr.read_i32()?);
             m_active_color_space = Some(rdr.read_i32()?);
             m_mt_rendering = Some(PlayerSettingsMMtRenderingVariant::parse(rdr, ver)?);
-            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(rdr, ver)?);
+            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(
+                rdr, ver,
+            )?);
             mip_stripping = Some(rdr.read_bool()?);
             rdr.align(4)?;
             number_of_mips_stripped = Some(rdr.read_i32()?);
@@ -1881,7 +2029,9 @@ impl crate::Parse for PlayerSettings {
             m_stereo_rendering_path = Some(rdr.read_i32()?);
             m_active_color_space = Some(rdr.read_i32()?);
             m_mt_rendering = Some(PlayerSettingsMMtRenderingVariant::parse(rdr, ver)?);
-            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(rdr, ver)?);
+            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(
+                rdr, ver,
+            )?);
             m_stack_trace_types = Some(PlayerSettingsMStackTraceTypesVariant::parse(rdr, ver)?);
             ios_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
             android_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
@@ -1891,7 +2041,9 @@ impl crate::Parse for PlayerSettings {
             m_stereo_rendering_path = Some(rdr.read_i32()?);
             m_active_color_space = Some(rdr.read_i32()?);
             m_mt_rendering = Some(PlayerSettingsMMtRenderingVariant::parse(rdr, ver)?);
-            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(rdr, ver)?);
+            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(
+                rdr, ver,
+            )?);
             m_stack_trace_types = Some(PlayerSettingsMStackTraceTypesVariant::parse(rdr, ver)?);
             ios_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
             android_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
@@ -1902,7 +2054,9 @@ impl crate::Parse for PlayerSettings {
             m_stereo_rendering_path = Some(rdr.read_i32()?);
             m_active_color_space = Some(rdr.read_i32()?);
             m_mt_rendering = Some(PlayerSettingsMMtRenderingVariant::parse(rdr, ver)?);
-            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(rdr, ver)?);
+            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(
+                rdr, ver,
+            )?);
             m_stack_trace_types = Some(PlayerSettingsMStackTraceTypesVariant::parse(rdr, ver)?);
             ios_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
             android_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
@@ -1913,7 +2067,9 @@ impl crate::Parse for PlayerSettings {
             m_stereo_rendering_path = Some(rdr.read_i32()?);
             m_active_color_space = Some(rdr.read_i32()?);
             m_mt_rendering = Some(PlayerSettingsMMtRenderingVariant::parse(rdr, ver)?);
-            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(rdr, ver)?);
+            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(
+                rdr, ver,
+            )?);
             m_stack_trace_types = Some(PlayerSettingsMStackTraceTypesVariant::parse(rdr, ver)?);
             ios_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
             android_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
@@ -1924,7 +2080,9 @@ impl crate::Parse for PlayerSettings {
             m_stereo_rendering_path = Some(rdr.read_i32()?);
             m_active_color_space = Some(rdr.read_i32()?);
             m_mt_rendering = Some(PlayerSettingsMMtRenderingVariant::parse(rdr, ver)?);
-            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(rdr, ver)?);
+            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(
+                rdr, ver,
+            )?);
             m_stack_trace_types = Some(PlayerSettingsMStackTraceTypesVariant::parse(rdr, ver)?);
             ios_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
             android_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
@@ -1935,7 +2093,9 @@ impl crate::Parse for PlayerSettings {
             m_stereo_rendering_path = Some(rdr.read_i32()?);
             m_active_color_space = Some(rdr.read_i32()?);
             m_mt_rendering = Some(PlayerSettingsMMtRenderingVariant::parse(rdr, ver)?);
-            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(rdr, ver)?);
+            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(
+                rdr, ver,
+            )?);
             m_stack_trace_types = Some(PlayerSettingsMStackTraceTypesVariant::parse(rdr, ver)?);
             ios_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
             android_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
@@ -1947,7 +2107,9 @@ impl crate::Parse for PlayerSettings {
             m_stereo_rendering_path = Some(rdr.read_i32()?);
             m_active_color_space = Some(rdr.read_i32()?);
             m_mt_rendering = Some(PlayerSettingsMMtRenderingVariant::parse(rdr, ver)?);
-            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(rdr, ver)?);
+            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(
+                rdr, ver,
+            )?);
             m_stack_trace_types = Some(PlayerSettingsMStackTraceTypesVariant::parse(rdr, ver)?);
             ios_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
             android_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
@@ -1959,7 +2121,9 @@ impl crate::Parse for PlayerSettings {
             m_stereo_rendering_path = Some(rdr.read_i32()?);
             m_active_color_space = Some(rdr.read_i32()?);
             m_mt_rendering = Some(PlayerSettingsMMtRenderingVariant::parse(rdr, ver)?);
-            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(rdr, ver)?);
+            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(
+                rdr, ver,
+            )?);
             m_stack_trace_types = Some(PlayerSettingsMStackTraceTypesVariant::parse(rdr, ver)?);
             ios_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
             android_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
@@ -1971,7 +2135,9 @@ impl crate::Parse for PlayerSettings {
             m_stereo_rendering_path = Some(rdr.read_i32()?);
             m_active_color_space = Some(rdr.read_i32()?);
             m_mt_rendering = Some(PlayerSettingsMMtRenderingVariant::parse(rdr, ver)?);
-            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(rdr, ver)?);
+            mobile_mt_rendering_baked = Some(PlayerSettingsMobileMtRenderingBakedVariant::parse(
+                rdr, ver,
+            )?);
             m_stack_trace_types = Some(PlayerSettingsMStackTraceTypesVariant::parse(rdr, ver)?);
             ios_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
             android_show_activity_indicator_on_loading = Some(rdr.read_i32()?);
@@ -2095,12 +2261,13 @@ impl crate::Parse for PlayerSettings {
             m_rendering_path = Some(rdr.read_i32()?);
             display_resolution_dialog = Some(rdr.read_i32()?);
         }
-            allowed_autorotate_to_portrait = Some(rdr.read_bool()?);
-            allowed_autorotate_to_portrait_upside_down = Some(rdr.read_bool()?);
-            allowed_autorotate_to_landscape_right = Some(rdr.read_bool()?);
-            allowed_autorotate_to_landscape_left = Some(rdr.read_bool()?);
-            use_os_autorotation = Some(rdr.read_bool()?);
-            use32_bit_display_buffer = Some(PlayerSettingsUse32BitDisplayBufferVariant::parse(rdr, ver)?);
+        allowed_autorotate_to_portrait = Some(rdr.read_bool()?);
+        allowed_autorotate_to_portrait_upside_down = Some(rdr.read_bool()?);
+        allowed_autorotate_to_landscape_right = Some(rdr.read_bool()?);
+        allowed_autorotate_to_landscape_left = Some(rdr.read_bool()?);
+        use_os_autorotation = Some(rdr.read_bool()?);
+        use32_bit_display_buffer =
+            Some(PlayerSettingsUse32BitDisplayBufferVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 5, 0) {
             preserve_framebuffer_alpha = Some(rdr.read_bool()?);
             adjust_iosfps_using_thermal_state = Some(rdr.read_bool()?);
@@ -2108,9 +2275,13 @@ impl crate::Parse for PlayerSettings {
             thermal_state_serious_iosfps = Some(rdr.read_i32()?);
             thermal_state_critical_iosfps = Some(rdr.read_i32()?);
             rdr.align(4)?;
-            disable_depth_and_stencil_buffers = Some(PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?);
+            disable_depth_and_stencil_buffers = Some(
+                PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?,
+            );
             android_start_in_fullscreen = Some(rdr.read_bool()?);
-            android_render_outside_safe_area = Some(PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?);
+            android_render_outside_safe_area = Some(
+                PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?,
+            );
             android_use_swappy = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_requested_visible_insets = Some(rdr.read_i32()?);
@@ -2126,15 +2297,21 @@ impl crate::Parse for PlayerSettings {
             android_minimum_window_height = Some(rdr.read_i32()?);
             android_fullscreen_mode = Some(rdr.read_i32()?);
             android_auto_rotation_behavior = Some(rdr.read_i32()?);
-            android_predictive_back_support = Some(PlayerSettingsAndroidPredictiveBackSupportVariant::parse(rdr, ver)?);
+            android_predictive_back_support = Some(
+                PlayerSettingsAndroidPredictiveBackSupportVariant::parse(rdr, ver)?,
+            );
             android_application_entry = Some(rdr.read_i32()?);
             default_is_native_resolution = Some(rdr.read_bool()?);
             mac_retina_support = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(6000, 2, 8) {
             preserve_framebuffer_alpha = Some(rdr.read_bool()?);
-            disable_depth_and_stencil_buffers = Some(PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?);
+            disable_depth_and_stencil_buffers = Some(
+                PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?,
+            );
             android_start_in_fullscreen = Some(rdr.read_bool()?);
-            android_render_outside_safe_area = Some(PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?);
+            android_render_outside_safe_area = Some(
+                PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?,
+            );
             android_use_swappy = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_display_options = Some(rdr.read_i32()?);
@@ -2148,15 +2325,21 @@ impl crate::Parse for PlayerSettings {
             android_minimum_window_height = Some(rdr.read_i32()?);
             android_fullscreen_mode = Some(rdr.read_i32()?);
             android_auto_rotation_behavior = Some(rdr.read_i32()?);
-            android_predictive_back_support = Some(PlayerSettingsAndroidPredictiveBackSupportVariant::parse(rdr, ver)?);
+            android_predictive_back_support = Some(
+                PlayerSettingsAndroidPredictiveBackSupportVariant::parse(rdr, ver)?,
+            );
             android_application_entry = Some(rdr.read_i32()?);
             default_is_native_resolution = Some(rdr.read_bool()?);
             mac_retina_support = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(6000, 1, 0) {
             preserve_framebuffer_alpha = Some(rdr.read_bool()?);
-            disable_depth_and_stencil_buffers = Some(PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?);
+            disable_depth_and_stencil_buffers = Some(
+                PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?,
+            );
             android_start_in_fullscreen = Some(rdr.read_bool()?);
-            android_render_outside_safe_area = Some(PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?);
+            android_render_outside_safe_area = Some(
+                PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?,
+            );
             android_use_swappy = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_blit_type = Some(rdr.read_i32()?);
@@ -2169,15 +2352,21 @@ impl crate::Parse for PlayerSettings {
             android_minimum_window_height = Some(rdr.read_i32()?);
             android_fullscreen_mode = Some(rdr.read_i32()?);
             android_auto_rotation_behavior = Some(rdr.read_i32()?);
-            android_predictive_back_support = Some(PlayerSettingsAndroidPredictiveBackSupportVariant::parse(rdr, ver)?);
+            android_predictive_back_support = Some(
+                PlayerSettingsAndroidPredictiveBackSupportVariant::parse(rdr, ver)?,
+            );
             android_application_entry = Some(rdr.read_i32()?);
             default_is_native_resolution = Some(rdr.read_bool()?);
             mac_retina_support = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(6000, 0, 60) {
             preserve_framebuffer_alpha = Some(rdr.read_bool()?);
-            disable_depth_and_stencil_buffers = Some(PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?);
+            disable_depth_and_stencil_buffers = Some(
+                PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?,
+            );
             android_start_in_fullscreen = Some(rdr.read_bool()?);
-            android_render_outside_safe_area = Some(PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?);
+            android_render_outside_safe_area = Some(
+                PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?,
+            );
             android_use_swappy = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_display_options = Some(rdr.read_i32()?);
@@ -2191,15 +2380,21 @@ impl crate::Parse for PlayerSettings {
             android_minimum_window_height = Some(rdr.read_i32()?);
             android_fullscreen_mode = Some(rdr.read_i32()?);
             android_auto_rotation_behavior = Some(rdr.read_i32()?);
-            android_predictive_back_support = Some(PlayerSettingsAndroidPredictiveBackSupportVariant::parse(rdr, ver)?);
+            android_predictive_back_support = Some(
+                PlayerSettingsAndroidPredictiveBackSupportVariant::parse(rdr, ver)?,
+            );
             android_application_entry = Some(rdr.read_i32()?);
             default_is_native_resolution = Some(rdr.read_bool()?);
             mac_retina_support = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(6000, 0, 5) {
             preserve_framebuffer_alpha = Some(rdr.read_bool()?);
-            disable_depth_and_stencil_buffers = Some(PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?);
+            disable_depth_and_stencil_buffers = Some(
+                PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?,
+            );
             android_start_in_fullscreen = Some(rdr.read_bool()?);
-            android_render_outside_safe_area = Some(PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?);
+            android_render_outside_safe_area = Some(
+                PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?,
+            );
             android_use_swappy = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_blit_type = Some(rdr.read_i32()?);
@@ -2212,15 +2407,21 @@ impl crate::Parse for PlayerSettings {
             android_minimum_window_height = Some(rdr.read_i32()?);
             android_fullscreen_mode = Some(rdr.read_i32()?);
             android_auto_rotation_behavior = Some(rdr.read_i32()?);
-            android_predictive_back_support = Some(PlayerSettingsAndroidPredictiveBackSupportVariant::parse(rdr, ver)?);
+            android_predictive_back_support = Some(
+                PlayerSettingsAndroidPredictiveBackSupportVariant::parse(rdr, ver)?,
+            );
             android_application_entry = Some(rdr.read_i32()?);
             default_is_native_resolution = Some(rdr.read_bool()?);
             mac_retina_support = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(6000, 0, 4) {
             preserve_framebuffer_alpha = Some(rdr.read_bool()?);
-            disable_depth_and_stencil_buffers = Some(PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?);
+            disable_depth_and_stencil_buffers = Some(
+                PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?,
+            );
             android_start_in_fullscreen = Some(rdr.read_bool()?);
-            android_render_outside_safe_area = Some(PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?);
+            android_render_outside_safe_area = Some(
+                PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?,
+            );
             android_use_swappy = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_blit_type = Some(rdr.read_i32()?);
@@ -2234,14 +2435,20 @@ impl crate::Parse for PlayerSettings {
             android_fullscreen_mode = Some(rdr.read_i32()?);
             android_auto_rotation_behavior = Some(rdr.read_i32()?);
             android_application_entry = Some(rdr.read_i32()?);
-            android_predictive_back_support = Some(PlayerSettingsAndroidPredictiveBackSupportVariant::parse(rdr, ver)?);
+            android_predictive_back_support = Some(
+                PlayerSettingsAndroidPredictiveBackSupportVariant::parse(rdr, ver)?,
+            );
             default_is_native_resolution = Some(rdr.read_bool()?);
             mac_retina_support = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2023, 3, 0) {
             preserve_framebuffer_alpha = Some(rdr.read_bool()?);
-            disable_depth_and_stencil_buffers = Some(PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?);
+            disable_depth_and_stencil_buffers = Some(
+                PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?,
+            );
             android_start_in_fullscreen = Some(rdr.read_bool()?);
-            android_render_outside_safe_area = Some(PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?);
+            android_render_outside_safe_area = Some(
+                PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?,
+            );
             android_use_swappy = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_blit_type = Some(rdr.read_i32()?);
@@ -2255,14 +2462,20 @@ impl crate::Parse for PlayerSettings {
             android_fullscreen_mode = Some(rdr.read_i32()?);
             android_auto_rotation_behavior = Some(rdr.read_i32()?);
             android_application_entry = Some(rdr.read_i32()?);
-            android_predictive_back_support = Some(PlayerSettingsAndroidPredictiveBackSupportVariant::parse(rdr, ver)?);
+            android_predictive_back_support = Some(
+                PlayerSettingsAndroidPredictiveBackSupportVariant::parse(rdr, ver)?,
+            );
             default_is_native_resolution = Some(rdr.read_bool()?);
             mac_retina_support = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2023, 2, 5) {
             preserve_framebuffer_alpha = Some(rdr.read_bool()?);
-            disable_depth_and_stencil_buffers = Some(PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?);
+            disable_depth_and_stencil_buffers = Some(
+                PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?,
+            );
             android_start_in_fullscreen = Some(rdr.read_bool()?);
-            android_render_outside_safe_area = Some(PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?);
+            android_render_outside_safe_area = Some(
+                PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?,
+            );
             android_use_swappy = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_blit_type = Some(rdr.read_i32()?);
@@ -2280,9 +2493,13 @@ impl crate::Parse for PlayerSettings {
             mac_retina_support = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2023, 1, 0) {
             preserve_framebuffer_alpha = Some(rdr.read_bool()?);
-            disable_depth_and_stencil_buffers = Some(PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?);
+            disable_depth_and_stencil_buffers = Some(
+                PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?,
+            );
             android_start_in_fullscreen = Some(rdr.read_bool()?);
-            android_render_outside_safe_area = Some(PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?);
+            android_render_outside_safe_area = Some(
+                PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?,
+            );
             android_use_swappy = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_blit_type = Some(rdr.read_i32()?);
@@ -2299,9 +2516,13 @@ impl crate::Parse for PlayerSettings {
             mac_retina_support = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2022, 3, 68) {
             preserve_framebuffer_alpha = Some(rdr.read_bool()?);
-            disable_depth_and_stencil_buffers = Some(PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?);
+            disable_depth_and_stencil_buffers = Some(
+                PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?,
+            );
             android_start_in_fullscreen = Some(rdr.read_bool()?);
-            android_render_outside_safe_area = Some(PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?);
+            android_render_outside_safe_area = Some(
+                PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?,
+            );
             android_use_swappy = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_display_options = Some(rdr.read_i32()?);
@@ -2315,14 +2536,20 @@ impl crate::Parse for PlayerSettings {
             android_minimum_window_height = Some(rdr.read_i32()?);
             android_fullscreen_mode = Some(rdr.read_i32()?);
             android_auto_rotation_behavior = Some(rdr.read_i32()?);
-            android_predictive_back_support = Some(PlayerSettingsAndroidPredictiveBackSupportVariant::parse(rdr, ver)?);
+            android_predictive_back_support = Some(
+                PlayerSettingsAndroidPredictiveBackSupportVariant::parse(rdr, ver)?,
+            );
             default_is_native_resolution = Some(rdr.read_bool()?);
             mac_retina_support = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2022, 3, 61) {
             preserve_framebuffer_alpha = Some(rdr.read_bool()?);
-            disable_depth_and_stencil_buffers = Some(PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?);
+            disable_depth_and_stencil_buffers = Some(
+                PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?,
+            );
             android_start_in_fullscreen = Some(rdr.read_bool()?);
-            android_render_outside_safe_area = Some(PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?);
+            android_render_outside_safe_area = Some(
+                PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?,
+            );
             android_use_swappy = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_blit_type = Some(rdr.read_i32()?);
@@ -2335,14 +2562,20 @@ impl crate::Parse for PlayerSettings {
             android_minimum_window_height = Some(rdr.read_i32()?);
             android_fullscreen_mode = Some(rdr.read_i32()?);
             android_auto_rotation_behavior = Some(rdr.read_i32()?);
-            android_predictive_back_support = Some(PlayerSettingsAndroidPredictiveBackSupportVariant::parse(rdr, ver)?);
+            android_predictive_back_support = Some(
+                PlayerSettingsAndroidPredictiveBackSupportVariant::parse(rdr, ver)?,
+            );
             default_is_native_resolution = Some(rdr.read_bool()?);
             mac_retina_support = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2022, 3, 17) {
             preserve_framebuffer_alpha = Some(rdr.read_bool()?);
-            disable_depth_and_stencil_buffers = Some(PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?);
+            disable_depth_and_stencil_buffers = Some(
+                PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?,
+            );
             android_start_in_fullscreen = Some(rdr.read_bool()?);
-            android_render_outside_safe_area = Some(PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?);
+            android_render_outside_safe_area = Some(
+                PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?,
+            );
             android_use_swappy = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_blit_type = Some(rdr.read_i32()?);
@@ -2359,9 +2592,13 @@ impl crate::Parse for PlayerSettings {
             mac_retina_support = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
             preserve_framebuffer_alpha = Some(rdr.read_bool()?);
-            disable_depth_and_stencil_buffers = Some(PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?);
+            disable_depth_and_stencil_buffers = Some(
+                PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?,
+            );
             android_start_in_fullscreen = Some(rdr.read_bool()?);
-            android_render_outside_safe_area = Some(PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?);
+            android_render_outside_safe_area = Some(
+                PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?,
+            );
             android_use_swappy = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_blit_type = Some(rdr.read_i32()?);
@@ -2377,9 +2614,13 @@ impl crate::Parse for PlayerSettings {
             mac_retina_support = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2021, 3, 51) {
             preserve_framebuffer_alpha = Some(rdr.read_bool()?);
-            disable_depth_and_stencil_buffers = Some(PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?);
+            disable_depth_and_stencil_buffers = Some(
+                PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?,
+            );
             android_start_in_fullscreen = Some(rdr.read_bool()?);
-            android_render_outside_safe_area = Some(PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?);
+            android_render_outside_safe_area = Some(
+                PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?,
+            );
             android_use_swappy = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_blit_type = Some(rdr.read_i32()?);
@@ -2392,14 +2633,20 @@ impl crate::Parse for PlayerSettings {
             android_minimum_window_height = Some(rdr.read_i32()?);
             android_fullscreen_mode = Some(rdr.read_i32()?);
             android_auto_rotation_behavior = Some(rdr.read_i32()?);
-            android_predictive_back_support = Some(PlayerSettingsAndroidPredictiveBackSupportVariant::parse(rdr, ver)?);
+            android_predictive_back_support = Some(
+                PlayerSettingsAndroidPredictiveBackSupportVariant::parse(rdr, ver)?,
+            );
             default_is_native_resolution = Some(rdr.read_bool()?);
             mac_retina_support = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2021, 3, 35) {
             preserve_framebuffer_alpha = Some(rdr.read_bool()?);
-            disable_depth_and_stencil_buffers = Some(PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?);
+            disable_depth_and_stencil_buffers = Some(
+                PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?,
+            );
             android_start_in_fullscreen = Some(rdr.read_bool()?);
-            android_render_outside_safe_area = Some(PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?);
+            android_render_outside_safe_area = Some(
+                PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?,
+            );
             android_use_swappy = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_blit_type = Some(rdr.read_i32()?);
@@ -2416,9 +2663,13 @@ impl crate::Parse for PlayerSettings {
             mac_retina_support = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2021, 1, 18) {
             preserve_framebuffer_alpha = Some(rdr.read_bool()?);
-            disable_depth_and_stencil_buffers = Some(PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?);
+            disable_depth_and_stencil_buffers = Some(
+                PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?,
+            );
             android_start_in_fullscreen = Some(rdr.read_bool()?);
-            android_render_outside_safe_area = Some(PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?);
+            android_render_outside_safe_area = Some(
+                PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?,
+            );
             android_use_swappy = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_blit_type = Some(rdr.read_i32()?);
@@ -2434,9 +2685,13 @@ impl crate::Parse for PlayerSettings {
             mac_retina_support = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2021, 1, 0) {
             preserve_framebuffer_alpha = Some(rdr.read_bool()?);
-            disable_depth_and_stencil_buffers = Some(PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?);
+            disable_depth_and_stencil_buffers = Some(
+                PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?,
+            );
             android_start_in_fullscreen = Some(rdr.read_bool()?);
-            android_render_outside_safe_area = Some(PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?);
+            android_render_outside_safe_area = Some(
+                PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?,
+            );
             android_use_swappy = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_blit_type = Some(rdr.read_i32()?);
@@ -2445,9 +2700,13 @@ impl crate::Parse for PlayerSettings {
             mac_retina_support = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2020, 3, 17) {
             preserve_framebuffer_alpha = Some(rdr.read_bool()?);
-            disable_depth_and_stencil_buffers = Some(PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?);
+            disable_depth_and_stencil_buffers = Some(
+                PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?,
+            );
             android_start_in_fullscreen = Some(rdr.read_bool()?);
-            android_render_outside_safe_area = Some(PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?);
+            android_render_outside_safe_area = Some(
+                PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?,
+            );
             android_use_swappy = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_blit_type = Some(rdr.read_i32()?);
@@ -2463,9 +2722,13 @@ impl crate::Parse for PlayerSettings {
             mac_retina_support = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
             preserve_framebuffer_alpha = Some(rdr.read_bool()?);
-            disable_depth_and_stencil_buffers = Some(PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?);
+            disable_depth_and_stencil_buffers = Some(
+                PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?,
+            );
             android_start_in_fullscreen = Some(rdr.read_bool()?);
-            android_render_outside_safe_area = Some(PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?);
+            android_render_outside_safe_area = Some(
+                PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?,
+            );
             android_use_swappy = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_blit_type = Some(rdr.read_i32()?);
@@ -2474,9 +2737,13 @@ impl crate::Parse for PlayerSettings {
             mac_retina_support = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2019, 4, 31) {
             preserve_framebuffer_alpha = Some(rdr.read_bool()?);
-            disable_depth_and_stencil_buffers = Some(PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?);
+            disable_depth_and_stencil_buffers = Some(
+                PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?,
+            );
             android_start_in_fullscreen = Some(rdr.read_bool()?);
-            android_render_outside_safe_area = Some(PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?);
+            android_render_outside_safe_area = Some(
+                PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?,
+            );
             android_use_swappy = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_blit_type = Some(rdr.read_i32()?);
@@ -2492,9 +2759,13 @@ impl crate::Parse for PlayerSettings {
             mac_retina_support = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2019, 2, 0) {
             preserve_framebuffer_alpha = Some(rdr.read_bool()?);
-            disable_depth_and_stencil_buffers = Some(PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?);
+            disable_depth_and_stencil_buffers = Some(
+                PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?,
+            );
             android_start_in_fullscreen = Some(rdr.read_bool()?);
-            android_render_outside_safe_area = Some(PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?);
+            android_render_outside_safe_area = Some(
+                PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?,
+            );
             android_use_swappy = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_blit_type = Some(rdr.read_i32()?);
@@ -2503,37 +2774,49 @@ impl crate::Parse for PlayerSettings {
             mac_retina_support = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
             preserve_framebuffer_alpha = Some(rdr.read_bool()?);
-            disable_depth_and_stencil_buffers = Some(PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?);
+            disable_depth_and_stencil_buffers = Some(
+                PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?,
+            );
             android_start_in_fullscreen = Some(rdr.read_bool()?);
-            android_render_outside_safe_area = Some(PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?);
+            android_render_outside_safe_area = Some(
+                PlayerSettingsAndroidRenderOutsideSafeAreaVariant::parse(rdr, ver)?,
+            );
             android_blit_type = Some(rdr.read_i32()?);
             rdr.align(4)?;
             default_is_native_resolution = Some(rdr.read_bool()?);
             mac_retina_support = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
             preserve_framebuffer_alpha = Some(rdr.read_bool()?);
-            disable_depth_and_stencil_buffers = Some(PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?);
+            disable_depth_and_stencil_buffers = Some(
+                PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?,
+            );
             android_blit_type = Some(rdr.read_i32()?);
             rdr.align(4)?;
             default_is_native_resolution = Some(rdr.read_bool()?);
             mac_retina_support = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
             preserve_framebuffer_alpha = Some(rdr.read_bool()?);
-            disable_depth_and_stencil_buffers = Some(PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?);
+            disable_depth_and_stencil_buffers = Some(
+                PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?,
+            );
             android_blit_type = Some(rdr.read_i32()?);
             rdr.align(4)?;
             default_is_full_screen = Some(rdr.read_bool()?);
             default_is_native_resolution = Some(rdr.read_bool()?);
             mac_retina_support = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            disable_depth_and_stencil_buffers = Some(PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?);
+            disable_depth_and_stencil_buffers = Some(
+                PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?,
+            );
             android_blit_type = Some(rdr.read_i32()?);
             rdr.align(4)?;
             default_is_full_screen = Some(rdr.read_bool()?);
             default_is_native_resolution = Some(rdr.read_bool()?);
             mac_retina_support = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            disable_depth_and_stencil_buffers = Some(PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?);
+            disable_depth_and_stencil_buffers = Some(
+                PlayerSettingsDisableDepthAndStencilBuffersVariant::parse(rdr, ver)?,
+            );
             default_is_full_screen = Some(rdr.read_bool()?);
             default_is_native_resolution = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(4, 2, 0) {
@@ -2549,59 +2832,87 @@ impl crate::Parse for PlayerSettings {
             default_is_full_screen = Some(rdr.read_bool()?);
             use_alpha_in_dashboard = Some(rdr.read_bool()?);
         }
-            run_in_background = Some(rdr.read_bool()?);
+        run_in_background = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(6000, 6, 0) {
             call_on_disable_on_asset_bundle_unload = Some(rdr.read_bool()?);
             mute_other_audio_sources = Some(rdr.read_bool()?);
-            prepare_ios_for_recording = Some(PlayerSettingsPrepareIosForRecordingVariant::parse(rdr, ver)?);
-            force_ios_speakers_when_recording = Some(PlayerSettingsForceIosSpeakersWhenRecordingVariant::parse(rdr, ver)?);
+            prepare_ios_for_recording = Some(PlayerSettingsPrepareIosForRecordingVariant::parse(
+                rdr, ver,
+            )?);
+            force_ios_speakers_when_recording = Some(
+                PlayerSettingsForceIosSpeakersWhenRecordingVariant::parse(rdr, ver)?,
+            );
             audio_spatial_experience = Some(rdr.read_i32()?);
             defer_system_gestures_mode = Some(rdr.read_i32()?);
             hide_home_button = Some(rdr.read_bool()?);
             submit_analytics = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(6000, 2, 5) {
             mute_other_audio_sources = Some(rdr.read_bool()?);
-            prepare_ios_for_recording = Some(PlayerSettingsPrepareIosForRecordingVariant::parse(rdr, ver)?);
-            force_ios_speakers_when_recording = Some(PlayerSettingsForceIosSpeakersWhenRecordingVariant::parse(rdr, ver)?);
+            prepare_ios_for_recording = Some(PlayerSettingsPrepareIosForRecordingVariant::parse(
+                rdr, ver,
+            )?);
+            force_ios_speakers_when_recording = Some(
+                PlayerSettingsForceIosSpeakersWhenRecordingVariant::parse(rdr, ver)?,
+            );
             audio_spatial_experience = Some(rdr.read_i32()?);
             defer_system_gestures_mode = Some(rdr.read_i32()?);
             hide_home_button = Some(rdr.read_bool()?);
             submit_analytics = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(6000, 1, 0) {
             mute_other_audio_sources = Some(rdr.read_bool()?);
-            prepare_ios_for_recording = Some(PlayerSettingsPrepareIosForRecordingVariant::parse(rdr, ver)?);
-            force_ios_speakers_when_recording = Some(PlayerSettingsForceIosSpeakersWhenRecordingVariant::parse(rdr, ver)?);
+            prepare_ios_for_recording = Some(PlayerSettingsPrepareIosForRecordingVariant::parse(
+                rdr, ver,
+            )?);
+            force_ios_speakers_when_recording = Some(
+                PlayerSettingsForceIosSpeakersWhenRecordingVariant::parse(rdr, ver)?,
+            );
             defer_system_gestures_mode = Some(rdr.read_i32()?);
             hide_home_button = Some(rdr.read_bool()?);
             submit_analytics = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(6000, 0, 58) {
             mute_other_audio_sources = Some(rdr.read_bool()?);
-            prepare_ios_for_recording = Some(PlayerSettingsPrepareIosForRecordingVariant::parse(rdr, ver)?);
-            force_ios_speakers_when_recording = Some(PlayerSettingsForceIosSpeakersWhenRecordingVariant::parse(rdr, ver)?);
+            prepare_ios_for_recording = Some(PlayerSettingsPrepareIosForRecordingVariant::parse(
+                rdr, ver,
+            )?);
+            force_ios_speakers_when_recording = Some(
+                PlayerSettingsForceIosSpeakersWhenRecordingVariant::parse(rdr, ver)?,
+            );
             audio_spatial_experience = Some(rdr.read_i32()?);
             defer_system_gestures_mode = Some(rdr.read_i32()?);
             hide_home_button = Some(rdr.read_bool()?);
             submit_analytics = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(6000, 0, 15) {
             mute_other_audio_sources = Some(rdr.read_bool()?);
-            prepare_ios_for_recording = Some(PlayerSettingsPrepareIosForRecordingVariant::parse(rdr, ver)?);
-            force_ios_speakers_when_recording = Some(PlayerSettingsForceIosSpeakersWhenRecordingVariant::parse(rdr, ver)?);
+            prepare_ios_for_recording = Some(PlayerSettingsPrepareIosForRecordingVariant::parse(
+                rdr, ver,
+            )?);
+            force_ios_speakers_when_recording = Some(
+                PlayerSettingsForceIosSpeakersWhenRecordingVariant::parse(rdr, ver)?,
+            );
             defer_system_gestures_mode = Some(rdr.read_i32()?);
             hide_home_button = Some(rdr.read_bool()?);
             submit_analytics = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2023, 1, 0) {
             capture_single_screen = Some(rdr.read_bool()?);
             mute_other_audio_sources = Some(rdr.read_bool()?);
-            prepare_ios_for_recording = Some(PlayerSettingsPrepareIosForRecordingVariant::parse(rdr, ver)?);
-            force_ios_speakers_when_recording = Some(PlayerSettingsForceIosSpeakersWhenRecordingVariant::parse(rdr, ver)?);
+            prepare_ios_for_recording = Some(PlayerSettingsPrepareIosForRecordingVariant::parse(
+                rdr, ver,
+            )?);
+            force_ios_speakers_when_recording = Some(
+                PlayerSettingsForceIosSpeakersWhenRecordingVariant::parse(rdr, ver)?,
+            );
             defer_system_gestures_mode = Some(rdr.read_i32()?);
             hide_home_button = Some(rdr.read_bool()?);
             submit_analytics = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2022, 3, 49) {
             capture_single_screen = Some(rdr.read_bool()?);
             mute_other_audio_sources = Some(rdr.read_bool()?);
-            prepare_ios_for_recording = Some(PlayerSettingsPrepareIosForRecordingVariant::parse(rdr, ver)?);
-            force_ios_speakers_when_recording = Some(PlayerSettingsForceIosSpeakersWhenRecordingVariant::parse(rdr, ver)?);
+            prepare_ios_for_recording = Some(PlayerSettingsPrepareIosForRecordingVariant::parse(
+                rdr, ver,
+            )?);
+            force_ios_speakers_when_recording = Some(
+                PlayerSettingsForceIosSpeakersWhenRecordingVariant::parse(rdr, ver)?,
+            );
             audio_spatial_experience = Some(rdr.read_i32()?);
             defer_system_gestures_mode = Some(rdr.read_i32()?);
             hide_home_button = Some(rdr.read_bool()?);
@@ -2609,55 +2920,77 @@ impl crate::Parse for PlayerSettings {
         } else if *ver >= crate::UnityVersion::new(2017, 1, 2) {
             capture_single_screen = Some(rdr.read_bool()?);
             mute_other_audio_sources = Some(rdr.read_bool()?);
-            prepare_ios_for_recording = Some(PlayerSettingsPrepareIosForRecordingVariant::parse(rdr, ver)?);
-            force_ios_speakers_when_recording = Some(PlayerSettingsForceIosSpeakersWhenRecordingVariant::parse(rdr, ver)?);
+            prepare_ios_for_recording = Some(PlayerSettingsPrepareIosForRecordingVariant::parse(
+                rdr, ver,
+            )?);
+            force_ios_speakers_when_recording = Some(
+                PlayerSettingsForceIosSpeakersWhenRecordingVariant::parse(rdr, ver)?,
+            );
             defer_system_gestures_mode = Some(rdr.read_i32()?);
             hide_home_button = Some(rdr.read_bool()?);
             submit_analytics = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             capture_single_screen = Some(rdr.read_bool()?);
             mute_other_audio_sources = Some(rdr.read_bool()?);
-            prepare_ios_for_recording = Some(PlayerSettingsPrepareIosForRecordingVariant::parse(rdr, ver)?);
-            force_ios_speakers_when_recording = Some(PlayerSettingsForceIosSpeakersWhenRecordingVariant::parse(rdr, ver)?);
+            prepare_ios_for_recording = Some(PlayerSettingsPrepareIosForRecordingVariant::parse(
+                rdr, ver,
+            )?);
+            force_ios_speakers_when_recording = Some(
+                PlayerSettingsForceIosSpeakersWhenRecordingVariant::parse(rdr, ver)?,
+            );
             submit_analytics = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(5, 6, 5) {
             capture_single_screen = Some(rdr.read_bool()?);
             mute_other_audio_sources = Some(rdr.read_bool()?);
-            prepare_ios_for_recording = Some(PlayerSettingsPrepareIosForRecordingVariant::parse(rdr, ver)?);
+            prepare_ios_for_recording = Some(PlayerSettingsPrepareIosForRecordingVariant::parse(
+                rdr, ver,
+            )?);
             defer_system_gestures_mode = Some(rdr.read_i32()?);
             hide_home_button = Some(rdr.read_bool()?);
             submit_analytics = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
             capture_single_screen = Some(rdr.read_bool()?);
             mute_other_audio_sources = Some(rdr.read_bool()?);
-            prepare_ios_for_recording = Some(PlayerSettingsPrepareIosForRecordingVariant::parse(rdr, ver)?);
+            prepare_ios_for_recording = Some(PlayerSettingsPrepareIosForRecordingVariant::parse(
+                rdr, ver,
+            )?);
             submit_analytics = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 3) {
             capture_single_screen = Some(rdr.read_bool()?);
             override_i_pod_music = Some(rdr.read_bool()?);
             mute_other_audio_sources = Some(rdr.read_bool()?);
-            prepare_ios_for_recording = Some(PlayerSettingsPrepareIosForRecordingVariant::parse(rdr, ver)?);
+            prepare_ios_for_recording = Some(PlayerSettingsPrepareIosForRecordingVariant::parse(
+                rdr, ver,
+            )?);
             submit_analytics = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
             capture_single_screen = Some(rdr.read_bool()?);
             override_i_pod_music = Some(rdr.read_bool()?);
-            prepare_ios_for_recording = Some(PlayerSettingsPrepareIosForRecordingVariant::parse(rdr, ver)?);
+            prepare_ios_for_recording = Some(PlayerSettingsPrepareIosForRecordingVariant::parse(
+                rdr, ver,
+            )?);
             submit_analytics = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(5, 3, 8) {
             capture_single_screen = Some(rdr.read_bool()?);
             override_i_pod_music = Some(rdr.read_bool()?);
             mute_other_audio_sources = Some(rdr.read_bool()?);
-            prepare_ios_for_recording = Some(PlayerSettingsPrepareIosForRecordingVariant::parse(rdr, ver)?);
+            prepare_ios_for_recording = Some(PlayerSettingsPrepareIosForRecordingVariant::parse(
+                rdr, ver,
+            )?);
             submit_analytics = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
             capture_single_screen = Some(rdr.read_bool()?);
             override_i_pod_music = Some(rdr.read_bool()?);
-            prepare_ios_for_recording = Some(PlayerSettingsPrepareIosForRecordingVariant::parse(rdr, ver)?);
+            prepare_ios_for_recording = Some(PlayerSettingsPrepareIosForRecordingVariant::parse(
+                rdr, ver,
+            )?);
             submit_analytics = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(4, 2, 0) {
             capture_single_screen = Some(rdr.read_bool()?);
             override_i_pod_music = Some(rdr.read_bool()?);
-            prepare_ios_for_recording = Some(PlayerSettingsPrepareIosForRecordingVariant::parse(rdr, ver)?);
+            prepare_ios_for_recording = Some(PlayerSettingsPrepareIosForRecordingVariant::parse(
+                rdr, ver,
+            )?);
             enable_hw_statistics = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(4, 1, 0) {
             capture_single_screen = Some(rdr.read_bool()?);
@@ -2667,7 +3000,7 @@ impl crate::Parse for PlayerSettings {
             capture_single_screen = Some(rdr.read_bool()?);
             override_i_pod_music = Some(rdr.read_bool()?);
         }
-            use_player_log = Some(rdr.read_bool()?);
+        use_player_log = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(2023, 1, 9) {
             dedicated_server_optimizations = Some(rdr.read_bool()?);
             bake_collision_meshes = Some(rdr.read_bool()?);
@@ -2703,7 +3036,9 @@ impl crate::Parse for PlayerSettings {
             resizable_window = Some(rdr.read_bool()?);
         } else {
         }
-            use_mac_app_store_validation = Some(PlayerSettingsUseMacAppStoreValidationVariant::parse(rdr, ver)?);
+        use_mac_app_store_validation = Some(PlayerSettingsUseMacAppStoreValidationVariant::parse(
+            rdr, ver,
+        )?);
         if *ver >= crate::UnityVersion::new(6000, 4, 1) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -2713,18 +3048,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             metal_use_metal_display_link = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
@@ -2737,25 +3076,35 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_gpu_scratch_pool_granularity = Some(rdr.read_i32()?);
             switch_allow_gpu_scratch_shrinking = Some(rdr.read_bool()?);
             rdr.align(4)?;
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
             switch_max_worker_multiple = Some(rdr.read_i32()?);
-            switch_nvn_graphics_firmware_memory = Some(PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?);
+            switch_nvn_graphics_firmware_memory = Some(
+                PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?,
+            );
             switch_graphics_jobs_sync_after_kick = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             load_store_debug_mode_enabled = Some(rdr.read_bool()?);
@@ -2769,12 +3118,15 @@ impl crate::Parse for PlayerSettings {
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             enable_open_gl_profiler_gpu_recorders = Some(rdr.read_bool()?);
             rdr.align(4)?;
             allow_hdr_display_support = Some(rdr.read_bool()?);
@@ -2782,14 +3134,23 @@ impl crate::Parse for PlayerSettings {
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             hdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             reset_resolution_on_window_resize = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             android_min_aspect_ratio = Some(rdr.read_f32()?);
             rdr.align(4)?;
             active_input_handler = Some(rdr.read_i32()?);
@@ -2798,22 +3159,49 @@ impl crate::Parse for PlayerSettings {
             rdr.align(4)?;
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
-            quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            quality_settings_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
             cloud_enabled = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
             platform_requires_readable_assets = Some(rdr.read_bool()?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
             insecure_http_option = Some(rdr.read_i32()?);
-            android_vulkan_deny_filter_list = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AndroidDeviceFilterData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            android_vulkan_deny_filter_list = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| AndroidDeviceFilterData::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            android_vulkan_allow_filter_list = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AndroidDeviceFilterData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            android_vulkan_allow_filter_list = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| AndroidDeviceFilterData::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             android_vulkan_device_filter_list_asset = Some(crate::PPtr::parse(rdr, ver)?);
-            d3d12_device_filter_list_asset = Some(PlayerSettingsD3d12DeviceFilterListAssetVariant::parse(rdr, ver)?);
+            d3d12_device_filter_list_asset = Some(
+                PlayerSettingsD3d12DeviceFilterListAssetVariant::parse(rdr, ver)?,
+            );
             allowed_http_connections = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(6000, 4, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
@@ -2824,18 +3212,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             metal_use_metal_display_link = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
@@ -2848,25 +3240,35 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_gpu_scratch_pool_granularity = Some(rdr.read_i32()?);
             switch_allow_gpu_scratch_shrinking = Some(rdr.read_bool()?);
             rdr.align(4)?;
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
             switch_max_worker_multiple = Some(rdr.read_i32()?);
-            switch_nvn_graphics_firmware_memory = Some(PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?);
+            switch_nvn_graphics_firmware_memory = Some(
+                PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?,
+            );
             switch_graphics_jobs_sync_after_kick = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             load_store_debug_mode_enabled = Some(rdr.read_bool()?);
@@ -2880,12 +3282,15 @@ impl crate::Parse for PlayerSettings {
             metro_input_source = Some(rdr.read_i32()?);
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             enable_open_gl_profiler_gpu_recorders = Some(rdr.read_bool()?);
             rdr.align(4)?;
             allow_hdr_display_support = Some(rdr.read_bool()?);
@@ -2893,36 +3298,72 @@ impl crate::Parse for PlayerSettings {
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             hdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             reset_resolution_on_window_resize = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             android_min_aspect_ratio = Some(rdr.read_f32()?);
             rdr.align(4)?;
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
-            quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            quality_settings_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
             cloud_enabled = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
             platform_requires_readable_assets = Some(rdr.read_bool()?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
             insecure_http_option = Some(rdr.read_i32()?);
-            android_vulkan_deny_filter_list = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AndroidDeviceFilterData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            android_vulkan_deny_filter_list = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| AndroidDeviceFilterData::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            android_vulkan_allow_filter_list = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AndroidDeviceFilterData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            android_vulkan_allow_filter_list = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| AndroidDeviceFilterData::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             android_vulkan_device_filter_list_asset = Some(crate::PPtr::parse(rdr, ver)?);
-            d3d12_device_filter_list_asset = Some(PlayerSettingsD3d12DeviceFilterListAssetVariant::parse(rdr, ver)?);
+            d3d12_device_filter_list_asset = Some(
+                PlayerSettingsD3d12DeviceFilterListAssetVariant::parse(rdr, ver)?,
+            );
             allowed_http_connections = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(6000, 3, 11) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
@@ -2933,18 +3374,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             metal_use_metal_display_link = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
@@ -2957,25 +3402,35 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_gpu_scratch_pool_granularity = Some(rdr.read_i32()?);
             switch_allow_gpu_scratch_shrinking = Some(rdr.read_bool()?);
             rdr.align(4)?;
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
             switch_max_worker_multiple = Some(rdr.read_i32()?);
-            switch_nvn_graphics_firmware_memory = Some(PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?);
+            switch_nvn_graphics_firmware_memory = Some(
+                PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?,
+            );
             switch_graphics_jobs_sync_after_kick = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             load_store_debug_mode_enabled = Some(rdr.read_bool()?);
@@ -2990,14 +3445,17 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             enable_open_gl_profiler_gpu_recorders = Some(rdr.read_bool()?);
             rdr.align(4)?;
             allow_hdr_display_support = Some(rdr.read_bool()?);
@@ -3005,36 +3463,72 @@ impl crate::Parse for PlayerSettings {
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             hdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             reset_resolution_on_window_resize = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             android_min_aspect_ratio = Some(rdr.read_f32()?);
             rdr.align(4)?;
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
-            quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            quality_settings_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
             cloud_enabled = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
             platform_requires_readable_assets = Some(rdr.read_bool()?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
             insecure_http_option = Some(rdr.read_i32()?);
-            android_vulkan_deny_filter_list = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AndroidDeviceFilterData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            android_vulkan_deny_filter_list = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| AndroidDeviceFilterData::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            android_vulkan_allow_filter_list = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AndroidDeviceFilterData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            android_vulkan_allow_filter_list = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| AndroidDeviceFilterData::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             android_vulkan_device_filter_list_asset = Some(crate::PPtr::parse(rdr, ver)?);
-            d3d12_device_filter_list_asset = Some(PlayerSettingsD3d12DeviceFilterListAssetVariant::parse(rdr, ver)?);
+            d3d12_device_filter_list_asset = Some(
+                PlayerSettingsD3d12DeviceFilterListAssetVariant::parse(rdr, ver)?,
+            );
             allowed_http_connections = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(6000, 3, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
@@ -3045,18 +3539,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -3067,25 +3565,35 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_gpu_scratch_pool_granularity = Some(rdr.read_i32()?);
             switch_allow_gpu_scratch_shrinking = Some(rdr.read_bool()?);
             rdr.align(4)?;
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
             switch_max_worker_multiple = Some(rdr.read_i32()?);
-            switch_nvn_graphics_firmware_memory = Some(PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?);
+            switch_nvn_graphics_firmware_memory = Some(
+                PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?,
+            );
             switch_graphics_jobs_sync_after_kick = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             load_store_debug_mode_enabled = Some(rdr.read_bool()?);
@@ -3100,14 +3608,17 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             enable_open_gl_profiler_gpu_recorders = Some(rdr.read_bool()?);
             rdr.align(4)?;
             allow_hdr_display_support = Some(rdr.read_bool()?);
@@ -3115,36 +3626,72 @@ impl crate::Parse for PlayerSettings {
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             hdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             reset_resolution_on_window_resize = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             android_min_aspect_ratio = Some(rdr.read_f32()?);
             rdr.align(4)?;
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
-            quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            quality_settings_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
             cloud_enabled = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
             platform_requires_readable_assets = Some(rdr.read_bool()?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
             insecure_http_option = Some(rdr.read_i32()?);
-            android_vulkan_deny_filter_list = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AndroidDeviceFilterData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            android_vulkan_deny_filter_list = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| AndroidDeviceFilterData::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            android_vulkan_allow_filter_list = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AndroidDeviceFilterData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            android_vulkan_allow_filter_list = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| AndroidDeviceFilterData::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             android_vulkan_device_filter_list_asset = Some(crate::PPtr::parse(rdr, ver)?);
-            d3d12_device_filter_list_asset = Some(PlayerSettingsD3d12DeviceFilterListAssetVariant::parse(rdr, ver)?);
+            d3d12_device_filter_list_asset = Some(
+                PlayerSettingsD3d12DeviceFilterListAssetVariant::parse(rdr, ver)?,
+            );
             allowed_http_connections = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(6000, 2, 7) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
@@ -3155,18 +3702,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -3177,25 +3728,35 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_gpu_scratch_pool_granularity = Some(rdr.read_i32()?);
             switch_allow_gpu_scratch_shrinking = Some(rdr.read_bool()?);
             rdr.align(4)?;
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
             switch_max_worker_multiple = Some(rdr.read_i32()?);
-            switch_nvn_graphics_firmware_memory = Some(PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?);
+            switch_nvn_graphics_firmware_memory = Some(
+                PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?,
+            );
             switch_graphics_jobs_sync_after_kick = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             load_store_debug_mode_enabled = Some(rdr.read_bool()?);
@@ -3210,14 +3771,17 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             enable_open_gl_profiler_gpu_recorders = Some(rdr.read_bool()?);
             rdr.align(4)?;
             allow_hdr_display_support = Some(rdr.read_bool()?);
@@ -3225,36 +3789,72 @@ impl crate::Parse for PlayerSettings {
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             hdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             reset_resolution_on_window_resize = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             android_min_aspect_ratio = Some(rdr.read_f32()?);
             rdr.align(4)?;
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
-            quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            quality_settings_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
             cloud_enabled = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
             platform_requires_readable_assets = Some(rdr.read_bool()?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
             insecure_http_option = Some(rdr.read_i32()?);
-            android_vulkan_deny_filter_list = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AndroidDeviceFilterData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            android_vulkan_deny_filter_list = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| AndroidDeviceFilterData::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            android_vulkan_allow_filter_list = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AndroidDeviceFilterData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            android_vulkan_allow_filter_list = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| AndroidDeviceFilterData::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             android_vulkan_device_filter_list_asset = Some(crate::PPtr::parse(rdr, ver)?);
-            d3d12_device_filter_list_asset = Some(PlayerSettingsD3d12DeviceFilterListAssetVariant::parse(rdr, ver)?);
+            d3d12_device_filter_list_asset = Some(
+                PlayerSettingsD3d12DeviceFilterListAssetVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(6000, 2, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -3264,18 +3864,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -3286,25 +3890,35 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_gpu_scratch_pool_granularity = Some(rdr.read_i32()?);
             switch_allow_gpu_scratch_shrinking = Some(rdr.read_bool()?);
             rdr.align(4)?;
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
             switch_max_worker_multiple = Some(rdr.read_i32()?);
-            switch_nvn_graphics_firmware_memory = Some(PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?);
+            switch_nvn_graphics_firmware_memory = Some(
+                PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?,
+            );
             switch_graphics_jobs_sync_after_kick = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             load_store_debug_mode_enabled = Some(rdr.read_bool()?);
@@ -3319,14 +3933,17 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             enable_open_gl_profiler_gpu_recorders = Some(rdr.read_bool()?);
             rdr.align(4)?;
             allow_hdr_display_support = Some(rdr.read_bool()?);
@@ -3334,33 +3951,67 @@ impl crate::Parse for PlayerSettings {
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             hdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             reset_resolution_on_window_resize = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             android_min_aspect_ratio = Some(rdr.read_f32()?);
             rdr.align(4)?;
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
-            quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            quality_settings_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
             cloud_enabled = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
             platform_requires_readable_assets = Some(rdr.read_bool()?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
             insecure_http_option = Some(rdr.read_i32()?);
-            android_vulkan_deny_filter_list = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AndroidDeviceFilterData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            android_vulkan_deny_filter_list = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| AndroidDeviceFilterData::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            android_vulkan_allow_filter_list = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AndroidDeviceFilterData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            android_vulkan_allow_filter_list = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| AndroidDeviceFilterData::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             android_vulkan_device_filter_list_asset = Some(crate::PPtr::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(6000, 1, 0) {
@@ -3372,18 +4023,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -3394,23 +4049,33 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_gpu_scratch_pool_granularity = Some(rdr.read_i32()?);
             switch_allow_gpu_scratch_shrinking = Some(rdr.read_bool()?);
             rdr.align(4)?;
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
             switch_max_worker_multiple = Some(rdr.read_i32()?);
-            switch_nvn_graphics_firmware_memory = Some(PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?);
+            switch_nvn_graphics_firmware_memory = Some(
+                PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?,
+            );
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             load_store_debug_mode_enabled = Some(rdr.read_bool()?);
@@ -3425,14 +4090,17 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             enable_open_gl_profiler_gpu_recorders = Some(rdr.read_bool()?);
             rdr.align(4)?;
             allow_hdr_display_support = Some(rdr.read_bool()?);
@@ -3440,33 +4108,67 @@ impl crate::Parse for PlayerSettings {
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             hdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             reset_resolution_on_window_resize = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             android_min_aspect_ratio = Some(rdr.read_f32()?);
             rdr.align(4)?;
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
-            quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            quality_settings_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
             cloud_enabled = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
             platform_requires_readable_assets = Some(rdr.read_bool()?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
             insecure_http_option = Some(rdr.read_i32()?);
-            android_vulkan_deny_filter_list = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AndroidDeviceFilterData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            android_vulkan_deny_filter_list = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| AndroidDeviceFilterData::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            android_vulkan_allow_filter_list = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AndroidDeviceFilterData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            android_vulkan_allow_filter_list = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| AndroidDeviceFilterData::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             android_vulkan_device_filter_list_asset = Some(crate::PPtr::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(6000, 0, 5) {
@@ -3478,18 +4180,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -3500,23 +4206,33 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_gpu_scratch_pool_granularity = Some(rdr.read_i32()?);
             switch_allow_gpu_scratch_shrinking = Some(rdr.read_bool()?);
             rdr.align(4)?;
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
             switch_max_worker_multiple = Some(rdr.read_i32()?);
-            switch_nvn_graphics_firmware_memory = Some(PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?);
+            switch_nvn_graphics_firmware_memory = Some(
+                PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?,
+            );
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             load_store_debug_mode_enabled = Some(rdr.read_bool()?);
@@ -3531,14 +4247,17 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             enable_open_gl_profiler_gpu_recorders = Some(rdr.read_bool()?);
             rdr.align(4)?;
             allow_hdr_display_support = Some(rdr.read_bool()?);
@@ -3546,33 +4265,67 @@ impl crate::Parse for PlayerSettings {
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             hdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             reset_resolution_on_window_resize = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             android_min_aspect_ratio = Some(rdr.read_f32()?);
             rdr.align(4)?;
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
-            quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            quality_settings_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
             cloud_enabled = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
             platform_requires_readable_assets = Some(rdr.read_bool()?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
             insecure_http_option = Some(rdr.read_i32()?);
-            android_vulkan_deny_filter_list = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AndroidDeviceFilterData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            android_vulkan_deny_filter_list = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| AndroidDeviceFilterData::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            android_vulkan_allow_filter_list = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AndroidDeviceFilterData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            android_vulkan_allow_filter_list = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| AndroidDeviceFilterData::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2023, 3, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
@@ -3583,18 +4336,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -3605,23 +4362,33 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_gpu_scratch_pool_granularity = Some(rdr.read_i32()?);
             switch_allow_gpu_scratch_shrinking = Some(rdr.read_bool()?);
             rdr.align(4)?;
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
             switch_max_worker_multiple = Some(rdr.read_i32()?);
-            switch_nvn_graphics_firmware_memory = Some(PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?);
+            switch_nvn_graphics_firmware_memory = Some(
+                PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?,
+            );
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             load_store_debug_mode_enabled = Some(rdr.read_bool()?);
@@ -3636,14 +4403,17 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             enable_open_gl_profiler_gpu_recorders = Some(rdr.read_bool()?);
             rdr.align(4)?;
             allow_hdr_display_support = Some(rdr.read_bool()?);
@@ -3651,29 +4421,49 @@ impl crate::Parse for PlayerSettings {
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             hdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             reset_resolution_on_window_resize = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             android_min_aspect_ratio = Some(rdr.read_f32()?);
             rdr.align(4)?;
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
-            quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            quality_settings_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
             cloud_enabled = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
             platform_requires_readable_assets = Some(rdr.read_bool()?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
             insecure_http_option = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2023, 2, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
@@ -3684,18 +4474,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -3706,23 +4500,33 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_gpu_scratch_pool_granularity = Some(rdr.read_i32()?);
             switch_allow_gpu_scratch_shrinking = Some(rdr.read_bool()?);
             rdr.align(4)?;
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
             switch_max_worker_multiple = Some(rdr.read_i32()?);
-            switch_nvn_graphics_firmware_memory = Some(PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?);
+            switch_nvn_graphics_firmware_memory = Some(
+                PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?,
+            );
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             load_store_debug_mode_enabled = Some(rdr.read_bool()?);
@@ -3735,14 +4539,17 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             enable_open_gl_profiler_gpu_recorders = Some(rdr.read_bool()?);
             rdr.align(4)?;
             allow_hdr_display_support = Some(rdr.read_bool()?);
@@ -3750,29 +4557,49 @@ impl crate::Parse for PlayerSettings {
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             hdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             reset_resolution_on_window_resize = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             android_min_aspect_ratio = Some(rdr.read_f32()?);
             rdr.align(4)?;
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
-            quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            quality_settings_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
             cloud_enabled = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
             platform_requires_readable_assets = Some(rdr.read_bool()?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
             insecure_http_option = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2023, 1, 12) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
@@ -3783,18 +4610,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -3805,23 +4636,33 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_gpu_scratch_pool_granularity = Some(rdr.read_i32()?);
             switch_allow_gpu_scratch_shrinking = Some(rdr.read_bool()?);
             rdr.align(4)?;
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
             switch_max_worker_multiple = Some(rdr.read_i32()?);
-            switch_nvn_graphics_firmware_memory = Some(PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?);
+            switch_nvn_graphics_firmware_memory = Some(
+                PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?,
+            );
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             load_store_debug_mode_enabled = Some(rdr.read_bool()?);
@@ -3834,14 +4675,17 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             enable_open_gl_profiler_gpu_recorders = Some(rdr.read_bool()?);
             rdr.align(4)?;
             allow_hdr_display_support = Some(rdr.read_bool()?);
@@ -3849,26 +4693,46 @@ impl crate::Parse for PlayerSettings {
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             hdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             reset_resolution_on_window_resize = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
-            quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            quality_settings_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
             cloud_enabled = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
             insecure_http_option = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2023, 1, 10) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
@@ -3879,18 +4743,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -3901,23 +4769,33 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_gpu_scratch_pool_granularity = Some(rdr.read_i32()?);
             switch_allow_gpu_scratch_shrinking = Some(rdr.read_bool()?);
             rdr.align(4)?;
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
             switch_max_worker_multiple = Some(rdr.read_i32()?);
-            switch_nvn_graphics_firmware_memory = Some(PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?);
+            switch_nvn_graphics_firmware_memory = Some(
+                PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?,
+            );
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             load_store_debug_mode_enabled = Some(rdr.read_bool()?);
@@ -3930,39 +4808,62 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             enable_open_gl_profiler_gpu_recorders = Some(rdr.read_bool()?);
             rdr.align(4)?;
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             hdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             reset_resolution_on_window_resize = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
-            quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            quality_settings_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
             cloud_enabled = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
             insecure_http_option = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2023, 1, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
@@ -3973,18 +4874,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -3995,22 +4900,32 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_gpu_scratch_pool_granularity = Some(rdr.read_i32()?);
             switch_allow_gpu_scratch_shrinking = Some(rdr.read_bool()?);
             rdr.align(4)?;
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
-            switch_nvn_graphics_firmware_memory = Some(PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_graphics_firmware_memory = Some(
+                PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?,
+            );
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             load_store_debug_mode_enabled = Some(rdr.read_bool()?);
@@ -4023,39 +4938,62 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             enable_open_gl_profiler_gpu_recorders = Some(rdr.read_bool()?);
             rdr.align(4)?;
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             hdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             reset_resolution_on_window_resize = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
-            quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            quality_settings_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
             cloud_enabled = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
             insecure_http_option = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2022, 3, 18) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
@@ -4065,18 +5003,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -4087,26 +5029,36 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_gpu_scratch_pool_granularity = Some(rdr.read_i32()?);
             switch_allow_gpu_scratch_shrinking = Some(rdr.read_bool()?);
             rdr.align(4)?;
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
-            switch_nvn_graphics_firmware_memory = Some(PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_graphics_firmware_memory = Some(
+                PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?,
+            );
             switch_max_worker_multiple = Some(rdr.read_i32()?);
             stadia_present_mode = Some(rdr.read_i32()?);
             stadia_target_framerate = Some(rdr.read_i32()?);
             rdr.align(4)?;
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             load_store_debug_mode_enabled = Some(rdr.read_bool()?);
@@ -4121,14 +5073,17 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             enable_open_gl_profiler_gpu_recorders = Some(rdr.read_bool()?);
             rdr.align(4)?;
             allow_hdr_display_support = Some(rdr.read_bool()?);
@@ -4136,27 +5091,47 @@ impl crate::Parse for PlayerSettings {
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             hdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             reset_resolution_on_window_resize = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
-            quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            quality_settings_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
             cloud_enabled = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
             platform_requires_readable_assets = Some(rdr.read_bool()?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
             insecure_http_option = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2022, 3, 11) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
@@ -4166,18 +5141,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -4188,26 +5167,36 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_gpu_scratch_pool_granularity = Some(rdr.read_i32()?);
             switch_allow_gpu_scratch_shrinking = Some(rdr.read_bool()?);
             rdr.align(4)?;
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
-            switch_nvn_graphics_firmware_memory = Some(PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_graphics_firmware_memory = Some(
+                PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?,
+            );
             switch_max_worker_multiple = Some(rdr.read_i32()?);
             stadia_present_mode = Some(rdr.read_i32()?);
             stadia_target_framerate = Some(rdr.read_i32()?);
             rdr.align(4)?;
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             load_store_debug_mode_enabled = Some(rdr.read_bool()?);
@@ -4220,14 +5209,17 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             enable_open_gl_profiler_gpu_recorders = Some(rdr.read_bool()?);
             rdr.align(4)?;
             allow_hdr_display_support = Some(rdr.read_bool()?);
@@ -4235,27 +5227,47 @@ impl crate::Parse for PlayerSettings {
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             hdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             reset_resolution_on_window_resize = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
-            quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            quality_settings_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
             cloud_enabled = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
             platform_requires_readable_assets = Some(rdr.read_bool()?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
             insecure_http_option = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2022, 3, 8) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
@@ -4265,18 +5277,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -4287,26 +5303,36 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_gpu_scratch_pool_granularity = Some(rdr.read_i32()?);
             switch_allow_gpu_scratch_shrinking = Some(rdr.read_bool()?);
             rdr.align(4)?;
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
-            switch_nvn_graphics_firmware_memory = Some(PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_graphics_firmware_memory = Some(
+                PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?,
+            );
             switch_max_worker_multiple = Some(rdr.read_i32()?);
             stadia_present_mode = Some(rdr.read_i32()?);
             stadia_target_framerate = Some(rdr.read_i32()?);
             rdr.align(4)?;
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             load_store_debug_mode_enabled = Some(rdr.read_bool()?);
@@ -4319,40 +5345,63 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             enable_open_gl_profiler_gpu_recorders = Some(rdr.read_bool()?);
             rdr.align(4)?;
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             hdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             reset_resolution_on_window_resize = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
-            quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            quality_settings_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
             cloud_enabled = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
             platform_requires_readable_assets = Some(rdr.read_bool()?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
             insecure_http_option = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2022, 2, 19) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
@@ -4362,18 +5411,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -4384,25 +5437,35 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_gpu_scratch_pool_granularity = Some(rdr.read_i32()?);
             switch_allow_gpu_scratch_shrinking = Some(rdr.read_bool()?);
             rdr.align(4)?;
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
-            switch_nvn_graphics_firmware_memory = Some(PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_graphics_firmware_memory = Some(
+                PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?,
+            );
             stadia_present_mode = Some(rdr.read_i32()?);
             stadia_target_framerate = Some(rdr.read_i32()?);
             rdr.align(4)?;
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             load_store_debug_mode_enabled = Some(rdr.read_bool()?);
@@ -4415,40 +5478,63 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             enable_open_gl_profiler_gpu_recorders = Some(rdr.read_bool()?);
             rdr.align(4)?;
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             hdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             reset_resolution_on_window_resize = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
-            quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            quality_settings_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
             cloud_enabled = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
             platform_requires_readable_assets = Some(rdr.read_bool()?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
             insecure_http_option = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2022, 2, 15) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
@@ -4458,18 +5544,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -4480,25 +5570,35 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_gpu_scratch_pool_granularity = Some(rdr.read_i32()?);
             switch_allow_gpu_scratch_shrinking = Some(rdr.read_bool()?);
             rdr.align(4)?;
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
-            switch_nvn_graphics_firmware_memory = Some(PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_graphics_firmware_memory = Some(
+                PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?,
+            );
             stadia_present_mode = Some(rdr.read_i32()?);
             stadia_target_framerate = Some(rdr.read_i32()?);
             rdr.align(4)?;
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             load_store_debug_mode_enabled = Some(rdr.read_bool()?);
@@ -4511,39 +5611,62 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             enable_open_gl_profiler_gpu_recorders = Some(rdr.read_bool()?);
             rdr.align(4)?;
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             hdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             reset_resolution_on_window_resize = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
-            quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            quality_settings_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
             cloud_enabled = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
             insecure_http_option = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2022, 2, 3) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
@@ -4553,18 +5676,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -4575,25 +5702,35 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_gpu_scratch_pool_granularity = Some(rdr.read_i32()?);
             switch_allow_gpu_scratch_shrinking = Some(rdr.read_bool()?);
             rdr.align(4)?;
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
-            switch_nvn_graphics_firmware_memory = Some(PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_graphics_firmware_memory = Some(
+                PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?,
+            );
             stadia_present_mode = Some(rdr.read_i32()?);
             stadia_target_framerate = Some(rdr.read_i32()?);
             rdr.align(4)?;
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             load_store_debug_mode_enabled = Some(rdr.read_bool()?);
@@ -4606,39 +5743,62 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             enable_open_gl_profiler_gpu_recorders = Some(rdr.read_bool()?);
             rdr.align(4)?;
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             d3dhdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             reset_resolution_on_window_resize = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
-            quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            quality_settings_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
             cloud_enabled = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
             insecure_http_option = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
@@ -4648,18 +5808,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -4670,25 +5834,35 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_gpu_scratch_pool_granularity = Some(rdr.read_i32()?);
             switch_allow_gpu_scratch_shrinking = Some(rdr.read_bool()?);
             rdr.align(4)?;
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
-            switch_nvn_graphics_firmware_memory = Some(PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_graphics_firmware_memory = Some(
+                PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?,
+            );
             stadia_present_mode = Some(rdr.read_i32()?);
             stadia_target_framerate = Some(rdr.read_i32()?);
             rdr.align(4)?;
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             load_store_debug_mode_enabled = Some(rdr.read_bool()?);
@@ -4699,39 +5873,62 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             enable_open_gl_profiler_gpu_recorders = Some(rdr.read_bool()?);
             rdr.align(4)?;
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             d3dhdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             reset_resolution_on_window_resize = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
-            quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            quality_settings_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
             cloud_enabled = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
             hmi_loading_image = Some(crate::PPtr::parse(rdr, ver)?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
             insecure_http_option = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2022, 1, 2) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
@@ -4741,18 +5938,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -4763,25 +5964,35 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_gpu_scratch_pool_granularity = Some(rdr.read_i32()?);
             switch_allow_gpu_scratch_shrinking = Some(rdr.read_bool()?);
             rdr.align(4)?;
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
-            switch_nvn_graphics_firmware_memory = Some(PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_graphics_firmware_memory = Some(
+                PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?,
+            );
             stadia_present_mode = Some(rdr.read_i32()?);
             stadia_target_framerate = Some(rdr.read_i32()?);
             rdr.align(4)?;
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
@@ -4791,37 +6002,60 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             d3dhdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             reset_resolution_on_window_resize = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
-            quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            quality_settings_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
             cloud_enabled = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
             player_data_path = Some(rdr.read_aligned_string()?);
             force_srgb_blit = Some(rdr.read_bool()?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
             insecure_http_option = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
@@ -4831,18 +6065,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -4853,25 +6091,35 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_gpu_scratch_pool_granularity = Some(rdr.read_i32()?);
             switch_allow_gpu_scratch_shrinking = Some(rdr.read_bool()?);
             rdr.align(4)?;
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
-            switch_nvn_graphics_firmware_memory = Some(PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_graphics_firmware_memory = Some(
+                PlayerSettingsSwitchNvnGraphicsFirmwareMemoryVariant::parse(rdr, ver)?,
+            );
             stadia_present_mode = Some(rdr.read_i32()?);
             stadia_target_framerate = Some(rdr.read_i32()?);
             rdr.align(4)?;
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
@@ -4881,35 +6129,58 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             d3dhdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
-            quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            quality_settings_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
             cloud_enabled = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
             player_data_path = Some(rdr.read_aligned_string()?);
             force_srgb_blit = Some(rdr.read_bool()?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
             insecure_http_option = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2021, 3, 30) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
@@ -4919,18 +6190,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -4941,22 +6216,30 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
             switch_max_worker_multiple = Some(rdr.read_i32()?);
             stadia_present_mode = Some(rdr.read_i32()?);
             stadia_target_framerate = Some(rdr.read_i32()?);
             rdr.align(4)?;
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
@@ -4966,40 +6249,63 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             enable_open_gl_profiler_gpu_recorders = Some(rdr.read_bool()?);
             rdr.align(4)?;
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             d3dhdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             reset_resolution_on_window_resize = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
-            quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            quality_settings_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
             cloud_enabled = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
             player_data_path = Some(rdr.read_aligned_string()?);
             force_srgb_blit = Some(rdr.read_bool()?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2021, 3, 13) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -5008,18 +6314,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -5030,21 +6340,29 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
             stadia_present_mode = Some(rdr.read_i32()?);
             stadia_target_framerate = Some(rdr.read_i32()?);
             rdr.align(4)?;
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
@@ -5054,40 +6372,63 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             enable_open_gl_profiler_gpu_recorders = Some(rdr.read_bool()?);
             rdr.align(4)?;
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             d3dhdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             reset_resolution_on_window_resize = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
-            quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            quality_settings_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
             cloud_enabled = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
             player_data_path = Some(rdr.read_aligned_string()?);
             force_srgb_blit = Some(rdr.read_bool()?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2021, 3, 3) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -5096,18 +6437,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -5118,21 +6463,29 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
             stadia_present_mode = Some(rdr.read_i32()?);
             stadia_target_framerate = Some(rdr.read_i32()?);
             rdr.align(4)?;
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
@@ -5142,39 +6495,62 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             enable_open_gl_profiler_gpu_recorders = Some(rdr.read_bool()?);
             rdr.align(4)?;
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             d3dhdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             reset_resolution_on_window_resize = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
-            quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            quality_settings_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
             cloud_enabled = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
             player_data_path = Some(rdr.read_aligned_string()?);
             force_srgb_blit = Some(rdr.read_bool()?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2021, 3, 2) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -5183,18 +6559,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -5205,21 +6585,29 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
             stadia_present_mode = Some(rdr.read_i32()?);
             stadia_target_framerate = Some(rdr.read_i32()?);
             rdr.align(4)?;
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
@@ -5229,37 +6617,60 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             enable_open_gl_profiler_gpu_recorders = Some(rdr.read_bool()?);
             rdr.align(4)?;
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             d3dhdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
-            quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            quality_settings_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
             cloud_enabled = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
             player_data_path = Some(rdr.read_aligned_string()?);
             force_srgb_blit = Some(rdr.read_bool()?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2021, 2, 4) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -5268,18 +6679,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -5290,21 +6705,29 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
             stadia_present_mode = Some(rdr.read_i32()?);
             stadia_target_framerate = Some(rdr.read_i32()?);
             rdr.align(4)?;
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
@@ -5314,35 +6737,58 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             d3dhdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
-            quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            quality_settings_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
             cloud_enabled = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
             player_data_path = Some(rdr.read_aligned_string()?);
             force_srgb_blit = Some(rdr.read_bool()?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -5351,18 +6797,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -5373,21 +6823,29 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
             stadia_present_mode = Some(rdr.read_i32()?);
             stadia_target_framerate = Some(rdr.read_i32()?);
             rdr.align(4)?;
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
@@ -5397,35 +6855,58 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             d3dhdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
-            quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            quality_settings_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
             cloud_enabled = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
             player_data_path = Some(rdr.read_aligned_string()?);
             force_srgb_blit = Some(rdr.read_bool()?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
             upload_cleared_texture_data_after_creation_from_script = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2021, 1, 14) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
@@ -5435,18 +6916,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -5457,21 +6942,29 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
             stadia_present_mode = Some(rdr.read_i32()?);
             stadia_target_framerate = Some(rdr.read_i32()?);
             rdr.align(4)?;
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
@@ -5481,33 +6974,56 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             d3dhdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
-            quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            quality_settings_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
             cloud_enabled = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2021, 1, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -5516,18 +7032,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -5538,21 +7058,29 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
             stadia_present_mode = Some(rdr.read_i32()?);
             stadia_target_framerate = Some(rdr.read_i32()?);
             rdr.align(4)?;
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
             bundle_version = Some(rdr.read_aligned_string()?);
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
@@ -5560,33 +7088,56 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             d3dhdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
-            quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            quality_settings_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
             cloud_enabled = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2020, 3, 42) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -5595,18 +7146,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -5617,21 +7172,29 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
             stadia_present_mode = Some(rdr.read_i32()?);
             stadia_target_framerate = Some(rdr.read_i32()?);
             rdr.align(4)?;
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
@@ -5641,36 +7204,59 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             d3dhdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             reset_resolution_on_window_resize = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             windows_gamepad_backend_hint = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
-            quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            quality_settings_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
             cloud_enabled = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2020, 3, 35) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -5679,18 +7265,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -5701,21 +7291,29 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
             stadia_present_mode = Some(rdr.read_i32()?);
             stadia_target_framerate = Some(rdr.read_i32()?);
             rdr.align(4)?;
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
@@ -5725,35 +7323,58 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             d3dhdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             reset_resolution_on_window_resize = Some(rdr.read_bool()?);
             rdr.align(4)?;
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
-            quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            quality_settings_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
             cloud_enabled = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2020, 3, 18) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -5762,18 +7383,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -5784,21 +7409,29 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
             stadia_present_mode = Some(rdr.read_i32()?);
             stadia_target_framerate = Some(rdr.read_i32()?);
             rdr.align(4)?;
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             vulkan_enable_command_buffer_recycling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
@@ -5808,33 +7441,56 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             d3dhdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
-            quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            quality_settings_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
             cloud_enabled = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -5843,18 +7499,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -5865,21 +7525,29 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
             stadia_present_mode = Some(rdr.read_i32()?);
             stadia_target_framerate = Some(rdr.read_i32()?);
             rdr.align(4)?;
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_enable_pre_transform = Some(rdr.read_bool()?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
             bundle_version = Some(rdr.read_aligned_string()?);
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
@@ -5887,33 +7555,56 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             d3dhdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             active_input_handler = Some(rdr.read_i32()?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
-            quality_settings_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            quality_settings_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
             cloud_enabled = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2020, 1, 7) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -5922,18 +7613,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -5944,20 +7639,28 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
             stadia_present_mode = Some(rdr.read_i32()?);
             stadia_target_framerate = Some(rdr.read_i32()?);
             rdr.align(4)?;
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
             bundle_version = Some(rdr.read_aligned_string()?);
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
@@ -5965,23 +7668,35 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             d3dhdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             project_name = Some(rdr.read_aligned_string()?);
@@ -5989,8 +7704,12 @@ impl crate::Parse for PlayerSettings {
             cloud_enabled = Some(rdr.read_bool()?);
             enable_native_platform_backends_for_new_input_system = Some(rdr.read_bool()?);
             disable_old_input_manager_support = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2020, 1, 1) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -5999,18 +7718,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -6021,19 +7744,26 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
             stadia_present_mode = Some(rdr.read_i32()?);
             stadia_target_framerate = Some(rdr.read_i32()?);
             rdr.align(4)?;
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
             bundle_version = Some(rdr.read_aligned_string()?);
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
@@ -6041,23 +7771,35 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             d3dhdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             project_name = Some(rdr.read_aligned_string()?);
@@ -6065,8 +7807,12 @@ impl crate::Parse for PlayerSettings {
             cloud_enabled = Some(rdr.read_bool()?);
             enable_native_platform_backends_for_new_input_system = Some(rdr.read_bool()?);
             disable_old_input_manager_support = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -6075,18 +7821,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -6097,17 +7847,23 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             stadia_present_mode = Some(rdr.read_i32()?);
             stadia_target_framerate = Some(rdr.read_i32()?);
             rdr.align(4)?;
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
             bundle_version = Some(rdr.read_aligned_string()?);
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
@@ -6115,23 +7871,35 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             d3dhdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             project_name = Some(rdr.read_aligned_string()?);
@@ -6139,8 +7907,12 @@ impl crate::Parse for PlayerSettings {
             cloud_enabled = Some(rdr.read_bool()?);
             enable_native_platform_backends_for_new_input_system = Some(rdr.read_bool()?);
             disable_old_input_manager_support = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
-            virtual_texturing_support_enabled = Some(PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
+            virtual_texturing_support_enabled = Some(
+                PlayerSettingsVirtualTexturingSupportEnabledVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2019, 4, 6) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -6149,18 +7921,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -6171,20 +7947,28 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
             stadia_present_mode = Some(rdr.read_i32()?);
             stadia_target_framerate = Some(rdr.read_i32()?);
             rdr.align(4)?;
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
-            vulkan_enable_late_acquire_next_image = Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
+            vulkan_enable_late_acquire_next_image =
+                Some(PlayerSettingsVulkanEnableLateAcquireNextImageVariant::parse(rdr, ver)?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
             bundle_version = Some(rdr.read_aligned_string()?);
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
@@ -6192,23 +7976,35 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             d3dhdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             project_name = Some(rdr.read_aligned_string()?);
@@ -6216,7 +8012,9 @@ impl crate::Parse for PlayerSettings {
             cloud_enabled = Some(rdr.read_bool()?);
             enable_native_platform_backends_for_new_input_system = Some(rdr.read_bool()?);
             disable_old_input_manager_support = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2019, 3, 15) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -6225,18 +8023,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -6247,17 +8049,23 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             stadia_present_mode = Some(rdr.read_i32()?);
             stadia_target_framerate = Some(rdr.read_i32()?);
             rdr.align(4)?;
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
             bundle_version = Some(rdr.read_aligned_string()?);
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
@@ -6265,23 +8073,35 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             d3dhdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             project_name = Some(rdr.read_aligned_string()?);
@@ -6289,7 +8109,9 @@ impl crate::Parse for PlayerSettings {
             cloud_enabled = Some(rdr.read_bool()?);
             enable_native_platform_backends_for_new_input_system = Some(rdr.read_bool()?);
             disable_old_input_manager_support = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2019, 3, 2) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -6298,18 +8120,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -6320,14 +8146,20 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
             bundle_version = Some(rdr.read_aligned_string()?);
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
@@ -6335,23 +8167,35 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             d3dhdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             project_name = Some(rdr.read_aligned_string()?);
@@ -6359,7 +8203,9 @@ impl crate::Parse for PlayerSettings {
             cloud_enabled = Some(rdr.read_bool()?);
             enable_native_platform_backends_for_new_input_system = Some(rdr.read_bool()?);
             disable_old_input_manager_support = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -6368,18 +8214,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -6388,14 +8238,20 @@ impl crate::Parse for PlayerSettings {
             xbox_one_disable_esram = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             vulkan_num_swapchain_buffers = Some(rdr.read_u32()?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
             bundle_version = Some(rdr.read_aligned_string()?);
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
@@ -6403,23 +8259,35 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             d3dhdr_bit_depth = Some(rdr.read_i32()?);
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             project_name = Some(rdr.read_aligned_string()?);
@@ -6427,7 +8295,9 @@ impl crate::Parse for PlayerSettings {
             cloud_enabled = Some(rdr.read_bool()?);
             enable_native_platform_backends_for_new_input_system = Some(rdr.read_bool()?);
             disable_old_input_manager_support = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -6437,19 +8307,23 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             graphics_job_mode = Some(rdr.read_i32()?);
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -6458,13 +8332,19 @@ impl crate::Parse for PlayerSettings {
             xbox_one_disable_esram = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
             bundle_version = Some(rdr.read_aligned_string()?);
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
@@ -6472,23 +8352,36 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            protect_graphics_memory = Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            protect_graphics_memory =
+                Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             project_name = Some(rdr.read_aligned_string()?);
@@ -6496,7 +8389,9 @@ impl crate::Parse for PlayerSettings {
             cloud_enabled = Some(rdr.read_bool()?);
             enable_native_platform_backends_for_new_input_system = Some(rdr.read_bool()?);
             disable_old_input_manager_support = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2018, 4, 26) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -6506,19 +8401,23 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             graphics_job_mode = Some(rdr.read_i32()?);
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -6529,15 +8428,22 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
             switch_nvn_max_public_texture_id_count = Some(rdr.read_i32()?);
-            switch_nvn_max_public_sampler_id_count = Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            switch_nvn_max_public_sampler_id_count =
+                Some(PlayerSettingsSwitchNvnMaxPublicSamplerIdCountVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
             bundle_version = Some(rdr.read_aligned_string()?);
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
@@ -6545,23 +8451,36 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
-            protect_graphics_memory = Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            protect_graphics_memory =
+                Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             project_name = Some(rdr.read_aligned_string()?);
@@ -6569,7 +8488,9 @@ impl crate::Parse for PlayerSettings {
             cloud_enabled = Some(rdr.read_bool()?);
             enable_native_platform_backends_for_new_input_system = Some(rdr.read_bool()?);
             disable_old_input_manager_support = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2018, 4, 17) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -6579,19 +8500,23 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             graphics_job_mode = Some(rdr.read_i32()?);
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -6602,13 +8527,19 @@ impl crate::Parse for PlayerSettings {
             xbox_one_enable_type_optimization = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
             bundle_version = Some(rdr.read_aligned_string()?);
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
@@ -6616,23 +8547,36 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
-            protect_graphics_memory = Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            protect_graphics_memory =
+                Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             project_name = Some(rdr.read_aligned_string()?);
@@ -6640,7 +8584,9 @@ impl crate::Parse for PlayerSettings {
             cloud_enabled = Some(rdr.read_bool()?);
             enable_native_platform_backends_for_new_input_system = Some(rdr.read_bool()?);
             disable_old_input_manager_support = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2018, 3, 5) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -6650,19 +8596,23 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             graphics_job_mode = Some(rdr.read_i32()?);
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -6671,13 +8621,19 @@ impl crate::Parse for PlayerSettings {
             xbox_one_disable_esram = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             switch_queue_control_memory = Some(rdr.read_i32()?);
             switch_queue_compute_memory = Some(rdr.read_i32()?);
             switch_nvn_shader_pools_granularity = Some(rdr.read_i32()?);
             switch_nvn_default_pools_granularity = Some(rdr.read_i32()?);
-            switch_nvn_other_pools_granularity = Some(PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            switch_nvn_other_pools_granularity = Some(
+                PlayerSettingsSwitchNvnOtherPoolsGranularityVariant::parse(rdr, ver)?,
+            );
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
             bundle_version = Some(rdr.read_aligned_string()?);
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
@@ -6685,23 +8641,36 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
-            protect_graphics_memory = Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            protect_graphics_memory =
+                Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             project_name = Some(rdr.read_aligned_string()?);
@@ -6709,7 +8678,9 @@ impl crate::Parse for PlayerSettings {
             cloud_enabled = Some(rdr.read_bool()?);
             enable_native_platform_backends_for_new_input_system = Some(rdr.read_bool()?);
             disable_old_input_manager_support = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -6719,19 +8690,23 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             graphics_job_mode = Some(rdr.read_i32()?);
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
             xbox_one_s_resolution = Some(rdr.read_i32()?);
             xbox_one_x_resolution = Some(rdr.read_i32()?);
@@ -6740,8 +8715,12 @@ impl crate::Parse for PlayerSettings {
             xbox_one_disable_esram = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
             bundle_version = Some(rdr.read_aligned_string()?);
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
@@ -6749,23 +8728,36 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
-            protect_graphics_memory = Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
-            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(rdr, ver)?);
+            protect_graphics_memory =
+                Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
+            enable_frame_timing_stats = Some(PlayerSettingsEnableFrameTimingStatsVariant::parse(
+                rdr, ver,
+            )?);
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             framebuffer_depth_memoryless_mode = Some(rdr.read_i32()?);
             project_name = Some(rdr.read_aligned_string()?);
@@ -6773,7 +8765,9 @@ impl crate::Parse for PlayerSettings {
             cloud_enabled = Some(rdr.read_bool()?);
             enable_native_platform_backends_for_new_input_system = Some(rdr.read_bool()?);
             disable_old_input_manager_support = Some(rdr.read_bool()?);
-            legacy_clamp_blend_shape_weights = Some(PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?);
+            legacy_clamp_blend_shape_weights = Some(
+                PlayerSettingsLegacyClampBlendShapeWeightsVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2018, 2, 9) {
             mac_app_store_category = Some(rdr.read_aligned_string()?);
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
@@ -6783,19 +8777,23 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             graphics_job_mode = Some(rdr.read_i32()?);
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             n3ds_disable_stereoscopic_view = Some(rdr.read_bool()?);
             n3ds_enable_shared_list_opt = Some(rdr.read_bool()?);
             n3ds_enable_v_sync = Some(PlayerSettingsN3dsEnableVSyncVariant::parse(rdr, ver)?);
@@ -6807,12 +8805,16 @@ impl crate::Parse for PlayerSettings {
             xbox_one_disable_esram = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             video_memory_for_vertex_buffers = Some(rdr.read_i32()?);
             psp2_power_mode = Some(rdr.read_i32()?);
             psp2_acquire_bgm = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_use_sw_command_buffers = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
@@ -6822,22 +8824,33 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             is_wsa_holographic_remoting_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
-            protect_graphics_memory = Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
+            protect_graphics_memory =
+                Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
@@ -6853,19 +8866,23 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             graphics_job_mode = Some(rdr.read_i32()?);
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             n3ds_disable_stereoscopic_view = Some(rdr.read_bool()?);
             n3ds_enable_shared_list_opt = Some(rdr.read_bool()?);
             n3ds_enable_v_sync = Some(PlayerSettingsN3dsEnableVSyncVariant::parse(rdr, ver)?);
@@ -6877,12 +8894,16 @@ impl crate::Parse for PlayerSettings {
             xbox_one_disable_esram = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             video_memory_for_vertex_buffers = Some(rdr.read_i32()?);
             psp2_power_mode = Some(rdr.read_i32()?);
             psp2_acquire_bgm = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            vulkan_enable_set_srgb_write = Some(PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?);
+            vulkan_enable_set_srgb_write = Some(
+                PlayerSettingsVulkanEnableSetSrgbWriteVariant::parse(rdr, ver)?,
+            );
             vulkan_use_sw_command_buffers = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
@@ -6892,20 +8913,31 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
-            protect_graphics_memory = Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
+            protect_graphics_memory =
+                Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
@@ -6921,19 +8953,23 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             graphics_job_mode = Some(rdr.read_i32()?);
             fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             n3ds_disable_stereoscopic_view = Some(rdr.read_bool()?);
             n3ds_enable_shared_list_opt = Some(rdr.read_bool()?);
             n3ds_enable_v_sync = Some(PlayerSettingsN3dsEnableVSyncVariant::parse(rdr, ver)?);
@@ -6945,7 +8981,9 @@ impl crate::Parse for PlayerSettings {
             xbox_one_disable_esram = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_present_immediate_threshold = Some(rdr.read_u32()?);
-            switch_queue_command_memory = Some(PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?);
+            switch_queue_command_memory = Some(
+                PlayerSettingsSwitchQueueCommandMemoryVariant::parse(rdr, ver)?,
+            );
             video_memory_for_vertex_buffers = Some(rdr.read_i32()?);
             psp2_power_mode = Some(rdr.read_i32()?);
             psp2_acquire_bgm = Some(rdr.read_bool()?);
@@ -6957,20 +8995,31 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
-            protect_graphics_memory = Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
+            protect_graphics_memory =
+                Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
@@ -6986,7 +9035,8 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             graphics_job_mode = Some(rdr.read_i32()?);
@@ -6994,12 +9044,15 @@ impl crate::Parse for PlayerSettings {
             d3d11_fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             n3ds_disable_stereoscopic_view = Some(rdr.read_bool()?);
             n3ds_enable_shared_list_opt = Some(rdr.read_bool()?);
             n3ds_enable_v_sync = Some(PlayerSettingsN3dsEnableVSyncVariant::parse(rdr, ver)?);
@@ -7032,20 +9085,31 @@ impl crate::Parse for PlayerSettings {
             wsa_transparent_swapchain = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
-            protect_graphics_memory = Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
+            protect_graphics_memory =
+                Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
@@ -7061,7 +9125,8 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             graphics_job_mode = Some(rdr.read_i32()?);
@@ -7070,12 +9135,15 @@ impl crate::Parse for PlayerSettings {
             d3d11_fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            metal_framebuffer_only = Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
+            metal_framebuffer_only =
+                Some(PlayerSettingsMetalFramebufferOnlyVariant::parse(rdr, ver)?);
             n3ds_disable_stereoscopic_view = Some(rdr.read_bool()?);
             n3ds_enable_shared_list_opt = Some(rdr.read_bool()?);
             n3ds_enable_v_sync = Some(PlayerSettingsN3dsEnableVSyncVariant::parse(rdr, ver)?);
@@ -7108,20 +9176,31 @@ impl crate::Parse for PlayerSettings {
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
-            protect_graphics_memory = Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
+            protect_graphics_memory =
+                Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_color_gamuts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_color_gamuts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             android_supported_aspect_ratio = Some(rdr.read_i32()?);
-            android_max_aspect_ratio = Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
+            android_max_aspect_ratio =
+                Some(PlayerSettingsAndroidMaxAspectRatioVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
@@ -7137,7 +9216,8 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             graphics_job_mode = Some(rdr.read_i32()?);
@@ -7146,7 +9226,9 @@ impl crate::Parse for PlayerSettings {
             d3d11_fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
@@ -7182,16 +9264,19 @@ impl crate::Parse for PlayerSettings {
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
-            protect_graphics_memory = Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
+            protect_graphics_memory =
+                Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
@@ -7207,7 +9292,8 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             graphics_job_mode = Some(rdr.read_i32()?);
@@ -7216,7 +9302,9 @@ impl crate::Parse for PlayerSettings {
             d3d11_fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
@@ -7250,16 +9338,19 @@ impl crate::Parse for PlayerSettings {
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
-            protect_graphics_memory = Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
+            protect_graphics_memory =
+                Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             target_pixel_density = Some(rdr.read_i32()?);
-            resolution_scaling_mode = Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
+            resolution_scaling_mode =
+                Some(PlayerSettingsResolutionScalingModeVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
@@ -7275,7 +9366,8 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             graphics_job_mode = Some(rdr.read_i32()?);
@@ -7284,7 +9376,9 @@ impl crate::Parse for PlayerSettings {
             d3d11_fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
@@ -7318,12 +9412,14 @@ impl crate::Parse for PlayerSettings {
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
-            protect_graphics_memory = Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
+            protect_graphics_memory =
+                Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             cloud_project_id = Some(rdr.read_aligned_string()?);
@@ -7340,7 +9436,8 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             graphics_job_mode = Some(rdr.read_i32()?);
@@ -7349,7 +9446,9 @@ impl crate::Parse for PlayerSettings {
             d3d11_fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
@@ -7381,12 +9480,14 @@ impl crate::Parse for PlayerSettings {
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
-            protect_graphics_memory = Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
+            protect_graphics_memory =
+                Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             cloud_project_id = Some(rdr.read_aligned_string()?);
@@ -7402,7 +9503,8 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             graphics_job_mode = Some(rdr.read_i32()?);
@@ -7411,7 +9513,9 @@ impl crate::Parse for PlayerSettings {
             d3d11_fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
@@ -7443,12 +9547,14 @@ impl crate::Parse for PlayerSettings {
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             xbox_one_enable7th_core = Some(rdr.read_bool()?);
             rdr.align(4)?;
             vr_settings = Some(VrSettings::parse(rdr, ver)?);
             rdr.align(4)?;
-            protect_graphics_memory = Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
+            protect_graphics_memory =
+                Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             cloud_project_id = Some(rdr.read_aligned_string()?);
@@ -7464,7 +9570,8 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             graphics_job_mode = Some(rdr.read_i32()?);
@@ -7473,7 +9580,9 @@ impl crate::Parse for PlayerSettings {
             d3d11_fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
@@ -7509,8 +9618,10 @@ impl crate::Parse for PlayerSettings {
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
-            protect_graphics_memory = Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            protect_graphics_memory =
+                Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             cloud_project_id = Some(rdr.read_aligned_string()?);
@@ -7525,7 +9636,8 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             graphics_job_mode = Some(rdr.read_i32()?);
@@ -7534,7 +9646,9 @@ impl crate::Parse for PlayerSettings {
             d3d11_fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
@@ -7568,8 +9682,10 @@ impl crate::Parse for PlayerSettings {
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
-            protect_graphics_memory = Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            protect_graphics_memory =
+                Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
             use_hdr_display = Some(rdr.read_bool()?);
             rdr.align(4)?;
             cloud_project_id = Some(rdr.read_aligned_string()?);
@@ -7584,7 +9700,8 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             graphics_job_mode = Some(rdr.read_i32()?);
@@ -7593,7 +9710,9 @@ impl crate::Parse for PlayerSettings {
             d3d11_fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
@@ -7627,8 +9746,10 @@ impl crate::Parse for PlayerSettings {
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
-            protect_graphics_memory = Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            protect_graphics_memory =
+                Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
@@ -7641,7 +9762,8 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             mac_fullscreen_mode = Some(rdr.read_i32()?);
@@ -7649,7 +9771,9 @@ impl crate::Parse for PlayerSettings {
             d3d11_fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
@@ -7683,8 +9807,10 @@ impl crate::Parse for PlayerSettings {
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_input_source = Some(rdr.read_i32()?);
             m_holographic_pause_on_tracking_loss = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
-            protect_graphics_memory = Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            protect_graphics_memory =
+                Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
@@ -7697,7 +9823,8 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             mac_fullscreen_mode = Some(rdr.read_i32()?);
@@ -7705,7 +9832,9 @@ impl crate::Parse for PlayerSettings {
             d3d11_fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
@@ -7739,9 +9868,11 @@ impl crate::Parse for PlayerSettings {
             bundle_version = Some(rdr.read_aligned_string()?);
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_enable_independent_input_source = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             single_pass_stereo_rendering = Some(rdr.read_bool()?);
-            protect_graphics_memory = Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
+            protect_graphics_memory =
+                Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
@@ -7754,7 +9885,8 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             mac_fullscreen_mode = Some(rdr.read_i32()?);
@@ -7762,7 +9894,9 @@ impl crate::Parse for PlayerSettings {
             d3d11_fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
@@ -7795,9 +9929,11 @@ impl crate::Parse for PlayerSettings {
             bundle_version = Some(rdr.read_aligned_string()?);
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_enable_independent_input_source = Some(rdr.read_bool()?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             single_pass_stereo_rendering = Some(rdr.read_bool()?);
-            protect_graphics_memory = Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
+            protect_graphics_memory =
+                Some(PlayerSettingsProtectGraphicsMemoryVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             project_name = Some(rdr.read_aligned_string()?);
             organization_id = Some(rdr.read_aligned_string()?);
@@ -7809,7 +9945,8 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             mac_fullscreen_mode = Some(rdr.read_i32()?);
@@ -7817,7 +9954,9 @@ impl crate::Parse for PlayerSettings {
             d3d11_fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
@@ -7853,8 +9992,10 @@ impl crate::Parse for PlayerSettings {
             bundle_version = Some(rdr.read_aligned_string()?);
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_enable_independent_input_source = Some(rdr.read_bool()?);
-            metro_enable_low_latency_presentation_api = Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            metro_enable_low_latency_presentation_api =
+                Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             virtual_reality_supported = Some(rdr.read_bool()?);
             rdr.align(4)?;
             cloud_project_id = Some(rdr.read_aligned_string()?);
@@ -7868,7 +10009,8 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             mac_fullscreen_mode = Some(rdr.read_i32()?);
@@ -7876,7 +10018,9 @@ impl crate::Parse for PlayerSettings {
             d3d11_fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
@@ -7911,8 +10055,10 @@ impl crate::Parse for PlayerSettings {
             bundle_version = Some(rdr.read_aligned_string()?);
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_enable_independent_input_source = Some(rdr.read_bool()?);
-            metro_enable_low_latency_presentation_api = Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            metro_enable_low_latency_presentation_api =
+                Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             virtual_reality_supported = Some(rdr.read_bool()?);
             rdr.align(4)?;
             cloud_project_id = Some(rdr.read_aligned_string()?);
@@ -7926,7 +10072,8 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             mac_fullscreen_mode = Some(rdr.read_i32()?);
@@ -7934,7 +10081,9 @@ impl crate::Parse for PlayerSettings {
             d3d11_fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
@@ -7966,8 +10115,10 @@ impl crate::Parse for PlayerSettings {
             bundle_version = Some(rdr.read_aligned_string()?);
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_enable_independent_input_source = Some(rdr.read_bool()?);
-            metro_enable_low_latency_presentation_api = Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            metro_enable_low_latency_presentation_api =
+                Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             virtual_reality_supported = Some(rdr.read_bool()?);
             rdr.align(4)?;
             cloud_project_id = Some(rdr.read_aligned_string()?);
@@ -7981,7 +10132,8 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             allow_fullscreen_switch = Some(rdr.read_bool()?);
             rdr.align(4)?;
             mac_fullscreen_mode = Some(rdr.read_i32()?);
@@ -7989,7 +10141,9 @@ impl crate::Parse for PlayerSettings {
             d3d11_fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_enable_pix_sampling = Some(rdr.read_bool()?);
@@ -8019,8 +10173,10 @@ impl crate::Parse for PlayerSettings {
             bundle_version = Some(rdr.read_aligned_string()?);
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_enable_independent_input_source = Some(rdr.read_bool()?);
-            metro_enable_low_latency_presentation_api = Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            metro_enable_low_latency_presentation_api =
+                Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             virtual_reality_supported = Some(rdr.read_bool()?);
             rdr.align(4)?;
             cloud_project_id = Some(rdr.read_aligned_string()?);
@@ -8034,13 +10190,16 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             mac_fullscreen_mode = Some(rdr.read_i32()?);
             d3d9_fullscreen_mode = Some(rdr.read_i32()?);
             d3d11_fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             n3ds_disable_stereoscopic_view = Some(rdr.read_bool()?);
@@ -8067,8 +10226,10 @@ impl crate::Parse for PlayerSettings {
             bundle_version = Some(rdr.read_aligned_string()?);
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_enable_independent_input_source = Some(rdr.read_bool()?);
-            metro_enable_low_latency_presentation_api = Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            metro_enable_low_latency_presentation_api =
+                Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             virtual_reality_supported = Some(rdr.read_bool()?);
             rdr.align(4)?;
             cloud_project_id = Some(rdr.read_aligned_string()?);
@@ -8082,13 +10243,16 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             mac_fullscreen_mode = Some(rdr.read_i32()?);
             d3d9_fullscreen_mode = Some(rdr.read_i32()?);
             d3d11_fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
@@ -8102,8 +10266,10 @@ impl crate::Parse for PlayerSettings {
             bundle_version = Some(rdr.read_aligned_string()?);
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_enable_independent_input_source = Some(rdr.read_bool()?);
-            metro_enable_low_latency_presentation_api = Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            metro_enable_low_latency_presentation_api =
+                Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             virtual_reality_supported = Some(rdr.read_bool()?);
             rdr.align(4)?;
             cloud_project_id = Some(rdr.read_aligned_string()?);
@@ -8118,13 +10284,16 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             mac_fullscreen_mode = Some(rdr.read_i32()?);
             d3d9_fullscreen_mode = Some(rdr.read_i32()?);
             d3d11_fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
@@ -8138,8 +10307,10 @@ impl crate::Parse for PlayerSettings {
             bundle_version = Some(rdr.read_aligned_string()?);
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_enable_independent_input_source = Some(rdr.read_bool()?);
-            metro_enable_low_latency_presentation_api = Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            metro_enable_low_latency_presentation_api =
+                Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
             cloud_project_id = Some(rdr.read_aligned_string()?);
             project_id = Some(rdr.read_aligned_string()?);
             project_name = Some(rdr.read_aligned_string()?);
@@ -8152,13 +10323,16 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             mac_fullscreen_mode = Some(rdr.read_i32()?);
             d3d9_fullscreen_mode = Some(rdr.read_i32()?);
             d3d11_fullscreen_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_one_resolution = Some(PlayerSettingsXboxOneResolutionVariant::parse(rdr, ver)?);
@@ -8172,8 +10346,10 @@ impl crate::Parse for PlayerSettings {
             bundle_version = Some(rdr.read_aligned_string()?);
             preloaded_assets = Some(PlayerSettingsPreloadedAssetsVariant::parse(rdr, ver)?);
             metro_enable_independent_input_source = Some(rdr.read_bool()?);
-            metro_enable_low_latency_presentation_api = Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
-            xbox_one_disable_kinect_gpu_reservation = Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
+            metro_enable_low_latency_presentation_api =
+                Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
+            xbox_one_disable_kinect_gpu_reservation =
+                Some(PlayerSettingsXboxOneDisableKinectGpuReservationVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 5, 5) {
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
@@ -8181,20 +10357,24 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             mac_fullscreen_mode = Some(rdr.read_i32()?);
             d3d9_fullscreen_mode = Some(rdr.read_i32()?);
             d3d11_force_exclusive_mode = Some(rdr.read_bool()?);
             rdr.align(4)?;
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             video_memory_for_vertex_buffers = Some(rdr.read_i32()?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
             i_phone_bundle_identifier = Some(rdr.read_aligned_string()?);
             metro_enable_independent_input_source = Some(rdr.read_bool()?);
-            metro_enable_low_latency_presentation_api = Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
+            metro_enable_low_latency_presentation_api =
+                Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 5, 4) {
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
@@ -8202,18 +10382,22 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_kinect = Some(rdr.read_bool()?);
             xbox_enable_kinect_auto_tracking = Some(rdr.read_bool()?);
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
-            visible_in_background = Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
+            visible_in_background =
+                Some(PlayerSettingsVisibleInBackgroundVariant::parse(rdr, ver)?);
             mac_fullscreen_mode = Some(rdr.read_i32()?);
             d3d9_fullscreen_mode = Some(rdr.read_i32()?);
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             video_memory_for_vertex_buffers = Some(rdr.read_i32()?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
             i_phone_bundle_identifier = Some(rdr.read_aligned_string()?);
             metro_enable_independent_input_source = Some(rdr.read_bool()?);
-            metro_enable_low_latency_presentation_api = Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
+            metro_enable_low_latency_presentation_api =
+                Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 5, 3) {
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
@@ -8224,14 +10408,17 @@ impl crate::Parse for PlayerSettings {
             mac_fullscreen_mode = Some(rdr.read_i32()?);
             d3d9_fullscreen_mode = Some(rdr.read_i32()?);
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             video_memory_for_vertex_buffers = Some(rdr.read_i32()?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
             i_phone_bundle_identifier = Some(rdr.read_aligned_string()?);
             metro_enable_independent_input_source = Some(rdr.read_bool()?);
-            metro_enable_low_latency_presentation_api = Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
+            metro_enable_low_latency_presentation_api =
+                Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 5, 0) {
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
@@ -8241,14 +10428,17 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
             mac_fullscreen_mode = Some(rdr.read_i32()?);
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             video_memory_for_vertex_buffers = Some(rdr.read_i32()?);
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
             i_phone_bundle_identifier = Some(rdr.read_aligned_string()?);
             metro_enable_independent_input_source = Some(rdr.read_bool()?);
-            metro_enable_low_latency_presentation_api = Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
+            metro_enable_low_latency_presentation_api =
+                Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 3, 3) {
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
@@ -8258,7 +10448,9 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
             mac_fullscreen_mode = Some(rdr.read_i32()?);
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             wii_hio2_usage = Some(rdr.read_i32()?);
@@ -8270,7 +10462,8 @@ impl crate::Parse for PlayerSettings {
             m_supported_aspect_ratios = Some(AspectRatios::parse(rdr, ver)?);
             i_phone_bundle_identifier = Some(rdr.read_aligned_string()?);
             metro_enable_independent_input_source = Some(rdr.read_bool()?);
-            metro_enable_low_latency_presentation_api = Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
+            metro_enable_low_latency_presentation_api =
+                Some(PlayerSettingsMetroEnableLowLatencyPresentationApiVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
             gpu_skinning = Some(PlayerSettingsGpuSkinningVariant::parse(rdr, ver)?);
             xbox_pix_texture_capture = Some(rdr.read_bool()?);
@@ -8280,7 +10473,9 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
             mac_fullscreen_mode = Some(rdr.read_i32()?);
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             xbox_enable_guest = Some(rdr.read_bool()?);
             rdr.align(4)?;
             wii_hio2_usage = Some(rdr.read_i32()?);
@@ -8299,7 +10494,9 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
             mac_fullscreen_mode = Some(rdr.read_i32()?);
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             wii_hio2_usage = Some(rdr.read_i32()?);
             wii_loading_screen_rect_placement = Some(rdr.read_i32()?);
             wii_loading_screen_background = Some(ColorRgbAf::parse(rdr, ver)?);
@@ -8316,7 +10513,9 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
             mac_fullscreen_mode = Some(rdr.read_i32()?);
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             wii_hio2_usage = Some(rdr.read_i32()?);
             wii_loading_screen_rect_placement = Some(rdr.read_i32()?);
             wii_loading_screen_background = Some(ColorRgbAf::parse(rdr, ver)?);
@@ -8333,7 +10532,9 @@ impl crate::Parse for PlayerSettings {
             xbox_enable_fitness = Some(PlayerSettingsXboxEnableFitnessVariant::parse(rdr, ver)?);
             mac_fullscreen_mode = Some(rdr.read_i32()?);
             xbox_speech_db = Some(rdr.read_u32()?);
-            xbox_enable_head_orientation = Some(PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?);
+            xbox_enable_head_orientation = Some(
+                PlayerSettingsXboxEnableHeadOrientationVariant::parse(rdr, ver)?,
+            );
             wii_hio2_usage = Some(rdr.read_i32()?);
             wii_loading_screen_rect_placement = Some(rdr.read_i32()?);
             wii_loading_screen_background = Some(ColorRgbAf::parse(rdr, ver)?);
@@ -8424,7 +10625,8 @@ impl crate::Parse for PlayerSettings {
             allowed_autorotate_to_portrait: allowed_autorotate_to_portrait.unwrap(),
             m_active_color_space,
             m_splash_screen_animation,
-            allowed_autorotate_to_portrait_upside_down: allowed_autorotate_to_portrait_upside_down.unwrap(),
+            allowed_autorotate_to_portrait_upside_down: allowed_autorotate_to_portrait_upside_down
+                .unwrap(),
             m_mt_rendering,
             m_mobile_rendering_path,
             m_splash_screen_logo_style,

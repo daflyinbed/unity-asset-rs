@@ -95,9 +95,7 @@ mod tests {
         static SEQ: AtomicU64 = AtomicU64::new(0);
         let n = SEQ.fetch_add(1, Ordering::Relaxed);
         let pid = std::process::id();
-        let path = std::env::temp_dir().join(format!(
-            "unity-asset-rs-detect-{pid}-{n}-{name}"
-        ));
+        let path = std::env::temp_dir().join(format!("unity-asset-rs-detect-{pid}-{n}-{name}"));
         std::fs::write(&path, content).expect("写临时文件失败");
         path
     }

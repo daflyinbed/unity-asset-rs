@@ -20,11 +20,6 @@ impl crate::Parse for HeightMeshBvNode {
         let i = rdr.read_i32()?;
         let n = rdr.read_i32()?;
 
-        Ok(HeightMeshBvNode {
-            min,
-            max,
-            i,
-            n,
-        })
+        Ok(HeightMeshBvNode { min, max, i, n })
     }
 }

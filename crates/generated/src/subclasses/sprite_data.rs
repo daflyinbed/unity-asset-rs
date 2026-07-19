@@ -14,8 +14,6 @@ impl crate::Parse for SpriteData {
     ) -> Result<Self, R::Error> {
         let sprite = crate::PPtr::parse(rdr, ver)?;
 
-        Ok(SpriteData {
-            sprite,
-        })
+        Ok(SpriteData { sprite })
     }
 }

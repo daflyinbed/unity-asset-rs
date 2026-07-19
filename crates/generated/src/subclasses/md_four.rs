@@ -10,11 +10,12 @@ impl crate::Parse for MdFour {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let md4_hash = ( { let n = rdr.read_i32()? as usize; rdr.read_bytes(n) } )?;
+        let md4_hash = ({
+            let n = rdr.read_i32()? as usize;
+            rdr.read_bytes(n)
+        })?;
         rdr.align(4)?;
 
-        Ok(MdFour {
-            md4_hash,
-        })
+        Ok(MdFour { md4_hash })
     }
 }

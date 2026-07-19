@@ -14,9 +14,6 @@ impl crate::Parse for ConfigSetting {
         let value = rdr.read_aligned_string()?;
         let flags = rdr.read_u32()?;
 
-        Ok(ConfigSetting {
-            value,
-            flags,
-        })
+        Ok(ConfigSetting { value, flags })
     }
 }

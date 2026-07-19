@@ -1,6 +1,5 @@
 //! 自动生成。请勿手动修改。
 
-
 /// 版本枚举：ClassInfoMClassNameVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ClassInfoMClassNameVariant {
@@ -51,21 +50,21 @@ impl crate::Parse for ClassInfo {
         let mut m_namespace_name = None;
         let mut m_method_index = None;
         let mut m_is_unity_class = None;
-            m_assembly_name_index = Some(rdr.read_i32()?);
-            m_namespace_index = Some(rdr.read_i32()?);
-            rdr.align(4)?;
-            m_class_name = Some(ClassInfoMClassNameVariant::parse(rdr, ver)?);
+        m_assembly_name_index = Some(rdr.read_i32()?);
+        m_namespace_index = Some(rdr.read_i32()?);
+        rdr.align(4)?;
+        m_class_name = Some(ClassInfoMClassNameVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2020, 1, 0) {
         } else if *ver >= crate::UnityVersion::new(2019, 4, 29) {
             m_namespace_name = Some(rdr.read_aligned_string()?);
             rdr.align(4)?;
         } else {
         }
-            m_num_of_methods = Some(rdr.read_i32()?);
-            m_method_index = Some(rdr.read_i32()?);
-            rdr.align(4)?;
-            m_is_unity_class = Some(rdr.read_bool()?);
-            rdr.align(4)?;
+        m_num_of_methods = Some(rdr.read_i32()?);
+        m_method_index = Some(rdr.read_i32()?);
+        rdr.align(4)?;
+        m_is_unity_class = Some(rdr.read_bool()?);
+        rdr.align(4)?;
 
         Ok(ClassInfo {
             m_assembly_name_index: m_assembly_name_index.unwrap(),

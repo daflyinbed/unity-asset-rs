@@ -4,7 +4,6 @@ use crate::subclasses::color_rgb_af::ColorRgbAf;
 use crate::subclasses::color_rgba32::ColorRgba32;
 use crate::subclasses::gradient::Gradient;
 
-
 /// 版本枚举：MinMaxGradientMinMaxStateVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum MinMaxGradientMinMaxStateVariant {
@@ -42,10 +41,10 @@ impl crate::Parse for MinMaxGradientMinColorVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            let v = ( { Ok(Box::new(ColorRgbAf::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(ColorRgbAf::parse(rdr, ver)?)) })?;
             Ok(Self::V5_4(v))
         } else {
-            let v = ( { Ok(Box::new(ColorRgba32::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(ColorRgba32::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
         }
     }
@@ -64,10 +63,10 @@ impl crate::Parse for MinMaxGradientMaxColorVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            let v = ( { Ok(Box::new(ColorRgbAf::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(ColorRgbAf::parse(rdr, ver)?)) })?;
             Ok(Self::V5_4(v))
         } else {
-            let v = ( { Ok(Box::new(ColorRgba32::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(ColorRgba32::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
         }
     }
@@ -101,8 +100,8 @@ impl crate::Parse for MinMaxGradient {
             max_gradient = Some(Gradient::parse(rdr, ver)?);
             min_gradient = Some(Gradient::parse(rdr, ver)?);
         }
-            min_color = Some(MinMaxGradientMinColorVariant::parse(rdr, ver)?);
-            max_color = Some(MinMaxGradientMaxColorVariant::parse(rdr, ver)?);
+        min_color = Some(MinMaxGradientMinColorVariant::parse(rdr, ver)?);
+        max_color = Some(MinMaxGradientMaxColorVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 6, 1) {
             max_gradient = Some(Gradient::parse(rdr, ver)?);
             min_gradient = Some(Gradient::parse(rdr, ver)?);

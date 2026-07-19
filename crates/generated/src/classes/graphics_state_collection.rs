@@ -29,10 +29,54 @@ impl crate::Parse for GraphicsStateCollection {
         let m_device_renderer = rdr.read_i32()?;
         let m_runtime_platform = rdr.read_i32()?;
         let m_quality_level_name = rdr.read_aligned_string()?;
-        let m_variant_info_map = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = Hash128::parse(rdr, ver)?; let b = VariantInfo::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-        let m_vertex_layout_info_map = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_u64()?; let b = VertexLayoutInfo::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-        let m_render_pass_info_map = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_u64()?; let b = RenderPassInfo::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-        let m_render_state_map = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_u64()?; let b = RenderStateInfo::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_variant_info_map = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| {
+                    ({
+                        let a = Hash128::parse(rdr, ver)?;
+                        let b = VariantInfo::parse(rdr, ver)?;
+                        Ok((a, b))
+                    })
+                })
+                .collect::<Result<Vec<_>, _>>()
+        })?;
+        let m_vertex_layout_info_map = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| {
+                    ({
+                        let a = rdr.read_u64()?;
+                        let b = VertexLayoutInfo::parse(rdr, ver)?;
+                        Ok((a, b))
+                    })
+                })
+                .collect::<Result<Vec<_>, _>>()
+        })?;
+        let m_render_pass_info_map = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| {
+                    ({
+                        let a = rdr.read_u64()?;
+                        let b = RenderPassInfo::parse(rdr, ver)?;
+                        Ok((a, b))
+                    })
+                })
+                .collect::<Result<Vec<_>, _>>()
+        })?;
+        let m_render_state_map = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| {
+                    ({
+                        let a = rdr.read_u64()?;
+                        let b = RenderStateInfo::parse(rdr, ver)?;
+                        Ok((a, b))
+                    })
+                })
+                .collect::<Result<Vec<_>, _>>()
+        })?;
 
         Ok(GraphicsStateCollection {
             m_name,

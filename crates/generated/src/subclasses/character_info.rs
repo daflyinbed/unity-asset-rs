@@ -23,9 +23,9 @@ impl crate::Parse for CharacterInfo {
         let mut width = None;
         let mut advance = None;
         let mut flipped = None;
-            index = Some(rdr.read_u32()?);
-            uv = Some(Rectf::parse(rdr, ver)?);
-            vert = Some(Rectf::parse(rdr, ver)?);
+        index = Some(rdr.read_u32()?);
+        uv = Some(Rectf::parse(rdr, ver)?);
+        vert = Some(Rectf::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 3, 0) {
             advance = Some(rdr.read_f32()?);
             flipped = Some(rdr.read_bool()?);

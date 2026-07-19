@@ -33,19 +33,26 @@ impl crate::Parse for SpriteAtlasData {
         let mut downscale_multiplier = None;
         let mut settings_raw = None;
         let mut secondary_textures = None;
-            texture = Some(crate::PPtr::parse(rdr, ver)?);
-            alpha_texture = Some(crate::PPtr::parse(rdr, ver)?);
-            texture_rect = Some(Rectf::parse(rdr, ver)?);
-            texture_rect_offset = Some(Vector2f::parse(rdr, ver)?);
+        texture = Some(crate::PPtr::parse(rdr, ver)?);
+        alpha_texture = Some(crate::PPtr::parse(rdr, ver)?);
+        texture_rect = Some(Rectf::parse(rdr, ver)?);
+        texture_rect_offset = Some(Vector2f::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2017, 1, 1) {
             atlas_rect_offset = Some(Vector2f::parse(rdr, ver)?);
         } else {
         }
-            uv_transform = Some(Vector4f::parse(rdr, ver)?);
-            downscale_multiplier = Some(rdr.read_f32()?);
-            settings_raw = Some(rdr.read_u32()?);
+        uv_transform = Some(Vector4f::parse(rdr, ver)?);
+        downscale_multiplier = Some(rdr.read_f32()?);
+        settings_raw = Some(rdr.read_u32()?);
         if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            secondary_textures = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SecondarySpriteTexture::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            secondary_textures = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| SecondarySpriteTexture::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else {
         }

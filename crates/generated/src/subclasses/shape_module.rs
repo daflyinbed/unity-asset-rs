@@ -4,7 +4,6 @@ use crate::PPtr;
 use crate::subclasses::multi_mode_parameter_mesh_spawn::MultiModeParameter_MeshSpawn;
 use crate::subclasses::vector3f::Vector3f;
 
-
 /// 版本枚举：ShapeModuleRadiusVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ShapeModuleRadiusVariant {
@@ -18,7 +17,7 @@ impl crate::Parse for ShapeModuleRadiusVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            let v = ( { Ok(Box::new(MultiModeParameter_MeshSpawn::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(MultiModeParameter_MeshSpawn::parse(rdr, ver)?)) })?;
             Ok(Self::V5_6(v))
         } else {
             let v = rdr.read_f32()?;
@@ -40,7 +39,7 @@ impl crate::Parse for ShapeModuleArcVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            let v = ( { Ok(Box::new(MultiModeParameter_MeshSpawn::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(MultiModeParameter_MeshSpawn::parse(rdr, ver)?)) })?;
             Ok(Self::V5_6(v))
         } else {
             let v = rdr.read_f32()?;
@@ -135,14 +134,14 @@ impl crate::Parse for ShapeModule {
         let mut m_texture_color_affects_particles = None;
         let mut m_texture_alpha_affects_particles = None;
         let mut m_texture_bilinear_filtering = None;
-            enabled = Some(rdr.read_bool()?);
-            rdr.align(4)?;
-            r#type = Some(rdr.read_i32()?);
+        enabled = Some(rdr.read_bool()?);
+        rdr.align(4)?;
+        r#type = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
         } else {
             radius = Some(ShapeModuleRadiusVariant::parse(rdr, ver)?);
         }
-            angle = Some(rdr.read_f32()?);
+        angle = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             length = Some(rdr.read_f32()?);
             box_thickness = Some(Vector3f::parse(rdr, ver)?);
@@ -174,7 +173,7 @@ impl crate::Parse for ShapeModule {
             box_y = Some(rdr.read_f32()?);
             box_z = Some(rdr.read_f32()?);
         }
-            placement_mode = Some(rdr.read_i32()?);
+        placement_mode = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2018, 3, 0) {
             m_mesh_material_index = Some(rdr.read_i32()?);
             m_mesh_normal_offset = Some(rdr.read_f32()?);
@@ -184,7 +183,7 @@ impl crate::Parse for ShapeModule {
             m_mesh_normal_offset = Some(rdr.read_f32()?);
         } else {
         }
-            m_mesh = Some(crate::PPtr::parse(rdr, ver)?);
+        m_mesh = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2018, 2, 0) {
             m_mesh_renderer = Some(crate::PPtr::parse(rdr, ver)?);
             m_skinned_mesh_renderer = Some(crate::PPtr::parse(rdr, ver)?);

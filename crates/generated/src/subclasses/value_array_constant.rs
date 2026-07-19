@@ -12,10 +12,13 @@ impl crate::Parse for ValueArrayConstant {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_value_array = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ValueConstant::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_value_array = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| ValueConstant::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
 
-        Ok(ValueArrayConstant {
-            m_value_array,
-        })
+        Ok(ValueArrayConstant { m_value_array })
     }
 }

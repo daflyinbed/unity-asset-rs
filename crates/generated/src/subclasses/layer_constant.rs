@@ -3,7 +3,6 @@
 use crate::subclasses::human_pose_mask::HumanPoseMask;
 use crate::subclasses::offset_ptr::OffsetPtr;
 
-
 /// 版本枚举：LayerConstantMIkPassVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum LayerConstantMIkPassVariant {
@@ -55,21 +54,21 @@ impl crate::Parse for LayerConstant {
         let mut m_ik_pass = None;
         let mut m_default_weight = None;
         let mut m_synced_layer_affects_timing = None;
-            m_state_machine_index = Some(rdr.read_u32()?);
+        m_state_machine_index = Some(rdr.read_u32()?);
         if *ver >= crate::UnityVersion::new(4, 3, 0) {
             m_state_machine_synchronized_layer_index = Some(rdr.read_u32()?);
         } else {
             m_state_machine_motion_set_index = Some(rdr.read_u32()?);
         }
-            m_body_mask = Some(HumanPoseMask::parse(rdr, ver)?);
-            m_skeleton_mask = Some(OffsetPtr::parse(rdr, ver)?);
-            m_binding = Some(rdr.read_u32()?);
-            int_m_layer_blending_mode = Some(rdr.read_i32()?);
+        m_body_mask = Some(HumanPoseMask::parse(rdr, ver)?);
+        m_skeleton_mask = Some(OffsetPtr::parse(rdr, ver)?);
+        m_binding = Some(rdr.read_u32()?);
+        int_m_layer_blending_mode = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(4, 2, 0) {
             m_default_weight = Some(rdr.read_f32()?);
         } else {
         }
-            m_ik_pass = Some(LayerConstantMIkPassVariant::parse(rdr, ver)?);
+        m_ik_pass = Some(LayerConstantMIkPassVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(4, 2, 0) {
             m_synced_layer_affects_timing = Some(rdr.read_bool()?);
             rdr.align(4)?;

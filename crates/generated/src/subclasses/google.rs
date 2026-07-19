@@ -1,6 +1,5 @@
 //! 自动生成。请勿手动修改。
 
-
 /// 版本枚举：GoogleUseSustainedPerformanceModeVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum GoogleUseSustainedPerformanceModeVariant {
@@ -39,7 +38,8 @@ impl crate::Parse for Google {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let depth_format = rdr.read_i32()?;
-        let use_sustained_performance_mode = GoogleUseSustainedPerformanceModeVariant::parse(rdr, ver)?;
+        let use_sustained_performance_mode =
+            GoogleUseSustainedPerformanceModeVariant::parse(rdr, ver)?;
         let enable_video_layer = if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             Some(rdr.read_bool()?)
         } else {

@@ -14,9 +14,6 @@ impl crate::Parse for TransformMaskElement {
         let m_path = rdr.read_aligned_string()?;
         let m_weight = rdr.read_f32()?;
 
-        Ok(TransformMaskElement {
-            m_path,
-            m_weight,
-        })
+        Ok(TransformMaskElement { m_path, m_weight })
     }
 }

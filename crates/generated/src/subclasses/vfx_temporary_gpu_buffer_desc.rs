@@ -16,9 +16,6 @@ impl crate::Parse for VfxTemporaryGpuBufferDesc {
         let desc = VfxgpuBufferDesc::parse(rdr, ver)?;
         let frame_count = rdr.read_u32()?;
 
-        Ok(VfxTemporaryGpuBufferDesc {
-            desc,
-            frame_count,
-        })
+        Ok(VfxTemporaryGpuBufferDesc { desc, frame_count })
     }
 }

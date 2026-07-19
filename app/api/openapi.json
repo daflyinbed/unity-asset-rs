@@ -314,11 +314,10 @@
           {
             "name": "pid",
             "in": "path",
-            "description": "对象 path_id(collection 内唯一)",
+            "description": "对象 path_id 十进制字符串(collection 内唯一)",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int64"
+              "type": "string"
             }
           },
           {
@@ -332,6 +331,20 @@
                 "null"
               ]
             }
+          },
+          {
+            "name": "revision",
+            "in": "query",
+            "description": "活动 Environment API 的可选 revision；legacy bundle 路由忽略。",
+            "required": false,
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "int64",
+              "minimum": 0
+            }
           }
         ],
         "responses": {
@@ -341,6 +354,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ObjectDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "path_id 不是合法 i64 十进制字符串",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
                 }
               }
             }
@@ -388,11 +411,10 @@
           {
             "name": "pid",
             "in": "path",
-            "description": "对象 path_id(须为 Texture2D/Sprite)",
+            "description": "对象 path_id 十进制字符串(须为 Texture2D/Sprite)",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int64"
+              "type": "string"
             }
           }
         ],
@@ -477,6 +499,20 @@
                 "null"
               ]
             }
+          },
+          {
+            "name": "revision",
+            "in": "query",
+            "description": "活动 Environment API 的可选 revision；legacy bundle 路由忽略。",
+            "required": false,
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "int64",
+              "minimum": 0
+            }
           }
         ],
         "responses": {
@@ -495,6 +531,609 @@
           },
           "404": {
             "description": "bundle 未加载",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/environment": {
+      "get": {
+        "tags": [
+          "environment"
+        ],
+        "operationId": "get_environment",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnvironmentSummary"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "environment"
+        ],
+        "operationId": "replace_environment",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReplaceEnvironmentBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "原子替换活动 Environment",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnvironmentSummary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "environment"
+        ],
+        "operationId": "clear_environment",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnvironmentSummary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/environment/collections": {
+      "get": {
+        "tags": [
+          "collection"
+        ],
+        "operationId": "list_environment_collections",
+        "parameters": [
+          {
+            "name": "revision",
+            "in": "query",
+            "description": "若提供且与当前 revision 不同，返回 409，避免把旧句柄用于新 Environment。",
+            "required": false,
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "int64",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectionListResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/environment/collections/{cid}/objects": {
+      "get": {
+        "tags": [
+          "object"
+        ],
+        "operationId": "list_environment_objects",
+        "parameters": [
+          {
+            "name": "cid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "revision",
+            "in": "query",
+            "description": "若提供且与当前 revision 不同，返回 409，避免把旧句柄用于新 Environment。",
+            "required": false,
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "int64",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObjectListResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/environment/collections/{cid}/objects/{pid}": {
+      "get": {
+        "tags": [
+          "object"
+        ],
+        "operationId": "get_environment_object",
+        "parameters": [
+          {
+            "name": "cid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "pid",
+            "in": "path",
+            "description": "path_id 十进制字符串",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "detail",
+            "in": "query",
+            "description": "传 `\"full\"` 附带原始 dump(typed → Debug 字符串,dynamic/mono → Value 递归 JSON)。",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          {
+            "name": "revision",
+            "in": "query",
+            "description": "活动 Environment API 的可选 revision；legacy bundle 路由忽略。",
+            "required": false,
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "int64",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObjectResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/environment/collections/{cid}/objects/{pid}/png": {
+      "get": {
+        "tags": [
+          "object"
+        ],
+        "operationId": "export_environment_object_png",
+        "parameters": [
+          {
+            "name": "cid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "pid",
+            "in": "path",
+            "description": "path_id 十进制字符串",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "revision",
+            "in": "query",
+            "description": "若提供且与当前 revision 不同，返回 409，避免把旧句柄用于新 Environment。",
+            "required": false,
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "int64",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "image/png": {}
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/environment/containers": {
+      "get": {
+        "tags": [
+          "container"
+        ],
+        "operationId": "list_environment_containers",
+        "parameters": [
+          {
+            "name": "path",
+            "in": "query",
+            "description": "按 path 精确匹配过滤(multidict 场景下返回该 path 的全部条目)。",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "description": "按宿主类型过滤:`\"AssetBundle\"` / `\"ResourceManager\"`。",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          {
+            "name": "revision",
+            "in": "query",
+            "description": "活动 Environment API 的可选 revision；legacy bundle 路由忽略。",
+            "required": false,
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "int64",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContainerListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/environment/sources": {
+      "post": {
+        "tags": [
+          "environment"
+        ],
+        "operationId": "add_source",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SourceInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnvironmentSummary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/environment/sources/{sid}": {
+      "delete": {
+        "tags": [
+          "environment"
+        ],
+        "operationId": "remove_source",
+        "parameters": [
+          {
+            "name": "sid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnvironmentSummary"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/environment/sources/{sid}/refresh": {
+      "post": {
+        "tags": [
+          "environment"
+        ],
+        "operationId": "refresh_source",
+        "parameters": [
+          {
+            "name": "sid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnvironmentSummary"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -621,6 +1260,26 @@
           }
         }
       },
+      "CollectionListResponse": {
+        "type": "object",
+        "required": [
+          "revision",
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CollectionItem"
+            }
+          },
+          "revision": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          }
+        }
+      },
       "ContainerEntryDto": {
         "type": "object",
         "description": "container 条目(AssetBundle.m_Container / ResourceManager.m_Container 聚合后的一条)。\n\n详见 `unity_asset::ContainerEntry`。path 可重复(multidict),每条都独立返回。",
@@ -669,6 +1328,66 @@
               ]
             },
             "description": "AssetBundle entry 的 preload 切片预解析引用(`[preload_index, +preload_size)`)。\nResourceManager 为 `null`。切片内解引用失败的位置为 `null`(保留下标对应关系)。"
+          }
+        }
+      },
+      "ContainerListResponse": {
+        "type": "object",
+        "required": [
+          "revision",
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContainerEntryDto"
+            }
+          },
+          "revision": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          }
+        }
+      },
+      "EnvironmentSummary": {
+        "type": "object",
+        "required": [
+          "revision",
+          "sources",
+          "collections",
+          "objects",
+          "resources",
+          "failures"
+        ],
+        "properties": {
+          "collections": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "failures": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "objects": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "resources": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "revision": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SourceItem"
+            }
           }
         }
       },
@@ -822,6 +1541,26 @@
         ],
         "description": "完整对象响应:元数据 + 可选 detail。"
       },
+      "ObjectListResponse": {
+        "type": "object",
+        "required": [
+          "revision",
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ObjectMeta"
+            }
+          },
+          "revision": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          }
+        }
+      },
       "ObjectMeta": {
         "type": "object",
         "description": "对象元数据。列表项和详情头部共用。",
@@ -849,8 +1588,8 @@
             "description": "\"typed\" / \"mono\" / \"dynamic\"。"
           },
           "path_id": {
-            "type": "integer",
-            "format": "int64"
+            "type": "string",
+            "description": "十进制字符串，避免 JavaScript JSON number 丢失 i64 精度。"
           }
         }
       },
@@ -868,8 +1607,25 @@
             "minimum": 0
           },
           "path_id": {
+            "type": "string",
+            "description": "十进制字符串，避免 JavaScript JSON number 丢失 i64 精度。"
+          }
+        }
+      },
+      "ObjectResponse": {
+        "type": "object",
+        "required": [
+          "revision",
+          "object"
+        ],
+        "properties": {
+          "object": {
+            "$ref": "#/components/schemas/ObjectDto"
+          },
+          "revision": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "minimum": 0
           }
         }
       },
@@ -885,10 +1641,85 @@
             "format": "int32"
           },
           "path_id": {
-            "type": "integer",
-            "format": "int64"
+            "type": "string",
+            "description": "十进制字符串，避免 JavaScript JSON number 丢失 i64 精度。"
           }
         }
+      },
+      "ReplaceEnvironmentBody": {
+        "type": "object",
+        "required": [
+          "sources"
+        ],
+        "properties": {
+          "sources": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SourceInput"
+            }
+          }
+        }
+      },
+      "SourceInput": {
+        "type": "object",
+        "required": [
+          "id",
+          "path",
+          "kind"
+        ],
+        "properties": {
+          "arknights": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string",
+            "description": "Electron/SQLite 分配的稳定 source id；Rust 只把它当作不透明字符串。"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/SourceKind"
+          },
+          "path": {
+            "type": "string"
+          }
+        }
+      },
+      "SourceItem": {
+        "type": "object",
+        "required": [
+          "id",
+          "path",
+          "kind",
+          "arknights",
+          "files"
+        ],
+        "properties": {
+          "arknights": {
+            "type": "boolean"
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "该 source 实际加载的文件。目录 source 会展开为递归扫描后命中的文件列表。"
+          },
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/SourceKind"
+          },
+          "path": {
+            "type": "string"
+          }
+        }
+      },
+      "SourceKind": {
+        "type": "string",
+        "enum": [
+          "file",
+          "directory"
+        ]
       },
       "Value": {}
     }
@@ -897,6 +1728,10 @@
     {
       "name": "bundle",
       "description": "Bundle 加载/卸载/查询"
+    },
+    {
+      "name": "environment",
+      "description": "单一活动 Environment 与增量 source 管理"
     },
     {
       "name": "collection",

@@ -12,10 +12,13 @@ impl crate::Parse for SkeletonMask {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_data = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SkeletonMaskElement::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_data = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| SkeletonMaskElement::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
 
-        Ok(SkeletonMask {
-            m_data,
-        })
+        Ok(SkeletonMask { m_data })
     }
 }

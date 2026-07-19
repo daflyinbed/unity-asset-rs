@@ -14,9 +14,6 @@ impl crate::Parse for Binding {
         let m_set = rdr.read_u32()?;
         let m_slot = rdr.read_u32()?;
 
-        Ok(Binding {
-            m_set,
-            m_slot,
-        })
+        Ok(Binding { m_set, m_slot })
     }
 }

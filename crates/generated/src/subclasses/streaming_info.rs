@@ -1,6 +1,5 @@
 //! 自动生成。请勿手动修改。
 
-
 /// 版本枚举：StreamingInfoOffsetVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum StreamingInfoOffsetVariant {
@@ -38,10 +37,6 @@ impl crate::Parse for StreamingInfo {
         let size = rdr.read_u32()?;
         let path = rdr.read_aligned_string()?;
 
-        Ok(StreamingInfo {
-            offset,
-            size,
-            path,
-        })
+        Ok(StreamingInfo { offset, size, path })
     }
 }

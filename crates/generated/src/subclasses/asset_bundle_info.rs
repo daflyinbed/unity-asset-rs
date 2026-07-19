@@ -14,7 +14,12 @@ impl crate::Parse for AssetBundleInfo {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let asset_bundle_hash = Hash128::parse(rdr, ver)?;
-        let asset_bundle_dependencies = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+        let asset_bundle_dependencies = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| rdr.read_i32())
+                .collect::<Result<Vec<_>, _>>()
+        })?;
 
         Ok(AssetBundleInfo {
             asset_bundle_hash,

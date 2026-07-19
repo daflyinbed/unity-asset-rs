@@ -3,7 +3,6 @@
 use crate::subclasses::substance_enum_item::SubstanceEnumItem;
 use crate::subclasses::substance_value::SubstanceValue;
 
-
 /// 版本枚举：SubstanceInputComponentLabelsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum SubstanceInputComponentLabelsVariant {
@@ -17,11 +16,21 @@ impl crate::Parse for SubstanceInputComponentLabelsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_aligned_string())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_aligned_string())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -40,11 +49,21 @@ impl crate::Parse for SubstanceInputEnumValuesVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SubstanceEnumItem::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| SubstanceEnumItem::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SubstanceEnumItem::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| SubstanceEnumItem::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -90,7 +109,7 @@ impl crate::Parse for SubstanceInput {
         let mut component_labels = None;
         let mut altered_textures_uid = None;
         let mut enum_values = None;
-            name = Some(rdr.read_aligned_string()?);
+        name = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(5, 2, 0) {
             label = Some(rdr.read_aligned_string()?);
             group = Some(rdr.read_aligned_string()?);
@@ -102,10 +121,10 @@ impl crate::Parse for SubstanceInput {
             group = Some(rdr.read_aligned_string()?);
         } else {
         }
-            r#type = Some(rdr.read_i32()?);
-            value = Some(SubstanceValue::parse(rdr, ver)?);
-            internal_type = Some(rdr.read_i32()?);
-            internal_index = Some(rdr.read_u32()?);
+        r#type = Some(rdr.read_i32()?);
+        value = Some(SubstanceValue::parse(rdr, ver)?);
+        internal_type = Some(rdr.read_i32()?);
+        internal_index = Some(rdr.read_u32()?);
         if *ver >= crate::UnityVersion::new(4, 5, 0) {
             internal_identifier = Some(rdr.read_u32()?);
             component_labels = Some(SubstanceInputComponentLabelsVariant::parse(rdr, ver)?);
@@ -113,12 +132,19 @@ impl crate::Parse for SubstanceInput {
             internal_identifier = Some(rdr.read_u32()?);
         } else {
         }
-            minimum = Some(rdr.read_f32()?);
-            maximum = Some(rdr.read_f32()?);
-            step = Some(rdr.read_f32()?);
-            flags = Some(rdr.read_u32()?);
-            altered_textures_uid = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
-            enum_values = Some(SubstanceInputEnumValuesVariant::parse(rdr, ver)?);
+        minimum = Some(rdr.read_f32()?);
+        maximum = Some(rdr.read_f32()?);
+        step = Some(rdr.read_f32()?);
+        flags = Some(rdr.read_u32()?);
+        altered_textures_uid = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_u32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        enum_values = Some(SubstanceInputEnumValuesVariant::parse(rdr, ver)?);
 
         Ok(SubstanceInput {
             name: name.unwrap(),

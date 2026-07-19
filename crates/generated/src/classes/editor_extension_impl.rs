@@ -28,7 +28,12 @@ impl crate::Parse for EditorExtensionImpl {
             m_template_father = Some(crate::PPtr::parse(rdr, ver)?);
             m_data_template = Some(crate::PPtr::parse(rdr, ver)?);
             m_override_variable = Some(bitset::parse(rdr, ver)?);
-            g_flattened_type_tree = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            g_flattened_type_tree = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n).map(|_| rdr.read_u8()).collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         }
 

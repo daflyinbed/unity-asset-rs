@@ -40,7 +40,14 @@ impl crate::Parse for VariantInfo {
             keyword_names = Some(rdr.read_aligned_string()?);
             sub_shader_index = Some(rdr.read_i32()?);
             pass_index = Some(rdr.read_i32()?);
-            graphics_state_info_set = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { GraphicsStateInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            graphics_state_info_set = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| GraphicsStateInfo::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else if *ver >= crate::UnityVersion::new(6000, 0, 0) {
             shader = Some(crate::PPtr::parse(rdr, ver)?);
             shader_name = Some(rdr.read_aligned_string()?);
@@ -48,7 +55,14 @@ impl crate::Parse for VariantInfo {
             keyword_names = Some(rdr.read_aligned_string()?);
             sub_shader_index = Some(rdr.read_i32()?);
             pass_index = Some(rdr.read_i32()?);
-            graphics_state_info_set = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { GraphicsStateInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            graphics_state_info_set = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| GraphicsStateInfo::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else {
             keywords = Some(rdr.read_aligned_string()?);
             pass_type = Some(rdr.read_i32()?);

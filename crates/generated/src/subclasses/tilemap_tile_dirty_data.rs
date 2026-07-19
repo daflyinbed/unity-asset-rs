@@ -12,8 +12,6 @@ impl crate::Parse for TilemapTileDirtyData {
     ) -> Result<Self, R::Error> {
         let m_dirty_index = rdr.read_u32()?;
 
-        Ok(TilemapTileDirtyData {
-            m_dirty_index,
-        })
+        Ok(TilemapTileDirtyData { m_dirty_index })
     }
 }

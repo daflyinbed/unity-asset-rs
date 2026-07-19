@@ -44,23 +44,51 @@ impl crate::Parse for AvatarConstant {
             m_avatar_skeleton = Some(OffsetPtr::parse(rdr, ver)?);
             m_avatar_skeleton_pose = Some(OffsetPtr::parse(rdr, ver)?);
             m_default_pose = Some(OffsetPtr::parse(rdr, ver)?);
-            m_skeleton_name_id_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_skeleton_name_id_array = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_u32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else {
             m_skeleton = Some(OffsetPtr::parse(rdr, ver)?);
             m_skeleton_pose = Some(OffsetPtr::parse(rdr, ver)?);
         }
-            m_human = Some(OffsetPtr::parse(rdr, ver)?);
-            m_human_skeleton_index_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+        m_human = Some(OffsetPtr::parse(rdr, ver)?);
+        m_human_skeleton_index_array = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_i32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
         if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            m_human_skeleton_reverse_index_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_human_skeleton_reverse_index_array = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else {
         }
-            m_root_motion_bone_index = Some(rdr.read_i32()?);
-            m_root_motion_bone_x = Some(xform::parse(rdr, ver)?);
+        m_root_motion_bone_index = Some(rdr.read_i32()?);
+        m_root_motion_bone_x = Some(xform::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(4, 3, 0) {
             m_root_motion_skeleton = Some(OffsetPtr::parse(rdr, ver)?);
             m_root_motion_skeleton_pose = Some(OffsetPtr::parse(rdr, ver)?);
-            m_root_motion_skeleton_index_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_root_motion_skeleton_index_array = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else {
         }

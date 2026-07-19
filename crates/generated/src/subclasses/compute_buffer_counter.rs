@@ -14,9 +14,6 @@ impl crate::Parse for ComputeBufferCounter {
         let bindpoint = rdr.read_i32()?;
         let offset = rdr.read_i32()?;
 
-        Ok(ComputeBufferCounter {
-            bindpoint,
-            offset,
-        })
+        Ok(ComputeBufferCounter { bindpoint, offset })
     }
 }

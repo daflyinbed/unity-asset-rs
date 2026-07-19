@@ -13,10 +13,15 @@ impl crate::Parse for SubstanceArchive {
     ) -> Result<Self, R::Error> {
         let mut m_name = None;
         let mut m_package_data = None;
-            m_name = Some(rdr.read_aligned_string()?);
+        m_name = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(2018, 1, 0) {
         } else {
-            m_package_data = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_package_data = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n).map(|_| rdr.read_u8()).collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         }
 

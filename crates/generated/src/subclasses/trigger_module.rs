@@ -39,8 +39,8 @@ impl crate::Parse for TriggerModule {
         let mut collision_shape5 = None;
         let mut radius_scale = None;
         let mut primitives = None;
-            enabled = Some(rdr.read_bool()?);
-            rdr.align(4)?;
+        enabled = Some(rdr.read_bool()?);
+        rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2020, 2, 0) {
         } else {
             collision_shape0 = Some(crate::PPtr::parse(rdr, ver)?);
@@ -50,17 +50,24 @@ impl crate::Parse for TriggerModule {
             collision_shape4 = Some(crate::PPtr::parse(rdr, ver)?);
             collision_shape5 = Some(crate::PPtr::parse(rdr, ver)?);
         }
-            inside = Some(rdr.read_i32()?);
-            outside = Some(rdr.read_i32()?);
-            enter = Some(rdr.read_i32()?);
-            exit = Some(rdr.read_i32()?);
+        inside = Some(rdr.read_i32()?);
+        outside = Some(rdr.read_i32()?);
+        enter = Some(rdr.read_i32()?);
+        exit = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2020, 2, 0) {
             collider_query_mode = Some(rdr.read_i32()?);
         } else {
         }
-            radius_scale = Some(rdr.read_f32()?);
+        radius_scale = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            primitives = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            primitives = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| crate::PPtr::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else {
         }

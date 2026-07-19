@@ -12,8 +12,6 @@ impl crate::Parse for AssetImportInProgressProxy {
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
 
-        Ok(AssetImportInProgressProxy {
-            m_name,
-        })
+        Ok(AssetImportInProgressProxy { m_name })
     }
 }

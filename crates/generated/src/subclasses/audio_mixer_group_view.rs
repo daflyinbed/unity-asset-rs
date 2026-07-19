@@ -13,12 +13,14 @@ impl crate::Parse for AudioMixerGroupView {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let guids = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Guid::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let guids = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| Guid::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         let name = rdr.read_aligned_string()?;
 
-        Ok(AudioMixerGroupView {
-            guids,
-            name,
-        })
+        Ok(AudioMixerGroupView { guids, name })
     }
 }

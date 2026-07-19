@@ -17,9 +17,6 @@ impl crate::Parse for SpriteAtlasInfo {
         let guid = Guid::parse(rdr, ver)?;
         let atlas = crate::PPtr::parse(rdr, ver)?;
 
-        Ok(SpriteAtlasInfo {
-            guid,
-            atlas,
-        })
+        Ok(SpriteAtlasInfo { guid, atlas })
     }
 }

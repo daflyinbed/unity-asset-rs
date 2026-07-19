@@ -7,7 +7,6 @@ use crate::subclasses::offset_ptr::OffsetPtr;
 use crate::subclasses::value_delta::ValueDelta;
 use crate::subclasses::xform::xform;
 
-
 /// 版本枚举：MuscleClipConstantMAverageSpeedVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum MuscleClipConstantMAverageSpeedVariant {
@@ -21,10 +20,10 @@ impl crate::Parse for MuscleClipConstantMAverageSpeedVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            let v = ( { Ok(Box::new(float3::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(float3::parse(rdr, ver)?)) })?;
             Ok(Self::V5_4(v))
         } else {
-            let v = ( { Ok(Box::new(float4::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(float4::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
         }
     }
@@ -98,55 +97,83 @@ impl crate::Parse for MuscleClipConstant {
         let mut m_keep_original_position_xz = None;
         let mut m_start_at_origin = None;
         let mut m_height_from_feet = None;
-            m_delta_pose = Some(HumanPose::parse(rdr, ver)?);
-            m_start_x = Some(xform::parse(rdr, ver)?);
+        m_delta_pose = Some(HumanPose::parse(rdr, ver)?);
+        m_start_x = Some(xform::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
             m_stop_x = Some(xform::parse(rdr, ver)?);
         } else {
         }
-            m_left_foot_start_x = Some(xform::parse(rdr, ver)?);
-            m_right_foot_start_x = Some(xform::parse(rdr, ver)?);
+        m_left_foot_start_x = Some(xform::parse(rdr, ver)?);
+        m_right_foot_start_x = Some(xform::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
         } else {
             m_motion_start_x = Some(xform::parse(rdr, ver)?);
             m_motion_stop_x = Some(xform::parse(rdr, ver)?);
         }
-            m_average_speed = Some(MuscleClipConstantMAverageSpeedVariant::parse(rdr, ver)?);
-            m_clip = Some(OffsetPtr::parse(rdr, ver)?);
-            m_start_time = Some(rdr.read_f32()?);
-            m_stop_time = Some(rdr.read_f32()?);
-            m_orientation_offset_y = Some(rdr.read_f32()?);
-            m_level = Some(rdr.read_f32()?);
-            m_cycle_offset = Some(rdr.read_f32()?);
-            m_average_angular_speed = Some(rdr.read_f32()?);
-            m_index_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+        m_average_speed = Some(MuscleClipConstantMAverageSpeedVariant::parse(rdr, ver)?);
+        m_clip = Some(OffsetPtr::parse(rdr, ver)?);
+        m_start_time = Some(rdr.read_f32()?);
+        m_stop_time = Some(rdr.read_f32()?);
+        m_orientation_offset_y = Some(rdr.read_f32()?);
+        m_level = Some(rdr.read_f32()?);
+        m_cycle_offset = Some(rdr.read_f32()?);
+        m_average_angular_speed = Some(rdr.read_f32()?);
+        m_index_array = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_i32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
         if *ver >= crate::UnityVersion::new(4, 3, 0) {
         } else {
-            m_additional_curve_index_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_additional_curve_index_array = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         }
-            m_value_array_delta = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ValueDelta::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+        m_value_array_delta = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| ValueDelta::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
         if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            m_value_array_reference_pose = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_f32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_value_array_reference_pose = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_f32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else {
         }
-            m_mirror = Some(rdr.read_bool()?);
+        m_mirror = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(4, 3, 0) {
             m_loop_time = Some(rdr.read_bool()?);
         } else {
         }
-            m_loop_blend = Some(rdr.read_bool()?);
-            m_loop_blend_orientation = Some(rdr.read_bool()?);
-            m_loop_blend_position_y = Some(rdr.read_bool()?);
-            m_loop_blend_position_xz = Some(rdr.read_bool()?);
+        m_loop_blend = Some(rdr.read_bool()?);
+        m_loop_blend_orientation = Some(rdr.read_bool()?);
+        m_loop_blend_position_y = Some(rdr.read_bool()?);
+        m_loop_blend_position_xz = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
             m_start_at_origin = Some(rdr.read_bool()?);
         } else {
         }
-            m_keep_original_orientation = Some(rdr.read_bool()?);
-            m_keep_original_position_y = Some(rdr.read_bool()?);
-            m_keep_original_position_xz = Some(rdr.read_bool()?);
-            m_height_from_feet = Some(rdr.read_bool()?);
-            rdr.align(4)?;
+        m_keep_original_orientation = Some(rdr.read_bool()?);
+        m_keep_original_position_y = Some(rdr.read_bool()?);
+        m_keep_original_position_xz = Some(rdr.read_bool()?);
+        m_height_from_feet = Some(rdr.read_bool()?);
+        rdr.align(4)?;
 
         Ok(MuscleClipConstant {
             m_delta_pose: m_delta_pose.unwrap(),

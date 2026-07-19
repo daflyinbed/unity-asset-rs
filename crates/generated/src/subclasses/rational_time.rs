@@ -16,9 +16,6 @@ impl crate::Parse for RationalTime {
         let m_count = rdr.read_i64()?;
         let m_rate = TicksPerSecond::parse(rdr, ver)?;
 
-        Ok(RationalTime {
-            m_count,
-            m_rate,
-        })
+        Ok(RationalTime { m_count, m_rate })
     }
 }

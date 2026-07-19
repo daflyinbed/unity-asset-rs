@@ -20,15 +20,46 @@ impl crate::Parse for LightProbeOcclusion {
         let mut m_shadow_mask_channel = None;
         let mut m_occlusion_mask_channel = None;
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            m_probe_occlusion_light_index = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_probe_occlusion_light_index = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else {
-            m_baked_light_index = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_baked_light_index = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         }
-            m_occlusion = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_f32() }).collect::<Result<Vec<_>, _>>() } )?);
+        m_occlusion = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_f32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            m_occlusion_mask_channel = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i8() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_occlusion_mask_channel = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n).map(|_| rdr.read_i8()).collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            m_shadow_mask_channel = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i8() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_shadow_mask_channel = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n).map(|_| rdr.read_i8()).collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else {
         }
 

@@ -13,8 +13,6 @@ impl crate::Parse for PropertyName32 {
         let id = rdr.read_i32()?;
         rdr.align(4)?;
 
-        Ok(PropertyName32 {
-            id,
-        })
+        Ok(PropertyName32 { id })
     }
 }

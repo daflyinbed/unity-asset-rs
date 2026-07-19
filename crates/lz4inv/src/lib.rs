@@ -126,10 +126,7 @@ pub fn decompress(src: &[u8], dst: &mut [u8]) -> Result<usize, DecompressError> 
 fn get_literal_token(src: &[u8], src_pos: &mut usize) -> (usize, usize) {
     let token = src[*src_pos];
     *src_pos += 1;
-    (
-        (token & 0xf) as usize,
-        ((token >> 4) & 0xf) as usize,
-    )
+    ((token & 0xf) as usize, ((token >> 4) & 0xf) as usize)
 }
 
 // 标准 LZ4 读 little-endian u16；明日方舟变体读 big-endian u16。

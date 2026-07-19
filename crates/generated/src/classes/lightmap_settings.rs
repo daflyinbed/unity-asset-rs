@@ -5,7 +5,6 @@ use crate::subclasses::enlighten_scene_mapping::EnlightenSceneMapping;
 use crate::subclasses::gi_settings::GiSettings;
 use crate::subclasses::lightmap_data::LightmapData;
 
-
 /// 版本枚举：LightmapSettingsMLightmapsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum LightmapSettingsMLightmapsVariant {
@@ -19,11 +18,21 @@ impl crate::Parse for LightmapSettingsMLightmapsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { LightmapData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| LightmapData::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { LightmapData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| LightmapData::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -70,14 +79,14 @@ impl crate::Parse for LightmapSettingsMGiSettingsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
-            let v = ( { Ok(Box::new(GiSettings::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(GiSettings::parse(rdr, ver)?)) })?;
             Ok(Self::V2023_2(v))
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            let v = ( { Ok(Box::new(GiSettings::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(GiSettings::parse(rdr, ver)?)) })?;
             rdr.align(4)?;
             Ok(Self::V2020_1(v))
         } else {
-            let v = ( { Ok(Box::new(GiSettings::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(GiSettings::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
         }
     }
@@ -126,8 +135,8 @@ impl crate::Parse for LightmapSettings {
             m_light_probes = Some(crate::PPtr::parse(rdr, ver)?);
         } else {
         }
-            m_lightmaps = Some(LightmapSettingsMLightmapsVariant::parse(rdr, ver)?);
-            m_lightmaps_mode = Some(LightmapSettingsMLightmapsModeVariant::parse(rdr, ver)?);
+        m_lightmaps = Some(LightmapSettingsMLightmapsVariant::parse(rdr, ver)?);
+        m_lightmaps_mode = Some(LightmapSettingsMLightmapsModeVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2020, 1, 0) {
             m_gi_settings = Some(LightmapSettingsMGiSettingsVariant::parse(rdr, ver)?);
             m_lighting_settings = Some(crate::PPtr::parse(rdr, ver)?);

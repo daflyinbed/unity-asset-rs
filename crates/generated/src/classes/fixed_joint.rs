@@ -2,7 +2,6 @@
 
 use crate::PPtr;
 
-
 /// 版本枚举：FixedJointMEnablePreprocessingVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum FixedJointMEnablePreprocessingVariant {
@@ -52,14 +51,14 @@ impl crate::Parse for FixedJoint {
         let mut m_enable_preprocessing = None;
         let mut m_mass_scale = None;
         let mut m_connected_mass_scale = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_connected_body = Some(crate::PPtr::parse(rdr, ver)?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_connected_body = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2020, 2, 0) {
             m_connected_articulation_body = Some(crate::PPtr::parse(rdr, ver)?);
         } else {
         }
-            m_break_force = Some(rdr.read_f32()?);
-            m_break_torque = Some(rdr.read_f32()?);
+        m_break_force = Some(rdr.read_f32()?);
+        m_break_torque = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             m_enable_collision = Some(rdr.read_bool()?);
             m_enable_preprocessing = Some(FixedJointMEnablePreprocessingVariant::parse(rdr, ver)?);

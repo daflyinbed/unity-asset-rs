@@ -2,7 +2,6 @@
 
 use crate::subclasses::animation_curve::AnimationCurve;
 
-
 /// 版本枚举：MinMaxCurveMinMaxStateVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum MinMaxCurveMinMaxStateVariant {
@@ -49,13 +48,13 @@ impl crate::Parse for MinMaxCurve {
             min_max_state = Some(MinMaxCurveMinMaxStateVariant::parse(rdr, ver)?);
         } else {
         }
-            scalar = Some(rdr.read_f32()?);
+        scalar = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(5, 6, 1) {
             min_scalar = Some(rdr.read_f32()?);
         } else {
         }
-            max_curve = Some(AnimationCurve::parse(rdr, ver)?);
-            min_curve = Some(AnimationCurve::parse(rdr, ver)?);
+        max_curve = Some(AnimationCurve::parse(rdr, ver)?);
+        min_curve = Some(AnimationCurve::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
         } else {
             min_max_state = Some(MinMaxCurveMinMaxStateVariant::parse(rdr, ver)?);

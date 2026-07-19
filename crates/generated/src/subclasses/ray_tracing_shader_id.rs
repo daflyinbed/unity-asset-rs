@@ -14,9 +14,6 @@ impl crate::Parse for RayTracingShaderId {
         let r#type = rdr.read_i32()?;
         let name = rdr.read_aligned_string()?;
 
-        Ok(RayTracingShaderId {
-            r#type,
-            name,
-        })
+        Ok(RayTracingShaderId { r#type, name })
     }
 }

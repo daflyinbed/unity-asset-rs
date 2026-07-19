@@ -4,7 +4,6 @@ use crate::PPtr;
 use crate::subclasses::lod::Lod;
 use crate::subclasses::vector3f::Vector3f;
 
-
 /// 版本枚举：LodGroupMLoDsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum LodGroupMLoDsVariant {
@@ -18,11 +17,21 @@ impl crate::Parse for LodGroupMLoDsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Lod::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| Lod::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Lod::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| Lod::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -102,9 +111,9 @@ impl crate::Parse for LodGroup {
         let mut m_animate_cross_fading = None;
         let mut m_last_lod_is_billboard = None;
         let mut m_global_illumination_lod = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_local_reference_point = Some(Vector3f::parse(rdr, ver)?);
-            m_size = Some(rdr.read_f32()?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_local_reference_point = Some(Vector3f::parse(rdr, ver)?);
+        m_size = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2018, 3, 0) {
             m_fade_mode = Some(rdr.read_i32()?);
             m_animate_cross_fading = Some(LodGroupMAnimateCrossFadingVariant::parse(rdr, ver)?);
@@ -117,8 +126,8 @@ impl crate::Parse for LodGroup {
         } else {
             m_screen_relative_transition_height = Some(rdr.read_f32()?);
         }
-            m_lo_ds = Some(LodGroupMLoDsVariant::parse(rdr, ver)?);
-            m_enabled = Some(LodGroupMEnabledVariant::parse(rdr, ver)?);
+        m_lo_ds = Some(LodGroupMLoDsVariant::parse(rdr, ver)?);
+        m_enabled = Some(LodGroupMEnabledVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 4, 0) {
             m_global_illumination_lod = Some(rdr.read_i32()?);
         } else {

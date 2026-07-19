@@ -5,7 +5,6 @@ use crate::subclasses::bit_field::BitField;
 use crate::subclasses::physics_job_options2_d::PhysicsJobOptions2D;
 use crate::subclasses::vector2f::Vector2f;
 
-
 /// 版本枚举：Physics2DSettingsMRaycastsHitTriggersVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum Physics2DSettingsMRaycastsHitTriggersVariant {
@@ -42,11 +41,21 @@ impl crate::Parse for Physics2DSettingsMLayerCollisionMatrixVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_u32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_u32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -180,10 +189,10 @@ impl crate::Parse for Physics2DSettings {
         let mut m_use_sub_stepping = None;
         let mut m_use_sub_step_contacts = None;
         let mut m_physics_low_level_settings = None;
-            m_gravity = Some(Vector2f::parse(rdr, ver)?);
-            m_default_material = Some(crate::PPtr::parse(rdr, ver)?);
-            m_velocity_iterations = Some(rdr.read_i32()?);
-            m_position_iterations = Some(rdr.read_i32()?);
+        m_gravity = Some(Vector2f::parse(rdr, ver)?);
+        m_default_material = Some(crate::PPtr::parse(rdr, ver)?);
+        m_velocity_iterations = Some(rdr.read_i32()?);
+        m_position_iterations = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(6000, 0, 1) {
             m_bounce_threshold = Some(rdr.read_f32()?);
             m_max_linear_correction = Some(rdr.read_f32()?);
@@ -207,7 +216,9 @@ impl crate::Parse for Physics2DSettings {
             m_use_sub_step_contacts = Some(rdr.read_bool()?);
             m_queries_hit_triggers = Some(rdr.read_bool()?);
             m_queries_start_in_colliders = Some(rdr.read_bool()?);
-            m_callbacks_on_disable = Some(Physics2DSettingsMCallbacksOnDisableVariant::parse(rdr, ver)?);
+            m_callbacks_on_disable = Some(Physics2DSettingsMCallbacksOnDisableVariant::parse(
+                rdr, ver,
+            )?);
             m_reuse_collision_callbacks = Some(rdr.read_bool()?);
             m_auto_sync_transforms = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -233,7 +244,9 @@ impl crate::Parse for Physics2DSettings {
             m_use_sub_step_contacts = Some(rdr.read_bool()?);
             m_queries_hit_triggers = Some(rdr.read_bool()?);
             m_queries_start_in_colliders = Some(rdr.read_bool()?);
-            m_callbacks_on_disable = Some(Physics2DSettingsMCallbacksOnDisableVariant::parse(rdr, ver)?);
+            m_callbacks_on_disable = Some(Physics2DSettingsMCallbacksOnDisableVariant::parse(
+                rdr, ver,
+            )?);
             m_reuse_collision_callbacks = Some(rdr.read_bool()?);
             m_auto_sync_transforms = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -254,7 +267,9 @@ impl crate::Parse for Physics2DSettings {
             m_simulation_mode = Some(rdr.read_i32()?);
             m_queries_hit_triggers = Some(rdr.read_bool()?);
             m_queries_start_in_colliders = Some(rdr.read_bool()?);
-            m_callbacks_on_disable = Some(Physics2DSettingsMCallbacksOnDisableVariant::parse(rdr, ver)?);
+            m_callbacks_on_disable = Some(Physics2DSettingsMCallbacksOnDisableVariant::parse(
+                rdr, ver,
+            )?);
             m_reuse_collision_callbacks = Some(rdr.read_bool()?);
             m_auto_sync_transforms = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -275,7 +290,9 @@ impl crate::Parse for Physics2DSettings {
             m_auto_simulation = Some(rdr.read_bool()?);
             m_queries_hit_triggers = Some(rdr.read_bool()?);
             m_queries_start_in_colliders = Some(rdr.read_bool()?);
-            m_callbacks_on_disable = Some(Physics2DSettingsMCallbacksOnDisableVariant::parse(rdr, ver)?);
+            m_callbacks_on_disable = Some(Physics2DSettingsMCallbacksOnDisableVariant::parse(
+                rdr, ver,
+            )?);
             m_reuse_collision_callbacks = Some(rdr.read_bool()?);
             m_auto_sync_transforms = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -296,7 +313,9 @@ impl crate::Parse for Physics2DSettings {
             m_auto_simulation = Some(rdr.read_bool()?);
             m_queries_hit_triggers = Some(rdr.read_bool()?);
             m_queries_start_in_colliders = Some(rdr.read_bool()?);
-            m_callbacks_on_disable = Some(Physics2DSettingsMCallbacksOnDisableVariant::parse(rdr, ver)?);
+            m_callbacks_on_disable = Some(Physics2DSettingsMCallbacksOnDisableVariant::parse(
+                rdr, ver,
+            )?);
             m_auto_sync_transforms = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
@@ -314,8 +333,12 @@ impl crate::Parse for Physics2DSettings {
             m_auto_simulation = Some(rdr.read_bool()?);
             m_queries_hit_triggers = Some(rdr.read_bool()?);
             m_queries_start_in_colliders = Some(rdr.read_bool()?);
-            m_change_stops_callbacks = Some(Physics2DSettingsMChangeStopsCallbacksVariant::parse(rdr, ver)?);
-            m_callbacks_on_disable = Some(Physics2DSettingsMCallbacksOnDisableVariant::parse(rdr, ver)?);
+            m_change_stops_callbacks = Some(Physics2DSettingsMChangeStopsCallbacksVariant::parse(
+                rdr, ver,
+            )?);
+            m_callbacks_on_disable = Some(Physics2DSettingsMCallbacksOnDisableVariant::parse(
+                rdr, ver,
+            )?);
             m_auto_sync_transforms = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
@@ -333,8 +356,12 @@ impl crate::Parse for Physics2DSettings {
             m_auto_simulation = Some(rdr.read_bool()?);
             m_queries_hit_triggers = Some(rdr.read_bool()?);
             m_queries_start_in_colliders = Some(rdr.read_bool()?);
-            m_change_stops_callbacks = Some(Physics2DSettingsMChangeStopsCallbacksVariant::parse(rdr, ver)?);
-            m_callbacks_on_disable = Some(Physics2DSettingsMCallbacksOnDisableVariant::parse(rdr, ver)?);
+            m_change_stops_callbacks = Some(Physics2DSettingsMChangeStopsCallbacksVariant::parse(
+                rdr, ver,
+            )?);
+            m_callbacks_on_disable = Some(Physics2DSettingsMCallbacksOnDisableVariant::parse(
+                rdr, ver,
+            )?);
         } else if *ver >= crate::UnityVersion::new(5, 6, 1) {
             m_velocity_threshold = Some(rdr.read_f32()?);
             m_max_linear_correction = Some(rdr.read_f32()?);
@@ -349,8 +376,12 @@ impl crate::Parse for Physics2DSettings {
             m_default_contact_offset = Some(rdr.read_f32()?);
             m_queries_hit_triggers = Some(rdr.read_bool()?);
             m_queries_start_in_colliders = Some(rdr.read_bool()?);
-            m_change_stops_callbacks = Some(Physics2DSettingsMChangeStopsCallbacksVariant::parse(rdr, ver)?);
-            m_callbacks_on_disable = Some(Physics2DSettingsMCallbacksOnDisableVariant::parse(rdr, ver)?);
+            m_change_stops_callbacks = Some(Physics2DSettingsMChangeStopsCallbacksVariant::parse(
+                rdr, ver,
+            )?);
+            m_callbacks_on_disable = Some(Physics2DSettingsMCallbacksOnDisableVariant::parse(
+                rdr, ver,
+            )?);
         } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
             m_velocity_threshold = Some(rdr.read_f32()?);
             m_max_linear_correction = Some(rdr.read_f32()?);
@@ -365,7 +396,9 @@ impl crate::Parse for Physics2DSettings {
             m_default_contact_offset = Some(rdr.read_f32()?);
             m_queries_hit_triggers = Some(rdr.read_bool()?);
             m_queries_start_in_colliders = Some(rdr.read_bool()?);
-            m_change_stops_callbacks = Some(Physics2DSettingsMChangeStopsCallbacksVariant::parse(rdr, ver)?);
+            m_change_stops_callbacks = Some(Physics2DSettingsMChangeStopsCallbacksVariant::parse(
+                rdr, ver,
+            )?);
         } else if *ver >= crate::UnityVersion::new(5, 2, 0) {
             m_velocity_threshold = Some(rdr.read_f32()?);
             m_max_linear_correction = Some(rdr.read_f32()?);
@@ -380,7 +413,9 @@ impl crate::Parse for Physics2DSettings {
             m_angular_sleep_tolerance = Some(rdr.read_f32()?);
             m_queries_hit_triggers = Some(rdr.read_bool()?);
             m_queries_start_in_colliders = Some(rdr.read_bool()?);
-            m_change_stops_callbacks = Some(Physics2DSettingsMChangeStopsCallbacksVariant::parse(rdr, ver)?);
+            m_change_stops_callbacks = Some(Physics2DSettingsMChangeStopsCallbacksVariant::parse(
+                rdr, ver,
+            )?);
         } else if *ver >= crate::UnityVersion::new(4, 6, 1) {
             m_velocity_threshold = Some(rdr.read_f32()?);
             m_max_linear_correction = Some(rdr.read_f32()?);
@@ -393,9 +428,13 @@ impl crate::Parse for Physics2DSettings {
             m_time_to_sleep = Some(rdr.read_f32()?);
             m_linear_sleep_tolerance = Some(rdr.read_f32()?);
             m_angular_sleep_tolerance = Some(rdr.read_f32()?);
-            m_raycasts_hit_triggers = Some(Physics2DSettingsMRaycastsHitTriggersVariant::parse(rdr, ver)?);
+            m_raycasts_hit_triggers = Some(Physics2DSettingsMRaycastsHitTriggersVariant::parse(
+                rdr, ver,
+            )?);
             m_raycasts_start_in_colliders = Some(rdr.read_bool()?);
-            m_change_stops_callbacks = Some(Physics2DSettingsMChangeStopsCallbacksVariant::parse(rdr, ver)?);
+            m_change_stops_callbacks = Some(Physics2DSettingsMChangeStopsCallbacksVariant::parse(
+                rdr, ver,
+            )?);
         } else if *ver >= crate::UnityVersion::new(4, 5, 3) {
             m_velocity_threshold = Some(rdr.read_f32()?);
             m_max_linear_correction = Some(rdr.read_f32()?);
@@ -407,7 +446,9 @@ impl crate::Parse for Physics2DSettings {
             m_time_to_sleep = Some(rdr.read_f32()?);
             m_linear_sleep_tolerance = Some(rdr.read_f32()?);
             m_angular_sleep_tolerance = Some(rdr.read_f32()?);
-            m_raycasts_hit_triggers = Some(Physics2DSettingsMRaycastsHitTriggersVariant::parse(rdr, ver)?);
+            m_raycasts_hit_triggers = Some(Physics2DSettingsMRaycastsHitTriggersVariant::parse(
+                rdr, ver,
+            )?);
             m_delete_stops_callbacks = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 5, 0) {
@@ -421,11 +462,17 @@ impl crate::Parse for Physics2DSettings {
             m_time_to_sleep = Some(rdr.read_f32()?);
             m_linear_sleep_tolerance = Some(rdr.read_f32()?);
             m_angular_sleep_tolerance = Some(rdr.read_f32()?);
-            m_raycasts_hit_triggers = Some(Physics2DSettingsMRaycastsHitTriggersVariant::parse(rdr, ver)?);
+            m_raycasts_hit_triggers = Some(Physics2DSettingsMRaycastsHitTriggersVariant::parse(
+                rdr, ver,
+            )?);
         } else {
-            m_raycasts_hit_triggers = Some(Physics2DSettingsMRaycastsHitTriggersVariant::parse(rdr, ver)?);
+            m_raycasts_hit_triggers = Some(Physics2DSettingsMRaycastsHitTriggersVariant::parse(
+                rdr, ver,
+            )?);
         }
-            m_layer_collision_matrix = Some(Physics2DSettingsMLayerCollisionMatrixVariant::parse(rdr, ver)?);
+        m_layer_collision_matrix = Some(Physics2DSettingsMLayerCollisionMatrixVariant::parse(
+            rdr, ver,
+        )?);
         if *ver >= crate::UnityVersion::new(6000, 3, 0) {
             m_physics_low_level_settings = Some(crate::PPtr::parse(rdr, ver)?);
         } else {

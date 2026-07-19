@@ -29,11 +29,7 @@ impl CompressionType {
     }
 }
 
-pub fn decompress(
-    ct: CompressionType,
-    input: &[u8],
-    expected: usize,
-) -> Result<Vec<u8>, TpkError> {
+pub fn decompress(ct: CompressionType, input: &[u8], expected: usize) -> Result<Vec<u8>, TpkError> {
     match ct {
         CompressionType::None => {
             if expected != 0 && input.len() != expected {
@@ -77,9 +73,7 @@ fn decompress_lzma(input: &[u8], expected: usize) -> Result<Vec<u8>, TpkError> {
         &mut std::io::Cursor::new(input),
         &mut out,
         &lzma_rs::decompress::Options {
-            unpacked_size: lzma_rs::decompress::UnpackedSize::UseProvided(Some(
-                expected as u64,
-            )),
+            unpacked_size: lzma_rs::decompress::UnpackedSize::UseProvided(Some(expected as u64)),
             allow_incomplete: false,
             memlimit: None,
         },

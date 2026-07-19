@@ -3,7 +3,6 @@
 use crate::PPtr;
 use crate::subclasses::animator_condition::AnimatorCondition;
 
-
 /// 版本枚举：AnimatorStateTransitionMConditionsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AnimatorStateTransitionMConditionsVariant {
@@ -17,11 +16,21 @@ impl crate::Parse for AnimatorStateTransitionMConditionsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AnimatorCondition::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| AnimatorCondition::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AnimatorCondition::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| AnimatorCondition::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -114,23 +123,27 @@ impl crate::Parse for AnimatorStateTransition {
         let mut m_interruption_source = None;
         let mut m_has_fixed_duration = None;
         let mut m_ordered_interruption = None;
-            m_name = Some(rdr.read_aligned_string()?);
+        m_name = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
         } else {
             m_source_state = Some(crate::PPtr::parse(rdr, ver)?);
-            m_destination_state = Some(AnimatorStateTransitionMDestinationStateVariant::parse(rdr, ver)?);
+            m_destination_state = Some(AnimatorStateTransitionMDestinationStateVariant::parse(
+                rdr, ver,
+            )?);
             m_transition_duration = Some(rdr.read_f32()?);
             m_transition_offset = Some(rdr.read_f32()?);
         }
-            m_conditions = Some(AnimatorStateTransitionMConditionsVariant::parse(rdr, ver)?);
+        m_conditions = Some(AnimatorStateTransitionMConditionsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_destination_state_machine = Some(crate::PPtr::parse(rdr, ver)?);
-            m_destination_state = Some(AnimatorStateTransitionMDestinationStateVariant::parse(rdr, ver)?);
+            m_destination_state = Some(AnimatorStateTransitionMDestinationStateVariant::parse(
+                rdr, ver,
+            )?);
         } else {
             m_atomic = Some(rdr.read_bool()?);
         }
-            m_solo = Some(rdr.read_bool()?);
-            m_mute = Some(rdr.read_bool()?);
+        m_solo = Some(rdr.read_bool()?);
+        m_mute = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(5, 1, 0) {
             m_is_exit = Some(rdr.read_bool()?);
             rdr.align(4)?;

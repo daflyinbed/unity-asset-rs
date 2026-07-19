@@ -3,7 +3,6 @@
 use crate::PPtr;
 use crate::subclasses::collab_editor_settings::CollabEditorSettings;
 
-
 /// 版本枚举：EditorSettingsMExternalVersionControlSupportVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum EditorSettingsMExternalVersionControlSupportVariant {
@@ -142,7 +141,8 @@ impl crate::Parse for EditorSettingsMCacheServerEnableTlsVariant {
 }
 #[derive(Debug, Clone)]
 pub struct EditorSettings {
-    pub m_external_version_control_support: Option<EditorSettingsMExternalVersionControlSupportVariant>,
+    pub m_external_version_control_support:
+        Option<EditorSettingsMExternalVersionControlSupportVariant>,
     pub m_serialization_mode: Option<EditorSettingsMSerializationModeVariant>,
     pub m_web_security_emulation_enabled: Option<i32>,
     pub m_line_endings_for_new_scripts: Option<i32>,
@@ -163,7 +163,8 @@ pub struct EditorSettings {
     pub m_collab_editor_settings: Option<CollabEditorSettings>,
     pub m_etc_texture_best_compressor: Option<i32>,
     pub m_enable_texture_streaming_in_edit_mode: Option<bool>,
-    pub m_enable_texture_streaming_in_play_mode: Option<EditorSettingsMEnableTextureStreamingInPlayModeVariant>,
+    pub m_enable_texture_streaming_in_play_mode:
+        Option<EditorSettingsMEnableTextureStreamingInPlayModeVariant>,
     pub m_async_shader_compilation: Option<EditorSettingsMAsyncShaderCompilationVariant>,
     pub m_caching_shader_preprocessor: Option<bool>,
     pub m_enter_play_mode_options_enabled: Option<bool>,
@@ -276,9 +277,12 @@ impl crate::Parse for EditorSettings {
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
-            m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
+            m_enable_texture_streaming_in_play_mode =
+                Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
             m_enable_editor_async_cpu_texture_loading = Some(rdr.read_bool()?);
-            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(rdr, ver)?);
+            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(
+                rdr, ver,
+            )?);
             m_block_shaders = Some(rdr.read_bool()?);
             m_unlock_block_shaders = Some(rdr.read_bool()?);
             m_prefab_mode_allow_auto_save = Some(rdr.read_bool()?);
@@ -303,8 +307,11 @@ impl crate::Parse for EditorSettings {
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
             m_cache_server_enable_download = Some(rdr.read_bool()?);
-            m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
-            m_cache_server_enable_tls = Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
+            m_cache_server_enable_upload = Some(
+                EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?,
+            );
+            m_cache_server_enable_tls =
+                Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
             m_cache_server_import_result_caching_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_cache_server_validation_mode = Some(rdr.read_i32()?);
@@ -330,9 +337,12 @@ impl crate::Parse for EditorSettings {
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
-            m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
+            m_enable_texture_streaming_in_play_mode =
+                Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
             m_enable_editor_async_cpu_texture_loading = Some(rdr.read_bool()?);
-            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(rdr, ver)?);
+            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(
+                rdr, ver,
+            )?);
             m_block_shaders = Some(rdr.read_bool()?);
             m_unlock_block_shaders = Some(rdr.read_bool()?);
             m_prefab_mode_allow_auto_save = Some(rdr.read_bool()?);
@@ -359,8 +369,11 @@ impl crate::Parse for EditorSettings {
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
             m_cache_server_enable_download = Some(rdr.read_bool()?);
-            m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
-            m_cache_server_enable_tls = Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
+            m_cache_server_enable_upload = Some(
+                EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?,
+            );
+            m_cache_server_enable_tls =
+                Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
             m_cache_server_import_result_caching_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_cache_server_validation_mode = Some(rdr.read_i32()?);
@@ -386,9 +399,12 @@ impl crate::Parse for EditorSettings {
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
-            m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
+            m_enable_texture_streaming_in_play_mode =
+                Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
             m_enable_editor_async_cpu_texture_loading = Some(rdr.read_bool()?);
-            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(rdr, ver)?);
+            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(
+                rdr, ver,
+            )?);
             m_block_shaders = Some(rdr.read_bool()?);
             m_unlock_block_shaders = Some(rdr.read_bool()?);
             m_prefab_mode_allow_auto_save = Some(rdr.read_bool()?);
@@ -415,8 +431,11 @@ impl crate::Parse for EditorSettings {
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
             m_cache_server_enable_download = Some(rdr.read_bool()?);
-            m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
-            m_cache_server_enable_tls = Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
+            m_cache_server_enable_upload = Some(
+                EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?,
+            );
+            m_cache_server_enable_tls =
+                Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
             m_cache_server_validation_mode = Some(rdr.read_i32()?);
             m_cache_server_download_batch_size = Some(rdr.read_i32()?);
             m_enable_enlighten_baked_gi = Some(rdr.read_bool()?);
@@ -440,9 +459,12 @@ impl crate::Parse for EditorSettings {
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
-            m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
+            m_enable_texture_streaming_in_play_mode =
+                Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
             m_enable_editor_async_cpu_texture_loading = Some(rdr.read_bool()?);
-            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(rdr, ver)?);
+            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(
+                rdr, ver,
+            )?);
             m_prefab_mode_allow_auto_save = Some(rdr.read_bool()?);
             m_enter_play_mode_options_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -467,9 +489,12 @@ impl crate::Parse for EditorSettings {
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
             m_cache_server_enable_download = Some(rdr.read_bool()?);
-            m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
+            m_cache_server_enable_upload = Some(
+                EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?,
+            );
             m_cache_server_enable_auth = Some(rdr.read_bool()?);
-            m_cache_server_enable_tls = Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
+            m_cache_server_enable_tls =
+                Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
             m_cache_server_validation_mode = Some(rdr.read_i32()?);
             m_cache_server_download_batch_size = Some(rdr.read_i32()?);
             m_enable_enlighten_baked_gi = Some(rdr.read_bool()?);
@@ -492,9 +517,12 @@ impl crate::Parse for EditorSettings {
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
-            m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
+            m_enable_texture_streaming_in_play_mode =
+                Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
             m_enable_editor_async_cpu_texture_loading = Some(rdr.read_bool()?);
-            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(rdr, ver)?);
+            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(
+                rdr, ver,
+            )?);
             m_prefab_mode_allow_auto_save = Some(rdr.read_bool()?);
             m_enter_play_mode_options_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -519,9 +547,12 @@ impl crate::Parse for EditorSettings {
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
             m_cache_server_enable_download = Some(rdr.read_bool()?);
-            m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
+            m_cache_server_enable_upload = Some(
+                EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?,
+            );
             m_cache_server_enable_auth = Some(rdr.read_bool()?);
-            m_cache_server_enable_tls = Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
+            m_cache_server_enable_tls =
+                Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
             m_cache_server_validation_mode = Some(rdr.read_i32()?);
             m_cache_server_download_batch_size = Some(rdr.read_i32()?);
             m_enable_enlighten_baked_gi = Some(rdr.read_bool()?);
@@ -543,9 +574,12 @@ impl crate::Parse for EditorSettings {
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
-            m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
+            m_enable_texture_streaming_in_play_mode =
+                Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
             m_enable_editor_async_cpu_texture_loading = Some(rdr.read_bool()?);
-            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(rdr, ver)?);
+            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(
+                rdr, ver,
+            )?);
             m_prefab_mode_allow_auto_save = Some(rdr.read_bool()?);
             m_enter_play_mode_options_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -570,9 +604,12 @@ impl crate::Parse for EditorSettings {
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
             m_cache_server_enable_download = Some(rdr.read_bool()?);
-            m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
+            m_cache_server_enable_upload = Some(
+                EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?,
+            );
             m_cache_server_enable_auth = Some(rdr.read_bool()?);
-            m_cache_server_enable_tls = Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
+            m_cache_server_enable_tls =
+                Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
             m_cache_server_validation_mode = Some(rdr.read_i32()?);
             m_cache_server_download_batch_size = Some(rdr.read_i32()?);
             m_enable_enlighten_baked_gi = Some(rdr.read_bool()?);
@@ -595,9 +632,12 @@ impl crate::Parse for EditorSettings {
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
-            m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
+            m_enable_texture_streaming_in_play_mode =
+                Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
             m_enable_editor_async_cpu_texture_loading = Some(rdr.read_bool()?);
-            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(rdr, ver)?);
+            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(
+                rdr, ver,
+            )?);
             m_prefab_mode_allow_auto_save = Some(rdr.read_bool()?);
             m_enter_play_mode_options_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -622,9 +662,12 @@ impl crate::Parse for EditorSettings {
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
             m_cache_server_enable_download = Some(rdr.read_bool()?);
-            m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
+            m_cache_server_enable_upload = Some(
+                EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?,
+            );
             m_cache_server_enable_auth = Some(rdr.read_bool()?);
-            m_cache_server_enable_tls = Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
+            m_cache_server_enable_tls =
+                Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
             m_cache_server_validation_mode = Some(rdr.read_i32()?);
             m_cache_server_download_batch_size = Some(rdr.read_i32()?);
             m_enable_enlighten_baked_gi = Some(rdr.read_bool()?);
@@ -646,9 +689,12 @@ impl crate::Parse for EditorSettings {
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
-            m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
+            m_enable_texture_streaming_in_play_mode =
+                Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
             m_enable_editor_async_cpu_texture_loading = Some(rdr.read_bool()?);
-            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(rdr, ver)?);
+            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(
+                rdr, ver,
+            )?);
             m_prefab_mode_allow_auto_save = Some(rdr.read_bool()?);
             m_enter_play_mode_options_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -671,9 +717,12 @@ impl crate::Parse for EditorSettings {
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
             m_cache_server_enable_download = Some(rdr.read_bool()?);
-            m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
+            m_cache_server_enable_upload = Some(
+                EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?,
+            );
             m_cache_server_enable_auth = Some(rdr.read_bool()?);
-            m_cache_server_enable_tls = Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
+            m_cache_server_enable_tls =
+                Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
             m_cache_server_validation_mode = Some(rdr.read_i32()?);
             m_cache_server_download_batch_size = Some(rdr.read_i32()?);
             m_enable_enlighten_baked_gi = Some(rdr.read_bool()?);
@@ -695,9 +744,12 @@ impl crate::Parse for EditorSettings {
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
-            m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
+            m_enable_texture_streaming_in_play_mode =
+                Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
             m_enable_editor_async_cpu_texture_loading = Some(rdr.read_bool()?);
-            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(rdr, ver)?);
+            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(
+                rdr, ver,
+            )?);
             m_prefab_mode_allow_auto_save = Some(rdr.read_bool()?);
             m_enter_play_mode_options_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -720,9 +772,12 @@ impl crate::Parse for EditorSettings {
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
             m_cache_server_enable_download = Some(rdr.read_bool()?);
-            m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
+            m_cache_server_enable_upload = Some(
+                EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?,
+            );
             m_cache_server_enable_auth = Some(rdr.read_bool()?);
-            m_cache_server_enable_tls = Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
+            m_cache_server_enable_tls =
+                Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
             m_cache_server_validation_mode = Some(rdr.read_i32()?);
             m_cache_server_download_batch_size = Some(rdr.read_i32()?);
             m_enable_enlighten_baked_gi = Some(rdr.read_bool()?);
@@ -743,9 +798,12 @@ impl crate::Parse for EditorSettings {
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
-            m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
+            m_enable_texture_streaming_in_play_mode =
+                Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
             m_enable_editor_async_cpu_texture_loading = Some(rdr.read_bool()?);
-            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(rdr, ver)?);
+            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(
+                rdr, ver,
+            )?);
             m_prefab_mode_allow_auto_save = Some(rdr.read_bool()?);
             m_enter_play_mode_options_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -766,9 +824,12 @@ impl crate::Parse for EditorSettings {
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
             m_cache_server_enable_download = Some(rdr.read_bool()?);
-            m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
+            m_cache_server_enable_upload = Some(
+                EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?,
+            );
             m_cache_server_enable_auth = Some(rdr.read_bool()?);
-            m_cache_server_enable_tls = Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
+            m_cache_server_enable_tls =
+                Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
             m_cache_server_validation_mode = Some(rdr.read_i32()?);
             m_cache_server_download_batch_size = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
@@ -788,9 +849,12 @@ impl crate::Parse for EditorSettings {
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
-            m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
+            m_enable_texture_streaming_in_play_mode =
+                Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
             m_enable_editor_async_cpu_texture_loading = Some(rdr.read_bool()?);
-            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(rdr, ver)?);
+            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(
+                rdr, ver,
+            )?);
             m_prefab_mode_allow_auto_save = Some(rdr.read_bool()?);
             m_enter_play_mode_options_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -811,9 +875,12 @@ impl crate::Parse for EditorSettings {
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
             m_cache_server_enable_download = Some(rdr.read_bool()?);
-            m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
+            m_cache_server_enable_upload = Some(
+                EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?,
+            );
             m_cache_server_enable_auth = Some(rdr.read_bool()?);
-            m_cache_server_enable_tls = Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
+            m_cache_server_enable_tls =
+                Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
             m_cache_server_validation_mode = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2021, 3, 10) {
             m_serialization_mode = Some(EditorSettingsMSerializationModeVariant::parse(rdr, ver)?);
@@ -831,8 +898,11 @@ impl crate::Parse for EditorSettings {
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
-            m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
-            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(rdr, ver)?);
+            m_enable_texture_streaming_in_play_mode =
+                Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
+            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(
+                rdr, ver,
+            )?);
             m_caching_shader_preprocessor = Some(rdr.read_bool()?);
             m_prefab_mode_allow_auto_save = Some(rdr.read_bool()?);
             m_enter_play_mode_options_enabled = Some(rdr.read_bool()?);
@@ -854,9 +924,12 @@ impl crate::Parse for EditorSettings {
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
             m_cache_server_enable_download = Some(rdr.read_bool()?);
-            m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
+            m_cache_server_enable_upload = Some(
+                EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?,
+            );
             m_cache_server_enable_auth = Some(rdr.read_bool()?);
-            m_cache_server_enable_tls = Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
+            m_cache_server_enable_tls =
+                Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
             m_cache_server_validation_mode = Some(rdr.read_i32()?);
             m_cache_server_download_batch_size = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2021, 3, 3) {
@@ -875,8 +948,11 @@ impl crate::Parse for EditorSettings {
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
-            m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
-            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(rdr, ver)?);
+            m_enable_texture_streaming_in_play_mode =
+                Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
+            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(
+                rdr, ver,
+            )?);
             m_caching_shader_preprocessor = Some(rdr.read_bool()?);
             m_prefab_mode_allow_auto_save = Some(rdr.read_bool()?);
             m_enter_play_mode_options_enabled = Some(rdr.read_bool()?);
@@ -898,9 +974,12 @@ impl crate::Parse for EditorSettings {
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
             m_cache_server_enable_download = Some(rdr.read_bool()?);
-            m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
+            m_cache_server_enable_upload = Some(
+                EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?,
+            );
             m_cache_server_enable_auth = Some(rdr.read_bool()?);
-            m_cache_server_enable_tls = Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
+            m_cache_server_enable_tls =
+                Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
             m_cache_server_validation_mode = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
             m_serialization_mode = Some(EditorSettingsMSerializationModeVariant::parse(rdr, ver)?);
@@ -918,8 +997,11 @@ impl crate::Parse for EditorSettings {
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
-            m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
-            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(rdr, ver)?);
+            m_enable_texture_streaming_in_play_mode =
+                Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
+            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(
+                rdr, ver,
+            )?);
             m_caching_shader_preprocessor = Some(rdr.read_bool()?);
             m_prefab_mode_allow_auto_save = Some(rdr.read_bool()?);
             m_enter_play_mode_options_enabled = Some(rdr.read_bool()?);
@@ -941,9 +1023,12 @@ impl crate::Parse for EditorSettings {
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
             m_cache_server_enable_download = Some(rdr.read_bool()?);
-            m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
+            m_cache_server_enable_upload = Some(
+                EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?,
+            );
             m_cache_server_enable_auth = Some(rdr.read_bool()?);
-            m_cache_server_enable_tls = Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
+            m_cache_server_enable_tls =
+                Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2021, 1, 0) {
             m_serialization_mode = Some(EditorSettingsMSerializationModeVariant::parse(rdr, ver)?);
             m_line_endings_for_new_scripts = Some(rdr.read_i32()?);
@@ -959,8 +1044,11 @@ impl crate::Parse for EditorSettings {
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
-            m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
-            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(rdr, ver)?);
+            m_enable_texture_streaming_in_play_mode =
+                Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
+            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(
+                rdr, ver,
+            )?);
             m_caching_shader_preprocessor = Some(rdr.read_bool()?);
             m_prefab_mode_allow_auto_save = Some(rdr.read_bool()?);
             m_enter_play_mode_options_enabled = Some(rdr.read_bool()?);
@@ -981,9 +1069,12 @@ impl crate::Parse for EditorSettings {
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
             m_cache_server_enable_download = Some(rdr.read_bool()?);
-            m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
+            m_cache_server_enable_upload = Some(
+                EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?,
+            );
             m_cache_server_enable_auth = Some(rdr.read_bool()?);
-            m_cache_server_enable_tls = Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
+            m_cache_server_enable_tls =
+                Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2020, 3, 35) {
             m_serialization_mode = Some(EditorSettingsMSerializationModeVariant::parse(rdr, ver)?);
             m_line_endings_for_new_scripts = Some(rdr.read_i32()?);
@@ -999,8 +1090,11 @@ impl crate::Parse for EditorSettings {
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
-            m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
-            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(rdr, ver)?);
+            m_enable_texture_streaming_in_play_mode =
+                Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
+            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(
+                rdr, ver,
+            )?);
             m_caching_shader_preprocessor = Some(rdr.read_bool()?);
             m_prefab_mode_allow_auto_save = Some(rdr.read_bool()?);
             m_enter_play_mode_options_enabled = Some(rdr.read_bool()?);
@@ -1021,9 +1115,12 @@ impl crate::Parse for EditorSettings {
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
             m_cache_server_enable_download = Some(rdr.read_bool()?);
-            m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
+            m_cache_server_enable_upload = Some(
+                EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?,
+            );
             m_cache_server_enable_auth = Some(rdr.read_bool()?);
-            m_cache_server_enable_tls = Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
+            m_cache_server_enable_tls =
+                Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
             m_cache_server_validation_mode = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
             m_serialization_mode = Some(EditorSettingsMSerializationModeVariant::parse(rdr, ver)?);
@@ -1040,8 +1137,11 @@ impl crate::Parse for EditorSettings {
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
-            m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
-            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(rdr, ver)?);
+            m_enable_texture_streaming_in_play_mode =
+                Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
+            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(
+                rdr, ver,
+            )?);
             m_caching_shader_preprocessor = Some(rdr.read_bool()?);
             m_prefab_mode_allow_auto_save = Some(rdr.read_bool()?);
             m_enter_play_mode_options_enabled = Some(rdr.read_bool()?);
@@ -1062,9 +1162,12 @@ impl crate::Parse for EditorSettings {
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
             m_cache_server_enable_download = Some(rdr.read_bool()?);
-            m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
+            m_cache_server_enable_upload = Some(
+                EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?,
+            );
             m_cache_server_enable_auth = Some(rdr.read_bool()?);
-            m_cache_server_enable_tls = Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
+            m_cache_server_enable_tls =
+                Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
             m_serialization_mode = Some(EditorSettingsMSerializationModeVariant::parse(rdr, ver)?);
             m_line_endings_for_new_scripts = Some(rdr.read_i32()?);
@@ -1080,8 +1183,11 @@ impl crate::Parse for EditorSettings {
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
-            m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
-            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(rdr, ver)?);
+            m_enable_texture_streaming_in_play_mode =
+                Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
+            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(
+                rdr, ver,
+            )?);
             m_caching_shader_preprocessor = Some(rdr.read_bool()?);
             m_enter_play_mode_options_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -1101,11 +1207,16 @@ impl crate::Parse for EditorSettings {
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
             m_cache_server_enable_download = Some(rdr.read_bool()?);
-            m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
+            m_cache_server_enable_upload = Some(
+                EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?,
+            );
             m_cache_server_enable_auth = Some(rdr.read_bool()?);
-            m_cache_server_enable_tls = Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
+            m_cache_server_enable_tls =
+                Some(EditorSettingsMCacheServerEnableTlsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2019, 4, 40) {
-            m_external_version_control_support = Some(EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?);
+            m_external_version_control_support = Some(
+                EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?,
+            );
             m_serialization_mode = Some(EditorSettingsMSerializationModeVariant::parse(rdr, ver)?);
             m_line_endings_for_new_scripts = Some(rdr.read_i32()?);
             m_default_behavior_mode = Some(rdr.read_i32()?);
@@ -1121,8 +1232,11 @@ impl crate::Parse for EditorSettings {
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
             m_collab_editor_settings = Some(CollabEditorSettings::parse(rdr, ver)?);
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
-            m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
-            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(rdr, ver)?);
+            m_enable_texture_streaming_in_play_mode =
+                Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
+            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(
+                rdr, ver,
+            )?);
             m_enter_play_mode_options_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_enter_play_mode_options = Some(rdr.read_i32()?);
@@ -1135,10 +1249,14 @@ impl crate::Parse for EditorSettings {
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
             m_cache_server_enable_download = Some(rdr.read_bool()?);
-            m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
+            m_cache_server_enable_upload = Some(
+                EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?,
+            );
             m_cache_server_validation_mode = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            m_external_version_control_support = Some(EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?);
+            m_external_version_control_support = Some(
+                EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?,
+            );
             m_serialization_mode = Some(EditorSettingsMSerializationModeVariant::parse(rdr, ver)?);
             m_line_endings_for_new_scripts = Some(rdr.read_i32()?);
             m_default_behavior_mode = Some(rdr.read_i32()?);
@@ -1154,8 +1272,11 @@ impl crate::Parse for EditorSettings {
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
             m_collab_editor_settings = Some(CollabEditorSettings::parse(rdr, ver)?);
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
-            m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
-            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(rdr, ver)?);
+            m_enable_texture_streaming_in_play_mode =
+                Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
+            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(
+                rdr, ver,
+            )?);
             m_enter_play_mode_options_enabled = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_enter_play_mode_options = Some(rdr.read_i32()?);
@@ -1168,9 +1289,13 @@ impl crate::Parse for EditorSettings {
             m_cache_server_endpoint = Some(rdr.read_aligned_string()?);
             m_cache_server_namespace_prefix = Some(rdr.read_aligned_string()?);
             m_cache_server_enable_download = Some(rdr.read_bool()?);
-            m_cache_server_enable_upload = Some(EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?);
+            m_cache_server_enable_upload = Some(
+                EditorSettingsMCacheServerEnableUploadVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2019, 2, 0) {
-            m_external_version_control_support = Some(EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?);
+            m_external_version_control_support = Some(
+                EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?,
+            );
             m_serialization_mode = Some(EditorSettingsMSerializationModeVariant::parse(rdr, ver)?);
             m_line_endings_for_new_scripts = Some(rdr.read_i32()?);
             m_default_behavior_mode = Some(rdr.read_i32()?);
@@ -1186,12 +1311,17 @@ impl crate::Parse for EditorSettings {
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
             m_collab_editor_settings = Some(CollabEditorSettings::parse(rdr, ver)?);
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
-            m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
-            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(rdr, ver)?);
+            m_enable_texture_streaming_in_play_mode =
+                Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
+            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(
+                rdr, ver,
+            )?);
             m_show_lightmap_resolution_overlay = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_external_version_control_support = Some(EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?);
+            m_external_version_control_support = Some(
+                EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?,
+            );
             m_serialization_mode = Some(EditorSettingsMSerializationModeVariant::parse(rdr, ver)?);
             m_line_endings_for_new_scripts = Some(rdr.read_i32()?);
             m_default_behavior_mode = Some(rdr.read_i32()?);
@@ -1207,10 +1337,15 @@ impl crate::Parse for EditorSettings {
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
             m_collab_editor_settings = Some(CollabEditorSettings::parse(rdr, ver)?);
             m_enable_texture_streaming_in_edit_mode = Some(rdr.read_bool()?);
-            m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
-            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(rdr, ver)?);
+            m_enable_texture_streaming_in_play_mode =
+                Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
+            m_async_shader_compilation = Some(EditorSettingsMAsyncShaderCompilationVariant::parse(
+                rdr, ver,
+            )?);
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            m_external_version_control_support = Some(EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?);
+            m_external_version_control_support = Some(
+                EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?,
+            );
             m_serialization_mode = Some(EditorSettingsMSerializationModeVariant::parse(rdr, ver)?);
             m_line_endings_for_new_scripts = Some(rdr.read_i32()?);
             m_default_behavior_mode = Some(rdr.read_i32()?);
@@ -1225,9 +1360,12 @@ impl crate::Parse for EditorSettings {
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
             m_collab_editor_settings = Some(CollabEditorSettings::parse(rdr, ver)?);
-            m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
+            m_enable_texture_streaming_in_play_mode =
+                Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2018, 2, 0) {
-            m_external_version_control_support = Some(EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?);
+            m_external_version_control_support = Some(
+                EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?,
+            );
             m_serialization_mode = Some(EditorSettingsMSerializationModeVariant::parse(rdr, ver)?);
             m_line_endings_for_new_scripts = Some(rdr.read_i32()?);
             m_default_behavior_mode = Some(rdr.read_i32()?);
@@ -1241,9 +1379,12 @@ impl crate::Parse for EditorSettings {
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
             m_user_generated_project_suffix = Some(rdr.read_aligned_string()?);
             m_collab_editor_settings = Some(CollabEditorSettings::parse(rdr, ver)?);
-            m_enable_texture_streaming_in_play_mode = Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
+            m_enable_texture_streaming_in_play_mode =
+                Some(EditorSettingsMEnableTextureStreamingInPlayModeVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            m_external_version_control_support = Some(EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?);
+            m_external_version_control_support = Some(
+                EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?,
+            );
             m_serialization_mode = Some(EditorSettingsMSerializationModeVariant::parse(rdr, ver)?);
             m_line_endings_for_new_scripts = Some(rdr.read_i32()?);
             m_default_behavior_mode = Some(rdr.read_i32()?);
@@ -1258,7 +1399,9 @@ impl crate::Parse for EditorSettings {
             m_user_generated_project_suffix = Some(rdr.read_aligned_string()?);
             m_collab_editor_settings = Some(CollabEditorSettings::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            m_external_version_control_support = Some(EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?);
+            m_external_version_control_support = Some(
+                EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?,
+            );
             m_serialization_mode = Some(EditorSettingsMSerializationModeVariant::parse(rdr, ver)?);
             m_default_behavior_mode = Some(rdr.read_i32()?);
             m_sprite_packer_mode = Some(rdr.read_i32()?);
@@ -1272,7 +1415,9 @@ impl crate::Parse for EditorSettings {
             m_user_generated_project_suffix = Some(rdr.read_aligned_string()?);
             m_collab_editor_settings = Some(CollabEditorSettings::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            m_external_version_control_support = Some(EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?);
+            m_external_version_control_support = Some(
+                EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?,
+            );
             m_serialization_mode = Some(EditorSettingsMSerializationModeVariant::parse(rdr, ver)?);
             m_default_behavior_mode = Some(rdr.read_i32()?);
             m_sprite_packer_mode = Some(rdr.read_i32()?);
@@ -1282,7 +1427,9 @@ impl crate::Parse for EditorSettings {
             m_user_generated_project_suffix = Some(rdr.read_aligned_string()?);
             m_collab_editor_settings = Some(CollabEditorSettings::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            m_external_version_control_support = Some(EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?);
+            m_external_version_control_support = Some(
+                EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?,
+            );
             m_serialization_mode = Some(EditorSettingsMSerializationModeVariant::parse(rdr, ver)?);
             m_default_behavior_mode = Some(rdr.read_i32()?);
             m_sprite_packer_mode = Some(rdr.read_i32()?);
@@ -1291,7 +1438,9 @@ impl crate::Parse for EditorSettings {
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
             m_user_generated_project_suffix = Some(rdr.read_aligned_string()?);
         } else if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            m_external_version_control_support = Some(EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?);
+            m_external_version_control_support = Some(
+                EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?,
+            );
             m_serialization_mode = Some(EditorSettingsMSerializationModeVariant::parse(rdr, ver)?);
             m_web_security_emulation_enabled = Some(rdr.read_i32()?);
             m_web_security_emulation_host_url = Some(rdr.read_aligned_string()?);
@@ -1302,7 +1451,9 @@ impl crate::Parse for EditorSettings {
             m_project_generation_included_extensions = Some(rdr.read_aligned_string()?);
             m_project_generation_root_namespace = Some(rdr.read_aligned_string()?);
         } else if *ver >= crate::UnityVersion::new(5, 1, 0) {
-            m_external_version_control_support = Some(EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?);
+            m_external_version_control_support = Some(
+                EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?,
+            );
             m_serialization_mode = Some(EditorSettingsMSerializationModeVariant::parse(rdr, ver)?);
             m_web_security_emulation_enabled = Some(rdr.read_i32()?);
             m_web_security_emulation_host_url = Some(rdr.read_aligned_string()?);
@@ -1311,7 +1462,9 @@ impl crate::Parse for EditorSettings {
             m_sprite_packer_mode = Some(rdr.read_i32()?);
             m_sprite_packer_padding_power = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            m_external_version_control_support = Some(EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?);
+            m_external_version_control_support = Some(
+                EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?,
+            );
             m_serialization_mode = Some(EditorSettingsMSerializationModeVariant::parse(rdr, ver)?);
             m_web_security_emulation_enabled = Some(rdr.read_i32()?);
             m_web_security_emulation_host_url = Some(rdr.read_aligned_string()?);
@@ -1319,13 +1472,17 @@ impl crate::Parse for EditorSettings {
             m_default_behavior_mode = Some(rdr.read_i32()?);
             m_sprite_packer_mode = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            m_external_version_control_support = Some(EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?);
+            m_external_version_control_support = Some(
+                EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?,
+            );
             m_serialization_mode = Some(EditorSettingsMSerializationModeVariant::parse(rdr, ver)?);
             m_web_security_emulation_enabled = Some(rdr.read_i32()?);
             m_web_security_emulation_host_url = Some(rdr.read_aligned_string()?);
             rdr.align(4)?;
         } else {
-            m_external_version_control_support = Some(EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?);
+            m_external_version_control_support = Some(
+                EditorSettingsMExternalVersionControlSupportVariant::parse(rdr, ver)?,
+            );
             m_web_security_emulation_enabled = Some(rdr.read_i32()?);
             m_web_security_emulation_host_url = Some(rdr.read_aligned_string()?);
             rdr.align(4)?;

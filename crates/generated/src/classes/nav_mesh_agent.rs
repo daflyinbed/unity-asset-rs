@@ -43,33 +43,33 @@ impl crate::Parse for NavMeshAgent {
         let mut m_base_offset = None;
         let mut m_walkable_mask = None;
         let mut m_obstacle_avoidance_type = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_enabled = Some(rdr.read_u8()?);
-            rdr.align(4)?;
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_enabled = Some(rdr.read_u8()?);
+        rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
             m_agent_type_id = Some(rdr.read_i32()?);
         } else {
         }
-            m_radius = Some(rdr.read_f32()?);
-            m_speed = Some(rdr.read_f32()?);
-            m_acceleration = Some(rdr.read_f32()?);
+        m_radius = Some(rdr.read_f32()?);
+        m_speed = Some(rdr.read_f32()?);
+        m_acceleration = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(4, 0, 0) {
             avoidance_priority = Some(rdr.read_i32()?);
         } else {
         }
-            m_angular_speed = Some(rdr.read_f32()?);
-            m_stopping_distance = Some(rdr.read_f32()?);
-            m_auto_traverse_off_mesh_link = Some(rdr.read_bool()?);
+        m_angular_speed = Some(rdr.read_f32()?);
+        m_stopping_distance = Some(rdr.read_f32()?);
+        m_auto_traverse_off_mesh_link = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(4, 1, 0) {
             m_auto_braking = Some(rdr.read_bool()?);
         } else {
         }
-            m_auto_repath = Some(rdr.read_bool()?);
-            rdr.align(4)?;
-            m_height = Some(rdr.read_f32()?);
-            m_base_offset = Some(rdr.read_f32()?);
-            m_walkable_mask = Some(rdr.read_u32()?);
-            m_obstacle_avoidance_type = Some(rdr.read_i32()?);
+        m_auto_repath = Some(rdr.read_bool()?);
+        rdr.align(4)?;
+        m_height = Some(rdr.read_f32()?);
+        m_base_offset = Some(rdr.read_f32()?);
+        m_walkable_mask = Some(rdr.read_u32()?);
+        m_obstacle_avoidance_type = Some(rdr.read_i32()?);
 
         Ok(NavMeshAgent {
             m_game_object: m_game_object.unwrap(),

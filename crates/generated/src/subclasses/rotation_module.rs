@@ -21,14 +21,14 @@ impl crate::Parse for RotationModule {
         let mut x = None;
         let mut y = None;
         let mut separate_axes = None;
-            enabled = Some(rdr.read_bool()?);
-            rdr.align(4)?;
+        enabled = Some(rdr.read_bool()?);
+        rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 3, 0) {
             x = Some(MinMaxCurve::parse(rdr, ver)?);
             y = Some(MinMaxCurve::parse(rdr, ver)?);
         } else {
         }
-            curve = Some(MinMaxCurve::parse(rdr, ver)?);
+        curve = Some(MinMaxCurve::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 3, 0) {
             separate_axes = Some(rdr.read_bool()?);
             rdr.align(4)?;

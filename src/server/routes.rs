@@ -10,14 +10,14 @@
 use std::path::{Component, Path, PathBuf};
 use std::sync::Arc;
 
+use axum::Json;
 use axum::extract::{Path as AxumPath, Query, State};
 use axum::http::header;
-use axum::Json;
 use serde::{Deserialize, Serialize};
 use unity_asset::{Environment, Loader};
 use utoipa::IntoParams;
 
-use super::dto::{is_image_class, ContainerEntryDto, ObjectDetail, ObjectDto, ObjectMeta};
+use super::dto::{ContainerEntryDto, ObjectDetail, ObjectDto, ObjectMeta, is_image_class};
 use super::error::{ApiError, ApiErrorBody};
 use super::state::AppState;
 
@@ -148,11 +148,13 @@ pub async fn load_bundle(
         .ok_or_else(|| ApiError::BadRequest("无法从 path 推断 id,请显式提供".into()))?;
     // 阻塞 IO + CPU 密集 → spawn_blocking。registry/full move 进闭包。
     let join = tokio::task::spawn_blocking(move || -> Result<Environment, String> {
-        let report = Loader::builder()
-            .registry(&registry)
-            .path(&full)
-            .build()
-            .map_err(|e| format!("build 失败: {e}"))?;
+        let builder = Loader::builder().registry(&registry);
+        let report = if full.is_dir() {
+            builder.scan_dir(&full).build()
+        } else {
+            builder.path(&full).build()
+        }
+        .map_err(|e| format!("build 失败: {e}"))?;
         for d in report.diagnostics() {
             eprintln!("{d}");
         }
@@ -286,14 +288,12 @@ pub async fn list_objects(
     let env = s.get_bundle(&bid).ok_or(ApiError::NotFound)?;
     let col = env.collections().get(cid).ok_or(ApiError::NotFound)?;
     // path_id 全局不唯一,只在 collection 内唯一 —— 故必须带 collection 查。
-    let mut rows: Vec<ObjectMeta> = col
-        .assets
-        .iter()
-        .filter_map(|(&pid, &idx)| {
-            env.objects().get(idx).map(|o| ObjectMeta::from_obj(pid, o))
-        })
+    let mut assets = col.assets.iter().collect::<Vec<_>>();
+    assets.sort_by_key(|&(&pid, _)| pid);
+    let rows: Vec<ObjectMeta> = assets
+        .into_iter()
+        .filter_map(|(&pid, &idx)| env.objects().get(idx).map(|o| ObjectMeta::from_obj(pid, o)))
         .collect();
-    rows.sort_by_key(|m| m.path_id);
     Ok(Json(rows))
 }
 
@@ -306,6 +306,8 @@ pub struct ContainerQuery {
     pub path: Option<String>,
     /// 按宿主类型过滤:`"AssetBundle"` / `"ResourceManager"`。
     pub kind: Option<String>,
+    /// 活动 Environment API 的可选 revision；legacy bundle 路由忽略。
+    pub revision: Option<u64>,
 }
 
 /// 列出 bundle 内全部 container 条目(AssetBundle.m_Container + ResourceManager.m_Container 聚合)。
@@ -362,6 +364,8 @@ pub async fn list_containers(
 pub struct DetailQuery {
     /// 传 `"full"` 附带原始 dump(typed → Debug 字符串,dynamic/mono → Value 递归 JSON)。
     pub detail: Option<String>,
+    /// 活动 Environment API 的可选 revision；legacy bundle 路由忽略。
+    pub revision: Option<u64>,
 }
 
 /// 取单个对象的元数据 + 可选 detail。
@@ -374,21 +378,23 @@ pub struct DetailQuery {
     params(
         ("bid" = String, Path, description = "bundle id"),
         ("cid" = usize, Path, description = "collection 下标"),
-        ("pid" = i64, Path, description = "对象 path_id(collection 内唯一)"),
+        ("pid" = String, Path, description = "对象 path_id 十进制字符串(collection 内唯一)"),
         DetailQuery,
     ),
     responses(
         (status = 200, description = "对象元数据(+可选 detail)", body = ObjectDto),
+        (status = 400, description = "path_id 不是合法 i64 十进制字符串", body = ApiErrorBody),
         (status = 404, description = "bundle/collection/object 不存在", body = ApiErrorBody),
     )
 )]
 pub async fn get_object(
     State(s): State<AppState>,
-    AxumPath((bid, cid, pid)): AxumPath<(String, usize, i64)>,
+    AxumPath((bid, cid, pid)): AxumPath<(String, usize, String)>,
     Query(q): Query<DetailQuery>,
 ) -> Result<Json<ObjectDto>, ApiError> {
     let env = s.get_bundle(&bid).ok_or(ApiError::NotFound)?;
     let col_id = env.collection_id(cid).ok_or(ApiError::NotFound)?;
+    let pid = parse_path_id(&pid)?;
     let obj = env.resolve_local(col_id, pid).ok_or(ApiError::NotFound)?;
     let detail = if q.detail.as_deref() == Some("full") {
         Some(ObjectDetail::from_parsed(&obj.object))
@@ -412,7 +418,7 @@ pub async fn get_object(
     params(
         ("bid" = String, Path, description = "bundle id"),
         ("cid" = usize, Path, description = "collection 下标"),
-        ("pid" = i64, Path, description = "对象 path_id(须为 Texture2D/Sprite)"),
+        ("pid" = String, Path, description = "对象 path_id 十进制字符串(须为 Texture2D/Sprite)"),
     ),
     responses(
         (status = 200, description = "PNG 图像字节", content_type = "image/png"),
@@ -423,10 +429,11 @@ pub async fn get_object(
 )]
 pub async fn export_object_png(
     State(s): State<AppState>,
-    AxumPath((bid, cid, pid)): AxumPath<(String, usize, i64)>,
+    AxumPath((bid, cid, pid)): AxumPath<(String, usize, String)>,
 ) -> Result<axum::response::Response, ApiError> {
     use unity_asset::{DecodeOptions, DecodedImage, ParsedObject};
 
+    let pid = parse_path_id(&pid)?;
     let env = s.get_bundle(&bid).ok_or(ApiError::NotFound)?;
     // spawn_blocking 要 'static,不能把借用 `obj` move 进闭包。
     // 在闭包内用 clone 的 Arc<Environment> 重新 resolve。
@@ -470,6 +477,12 @@ pub async fn export_object_png(
     resp.headers_mut()
         .insert(header::CONTENT_DISPOSITION, disposition);
     Ok(resp)
+}
+
+pub(super) fn parse_path_id(value: &str) -> Result<i64, ApiError> {
+    value
+        .parse()
+        .map_err(|_| ApiError::BadRequest(format!("非法 path_id: {value}")))
 }
 
 /// 无 export feature 时:PNG 端点不注册进 router(`routes!(export_object_png)` 在 mod.rs

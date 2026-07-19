@@ -26,16 +26,16 @@ impl crate::Parse for TreeInstance {
         let mut rotation = None;
         let mut lightmap_color = None;
         let mut index = None;
-            position = Some(Vector3f::parse(rdr, ver)?);
-            width_scale = Some(rdr.read_f32()?);
-            height_scale = Some(rdr.read_f32()?);
+        position = Some(Vector3f::parse(rdr, ver)?);
+        width_scale = Some(rdr.read_f32()?);
+        height_scale = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             rotation = Some(rdr.read_f32()?);
         } else {
         }
-            color = Some(ColorRgba32::parse(rdr, ver)?);
-            lightmap_color = Some(ColorRgba32::parse(rdr, ver)?);
-            index = Some(rdr.read_i32()?);
+        color = Some(ColorRgba32::parse(rdr, ver)?);
+        lightmap_color = Some(ColorRgba32::parse(rdr, ver)?);
+        index = Some(rdr.read_i32()?);
 
         Ok(TreeInstance {
             position: position.unwrap(),

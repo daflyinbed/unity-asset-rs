@@ -17,7 +17,18 @@ impl crate::Parse for LocalizationAsset {
         let locale_iso_code = rdr.read_aligned_string()?;
         let editor_asset = rdr.read_bool()?;
         rdr.align(4)?;
-        let string_table = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        let string_table = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| {
+                    ({
+                        let a = rdr.read_aligned_string()?;
+                        let b = rdr.read_aligned_string()?;
+                        Ok((a, b))
+                    })
+                })
+                .collect::<Result<Vec<_>, _>>()
+        })?;
 
         Ok(LocalizationAsset {
             m_name,

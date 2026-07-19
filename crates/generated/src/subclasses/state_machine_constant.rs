@@ -23,14 +23,35 @@ impl crate::Parse for StateMachineConstant {
         let mut m_selector_state_constant_array = None;
         let mut m_synchronized_layer_count = None;
         let mut m_evaluate_transitions_on_start = None;
-            m_state_constant_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { OffsetPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_any_state_transition_constant_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { OffsetPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+        m_state_constant_array = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| OffsetPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        m_any_state_transition_constant_array = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| OffsetPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_selector_state_constant_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { OffsetPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_selector_state_constant_array = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| OffsetPtr::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else {
         }
-            m_default_state = Some(rdr.read_u32()?);
-            m_synchronized_layer_count = Some(rdr.read_u32()?);
+        m_default_state = Some(rdr.read_u32()?);
+        m_synchronized_layer_count = Some(rdr.read_u32()?);
         if *ver >= crate::UnityVersion::new(6000, 4, 0) {
             m_evaluate_transitions_on_start = Some(rdr.read_bool()?);
             rdr.align(4)?;

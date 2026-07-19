@@ -10,11 +10,14 @@ impl crate::Parse for VfxInstanceSplitDesc {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let values = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+        let values = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| rdr.read_u32())
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
 
-        Ok(VfxInstanceSplitDesc {
-            values,
-        })
+        Ok(VfxInstanceSplitDesc { values })
     }
 }

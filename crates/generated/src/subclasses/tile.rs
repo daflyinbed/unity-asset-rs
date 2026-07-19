@@ -2,7 +2,6 @@
 
 use crate::PPtr;
 
-
 /// 版本枚举：TileMTileMatrixIndexVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TileMTileMatrixIndexVariant {
@@ -107,23 +106,27 @@ impl crate::Parse for Tile {
         let mut m_all_tile_flags = None;
         let mut dummy_alignment = None;
         let mut m_collider_type = None;
-            m_tile_index = Some(rdr.read_u32()?);
-            m_tile_sprite_index = Some(rdr.read_u32()?);
-            m_tile_matrix_index = Some(TileMTileMatrixIndexVariant::parse(rdr, ver)?);
-            m_tile_color_index = Some(TileMTileColorIndexVariant::parse(rdr, ver)?);
+        m_tile_index = Some(rdr.read_u32()?);
+        m_tile_sprite_index = Some(rdr.read_u32()?);
+        m_tile_matrix_index = Some(TileMTileMatrixIndexVariant::parse(rdr, ver)?);
+        m_tile_color_index = Some(TileMTileColorIndexVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2020, 1, 8) {
-            m_tile_object_to_instantiate_index = Some(TileMTileObjectToInstantiateIndexVariant::parse(rdr, ver)?);
+            m_tile_object_to_instantiate_index =
+                Some(TileMTileObjectToInstantiateIndexVariant::parse(rdr, ver)?);
             dummy_alignment = Some(rdr.read_u16()?);
             m_all_tile_flags = Some(rdr.read_u32()?);
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            m_tile_object_to_instantiate_index = Some(TileMTileObjectToInstantiateIndexVariant::parse(rdr, ver)?);
+            m_tile_object_to_instantiate_index =
+                Some(TileMTileObjectToInstantiateIndexVariant::parse(rdr, ver)?);
             m_all_tile_flags = Some(rdr.read_u32()?);
         } else if *ver >= crate::UnityVersion::new(2019, 4, 24) {
-            m_tile_object_to_instantiate_index = Some(TileMTileObjectToInstantiateIndexVariant::parse(rdr, ver)?);
+            m_tile_object_to_instantiate_index =
+                Some(TileMTileObjectToInstantiateIndexVariant::parse(rdr, ver)?);
             dummy_alignment = Some(rdr.read_u16()?);
             m_all_tile_flags = Some(rdr.read_u32()?);
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            m_tile_object_to_instantiate_index = Some(TileMTileObjectToInstantiateIndexVariant::parse(rdr, ver)?);
+            m_tile_object_to_instantiate_index =
+                Some(TileMTileObjectToInstantiateIndexVariant::parse(rdr, ver)?);
             m_all_tile_flags = Some(rdr.read_u32()?);
         } else {
             m_object_to_instantiate = Some(crate::PPtr::parse(rdr, ver)?);

@@ -16,10 +16,6 @@ impl crate::Parse for Vector3f {
         let y = rdr.read_f32()?;
         let z = rdr.read_f32()?;
 
-        Ok(Vector3f {
-            x,
-            y,
-            z,
-        })
+        Ok(Vector3f { x, y, z })
     }
 }

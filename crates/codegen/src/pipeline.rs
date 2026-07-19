@@ -10,7 +10,7 @@ use heck::ToUpperCamelCase;
 
 use crate::ir::*;
 use crate::names::{to_rust_field_name, to_rust_type_name};
-use crate::tpk::{TpkTypeTree, TpkUnityNode, VersionedClass, UnityVersion};
+use crate::tpk::{TpkTypeTree, TpkUnityNode, UnityVersion, VersionedClass};
 
 // ────────────────────────────────────────────────────────────────────
 // 入口
@@ -100,10 +100,10 @@ fn p00b_merge_moved_groups(blob: &mut TpkTypeTree) {
 
     // (新 ID, [旧 ID...])
     let groups: &[(i32, &[i32])] = &[
-        (238, &[194]), // NavMesh → NavMeshData
-        (258, &[197]), // LightProbes
+        (238, &[194]),  // NavMesh → NavMeshData
+        (258, &[197]),  // LightProbes
         (319, &[1011]), // AvatarMask
-        (329, &[327]), // VideoClip
+        (329, &[327]),  // VideoClip
     ];
 
     for &(new_id, old_ids) in groups {
@@ -165,7 +165,8 @@ fn p00b_merge_moved_groups(blob: &mut TpkTypeTree) {
         old_entries.sort_by_key(|e| e.version.major_minor_build());
 
         let new_entries = std::mem::take(&mut new_info.classes);
-        let mut merged: Vec<VersionedClass> = Vec::with_capacity(new_entries.len() + old_entries.len());
+        let mut merged: Vec<VersionedClass> =
+            Vec::with_capacity(new_entries.len() + old_entries.len());
         let mut i_new = 0usize;
         let mut i_old = 0usize;
         while i_new < new_entries.len() || i_old < old_entries.len() {
@@ -188,10 +189,7 @@ fn p00b_merge_moved_groups(blob: &mut TpkTypeTree) {
         // 去重：相邻同 major_minor_build 保留首个（归并已让新 ID 优先）。
         merged.dedup_by_key(|e| e.version.major_minor_build());
 
-        log::info!(
-            "p00b: classID {new_id} 合并完成（{} 条目）",
-            merged.len()
-        );
+        log::info!("p00b: classID {new_id} 合并完成（{} 条目）", merged.len());
         new_info.classes = merged;
     }
 }
@@ -303,7 +301,9 @@ fn p03_collect_pptr_targets(blob: &TpkTypeTree, state: &mut Pipeline) {
 
 /// `"PPtr<Component>" → Some("Component")`；`"PPtr<$GameObject>" → Some("GameObject")`。
 fn parse_pptr_target(type_name: &str) -> Option<String> {
-    let inner = type_name.strip_prefix("PPtr<").and_then(|s| s.strip_suffix('>'))?;
+    let inner = type_name
+        .strip_prefix("PPtr<")
+        .and_then(|s| s.strip_suffix('>'))?;
     let inner = inner.strip_prefix('$').unwrap_or(inner);
     Some(to_rust_type_name(inner))
 }
@@ -366,7 +366,9 @@ fn p04_resolve_inheritance(blob: &TpkTypeTree, state: &mut Pipeline) {
         }
         if name_count.get(&class.name).copied().unwrap_or(0) > 1 {
             let n = seen.entry(class.name.clone()).or_insert(0);
-            if *n > 0 && let ClassKey::Main(id) = class.key {
+            if *n > 0
+                && let ClassKey::Main(id) = class.key
+            {
                 class.name = format!("{}_{}", class.name, id);
             }
             *n += 1;
@@ -451,8 +453,7 @@ fn p05_merge_fields(blob: &TpkTypeTree, state: &mut Pipeline) {
 
         if let Some(occurrences) = sub_occurrences.get(unity_name) {
             // 有 release_root 出现：跨版本合并
-            let (own_fields, version_layouts) =
-                merge_and_layout(occurrences.clone(), class_name);
+            let (own_fields, version_layouts) = merge_and_layout(occurrences.clone(), class_name);
             if let Some(class) = state.classes.get_mut(key) {
                 class.own_fields = own_fields;
                 class.version_layouts = version_layouts;
@@ -673,10 +674,7 @@ fn merged_order_compatible(merged: &[&str], version_fields: &[&str]) -> bool {
 /// 这弥补了 `merge_fields_across_versions` 只产出 `Since(earliest)` 不产出 `Range`
 /// 的限制：非单调字段在线性 parse 下会在不存在的版本里被错误读取。
 fn presence_is_monotonic(orders: &[Vec<&str>]) -> bool {
-    let all_fields: BTreeSet<&str> = orders
-        .iter()
-        .flat_map(|o| o.iter().copied())
-        .collect();
+    let all_fields: BTreeSet<&str> = orders.iter().flat_map(|o| o.iter().copied()).collect();
     for name in &all_fields {
         let mut seen = false;
         for order in orders {
@@ -825,7 +823,9 @@ fn node_to_rust_type(node: &TpkUnityNode, blob: &TpkTypeTree) -> RustType {
         NodeType::TypelessData => RustType::Bytes,
         NodeType::PPtr => {
             let target = parse_pptr_target(type_name).unwrap_or_else(|| "Unknown".into());
-            RustType::Pptr { target_class: target }
+            RustType::Pptr {
+                target_class: target,
+            }
         }
         NodeType::Array | NodeType::Vector => {
             let data_idx = find_array_data_child(node, blob, nt);
@@ -842,8 +842,10 @@ fn node_to_rust_type(node: &TpkUnityNode, blob: &TpkTypeTree) -> RustType {
             if let Some(idx) = pair_idx {
                 let pair_node = &blob.node_pool[idx as usize];
                 if pair_node.sub_nodes.len() >= 2 {
-                    let k = node_to_rust_type(&blob.node_pool[pair_node.sub_nodes[0] as usize], blob);
-                    let v = node_to_rust_type(&blob.node_pool[pair_node.sub_nodes[1] as usize], blob);
+                    let k =
+                        node_to_rust_type(&blob.node_pool[pair_node.sub_nodes[0] as usize], blob);
+                    let v =
+                        node_to_rust_type(&blob.node_pool[pair_node.sub_nodes[1] as usize], blob);
                     let pair_t = RustType::Pair(Box::new(k), Box::new(v));
                     return RustType::List(Box::new(pair_t));
                 }
@@ -954,8 +956,7 @@ fn merge_fields_across_versions(
             })
             .collect();
 
-        let present_versions: Vec<UnityVersion> =
-            present.iter().map(|(v, _, _)| *v).collect();
+        let present_versions: Vec<UnityVersion> = present.iter().map(|(v, _, _)| *v).collect();
 
         let gate = if present_versions.len() == total {
             VersionGate::Always
@@ -1136,14 +1137,23 @@ mod tests {
 
     #[test]
     fn parse_pptr_simple() {
-        assert_eq!(parse_pptr_target("PPtr<Component>"), Some("Component".into()));
-        assert_eq!(parse_pptr_target("PPtr<Texture2D>"), Some("Texture2D".into()));
+        assert_eq!(
+            parse_pptr_target("PPtr<Component>"),
+            Some("Component".into())
+        );
+        assert_eq!(
+            parse_pptr_target("PPtr<Texture2D>"),
+            Some("Texture2D".into())
+        );
     }
 
     #[test]
     fn parse_pptr_dollar_prefix() {
         // MonoBehaviour 字段会写成 PPtr<$GameObject>
-        assert_eq!(parse_pptr_target("PPtr<$GameObject>"), Some("GameObject".into()));
+        assert_eq!(
+            parse_pptr_target("PPtr<$GameObject>"),
+            Some("GameObject".into())
+        );
     }
 
     #[test]

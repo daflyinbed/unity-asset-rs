@@ -3,7 +3,6 @@
 use crate::PPtr;
 use crate::subclasses::bit_field::BitField;
 
-
 /// 版本枚举：AreaEffector2DMForceTargetVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AreaEffector2DMForceTargetVariant {
@@ -63,15 +62,15 @@ impl crate::Parse for AreaEffector2D {
         let mut m_force_target = None;
         let mut m_linear_damping = None;
         let mut m_angular_damping = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_enabled = Some(rdr.read_u8()?);
-            rdr.align(4)?;
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_enabled = Some(rdr.read_u8()?);
+        rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 0, 2) {
             m_use_collider_mask = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else {
         }
-            m_collider_mask = Some(BitField::parse(rdr, ver)?);
+        m_collider_mask = Some(BitField::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 2) {
             m_use_global_angle = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -79,8 +78,8 @@ impl crate::Parse for AreaEffector2D {
         } else {
             m_force_direction = Some(rdr.read_f32()?);
         }
-            m_force_magnitude = Some(rdr.read_f32()?);
-            m_force_variation = Some(rdr.read_f32()?);
+        m_force_magnitude = Some(rdr.read_f32()?);
+        m_force_variation = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(6000, 1, 0) {
             m_force_target = Some(AreaEffector2DMForceTargetVariant::parse(rdr, ver)?);
             m_linear_damping = Some(rdr.read_f32()?);

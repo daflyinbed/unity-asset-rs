@@ -14,9 +14,6 @@ impl crate::Parse for AssemblyDefinitionReferenceAsset {
         let m_name = rdr.read_aligned_string()?;
         let m_script = rdr.read_aligned_string()?;
 
-        Ok(AssemblyDefinitionReferenceAsset {
-            m_name,
-            m_script,
-        })
+        Ok(AssemblyDefinitionReferenceAsset { m_name, m_script })
     }
 }

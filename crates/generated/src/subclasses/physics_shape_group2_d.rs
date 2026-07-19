@@ -14,9 +14,19 @@ impl crate::Parse for PhysicsShapeGroup2D {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_shapes = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { PhysicsShape::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_shapes = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| PhysicsShape::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
-        let m_vertices = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_vertices = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| Vector2f::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
 
         Ok(PhysicsShapeGroup2D {

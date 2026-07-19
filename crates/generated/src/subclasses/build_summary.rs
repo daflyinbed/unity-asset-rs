@@ -4,7 +4,6 @@ use crate::subclasses::date_time::DateTime;
 use crate::subclasses::guid::Guid;
 use crate::subclasses::hash128::Hash128;
 
-
 /// 版本枚举：BuildSummaryBuildResultVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum BuildSummaryBuildResultVariant {
@@ -120,7 +119,7 @@ impl crate::Parse for BuildSummary {
         } else {
             name = Some(rdr.read_aligned_string()?);
         }
-            platform_name = Some(rdr.read_aligned_string()?);
+        platform_name = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(2021, 2, 0) {
             platform_group_name = Some(rdr.read_aligned_string()?);
             subtarget = Some(rdr.read_i32()?);
@@ -128,13 +127,13 @@ impl crate::Parse for BuildSummary {
             platform_group_name = Some(rdr.read_aligned_string()?);
         } else {
         }
-            options = Some(rdr.read_i32()?);
+        options = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(6000, 5, 0) {
             build_content_options = Some(rdr.read_i32()?);
         } else {
         }
-            asset_bundle_options = Some(rdr.read_i32()?);
-            output_path = Some(rdr.read_aligned_string()?);
+        asset_bundle_options = Some(rdr.read_i32()?);
+        output_path = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(6000, 5, 0) {
             data_path = Some(rdr.read_aligned_string()?);
             build_name = Some(rdr.read_aligned_string()?);
@@ -142,15 +141,15 @@ impl crate::Parse for BuildSummary {
             data_path = Some(rdr.read_aligned_string()?);
         } else {
         }
-            crc = Some(rdr.read_u32()?);
-            total_size = Some(rdr.read_u64()?);
+        crc = Some(rdr.read_u32()?);
+        total_size = Some(rdr.read_u64()?);
         if *ver >= crate::UnityVersion::new(2018, 1, 0) {
             total_time_ticks = Some(rdr.read_u64()?);
         } else {
             total_time_ms = Some(rdr.read_u64()?);
         }
-            total_errors = Some(rdr.read_i32()?);
-            total_warnings = Some(rdr.read_i32()?);
+        total_errors = Some(rdr.read_i32()?);
+        total_warnings = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(6000, 5, 0) {
             build_type = Some(rdr.read_i32()?);
             build_result = Some(BuildSummaryBuildResultVariant::parse(rdr, ver)?);

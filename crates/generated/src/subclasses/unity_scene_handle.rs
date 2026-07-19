@@ -12,8 +12,6 @@ impl crate::Parse for UnitySceneHandle {
     ) -> Result<Self, R::Error> {
         let value = rdr.read_i32()?;
 
-        Ok(UnitySceneHandle {
-            value,
-        })
+        Ok(UnitySceneHandle { value })
     }
 }

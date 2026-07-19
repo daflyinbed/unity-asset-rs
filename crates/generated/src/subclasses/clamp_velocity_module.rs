@@ -2,7 +2,6 @@
 
 use crate::subclasses::min_max_curve::MinMaxCurve;
 
-
 /// 版本枚举：ClampVelocityModuleSeparateAxisVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ClampVelocityModuleSeparateAxisVariant {
@@ -79,13 +78,13 @@ impl crate::Parse for ClampVelocityModule {
         let mut multiply_drag_by_particle_size = None;
         let mut multiply_drag_by_particle_velocity = None;
         let mut drag = None;
-            enabled = Some(rdr.read_bool()?);
-            rdr.align(4)?;
-            x = Some(MinMaxCurve::parse(rdr, ver)?);
-            y = Some(MinMaxCurve::parse(rdr, ver)?);
-            z = Some(MinMaxCurve::parse(rdr, ver)?);
-            magnitude = Some(MinMaxCurve::parse(rdr, ver)?);
-            separate_axis = Some(ClampVelocityModuleSeparateAxisVariant::parse(rdr, ver)?);
+        enabled = Some(rdr.read_bool()?);
+        rdr.align(4)?;
+        x = Some(MinMaxCurve::parse(rdr, ver)?);
+        y = Some(MinMaxCurve::parse(rdr, ver)?);
+        z = Some(MinMaxCurve::parse(rdr, ver)?);
+        magnitude = Some(MinMaxCurve::parse(rdr, ver)?);
+        separate_axis = Some(ClampVelocityModuleSeparateAxisVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             in_world_space = Some(ClampVelocityModuleInWorldSpaceVariant::parse(rdr, ver)?);
             multiply_drag_by_particle_size = Some(rdr.read_bool()?);
@@ -95,7 +94,7 @@ impl crate::Parse for ClampVelocityModule {
             in_world_space = Some(ClampVelocityModuleInWorldSpaceVariant::parse(rdr, ver)?);
         } else {
         }
-            dampen = Some(rdr.read_f32()?);
+        dampen = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             drag = Some(MinMaxCurve::parse(rdr, ver)?);
         } else {

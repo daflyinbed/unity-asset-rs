@@ -24,7 +24,7 @@ pub fn fix_file_identifier(name: &str) -> String {
 
 /// 取路径最后一段分量（对齐 `System.IO.Path.GetFileName`，按 `/` 与 `\` 切分）。
 fn basename(path: &str) -> String {
-    let pos = path.rsplit([ '/', '\\' ]).next();
+    let pos = path.rsplit(['/', '\\']).next();
     pos.map(str::to_owned).unwrap_or_else(|| path.to_owned())
 }
 
@@ -35,7 +35,10 @@ mod tests {
     #[test]
     fn fix_basic() {
         assert_eq!(fix_file_identifier("CAB-1234.assets"), "cab-1234.assets");
-        assert_eq!(fix_file_identifier("archive:/CAB-1234/CAB-1234.resS"), "cab-1234.ress");
+        assert_eq!(
+            fix_file_identifier("archive:/CAB-1234/CAB-1234.resS"),
+            "cab-1234.ress"
+        );
         assert_eq!(fix_file_identifier("library/12345"), "12345");
         assert_eq!(fix_file_identifier("resources/shared.tex"), "shared.tex");
         assert_eq!(fix_file_identifier("archive:/CAB-x/level0"), "level0");
@@ -43,6 +46,9 @@ mod tests {
 
     #[test]
     fn fix_backslash() {
-        assert_eq!(fix_file_identifier("archive:/CAB-x/sub\\file.resS"), "file.ress");
+        assert_eq!(
+            fix_file_identifier("archive:/CAB-x/sub\\file.resS"),
+            "file.ress"
+        );
     }
 }

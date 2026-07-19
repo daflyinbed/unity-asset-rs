@@ -19,17 +19,47 @@ impl crate::Parse for RayTracingShaderResources {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let textures = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { RayTracingShaderResource::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let textures = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| RayTracingShaderResource::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
-        let builtin_samplers = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { RayTracingShaderBuiltinSampler::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let builtin_samplers = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| RayTracingShaderBuiltinSampler::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
-        let input_buffers = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { RayTracingShaderResource::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let input_buffers = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| RayTracingShaderResource::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
-        let output_buffers = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { RayTracingShaderResource::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let output_buffers = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| RayTracingShaderResource::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
-        let constant_buffers_desc = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { RayTracingShaderConstantBuffer::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let constant_buffers_desc = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| RayTracingShaderConstantBuffer::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
-        let constant_buffers = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { RayTracingShaderResource::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let constant_buffers = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| RayTracingShaderResource::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
 
         Ok(RayTracingShaderResources {

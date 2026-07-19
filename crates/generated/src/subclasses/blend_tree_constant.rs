@@ -15,7 +15,14 @@ impl crate::Parse for BlendTreeConstant {
     ) -> Result<Self, R::Error> {
         let mut m_node_array = None;
         let mut m_blend_event_array_constant = None;
-            m_node_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { OffsetPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+        m_node_array = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| OffsetPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
         if *ver >= crate::UnityVersion::new(4, 5, 0) {
         } else {
             m_blend_event_array_constant = Some(OffsetPtr::parse(rdr, ver)?);

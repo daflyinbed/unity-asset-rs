@@ -8,7 +8,6 @@ use crate::subclasses::procedural_texture_assignment::ProceduralTextureAssignmen
 use crate::subclasses::texture_importer_platform_settings::TextureImporterPlatformSettings;
 use crate::subclasses::unity_property_sheet::UnityPropertySheet;
 
-
 /// 版本枚举：MaterialInstanceSettingsInputsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum MaterialInstanceSettingsInputsVariant {
@@ -22,11 +21,21 @@ impl crate::Parse for MaterialInstanceSettingsInputsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { InputImportSettings::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| InputImportSettings::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { InputImportSettings::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| InputImportSettings::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -45,11 +54,21 @@ impl crate::Parse for MaterialInstanceSettingsTextureParametersVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { InputImportSettings::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| InputImportSettings::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { InputImportSettings::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| InputImportSettings::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -69,14 +88,29 @@ impl crate::Parse for MaterialInstanceSettingsBuildTargetSettingsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MaterialBuildTargetSettings::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| MaterialBuildTargetSettings::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MaterialBuildTargetSettings::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| MaterialBuildTargetSettings::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::V3_5(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TextureImporterPlatformSettings::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| TextureImporterPlatformSettings::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -95,11 +129,21 @@ impl crate::Parse for MaterialInstanceSettingsTextureAssignmentsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ProceduralTextureAssignment::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| ProceduralTextureAssignment::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ProceduralTextureAssignment::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| ProceduralTextureAssignment::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -139,8 +183,8 @@ impl crate::Parse for MaterialInstanceSettings {
         let mut texture_parameters = None;
         let mut build_target_settings = None;
         let mut texture_assignments = None;
-            name = Some(rdr.read_aligned_string()?);
-            prototype_name = Some(rdr.read_aligned_string()?);
+        name = Some(rdr.read_aligned_string()?);
+        prototype_name = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(5, 3, 4) {
             shader_name = Some(rdr.read_aligned_string()?);
             shader = Some(crate::PPtr::parse(rdr, ver)?);
@@ -161,15 +205,21 @@ impl crate::Parse for MaterialInstanceSettings {
         } else {
             shader_name = Some(rdr.read_aligned_string()?);
         }
-            inputs = Some(MaterialInstanceSettingsInputsVariant::parse(rdr, ver)?);
-            material_information = Some(ProceduralMaterialInformation::parse(rdr, ver)?);
-            material_properties = Some(UnityPropertySheet::parse(rdr, ver)?);
-            texture_parameters = Some(MaterialInstanceSettingsTextureParametersVariant::parse(rdr, ver)?);
+        inputs = Some(MaterialInstanceSettingsInputsVariant::parse(rdr, ver)?);
+        material_information = Some(ProceduralMaterialInformation::parse(rdr, ver)?);
+        material_properties = Some(UnityPropertySheet::parse(rdr, ver)?);
+        texture_parameters = Some(MaterialInstanceSettingsTextureParametersVariant::parse(
+            rdr, ver,
+        )?);
         if *ver >= crate::UnityVersion::new(4, 5, 0) {
-            texture_assignments = Some(MaterialInstanceSettingsTextureAssignmentsVariant::parse(rdr, ver)?);
+            texture_assignments = Some(MaterialInstanceSettingsTextureAssignmentsVariant::parse(
+                rdr, ver,
+            )?);
         } else {
         }
-            build_target_settings = Some(MaterialInstanceSettingsBuildTargetSettingsVariant::parse(rdr, ver)?);
+        build_target_settings = Some(MaterialInstanceSettingsBuildTargetSettingsVariant::parse(
+            rdr, ver,
+        )?);
 
         Ok(MaterialInstanceSettings {
             name: name.unwrap(),

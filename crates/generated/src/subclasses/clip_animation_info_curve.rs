@@ -16,9 +16,6 @@ impl crate::Parse for ClipAnimationInfoCurve {
         let name = rdr.read_aligned_string()?;
         let curve = AnimationCurve::parse(rdr, ver)?;
 
-        Ok(ClipAnimationInfoCurve {
-            name,
-            curve,
-        })
+        Ok(ClipAnimationInfoCurve { name, curve })
     }
 }

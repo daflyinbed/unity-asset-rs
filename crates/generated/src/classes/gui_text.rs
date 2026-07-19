@@ -43,24 +43,24 @@ impl crate::Parse for GuiText {
         let mut m_pixel_correct = None;
         let mut m_color = None;
         let mut m_rich_text = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_enabled = Some(rdr.read_u8()?);
-            rdr.align(4)?;
-            m_text = Some(rdr.read_aligned_string()?);
-            m_anchor = Some(rdr.read_i16()?);
-            m_alignment = Some(rdr.read_i16()?);
-            m_pixel_offset = Some(Vector2f::parse(rdr, ver)?);
-            m_line_spacing = Some(rdr.read_f32()?);
-            m_tab_size = Some(rdr.read_f32()?);
-            m_font = Some(crate::PPtr::parse(rdr, ver)?);
-            m_material = Some(crate::PPtr::parse(rdr, ver)?);
-            m_font_size = Some(rdr.read_i32()?);
-            m_font_style = Some(rdr.read_i32()?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_enabled = Some(rdr.read_u8()?);
+        rdr.align(4)?;
+        m_text = Some(rdr.read_aligned_string()?);
+        m_anchor = Some(rdr.read_i16()?);
+        m_alignment = Some(rdr.read_i16()?);
+        m_pixel_offset = Some(Vector2f::parse(rdr, ver)?);
+        m_line_spacing = Some(rdr.read_f32()?);
+        m_tab_size = Some(rdr.read_f32()?);
+        m_font = Some(crate::PPtr::parse(rdr, ver)?);
+        m_material = Some(crate::PPtr::parse(rdr, ver)?);
+        m_font_size = Some(rdr.read_i32()?);
+        m_font_style = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(4, 2, 0) {
             m_color = Some(ColorRgba32::parse(rdr, ver)?);
         } else {
         }
-            m_pixel_correct = Some(rdr.read_bool()?);
+        m_pixel_correct = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(4, 0, 0) {
             m_rich_text = Some(rdr.read_bool()?);
         } else {

@@ -3,7 +3,6 @@
 use crate::subclasses::streamed_resource::StreamedResource;
 use crate::subclasses::video_clip_importer_target_settings::VideoClipImporterTargetSettings;
 
-
 /// 版本枚举：VideoClipImporterOutputSourceHasAlphaVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum VideoClipImporterOutputSourceHasAlphaVariant {
@@ -78,12 +77,28 @@ impl crate::Parse for VideoClipImporterOutput {
             source_pixel_aspect_ratio_denominator = Some(rdr.read_u32()?);
             source_frame_rate = Some(rdr.read_f64()?);
             source_file_size = Some(rdr.read_u64()?);
-            source_audio_channel_count = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u16() }).collect::<Result<Vec<_>, _>>() } )?);
+            source_audio_channel_count = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_u16())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            source_has_alpha = Some(VideoClipImporterOutputSourceHasAlphaVariant::parse(rdr, ver)?);
+            source_has_alpha = Some(VideoClipImporterOutputSourceHasAlphaVariant::parse(
+                rdr, ver,
+            )?);
             transcode_skipped = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            source_audio_sample_rate = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
+            source_audio_sample_rate = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_u32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             original_width = Some(rdr.read_i32()?);
             original_height = Some(rdr.read_i32()?);
@@ -95,10 +110,26 @@ impl crate::Parse for VideoClipImporterOutput {
             source_pixel_aspect_ratio_denominator = Some(rdr.read_u32()?);
             source_frame_rate = Some(rdr.read_f64()?);
             source_file_size = Some(rdr.read_u64()?);
-            source_audio_channel_count = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u16() }).collect::<Result<Vec<_>, _>>() } )?);
+            source_audio_channel_count = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_u16())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            source_has_alpha = Some(VideoClipImporterOutputSourceHasAlphaVariant::parse(rdr, ver)?);
-            source_audio_sample_rate = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
+            source_has_alpha = Some(VideoClipImporterOutputSourceHasAlphaVariant::parse(
+                rdr, ver,
+            )?);
+            source_audio_sample_rate = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_u32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             original_width = Some(rdr.read_i32()?);
             original_height = Some(rdr.read_i32()?);
@@ -117,10 +148,26 @@ impl crate::Parse for VideoClipImporterOutput {
         } else if *ver >= crate::UnityVersion::new(2017, 1, 3) {
             source_frame_rate = Some(rdr.read_f64()?);
             source_file_size = Some(rdr.read_u64()?);
-            source_audio_channel_count = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u16() }).collect::<Result<Vec<_>, _>>() } )?);
+            source_audio_channel_count = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_u16())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            source_has_alpha = Some(VideoClipImporterOutputSourceHasAlphaVariant::parse(rdr, ver)?);
-            source_audio_sample_rate = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
+            source_has_alpha = Some(VideoClipImporterOutputSourceHasAlphaVariant::parse(
+                rdr, ver,
+            )?);
+            source_audio_sample_rate = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_u32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             original_width = Some(rdr.read_i32()?);
             original_height = Some(rdr.read_i32()?);

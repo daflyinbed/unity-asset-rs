@@ -23,8 +23,8 @@ impl crate::Parse for ProceduralMaterialInformation {
         let mut m_generate_all_outputs = None;
         let mut m_generate_mipmaps = None;
         let mut m_animation_update_rate = None;
-            m_offset = Some(Vector2f::parse(rdr, ver)?);
-            m_scale = Some(Vector2f::parse(rdr, ver)?);
+        m_offset = Some(Vector2f::parse(rdr, ver)?);
+        m_scale = Some(Vector2f::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(4, 5, 0) {
             m_generate_mipmaps = Some(rdr.read_bool()?);
             rdr.align(4)?;

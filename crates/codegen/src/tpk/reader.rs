@@ -42,27 +42,39 @@ impl<'a> LeReader<'a> {
     }
 
     pub fn read_i16(&mut self, reason: &'static str) -> Result<i16, TpkError> {
-        Ok(i16::from_le_bytes(self.take(2, reason)?.try_into().unwrap()))
+        Ok(i16::from_le_bytes(
+            self.take(2, reason)?.try_into().unwrap(),
+        ))
     }
 
     pub fn read_u16(&mut self, reason: &'static str) -> Result<u16, TpkError> {
-        Ok(u16::from_le_bytes(self.take(2, reason)?.try_into().unwrap()))
+        Ok(u16::from_le_bytes(
+            self.take(2, reason)?.try_into().unwrap(),
+        ))
     }
 
     pub fn read_i32(&mut self, reason: &'static str) -> Result<i32, TpkError> {
-        Ok(i32::from_le_bytes(self.take(4, reason)?.try_into().unwrap()))
+        Ok(i32::from_le_bytes(
+            self.take(4, reason)?.try_into().unwrap(),
+        ))
     }
 
     pub fn read_u32(&mut self, reason: &'static str) -> Result<u32, TpkError> {
-        Ok(u32::from_le_bytes(self.take(4, reason)?.try_into().unwrap()))
+        Ok(u32::from_le_bytes(
+            self.take(4, reason)?.try_into().unwrap(),
+        ))
     }
 
     pub fn read_i64(&mut self, reason: &'static str) -> Result<i64, TpkError> {
-        Ok(i64::from_le_bytes(self.take(8, reason)?.try_into().unwrap()))
+        Ok(i64::from_le_bytes(
+            self.take(8, reason)?.try_into().unwrap(),
+        ))
     }
 
     pub fn read_u64(&mut self, reason: &'static str) -> Result<u64, TpkError> {
-        Ok(u64::from_le_bytes(self.take(8, reason)?.try_into().unwrap()))
+        Ok(u64::from_le_bytes(
+            self.take(8, reason)?.try_into().unwrap(),
+        ))
     }
 
     /// 读 .NET 7-bit varint 长度前缀 + UTF-8 字符串。

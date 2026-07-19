@@ -2,7 +2,6 @@
 
 use crate::PPtr;
 
-
 /// 版本枚举：AnimatorMControllerVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AnimatorMControllerVariant {
@@ -209,7 +208,8 @@ pub struct Animator {
     pub m_animate_physics: Option<AnimatorMAnimatePhysicsVariant>,
     pub m_has_transform_hierarchy: Option<bool>,
     pub m_linear_velocity_blending: Option<AnimatorMLinearVelocityBlendingVariant>,
-    pub m_allow_constant_clip_sampling_optimization: Option<AnimatorMAllowConstantClipSamplingOptimizationVariant>,
+    pub m_allow_constant_clip_sampling_optimization:
+        Option<AnimatorMAllowConstantClipSamplingOptimizationVariant>,
     pub m_stabilize_feet: Option<AnimatorMStabilizeFeetVariant>,
     pub m_keep_animator_controller_state_on_disable: Option<bool>,
     pub m_keep_animator_state_on_disable: Option<AnimatorMKeepAnimatorStateOnDisableVariant>,
@@ -236,101 +236,133 @@ impl crate::Parse for Animator {
         let mut m_keep_animator_controller_state_on_disable = None;
         let mut m_keep_animator_state_on_disable = None;
         let mut m_write_default_values_on_disable = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_enabled = Some(rdr.read_u8()?);
-            rdr.align(4)?;
-            m_avatar = Some(crate::PPtr::parse(rdr, ver)?);
-            m_controller = Some(AnimatorMControllerVariant::parse(rdr, ver)?);
-            m_culling_mode = Some(rdr.read_i32()?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_enabled = Some(rdr.read_u8()?);
+        rdr.align(4)?;
+        m_avatar = Some(crate::PPtr::parse(rdr, ver)?);
+        m_controller = Some(AnimatorMControllerVariant::parse(rdr, ver)?);
+        m_culling_mode = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(4, 5, 0) {
             m_update_mode = Some(rdr.read_i32()?);
         } else {
         }
-            m_apply_root_motion = Some(AnimatorMApplyRootMotionVariant::parse(rdr, ver)?);
+        m_apply_root_motion = Some(AnimatorMApplyRootMotionVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            m_linear_velocity_blending = Some(AnimatorMLinearVelocityBlendingVariant::parse(rdr, ver)?);
+            m_linear_velocity_blending =
+                Some(AnimatorMLinearVelocityBlendingVariant::parse(rdr, ver)?);
             m_stabilize_feet = Some(AnimatorMStabilizeFeetVariant::parse(rdr, ver)?);
             m_animate_physics = Some(AnimatorMAnimatePhysicsVariant::parse(rdr, ver)?);
             m_has_transform_hierarchy = Some(rdr.read_bool()?);
-            m_allow_constant_clip_sampling_optimization = Some(AnimatorMAllowConstantClipSamplingOptimizationVariant::parse(rdr, ver)?);
-            m_keep_animator_state_on_disable = Some(AnimatorMKeepAnimatorStateOnDisableVariant::parse(rdr, ver)?);
+            m_allow_constant_clip_sampling_optimization =
+                Some(AnimatorMAllowConstantClipSamplingOptimizationVariant::parse(rdr, ver)?);
+            m_keep_animator_state_on_disable =
+                Some(AnimatorMKeepAnimatorStateOnDisableVariant::parse(rdr, ver)?);
             m_write_default_values_on_disable = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2022, 2, 9) {
-            m_linear_velocity_blending = Some(AnimatorMLinearVelocityBlendingVariant::parse(rdr, ver)?);
+            m_linear_velocity_blending =
+                Some(AnimatorMLinearVelocityBlendingVariant::parse(rdr, ver)?);
             m_stabilize_feet = Some(AnimatorMStabilizeFeetVariant::parse(rdr, ver)?);
             m_has_transform_hierarchy = Some(rdr.read_bool()?);
-            m_allow_constant_clip_sampling_optimization = Some(AnimatorMAllowConstantClipSamplingOptimizationVariant::parse(rdr, ver)?);
-            m_keep_animator_state_on_disable = Some(AnimatorMKeepAnimatorStateOnDisableVariant::parse(rdr, ver)?);
+            m_allow_constant_clip_sampling_optimization =
+                Some(AnimatorMAllowConstantClipSamplingOptimizationVariant::parse(rdr, ver)?);
+            m_keep_animator_state_on_disable =
+                Some(AnimatorMKeepAnimatorStateOnDisableVariant::parse(rdr, ver)?);
             m_write_default_values_on_disable = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2022, 1, 24) {
-            m_linear_velocity_blending = Some(AnimatorMLinearVelocityBlendingVariant::parse(rdr, ver)?);
+            m_linear_velocity_blending =
+                Some(AnimatorMLinearVelocityBlendingVariant::parse(rdr, ver)?);
             m_stabilize_feet = Some(AnimatorMStabilizeFeetVariant::parse(rdr, ver)?);
             m_has_transform_hierarchy = Some(rdr.read_bool()?);
-            m_allow_constant_clip_sampling_optimization = Some(AnimatorMAllowConstantClipSamplingOptimizationVariant::parse(rdr, ver)?);
-            m_keep_animator_state_on_disable = Some(AnimatorMKeepAnimatorStateOnDisableVariant::parse(rdr, ver)?);
+            m_allow_constant_clip_sampling_optimization =
+                Some(AnimatorMAllowConstantClipSamplingOptimizationVariant::parse(rdr, ver)?);
+            m_keep_animator_state_on_disable =
+                Some(AnimatorMKeepAnimatorStateOnDisableVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
-            m_linear_velocity_blending = Some(AnimatorMLinearVelocityBlendingVariant::parse(rdr, ver)?);
+            m_linear_velocity_blending =
+                Some(AnimatorMLinearVelocityBlendingVariant::parse(rdr, ver)?);
             m_stabilize_feet = Some(AnimatorMStabilizeFeetVariant::parse(rdr, ver)?);
             m_has_transform_hierarchy = Some(rdr.read_bool()?);
-            m_allow_constant_clip_sampling_optimization = Some(AnimatorMAllowConstantClipSamplingOptimizationVariant::parse(rdr, ver)?);
+            m_allow_constant_clip_sampling_optimization =
+                Some(AnimatorMAllowConstantClipSamplingOptimizationVariant::parse(rdr, ver)?);
             m_keep_animator_controller_state_on_disable = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2021, 3, 20) {
-            m_linear_velocity_blending = Some(AnimatorMLinearVelocityBlendingVariant::parse(rdr, ver)?);
+            m_linear_velocity_blending =
+                Some(AnimatorMLinearVelocityBlendingVariant::parse(rdr, ver)?);
             m_stabilize_feet = Some(AnimatorMStabilizeFeetVariant::parse(rdr, ver)?);
             m_has_transform_hierarchy = Some(rdr.read_bool()?);
-            m_allow_constant_clip_sampling_optimization = Some(AnimatorMAllowConstantClipSamplingOptimizationVariant::parse(rdr, ver)?);
-            m_keep_animator_state_on_disable = Some(AnimatorMKeepAnimatorStateOnDisableVariant::parse(rdr, ver)?);
+            m_allow_constant_clip_sampling_optimization =
+                Some(AnimatorMAllowConstantClipSamplingOptimizationVariant::parse(rdr, ver)?);
+            m_keep_animator_state_on_disable =
+                Some(AnimatorMKeepAnimatorStateOnDisableVariant::parse(rdr, ver)?);
             m_write_default_values_on_disable = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2021, 3, 16) {
-            m_linear_velocity_blending = Some(AnimatorMLinearVelocityBlendingVariant::parse(rdr, ver)?);
+            m_linear_velocity_blending =
+                Some(AnimatorMLinearVelocityBlendingVariant::parse(rdr, ver)?);
             m_stabilize_feet = Some(AnimatorMStabilizeFeetVariant::parse(rdr, ver)?);
             m_has_transform_hierarchy = Some(rdr.read_bool()?);
-            m_allow_constant_clip_sampling_optimization = Some(AnimatorMAllowConstantClipSamplingOptimizationVariant::parse(rdr, ver)?);
-            m_keep_animator_state_on_disable = Some(AnimatorMKeepAnimatorStateOnDisableVariant::parse(rdr, ver)?);
+            m_allow_constant_clip_sampling_optimization =
+                Some(AnimatorMAllowConstantClipSamplingOptimizationVariant::parse(rdr, ver)?);
+            m_keep_animator_state_on_disable =
+                Some(AnimatorMKeepAnimatorStateOnDisableVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            m_linear_velocity_blending = Some(AnimatorMLinearVelocityBlendingVariant::parse(rdr, ver)?);
+            m_linear_velocity_blending =
+                Some(AnimatorMLinearVelocityBlendingVariant::parse(rdr, ver)?);
             m_stabilize_feet = Some(AnimatorMStabilizeFeetVariant::parse(rdr, ver)?);
             m_has_transform_hierarchy = Some(rdr.read_bool()?);
-            m_allow_constant_clip_sampling_optimization = Some(AnimatorMAllowConstantClipSamplingOptimizationVariant::parse(rdr, ver)?);
+            m_allow_constant_clip_sampling_optimization =
+                Some(AnimatorMAllowConstantClipSamplingOptimizationVariant::parse(rdr, ver)?);
             m_keep_animator_controller_state_on_disable = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2021, 1, 0) {
-            m_linear_velocity_blending = Some(AnimatorMLinearVelocityBlendingVariant::parse(rdr, ver)?);
+            m_linear_velocity_blending =
+                Some(AnimatorMLinearVelocityBlendingVariant::parse(rdr, ver)?);
             m_has_transform_hierarchy = Some(rdr.read_bool()?);
-            m_allow_constant_clip_sampling_optimization = Some(AnimatorMAllowConstantClipSamplingOptimizationVariant::parse(rdr, ver)?);
+            m_allow_constant_clip_sampling_optimization =
+                Some(AnimatorMAllowConstantClipSamplingOptimizationVariant::parse(rdr, ver)?);
             m_keep_animator_controller_state_on_disable = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2020, 3, 46) {
-            m_linear_velocity_blending = Some(AnimatorMLinearVelocityBlendingVariant::parse(rdr, ver)?);
+            m_linear_velocity_blending =
+                Some(AnimatorMLinearVelocityBlendingVariant::parse(rdr, ver)?);
             m_stabilize_feet = Some(AnimatorMStabilizeFeetVariant::parse(rdr, ver)?);
             m_has_transform_hierarchy = Some(rdr.read_bool()?);
-            m_allow_constant_clip_sampling_optimization = Some(AnimatorMAllowConstantClipSamplingOptimizationVariant::parse(rdr, ver)?);
-            m_keep_animator_state_on_disable = Some(AnimatorMKeepAnimatorStateOnDisableVariant::parse(rdr, ver)?);
+            m_allow_constant_clip_sampling_optimization =
+                Some(AnimatorMAllowConstantClipSamplingOptimizationVariant::parse(rdr, ver)?);
+            m_keep_animator_state_on_disable =
+                Some(AnimatorMKeepAnimatorStateOnDisableVariant::parse(rdr, ver)?);
             m_write_default_values_on_disable = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2020, 3, 43) {
-            m_linear_velocity_blending = Some(AnimatorMLinearVelocityBlendingVariant::parse(rdr, ver)?);
+            m_linear_velocity_blending =
+                Some(AnimatorMLinearVelocityBlendingVariant::parse(rdr, ver)?);
             m_stabilize_feet = Some(AnimatorMStabilizeFeetVariant::parse(rdr, ver)?);
             m_has_transform_hierarchy = Some(rdr.read_bool()?);
-            m_allow_constant_clip_sampling_optimization = Some(AnimatorMAllowConstantClipSamplingOptimizationVariant::parse(rdr, ver)?);
-            m_keep_animator_state_on_disable = Some(AnimatorMKeepAnimatorStateOnDisableVariant::parse(rdr, ver)?);
+            m_allow_constant_clip_sampling_optimization =
+                Some(AnimatorMAllowConstantClipSamplingOptimizationVariant::parse(rdr, ver)?);
+            m_keep_animator_state_on_disable =
+                Some(AnimatorMKeepAnimatorStateOnDisableVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            m_linear_velocity_blending = Some(AnimatorMLinearVelocityBlendingVariant::parse(rdr, ver)?);
+            m_linear_velocity_blending =
+                Some(AnimatorMLinearVelocityBlendingVariant::parse(rdr, ver)?);
             m_has_transform_hierarchy = Some(rdr.read_bool()?);
-            m_allow_constant_clip_sampling_optimization = Some(AnimatorMAllowConstantClipSamplingOptimizationVariant::parse(rdr, ver)?);
+            m_allow_constant_clip_sampling_optimization =
+                Some(AnimatorMAllowConstantClipSamplingOptimizationVariant::parse(rdr, ver)?);
             m_keep_animator_controller_state_on_disable = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_linear_velocity_blending = Some(AnimatorMLinearVelocityBlendingVariant::parse(rdr, ver)?);
+            m_linear_velocity_blending =
+                Some(AnimatorMLinearVelocityBlendingVariant::parse(rdr, ver)?);
             m_has_transform_hierarchy = Some(rdr.read_bool()?);
-            m_allow_constant_clip_sampling_optimization = Some(AnimatorMAllowConstantClipSamplingOptimizationVariant::parse(rdr, ver)?);
+            m_allow_constant_clip_sampling_optimization =
+                Some(AnimatorMAllowConstantClipSamplingOptimizationVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 5, 3) {
             m_has_transform_hierarchy = Some(rdr.read_bool()?);
-            m_allow_constant_clip_sampling_optimization = Some(AnimatorMAllowConstantClipSamplingOptimizationVariant::parse(rdr, ver)?);
+            m_allow_constant_clip_sampling_optimization =
+                Some(AnimatorMAllowConstantClipSamplingOptimizationVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 5, 0) {
             m_has_transform_hierarchy = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(4, 3, 0) {

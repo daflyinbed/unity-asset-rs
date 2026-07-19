@@ -14,9 +14,6 @@ impl crate::Parse for Vector2f {
         let x = rdr.read_f32()?;
         let y = rdr.read_f32()?;
 
-        Ok(Vector2f {
-            x,
-            y,
-        })
+        Ok(Vector2f { x, y })
     }
 }

@@ -4,7 +4,6 @@ use crate::PPtr;
 use crate::subclasses::color_rgb_af::ColorRgbAf;
 use crate::subclasses::spherical_harmonics_l2::SphericalHarmonicsL2;
 
-
 /// 版本枚举：RenderSettingsMCustomReflectionVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum RenderSettingsMCustomReflectionVariant {
@@ -95,13 +94,13 @@ impl crate::Parse for RenderSettings {
         let mut m_sun = None;
         let mut m_indirect_specular_color = None;
         let mut m_use_radiance_ambient_probe = None;
-            m_fog = Some(rdr.read_bool()?);
-            rdr.align(4)?;
-            m_fog_color = Some(ColorRgbAf::parse(rdr, ver)?);
-            m_fog_mode = Some(rdr.read_i32()?);
-            m_fog_density = Some(rdr.read_f32()?);
-            m_linear_fog_start = Some(rdr.read_f32()?);
-            m_linear_fog_end = Some(rdr.read_f32()?);
+        m_fog = Some(rdr.read_bool()?);
+        rdr.align(4)?;
+        m_fog_color = Some(ColorRgbAf::parse(rdr, ver)?);
+        m_fog_mode = Some(rdr.read_i32()?);
+        m_fog_density = Some(rdr.read_f32()?);
+        m_linear_fog_start = Some(rdr.read_f32()?);
+        m_linear_fog_end = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
             m_ambient_sky_color = Some(ColorRgbAf::parse(rdr, ver)?);
             m_ambient_equator_color = Some(ColorRgbAf::parse(rdr, ver)?);
@@ -120,15 +119,15 @@ impl crate::Parse for RenderSettings {
         } else {
             m_ambient_light = Some(ColorRgbAf::parse(rdr, ver)?);
         }
-            m_skybox_material = Some(crate::PPtr::parse(rdr, ver)?);
-            m_halo_strength = Some(rdr.read_f32()?);
-            m_flare_strength = Some(rdr.read_f32()?);
+        m_skybox_material = Some(crate::PPtr::parse(rdr, ver)?);
+        m_halo_strength = Some(rdr.read_f32()?);
+        m_flare_strength = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(4, 3, 0) {
             m_flare_fade_speed = Some(rdr.read_f32()?);
         } else {
         }
-            m_halo_texture = Some(crate::PPtr::parse(rdr, ver)?);
-            m_spot_cookie = Some(crate::PPtr::parse(rdr, ver)?);
+        m_halo_texture = Some(crate::PPtr::parse(rdr, ver)?);
+        m_spot_cookie = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2018, 1, 0) {
             m_default_reflection_mode = Some(rdr.read_i32()?);
             m_default_reflection_resolution = Some(rdr.read_i32()?);

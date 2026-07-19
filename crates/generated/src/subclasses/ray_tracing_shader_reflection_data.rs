@@ -20,16 +20,27 @@ impl crate::Parse for RayTracingShaderReflectionData {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let functions = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { RayTracingShaderFunctionDesc::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let functions = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| RayTracingShaderFunctionDesc::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
         let local_resources = RayTracingShaderResources::parse(rdr, ver)?;
         let global_resources = RayTracingShaderResources::parse(rdr, ver)?;
         let has_errors = rdr.read_bool()?;
         rdr.align(4)?;
-        let code = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
+        let code = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n).map(|_| rdr.read_u8()).collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
         let precompiled = if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n).map(|_| rdr.read_u8()).collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Some(v)
         } else {

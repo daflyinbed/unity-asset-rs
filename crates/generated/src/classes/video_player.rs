@@ -2,7 +2,6 @@
 
 use crate::PPtr;
 
-
 /// 版本枚举：VideoPlayerMTargetAudioSourcesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum VideoPlayerMTargetAudioSourcesVariant {
@@ -16,11 +15,21 @@ impl crate::Parse for VideoPlayerMTargetAudioSourcesVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -39,11 +48,21 @@ impl crate::Parse for VideoPlayerMDirectAudioVolumesVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_f32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_f32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_f32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_f32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -136,47 +155,69 @@ impl crate::Parse for VideoPlayer {
         let mut m_wait_for_first_frame = None;
         let mut m_frame_ready_event_enabled = None;
         let mut m_video_shaders = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_enabled = Some(rdr.read_u8()?);
-            rdr.align(4)?;
-            m_video_clip = Some(crate::PPtr::parse(rdr, ver)?);
-            m_target_camera_alpha = Some(rdr.read_f32()?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_enabled = Some(rdr.read_u8()?);
+        rdr.align(4)?;
+        m_video_clip = Some(crate::PPtr::parse(rdr, ver)?);
+        m_target_camera_alpha = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2017, 3, 0) {
             m_target_camera3_d_layout = Some(rdr.read_i32()?);
         } else {
         }
-            m_target_camera = Some(crate::PPtr::parse(rdr, ver)?);
-            m_target_texture = Some(crate::PPtr::parse(rdr, ver)?);
+        m_target_camera = Some(crate::PPtr::parse(rdr, ver)?);
+        m_target_texture = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             m_time_reference = Some(rdr.read_i32()?);
         } else {
         }
-            m_target_material_renderer = Some(crate::PPtr::parse(rdr, ver)?);
-            m_target_material_property = Some(rdr.read_aligned_string()?);
-            m_render_mode = Some(rdr.read_i32()?);
-            m_aspect_ratio = Some(rdr.read_i32()?);
-            m_data_source = Some(rdr.read_i32()?);
+        m_target_material_renderer = Some(crate::PPtr::parse(rdr, ver)?);
+        m_target_material_property = Some(rdr.read_aligned_string()?);
+        m_render_mode = Some(rdr.read_i32()?);
+        m_aspect_ratio = Some(rdr.read_i32()?);
+        m_data_source = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             m_time_update_mode = Some(rdr.read_i32()?);
         } else {
         }
-            m_playback_speed = Some(rdr.read_f32()?);
-            m_audio_output_mode = Some(rdr.read_i32()?);
-            m_target_audio_sources = Some(VideoPlayerMTargetAudioSourcesVariant::parse(rdr, ver)?);
-            m_direct_audio_volumes = Some(VideoPlayerMDirectAudioVolumesVariant::parse(rdr, ver)?);
-            m_url = Some(rdr.read_aligned_string()?);
-            m_enabled_audio_tracks = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            m_direct_audio_mutes = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            m_controlled_audio_track_count = Some(rdr.read_u16()?);
-            m_play_on_awake = Some(rdr.read_bool()?);
-            m_skip_on_drop = Some(rdr.read_bool()?);
-            m_looping = Some(rdr.read_bool()?);
-            m_wait_for_first_frame = Some(rdr.read_bool()?);
-            m_frame_ready_event_enabled = Some(VideoPlayerMFrameReadyEventEnabledVariant::parse(rdr, ver)?);
+        m_playback_speed = Some(rdr.read_f32()?);
+        m_audio_output_mode = Some(rdr.read_i32()?);
+        m_target_audio_sources = Some(VideoPlayerMTargetAudioSourcesVariant::parse(rdr, ver)?);
+        m_direct_audio_volumes = Some(VideoPlayerMDirectAudioVolumesVariant::parse(rdr, ver)?);
+        m_url = Some(rdr.read_aligned_string()?);
+        m_enabled_audio_tracks = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_bool())
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
+        m_direct_audio_mutes = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_bool())
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
+        m_controlled_audio_track_count = Some(rdr.read_u16()?);
+        m_play_on_awake = Some(rdr.read_bool()?);
+        m_skip_on_drop = Some(rdr.read_bool()?);
+        m_looping = Some(rdr.read_bool()?);
+        m_wait_for_first_frame = Some(rdr.read_bool()?);
+        m_frame_ready_event_enabled =
+            Some(VideoPlayerMFrameReadyEventEnabledVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            m_video_shaders = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_video_shaders = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| crate::PPtr::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else {
         }

@@ -16,9 +16,6 @@ impl crate::Parse for MinMaxAabb {
         let m_min = Vector3f::parse(rdr, ver)?;
         let m_max = Vector3f::parse(rdr, ver)?;
 
-        Ok(MinMaxAabb {
-            m_min,
-            m_max,
-        })
+        Ok(MinMaxAabb { m_min, m_max })
     }
 }

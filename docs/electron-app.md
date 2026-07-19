@@ -1,18 +1,56 @@
 # Electron 应用设计与落地计划
 
 > 本文记录桌面端的进程边界、项目/会话模型和分阶段落地计划。界面原型以
-> `app/pages/zed.vue` 为准；Rust REST 端点以 `src/server/` 和运行时生成的
+> `app/pages/index.vue` 为准；Rust REST 端点以 `src/server/` 和运行时生成的
 > `/openapi.json` 为准。
 
 ## 产品结构
 
 桌面端是项目驱动的 Unity 对象工作台，主体保持三行：
 
-1. 顶栏：菜单、项目名、当前 bundle 与 Unity 版本 chip、窗口按钮。
+1. 顶栏：菜单、项目名、source 数量与 Unity 版本 chip、窗口按钮。
 2. 工作区：标签页 + 可停靠对象抽屉；标签页在 Preview 和 Dump 间切换；底部可开日志面板。
 3. 状态栏：对象统计与 left/bottom/right 三个面板控制按钮。
 
 抽屉支持表格和 container path 树。树按 `dyn/art/...` 分层并允许折叠；搜索和类型过滤同时作用于两种视图。Preview 使用棋盘格和元数据条；Dump 使用等宽字体、行号和轻量语法着色。
+
+## 主题颜色语义
+
+主题的唯一值来源是 `app/style.css` 中的 `--my-color-*` CSS 变量，组件通过
+`uno.config.ts` 暴露的语义类使用它们。不要把编号当作任意的明暗色阶；编号表示组件角色和交互状态。
+
+独立背景色的职责如下：
+
+| 变量 | 用途 |
+| --- | --- |
+| `--my-color-background` | 应用主背景 |
+| `--my-color-panel` | 卡片、表格、抽屉、菜单、popover、dialog 等容器背景 |
+| `--my-color-surface` | 输入框、select、checkbox 等表单控件背景 |
+| `--my-color-overlay` | Dialog 等模态层的遮罩 |
+
+桌面工作区还保留 `titlebar`、`statusbar`、`tabbar` 和 `drawer` 四个专用层级色。它们用于区分固定的
+工作区 chrome 区域，不替代菜单、卡片、popover 等通用 `panel` 语义。
+
+`accent`、`neutral` 和 `danger` 每组都有 `1..10 + contrast`。Accent 用于品牌和主要操作，Neutral
+用于无强调的界面结构，Danger 只用于错误及危险操作。每组编号的固定含义是：
+
+| Variant | 用途 |
+| --- | --- |
+| `1` | outline/ghost hover 背景 |
+| `2` | outline/ghost active 背景；surface 或 neutral disabled 背景 |
+| `3` | surface hover 背景 |
+| `4` | surface active 背景 |
+| `5` | outline/ghost 默认边框 |
+| `6` | outline/ghost hover 边框；neutral disabled 边框 |
+| `7` | solid 默认背景；neutral disabled 文字 |
+| `8` | solid hover 背景 |
+| `9` | solid active 背景 |
+| `10` | 普通文字和图标颜色 |
+| `contrast` | solid 背景上的文字和图标颜色 |
+
+弱化文字仍使用 `*-10`，通过透明度表达层级，例如 `text-neutral-10/60`；不要改用较小编号。
+普通边框使用 `*-5`，hover 边框使用 `*-6`。Ghost 控件按 `*-1` hover、`*-2` active；solid
+控件按 `*-7` 默认、`*-8` hover、`*-9` active，并使用 `*-contrast` 作为前景色。
 
 ## 进程边界
 
@@ -37,31 +75,34 @@ Electron main
 
 Electron 生命周期内只启动一个 Rust 服务。项目切换不重启服务：
 
-1. main 将旧项目工作区写入 SQLite。
-2. 调用 `DELETE /bundles` 清空 Rust 内存中的全部 Environment。
-3. 根据新项目记录逐个 `POST /bundles`。
-4. collection/object/container 就绪后恢复标签页。
+1. main 从 SQLite 读取项目的 `project_sources`。
+2. 用一次 `PUT /environment` 原子构建并替换 Rust 中唯一的活动 Environment。
+3. renderer 按响应 revision 拉取 collection/object/container 全量快照。
+4. source 新增、删除、刷新分别走 `/environment/sources` 的增量端点；旧 source 不重新解析。
+5. collection/object/container 就绪后，renderer 按新句柄协调仍存在的标签页。
 
 `serve --root` 仍是安全边界。桌面端启动服务时应使用用户允许打开项目的共同根目录；如果未来需要同时打开互不相干的文件系统根，应把 Rust 的“允许根目录”改为显式动态白名单，而不是让 renderer 传任意绝对路径。
 
-Rust 异常退出时，main 重启同一服务并按当前项目的 bundle 清单恢复内存状态。切换项目期间 UI 进入只读 loading 状态，避免旧请求落到新项目。
+Rust 异常退出时，main 重启同一服务并按当前项目的 source 清单恢复内存状态。切换项目期间 UI 进入只读 loading 状态，避免旧请求落到新项目。
 
 ## 对象身份
 
 对象的稳定身份是：
 
 ```text
-(bundle_id, collection_id, path_id)
+(environment_revision, collection_id, path_id)
 ```
 
-`path_id` 只在 collection 内唯一，正式状态模型不得沿用 mock 的单个 `id`。标签页、当前对象、container 映射和 PNG/Dump 缓存都使用上述复合键。
+`path_id` 只在 collection 内唯一。source 变更后 collection id 允许重排，因此旧 revision
+下的句柄不得用于新 Environment；REST 在带过期 `revision` 的查询上返回 409。
 
 ## SQLite 状态模型
 
 better-sqlite3 只在 main 使用。首版 schema：
 
 - `projects`：项目名、根路径、最近打开时间。
-- `project_bundles`：项目内 bundle id、相对路径、Arknights codec 选项和排序。
+- `project_sources`：项目内文件/目录的绝对路径、类型、Arknights codec 选项和排序。
+- `project_bundles`：migration 1 的兼容表；新项目逻辑不再写入。
 - `workspace_sessions`：按项目保存版本化 JSON 工作区快照。
 - `schema_migrations`：已执行 migration 及时间。
 
@@ -70,7 +111,7 @@ better-sqlite3 只在 main 使用。首版 schema：
 - 打开的标签页及顺序、活动标签、每个标签的 Preview/Dump 模式；
 - 抽屉的 left/right/hidden、宽度、table/tree、搜索和类型过滤；
 - 日志面板开关和高度；
-- 当前 bundle。
+- 当前 source / collection。
 
 界面状态 debounce 保存，并在关闭标签、切换项目和窗口关闭前立即 flush。日志内容不持久化，只在内存保留有限条数。
 
@@ -99,16 +140,18 @@ type Result<T> =
 
 ## 分阶段计划
 
-### 基础设施
+### 已落地基础设施
 
-- Rust 增加清空全部 bundle 的端点和离线 OpenAPI 输出命令。
+- Rust 提供单一 `/environment`、增量 source mutation、revision 防陈旧查询和离线 OpenAPI。
 - main 初始化 better-sqlite3 并按顺序执行 migration。
 - 建立共享 IPC contract、main handler helper 和 preload bridge。
 - 配置 openapi-typescript/openapi-fetch，并通过 IPC adapter 代理请求。
 
-### 项目生命周期
+### 已落地项目生命周期
 
-- 增加项目选择、最近项目和 bundle 清单操作。
+- 增加新建项目、最近项目和文件/目录 source 清单操作。
+- project 只存在于 Electron/SQLite；Rust 只接收不透明 source id。
+- project 新建/追加失败时 main 执行 SQLite/Rust 补偿，避免留下半更新状态。
 - Rust 启动、探活、清理、加载和崩溃恢复由一个状态机串行化。
 - 恢复 session 时丢失的 bundle/对象保留错误标签，不静默删除。
 

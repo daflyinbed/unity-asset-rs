@@ -16,9 +16,6 @@ impl crate::Parse for QuaternionCurve {
         let curve = AnimationCurve::parse(rdr, ver)?;
         let path = rdr.read_aligned_string()?;
 
-        Ok(QuaternionCurve {
-            curve,
-            path,
-        })
+        Ok(QuaternionCurve { curve, path })
     }
 }

@@ -2,7 +2,6 @@
 
 use crate::subclasses::guid::Guid;
 
-
 /// 版本枚举：BuildReportPackedAssetInfoPackedSizeVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum BuildReportPackedAssetInfoPackedSizeVariant {
@@ -45,14 +44,16 @@ impl crate::Parse for BuildReportPackedAssetInfo {
         let mut source_asset_guid = None;
         let mut offset = None;
         let mut build_time_asset_path = None;
-            file_id = Some(rdr.read_i64()?);
-            class_id = Some(rdr.read_i32()?);
-            packed_size = Some(BuildReportPackedAssetInfoPackedSizeVariant::parse(rdr, ver)?);
+        file_id = Some(rdr.read_i64()?);
+        class_id = Some(rdr.read_i32()?);
+        packed_size = Some(BuildReportPackedAssetInfoPackedSizeVariant::parse(
+            rdr, ver,
+        )?);
         if *ver >= crate::UnityVersion::new(2019, 3, 0) {
             offset = Some(rdr.read_u64()?);
         } else {
         }
-            source_asset_guid = Some(Guid::parse(rdr, ver)?);
+        source_asset_guid = Some(Guid::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 4, 2) {
             build_time_asset_path = Some(rdr.read_aligned_string()?);
         } else {

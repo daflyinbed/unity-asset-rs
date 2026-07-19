@@ -3,7 +3,6 @@
 use crate::PPtr;
 use crate::subclasses::bit_field::BitField;
 
-
 /// 版本枚举：TerrainColliderMMaterialVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TerrainColliderMMaterialVariant {
@@ -56,7 +55,7 @@ impl crate::Parse for TerrainCollider {
         let mut m_enable_tree_colliders = None;
         let mut m_layer_override_priority = None;
         let mut m_provides_contacts = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             m_material = Some(TerrainColliderMMaterialVariant::parse(rdr, ver)?);
             m_include_layers = Some(BitField::parse(rdr, ver)?);
@@ -72,9 +71,9 @@ impl crate::Parse for TerrainCollider {
             m_material = Some(TerrainColliderMMaterialVariant::parse(rdr, ver)?);
             m_is_trigger = Some(rdr.read_bool()?);
         }
-            m_enabled = Some(rdr.read_bool()?);
-            rdr.align(4)?;
-            m_terrain_data = Some(crate::PPtr::parse(rdr, ver)?);
+        m_enabled = Some(rdr.read_bool()?);
+        rdr.align(4)?;
+        m_terrain_data = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_enable_tree_colliders = Some(rdr.read_bool()?);
         } else {

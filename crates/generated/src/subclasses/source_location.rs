@@ -14,9 +14,6 @@ impl crate::Parse for SourceLocation {
         let m_file = rdr.read_aligned_string()?;
         let m_position = rdr.read_u32()?;
 
-        Ok(SourceLocation {
-            m_file,
-            m_position,
-        })
+        Ok(SourceLocation { m_file, m_position })
     }
 }

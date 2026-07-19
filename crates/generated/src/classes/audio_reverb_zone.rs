@@ -49,29 +49,29 @@ impl crate::Parse for AudioReverbZone {
         let mut m_density = None;
         let mut m_lf_reference = None;
         let mut m_room_lf = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_enabled = Some(rdr.read_u8()?);
-            rdr.align(4)?;
-            m_min_distance = Some(rdr.read_f32()?);
-            m_max_distance = Some(rdr.read_f32()?);
-            m_reverb_preset = Some(rdr.read_i32()?);
-            m_room = Some(rdr.read_i32()?);
-            m_room_hf = Some(rdr.read_i32()?);
-            m_decay_time = Some(rdr.read_f32()?);
-            m_decay_hf_ratio = Some(rdr.read_f32()?);
-            m_reflections = Some(rdr.read_i32()?);
-            m_reflections_delay = Some(rdr.read_f32()?);
-            m_reverb = Some(rdr.read_i32()?);
-            m_reverb_delay = Some(rdr.read_f32()?);
-            m_hf_reference = Some(rdr.read_f32()?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_enabled = Some(rdr.read_u8()?);
+        rdr.align(4)?;
+        m_min_distance = Some(rdr.read_f32()?);
+        m_max_distance = Some(rdr.read_f32()?);
+        m_reverb_preset = Some(rdr.read_i32()?);
+        m_room = Some(rdr.read_i32()?);
+        m_room_hf = Some(rdr.read_i32()?);
+        m_decay_time = Some(rdr.read_f32()?);
+        m_decay_hf_ratio = Some(rdr.read_f32()?);
+        m_reflections = Some(rdr.read_i32()?);
+        m_reflections_delay = Some(rdr.read_f32()?);
+        m_reverb = Some(rdr.read_i32()?);
+        m_reverb_delay = Some(rdr.read_f32()?);
+        m_hf_reference = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
         } else {
             m_room_rolloff_factor = Some(rdr.read_f32()?);
         }
-            m_diffusion = Some(rdr.read_f32()?);
-            m_density = Some(rdr.read_f32()?);
-            m_lf_reference = Some(rdr.read_f32()?);
-            m_room_lf = Some(rdr.read_i32()?);
+        m_diffusion = Some(rdr.read_f32()?);
+        m_density = Some(rdr.read_f32()?);
+        m_lf_reference = Some(rdr.read_f32()?);
+        m_room_lf = Some(rdr.read_i32()?);
 
         Ok(AudioReverbZone {
             m_game_object: m_game_object.unwrap(),

@@ -33,14 +33,14 @@ impl crate::Parse for ShadowSettings {
         let mut m_near_plane = None;
         let mut m_culling_matrix_override = None;
         let mut m_use_culling_matrix_override = None;
-            m_type = Some(rdr.read_i32()?);
-            m_resolution = Some(rdr.read_i32()?);
+        m_type = Some(rdr.read_i32()?);
+        m_resolution = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
             m_custom_resolution = Some(rdr.read_i32()?);
         } else {
         }
-            m_strength = Some(rdr.read_f32()?);
-            m_bias = Some(rdr.read_f32()?);
+        m_strength = Some(rdr.read_f32()?);
+        m_bias = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             m_normal_bias = Some(rdr.read_f32()?);
             m_near_plane = Some(rdr.read_f32()?);

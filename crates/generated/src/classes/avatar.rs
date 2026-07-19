@@ -20,7 +20,18 @@ impl crate::Parse for Avatar {
         let m_name = rdr.read_aligned_string()?;
         let m_avatar_size = rdr.read_u32()?;
         let m_avatar = AvatarConstant::parse(rdr, ver)?;
-        let m_tos = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_u32()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_tos = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| {
+                    ({
+                        let a = rdr.read_u32()?;
+                        let b = rdr.read_aligned_string()?;
+                        Ok((a, b))
+                    })
+                })
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         let m_human_description = if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             Some(HumanDescription::parse(rdr, ver)?)
         } else {

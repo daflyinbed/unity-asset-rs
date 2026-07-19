@@ -13,8 +13,6 @@ impl crate::Parse for NavMeshBuildDebugSettings {
         let m_flags = rdr.read_u8()?;
         rdr.align(4)?;
 
-        Ok(NavMeshBuildDebugSettings {
-            m_flags,
-        })
+        Ok(NavMeshBuildDebugSettings { m_flags })
     }
 }

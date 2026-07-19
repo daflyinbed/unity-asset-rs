@@ -26,8 +26,8 @@ mod bundle;
 mod container;
 mod containers;
 mod cursor;
-mod detect;
 pub mod decompress;
+mod detect;
 pub mod environment;
 mod error;
 pub mod format;
@@ -38,10 +38,10 @@ mod serialized_file;
 pub mod typetree;
 
 // ── 高级门面模块 ──
-pub mod io;
-pub mod types;
 #[cfg(feature = "export")]
 pub mod export;
+pub mod io;
+pub mod types;
 
 #[cfg(feature = "export")]
 pub mod sprite_export;
@@ -49,18 +49,18 @@ pub mod sprite_export;
 pub mod texture_export;
 
 // ── 顶层 re-export:常用类型直转,避免用户写全路径 ──
-pub use loader::{Diagnostic, DiagnosticKind, LoadReport, Loader, LoaderBuilder, Severity};
-#[cfg(feature = "export")]
-pub use export::{decode_texture, DecodeImageError, DecodeOptions, DecodedImage};
+pub use container::{ContainerEntry, ContainerIndex, ContainerKind};
 pub use environment::{
     AssetCollection, ClassId, CollectionId, DependencyProvider, DependencyRequest, Environment,
-    EnvironmentObject, NamedBytes, ObjectId, ObjectRef, ParseFailure, PPtrLike, ProviderError,
-    ResourceFile, ResourceProvider, ResourceRequest,
+    EnvironmentObject, NamedBytes, ObjectId, ObjectRef, PPtrLike, ParseFailure, ProviderError,
+    ResourceFile, ResourceProvider, ResourceRequest, SourceId,
 };
-pub use container::{ContainerEntry, ContainerIndex, ContainerKind};
-pub use object_parser::{MonoBehaviour, ParsedObject};
+#[cfg(feature = "export")]
+pub use export::{DecodeImageError, DecodeOptions, DecodedImage, decode_texture};
 pub use format::{FileFormat, LoadedFile, load_recursive, sniff};
-pub use typetree::{Value, RefTypeTable, PPtrValue};
+pub use loader::{Diagnostic, DiagnosticKind, LoadReport, Loader, LoaderBuilder, Severity};
+pub use object_parser::{MonoBehaviour, ParsedObject};
+pub use typetree::{PPtrValue, RefTypeTable, Value};
 
 /// 从文件路径加载 Unity 资产文件(递归再派发)。
 ///
@@ -91,4 +91,7 @@ pub fn load_bytes_with(src: Bytes, registry: &Registry) -> Result<LoadedFile> {
 }
 
 // Registry/Decompressor 经 decompress 模块导出,但顶层也直转(常用)。
-pub use decompress::{CompressionType, Decompressor, IdentityDecompressor, Lz4Decompressor, LzmaDecompressor, Registry};
+pub use decompress::{
+    CompressionType, Decompressor, IdentityDecompressor, Lz4Decompressor, LzmaDecompressor,
+    Registry,
+};

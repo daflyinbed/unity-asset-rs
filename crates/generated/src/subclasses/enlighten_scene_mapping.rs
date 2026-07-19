@@ -6,7 +6,6 @@ use crate::subclasses::enlighten_system_information::EnlightenSystemInformation;
 use crate::subclasses::enlighten_terrain_chunks_information::EnlightenTerrainChunksInformation;
 use crate::subclasses::hash128::Hash128;
 
-
 /// 版本枚举：EnlightenSceneMappingMRenderersVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum EnlightenSceneMappingMRenderersVariant {
@@ -20,11 +19,21 @@ impl crate::Parse for EnlightenSceneMappingMRenderersVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { EnlightenRendererInformation::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| EnlightenRendererInformation::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { EnlightenRendererInformation::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| EnlightenRendererInformation::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -43,11 +52,21 @@ impl crate::Parse for EnlightenSceneMappingMSystemsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { EnlightenSystemInformation::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| EnlightenSystemInformation::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { EnlightenSystemInformation::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| EnlightenSystemInformation::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -66,11 +85,21 @@ impl crate::Parse for EnlightenSceneMappingMSystemAtlasesVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { EnlightenSystemAtlasInformation::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| EnlightenSystemAtlasInformation::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { EnlightenSystemAtlasInformation::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| EnlightenSystemAtlasInformation::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -89,11 +118,21 @@ impl crate::Parse for EnlightenSceneMappingMProbesetsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Hash128::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| Hash128::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Hash128::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| Hash128::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -112,11 +151,21 @@ impl crate::Parse for EnlightenSceneMappingMTerrainChunksVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { EnlightenTerrainChunksInformation::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| EnlightenTerrainChunksInformation::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { EnlightenTerrainChunksInformation::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| EnlightenTerrainChunksInformation::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -140,14 +189,14 @@ impl crate::Parse for EnlightenSceneMapping {
         let mut m_system_atlases = None;
         let mut m_probesets = None;
         let mut m_terrain_chunks = None;
-            m_renderers = Some(EnlightenSceneMappingMRenderersVariant::parse(rdr, ver)?);
-            m_systems = Some(EnlightenSceneMappingMSystemsVariant::parse(rdr, ver)?);
+        m_renderers = Some(EnlightenSceneMappingMRenderersVariant::parse(rdr, ver)?);
+        m_systems = Some(EnlightenSceneMappingMSystemsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 3, 0) {
             m_probesets = Some(EnlightenSceneMappingMProbesetsVariant::parse(rdr, ver)?);
         } else {
         }
-            m_system_atlases = Some(EnlightenSceneMappingMSystemAtlasesVariant::parse(rdr, ver)?);
-            m_terrain_chunks = Some(EnlightenSceneMappingMTerrainChunksVariant::parse(rdr, ver)?);
+        m_system_atlases = Some(EnlightenSceneMappingMSystemAtlasesVariant::parse(rdr, ver)?);
+        m_terrain_chunks = Some(EnlightenSceneMappingMTerrainChunksVariant::parse(rdr, ver)?);
 
         Ok(EnlightenSceneMapping {
             m_renderers: m_renderers.unwrap(),

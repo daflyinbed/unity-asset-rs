@@ -50,8 +50,8 @@ impl crate::Parse for Rigidbody {
         let mut m_exclude_layers = None;
         let mut m_implicit_com = None;
         let mut m_implicit_tensor = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_mass = Some(rdr.read_f32()?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_mass = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(6000, 1, 0) {
             m_linear_damping = Some(rdr.read_f32()?);
             m_angular_damping = Some(rdr.read_f32()?);
@@ -76,12 +76,12 @@ impl crate::Parse for Rigidbody {
             m_drag = Some(rdr.read_f32()?);
             m_angular_drag = Some(rdr.read_f32()?);
         }
-            m_use_gravity = Some(rdr.read_bool()?);
-            m_is_kinematic = Some(rdr.read_bool()?);
-            m_interpolate = Some(rdr.read_u8()?);
-            rdr.align(4)?;
-            m_constraints = Some(rdr.read_i32()?);
-            m_collision_detection = Some(rdr.read_i32()?);
+        m_use_gravity = Some(rdr.read_bool()?);
+        m_is_kinematic = Some(rdr.read_bool()?);
+        m_interpolate = Some(rdr.read_u8()?);
+        rdr.align(4)?;
+        m_constraints = Some(rdr.read_i32()?);
+        m_collision_detection = Some(rdr.read_i32()?);
 
         Ok(Rigidbody {
             m_game_object: m_game_object.unwrap(),

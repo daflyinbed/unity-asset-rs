@@ -5,7 +5,6 @@ use crate::subclasses::color_rgba32::ColorRgba32;
 use crate::subclasses::hash128::Hash128;
 use crate::subclasses::vector4f::Vector4f;
 
-
 /// 版本枚举：TerrainMDrawTreesAndFoliageVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TerrainMDrawTreesAndFoliageVariant {
@@ -65,11 +64,11 @@ impl crate::Parse for TerrainMChunkDynamicUvstVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            let v = ( { Ok(Box::new(Vector4f::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(Vector4f::parse(rdr, ver)?)) })?;
             rdr.align(4)?;
             Ok(Self::V2018_3(v))
         } else {
-            let v = ( { Ok(Box::new(Vector4f::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(Vector4f::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
         }
     }
@@ -175,7 +174,8 @@ pub struct Terrain {
     pub m_allow_auto_connect: Option<bool>,
     pub m_rendering_layer_mask: Option<u32>,
     pub m_enable_heightmap_ray_tracing: Option<bool>,
-    pub m_enable_trees_and_details_ray_tracing: Option<TerrainMEnableTreesAndDetailsRayTracingVariant>,
+    pub m_enable_trees_and_details_ray_tracing:
+        Option<TerrainMEnableTreesAndDetailsRayTracingVariant>,
     pub m_tree_motion_vector_mode_override: Option<i32>,
     pub m_enable_heightmap_lod_frustum_culling: Option<bool>,
 }
@@ -228,34 +228,34 @@ impl crate::Parse for Terrain {
         let mut m_enable_trees_and_details_ray_tracing = None;
         let mut m_tree_motion_vector_mode_override = None;
         let mut m_enable_heightmap_lod_frustum_culling = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_enabled = Some(rdr.read_u8()?);
-            rdr.align(4)?;
-            m_terrain_data = Some(crate::PPtr::parse(rdr, ver)?);
-            m_tree_distance = Some(rdr.read_f32()?);
-            m_tree_billboard_distance = Some(rdr.read_f32()?);
-            m_tree_cross_fade_length = Some(rdr.read_f32()?);
-            m_tree_maximum_full_lod_count = Some(rdr.read_i32()?);
-            m_detail_object_distance = Some(rdr.read_f32()?);
-            m_detail_object_density = Some(rdr.read_f32()?);
-            m_heightmap_pixel_error = Some(rdr.read_f32()?);
-            m_splat_map_distance = Some(rdr.read_f32()?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_enabled = Some(rdr.read_u8()?);
+        rdr.align(4)?;
+        m_terrain_data = Some(crate::PPtr::parse(rdr, ver)?);
+        m_tree_distance = Some(rdr.read_f32()?);
+        m_tree_billboard_distance = Some(rdr.read_f32()?);
+        m_tree_cross_fade_length = Some(rdr.read_f32()?);
+        m_tree_maximum_full_lod_count = Some(rdr.read_i32()?);
+        m_detail_object_distance = Some(rdr.read_f32()?);
+        m_detail_object_density = Some(rdr.read_f32()?);
+        m_heightmap_pixel_error = Some(rdr.read_f32()?);
+        m_splat_map_distance = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2022, 3, 31) {
             m_heightmap_minimum_lod_simplification = Some(rdr.read_i32()?);
         } else {
         }
-            m_heightmap_maximum_lod = Some(rdr.read_i32()?);
+        m_heightmap_maximum_lod = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             m_shadow_casting_mode = Some(rdr.read_i32()?);
         } else {
             m_cast_shadows = Some(rdr.read_bool()?);
         }
-            m_draw_heightmap = Some(rdr.read_bool()?);
+        m_draw_heightmap = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(2018, 3, 0) {
             m_draw_instanced = Some(rdr.read_bool()?);
         } else {
         }
-            m_draw_trees_and_foliage = Some(TerrainMDrawTreesAndFoliageVariant::parse(rdr, ver)?);
+        m_draw_trees_and_foliage = Some(TerrainMDrawTreesAndFoliageVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             m_static_shadow_caster = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -266,7 +266,7 @@ impl crate::Parse for Terrain {
             rdr.align(4)?;
         } else {
         }
-            m_reflection_probe_usage = Some(rdr.read_i32()?);
+        m_reflection_probe_usage = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2019, 2, 0) {
         } else if *ver >= crate::UnityVersion::new(5, 0, 1) {
             m_material_type = Some(rdr.read_i32()?);
@@ -280,36 +280,41 @@ impl crate::Parse for Terrain {
             rdr.align(4)?;
             m_default_smoothness = Some(rdr.read_f32()?);
         }
-            m_material_template = Some(crate::PPtr::parse(rdr, ver)?);
-            m_lightmap_index = Some(rdr.read_u16()?);
-            m_lightmap_index_dynamic = Some(rdr.read_u16()?);
-            m_lightmap_tiling_offset = Some(Vector4f::parse(rdr, ver)?);
-            m_lightmap_tiling_offset_dynamic = Some(Vector4f::parse(rdr, ver)?);
+        m_material_template = Some(crate::PPtr::parse(rdr, ver)?);
+        m_lightmap_index = Some(rdr.read_u16()?);
+        m_lightmap_index_dynamic = Some(rdr.read_u16()?);
+        m_lightmap_tiling_offset = Some(Vector4f::parse(rdr, ver)?);
+        m_lightmap_tiling_offset_dynamic = Some(Vector4f::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             m_explicit_probe_set_hash = Some(Hash128::parse(rdr, ver)?);
         } else {
         }
-            m_bake_light_probes_for_trees = Some(TerrainMBakeLightProbesForTreesVariant::parse(rdr, ver)?);
+        m_bake_light_probes_for_trees =
+            Some(TerrainMBakeLightProbesForTreesVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2018, 2, 0) {
             m_preserve_tree_prototype_layers = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else {
         }
-            m_dynamic_uvst = Some(Vector4f::parse(rdr, ver)?);
-            m_chunk_dynamic_uvst = Some(TerrainMChunkDynamicUvstVariant::parse(rdr, ver)?);
+        m_dynamic_uvst = Some(Vector4f::parse(rdr, ver)?);
+        m_chunk_dynamic_uvst = Some(TerrainMChunkDynamicUvstVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 6, 0) {
             m_grouping_id = Some(rdr.read_i32()?);
             m_rendering_layer_mask = Some(rdr.read_u32()?);
             m_allow_auto_connect = Some(rdr.read_bool()?);
             m_enable_heightmap_ray_tracing = Some(rdr.read_bool()?);
-            m_enable_trees_and_details_ray_tracing = Some(TerrainMEnableTreesAndDetailsRayTracingVariant::parse(rdr, ver)?);
+            m_enable_trees_and_details_ray_tracing = Some(
+                TerrainMEnableTreesAndDetailsRayTracingVariant::parse(rdr, ver)?,
+            );
             m_tree_motion_vector_mode_override = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(6000, 4, 9) {
             m_grouping_id = Some(rdr.read_i32()?);
             m_rendering_layer_mask = Some(rdr.read_u32()?);
             m_allow_auto_connect = Some(rdr.read_bool()?);
             m_enable_heightmap_ray_tracing = Some(rdr.read_bool()?);
-            m_enable_trees_and_details_ray_tracing = Some(TerrainMEnableTreesAndDetailsRayTracingVariant::parse(rdr, ver)?);
+            m_enable_trees_and_details_ray_tracing = Some(
+                TerrainMEnableTreesAndDetailsRayTracingVariant::parse(rdr, ver)?,
+            );
             m_enable_heightmap_lod_frustum_culling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_tree_motion_vector_mode_override = Some(rdr.read_i32()?);
@@ -318,14 +323,18 @@ impl crate::Parse for Terrain {
             m_rendering_layer_mask = Some(rdr.read_u32()?);
             m_allow_auto_connect = Some(rdr.read_bool()?);
             m_enable_heightmap_ray_tracing = Some(rdr.read_bool()?);
-            m_enable_trees_and_details_ray_tracing = Some(TerrainMEnableTreesAndDetailsRayTracingVariant::parse(rdr, ver)?);
+            m_enable_trees_and_details_ray_tracing = Some(
+                TerrainMEnableTreesAndDetailsRayTracingVariant::parse(rdr, ver)?,
+            );
             m_tree_motion_vector_mode_override = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(6000, 3, 17) {
             m_grouping_id = Some(rdr.read_i32()?);
             m_rendering_layer_mask = Some(rdr.read_u32()?);
             m_allow_auto_connect = Some(rdr.read_bool()?);
             m_enable_heightmap_ray_tracing = Some(rdr.read_bool()?);
-            m_enable_trees_and_details_ray_tracing = Some(TerrainMEnableTreesAndDetailsRayTracingVariant::parse(rdr, ver)?);
+            m_enable_trees_and_details_ray_tracing = Some(
+                TerrainMEnableTreesAndDetailsRayTracingVariant::parse(rdr, ver)?,
+            );
             m_enable_heightmap_lod_frustum_culling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_tree_motion_vector_mode_override = Some(rdr.read_i32()?);
@@ -334,14 +343,18 @@ impl crate::Parse for Terrain {
             m_rendering_layer_mask = Some(rdr.read_u32()?);
             m_allow_auto_connect = Some(rdr.read_bool()?);
             m_enable_heightmap_ray_tracing = Some(rdr.read_bool()?);
-            m_enable_trees_and_details_ray_tracing = Some(TerrainMEnableTreesAndDetailsRayTracingVariant::parse(rdr, ver)?);
+            m_enable_trees_and_details_ray_tracing = Some(
+                TerrainMEnableTreesAndDetailsRayTracingVariant::parse(rdr, ver)?,
+            );
             m_tree_motion_vector_mode_override = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(6000, 0, 76) {
             m_grouping_id = Some(rdr.read_i32()?);
             m_rendering_layer_mask = Some(rdr.read_u32()?);
             m_allow_auto_connect = Some(rdr.read_bool()?);
             m_enable_heightmap_ray_tracing = Some(rdr.read_bool()?);
-            m_enable_trees_and_details_ray_tracing = Some(TerrainMEnableTreesAndDetailsRayTracingVariant::parse(rdr, ver)?);
+            m_enable_trees_and_details_ray_tracing = Some(
+                TerrainMEnableTreesAndDetailsRayTracingVariant::parse(rdr, ver)?,
+            );
             m_enable_heightmap_lod_frustum_culling = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_tree_motion_vector_mode_override = Some(rdr.read_i32()?);
@@ -350,27 +363,35 @@ impl crate::Parse for Terrain {
             m_rendering_layer_mask = Some(rdr.read_u32()?);
             m_allow_auto_connect = Some(rdr.read_bool()?);
             m_enable_heightmap_ray_tracing = Some(rdr.read_bool()?);
-            m_enable_trees_and_details_ray_tracing = Some(TerrainMEnableTreesAndDetailsRayTracingVariant::parse(rdr, ver)?);
+            m_enable_trees_and_details_ray_tracing = Some(
+                TerrainMEnableTreesAndDetailsRayTracingVariant::parse(rdr, ver)?,
+            );
             m_tree_motion_vector_mode_override = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2023, 1, 0) {
             m_grouping_id = Some(rdr.read_i32()?);
             m_rendering_layer_mask = Some(rdr.read_u32()?);
             m_allow_auto_connect = Some(rdr.read_bool()?);
             m_enable_heightmap_ray_tracing = Some(rdr.read_bool()?);
-            m_enable_trees_and_details_ray_tracing = Some(TerrainMEnableTreesAndDetailsRayTracingVariant::parse(rdr, ver)?);
+            m_enable_trees_and_details_ray_tracing = Some(
+                TerrainMEnableTreesAndDetailsRayTracingVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2022, 3, 3) {
             m_grouping_id = Some(rdr.read_i32()?);
             m_rendering_layer_mask = Some(rdr.read_u32()?);
             m_allow_auto_connect = Some(rdr.read_bool()?);
             m_enable_heightmap_ray_tracing = Some(rdr.read_bool()?);
-            m_enable_trees_and_details_ray_tracing = Some(TerrainMEnableTreesAndDetailsRayTracingVariant::parse(rdr, ver)?);
+            m_enable_trees_and_details_ray_tracing = Some(
+                TerrainMEnableTreesAndDetailsRayTracingVariant::parse(rdr, ver)?,
+            );
             m_tree_motion_vector_mode_override = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             m_grouping_id = Some(rdr.read_i32()?);
             m_rendering_layer_mask = Some(rdr.read_u32()?);
             m_allow_auto_connect = Some(rdr.read_bool()?);
             m_enable_heightmap_ray_tracing = Some(rdr.read_bool()?);
-            m_enable_trees_and_details_ray_tracing = Some(TerrainMEnableTreesAndDetailsRayTracingVariant::parse(rdr, ver)?);
+            m_enable_trees_and_details_ray_tracing = Some(
+                TerrainMEnableTreesAndDetailsRayTracingVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
             m_grouping_id = Some(rdr.read_i32()?);
             m_rendering_layer_mask = Some(rdr.read_u32()?);

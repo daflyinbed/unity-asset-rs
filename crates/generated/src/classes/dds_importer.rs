@@ -2,7 +2,6 @@
 
 use crate::subclasses::md_four::MdFour;
 
-
 /// 版本枚举：DdsImporterMNameVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum DdsImporterMNameVariant {
@@ -54,7 +53,7 @@ impl crate::Parse for DdsImporter {
         let mut m_asset_bundle_name = None;
         let mut m_new_hash_identity = None;
         let mut m_asset_bundle_variant = None;
-            m_name = Some(DdsImporterMNameVariant::parse(rdr, ver)?);
+        m_name = Some(DdsImporterMNameVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
             m_is_readable = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -69,7 +68,20 @@ impl crate::Parse for DdsImporter {
             m_user_data = Some(rdr.read_aligned_string()?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
         } else {
-            m_file_id_to_recycle_name = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i32()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_file_id_to_recycle_name = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_i32()?;
+                                let b = rdr.read_aligned_string()?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_old_hash_identity = Some(MdFour::parse(rdr, ver)?);
             m_new_hash_identity = Some(MdFour::parse(rdr, ver)?);
         }

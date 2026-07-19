@@ -3,7 +3,6 @@
 use crate::subclasses::fast_property_name::FastPropertyName;
 use crate::subclasses::serialized_shader_float_value::SerializedShaderFloatValue;
 
-
 /// 版本枚举：SerializedShaderVectorValueNameVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum SerializedShaderVectorValueNameVariant {
@@ -20,7 +19,7 @@ impl crate::Parse for SerializedShaderVectorValueNameVariant {
             let v = rdr.read_aligned_string()?;
             Ok(Self::V5_6(v))
         } else {
-            let v = ( { Ok(Box::new(FastPropertyName::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(FastPropertyName::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
         }
     }
@@ -45,12 +44,6 @@ impl crate::Parse for SerializedShaderVectorValue {
         let w = SerializedShaderFloatValue::parse(rdr, ver)?;
         let name = SerializedShaderVectorValueNameVariant::parse(rdr, ver)?;
 
-        Ok(SerializedShaderVectorValue {
-            x,
-            y,
-            z,
-            w,
-            name,
-        })
+        Ok(SerializedShaderVectorValue { x, y, z, w, name })
     }
 }

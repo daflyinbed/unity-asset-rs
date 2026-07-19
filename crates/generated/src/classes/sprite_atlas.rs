@@ -21,11 +21,36 @@ impl crate::Parse for SpriteAtlas {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
-        let m_packed_sprites = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_packed_sprites = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| crate::PPtr::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
-        let m_packed_sprite_names_to_index = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_packed_sprite_names_to_index = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| rdr.read_aligned_string())
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
-        let m_render_data_map = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = ( { let a = Guid::parse(rdr, ver)?; let b = rdr.read_i64()?; Ok((a, b)) } )?; let b = SpriteAtlasData::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_render_data_map = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| {
+                    ({
+                        let a = ({
+                            let a = Guid::parse(rdr, ver)?;
+                            let b = rdr.read_i64()?;
+                            Ok((a, b))
+                        })?;
+                        let b = SpriteAtlasData::parse(rdr, ver)?;
+                        Ok((a, b))
+                    })
+                })
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         let m_tag = rdr.read_aligned_string()?;
         let m_is_variant = rdr.read_bool()?;
         rdr.align(4)?;

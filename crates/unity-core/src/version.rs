@@ -10,7 +10,11 @@ pub struct UnityVersion {
 
 impl UnityVersion {
     pub const fn new(major: u16, minor: u16, build: u16) -> Self {
-        Self { major, minor, build }
+        Self {
+            major,
+            minor,
+            build,
+        }
     }
 
     /// 解析 "2017.4.39f1" 之类；无法解析的部分归 0。
@@ -19,7 +23,11 @@ impl UnityVersion {
         let major = parts.next().and_then(parse_digits).unwrap_or(0);
         let minor = parts.next().and_then(parse_digits).unwrap_or(0);
         let build = parts.next().and_then(parse_digits).unwrap_or(0);
-        Self { major, minor, build }
+        Self {
+            major,
+            minor,
+            build,
+        }
     }
 }
 

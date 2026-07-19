@@ -17,7 +17,7 @@ impl crate::Parse for SamplerParameter {
         let mut sampler = None;
         let mut bind_point = None;
         let mut m_binding = None;
-            sampler = Some(rdr.read_u32()?);
+        sampler = Some(rdr.read_u32()?);
         if *ver >= crate::UnityVersion::new(6000, 6, 0) {
             m_binding = Some(Binding::parse(rdr, ver)?);
         } else {

@@ -16,9 +16,36 @@ impl crate::Parse for AssetBundleManifest {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
-        let asset_bundle_names = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i32()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
-        let asset_bundles_with_variant = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
-        let asset_bundle_infos = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i32()?; let b = AssetBundleInfo::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        let asset_bundle_names = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| {
+                    ({
+                        let a = rdr.read_i32()?;
+                        let b = rdr.read_aligned_string()?;
+                        Ok((a, b))
+                    })
+                })
+                .collect::<Result<Vec<_>, _>>()
+        })?;
+        let asset_bundles_with_variant = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| rdr.read_i32())
+                .collect::<Result<Vec<_>, _>>()
+        })?;
+        let asset_bundle_infos = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| {
+                    ({
+                        let a = rdr.read_i32()?;
+                        let b = AssetBundleInfo::parse(rdr, ver)?;
+                        Ok((a, b))
+                    })
+                })
+                .collect::<Result<Vec<_>, _>>()
+        })?;
 
         Ok(AssetBundleManifest {
             m_name,

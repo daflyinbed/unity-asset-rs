@@ -27,19 +27,47 @@ impl crate::Parse for VfxTaskDesc {
         let mut params = None;
         let mut processor = None;
         let mut instance_split_index = None;
-            r#type = Some(rdr.read_i32()?);
-            buffers = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VfxMapping::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+        r#type = Some(rdr.read_i32()?);
+        buffers = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| VfxMapping::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2019, 2, 0) {
-            temporary_buffers = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VfxMappingTemporary::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            temporary_buffers = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| VfxMappingTemporary::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else {
         }
-            values = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VfxMapping::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            params = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VfxMapping::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            processor = Some(crate::PPtr::parse(rdr, ver)?);
+        values = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| VfxMapping::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
+        params = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| VfxMapping::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
+        processor = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2023, 1, 17) {
             instance_split_index = Some(rdr.read_u32()?);
         } else if *ver >= crate::UnityVersion::new(2023, 1, 0) {

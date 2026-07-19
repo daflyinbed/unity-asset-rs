@@ -6,7 +6,6 @@ use crate::subclasses::hash128::Hash128;
 use crate::subclasses::library_representation::LibraryRepresentation;
 use crate::subclasses::md_four::MdFour;
 
-
 /// 版本枚举：AssetRepresentationsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AssetRepresentationsVariant {
@@ -20,11 +19,21 @@ impl crate::Parse for AssetRepresentationsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { LibraryRepresentation::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| LibraryRepresentation::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { LibraryRepresentation::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| LibraryRepresentation::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -43,11 +52,21 @@ impl crate::Parse for AssetChildrenVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Guid::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| Guid::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Guid::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| Guid::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -66,10 +85,10 @@ impl crate::Parse for AssetHashVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = ( { Ok(Box::new(Hash128::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(Hash128::parse(rdr, ver)?)) })?;
             Ok(Self::V5_0(v))
         } else {
-            let v = ( { Ok(Box::new(MdFour::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(MdFour::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
         }
     }
@@ -88,10 +107,32 @@ impl crate::Parse for AssetGuidOfPathLocationDependenciesVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = Guid::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| {
+                        ({
+                            let a = rdr.read_aligned_string()?;
+                            let b = Guid::parse(rdr, ver)?;
+                            Ok((a, b))
+                        })
+                    })
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::V2018_3(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = Guid::parse(rdr, ver)?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| {
+                        ({
+                            let a = Guid::parse(rdr, ver)?;
+                            let b = rdr.read_aligned_string()?;
+                            Ok((a, b))
+                        })
+                    })
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -150,27 +191,42 @@ impl crate::Parse for Asset {
             meta_modification_date_0 = Some(rdr.read_u32()?);
             meta_modification_date_1 = Some(rdr.read_u32()?);
         }
-            main_representation = Some(LibraryRepresentation::parse(rdr, ver)?);
-            representations = Some(AssetRepresentationsVariant::parse(rdr, ver)?);
-            children = Some(AssetChildrenVariant::parse(rdr, ver)?);
-            parent = Some(Guid::parse(rdr, ver)?);
+        main_representation = Some(LibraryRepresentation::parse(rdr, ver)?);
+        representations = Some(AssetRepresentationsVariant::parse(rdr, ver)?);
+        children = Some(AssetChildrenVariant::parse(rdr, ver)?);
+        parent = Some(Guid::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(3, 5, 0) {
         } else {
             digest = Some(MdFour::parse(rdr, ver)?);
         }
-            r#type = Some(rdr.read_i32()?);
-            labels = Some(AssetLabels::parse(rdr, ver)?);
+        r#type = Some(rdr.read_i32()?);
+        labels = Some(AssetLabels::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2018, 1, 0) {
             importer_class_id = Some(rdr.read_i32()?);
             scripted_importer_class_id = Some(rdr.read_aligned_string()?);
             importer_version_hash = Some(rdr.read_u32()?);
             hash = Some(AssetHashVariant::parse(rdr, ver)?);
             asset_bundle_index = Some(rdr.read_i32()?);
-            hash_of_imported_asset_dependencies = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Guid::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            hash_of_imported_asset_dependencies = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| Guid::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            hash_of_source_asset_dependencies = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Guid::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            hash_of_source_asset_dependencies = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| Guid::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            guid_of_path_location_dependencies = Some(AssetGuidOfPathLocationDependenciesVariant::parse(rdr, ver)?);
+            guid_of_path_location_dependencies =
+                Some(AssetGuidOfPathLocationDependenciesVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2017, 4, 14) {
             importer_class_id = Some(rdr.read_i32()?);
             scripted_importer_class_id = Some(rdr.read_aligned_string()?);

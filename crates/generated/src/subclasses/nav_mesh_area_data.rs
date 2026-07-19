@@ -14,9 +14,6 @@ impl crate::Parse for NavMeshAreaData {
         let name = rdr.read_aligned_string()?;
         let cost = rdr.read_f32()?;
 
-        Ok(NavMeshAreaData {
-            name,
-            cost,
-        })
+        Ok(NavMeshAreaData { name, cost })
     }
 }

@@ -4,7 +4,6 @@ use crate::PPtr;
 use crate::subclasses::mipmap_limit_settings::MipmapLimitSettings;
 use crate::subclasses::vector3f::Vector3f;
 
-
 /// 版本枚举：QualitySettingSoftVegetationVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum QualitySettingSoftVegetationVariant {
@@ -226,7 +225,8 @@ pub struct QualitySetting {
     pub streaming_mipmaps_memory_budget: Option<f32>,
     pub enable_lod_cross_fade: Option<bool>,
     pub adaptive_vsync_extra_a: Option<i32>,
-    pub resolution_scaling_fixed_dpi_factor: Option<QualitySettingResolutionScalingFixedDpiFactorVariant>,
+    pub resolution_scaling_fixed_dpi_factor:
+        Option<QualitySettingResolutionScalingFixedDpiFactorVariant>,
     pub streaming_mipmaps_renderers_per_frame: Option<i32>,
     pub adaptive_vsync_extra_b: Option<i32>,
     pub streaming_mipmaps_max_level_reduction: Option<i32>,
@@ -307,12 +307,12 @@ impl crate::Parse for QualitySetting {
             name = Some(rdr.read_aligned_string()?);
         } else {
         }
-            pixel_light_count = Some(rdr.read_i32()?);
-            shadows = Some(rdr.read_i32()?);
-            shadow_resolution = Some(rdr.read_i32()?);
-            shadow_projection = Some(rdr.read_i32()?);
-            shadow_cascades = Some(rdr.read_i32()?);
-            shadow_distance = Some(rdr.read_f32()?);
+        pixel_light_count = Some(rdr.read_i32()?);
+        shadows = Some(rdr.read_i32()?);
+        shadow_resolution = Some(rdr.read_i32()?);
+        shadow_projection = Some(rdr.read_i32()?);
+        shadow_cascades = Some(rdr.read_i32()?);
+        shadow_distance = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             shadow_near_plane_offset = Some(rdr.read_f32()?);
             shadow_cascade2_split = Some(rdr.read_f32()?);
@@ -320,7 +320,14 @@ impl crate::Parse for QualitySetting {
             shadowmask_mode = Some(rdr.read_i32()?);
             skin_weights = Some(rdr.read_i32()?);
             global_texture_mipmap_limit = Some(rdr.read_i32()?);
-            texture_mipmap_limit_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MipmapLimitSettings::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            texture_mipmap_limit_settings = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| MipmapLimitSettings::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             shadow_near_plane_offset = Some(rdr.read_f32()?);
@@ -351,26 +358,36 @@ impl crate::Parse for QualitySetting {
             blend_weights = Some(rdr.read_i32()?);
             texture_quality = Some(rdr.read_i32()?);
         }
-            anisotropic_textures = Some(rdr.read_i32()?);
-            anti_aliasing = Some(rdr.read_i32()?);
-            soft_particles = Some(rdr.read_bool()?);
-            soft_vegetation = Some(QualitySettingSoftVegetationVariant::parse(rdr, ver)?);
+        anisotropic_textures = Some(rdr.read_i32()?);
+        anti_aliasing = Some(rdr.read_i32()?);
+        soft_particles = Some(rdr.read_bool()?);
+        soft_vegetation = Some(QualitySettingSoftVegetationVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
             realtime_reflection_probes = Some(rdr.read_bool()?);
-            billboards_face_camera_position = Some(QualitySettingBillboardsFaceCameraPositionVariant::parse(rdr, ver)?);
-            use_legacy_detail_distribution = Some(QualitySettingUseLegacyDetailDistributionVariant::parse(rdr, ver)?);
+            billboards_face_camera_position = Some(
+                QualitySettingBillboardsFaceCameraPositionVariant::parse(rdr, ver)?,
+            );
+            use_legacy_detail_distribution = Some(
+                QualitySettingUseLegacyDetailDistributionVariant::parse(rdr, ver)?,
+            );
             adaptive_vsync = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             realtime_reflection_probes = Some(rdr.read_bool()?);
-            billboards_face_camera_position = Some(QualitySettingBillboardsFaceCameraPositionVariant::parse(rdr, ver)?);
-            use_legacy_detail_distribution = Some(QualitySettingUseLegacyDetailDistributionVariant::parse(rdr, ver)?);
+            billboards_face_camera_position = Some(
+                QualitySettingBillboardsFaceCameraPositionVariant::parse(rdr, ver)?,
+            );
+            use_legacy_detail_distribution = Some(
+                QualitySettingUseLegacyDetailDistributionVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
             realtime_reflection_probes = Some(rdr.read_bool()?);
-            billboards_face_camera_position = Some(QualitySettingBillboardsFaceCameraPositionVariant::parse(rdr, ver)?);
+            billboards_face_camera_position = Some(
+                QualitySettingBillboardsFaceCameraPositionVariant::parse(rdr, ver)?,
+            );
         } else {
         }
-            v_sync_count = Some(QualitySettingVSyncCountVariant::parse(rdr, ver)?);
+        v_sync_count = Some(QualitySettingVSyncCountVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 2, 0) {
             realtime_gicpu_usage = Some(rdr.read_i32()?);
             adaptive_vsync_extra_a = Some(rdr.read_i32()?);
@@ -386,12 +403,16 @@ impl crate::Parse for QualitySetting {
             streaming_mipmaps_renderers_per_frame = Some(rdr.read_i32()?);
             streaming_mipmaps_max_level_reduction = Some(rdr.read_i32()?);
             streaming_mipmaps_max_file_io_requests = Some(rdr.read_i32()?);
-            particle_raycast_budget = Some(QualitySettingParticleRaycastBudgetVariant::parse(rdr, ver)?);
+            particle_raycast_budget =
+                Some(QualitySettingParticleRaycastBudgetVariant::parse(rdr, ver)?);
             async_upload_time_slice = Some(rdr.read_i32()?);
-            async_upload_buffer_size = Some(QualitySettingAsyncUploadBufferSizeVariant::parse(rdr, ver)?);
+            async_upload_buffer_size =
+                Some(QualitySettingAsyncUploadBufferSizeVariant::parse(rdr, ver)?);
             async_upload_persistent_buffer = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            resolution_scaling_fixed_dpi_factor = Some(QualitySettingResolutionScalingFixedDpiFactorVariant::parse(rdr, ver)?);
+            resolution_scaling_fixed_dpi_factor = Some(
+                QualitySettingResolutionScalingFixedDpiFactorVariant::parse(rdr, ver)?,
+            );
             custom_render_pipeline = Some(crate::PPtr::parse(rdr, ver)?);
             rdr.align(4)?;
             terrain_quality_overrides = Some(rdr.read_i32()?);
@@ -418,12 +439,16 @@ impl crate::Parse for QualitySetting {
             streaming_mipmaps_renderers_per_frame = Some(rdr.read_i32()?);
             streaming_mipmaps_max_level_reduction = Some(rdr.read_i32()?);
             streaming_mipmaps_max_file_io_requests = Some(rdr.read_i32()?);
-            particle_raycast_budget = Some(QualitySettingParticleRaycastBudgetVariant::parse(rdr, ver)?);
+            particle_raycast_budget =
+                Some(QualitySettingParticleRaycastBudgetVariant::parse(rdr, ver)?);
             async_upload_time_slice = Some(rdr.read_i32()?);
-            async_upload_buffer_size = Some(QualitySettingAsyncUploadBufferSizeVariant::parse(rdr, ver)?);
+            async_upload_buffer_size =
+                Some(QualitySettingAsyncUploadBufferSizeVariant::parse(rdr, ver)?);
             async_upload_persistent_buffer = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            resolution_scaling_fixed_dpi_factor = Some(QualitySettingResolutionScalingFixedDpiFactorVariant::parse(rdr, ver)?);
+            resolution_scaling_fixed_dpi_factor = Some(
+                QualitySettingResolutionScalingFixedDpiFactorVariant::parse(rdr, ver)?,
+            );
             custom_render_pipeline = Some(crate::PPtr::parse(rdr, ver)?);
             rdr.align(4)?;
             terrain_quality_overrides = Some(rdr.read_i32()?);
@@ -448,12 +473,16 @@ impl crate::Parse for QualitySetting {
             streaming_mipmaps_renderers_per_frame = Some(rdr.read_i32()?);
             streaming_mipmaps_max_level_reduction = Some(rdr.read_i32()?);
             streaming_mipmaps_max_file_io_requests = Some(rdr.read_i32()?);
-            particle_raycast_budget = Some(QualitySettingParticleRaycastBudgetVariant::parse(rdr, ver)?);
+            particle_raycast_budget =
+                Some(QualitySettingParticleRaycastBudgetVariant::parse(rdr, ver)?);
             async_upload_time_slice = Some(rdr.read_i32()?);
-            async_upload_buffer_size = Some(QualitySettingAsyncUploadBufferSizeVariant::parse(rdr, ver)?);
+            async_upload_buffer_size =
+                Some(QualitySettingAsyncUploadBufferSizeVariant::parse(rdr, ver)?);
             async_upload_persistent_buffer = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            resolution_scaling_fixed_dpi_factor = Some(QualitySettingResolutionScalingFixedDpiFactorVariant::parse(rdr, ver)?);
+            resolution_scaling_fixed_dpi_factor = Some(
+                QualitySettingResolutionScalingFixedDpiFactorVariant::parse(rdr, ver)?,
+            );
             custom_render_pipeline = Some(crate::PPtr::parse(rdr, ver)?);
             rdr.align(4)?;
             terrain_quality_overrides = Some(rdr.read_i32()?);
@@ -477,12 +506,16 @@ impl crate::Parse for QualitySetting {
             streaming_mipmaps_renderers_per_frame = Some(rdr.read_i32()?);
             streaming_mipmaps_max_level_reduction = Some(rdr.read_i32()?);
             streaming_mipmaps_max_file_io_requests = Some(rdr.read_i32()?);
-            particle_raycast_budget = Some(QualitySettingParticleRaycastBudgetVariant::parse(rdr, ver)?);
+            particle_raycast_budget =
+                Some(QualitySettingParticleRaycastBudgetVariant::parse(rdr, ver)?);
             async_upload_time_slice = Some(rdr.read_i32()?);
-            async_upload_buffer_size = Some(QualitySettingAsyncUploadBufferSizeVariant::parse(rdr, ver)?);
+            async_upload_buffer_size =
+                Some(QualitySettingAsyncUploadBufferSizeVariant::parse(rdr, ver)?);
             async_upload_persistent_buffer = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            resolution_scaling_fixed_dpi_factor = Some(QualitySettingResolutionScalingFixedDpiFactorVariant::parse(rdr, ver)?);
+            resolution_scaling_fixed_dpi_factor = Some(
+                QualitySettingResolutionScalingFixedDpiFactorVariant::parse(rdr, ver)?,
+            );
             custom_render_pipeline = Some(crate::PPtr::parse(rdr, ver)?);
             rdr.align(4)?;
             terrain_quality_overrides = Some(rdr.read_i32()?);
@@ -505,12 +538,16 @@ impl crate::Parse for QualitySetting {
             streaming_mipmaps_renderers_per_frame = Some(rdr.read_i32()?);
             streaming_mipmaps_max_level_reduction = Some(rdr.read_i32()?);
             streaming_mipmaps_max_file_io_requests = Some(rdr.read_i32()?);
-            particle_raycast_budget = Some(QualitySettingParticleRaycastBudgetVariant::parse(rdr, ver)?);
+            particle_raycast_budget =
+                Some(QualitySettingParticleRaycastBudgetVariant::parse(rdr, ver)?);
             async_upload_time_slice = Some(rdr.read_i32()?);
-            async_upload_buffer_size = Some(QualitySettingAsyncUploadBufferSizeVariant::parse(rdr, ver)?);
+            async_upload_buffer_size =
+                Some(QualitySettingAsyncUploadBufferSizeVariant::parse(rdr, ver)?);
             async_upload_persistent_buffer = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            resolution_scaling_fixed_dpi_factor = Some(QualitySettingResolutionScalingFixedDpiFactorVariant::parse(rdr, ver)?);
+            resolution_scaling_fixed_dpi_factor = Some(
+                QualitySettingResolutionScalingFixedDpiFactorVariant::parse(rdr, ver)?,
+            );
             custom_render_pipeline = Some(crate::PPtr::parse(rdr, ver)?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2021, 3, 29) {
@@ -524,12 +561,16 @@ impl crate::Parse for QualitySetting {
             streaming_mipmaps_renderers_per_frame = Some(rdr.read_i32()?);
             streaming_mipmaps_max_level_reduction = Some(rdr.read_i32()?);
             streaming_mipmaps_max_file_io_requests = Some(rdr.read_i32()?);
-            particle_raycast_budget = Some(QualitySettingParticleRaycastBudgetVariant::parse(rdr, ver)?);
+            particle_raycast_budget =
+                Some(QualitySettingParticleRaycastBudgetVariant::parse(rdr, ver)?);
             async_upload_time_slice = Some(rdr.read_i32()?);
-            async_upload_buffer_size = Some(QualitySettingAsyncUploadBufferSizeVariant::parse(rdr, ver)?);
+            async_upload_buffer_size =
+                Some(QualitySettingAsyncUploadBufferSizeVariant::parse(rdr, ver)?);
             async_upload_persistent_buffer = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            resolution_scaling_fixed_dpi_factor = Some(QualitySettingResolutionScalingFixedDpiFactorVariant::parse(rdr, ver)?);
+            resolution_scaling_fixed_dpi_factor = Some(
+                QualitySettingResolutionScalingFixedDpiFactorVariant::parse(rdr, ver)?,
+            );
             custom_render_pipeline = Some(crate::PPtr::parse(rdr, ver)?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
@@ -542,12 +583,16 @@ impl crate::Parse for QualitySetting {
             streaming_mipmaps_renderers_per_frame = Some(rdr.read_i32()?);
             streaming_mipmaps_max_level_reduction = Some(rdr.read_i32()?);
             streaming_mipmaps_max_file_io_requests = Some(rdr.read_i32()?);
-            particle_raycast_budget = Some(QualitySettingParticleRaycastBudgetVariant::parse(rdr, ver)?);
+            particle_raycast_budget =
+                Some(QualitySettingParticleRaycastBudgetVariant::parse(rdr, ver)?);
             async_upload_time_slice = Some(rdr.read_i32()?);
-            async_upload_buffer_size = Some(QualitySettingAsyncUploadBufferSizeVariant::parse(rdr, ver)?);
+            async_upload_buffer_size =
+                Some(QualitySettingAsyncUploadBufferSizeVariant::parse(rdr, ver)?);
             async_upload_persistent_buffer = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            resolution_scaling_fixed_dpi_factor = Some(QualitySettingResolutionScalingFixedDpiFactorVariant::parse(rdr, ver)?);
+            resolution_scaling_fixed_dpi_factor = Some(
+                QualitySettingResolutionScalingFixedDpiFactorVariant::parse(rdr, ver)?,
+            );
             custom_render_pipeline = Some(crate::PPtr::parse(rdr, ver)?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
@@ -560,12 +605,16 @@ impl crate::Parse for QualitySetting {
             streaming_mipmaps_renderers_per_frame = Some(rdr.read_i32()?);
             streaming_mipmaps_max_level_reduction = Some(rdr.read_i32()?);
             streaming_mipmaps_max_file_io_requests = Some(rdr.read_i32()?);
-            particle_raycast_budget = Some(QualitySettingParticleRaycastBudgetVariant::parse(rdr, ver)?);
+            particle_raycast_budget =
+                Some(QualitySettingParticleRaycastBudgetVariant::parse(rdr, ver)?);
             async_upload_time_slice = Some(rdr.read_i32()?);
-            async_upload_buffer_size = Some(QualitySettingAsyncUploadBufferSizeVariant::parse(rdr, ver)?);
+            async_upload_buffer_size =
+                Some(QualitySettingAsyncUploadBufferSizeVariant::parse(rdr, ver)?);
             async_upload_persistent_buffer = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            resolution_scaling_fixed_dpi_factor = Some(QualitySettingResolutionScalingFixedDpiFactorVariant::parse(rdr, ver)?);
+            resolution_scaling_fixed_dpi_factor = Some(
+                QualitySettingResolutionScalingFixedDpiFactorVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2018, 2, 0) {
             lod_bias = Some(rdr.read_f32()?);
             maximum_lod_level = Some(QualitySettingMaximumLodLevelVariant::parse(rdr, ver)?);
@@ -576,27 +625,38 @@ impl crate::Parse for QualitySetting {
             streaming_mipmaps_renderers_per_frame = Some(rdr.read_i32()?);
             streaming_mipmaps_max_level_reduction = Some(rdr.read_i32()?);
             streaming_mipmaps_max_file_io_requests = Some(rdr.read_i32()?);
-            particle_raycast_budget = Some(QualitySettingParticleRaycastBudgetVariant::parse(rdr, ver)?);
+            particle_raycast_budget =
+                Some(QualitySettingParticleRaycastBudgetVariant::parse(rdr, ver)?);
             async_upload_time_slice = Some(rdr.read_i32()?);
-            async_upload_buffer_size = Some(QualitySettingAsyncUploadBufferSizeVariant::parse(rdr, ver)?);
-            resolution_scaling_fixed_dpi_factor = Some(QualitySettingResolutionScalingFixedDpiFactorVariant::parse(rdr, ver)?);
+            async_upload_buffer_size =
+                Some(QualitySettingAsyncUploadBufferSizeVariant::parse(rdr, ver)?);
+            resolution_scaling_fixed_dpi_factor = Some(
+                QualitySettingResolutionScalingFixedDpiFactorVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             lod_bias = Some(rdr.read_f32()?);
             maximum_lod_level = Some(QualitySettingMaximumLodLevelVariant::parse(rdr, ver)?);
-            particle_raycast_budget = Some(QualitySettingParticleRaycastBudgetVariant::parse(rdr, ver)?);
+            particle_raycast_budget =
+                Some(QualitySettingParticleRaycastBudgetVariant::parse(rdr, ver)?);
             async_upload_time_slice = Some(rdr.read_i32()?);
-            async_upload_buffer_size = Some(QualitySettingAsyncUploadBufferSizeVariant::parse(rdr, ver)?);
-            resolution_scaling_fixed_dpi_factor = Some(QualitySettingResolutionScalingFixedDpiFactorVariant::parse(rdr, ver)?);
+            async_upload_buffer_size =
+                Some(QualitySettingAsyncUploadBufferSizeVariant::parse(rdr, ver)?);
+            resolution_scaling_fixed_dpi_factor = Some(
+                QualitySettingResolutionScalingFixedDpiFactorVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
             lod_bias = Some(rdr.read_f32()?);
             maximum_lod_level = Some(QualitySettingMaximumLodLevelVariant::parse(rdr, ver)?);
-            particle_raycast_budget = Some(QualitySettingParticleRaycastBudgetVariant::parse(rdr, ver)?);
+            particle_raycast_budget =
+                Some(QualitySettingParticleRaycastBudgetVariant::parse(rdr, ver)?);
             async_upload_time_slice = Some(rdr.read_i32()?);
-            async_upload_buffer_size = Some(QualitySettingAsyncUploadBufferSizeVariant::parse(rdr, ver)?);
+            async_upload_buffer_size =
+                Some(QualitySettingAsyncUploadBufferSizeVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
             lod_bias = Some(rdr.read_f32()?);
             maximum_lod_level = Some(QualitySettingMaximumLodLevelVariant::parse(rdr, ver)?);
-            particle_raycast_budget = Some(QualitySettingParticleRaycastBudgetVariant::parse(rdr, ver)?);
+            particle_raycast_budget =
+                Some(QualitySettingParticleRaycastBudgetVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
             lod_bias = Some(rdr.read_f32()?);
             maximum_lod_level = Some(QualitySettingMaximumLodLevelVariant::parse(rdr, ver)?);

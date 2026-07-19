@@ -2,7 +2,6 @@
 
 use crate::subclasses::child_motion::ChildMotion;
 
-
 /// 版本枚举：BlendTreeMChildsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum BlendTreeMChildsVariant {
@@ -16,11 +15,21 @@ impl crate::Parse for BlendTreeMChildsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ChildMotion::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| ChildMotion::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ChildMotion::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| ChildMotion::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -97,16 +106,17 @@ impl crate::Parse for BlendTree {
         let mut m_use_automatic_thresholds = None;
         let mut m_blend_type = None;
         let mut m_normalized_blend_values = None;
-            m_name = Some(rdr.read_aligned_string()?);
-            m_childs = Some(BlendTreeMChildsVariant::parse(rdr, ver)?);
-            m_blend_parameter = Some(rdr.read_aligned_string()?);
+        m_name = Some(rdr.read_aligned_string()?);
+        m_childs = Some(BlendTreeMChildsVariant::parse(rdr, ver)?);
+        m_blend_parameter = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(4, 1, 0) {
             m_blend_parameter_y = Some(rdr.read_aligned_string()?);
         } else {
         }
-            m_min_threshold = Some(rdr.read_f32()?);
-            m_max_threshold = Some(rdr.read_f32()?);
-            m_use_automatic_thresholds = Some(BlendTreeMUseAutomaticThresholdsVariant::parse(rdr, ver)?);
+        m_min_threshold = Some(rdr.read_f32()?);
+        m_max_threshold = Some(rdr.read_f32()?);
+        m_use_automatic_thresholds =
+            Some(BlendTreeMUseAutomaticThresholdsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_normalized_blend_values = Some(rdr.read_bool()?);
             rdr.align(4)?;

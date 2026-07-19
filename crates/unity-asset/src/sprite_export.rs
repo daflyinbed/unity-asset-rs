@@ -49,15 +49,15 @@ use std::path::{Path, PathBuf};
 use snafu::Snafu;
 
 use crate::environment::EnvironmentObject;
-use crate::texture_export::{flip_vertical_in_place, write_png, TextureExportError};
+use crate::texture_export::{TextureExportError, flip_vertical_in_place, write_png};
 use crate::{ClassId, Environment, PPtr, ParsedObject, UnityVersion};
-use generated::{ClassIDType, UnityObject};
 use generated::classes::sprite::Sprite;
 use generated::classes::sprite_atlas::SpriteAtlas;
 use generated::subclasses::guid::Guid;
 use generated::subclasses::rectf::Rectf;
 use generated::subclasses::sprite_atlas_data::SpriteAtlasData;
 use generated::subclasses::sprite_render_data::SpriteRenderData;
+use generated::{ClassIDType, UnityObject};
 
 /// Sprite 导出错误。包装下游纹理错误 + sprite 专属失败。
 #[derive(Debug, Snafu)]
@@ -65,9 +65,7 @@ use generated::subclasses::sprite_render_data::SpriteRenderData;
 pub enum SpriteExportError {
     /// 下游纹理解码 / IO 错误透传。
     #[snafu(display("texture decode/io error: {source}"))]
-    Texture {
-        source: TextureExportError,
-    },
+    Texture { source: TextureExportError },
 
     /// `m_rd.texture` / atlas 的 `texture` PPtr 解引用失败（跨 bundle 没载入 / path_id 漂移）。
     #[snafu(display("sprite texture PPtr 解引用失败"))]
@@ -523,7 +521,12 @@ mod tests {
     }
 
     fn rect(x: f32, y: f32, w: f32, h: f32) -> Rectf {
-        Rectf { x, y, width: w, height: h }
+        Rectf {
+            x,
+            y,
+            width: w,
+            height: h,
+        }
     }
 
     /// 读 (x, y) 处像素的 RGBA 元组。
@@ -717,9 +720,24 @@ mod tests {
     #[test]
     fn guid_equality_fieldwise() {
         use generated::subclasses::guid::Guid;
-        let a = Guid { data_0: 1, data_1: 2, data_2: 3, data_3: 4 };
-        let b = Guid { data_0: 1, data_1: 2, data_2: 3, data_3: 4 };
-        let c = Guid { data_0: 9, data_1: 2, data_2: 3, data_3: 4 };
+        let a = Guid {
+            data_0: 1,
+            data_1: 2,
+            data_2: 3,
+            data_3: 4,
+        };
+        let b = Guid {
+            data_0: 1,
+            data_1: 2,
+            data_2: 3,
+            data_3: 4,
+        };
+        let c = Guid {
+            data_0: 9,
+            data_1: 2,
+            data_2: 3,
+            data_3: 4,
+        };
         assert!(guid_eq(&a, &b));
         assert!(!guid_eq(&a, &c));
     }

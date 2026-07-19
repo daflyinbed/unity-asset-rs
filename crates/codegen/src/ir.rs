@@ -113,7 +113,9 @@ pub enum RustType {
     /// `(K, V)` 元组（map 的元素）
     Pair(Box<RustType>, Box<RustType>),
     /// `PPtr<T>`，target_class 已 Rust 化
-    Pptr { target_class: String },
+    Pptr {
+        target_class: String,
+    },
     /// 引用另一个 EmitClass（subclass）
     Subclass(String),
     /// 版本门控字段（外层包 Option）

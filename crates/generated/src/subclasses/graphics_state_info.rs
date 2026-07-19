@@ -1,6 +1,5 @@
 //! 自动生成。请勿手动修改。
 
-
 /// 版本枚举：GraphicsStateInfoInvertProjectionMatrixVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum GraphicsStateInfoInvertProjectionMatrixVariant {
@@ -66,24 +65,26 @@ impl crate::Parse for GraphicsStateInfo {
         let mut invert_projection_matrix = None;
         let mut unfilterable_texture_bindings = None;
         let mut nonfiltering_sampler_bindings = None;
-            vertex_layout = Some(rdr.read_u64()?);
-            render_pass = Some(rdr.read_u64()?);
-            render_state = Some(rdr.read_u64()?);
-            sub_pass_index = Some(rdr.read_i32()?);
-            topology = Some(rdr.read_i32()?);
-            force_cull_mode = Some(rdr.read_i32()?);
+        vertex_layout = Some(rdr.read_u64()?);
+        render_pass = Some(rdr.read_u64()?);
+        render_state = Some(rdr.read_u64()?);
+        sub_pass_index = Some(rdr.read_i32()?);
+        topology = Some(rdr.read_i32()?);
+        force_cull_mode = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(6000, 1, 0) {
             shading_rate_combiner_primitive = Some(rdr.read_i32()?);
             shading_rate_combiner_fragment = Some(rdr.read_i32()?);
             base_shading_rate = Some(rdr.read_i32()?);
         } else {
         }
-            depth_bias = Some(rdr.read_f32()?);
-            slope_depth_bias = Some(rdr.read_f32()?);
-            user_backface = Some(rdr.read_bool()?);
-            app_backface = Some(rdr.read_bool()?);
-            wireframe = Some(rdr.read_bool()?);
-            invert_projection_matrix = Some(GraphicsStateInfoInvertProjectionMatrixVariant::parse(rdr, ver)?);
+        depth_bias = Some(rdr.read_f32()?);
+        slope_depth_bias = Some(rdr.read_f32()?);
+        user_backface = Some(rdr.read_bool()?);
+        app_backface = Some(rdr.read_bool()?);
+        wireframe = Some(rdr.read_bool()?);
+        invert_projection_matrix = Some(GraphicsStateInfoInvertProjectionMatrixVariant::parse(
+            rdr, ver,
+        )?);
         if *ver >= crate::UnityVersion::new(6000, 4, 0) {
             unfilterable_texture_bindings = Some(rdr.read_u64()?);
             nonfiltering_sampler_bindings = Some(rdr.read_u64()?);

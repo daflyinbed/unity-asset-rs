@@ -16,9 +16,6 @@ impl crate::Parse for BuiltinShaderSettings {
         let m_mode = rdr.read_i32()?;
         let m_shader = crate::PPtr::parse(rdr, ver)?;
 
-        Ok(BuiltinShaderSettings {
-            m_mode,
-            m_shader,
-        })
+        Ok(BuiltinShaderSettings { m_mode, m_shader })
     }
 }

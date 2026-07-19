@@ -6,7 +6,6 @@ use crate::subclasses::hand_pose::HandPose;
 use crate::subclasses::human_goal::HumanGoal;
 use crate::subclasses::xform::xform;
 
-
 /// 版本枚举：HumanPoseMLookAtPositionVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum HumanPoseMLookAtPositionVariant {
@@ -20,10 +19,10 @@ impl crate::Parse for HumanPoseMLookAtPositionVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            let v = ( { Ok(Box::new(float3::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(float3::parse(rdr, ver)?)) })?;
             Ok(Self::V5_4(v))
         } else {
-            let v = ( { Ok(Box::new(float4::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(float4::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
         }
     }
@@ -42,10 +41,20 @@ impl crate::Parse for HumanPoseMTDoFArrayVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { float3::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| float3::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::V5_4(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { float4::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| float4::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -70,10 +79,20 @@ impl crate::Parse for HumanPose {
         let m_root_x = xform::parse(rdr, ver)?;
         let m_look_at_position = HumanPoseMLookAtPositionVariant::parse(rdr, ver)?;
         let m_look_at_weight = float4::parse(rdr, ver)?;
-        let m_goal_array = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { HumanGoal::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_goal_array = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| HumanGoal::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         let m_left_hand_pose = HandPose::parse(rdr, ver)?;
         let m_right_hand_pose = HandPose::parse(rdr, ver)?;
-        let m_do_f_array = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_f32() }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_do_f_array = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| rdr.read_f32())
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         let m_t_do_f_array = if *ver >= crate::UnityVersion::new(5, 2, 0) {
             Some(HumanPoseMTDoFArrayVariant::parse(rdr, ver)?)
         } else {

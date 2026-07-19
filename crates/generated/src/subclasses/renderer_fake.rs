@@ -6,7 +6,6 @@ use crate::subclasses::static_batch_info::StaticBatchInfo;
 use crate::subclasses::vector3f::Vector3f;
 use crate::subclasses::vector4f::Vector4f;
 
-
 /// 版本枚举：RendererFakeMReflectionProbeUsageVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum RendererFakeMReflectionProbeUsageVariant {
@@ -117,14 +116,14 @@ impl crate::Parse for RendererFake {
         let mut m_parameters = None;
         let mut m_use_world_space = None;
         let mut m_loop = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_enabled = Some(rdr.read_bool()?);
-            m_cast_shadows = Some(rdr.read_u8()?);
-            m_receive_shadows = Some(rdr.read_u8()?);
-            m_dynamic_occludee = Some(rdr.read_u8()?);
-            m_motion_vectors = Some(rdr.read_u8()?);
-            m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(RendererFakeMReflectionProbeUsageVariant::parse(rdr, ver)?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_enabled = Some(rdr.read_bool()?);
+        m_cast_shadows = Some(rdr.read_u8()?);
+        m_receive_shadows = Some(rdr.read_u8()?);
+        m_dynamic_occludee = Some(rdr.read_u8()?);
+        m_motion_vectors = Some(rdr.read_u8()?);
+        m_light_probe_usage = Some(rdr.read_u8()?);
+        m_reflection_probe_usage = Some(RendererFakeMReflectionProbeUsageVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2020, 1, 0) {
             m_ray_tracing_mode = Some(RendererFakeMRayTracingModeVariant::parse(rdr, ver)?);
             m_ray_trace_procedural = Some(rdr.read_u8()?);
@@ -133,28 +132,42 @@ impl crate::Parse for RendererFake {
             m_ray_tracing_mode = Some(RendererFakeMRayTracingModeVariant::parse(rdr, ver)?);
         } else {
         }
-            m_rendering_layer_mask = Some(rdr.read_u32()?);
-            m_renderer_priority = Some(rdr.read_i32()?);
-            m_lightmap_index = Some(rdr.read_u16()?);
-            m_lightmap_index_dynamic = Some(rdr.read_u16()?);
-            m_lightmap_tiling_offset = Some(Vector4f::parse(rdr, ver)?);
-            m_lightmap_tiling_offset_dynamic = Some(Vector4f::parse(rdr, ver)?);
-            m_materials = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            m_static_batch_info = Some(StaticBatchInfo::parse(rdr, ver)?);
-            m_static_batch_root = Some(crate::PPtr::parse(rdr, ver)?);
-            m_probe_anchor = Some(crate::PPtr::parse(rdr, ver)?);
-            m_light_probe_volume_override = Some(crate::PPtr::parse(rdr, ver)?);
-            rdr.align(4)?;
-            m_sorting_layer_id = Some(rdr.read_i32()?);
-            m_sorting_layer = Some(rdr.read_i16()?);
-            m_sorting_order = Some(rdr.read_i16()?);
-            rdr.align(4)?;
-            m_positions = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector3f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            m_parameters = Some(LineParameters::parse(rdr, ver)?);
-            m_use_world_space = Some(rdr.read_bool()?);
-            m_loop = Some(rdr.read_bool()?);
+        m_rendering_layer_mask = Some(rdr.read_u32()?);
+        m_renderer_priority = Some(rdr.read_i32()?);
+        m_lightmap_index = Some(rdr.read_u16()?);
+        m_lightmap_index_dynamic = Some(rdr.read_u16()?);
+        m_lightmap_tiling_offset = Some(Vector4f::parse(rdr, ver)?);
+        m_lightmap_tiling_offset_dynamic = Some(Vector4f::parse(rdr, ver)?);
+        m_materials = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
+        m_static_batch_info = Some(StaticBatchInfo::parse(rdr, ver)?);
+        m_static_batch_root = Some(crate::PPtr::parse(rdr, ver)?);
+        m_probe_anchor = Some(crate::PPtr::parse(rdr, ver)?);
+        m_light_probe_volume_override = Some(crate::PPtr::parse(rdr, ver)?);
+        rdr.align(4)?;
+        m_sorting_layer_id = Some(rdr.read_i32()?);
+        m_sorting_layer = Some(rdr.read_i16()?);
+        m_sorting_order = Some(rdr.read_i16()?);
+        rdr.align(4)?;
+        m_positions = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| Vector3f::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
+        m_parameters = Some(LineParameters::parse(rdr, ver)?);
+        m_use_world_space = Some(rdr.read_bool()?);
+        m_loop = Some(rdr.read_bool()?);
 
         Ok(RendererFake {
             m_game_object: m_game_object.unwrap(),

@@ -12,8 +12,6 @@ impl crate::Parse for GameObjectRecorder {
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
 
-        Ok(GameObjectRecorder {
-            m_name,
-        })
+        Ok(GameObjectRecorder { m_name })
     }
 }

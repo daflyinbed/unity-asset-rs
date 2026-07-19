@@ -49,8 +49,8 @@ impl crate::Parse for UvModule {
         let mut flip_v = None;
         let mut sprites = None;
         let mut row_mode = None;
-            enabled = Some(rdr.read_bool()?);
-            rdr.align(4)?;
+        enabled = Some(rdr.read_bool()?);
+        rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2018, 3, 0) {
             mode = Some(rdr.read_i32()?);
             time_mode = Some(rdr.read_i32()?);
@@ -59,7 +59,7 @@ impl crate::Parse for UvModule {
             mode = Some(rdr.read_i32()?);
         } else {
         }
-            frame_over_time = Some(MinMaxCurve::parse(rdr, ver)?);
+        frame_over_time = Some(MinMaxCurve::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2018, 3, 0) {
             start_frame = Some(MinMaxCurve::parse(rdr, ver)?);
             speed_range = Some(Vector2f::parse(rdr, ver)?);
@@ -67,15 +67,22 @@ impl crate::Parse for UvModule {
             start_frame = Some(MinMaxCurve::parse(rdr, ver)?);
         } else {
         }
-            tiles_x = Some(rdr.read_i32()?);
-            tiles_y = Some(rdr.read_i32()?);
-            animation_type = Some(rdr.read_i32()?);
-            row_index = Some(rdr.read_i32()?);
-            cycles = Some(rdr.read_f32()?);
+        tiles_x = Some(rdr.read_i32()?);
+        tiles_y = Some(rdr.read_i32()?);
+        animation_type = Some(rdr.read_i32()?);
+        row_index = Some(rdr.read_i32()?);
+        cycles = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             uv_channel_mask = Some(rdr.read_i32()?);
             row_mode = Some(rdr.read_i32()?);
-            sprites = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SpriteData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            sprites = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| SpriteData::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             flip_u = Some(rdr.read_f32()?);
             flip_v = Some(rdr.read_f32()?);
@@ -83,7 +90,14 @@ impl crate::Parse for UvModule {
             uv_channel_mask = Some(rdr.read_i32()?);
             random_row = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            sprites = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SpriteData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            sprites = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| SpriteData::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             flip_u = Some(rdr.read_f32()?);
             flip_v = Some(rdr.read_f32()?);
@@ -93,7 +107,14 @@ impl crate::Parse for UvModule {
             flip_v = Some(rdr.read_f32()?);
             random_row = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            sprites = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SpriteData::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            sprites = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| SpriteData::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
             uv_channel_mask = Some(rdr.read_i32()?);

@@ -40,7 +40,12 @@ impl crate::Parse for AudioRandomContainer {
         let m_pitch_randomization_range = Vector2f::parse(rdr, ver)?;
         let m_automatic_trigger_time_randomization_range = Vector2f::parse(rdr, ver)?;
         let m_loop_count_randomization_range = Vector2f::parse(rdr, ver)?;
-        let m_elements = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_elements = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| crate::PPtr::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
         let m_avoid_repeating_last = rdr.read_i32()?;
         let m_playback_mode = rdr.read_i32()?;

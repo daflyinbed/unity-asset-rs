@@ -26,7 +26,7 @@ impl crate::Parse for HeightmapData {
         } else {
             position = Some(Vector3f::parse(rdr, ver)?);
         }
-            terrain_data = Some(crate::PPtr::parse(rdr, ver)?);
+        terrain_data = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             is_rotated = Some(rdr.read_bool()?);
         } else {

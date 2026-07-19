@@ -19,14 +19,21 @@ impl crate::Parse for RayTracingShaderConstantBuffer {
         let mut byte_size = None;
         let mut params = None;
         let mut hash = None;
-            name = Some(rdr.read_aligned_string()?);
-            byte_size = Some(rdr.read_i32()?);
+        name = Some(rdr.read_aligned_string()?);
+        byte_size = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2020, 1, 0) {
             hash = Some(rdr.read_u32()?);
         } else {
         }
-            params = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { RayTracingShaderParam::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+        params = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| RayTracingShaderParam::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
 
         Ok(RayTracingShaderConstantBuffer {
             name: name.unwrap(),

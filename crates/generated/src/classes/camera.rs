@@ -6,7 +6,6 @@ use crate::subclasses::color_rgb_af::ColorRgbAf;
 use crate::subclasses::rectf::Rectf;
 use crate::subclasses::vector2f::Vector2f;
 
-
 /// 版本枚举：CameraMProjectionMatrixModeVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum CameraMProjectionMatrixModeVariant {
@@ -180,11 +179,11 @@ impl crate::Parse for Camera {
         let mut m_force_into_rt = None;
         let mut m_allow_dynamic_resolution = None;
         let mut m_stereo_mirror_mode = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_enabled = Some(rdr.read_u8()?);
-            rdr.align(4)?;
-            m_clear_flags = Some(rdr.read_u32()?);
-            m_back_ground_color = Some(ColorRgbAf::parse(rdr, ver)?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_enabled = Some(rdr.read_u8()?);
+        rdr.align(4)?;
+        m_clear_flags = Some(rdr.read_u32()?);
+        m_back_ground_color = Some(ColorRgbAf::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             m_projection_matrix_mode = Some(CameraMProjectionMatrixModeVariant::parse(rdr, ver)?);
             m_gate_fit_mode = Some(CameraMGateFitModeVariant::parse(rdr, ver)?);
@@ -218,17 +217,17 @@ impl crate::Parse for Camera {
             m_focal_length = Some(rdr.read_f32()?);
         } else {
         }
-            m_normalized_view_port_rect = Some(Rectf::parse(rdr, ver)?);
-            near_clip_plane = Some(rdr.read_f32()?);
-            far_clip_plane = Some(rdr.read_f32()?);
-            field_of_view = Some(rdr.read_f32()?);
-            orthographic = Some(rdr.read_bool()?);
-            rdr.align(4)?;
-            orthographic_size = Some(rdr.read_f32()?);
-            m_depth = Some(rdr.read_f32()?);
-            m_culling_mask = Some(BitField::parse(rdr, ver)?);
-            m_rendering_path = Some(rdr.read_i32()?);
-            m_target_texture = Some(crate::PPtr::parse(rdr, ver)?);
+        m_normalized_view_port_rect = Some(Rectf::parse(rdr, ver)?);
+        near_clip_plane = Some(rdr.read_f32()?);
+        far_clip_plane = Some(rdr.read_f32()?);
+        field_of_view = Some(rdr.read_f32()?);
+        orthographic = Some(rdr.read_bool()?);
+        rdr.align(4)?;
+        orthographic_size = Some(rdr.read_f32()?);
+        m_depth = Some(rdr.read_f32()?);
+        m_culling_mask = Some(BitField::parse(rdr, ver)?);
+        m_rendering_path = Some(rdr.read_i32()?);
+        m_target_texture = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2017, 3, 0) {
             m_target_display = Some(CameraMTargetDisplayVariant::parse(rdr, ver)?);
             m_target_eye = Some(rdr.read_i32()?);

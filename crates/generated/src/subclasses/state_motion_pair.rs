@@ -16,9 +16,6 @@ impl crate::Parse for StateMotionPair {
         let m_state = crate::PPtr::parse(rdr, ver)?;
         let m_motion = crate::PPtr::parse(rdr, ver)?;
 
-        Ok(StateMotionPair {
-            m_state,
-            m_motion,
-        })
+        Ok(StateMotionPair { m_state, m_motion })
     }
 }

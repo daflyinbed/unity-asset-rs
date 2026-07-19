@@ -11,8 +11,10 @@
 
 use generated::UnityObject;
 use serde::Serialize;
-use serde_json::{json, Map, Value as JsonValue};
-use unity_asset::{ContainerEntry, ContainerKind, EnvironmentObject, MonoBehaviour, ParsedObject, Value};
+use serde_json::{Map, Value as JsonValue, json};
+use unity_asset::{
+    ContainerEntry, ContainerKind, EnvironmentObject, MonoBehaviour, ParsedObject, Value,
+};
 use utoipa::ToSchema;
 
 /// bytes/string 在 JSON 里截断到此长度(与 CLI `dump_value` 思路一致,防超大字段刷屏)。
@@ -21,7 +23,8 @@ const TRUNCATE_LEN: usize = 256;
 /// 对象元数据。列表项和详情头部共用。
 #[derive(Serialize, ToSchema)]
 pub struct ObjectMeta {
-    pub path_id: i64,
+    /// 十进制字符串，避免 JavaScript JSON number 丢失 i64 精度。
+    pub path_id: String,
     pub class_id: i32,
     pub class_name: String,
     /// "typed" / "mono" / "dynamic"。
@@ -34,7 +37,7 @@ impl ObjectMeta {
     pub fn from_obj(path_id: i64, obj: &EnvironmentObject) -> Self {
         let (_, label) = crate::parse_status(&obj.object);
         Self {
-            path_id,
+            path_id: path_id.to_string(),
             class_id: obj.class_id.get(),
             class_name: crate::class_name(obj.class_id),
             parse_status: label,
@@ -85,14 +88,15 @@ pub struct MonoShell {
 #[derive(Serialize, ToSchema)]
 pub struct PPtrJson {
     pub file_id: i32,
-    pub path_id: i64,
+    /// 十进制字符串，避免 JavaScript JSON number 丢失 i64 精度。
+    pub path_id: String,
 }
 
 impl From<&unity_asset::PPtrValue> for PPtrJson {
     fn from(p: &unity_asset::PPtrValue) -> Self {
         Self {
             file_id: p.file_id,
-            path_id: p.path_id,
+            path_id: p.path_id.to_string(),
         }
     }
 }
@@ -154,9 +158,7 @@ pub fn value_to_json(v: &Value) -> JsonValue {
         Value::String(s) => JsonValue::String(truncate_string(s)),
         Value::Bytes(b) => truncate_bytes(b),
         Value::Pair(a, bb) => json!([value_to_json(a), value_to_json(bb)]),
-        Value::Array(items) => {
-            JsonValue::Array(items.iter().map(value_to_json).collect())
-        }
+        Value::Array(items) => JsonValue::Array(items.iter().map(value_to_json).collect()),
         Value::Struct(fields) => {
             let mut m = Map::with_capacity(fields.len());
             for (k, val) in fields {
@@ -164,7 +166,7 @@ pub fn value_to_json(v: &Value) -> JsonValue {
             }
             JsonValue::Object(m)
         }
-        Value::PPtr(p) => json!({ "file_id": p.file_id, "path_id": p.path_id }),
+        Value::PPtr(p) => json!({ "file_id": p.file_id, "path_id": p.path_id.to_string() }),
     }
 }
 
@@ -182,7 +184,10 @@ fn truncate_string(s: &str) -> String {
 fn truncate_bytes(b: &[u8]) -> JsonValue {
     let truncated = b.len() > TRUNCATE_LEN;
     let head: String = if truncated {
-        b.iter().take(TRUNCATE_LEN).map(|x| format!("{x:02x}")).collect()
+        b.iter()
+            .take(TRUNCATE_LEN)
+            .map(|x| format!("{x:02x}"))
+            .collect()
     } else {
         b.iter().map(|x| format!("{x:02x}")).collect()
     };
@@ -227,7 +232,8 @@ pub struct ContainerEntryDto {
 pub struct ObjectRefDto {
     /// collection 下标(见 `list_collections` 的 index)。
     pub collection: usize,
-    pub path_id: i64,
+    /// 十进制字符串，避免 JavaScript JSON number 丢失 i64 精度。
+    pub path_id: String,
 }
 
 impl ContainerEntryDto {
@@ -237,7 +243,7 @@ impl ContainerEntryDto {
         let ref_dto = |id: unity_asset::ObjectId| {
             (id.collection.to_index() < env_collections_len).then_some(ObjectRefDto {
                 collection: id.collection.to_index(),
-                path_id: id.path_id,
+                path_id: id.path_id.to_string(),
             })
         };
         Self {
@@ -249,11 +255,12 @@ impl ContainerEntryDto {
             asset: e.asset.and_then(ref_dto),
             host: ref_dto(e.host).unwrap_or(ObjectRefDto {
                 collection: e.host.collection.to_index(),
-                path_id: e.host.path_id,
+                path_id: e.host.path_id.to_string(),
             }),
-            preload: e.preload.as_ref().map(|slice| {
-                slice.iter().map(|p| p.and_then(ref_dto)).collect()
-            }),
+            preload: e
+                .preload
+                .as_ref()
+                .map(|slice| slice.iter().map(|p| p.and_then(ref_dto)).collect()),
         }
     }
 }

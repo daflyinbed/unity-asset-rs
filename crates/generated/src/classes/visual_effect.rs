@@ -3,7 +3,6 @@
 use crate::PPtr;
 use crate::subclasses::vfx_property_sheet_serialized_base::VfxPropertySheetSerializedBase;
 
-
 /// 版本枚举：VisualEffectMResetSeedOnPlayVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum VisualEffectMResetSeedOnPlayVariant {
@@ -83,18 +82,18 @@ impl crate::Parse for VisualEffect {
         let mut m_property_sheet = None;
         let mut m_allow_instancing = None;
         let mut m_release_instance_on_disable = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_enabled = Some(rdr.read_u8()?);
-            rdr.align(4)?;
-            m_asset = Some(crate::PPtr::parse(rdr, ver)?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_enabled = Some(rdr.read_u8()?);
+        rdr.align(4)?;
+        m_asset = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2019, 3, 0) {
             m_initial_event_name = Some(rdr.read_aligned_string()?);
             m_initial_event_name_overriden = Some(rdr.read_u8()?);
             rdr.align(4)?;
         } else {
         }
-            m_start_seed = Some(rdr.read_u32()?);
-            m_reset_seed_on_play = Some(VisualEffectMResetSeedOnPlayVariant::parse(rdr, ver)?);
+        m_start_seed = Some(rdr.read_u32()?);
+        m_reset_seed_on_play = Some(VisualEffectMResetSeedOnPlayVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 5, 0) {
             m_allow_instancing = Some(VisualEffectMAllowInstancingVariant::parse(rdr, ver)?);
             m_release_instance_on_disable = Some(rdr.read_u8()?);
@@ -103,7 +102,7 @@ impl crate::Parse for VisualEffect {
             m_allow_instancing = Some(VisualEffectMAllowInstancingVariant::parse(rdr, ver)?);
         } else {
         }
-            m_property_sheet = Some(VfxPropertySheetSerializedBase::parse(rdr, ver)?);
+        m_property_sheet = Some(VfxPropertySheetSerializedBase::parse(rdr, ver)?);
 
         Ok(VisualEffect {
             m_game_object: m_game_object.unwrap(),

@@ -29,9 +29,32 @@ impl crate::Parse for ComputeShaderCompilationContext {
         let source_file_name = rdr.read_aligned_string()?;
         let source = rdr.read_aligned_string()?;
         let source_file = rdr.read_aligned_string()?;
-        let kernels = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+        let kernels = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| rdr.read_aligned_string())
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
-        let kernel_macros = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        let kernel_macros = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| {
+                    ({
+                        let n = rdr.read_i32()? as usize;
+                        (0..n)
+                            .map(|_| {
+                                ({
+                                    let a = rdr.read_aligned_string()?;
+                                    let b = rdr.read_aligned_string()?;
+                                    Ok((a, b))
+                                })
+                            })
+                            .collect::<Result<Vec<_>, _>>()
+                    })
+                })
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
         let compilation_flags = rdr.read_i32()?;
         let api_mask = rdr.read_u32()?;
@@ -40,7 +63,12 @@ impl crate::Parse for ComputeShaderCompilationContext {
         let include_hash1 = rdr.read_u32()?;
         let include_hash2 = rdr.read_u32()?;
         let include_hash3 = rdr.read_u32()?;
-        let include_files = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+        let include_files = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| rdr.read_aligned_string())
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
 
         Ok(ComputeShaderCompilationContext {

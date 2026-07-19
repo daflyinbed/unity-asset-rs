@@ -5,7 +5,6 @@ use crate::subclasses::build_report_file::BuildReportFile;
 use crate::subclasses::build_step_info::BuildStepInfo;
 use crate::subclasses::build_summary::BuildSummary;
 
-
 /// 版本枚举：BuildReportMFilesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum BuildReportMFilesVariant {
@@ -19,11 +18,21 @@ impl crate::Parse for BuildReportMFilesVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { BuildReportFile::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| BuildReportFile::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { BuildReportFile::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| BuildReportFile::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -42,11 +51,21 @@ impl crate::Parse for BuildReportMBuildStepsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { BuildStepInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| BuildStepInfo::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { BuildStepInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| BuildStepInfo::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -65,11 +84,21 @@ impl crate::Parse for BuildReportMAppendicesVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -95,16 +124,23 @@ impl crate::Parse for BuildReport {
         let mut m_build_steps = None;
         let mut m_appendices = None;
         let mut m_root_asset_paths = None;
-            m_name = Some(rdr.read_aligned_string()?);
-            m_summary = Some(BuildSummary::parse(rdr, ver)?);
-            m_files = Some(BuildReportMFilesVariant::parse(rdr, ver)?);
-            m_build_steps = Some(BuildReportMBuildStepsVariant::parse(rdr, ver)?);
+        m_name = Some(rdr.read_aligned_string()?);
+        m_summary = Some(BuildSummary::parse(rdr, ver)?);
+        m_files = Some(BuildReportMFilesVariant::parse(rdr, ver)?);
+        m_build_steps = Some(BuildReportMBuildStepsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            m_root_asset_paths = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_root_asset_paths = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else {
         }
-            m_appendices = Some(BuildReportMAppendicesVariant::parse(rdr, ver)?);
+        m_appendices = Some(BuildReportMAppendicesVariant::parse(rdr, ver)?);
 
         Ok(BuildReport {
             m_name: m_name.unwrap(),

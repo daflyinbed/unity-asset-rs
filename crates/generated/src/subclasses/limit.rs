@@ -3,7 +3,6 @@
 use crate::subclasses::float3::float3;
 use crate::subclasses::float4::float4;
 
-
 /// 版本枚举：LimitMMinVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum LimitMMinVariant {
@@ -17,10 +16,10 @@ impl crate::Parse for LimitMMinVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            let v = ( { Ok(Box::new(float3::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(float3::parse(rdr, ver)?)) })?;
             Ok(Self::V5_4(v))
         } else {
-            let v = ( { Ok(Box::new(float4::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(float4::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
         }
     }
@@ -39,10 +38,10 @@ impl crate::Parse for LimitMMaxVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            let v = ( { Ok(Box::new(float3::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(float3::parse(rdr, ver)?)) })?;
             Ok(Self::V5_4(v))
         } else {
-            let v = ( { Ok(Box::new(float4::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(float4::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
         }
     }
@@ -61,9 +60,6 @@ impl crate::Parse for Limit {
         let m_min = LimitMMinVariant::parse(rdr, ver)?;
         let m_max = LimitMMaxVariant::parse(rdr, ver)?;
 
-        Ok(Limit {
-            m_min,
-            m_max,
-        })
+        Ok(Limit { m_min, m_max })
     }
 }

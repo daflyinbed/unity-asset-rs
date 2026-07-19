@@ -15,12 +15,11 @@ import IconMusic from "~icons/lucide/music";
 import IconPaintbrush from "~icons/lucide/paintbrush";
 import IconPalette from "~icons/lucide/palette";
 import IconPlay from "~icons/lucide/play";
-import type { AssetType } from "../../mock/assets";
 import type { Component } from "vue";
 
-const props = defineProps<{ type: AssetType }>();
+const props = defineProps<{ type: string }>();
 
-const MAP: Record<AssetType, Component> = {
+const MAP: Record<string, Component> = {
   Texture2D: IconImage,
   Sprite: IconLayers,
   Material: IconPalette,

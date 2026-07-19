@@ -47,19 +47,19 @@ impl crate::Parse for LightmapParameters {
         let mut ao_anti_aliasing_samples = None;
         let mut limit_lightmap_count = None;
         let mut max_lightmap_count = None;
-            m_name = Some(rdr.read_aligned_string()?);
-            resolution = Some(rdr.read_f32()?);
-            cluster_resolution = Some(rdr.read_f32()?);
-            irradiance_budget = Some(rdr.read_i32()?);
-            irradiance_quality = Some(rdr.read_i32()?);
-            back_face_tolerance = Some(rdr.read_f32()?);
-            is_transparent = Some(rdr.read_i32()?);
-            modelling_tolerance = Some(rdr.read_f32()?);
-            system_tag = Some(rdr.read_i32()?);
-            edge_stitching = Some(rdr.read_i32()?);
-            blur_radius = Some(rdr.read_i32()?);
-            direct_light_quality = Some(rdr.read_i32()?);
-            anti_aliasing_samples = Some(rdr.read_i32()?);
+        m_name = Some(rdr.read_aligned_string()?);
+        resolution = Some(rdr.read_f32()?);
+        cluster_resolution = Some(rdr.read_f32()?);
+        irradiance_budget = Some(rdr.read_i32()?);
+        irradiance_quality = Some(rdr.read_i32()?);
+        back_face_tolerance = Some(rdr.read_f32()?);
+        is_transparent = Some(rdr.read_i32()?);
+        modelling_tolerance = Some(rdr.read_f32()?);
+        system_tag = Some(rdr.read_i32()?);
+        edge_stitching = Some(rdr.read_i32()?);
+        blur_radius = Some(rdr.read_i32()?);
+        direct_light_quality = Some(rdr.read_i32()?);
+        anti_aliasing_samples = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             pushoff = Some(rdr.read_f32()?);
             baked_lightmap_tag = Some(rdr.read_i32()?);
@@ -71,8 +71,8 @@ impl crate::Parse for LightmapParameters {
             pushoff = Some(rdr.read_f32()?);
         } else {
         }
-            ao_quality = Some(rdr.read_i32()?);
-            ao_anti_aliasing_samples = Some(rdr.read_i32()?);
+        ao_quality = Some(rdr.read_i32()?);
+        ao_anti_aliasing_samples = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(5, 0, 1) {
         } else {
             baked_lightmap_tag = Some(rdr.read_i32()?);

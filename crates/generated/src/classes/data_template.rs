@@ -5,7 +5,6 @@ use crate::subclasses::guid::Guid;
 use crate::subclasses::p_ptr_prefab_instance::PPtr_PrefabInstance;
 use crate::subclasses::prefab_modification::PrefabModification;
 
-
 /// 版本枚举：DataTemplateMSourcePrefabVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum DataTemplateMSourcePrefabVariant {
@@ -19,7 +18,7 @@ impl crate::Parse for DataTemplateMSourcePrefabVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2018, 2, 0) {
-            let v = ( { Ok(Box::new(PPtr_PrefabInstance::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(PPtr_PrefabInstance::parse(rdr, ver)?)) })?;
             Ok(Self::V2018_2(v))
         } else {
             let v = crate::PPtr::parse(rdr, ver)?;
@@ -97,7 +96,14 @@ impl crate::Parse for DataTemplate {
             rdr.align(4)?;
         } else {
             m_last_merge_identifier = Some(Guid::parse(rdr, ver)?);
-            m_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_objects = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| crate::PPtr::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_father = Some(crate::PPtr::parse(rdr, ver)?);
             m_is_data_template = Some(rdr.read_bool()?);
             rdr.align(4)?;

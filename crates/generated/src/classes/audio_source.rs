@@ -3,7 +3,6 @@
 use crate::PPtr;
 use crate::subclasses::animation_curve::AnimationCurve;
 
-
 /// 版本枚举：AudioSourceMResourceVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AudioSourceMResourceVariant {
@@ -153,24 +152,24 @@ impl crate::Parse for AudioSource {
         let mut bypass_reverb_zones = None;
         let mut spread_custom_curve = None;
         let mut reverb_zone_mix_custom_curve = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_enabled = Some(rdr.read_u8()?);
-            rdr.align(4)?;
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_enabled = Some(rdr.read_u8()?);
+        rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             output_audio_mixer_group = Some(crate::PPtr::parse(rdr, ver)?);
         } else {
         }
-            m_audio_clip = Some(crate::PPtr::parse(rdr, ver)?);
+        m_audio_clip = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
             m_resource = Some(AudioSourceMResourceVariant::parse(rdr, ver)?);
         } else {
         }
-            m_play_on_awake = Some(rdr.read_bool()?);
-            rdr.align(4)?;
-            m_volume = Some(rdr.read_f32()?);
-            m_pitch = Some(rdr.read_f32()?);
-            r#loop = Some(rdr.read_bool()?);
-            mute = Some(AudioSourceMuteVariant::parse(rdr, ver)?);
+        m_play_on_awake = Some(rdr.read_bool()?);
+        rdr.align(4)?;
+        m_volume = Some(rdr.read_f32()?);
+        m_pitch = Some(rdr.read_f32()?);
+        r#loop = Some(rdr.read_bool()?);
+        mute = Some(AudioSourceMuteVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
             spatialize = Some(AudioSourceSpatializeVariant::parse(rdr, ver)?);
             spatialize_post_effects = Some(rdr.read_bool()?);
@@ -179,22 +178,22 @@ impl crate::Parse for AudioSource {
             spatialize = Some(AudioSourceSpatializeVariant::parse(rdr, ver)?);
         } else {
         }
-            priority = Some(rdr.read_i32()?);
-            doppler_level = Some(rdr.read_f32()?);
-            min_distance = Some(rdr.read_f32()?);
-            max_distance = Some(rdr.read_f32()?);
-            pan2_d = Some(rdr.read_f32()?);
-            rolloff_mode = Some(rdr.read_i32()?);
-            bypass_effects = Some(AudioSourceBypassEffectsVariant::parse(rdr, ver)?);
+        priority = Some(rdr.read_i32()?);
+        doppler_level = Some(rdr.read_f32()?);
+        min_distance = Some(rdr.read_f32()?);
+        max_distance = Some(rdr.read_f32()?);
+        pan2_d = Some(rdr.read_f32()?);
+        rolloff_mode = Some(rdr.read_i32()?);
+        bypass_effects = Some(AudioSourceBypassEffectsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(4, 2, 0) {
             bypass_listener_effects = Some(rdr.read_bool()?);
             bypass_reverb_zones = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else {
         }
-            rolloff_custom_curve = Some(AnimationCurve::parse(rdr, ver)?);
-            pan_level_custom_curve = Some(AnimationCurve::parse(rdr, ver)?);
-            spread_custom_curve = Some(AnimationCurve::parse(rdr, ver)?);
+        rolloff_custom_curve = Some(AnimationCurve::parse(rdr, ver)?);
+        pan_level_custom_curve = Some(AnimationCurve::parse(rdr, ver)?);
+        spread_custom_curve = Some(AnimationCurve::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             reverb_zone_mix_custom_curve = Some(AnimationCurve::parse(rdr, ver)?);
         } else {

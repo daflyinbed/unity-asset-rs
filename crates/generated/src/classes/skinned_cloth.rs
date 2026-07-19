@@ -40,7 +40,12 @@ impl crate::Parse for SkinnedCloth {
         let m_random_acceleration = Vector3f::parse(rdr, ver)?;
         let m_world_velocity_scale = rdr.read_f32()?;
         let m_world_acceleration_scale = rdr.read_f32()?;
-        let m_coefficients = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ClothConstrainCoefficients::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_coefficients = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| ClothConstrainCoefficients::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
 
         Ok(SkinnedCloth {
             m_game_object,

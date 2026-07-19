@@ -4,7 +4,6 @@ use crate::PPtr;
 use crate::subclasses::bit_field::BitField;
 use crate::subclasses::vector3f::Vector3f;
 
-
 /// 版本枚举：CharacterControllerMGameObjectVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum CharacterControllerMGameObjectVariant {
@@ -88,7 +87,7 @@ impl crate::Parse for CharacterController {
         let mut m_provides_contacts = None;
         let mut m_min_move_distance = None;
         let mut m_center = None;
-            m_game_object = Some(CharacterControllerMGameObjectVariant::parse(rdr, ver)?);
+        m_game_object = Some(CharacterControllerMGameObjectVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2023, 3, 0) {
             m_material = Some(CharacterControllerMMaterialVariant::parse(rdr, ver)?);
             m_include_layers = Some(BitField::parse(rdr, ver)?);
@@ -115,13 +114,13 @@ impl crate::Parse for CharacterController {
             rdr.align(4)?;
         } else {
         }
-            m_height = Some(rdr.read_f32()?);
-            m_radius = Some(rdr.read_f32()?);
-            m_slope_limit = Some(rdr.read_f32()?);
-            m_step_offset = Some(rdr.read_f32()?);
-            m_skin_width = Some(rdr.read_f32()?);
-            m_min_move_distance = Some(rdr.read_f32()?);
-            m_center = Some(Vector3f::parse(rdr, ver)?);
+        m_height = Some(rdr.read_f32()?);
+        m_radius = Some(rdr.read_f32()?);
+        m_slope_limit = Some(rdr.read_f32()?);
+        m_step_offset = Some(rdr.read_f32()?);
+        m_skin_width = Some(rdr.read_f32()?);
+        m_min_move_distance = Some(rdr.read_f32()?);
+        m_center = Some(Vector3f::parse(rdr, ver)?);
 
         Ok(CharacterController {
             m_game_object: m_game_object.unwrap(),

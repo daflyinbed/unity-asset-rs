@@ -1,6 +1,5 @@
 //! 自动生成。请勿手动修改。
 
-
 /// 版本枚举：ExpressionOpVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ExpressionOpVariant {
@@ -73,7 +72,7 @@ impl crate::Parse for Expression {
         let mut data_2 = None;
         let mut jmp_code = None;
         let mut data_3 = None;
-            op = Some(ExpressionOpVariant::parse(rdr, ver)?);
+        op = Some(ExpressionOpVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 5, 0) {
             data_type = Some(rdr.read_u8()?);
             data_size = Some(rdr.read_u8()?);
@@ -81,11 +80,11 @@ impl crate::Parse for Expression {
             jmp_code = Some(rdr.read_u16()?);
         } else {
         }
-            value_index = Some(ExpressionValueIndexVariant::parse(rdr, ver)?);
-            data_0 = Some(rdr.read_i32()?);
-            data_1 = Some(rdr.read_i32()?);
-            data_2 = Some(rdr.read_i32()?);
-            data_3 = Some(rdr.read_i32()?);
+        value_index = Some(ExpressionValueIndexVariant::parse(rdr, ver)?);
+        data_0 = Some(rdr.read_i32()?);
+        data_1 = Some(rdr.read_i32()?);
+        data_2 = Some(rdr.read_i32()?);
+        data_3 = Some(rdr.read_i32()?);
 
         Ok(Expression {
             op: op.unwrap(),

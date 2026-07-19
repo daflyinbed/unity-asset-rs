@@ -12,7 +12,18 @@ impl crate::Parse for HumanTemplate {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
-        let m_bone_template = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_bone_template = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| {
+                    ({
+                        let a = rdr.read_aligned_string()?;
+                        let b = rdr.read_aligned_string()?;
+                        Ok((a, b))
+                    })
+                })
+                .collect::<Result<Vec<_>, _>>()
+        })?;
 
         Ok(HumanTemplate {
             m_name,

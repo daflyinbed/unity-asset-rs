@@ -5,7 +5,13 @@
   --my-color-surface: #ffffff;
   --my-color-overlay: rgba(0, 0, 0, 0.5);
 
-  /* ===== Accent 语义色组（紫色系）===== */
+  /* ===== 桌面工作区层级色 ===== */
+  --my-color-titlebar: #e4e4e7;
+  --my-color-statusbar: #ebebee;
+  --my-color-tabbar: #f1f1f3;
+  --my-color-drawer: #f7f7f9;
+
+  /* ===== Accent 语义色组（品牌紫色系）===== */
   --my-color-accent-1: #f6f0ff;
   --my-color-accent-2: #ece0ff;
   --my-color-accent-3: #ddc9ff;
@@ -15,23 +21,36 @@
   --my-color-accent-7: #7c3aed;
   --my-color-accent-8: #6d28d9;
   --my-color-accent-9: #5b21b6;
-  --my-color-accent-10: #3b0f7a;
+  --my-color-accent-10: #6d28d9;
   --my-color-accent-contrast: #ffffff;
 
   /* ===== Neutral 语义色组（灰系）===== */
   --my-color-neutral-1: #f8f8f9;
-  --my-color-neutral-2: #eeeff1;
-  --my-color-neutral-3: #e2e3e7;
-  --my-color-neutral-4: #d1d3d9;
-  --my-color-neutral-5: #b0b3bd;
-  --my-color-neutral-6: #8a8e99;
-  --my-color-neutral-7: #6b6f7a;
-  --my-color-neutral-8: #4a4d56;
-  --my-color-neutral-9: #313336;
-  --my-color-neutral-10: #1c1d20;
+  --my-color-neutral-2: #eff0f2;
+  --my-color-neutral-3: #e4e5e8;
+  --my-color-neutral-4: #d7d9de;
+  --my-color-neutral-5: #c2c5cc;
+  --my-color-neutral-6: #a7abb5;
+  --my-color-neutral-7: #858a95;
+  --my-color-neutral-8: #555962;
+  --my-color-neutral-9: #303238;
+  --my-color-neutral-10: #151619;
   --my-color-neutral-contrast: #ffffff;
 
-  color: var(--my-color-neutral-8);
+  /* ===== Danger 语义色组（错误和危险操作）===== */
+  --my-color-danger-1: #fff1f2;
+  --my-color-danger-2: #ffe4e6;
+  --my-color-danger-3: #fecdd3;
+  --my-color-danger-4: #fda4af;
+  --my-color-danger-5: #fb7185;
+  --my-color-danger-6: #f43f5e;
+  --my-color-danger-7: #e11d48;
+  --my-color-danger-8: #be123c;
+  --my-color-danger-9: #9f1239;
+  --my-color-danger-10: #881337;
+  --my-color-danger-contrast: #ffffff;
+
+  color: var(--my-color-neutral-10);
   background: var(--my-color-background);
   font-family: system-ui, "Segoe UI", Roboto, sans-serif;
   font-synthesis: none;
@@ -40,8 +59,12 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-* {
+*,
+::before,
+::after {
   box-sizing: border-box;
+  border-style: solid;
+  border-width: 0;
 }
 
 html,
@@ -53,4 +76,21 @@ body,
 
 p {
   margin: 0;
+}
+
+button {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  background: transparent;
+}
+
+.app-drag-region {
+  app-region: drag;
+}
+
+.app-no-drag {
+  app-region: no-drag;
 }

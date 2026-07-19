@@ -1,9 +1,8 @@
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
-use crate::subclasses::property_name32::PropertyName32;
 use crate::subclasses::property_name_nested::PropertyNameNested;
-
+use crate::subclasses::property_name32::PropertyName32;
 
 /// 版本枚举：ExposedReferenceTableMReferencesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
@@ -20,19 +19,63 @@ impl crate::Parse for ExposedReferenceTableMReferencesVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2019, 4, 3) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = PropertyNameNested::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| {
+                        ({
+                            let a = PropertyNameNested::parse(rdr, ver)?;
+                            let b = crate::PPtr::parse(rdr, ver)?;
+                            Ok((a, b))
+                        })
+                    })
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2019_4_3(v))
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = PropertyName32::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| {
+                        ({
+                            let a = PropertyName32::parse(rdr, ver)?;
+                            let b = crate::PPtr::parse(rdr, ver)?;
+                            Ok((a, b))
+                        })
+                    })
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2019_1(v))
         } else if *ver >= crate::UnityVersion::new(2018, 4, 25) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = PropertyNameNested::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| {
+                        ({
+                            let a = PropertyNameNested::parse(rdr, ver)?;
+                            let b = crate::PPtr::parse(rdr, ver)?;
+                            Ok((a, b))
+                        })
+                    })
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2018_4_25(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = PropertyName32::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| {
+                        ({
+                            let a = PropertyName32::parse(rdr, ver)?;
+                            let b = crate::PPtr::parse(rdr, ver)?;
+                            Ok((a, b))
+                        })
+                    })
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::Default(v))
         }
@@ -50,8 +93,6 @@ impl crate::Parse for ExposedReferenceTable {
     ) -> Result<Self, R::Error> {
         let m_references = ExposedReferenceTableMReferencesVariant::parse(rdr, ver)?;
 
-        Ok(ExposedReferenceTable {
-            m_references,
-        })
+        Ok(ExposedReferenceTable { m_references })
     }
 }

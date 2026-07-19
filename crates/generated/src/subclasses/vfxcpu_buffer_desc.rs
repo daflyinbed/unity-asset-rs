@@ -22,11 +22,18 @@ impl crate::Parse for VfxcpuBufferDesc {
         let mut layout = None;
         let mut initial_data = None;
         let mut debug_name = None;
-            capacity = Some(rdr.read_u32()?);
-            stride = Some(rdr.read_u32()?);
-            layout = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VfxLayoutElementDesc::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            initial_data = Some(VfxcpuBufferData::parse(rdr, ver)?);
+        capacity = Some(rdr.read_u32()?);
+        stride = Some(rdr.read_u32()?);
+        layout = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| VfxLayoutElementDesc::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
+        initial_data = Some(VfxcpuBufferData::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 6, 0) {
         } else if *ver >= crate::UnityVersion::new(6000, 4, 4) {
             debug_name = Some(rdr.read_aligned_string()?);

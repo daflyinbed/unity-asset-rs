@@ -14,9 +14,6 @@ impl crate::Parse for SubstanceEnumItem {
         let value = rdr.read_i32()?;
         let text = rdr.read_aligned_string()?;
 
-        Ok(SubstanceEnumItem {
-            value,
-            text,
-        })
+        Ok(SubstanceEnumItem { value, text })
     }
 }

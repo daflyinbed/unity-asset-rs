@@ -3,7 +3,6 @@
 use crate::subclasses::class_info::ClassInfo;
 use crate::subclasses::class_method_info::ClassMethodInfo;
 
-
 /// 版本枚举：RuntimeInitializeOnLoadManagerMAssemblyNamesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum RuntimeInitializeOnLoadManagerMAssemblyNamesVariant {
@@ -17,11 +16,21 @@ impl crate::Parse for RuntimeInitializeOnLoadManagerMAssemblyNamesVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_aligned_string())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_aligned_string())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -40,11 +49,21 @@ impl crate::Parse for RuntimeInitializeOnLoadManagerMBeforeUnityMethodExecutionO
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_i32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_i32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -63,11 +82,21 @@ impl crate::Parse for RuntimeInitializeOnLoadManagerMAfterUnityMethodExecutionOr
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_i32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_i32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -86,11 +115,21 @@ impl crate::Parse for RuntimeInitializeOnLoadManagerMBeforeMethodExecutionOrders
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_i32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_i32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -102,10 +141,13 @@ pub struct RuntimeInitializeOnLoadManager {
     pub m_class_infos: Option<Vec<ClassInfo>>,
     pub m_class_method_infos: Option<Vec<ClassMethodInfo>>,
     pub m_unity_method_execution_orders: Option<Vec<i32>>,
-    pub m_before_unity_method_execution_orders: Option<RuntimeInitializeOnLoadManagerMBeforeUnityMethodExecutionOrdersVariant>,
+    pub m_before_unity_method_execution_orders:
+        Option<RuntimeInitializeOnLoadManagerMBeforeUnityMethodExecutionOrdersVariant>,
     pub m_method_execution_orders: Option<Vec<i32>>,
-    pub m_after_unity_method_execution_orders: Option<RuntimeInitializeOnLoadManagerMAfterUnityMethodExecutionOrdersVariant>,
-    pub m_before_method_execution_orders: Option<RuntimeInitializeOnLoadManagerMBeforeMethodExecutionOrdersVariant>,
+    pub m_after_unity_method_execution_orders:
+        Option<RuntimeInitializeOnLoadManagerMAfterUnityMethodExecutionOrdersVariant>,
+    pub m_before_method_execution_orders:
+        Option<RuntimeInitializeOnLoadManagerMBeforeMethodExecutionOrdersVariant>,
     pub m_after_method_execution_orders: Option<Vec<i32>>,
     pub m_after_assemblies_loaded_unity_method_execution_orders: Option<Vec<i32>>,
     pub m_after_assemblies_loaded_method_execution_orders: Option<Vec<i32>>,
@@ -138,74 +180,301 @@ impl crate::Parse for RuntimeInitializeOnLoadManager {
         let mut m_subsystem_registration_method_execution_orders = None;
         if *ver >= crate::UnityVersion::new(2020, 2, 0) {
         } else if *ver >= crate::UnityVersion::new(2019, 2, 0) {
-            m_assembly_names = Some(RuntimeInitializeOnLoadManagerMAssemblyNamesVariant::parse(rdr, ver)?);
-            m_namespace_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_assembly_names = Some(RuntimeInitializeOnLoadManagerMAssemblyNamesVariant::parse(
+                rdr, ver,
+            )?);
+            m_namespace_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_class_infos = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ClassInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_class_infos = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| ClassInfo::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_class_method_infos = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ClassMethodInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_class_method_infos = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| ClassMethodInfo::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_before_unity_method_execution_orders = Some(RuntimeInitializeOnLoadManagerMBeforeUnityMethodExecutionOrdersVariant::parse(rdr, ver)?);
-            m_after_unity_method_execution_orders = Some(RuntimeInitializeOnLoadManagerMAfterUnityMethodExecutionOrdersVariant::parse(rdr, ver)?);
-            m_before_method_execution_orders = Some(RuntimeInitializeOnLoadManagerMBeforeMethodExecutionOrdersVariant::parse(rdr, ver)?);
-            m_after_method_execution_orders = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_before_unity_method_execution_orders = Some(
+                RuntimeInitializeOnLoadManagerMBeforeUnityMethodExecutionOrdersVariant::parse(
+                    rdr, ver,
+                )?,
+            );
+            m_after_unity_method_execution_orders = Some(
+                RuntimeInitializeOnLoadManagerMAfterUnityMethodExecutionOrdersVariant::parse(
+                    rdr, ver,
+                )?,
+            );
+            m_before_method_execution_orders = Some(
+                RuntimeInitializeOnLoadManagerMBeforeMethodExecutionOrdersVariant::parse(rdr, ver)?,
+            );
+            m_after_method_execution_orders = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_after_assemblies_loaded_unity_method_execution_orders = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_after_assemblies_loaded_unity_method_execution_orders = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_after_assemblies_loaded_method_execution_orders = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_after_assemblies_loaded_method_execution_orders = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_before_splash_screen_unity_method_execution_orders = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_before_splash_screen_unity_method_execution_orders = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_before_splash_screen_method_execution_orders = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_before_splash_screen_method_execution_orders = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_subsystem_registration_unity_method_execution_orders = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_subsystem_registration_unity_method_execution_orders = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_subsystem_registration_method_execution_orders = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_subsystem_registration_method_execution_orders = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_assembly_names = Some(RuntimeInitializeOnLoadManagerMAssemblyNamesVariant::parse(rdr, ver)?);
-            m_namespace_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_assembly_names = Some(RuntimeInitializeOnLoadManagerMAssemblyNamesVariant::parse(
+                rdr, ver,
+            )?);
+            m_namespace_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_class_infos = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ClassInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_class_infos = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| ClassInfo::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_class_method_infos = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ClassMethodInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_class_method_infos = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| ClassMethodInfo::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_before_unity_method_execution_orders = Some(RuntimeInitializeOnLoadManagerMBeforeUnityMethodExecutionOrdersVariant::parse(rdr, ver)?);
-            m_after_unity_method_execution_orders = Some(RuntimeInitializeOnLoadManagerMAfterUnityMethodExecutionOrdersVariant::parse(rdr, ver)?);
-            m_before_method_execution_orders = Some(RuntimeInitializeOnLoadManagerMBeforeMethodExecutionOrdersVariant::parse(rdr, ver)?);
-            m_after_method_execution_orders = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_before_unity_method_execution_orders = Some(
+                RuntimeInitializeOnLoadManagerMBeforeUnityMethodExecutionOrdersVariant::parse(
+                    rdr, ver,
+                )?,
+            );
+            m_after_unity_method_execution_orders = Some(
+                RuntimeInitializeOnLoadManagerMAfterUnityMethodExecutionOrdersVariant::parse(
+                    rdr, ver,
+                )?,
+            );
+            m_before_method_execution_orders = Some(
+                RuntimeInitializeOnLoadManagerMBeforeMethodExecutionOrdersVariant::parse(rdr, ver)?,
+            );
+            m_after_method_execution_orders = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_after_assemblies_loaded_unity_method_execution_orders = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_after_assemblies_loaded_unity_method_execution_orders = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_after_assemblies_loaded_method_execution_orders = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_after_assemblies_loaded_method_execution_orders = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_before_splash_screen_unity_method_execution_orders = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_before_splash_screen_unity_method_execution_orders = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_before_splash_screen_method_execution_orders = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_before_splash_screen_method_execution_orders = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            m_assembly_names = Some(RuntimeInitializeOnLoadManagerMAssemblyNamesVariant::parse(rdr, ver)?);
-            m_namespace_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_assembly_names = Some(RuntimeInitializeOnLoadManagerMAssemblyNamesVariant::parse(
+                rdr, ver,
+            )?);
+            m_namespace_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_class_infos = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ClassInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_class_infos = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| ClassInfo::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_class_method_infos = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ClassMethodInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_class_method_infos = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| ClassMethodInfo::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_before_unity_method_execution_orders = Some(RuntimeInitializeOnLoadManagerMBeforeUnityMethodExecutionOrdersVariant::parse(rdr, ver)?);
-            m_after_unity_method_execution_orders = Some(RuntimeInitializeOnLoadManagerMAfterUnityMethodExecutionOrdersVariant::parse(rdr, ver)?);
-            m_before_method_execution_orders = Some(RuntimeInitializeOnLoadManagerMBeforeMethodExecutionOrdersVariant::parse(rdr, ver)?);
-            m_after_method_execution_orders = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_before_unity_method_execution_orders = Some(
+                RuntimeInitializeOnLoadManagerMBeforeUnityMethodExecutionOrdersVariant::parse(
+                    rdr, ver,
+                )?,
+            );
+            m_after_unity_method_execution_orders = Some(
+                RuntimeInitializeOnLoadManagerMAfterUnityMethodExecutionOrdersVariant::parse(
+                    rdr, ver,
+                )?,
+            );
+            m_before_method_execution_orders = Some(
+                RuntimeInitializeOnLoadManagerMBeforeMethodExecutionOrdersVariant::parse(rdr, ver)?,
+            );
+            m_after_method_execution_orders = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else {
-            m_assembly_names = Some(RuntimeInitializeOnLoadManagerMAssemblyNamesVariant::parse(rdr, ver)?);
-            m_namespace_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_assembly_names = Some(RuntimeInitializeOnLoadManagerMAssemblyNamesVariant::parse(
+                rdr, ver,
+            )?);
+            m_namespace_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_class_infos = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ClassInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_class_infos = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| ClassInfo::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_class_method_infos = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ClassMethodInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_class_method_infos = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| ClassMethodInfo::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_unity_method_execution_orders = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
-            m_method_execution_orders = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_unity_method_execution_orders = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
+            m_method_execution_orders = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         }
 

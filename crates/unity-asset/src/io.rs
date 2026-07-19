@@ -9,5 +9,5 @@ pub use crate::decompress::{
     CompressionType, Decompressor, IdentityDecompressor, Lz4Decompressor, LzmaDecompressor,
     Registry,
 };
-pub use crate::format::{load_recursive, sniff, FileFormat, LoadedFile};
+pub use crate::format::{FileFormat, LoadedFile, load_recursive, sniff};
 pub use crate::serialized_file::{FileIdentifier, ObjectInfo, SerializedFile, SerializedType};

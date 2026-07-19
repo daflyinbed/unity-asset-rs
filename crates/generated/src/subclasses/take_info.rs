@@ -29,18 +29,18 @@ impl crate::Parse for TakeInfo {
         let mut bake_stop_time = None;
         let mut sample_rate = None;
         let mut clip = None;
-            name = Some(rdr.read_aligned_string()?);
-            default_clip_name = Some(rdr.read_aligned_string()?);
+        name = Some(rdr.read_aligned_string()?);
+        default_clip_name = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             internal_id = Some(rdr.read_i64()?);
         } else {
         }
-            start_time = Some(rdr.read_f32()?);
-            stop_time = Some(rdr.read_f32()?);
-            bake_start_time = Some(rdr.read_f32()?);
-            bake_stop_time = Some(rdr.read_f32()?);
-            sample_rate = Some(rdr.read_f32()?);
-            clip = Some(crate::PPtr::parse(rdr, ver)?);
+        start_time = Some(rdr.read_f32()?);
+        stop_time = Some(rdr.read_f32()?);
+        bake_start_time = Some(rdr.read_f32()?);
+        bake_stop_time = Some(rdr.read_f32()?);
+        sample_rate = Some(rdr.read_f32()?);
+        clip = Some(crate::PPtr::parse(rdr, ver)?);
 
         Ok(TakeInfo {
             name: name.unwrap(),

@@ -19,17 +19,15 @@
 //! (Rust 无运行时 `register_cab`,无需惰性)、ResourceManager 不做取最长路径特例
 //! (用户按需在遍历 `entries()` 时自行处理)。
 
-use generated::classes::asset_bundle::{
-    AssetBundle, AssetBundleMPreloadTableVariant,
-};
+use generated::UnityObject;
+use generated::classes::asset_bundle::{AssetBundle, AssetBundleMPreloadTableVariant};
 use generated::classes::resource_manager::ResourceManager;
 use generated::subclasses::asset_info::AssetInfo;
-use generated::UnityObject;
 use unity_core::PPtr;
 
-use crate::object_parser::ParsedObject;
-use crate::environment::{Environment, EnvironmentObject};
 use crate::ObjectId;
+use crate::environment::{Environment, EnvironmentObject};
+use crate::object_parser::ParsedObject;
 
 /// container 条目的宿主类型,区分两类 Unity 加载 API 的语义。
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -112,12 +110,7 @@ impl ContainerIndex {
     }
 
     /// 注册一个 AssetBundle 宿主的全部 container 条目。
-    fn add_asset_bundle(
-        &mut self,
-        env: &Environment,
-        host: &EnvironmentObject,
-        ab: &AssetBundle,
-    ) {
+    fn add_asset_bundle(&mut self, env: &Environment, host: &EnvironmentObject, ab: &AssetBundle) {
         let host_id = host.id();
         // m_PreloadTable 跨版本只是 Default / V2017_1 两个变体,内部都是 Vec<PPtr>。
         let preload_table: &[PPtr] = match &ab.m_preload_table {
@@ -127,7 +120,9 @@ impl ContainerIndex {
 
         for (path, info) in &ab.m_container {
             // 主 asset 解引用(FileID 可能 != 0,指向依赖 bundle)。
-            let asset = env.resolve_from(host, &info.asset).map(EnvironmentObject::id);
+            let asset = env
+                .resolve_from(host, &info.asset)
+                .map(EnvironmentObject::id);
             let preload = resolve_preload_slice(env, host, preload_table, info);
             self.entries.push(ContainerEntry {
                 path: path.clone(),

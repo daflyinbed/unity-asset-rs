@@ -4,7 +4,6 @@ use crate::subclasses::min_max_curve::MinMaxCurve;
 use crate::subclasses::min_max_gradient::MinMaxGradient;
 use crate::subclasses::vector3f::Vector3f;
 
-
 /// 版本枚举：InitialModuleGravityModifierVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum InitialModuleGravityModifierVariant {
@@ -18,7 +17,7 @@ impl crate::Parse for InitialModuleGravityModifierVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = ( { Ok(Box::new(MinMaxCurve::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(MinMaxCurve::parse(rdr, ver)?)) })?;
             Ok(Self::V5_5(v))
         } else {
             let v = rdr.read_f32()?;
@@ -71,12 +70,12 @@ impl crate::Parse for InitialModule {
         let mut gravity_source = None;
         let mut size3_d = None;
         let mut custom_emitter_velocity = None;
-            enabled = Some(rdr.read_bool()?);
-            rdr.align(4)?;
-            start_lifetime = Some(MinMaxCurve::parse(rdr, ver)?);
-            start_speed = Some(MinMaxCurve::parse(rdr, ver)?);
-            start_color = Some(MinMaxGradient::parse(rdr, ver)?);
-            start_size = Some(MinMaxCurve::parse(rdr, ver)?);
+        enabled = Some(rdr.read_bool()?);
+        rdr.align(4)?;
+        start_lifetime = Some(MinMaxCurve::parse(rdr, ver)?);
+        start_speed = Some(MinMaxCurve::parse(rdr, ver)?);
+        start_color = Some(MinMaxGradient::parse(rdr, ver)?);
+        start_size = Some(MinMaxCurve::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
             start_size_y = Some(MinMaxCurve::parse(rdr, ver)?);
             start_size_z = Some(MinMaxCurve::parse(rdr, ver)?);
@@ -87,7 +86,7 @@ impl crate::Parse for InitialModule {
             start_rotation_y = Some(MinMaxCurve::parse(rdr, ver)?);
         } else {
         }
-            start_rotation = Some(MinMaxCurve::parse(rdr, ver)?);
+        start_rotation = Some(MinMaxCurve::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2022, 1, 0) {
             randomize_rotation_direction = Some(rdr.read_f32()?);
             gravity_source = Some(rdr.read_i32()?);
@@ -100,7 +99,7 @@ impl crate::Parse for InitialModule {
             gravity_modifier = Some(InitialModuleGravityModifierVariant::parse(rdr, ver)?);
             inherit_velocity = Some(rdr.read_f32()?);
         }
-            max_num_particles = Some(rdr.read_i32()?);
+        max_num_particles = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2021, 1, 0) {
             custom_emitter_velocity = Some(Vector3f::parse(rdr, ver)?);
             size3_d = Some(rdr.read_bool()?);

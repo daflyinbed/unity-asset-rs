@@ -10,7 +10,6 @@ use crate::subclasses::vfx_temporary_gpu_buffer_desc::VfxTemporaryGpuBufferDesc;
 use crate::subclasses::vfxcpu_buffer_desc::VfxcpuBufferDesc;
 use crate::subclasses::vfxgpu_buffer_desc::VfxgpuBufferDesc;
 
-
 /// 版本枚举：VisualEffectInfoMExposedExpressionsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum VisualEffectInfoMExposedExpressionsVariant {
@@ -24,11 +23,21 @@ impl crate::Parse for VisualEffectInfoMExposedExpressionsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VfxExposedMapping::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| VfxExposedMapping::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2023_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VfxMapping::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| VfxMapping::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::Default(v))
         }
@@ -97,20 +106,48 @@ impl crate::Parse for VisualEffectInfo {
             m_initial_event_name = Some(rdr.read_aligned_string()?);
         } else {
         }
-            m_expressions = Some(VfxExpressionContainer::parse(rdr, ver)?);
-            m_property_sheet = Some(VfxPropertySheetSerializedBase::parse(rdr, ver)?);
-            m_exposed_expressions = Some(VisualEffectInfoMExposedExpressionsVariant::parse(rdr, ver)?);
-            m_buffers = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VfxgpuBufferDesc::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+        m_expressions = Some(VfxExpressionContainer::parse(rdr, ver)?);
+        m_property_sheet = Some(VfxPropertySheetSerializedBase::parse(rdr, ver)?);
+        m_exposed_expressions = Some(VisualEffectInfoMExposedExpressionsVariant::parse(rdr, ver)?);
+        m_buffers = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| VfxgpuBufferDesc::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2019, 2, 0) {
-            m_temporary_buffers = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VfxTemporaryGpuBufferDesc::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_temporary_buffers = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| VfxTemporaryGpuBufferDesc::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else {
         }
-            m_cpu_buffers = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VfxcpuBufferDesc::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            m_events = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VfxEventDesc::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+        m_cpu_buffers = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| VfxcpuBufferDesc::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
+        m_events = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| VfxEventDesc::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             m_instancing_disabled_reason = Some(rdr.read_i32()?);
             m_runtime_version = Some(rdr.read_u32()?);

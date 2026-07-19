@@ -13,8 +13,6 @@ impl crate::Parse for PerformanceReportingSettings {
         let m_enabled = rdr.read_bool()?;
         rdr.align(4)?;
 
-        Ok(PerformanceReportingSettings {
-            m_enabled,
-        })
+        Ok(PerformanceReportingSettings { m_enabled })
     }
 }

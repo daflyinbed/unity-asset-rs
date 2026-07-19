@@ -3,19 +3,25 @@
 
 use std::path::Path;
 
+use generated::{ClassIDType, UnityObject};
 use unity_asset::{
     Bytes, ClassId, DependencyProvider, Environment, FileFormat, LoadedFile, Loader, ObjectId,
     ParseFailure, ParsedObject, ResourceProvider,
 };
-use generated::{ClassIDType, UnityObject};
 
 /// 默认 fixture（io 层测试同款）。
-const DEFAULT_BUNDLE: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/../../example/char_002_amiya.ab");
+const DEFAULT_BUNDLE: &str = concat!(
+    env!("CARGO_MANIFEST_DIR"),
+    "/../../example/char_002_amiya.ab"
+);
 /// example/ 目录下全部 fixture（5 个 bundle）。
 const EXAMPLE_DIR: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/../../example");
 /// 两个 fixture，用于多 bundle 测试。
 const TWO_BUNDLES: &[&str] = &[
-    concat!(env!("CARGO_MANIFEST_DIR"), "/../../example/char_002_amiya.ab"),
+    concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../../example/char_002_amiya.ab"
+    ),
     concat!(env!("CARGO_MANIFEST_DIR"), "/../../example/Combine.unity3d"),
 ];
 
@@ -50,6 +56,35 @@ fn environment_builds_and_has_objects() {
 }
 
 #[test]
+fn sources_can_be_inserted_removed_and_replaced_without_reloading_survivors() {
+    let first = load_env(TWO_BUNDLES[0]);
+    let first_objects = first.objects().len();
+    let second = load_env(TWO_BUNDLES[1]);
+    let second_objects = second.objects().len();
+
+    let mut env = Environment::empty();
+    let first_id = env.insert_source(first);
+    let second_id = env.insert_source(second);
+    assert_eq!(env.source_count(), 2);
+    assert_eq!(env.objects().len(), first_objects + second_objects);
+
+    assert!(env.remove_source(first_id));
+    assert_eq!(env.source_count(), 1);
+    assert_eq!(env.objects().len(), second_objects);
+    for (index, collection) in env.collections().iter().enumerate() {
+        assert_eq!(
+            collection.dependencies.first().copied().flatten(),
+            env.collection_id(index)
+        );
+    }
+
+    let replacement = load_env(TWO_BUNDLES[0]);
+    assert!(env.replace_source(second_id, replacement));
+    assert_eq!(env.source_count(), 1);
+    assert_eq!(env.objects().len(), first_objects);
+}
+
+#[test]
 fn dependencies_zero_is_self() {
     // dependencies[0] = self 约定：对每个 collection，resolve_local(自身 path_id) 应命中。
     let env = load_env(DEFAULT_BUNDLE);
@@ -78,9 +113,12 @@ fn no_unexpected_failures() {
     if let Some(f) = env.failures().first() {
         match f {
             ParseFailure::File { name, error } => panic!("file 失败: {name}: {error}"),
-            ParseFailure::Object { collection, path_id, class_id, error } => panic!(
-                "object 失败: col={collection} pid={path_id} cid={class_id}: {error}"
-            ),
+            ParseFailure::Object {
+                collection,
+                path_id,
+                class_id,
+                error,
+            } => panic!("object 失败: col={collection} pid={path_id} cid={class_id}: {error}"),
             ParseFailure::Container { name, error } => {
                 panic!("container 失败: {name}: {error}")
             }
@@ -92,10 +130,7 @@ fn no_unexpected_failures() {
 fn object_id_and_ref_roundtrip() {
     // CollectionId/ObjectId/ObjectRef 三件套:从对象取 id,经 resolve_ref 回到同一对象。
     let env = load_env(DEFAULT_BUNDLE);
-    let first = env
-        .objects()
-        .first()
-        .expect("应至少有一个对象");
+    let first = env.objects().first().expect("应至少有一个对象");
     let id = first.id();
     assert_eq!(id.path_id, first.path_id);
     assert_eq!(id.collection, first.collection);
@@ -112,12 +147,13 @@ fn object_id_and_ref_roundtrip() {
     assert_eq!(r2.get().map(|o| o as *const _), Some(first as *const _));
 
     // 不存在的 path_id → None。
-    assert!(env
-        .resolve_ref(ObjectId {
+    assert!(
+        env.resolve_ref(ObjectId {
             collection: first.collection,
             path_id: i64::MAX
         })
-        .is_none());
+        .is_none()
+    );
 
     // to_index/collection_id 互为逆运算(escape hatch 可用)。
     let idx = first.collection.to_index();
@@ -139,7 +175,10 @@ fn objects_of_class_filter_works() {
             }
         }
     }
-    assert!(sum <= total, "objects_of_class 求和 {sum} 不应超过总数 {total}");
+    assert!(
+        sum <= total,
+        "objects_of_class 求和 {sum} 不应超过总数 {total}"
+    );
 }
 
 #[test]
@@ -154,7 +193,10 @@ fn class_id_open_set_supports_mono_behaviour() {
     // 但 objects_of_class_id(ClassId::MONO_BEHAVIOUR) 能查到 MonoBehaviour 对象。
     let via_open = env.objects_of_class_id(ClassId::MONO_BEHAVIOUR).count();
     let via_method = env.mono_behaviours().count();
-    assert_eq!(via_open, via_method, "mono_behaviours() 应等价于 objects_of_class_id(MONO_BEHAVIOUR)");
+    assert_eq!(
+        via_open, via_method,
+        "mono_behaviours() 应等价于 objects_of_class_id(MONO_BEHAVIOUR)"
+    );
     assert!(via_open > 0, "char_002_amiya.ab 应含 MonoBehaviour");
 
     // known() 对 Texture2D 应命中。
@@ -186,7 +228,11 @@ fn streaming_data_on_texture2d() {
         }
         match env.streaming_data(sd) {
             Some(bytes) => {
-                assert_eq!(bytes.len(), sd.size as usize, "streaming_data 长度应匹配 size");
+                assert_eq!(
+                    bytes.len(),
+                    sd.size as usize,
+                    "streaming_data 长度应匹配 size"
+                );
             }
             None => {
                 // 资源未命中（可能跨 bundle 或无 .resS）——记录但不 panic
@@ -244,10 +290,7 @@ fn scan_dir_scans_all_bundles() {
         "example/ 下至少应有 5 个 collection（实得 {}）",
         env.collections().len()
     );
-    assert!(
-        !env.objects().is_empty(),
-        "目录加载应解析出对象"
-    );
+    assert!(!env.objects().is_empty(), "目录加载应解析出对象");
     // 依赖约定不变：每个 collection 的 dependencies[0] = self。
     for (col_idx, col) in env.collections().iter().enumerate() {
         assert_eq!(
@@ -329,10 +372,16 @@ fn cross_bundle_pptr_resolution_resolved_count_increases() {
 fn loaded_method_accepts_preloaded_file() {
     // 用户可用自定义 registry 预加载资产文件，再喂入 builder（.loaded() 入口）。
     let raw = unity_asset::load(DEFAULT_BUNDLE).expect("预加载失败");
-    let env = Loader::builder().loaded(raw).build().unwrap().into_environment();
-    assert!(!env.collections().is_empty(), ".loaded() 应能并入预加载的资产文件");
+    let env = Loader::builder()
+        .loaded(raw)
+        .build()
+        .unwrap()
+        .into_environment();
+    assert!(
+        !env.collections().is_empty(),
+        ".loaded() 应能并入预加载的资产文件"
+    );
 }
-
 
 // ── DependencyProvider / ResourceProvider 扩展点测试 ──
 //
@@ -368,20 +417,26 @@ struct StubDependencyProvider {
 impl StubDependencyProvider {
     fn new() -> Self {
         Self {
-            calls: std::sync::Arc::new(std::sync::Mutex::new(
-                std::collections::HashMap::new(),
-            )),
+            calls: std::sync::Arc::new(std::sync::Mutex::new(std::collections::HashMap::new())),
         }
     }
     /// 返回共享计数句柄（provider 注册后用它查询）。
-    fn counter(&self) -> std::sync::Arc<std::sync::Mutex<std::collections::HashMap<String, usize>>> {
+    fn counter(
+        &self,
+    ) -> std::sync::Arc<std::sync::Mutex<std::collections::HashMap<String, usize>>> {
         self.calls.clone()
     }
     /// 根据 query 的 path_name 决定加载哪个 example bundle（模拟「磁盘现取」）。
     fn bundle_for(name: &str) -> Option<&'static str> {
         match name {
-            PREFABS_EXT_CLASSICONS => Some(concat!(env!("CARGO_MANIFEST_DIR"), "/../../example/DownloadClassIcons.unity3d")),
-            PREFABS_EXT_COMMONUI => Some(concat!(env!("CARGO_MANIFEST_DIR"), "/../../example/DownloadCommonUI.unity3d")),
+            PREFABS_EXT_CLASSICONS => Some(concat!(
+                env!("CARGO_MANIFEST_DIR"),
+                "/../../example/DownloadClassIcons.unity3d"
+            )),
+            PREFABS_EXT_COMMONUI => Some(concat!(
+                env!("CARGO_MANIFEST_DIR"),
+                "/../../example/DownloadCommonUI.unity3d"
+            )),
             _ => None,
         }
     }
@@ -417,8 +472,14 @@ fn dependency_provider_lazy_loads_missing_bundles() {
     // 前置：Prefabs + 两个 target bundle 都存在。
     for b in &[
         concat!(env!("CARGO_MANIFEST_DIR"), "/../../example/Prefabs.unity3d"),
-        concat!(env!("CARGO_MANIFEST_DIR"), "/../../example/DownloadClassIcons.unity3d"),
-        concat!(env!("CARGO_MANIFEST_DIR"), "/../../example/DownloadCommonUI.unity3d"),
+        concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/../../example/DownloadClassIcons.unity3d"
+        ),
+        concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/../../example/DownloadCommonUI.unity3d"
+        ),
     ] {
         if !Path::new(b).exists() {
             eprintln!("跳过：缺少 fixture {b}");
@@ -427,14 +488,24 @@ fn dependency_provider_lazy_loads_missing_bundles() {
     }
 
     // 对照组：无 provider，单独加载 Prefabs —— 4 个 external 全 None。
-    let baseline = Loader::builder().path(concat!(env!("CARGO_MANIFEST_DIR"), "/../../example/Prefabs.unity3d")).build().unwrap().into_environment();
+    let baseline = Loader::builder()
+        .path(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/../../example/Prefabs.unity3d"
+        ))
+        .build()
+        .unwrap()
+        .into_environment();
     let baseline_resolved = count_resolved_deps(&baseline);
 
     // 实验组：注册 provider，对 2 个 external 按需加载目标 bundle。
     let stub = StubDependencyProvider::new();
     let counter = stub.counter();
     let env = Loader::builder()
-        .path(concat!(env!("CARGO_MANIFEST_DIR"), "/../../example/Prefabs.unity3d"))
+        .path(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/../../example/Prefabs.unity3d"
+        ))
         .dependency_provider(stub)
         .build()
         .unwrap()
@@ -444,10 +515,24 @@ fn dependency_provider_lazy_loads_missing_bundles() {
     eprintln!("baseline resolved = {baseline_resolved}, with provider = {with_provider_resolved}");
 
     // provider 应对 2 个可加载的 external 各被调用（tried 去重后各 1 次）。
-    let classic_calls = *counter.lock().unwrap().get(PREFABS_EXT_CLASSICONS).unwrap_or(&0);
-    let ui_calls = *counter.lock().unwrap().get(PREFABS_EXT_COMMONUI).unwrap_or(&0);
-    assert!(classic_calls >= 1, "provider 应对 DownloadClassIcons 的 external 被调用");
-    assert!(ui_calls >= 1, "provider 应对 DownloadCommonUI 的 external 被调用");
+    let classic_calls = *counter
+        .lock()
+        .unwrap()
+        .get(PREFABS_EXT_CLASSICONS)
+        .unwrap_or(&0);
+    let ui_calls = *counter
+        .lock()
+        .unwrap()
+        .get(PREFABS_EXT_COMMONUI)
+        .unwrap_or(&0);
+    assert!(
+        classic_calls >= 1,
+        "provider 应对 DownloadClassIcons 的 external 被调用"
+    );
+    assert!(
+        ui_calls >= 1,
+        "provider 应对 DownloadCommonUI 的 external 被调用"
+    );
 
     // resolved 槽应比 baseline 至少多 2（2 个 external 被 resolve）。
     // 注意：懒加载并入的 bundle 自己也有 [0]=self 槽，故增量 >= 2 + 并入 collection 数。
@@ -474,11 +559,23 @@ fn dependency_provider_lazy_loads_missing_bundles() {
 #[test]
 fn no_dependency_provider_leaves_externals_unresolved() {
     // 回归保护：未注册 provider 时，行为退化为纯 eager —— 真缺失的 external 留 None。
-    if !Path::new(concat!(env!("CARGO_MANIFEST_DIR"), "/../../example/Prefabs.unity3d")).exists() {
+    if !Path::new(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../../example/Prefabs.unity3d"
+    ))
+    .exists()
+    {
         eprintln!("跳过：缺少 fixture example/Prefabs.unity3d");
         return;
     }
-    let env = Loader::builder().path(concat!(env!("CARGO_MANIFEST_DIR"), "/../../example/Prefabs.unity3d")).build().unwrap().into_environment();
+    let env = Loader::builder()
+        .path(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/../../example/Prefabs.unity3d"
+        ))
+        .build()
+        .unwrap()
+        .into_environment();
     let any_none = env
         .collections()
         .iter()
@@ -537,7 +634,8 @@ impl ResourceProvider for StubResourceProvider {
         &self,
         _req: &unity_asset::ResourceRequest<'_>,
     ) -> Result<Option<Bytes>, unity_asset::ProviderError> {
-        self.called.store(true, std::sync::atomic::Ordering::Relaxed);
+        self.called
+            .store(true, std::sync::atomic::Ordering::Relaxed);
         // 合成足够大的资源覆盖 Combine 的 Texture2D streaming size（1MB），
         // 使 streaming_data 的 bounds 校验通过。首字节用 0xAB 标记便于断言。
         // Provider 只返回 Bytes;Loader 自己算 name_fixed 并注册。
@@ -551,11 +649,19 @@ impl ResourceProvider for StubResourceProvider {
 
 #[test]
 fn resource_provider_prefetches_missing_ress() {
-    if !Path::new(concat!(env!("CARGO_MANIFEST_DIR"), "/../../example/Combine.unity3d")).exists() {
+    if !Path::new(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../../example/Combine.unity3d"
+    ))
+    .exists()
+    {
         eprintln!("跳过：缺少 fixture example/Combine.unity3d");
         return;
     }
-    let standalone = match load_serialized_only(concat!(env!("CARGO_MANIFEST_DIR"), "/../../example/Combine.unity3d")) {
+    let standalone = match load_serialized_only(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../../example/Combine.unity3d"
+    )) {
         Some(f) => f,
         None => {
             eprintln!("跳过：Combine.unity3d 未解出 SerializedFile leaf");
@@ -596,12 +702,12 @@ fn resource_provider_prefetches_missing_ress() {
         return;
     };
     let data = env.streaming_data(&sd);
-    assert!(data.is_some(), "streaming_data 应命中（经 provider 注册的 resS）");
-    let data = data.unwrap();
     assert!(
-        !data.is_empty(),
-        "streaming_data 取到的字节非空"
+        data.is_some(),
+        "streaming_data 应命中（经 provider 注册的 resS）"
     );
+    let data = data.unwrap();
+    assert!(!data.is_empty(), "streaming_data 取到的字节非空");
     // 合成资源是 [0xAB; 32]，offset=0 处应为 0xAB（只要 size>0）。
     assert_eq!(data[0], 0xAB, "streaming_data 首字节应为合成资源标记 0xAB");
 }
@@ -609,22 +715,36 @@ fn resource_provider_prefetches_missing_ress() {
 #[test]
 fn no_resource_provider_keeps_ress_unresolved_when_missing() {
     // 回归保护：无 provider 且 bundle 内无 resS 时，streaming_data 返回 None（不 panic）。
-    if !Path::new(concat!(env!("CARGO_MANIFEST_DIR"), "/../../example/Combine.unity3d")).exists() {
+    if !Path::new(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../../example/Combine.unity3d"
+    ))
+    .exists()
+    {
         eprintln!("跳过：缺少 fixture example/Combine.unity3d");
         return;
     }
-    let standalone = match load_serialized_only(concat!(env!("CARGO_MANIFEST_DIR"), "/../../example/Combine.unity3d")) {
+    let standalone = match load_serialized_only(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../../example/Combine.unity3d"
+    )) {
         Some(f) => f,
         None => return,
     };
-    let env = Loader::builder().loaded(standalone).build().unwrap().into_environment();
+    let env = Loader::builder()
+        .loaded(standalone)
+        .build()
+        .unwrap()
+        .into_environment();
     let tex_stream = env.objects().iter().find_map(|o| {
         if let ParsedObject::Typed(UnityObject::Texture2D(t)) = &o.object {
             return t.m_stream_data.clone();
         }
         None
     });
-    let Some(sd) = tex_stream else { return; };
+    let Some(sd) = tex_stream else {
+        return;
+    };
     assert!(
         env.streaming_data(&sd).is_none(),
         "无 provider 且 bundle 内无 resS 时 streaming_data 应返回 None"

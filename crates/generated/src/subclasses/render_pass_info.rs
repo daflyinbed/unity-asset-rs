@@ -3,7 +3,6 @@
 use crate::subclasses::attachment_info::AttachmentInfo;
 use crate::subclasses::sub_pass_descriptor::SubPassDescriptor;
 
-
 /// 版本枚举：RenderPassInfoSampleCountVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum RenderPassInfoSampleCountVariant {
@@ -55,18 +54,32 @@ impl crate::Parse for RenderPassInfo {
         let mut foveation_image_index = None;
         let mut sample_count = None;
         let mut has_eye_texture = None;
-            attachments = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AttachmentInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            attachment_count = Some(rdr.read_i32()?);
-            sub_passes = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SubPassDescriptor::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            sub_pass_count = Some(rdr.read_i32()?);
-            depth_attachment_index = Some(rdr.read_i32()?);
-            shading_rate_index = Some(rdr.read_i32()?);
+        attachments = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| AttachmentInfo::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        attachment_count = Some(rdr.read_i32()?);
+        sub_passes = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| SubPassDescriptor::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        sub_pass_count = Some(rdr.read_i32()?);
+        depth_attachment_index = Some(rdr.read_i32()?);
+        shading_rate_index = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(6000, 1, 0) {
             foveation_image_index = Some(rdr.read_i32()?);
         } else {
         }
-            multiview_count = Some(rdr.read_i32()?);
-            sample_count = Some(RenderPassInfoSampleCountVariant::parse(rdr, ver)?);
+        multiview_count = Some(rdr.read_i32()?);
+        sample_count = Some(RenderPassInfoSampleCountVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 6, 0) {
         } else if *ver >= crate::UnityVersion::new(6000, 2, 0) {
             has_eye_texture = Some(rdr.read_bool()?);

@@ -12,8 +12,6 @@ impl crate::Parse for FastPropertyName {
     ) -> Result<Self, R::Error> {
         let name = rdr.read_aligned_string()?;
 
-        Ok(FastPropertyName {
-            name,
-        })
+        Ok(FastPropertyName { name })
     }
 }

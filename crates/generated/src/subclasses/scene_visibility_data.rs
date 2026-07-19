@@ -14,8 +14,6 @@ impl crate::Parse for SceneVisibilityData {
     ) -> Result<Self, R::Error> {
         let m_scene_guid = Guid::parse(rdr, ver)?;
 
-        Ok(SceneVisibilityData {
-            m_scene_guid,
-        })
+        Ok(SceneVisibilityData { m_scene_guid })
     }
 }

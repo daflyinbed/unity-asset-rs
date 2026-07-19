@@ -19,10 +19,20 @@ impl crate::Parse for XboxOneSocketDefinition {
         let m_name = rdr.read_aligned_string()?;
         let m_port = rdr.read_aligned_string()?;
         let m_protocol = rdr.read_i32()?;
-        let m_usages = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_usages = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| rdr.read_i32())
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         let m_template_name = rdr.read_aligned_string()?;
         let m_session_requirment = rdr.read_i32()?;
-        let m_device_usages = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_device_usages = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| rdr.read_i32())
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
 
         Ok(XboxOneSocketDefinition {

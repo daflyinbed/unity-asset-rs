@@ -5,7 +5,6 @@ use crate::subclasses::soft_joint_limit::SoftJointLimit;
 use crate::subclasses::soft_joint_limit_spring::SoftJointLimitSpring;
 use crate::subclasses::vector3f::Vector3f;
 
-
 /// 版本枚举：CharacterJointMEnablePreprocessingVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum CharacterJointMEnablePreprocessingVariant {
@@ -83,33 +82,33 @@ impl crate::Parse for CharacterJoint {
         let mut m_enable_preprocessing = None;
         let mut m_mass_scale = None;
         let mut m_connected_mass_scale = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_connected_body = Some(crate::PPtr::parse(rdr, ver)?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_connected_body = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2020, 2, 0) {
             m_connected_articulation_body = Some(crate::PPtr::parse(rdr, ver)?);
         } else {
         }
-            m_anchor = Some(Vector3f::parse(rdr, ver)?);
-            m_axis = Some(Vector3f::parse(rdr, ver)?);
+        m_anchor = Some(Vector3f::parse(rdr, ver)?);
+        m_axis = Some(Vector3f::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(4, 3, 0) {
             m_auto_configure_connected_anchor = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_connected_anchor = Some(Vector3f::parse(rdr, ver)?);
         } else {
         }
-            m_swing_axis = Some(Vector3f::parse(rdr, ver)?);
+        m_swing_axis = Some(Vector3f::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_twist_limit_spring = Some(SoftJointLimitSpring::parse(rdr, ver)?);
         } else {
         }
-            m_low_twist_limit = Some(SoftJointLimit::parse(rdr, ver)?);
-            m_high_twist_limit = Some(SoftJointLimit::parse(rdr, ver)?);
+        m_low_twist_limit = Some(SoftJointLimit::parse(rdr, ver)?);
+        m_high_twist_limit = Some(SoftJointLimit::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_swing_limit_spring = Some(SoftJointLimitSpring::parse(rdr, ver)?);
         } else {
         }
-            m_swing1_limit = Some(SoftJointLimit::parse(rdr, ver)?);
-            m_swing2_limit = Some(SoftJointLimit::parse(rdr, ver)?);
+        m_swing1_limit = Some(SoftJointLimit::parse(rdr, ver)?);
+        m_swing2_limit = Some(SoftJointLimit::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_enable_projection = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -117,16 +116,18 @@ impl crate::Parse for CharacterJoint {
             m_projection_angle = Some(rdr.read_f32()?);
         } else {
         }
-            m_break_force = Some(rdr.read_f32()?);
-            m_break_torque = Some(rdr.read_f32()?);
+        m_break_force = Some(rdr.read_f32()?);
+        m_break_torque = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             m_enable_collision = Some(rdr.read_bool()?);
-            m_enable_preprocessing = Some(CharacterJointMEnablePreprocessingVariant::parse(rdr, ver)?);
+            m_enable_preprocessing =
+                Some(CharacterJointMEnablePreprocessingVariant::parse(rdr, ver)?);
             m_mass_scale = Some(rdr.read_f32()?);
             m_connected_mass_scale = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_enable_collision = Some(rdr.read_bool()?);
-            m_enable_preprocessing = Some(CharacterJointMEnablePreprocessingVariant::parse(rdr, ver)?);
+            m_enable_preprocessing =
+                Some(CharacterJointMEnablePreprocessingVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 5, 0) {
             m_enable_collision = Some(rdr.read_bool()?);
         } else {

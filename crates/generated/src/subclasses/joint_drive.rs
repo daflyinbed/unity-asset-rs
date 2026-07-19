@@ -23,9 +23,9 @@ impl crate::Parse for JointDrive {
         } else {
             mode = Some(rdr.read_i32()?);
         }
-            position_spring = Some(rdr.read_f32()?);
-            position_damper = Some(rdr.read_f32()?);
-            maximum_force = Some(rdr.read_f32()?);
+        position_spring = Some(rdr.read_f32()?);
+        position_damper = Some(rdr.read_f32()?);
+        maximum_force = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             use_acceleration = Some(rdr.read_i32()?);
         } else {

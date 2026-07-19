@@ -14,12 +14,12 @@
 
 use std::io::Write;
 
-use generated::classes::texture2_d::Texture2D;
 use generated::UnityObject;
+use generated::classes::texture2_d::Texture2D;
 
+use crate::UnityVersion;
 use crate::environment::Environment;
 pub use crate::texture_export::TextureExportError;
-use crate::UnityVersion;
 
 /// 解码后的中间图像:top-down RGBA8。统一纹理/Sprite 解码的中间表示,
 /// 由 [`decode_texture`] / [`Environment::decode_image`] 产出,可 [`DecodedImage::write_png`]
@@ -47,8 +47,8 @@ impl DecodedImage {
 
     /// 创建文件并写入 PNG。文件名后缀不自动加,调用方负责。
     pub fn write_png_path(&self, path: &std::path::Path) -> Result<(), TextureExportError> {
-        let mut f = std::fs::File::create(path)
-            .map_err(|e| TextureExportError::PngIo { source: e })?;
+        let mut f =
+            std::fs::File::create(path).map_err(|e| TextureExportError::PngIo { source: e })?;
         self.write_png(&mut f)
     }
 }
@@ -69,13 +69,14 @@ pub fn decode_texture(
     ver: UnityVersion,
 ) -> Result<DecodedImage, TextureExportError> {
     use crate::texture_export::{
-        decode_astc, decode_bcn, decode_crunch, decode_etc, decode_uncompressed,
-        texture_pixel_bytes, TextureFormat,
+        TextureFormat, decode_astc, decode_bcn, decode_crunch, decode_etc, decode_uncompressed,
+        texture_pixel_bytes,
     };
     let data = texture_pixel_bytes(t, env).ok_or(TextureExportError::NoImageData)?;
     let (w, h) = (t.m_width.max(0) as u32, t.m_height.max(0) as u32);
-    let fmt = TextureFormat::from_i32(t.m_format)
-        .ok_or(TextureExportError::UnknownFormat { format_id: t.m_format })?;
+    let fmt = TextureFormat::from_i32(t.m_format).ok_or(TextureExportError::UnknownFormat {
+        format_id: t.m_format,
+    })?;
     // decode_crunch 自带输出尺寸(cubemap 纵向拼接改变高度),其余路径尺寸 = (w, h)。
     let (rgba, ow, oh) = if fmt.astc_block().is_some() {
         (decode_astc(&data, w, h, fmt)?, w, h)
@@ -112,8 +113,7 @@ impl Environment {
                 Ok(decode_texture(t, self, ver)?)
             }
             crate::ParsedObject::Typed(UnityObject::Sprite(s)) => {
-                let (rgba, w, h) =
-                    crate::sprite_export::sprite_pixel_bytes(self, obj, s, ver)?;
+                let (rgba, w, h) = crate::sprite_export::sprite_pixel_bytes(self, obj, s, ver)?;
                 Ok(DecodedImage::new(rgba, w, h))
             }
             _ => Err(DecodeImageError::UnsupportedClass {
@@ -129,7 +129,9 @@ pub enum DecodeImageError {
     Texture(TextureExportError),
     Sprite(crate::sprite_export::SpriteExportError),
     /// 对象既非 Texture2D 也非 Sprite。
-    UnsupportedClass { class_id: crate::ClassId },
+    UnsupportedClass {
+        class_id: crate::ClassId,
+    },
 }
 
 impl std::fmt::Display for DecodeImageError {
@@ -157,8 +159,8 @@ impl From<crate::sprite_export::SpriteExportError> for DecodeImageError {
 }
 
 // 重新导出底层原语 + 高层导出函数,保持 `export` 模块作为单一入口。
-pub use crate::sprite_export::{export_sprite, sprite_pixel_bytes, SpriteExportError};
+pub use crate::sprite_export::{SpriteExportError, export_sprite, sprite_pixel_bytes};
 pub use crate::texture_export::{
-    decode_astc, decode_bcn, decode_crunch, decode_etc, decode_uncompressed, texture_pixel_bytes,
-    write_png, TextureFormat,
+    TextureFormat, decode_astc, decode_bcn, decode_crunch, decode_etc, decode_uncompressed,
+    texture_pixel_bytes, write_png,
 };

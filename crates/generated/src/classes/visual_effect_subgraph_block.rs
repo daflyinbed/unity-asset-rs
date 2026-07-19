@@ -12,8 +12,6 @@ impl crate::Parse for VisualEffectSubgraphBlock {
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
 
-        Ok(VisualEffectSubgraphBlock {
-            m_name,
-        })
+        Ok(VisualEffectSubgraphBlock { m_name })
     }
 }

@@ -3,7 +3,6 @@
 use crate::PPtr;
 use crate::subclasses::vector2f::Vector2f;
 
-
 /// 版本枚举：ChildMotionMIsAnimVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ChildMotionMIsAnimVariant {
@@ -51,13 +50,13 @@ impl crate::Parse for ChildMotion {
         let mut m_cycle_offset = None;
         let mut m_direct_blend_parameter = None;
         let mut m_mirror = None;
-            m_motion = Some(crate::PPtr::parse(rdr, ver)?);
-            m_threshold = Some(rdr.read_f32()?);
+        m_motion = Some(crate::PPtr::parse(rdr, ver)?);
+        m_threshold = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(4, 1, 0) {
             m_position = Some(Vector2f::parse(rdr, ver)?);
         } else {
         }
-            m_time_scale = Some(rdr.read_f32()?);
+        m_time_scale = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_cycle_offset = Some(rdr.read_f32()?);
             m_direct_blend_parameter = Some(rdr.read_aligned_string()?);

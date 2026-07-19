@@ -1,10 +1,12 @@
 import { join } from "node:path";
 import process from "node:process";
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, Menu } from "electron";
 import { WorkspaceDatabase } from "./database/index.js";
 import { registerIpc } from "./ipc.js";
+import { RustService } from "./rust-service.js";
 
 let database: WorkspaceDatabase | null = null;
+const rustService = new RustService();
 
 async function createWindow() {
   const window = new BrowserWindow({
@@ -12,6 +14,8 @@ async function createWindow() {
     height: 800,
     minWidth: 960,
     minHeight: 640,
+    autoHideMenuBar: true,
+    frame: false,
     show: false,
     webPreferences: {
       contextIsolation: true,
@@ -31,10 +35,12 @@ async function createWindow() {
 }
 
 app.whenReady().then(async () => {
+  Menu.setApplicationMenu(null);
   database = new WorkspaceDatabase(
     join(app.getPath("userData"), "workspace.sqlite3"),
   );
-  registerIpc(database);
+  await rustService.start();
+  registerIpc(database, rustService);
   await createWindow();
 
   app.on("activate", () => {
@@ -43,6 +49,7 @@ app.whenReady().then(async () => {
 });
 
 app.on("before-quit", () => {
+  rustService.stop();
   database?.close();
   database = null;
 });

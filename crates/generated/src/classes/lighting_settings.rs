@@ -27,20 +27,20 @@ impl crate::Parse for LightingSettings {
         let mut m_albedo_boost = None;
         let mut m_indirect_output_scale = None;
         let mut m_using_shadowmask = None;
-            m_name = Some(rdr.read_aligned_string()?);
+        m_name = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
         } else {
             m_gi_workflow_mode = Some(rdr.read_i32()?);
         }
-            m_enable_baked_lightmaps = Some(rdr.read_bool()?);
-            m_enable_realtime_lightmaps = Some(rdr.read_bool()?);
-            m_realtime_environment_lighting = Some(rdr.read_bool()?);
-            rdr.align(4)?;
-            m_bounce_scale = Some(rdr.read_f32()?);
-            m_albedo_boost = Some(rdr.read_f32()?);
-            m_indirect_output_scale = Some(rdr.read_f32()?);
-            m_using_shadowmask = Some(rdr.read_bool()?);
-            rdr.align(4)?;
+        m_enable_baked_lightmaps = Some(rdr.read_bool()?);
+        m_enable_realtime_lightmaps = Some(rdr.read_bool()?);
+        m_realtime_environment_lighting = Some(rdr.read_bool()?);
+        rdr.align(4)?;
+        m_bounce_scale = Some(rdr.read_f32()?);
+        m_albedo_boost = Some(rdr.read_f32()?);
+        m_indirect_output_scale = Some(rdr.read_f32()?);
+        m_using_shadowmask = Some(rdr.read_bool()?);
+        rdr.align(4)?;
 
         Ok(LightingSettings {
             m_name: m_name.unwrap(),

@@ -4,7 +4,6 @@ use crate::PPtr;
 use crate::subclasses::gl_texture_settings::GlTextureSettings;
 use crate::subclasses::source_asset_identifier::SourceAssetIdentifier;
 
-
 /// 版本枚举：IhvImageFormatImporterMExternalObjectsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum IhvImageFormatImporterMExternalObjectsVariant {
@@ -18,11 +17,33 @@ impl crate::Parse for IhvImageFormatImporterMExternalObjectsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| {
+                        ({
+                            let a = SourceAssetIdentifier::parse(rdr, ver)?;
+                            let b = crate::PPtr::parse(rdr, ver)?;
+                            Ok((a, b))
+                        })
+                    })
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2019_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| {
+                        ({
+                            let a = SourceAssetIdentifier::parse(rdr, ver)?;
+                            let b = crate::PPtr::parse(rdr, ver)?;
+                            Ok((a, b))
+                        })
+                    })
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -108,7 +129,8 @@ pub struct IhvImageFormatImporter {
     pub m_s_rgb_texture: Option<IhvImageFormatImporterMSRgbTextureVariant>,
     pub m_asset_bundle_variant: String,
     pub m_streaming_mipmaps: Option<bool>,
-    pub m_streaming_mipmaps_priority: Option<IhvImageFormatImporterMStreamingMipmapsPriorityVariant>,
+    pub m_streaming_mipmaps_priority:
+        Option<IhvImageFormatImporterMStreamingMipmapsPriorityVariant>,
     pub m_ignore_mipmap_limit: Option<bool>,
     pub m_mipmap_limit_group_name: Option<String>,
 }
@@ -131,22 +153,34 @@ impl crate::Parse for IhvImageFormatImporter {
         let mut m_streaming_mipmaps_priority = None;
         let mut m_ignore_mipmap_limit = None;
         let mut m_mipmap_limit_group_name = None;
-            m_name = Some(rdr.read_aligned_string()?);
+        m_name = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_external_objects = Some(IhvImageFormatImporterMExternalObjectsVariant::parse(rdr, ver)?);
-            m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_external_objects = Some(IhvImageFormatImporterMExternalObjectsVariant::parse(
+                rdr, ver,
+            )?);
+            m_used_file_i_ds = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i64())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            m_external_objects = Some(IhvImageFormatImporterMExternalObjectsVariant::parse(rdr, ver)?);
+            m_external_objects = Some(IhvImageFormatImporterMExternalObjectsVariant::parse(
+                rdr, ver,
+            )?);
         } else {
         }
-            m_texture_settings = Some(GlTextureSettings::parse(rdr, ver)?);
-            m_is_readable = Some(IhvImageFormatImporterMIsReadableVariant::parse(rdr, ver)?);
+        m_texture_settings = Some(GlTextureSettings::parse(rdr, ver)?);
+        m_is_readable = Some(IhvImageFormatImporterMIsReadableVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             m_s_rgb_texture = Some(IhvImageFormatImporterMSRgbTextureVariant::parse(rdr, ver)?);
             m_streaming_mipmaps = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_streaming_mipmaps_priority = Some(IhvImageFormatImporterMStreamingMipmapsPriorityVariant::parse(rdr, ver)?);
+            m_streaming_mipmaps_priority =
+                Some(IhvImageFormatImporterMStreamingMipmapsPriorityVariant::parse(rdr, ver)?);
             m_ignore_mipmap_limit = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_mipmap_limit_group_name = Some(rdr.read_aligned_string()?);
@@ -155,14 +189,15 @@ impl crate::Parse for IhvImageFormatImporter {
             m_s_rgb_texture = Some(IhvImageFormatImporterMSRgbTextureVariant::parse(rdr, ver)?);
             m_streaming_mipmaps = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_streaming_mipmaps_priority = Some(IhvImageFormatImporterMStreamingMipmapsPriorityVariant::parse(rdr, ver)?);
+            m_streaming_mipmaps_priority =
+                Some(IhvImageFormatImporterMStreamingMipmapsPriorityVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
             m_s_rgb_texture = Some(IhvImageFormatImporterMSRgbTextureVariant::parse(rdr, ver)?);
         } else {
         }
-            m_user_data = Some(rdr.read_aligned_string()?);
-            m_asset_bundle_name = Some(rdr.read_aligned_string()?);
-            m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
+        m_user_data = Some(rdr.read_aligned_string()?);
+        m_asset_bundle_name = Some(rdr.read_aligned_string()?);
+        m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
 
         Ok(IhvImageFormatImporter {
             m_name: m_name.unwrap(),

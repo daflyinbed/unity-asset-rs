@@ -25,13 +25,13 @@ impl crate::Parse for SplatPrototype {
         let mut tile_offset = None;
         let mut specular_metallic = None;
         let mut smoothness = None;
-            texture = Some(crate::PPtr::parse(rdr, ver)?);
+        texture = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(4, 0, 0) {
             normal_map = Some(crate::PPtr::parse(rdr, ver)?);
         } else {
         }
-            tile_size = Some(Vector2f::parse(rdr, ver)?);
-            tile_offset = Some(Vector2f::parse(rdr, ver)?);
+        tile_size = Some(Vector2f::parse(rdr, ver)?);
+        tile_offset = Some(Vector2f::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 1) {
             specular_metallic = Some(Vector4f::parse(rdr, ver)?);
             smoothness = Some(rdr.read_f32()?);

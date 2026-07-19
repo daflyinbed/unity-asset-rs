@@ -38,13 +38,6 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    '/zed': RouteRecordInfo<
-      '/zed',
-      '/zed',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
   }
 
   /**
@@ -61,14 +54,6 @@ declare module 'vue-router/auto-routes' {
     'app/pages/index.vue': {
       routes:
         | '/'
-      views:
-        | never
-      pathParamNames:
-        | never
-    }
-    'app/pages/zed.vue': {
-      routes:
-        | '/zed'
       views:
         | never
       pathParamNames:

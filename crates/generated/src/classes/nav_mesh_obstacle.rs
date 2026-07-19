@@ -34,9 +34,9 @@ impl crate::Parse for NavMeshObstacle {
         let mut m_carve_only_stationary = None;
         let mut m_center = None;
         let mut m_time_to_stationary = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_enabled = Some(rdr.read_u8()?);
-            rdr.align(4)?;
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_enabled = Some(rdr.read_u8()?);
+        rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_shape = Some(rdr.read_i32()?);
             m_extents = Some(Vector3f::parse(rdr, ver)?);

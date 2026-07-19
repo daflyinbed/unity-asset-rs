@@ -12,8 +12,6 @@ impl crate::Parse for RoslynAdditionalFileAsset {
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
 
-        Ok(RoslynAdditionalFileAsset {
-            m_name,
-        })
+        Ok(RoslynAdditionalFileAsset { m_name })
     }
 }

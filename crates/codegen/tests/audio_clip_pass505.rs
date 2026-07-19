@@ -10,7 +10,7 @@
 
 use std::path::Path;
 
-use unity_asset_codegen::{run_pipeline, TpkFile};
+use unity_asset_codegen::{TpkFile, run_pipeline};
 
 const TPK_PATH: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/type_tree.tpk");
 
@@ -43,10 +43,7 @@ fn audio_clip_m_audio_data_enum_exists() {
         src.contains("pub enum AudioClipMAudioData"),
         "应有 AudioClipMAudioData 枚举定义"
     );
-    assert!(
-        src.contains("Inline(Vec<u8>)"),
-        "Inline 变体应为 Vec<u8>"
-    );
+    assert!(src.contains("Inline(Vec<u8>)"), "Inline 变体应为 Vec<u8>");
     assert!(
         src.contains("Streamed { size: u32, offset: u32 }"),
         "Streamed 变体应为 {{ size: u32, offset: u32 }}"

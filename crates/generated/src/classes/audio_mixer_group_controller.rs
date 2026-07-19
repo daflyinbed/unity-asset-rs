@@ -19,7 +19,12 @@ impl crate::Parse for AudioMixerGroupController {
         let m_name = rdr.read_aligned_string()?;
         let m_audio_mixer = crate::PPtr::parse(rdr, ver)?;
         let m_group_id = Guid::parse(rdr, ver)?;
-        let m_children = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_children = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| crate::PPtr::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
 
         Ok(AudioMixerGroupController {

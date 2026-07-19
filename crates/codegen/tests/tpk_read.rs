@@ -61,11 +61,18 @@ fn gameobject_node_tree_shape() {
     let root = &blob.node_pool[root_idx as usize];
 
     // 根节点应是 "GameObject" 类型、名字是 "Base"。
-    assert_eq!(blob.string_pool[root.type_name_index as usize], "GameObject");
+    assert_eq!(
+        blob.string_pool[root.type_name_index as usize],
+        "GameObject"
+    );
     assert_eq!(blob.string_pool[root.name_index as usize], "Base");
 
     // 根的 meta_flag 应含 0x8000 (AnyChildUsesAlignBytes)。
-    assert_ne!(root.meta_flag & 0x8000, 0, "根节点应有 AnyChildUsesAlignBytes");
+    assert_ne!(
+        root.meta_flag & 0x8000,
+        0,
+        "根节点应有 AnyChildUsesAlignBytes"
+    );
 
     // 应有 m_Component 子节点（vector 类型）。
     let comp = root

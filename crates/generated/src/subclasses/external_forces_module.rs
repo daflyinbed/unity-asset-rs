@@ -25,19 +25,33 @@ impl crate::Parse for ExternalForcesModule {
         let mut influence_filter = None;
         let mut influence_mask = None;
         let mut influence_list = None;
-            enabled = Some(rdr.read_bool()?);
-            rdr.align(4)?;
+        enabled = Some(rdr.read_bool()?);
+        rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             multiplier_curve = Some(MinMaxCurve::parse(rdr, ver)?);
             influence_filter = Some(rdr.read_i32()?);
             influence_mask = Some(BitField::parse(rdr, ver)?);
-            influence_list = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            influence_list = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| crate::PPtr::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
             multiplier = Some(rdr.read_f32()?);
             influence_filter = Some(rdr.read_i32()?);
             influence_mask = Some(BitField::parse(rdr, ver)?);
-            influence_list = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            influence_list = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| crate::PPtr::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else {
             multiplier = Some(rdr.read_f32()?);

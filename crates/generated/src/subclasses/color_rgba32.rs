@@ -12,8 +12,6 @@ impl crate::Parse for ColorRgba32 {
     ) -> Result<Self, R::Error> {
         let rgba = rdr.read_u32()?;
 
-        Ok(ColorRgba32 {
-            rgba,
-        })
+        Ok(ColorRgba32 { rgba })
     }
 }

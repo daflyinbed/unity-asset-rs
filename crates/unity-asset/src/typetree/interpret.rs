@@ -2,10 +2,12 @@
 //!
 //! 对应 UnityPy `TypeTreeHelper.read_value`。
 
-use crate::cursor::{Cursor, Endian};
-use crate::error::{NegativeArrayLenSnafu, RefTypeNotFoundSnafu, Result, TypeTreeSizeMismatchSnafu};
-use crate::typetree::{PPtrValue, RefTypeTable, TypeKind, TypeNode, Value};
 use crate::UnityVersion;
+use crate::cursor::{Cursor, Endian};
+use crate::error::{
+    NegativeArrayLenSnafu, RefTypeNotFoundSnafu, Result, TypeTreeSizeMismatchSnafu,
+};
+use crate::typetree::{PPtrValue, RefTypeTable, TypeKind, TypeNode, Value};
 
 const ALIGN_MASK: u32 = 0x4000;
 
@@ -207,14 +209,10 @@ fn read_children(r: &mut Cursor, children: &[TypeNode], ctx: Ctx) -> Result<Vec<
             // [SerializeReference]：用已读的 type{class,ns,asm} 兄弟字段查 ref_types
             TypeKind::Struct(s) if s == "ReferencedObjectData" => {
                 let (class, ns, asm) = extract_ref_type(&fields)?;
-                let ref_node = ctx.refs.lookup(&class, &ns, &asm).ok_or_else(|| {
-                    RefTypeNotFoundSnafu {
-                        class,
-                        ns,
-                        asm,
-                    }
-                    .build()
-                })?;
+                let ref_node = ctx
+                    .refs
+                    .lookup(&class, &ns, &asm)
+                    .ok_or_else(|| RefTypeNotFoundSnafu { class, ns, asm }.build())?;
                 let val = walk(r, ref_node, ctx)?;
                 fields.push((child.name.clone(), val));
                 continue;

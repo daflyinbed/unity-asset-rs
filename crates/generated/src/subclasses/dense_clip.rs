@@ -18,7 +18,12 @@ impl crate::Parse for DenseClip {
         let m_curve_count = rdr.read_u32()?;
         let m_sample_rate = rdr.read_f32()?;
         let m_begin_time = rdr.read_f32()?;
-        let m_sample_array = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_f32() }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_sample_array = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| rdr.read_f32())
+                .collect::<Result<Vec<_>, _>>()
+        })?;
 
         Ok(DenseClip {
             m_frame_count,

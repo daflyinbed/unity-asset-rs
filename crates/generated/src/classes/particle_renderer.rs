@@ -5,7 +5,6 @@ use crate::subclasses::static_batch_info::StaticBatchInfo;
 use crate::subclasses::uv_animation::UvAnimation;
 use crate::subclasses::vector4f::Vector4f;
 
-
 /// 版本枚举：ParticleRendererMEnabledVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ParticleRendererMEnabledVariant {
@@ -117,11 +116,21 @@ impl crate::Parse for ParticleRendererMMaterialsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -309,44 +318,57 @@ impl crate::Parse for ParticleRenderer {
         let mut m_probe_anchor = None;
         let mut uv_animation = None;
         let mut m_light_probe_volume_override = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_enabled = Some(ParticleRendererMEnabledVariant::parse(rdr, ver)?);
-            m_cast_shadows = Some(ParticleRendererMCastShadowsVariant::parse(rdr, ver)?);
-            m_receive_shadows = Some(ParticleRendererMReceiveShadowsVariant::parse(rdr, ver)?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_enabled = Some(ParticleRendererMEnabledVariant::parse(rdr, ver)?);
+        m_cast_shadows = Some(ParticleRendererMCastShadowsVariant::parse(rdr, ver)?);
+        m_receive_shadows = Some(ParticleRendererMReceiveShadowsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2018, 1, 0) {
             m_dynamic_occludee = Some(rdr.read_u8()?);
             m_motion_vectors = Some(rdr.read_u8()?);
             m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(ParticleRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage = Some(ParticleRendererMReflectionProbeUsageVariant::parse(
+                rdr, ver,
+            )?);
             m_rendering_layer_mask = Some(rdr.read_u32()?);
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             m_dynamic_occludee = Some(rdr.read_u8()?);
             m_motion_vectors = Some(rdr.read_u8()?);
             m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(ParticleRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage = Some(ParticleRendererMReflectionProbeUsageVariant::parse(
+                rdr, ver,
+            )?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
             m_motion_vectors = Some(rdr.read_u8()?);
             m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(ParticleRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage = Some(ParticleRendererMReflectionProbeUsageVariant::parse(
+                rdr, ver,
+            )?);
         } else {
         }
-            m_lightmap_index = Some(ParticleRendererMLightmapIndexVariant::parse(rdr, ver)?);
+        m_lightmap_index = Some(ParticleRendererMLightmapIndexVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_lightmap_index_dynamic = Some(rdr.read_u16()?);
         } else {
         }
-            m_lightmap_tiling_offset = Some(Vector4f::parse(rdr, ver)?);
+        m_lightmap_tiling_offset = Some(Vector4f::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_lightmap_tiling_offset_dynamic = Some(Vector4f::parse(rdr, ver)?);
         } else {
         }
-            m_materials = Some(ParticleRendererMMaterialsVariant::parse(rdr, ver)?);
+        m_materials = Some(ParticleRendererMMaterialsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
             m_static_batch_info = Some(StaticBatchInfo::parse(rdr, ver)?);
         } else {
-            m_subset_indices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_subset_indices = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_u32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         }
-            m_static_batch_root = Some(crate::PPtr::parse(rdr, ver)?);
+        m_static_batch_root = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
             m_probe_anchor = Some(ParticleRendererMProbeAnchorVariant::parse(rdr, ver)?);
             m_light_probe_volume_override = Some(crate::PPtr::parse(rdr, ver)?);
@@ -363,7 +385,9 @@ impl crate::Parse for ParticleRenderer {
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_use_light_probes = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_reflection_probe_usage = Some(ParticleRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage = Some(ParticleRendererMReflectionProbeUsageVariant::parse(
+                rdr, ver,
+            )?);
             m_probe_anchor = Some(ParticleRendererMProbeAnchorVariant::parse(rdr, ver)?);
             m_sorting_layer_id = Some(ParticleRendererMSortingLayerIdVariant::parse(rdr, ver)?);
             m_sorting_order = Some(ParticleRendererMSortingOrderVariant::parse(rdr, ver)?);
@@ -385,12 +409,12 @@ impl crate::Parse for ParticleRenderer {
             m_light_probe_anchor = Some(ParticleRendererMLightProbeAnchorVariant::parse(rdr, ver)?);
         } else {
         }
-            m_camera_velocity_scale = Some(rdr.read_f32()?);
-            m_stretch_particles = Some(rdr.read_i32()?);
-            m_length_scale = Some(rdr.read_f32()?);
-            m_velocity_scale = Some(rdr.read_f32()?);
-            m_max_particle_size = Some(rdr.read_f32()?);
-            uv_animation = Some(UvAnimation::parse(rdr, ver)?);
+        m_camera_velocity_scale = Some(rdr.read_f32()?);
+        m_stretch_particles = Some(rdr.read_i32()?);
+        m_length_scale = Some(rdr.read_f32()?);
+        m_velocity_scale = Some(rdr.read_f32()?);
+        m_max_particle_size = Some(rdr.read_f32()?);
+        uv_animation = Some(UvAnimation::parse(rdr, ver)?);
 
         Ok(ParticleRenderer {
             m_game_object: m_game_object.unwrap(),

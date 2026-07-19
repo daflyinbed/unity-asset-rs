@@ -13,7 +13,12 @@ impl crate::Parse for KeywordDeclarationOverride {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let keywords = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { KeywordOverrideInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let keywords = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| KeywordOverrideInfo::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
         let variant_generation_mode = rdr.read_i32()?;
 

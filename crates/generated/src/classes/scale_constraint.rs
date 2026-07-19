@@ -35,15 +35,15 @@ impl crate::Parse for ScaleConstraint {
         let mut m_is_contraint_active = None;
         let mut m_active = None;
         let mut m_sources = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_enabled = Some(rdr.read_u8()?);
-            rdr.align(4)?;
-            m_weight = Some(rdr.read_f32()?);
-            m_scale_at_rest = Some(Vector3f::parse(rdr, ver)?);
-            m_scale_offset = Some(Vector3f::parse(rdr, ver)?);
-            m_affect_scaling_x = Some(rdr.read_bool()?);
-            m_affect_scaling_y = Some(rdr.read_bool()?);
-            m_affect_scaling_z = Some(rdr.read_bool()?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_enabled = Some(rdr.read_u8()?);
+        rdr.align(4)?;
+        m_weight = Some(rdr.read_f32()?);
+        m_scale_at_rest = Some(Vector3f::parse(rdr, ver)?);
+        m_scale_offset = Some(Vector3f::parse(rdr, ver)?);
+        m_affect_scaling_x = Some(rdr.read_bool()?);
+        m_affect_scaling_y = Some(rdr.read_bool()?);
+        m_affect_scaling_z = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(2022, 1, 0) {
             m_active = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -51,8 +51,15 @@ impl crate::Parse for ScaleConstraint {
             m_is_contraint_active = Some(rdr.read_bool()?);
             rdr.align(4)?;
         }
-            m_sources = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ConstraintSource::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+        m_sources = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| ConstraintSource::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
 
         Ok(ScaleConstraint {
             m_game_object: m_game_object.unwrap(),

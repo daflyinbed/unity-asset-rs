@@ -1,8 +1,8 @@
 //! 统一 API 错误。转 axum `IntoResponse`,所有 handler 返回 `Result<T, ApiError>`。
 
+use axum::Json;
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
-use axum::Json;
 use serde::Serialize;
 use serde_json::json;
 use utoipa::ToSchema;
@@ -23,6 +23,8 @@ pub enum ApiError {
     NotFound,
     /// 请求参数非法(JSON 解析失败、path 穿越等)。
     BadRequest(String),
+    /// 请求基于过期 revision，客户端需要拉取最新快照。
+    Conflict(String),
     /// 加载/构建 Environment 失败。
     Load(String),
     /// 导出(PNG)失败。
@@ -36,6 +38,7 @@ impl IntoResponse for ApiError {
         let (code, msg): (StatusCode, String) = match self {
             ApiError::NotFound => (StatusCode::NOT_FOUND, "not found".into()),
             ApiError::BadRequest(m) => (StatusCode::BAD_REQUEST, m),
+            ApiError::Conflict(m) => (StatusCode::CONFLICT, m),
             ApiError::Load(m) => (StatusCode::UNPROCESSABLE_ENTITY, m),
             ApiError::Export(m) => (StatusCode::UNPROCESSABLE_ENTITY, m),
             ApiError::Internal(m) => (StatusCode::INTERNAL_SERVER_ERROR, m),

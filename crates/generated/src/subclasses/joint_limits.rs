@@ -23,8 +23,8 @@ impl crate::Parse for JointLimits {
         let mut max_bounce = None;
         let mut bounce_min_velocity = None;
         let mut contact_distance = None;
-            min = Some(rdr.read_f32()?);
-            max = Some(rdr.read_f32()?);
+        min = Some(rdr.read_f32()?);
+        max = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(5, 1, 0) {
             bounciness = Some(rdr.read_f32()?);
             bounce_min_velocity = Some(rdr.read_f32()?);

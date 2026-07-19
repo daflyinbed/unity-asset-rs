@@ -3,7 +3,6 @@
 use crate::subclasses::gl_texture_settings::GlTextureSettings;
 use crate::subclasses::streaming_info::StreamingInfo;
 
-
 /// 版本枚举：Texture2DArrayMDownscaleFallbackVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum Texture2DArrayMDownscaleFallbackVariant {
@@ -96,7 +95,7 @@ impl crate::Parse for Texture2DArray {
         let mut m_usage_mode = None;
         let mut m_ignore_mipmap_limit = None;
         let mut m_mipmap_limit_group_name = None;
-            m_name = Some(rdr.read_aligned_string()?);
+        m_name = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
             m_is_alpha_channel_optional = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -119,35 +118,40 @@ impl crate::Parse for Texture2DArray {
             m_downscale_fallback = Some(Texture2DArrayMDownscaleFallbackVariant::parse(rdr, ver)?);
         } else {
         }
-            m_width = Some(rdr.read_i32()?);
-            m_height = Some(rdr.read_i32()?);
-            m_depth = Some(rdr.read_i32()?);
+        m_width = Some(rdr.read_i32()?);
+        m_height = Some(rdr.read_i32()?);
+        m_depth = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
         } else {
             m_format = Some(rdr.read_i32()?);
         }
-            m_mip_count = Some(rdr.read_i32()?);
+        m_mip_count = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
             m_mips_stripped = Some(rdr.read_i32()?);
         } else {
         }
-            m_complete_image_size = Some(rdr.read_u32()?);
-            m_texture_settings = Some(GlTextureSettings::parse(rdr, ver)?);
+        m_complete_image_size = Some(rdr.read_u32()?);
+        m_texture_settings = Some(GlTextureSettings::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2020, 2, 0) {
             m_usage_mode = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
         } else {
             m_color_space = Some(rdr.read_i32()?);
         }
-            m_is_readable = Some(Texture2DArrayMIsReadableVariant::parse(rdr, ver)?);
+        m_is_readable = Some(Texture2DArrayMIsReadableVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
             m_ignore_mipmap_limit = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_mipmap_limit_group_name = Some(rdr.read_aligned_string()?);
         } else {
         }
-            image_data = Some(( { let n = rdr.read_i32()? as usize; rdr.read_bytes(n) } )?);
-            rdr.align(4)?;
+        image_data = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                rdr.read_bytes(n)
+            })?,
+        );
+        rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
             m_stream_data = Some(StreamingInfo::parse(rdr, ver)?);
         } else {

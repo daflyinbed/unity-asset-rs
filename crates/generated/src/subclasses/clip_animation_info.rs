@@ -6,7 +6,6 @@ use crate::subclasses::avatar_skeleton_mask_element::AvatarSkeletonMaskElement;
 use crate::subclasses::clip_animation_info_curve::ClipAnimationInfoCurve;
 use crate::subclasses::transform_mask_element::TransformMaskElement;
 
-
 /// 版本枚举：ClipAnimationInfoFirstFrameVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ClipAnimationInfoFirstFrameVariant {
@@ -110,11 +109,21 @@ impl crate::Parse for ClipAnimationInfoBodyMaskVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_u32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_u32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -133,11 +142,21 @@ impl crate::Parse for ClipAnimationInfoCurvesVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ClipAnimationInfoCurve::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| ClipAnimationInfoCurve::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ClipAnimationInfoCurve::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| ClipAnimationInfoCurve::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -156,11 +175,21 @@ impl crate::Parse for ClipAnimationInfoTransformMaskVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TransformMaskElement::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| TransformMaskElement::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TransformMaskElement::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| TransformMaskElement::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -179,11 +208,21 @@ impl crate::Parse for ClipAnimationInfoEventsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AnimationEvent::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| AnimationEvent::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AnimationEvent::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| AnimationEvent::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -257,7 +296,7 @@ impl crate::Parse for ClipAnimationInfo {
         let mut mask_type = None;
         let mut mask_source = None;
         let mut additive_reference_pose_frame = None;
-            name = Some(rdr.read_aligned_string()?);
+        name = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             take_name = Some(rdr.read_aligned_string()?);
             internal_id = Some(rdr.read_i64()?);
@@ -265,16 +304,16 @@ impl crate::Parse for ClipAnimationInfo {
             take_name = Some(rdr.read_aligned_string()?);
         } else {
         }
-            first_frame = Some(ClipAnimationInfoFirstFrameVariant::parse(rdr, ver)?);
-            last_frame = Some(ClipAnimationInfoLastFrameVariant::parse(rdr, ver)?);
-            wrap_mode = Some(rdr.read_i32()?);
+        first_frame = Some(ClipAnimationInfoFirstFrameVariant::parse(rdr, ver)?);
+        last_frame = Some(ClipAnimationInfoLastFrameVariant::parse(rdr, ver)?);
+        wrap_mode = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(4, 0, 0) {
             orientation_offset_y = Some(rdr.read_f32()?);
             level = Some(rdr.read_f32()?);
             cycle_offset = Some(rdr.read_f32()?);
         } else {
         }
-            r#loop = Some(ClipAnimationInfoRLoopVariant::parse(rdr, ver)?);
+        r#loop = Some(ClipAnimationInfoRLoopVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 3, 0) {
             has_additive_reference_pose = Some(rdr.read_bool()?);
             loop_time = Some(rdr.read_bool()?);
@@ -338,7 +377,14 @@ impl crate::Parse for ClipAnimationInfo {
             rdr.align(4)?;
             body_mask = Some(ClipAnimationInfoBodyMaskVariant::parse(rdr, ver)?);
             curves = Some(ClipAnimationInfoCurvesVariant::parse(rdr, ver)?);
-            skeleton_mask_elements = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AvatarSkeletonMaskElement::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            skeleton_mask_elements = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| AvatarSkeletonMaskElement::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else {
         }
 

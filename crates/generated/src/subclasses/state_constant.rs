@@ -3,7 +3,6 @@
 use crate::subclasses::leaf_info_constant::LeafInfoConstant;
 use crate::subclasses::offset_ptr::OffsetPtr;
 
-
 /// 版本枚举：StateConstantMLoopVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum StateConstantMLoopVariant {
@@ -73,13 +72,41 @@ impl crate::Parse for StateConstant {
         let mut m_mirror = None;
         let mut m_time_param_id = None;
         let mut m_write_default_values = None;
-            m_transition_constant_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { OffsetPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_blend_tree_constant_index_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+        m_transition_constant_array = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| OffsetPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        m_blend_tree_constant_index_array = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_i32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
         if *ver >= crate::UnityVersion::new(5, 2, 0) {
         } else {
-            m_leaf_info_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { LeafInfoConstant::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_leaf_info_array = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| LeafInfoConstant::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         }
-            m_blend_tree_constant_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { OffsetPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+        m_blend_tree_constant_array = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| OffsetPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_name_id = Some(rdr.read_u32()?);
             m_path_id = Some(rdr.read_u32()?);
@@ -90,7 +117,7 @@ impl crate::Parse for StateConstant {
         } else {
             m_id = Some(rdr.read_u32()?);
         }
-            m_tag_id = Some(rdr.read_u32()?);
+        m_tag_id = Some(rdr.read_u32()?);
         if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             m_speed_param_id = Some(rdr.read_u32()?);
             m_mirror_param_id = Some(rdr.read_u32()?);
@@ -102,17 +129,17 @@ impl crate::Parse for StateConstant {
             m_cycle_offset_param_id = Some(rdr.read_u32()?);
         } else {
         }
-            m_speed = Some(rdr.read_f32()?);
+        m_speed = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(4, 1, 0) {
             m_cycle_offset = Some(rdr.read_f32()?);
         } else {
         }
-            m_ik_on_feet = Some(rdr.read_bool()?);
+        m_ik_on_feet = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_write_default_values = Some(rdr.read_bool()?);
         } else {
         }
-            m_loop = Some(StateConstantMLoopVariant::parse(rdr, ver)?);
+        m_loop = Some(StateConstantMLoopVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(4, 1, 0) {
             m_mirror = Some(rdr.read_bool()?);
             rdr.align(4)?;

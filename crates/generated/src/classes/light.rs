@@ -8,7 +8,6 @@ use crate::subclasses::shadow_settings::ShadowSettings;
 use crate::subclasses::vector2f::Vector2f;
 use crate::subclasses::vector4f::Vector4f;
 
-
 /// 版本枚举：LightMDrawHaloVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum LightMDrawHaloVariant {
@@ -108,7 +107,8 @@ pub struct Light {
     pub m_use_color_temperature: Option<bool>,
     pub m_bounding_sphere_override: Option<Vector4f>,
     pub m_use_bounding_sphere_override: Option<LightMUseBoundingSphereOverrideVariant>,
-    pub m_use_view_frustum_for_shadow_caster_cull: Option<LightMUseViewFrustumForShadowCasterCullVariant>,
+    pub m_use_view_frustum_for_shadow_caster_cull:
+        Option<LightMUseViewFrustumForShadowCasterCullVariant>,
     pub m_force_visible: Option<bool>,
     pub m_light_unit: Option<i32>,
     pub m_shape_radius: Option<f32>,
@@ -156,19 +156,19 @@ impl crate::Parse for Light {
         let mut m_shape_radius = None;
         let mut m_lux_at_distance = None;
         let mut m_enable_spot_reflector = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_enabled = Some(rdr.read_u8()?);
-            rdr.align(4)?;
-            m_type = Some(rdr.read_i32()?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_enabled = Some(rdr.read_u8()?);
+        rdr.align(4)?;
+        m_type = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
             m_shape = Some(rdr.read_i32()?);
         } else {
         }
-            m_color = Some(ColorRgbAf::parse(rdr, ver)?);
-            m_intensity = Some(rdr.read_f32()?);
-            m_range = Some(rdr.read_f32()?);
-            m_spot_angle = Some(rdr.read_f32()?);
+        m_color = Some(ColorRgbAf::parse(rdr, ver)?);
+        m_intensity = Some(rdr.read_f32()?);
+        m_range = Some(rdr.read_f32()?);
+        m_spot_angle = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(6000, 3, 0) {
             m_inner_spot_angle = Some(rdr.read_f32()?);
             m_cookie_size2_d = Some(Vector2f::parse(rdr, ver)?);
@@ -178,9 +178,9 @@ impl crate::Parse for Light {
         } else {
             m_cookie_size = Some(rdr.read_f32()?);
         }
-            m_shadows = Some(ShadowSettings::parse(rdr, ver)?);
-            m_cookie = Some(crate::PPtr::parse(rdr, ver)?);
-            m_draw_halo = Some(LightMDrawHaloVariant::parse(rdr, ver)?);
+        m_shadows = Some(ShadowSettings::parse(rdr, ver)?);
+        m_cookie = Some(crate::PPtr::parse(rdr, ver)?);
+        m_draw_halo = Some(LightMDrawHaloVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
             m_baking_output = Some(LightBakingOutput::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
@@ -190,14 +190,14 @@ impl crate::Parse for Light {
             m_actually_lightmapped = Some(rdr.read_bool()?);
             rdr.align(4)?;
         }
-            m_flare = Some(crate::PPtr::parse(rdr, ver)?);
-            m_render_mode = Some(rdr.read_i32()?);
-            m_culling_mask = Some(BitField::parse(rdr, ver)?);
+        m_flare = Some(crate::PPtr::parse(rdr, ver)?);
+        m_render_mode = Some(rdr.read_i32()?);
+        m_culling_mask = Some(BitField::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             m_rendering_layer_mask = Some(rdr.read_u32()?);
         } else {
         }
-            m_lightmapping = Some(rdr.read_i32()?);
+        m_lightmapping = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(6000, 4, 0) {
             m_light_shadow_caster_mode = Some(rdr.read_i32()?);
             m_area_size = Some(Vector2f::parse(rdr, ver)?);
@@ -206,8 +206,11 @@ impl crate::Parse for Light {
             m_use_color_temperature = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_bounding_sphere_override = Some(Vector4f::parse(rdr, ver)?);
-            m_use_bounding_sphere_override = Some(LightMUseBoundingSphereOverrideVariant::parse(rdr, ver)?);
-            m_use_view_frustum_for_shadow_caster_cull = Some(LightMUseViewFrustumForShadowCasterCullVariant::parse(rdr, ver)?);
+            m_use_bounding_sphere_override =
+                Some(LightMUseBoundingSphereOverrideVariant::parse(rdr, ver)?);
+            m_use_view_frustum_for_shadow_caster_cull = Some(
+                LightMUseViewFrustumForShadowCasterCullVariant::parse(rdr, ver)?,
+            );
             m_force_visible = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_shape_radius = Some(rdr.read_f32()?);
@@ -223,8 +226,11 @@ impl crate::Parse for Light {
             m_use_color_temperature = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_bounding_sphere_override = Some(Vector4f::parse(rdr, ver)?);
-            m_use_bounding_sphere_override = Some(LightMUseBoundingSphereOverrideVariant::parse(rdr, ver)?);
-            m_use_view_frustum_for_shadow_caster_cull = Some(LightMUseViewFrustumForShadowCasterCullVariant::parse(rdr, ver)?);
+            m_use_bounding_sphere_override =
+                Some(LightMUseBoundingSphereOverrideVariant::parse(rdr, ver)?);
+            m_use_view_frustum_for_shadow_caster_cull = Some(
+                LightMUseViewFrustumForShadowCasterCullVariant::parse(rdr, ver)?,
+            );
             m_force_visible = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_light_unit = Some(rdr.read_i32()?);
@@ -239,8 +245,11 @@ impl crate::Parse for Light {
             m_use_color_temperature = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_bounding_sphere_override = Some(Vector4f::parse(rdr, ver)?);
-            m_use_bounding_sphere_override = Some(LightMUseBoundingSphereOverrideVariant::parse(rdr, ver)?);
-            m_use_view_frustum_for_shadow_caster_cull = Some(LightMUseViewFrustumForShadowCasterCullVariant::parse(rdr, ver)?);
+            m_use_bounding_sphere_override =
+                Some(LightMUseBoundingSphereOverrideVariant::parse(rdr, ver)?);
+            m_use_view_frustum_for_shadow_caster_cull = Some(
+                LightMUseViewFrustumForShadowCasterCullVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             m_light_shadow_caster_mode = Some(rdr.read_i32()?);
             m_area_size = Some(Vector2f::parse(rdr, ver)?);
@@ -249,7 +258,8 @@ impl crate::Parse for Light {
             m_use_color_temperature = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_bounding_sphere_override = Some(Vector4f::parse(rdr, ver)?);
-            m_use_bounding_sphere_override = Some(LightMUseBoundingSphereOverrideVariant::parse(rdr, ver)?);
+            m_use_bounding_sphere_override =
+                Some(LightMUseBoundingSphereOverrideVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2018, 2, 0) {
             m_light_shadow_caster_mode = Some(rdr.read_i32()?);
             m_area_size = Some(Vector2f::parse(rdr, ver)?);

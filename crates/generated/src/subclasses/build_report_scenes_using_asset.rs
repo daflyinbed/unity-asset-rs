@@ -12,7 +12,12 @@ impl crate::Parse for BuildReportScenesUsingAsset {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let asset_path = rdr.read_aligned_string()?;
-        let scene_paths = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+        let scene_paths = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| rdr.read_aligned_string())
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
 
         Ok(BuildReportScenesUsingAsset {

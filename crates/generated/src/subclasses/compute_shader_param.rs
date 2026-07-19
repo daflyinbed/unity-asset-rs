@@ -2,7 +2,6 @@
 
 use crate::subclasses::fast_property_name::FastPropertyName;
 
-
 /// 版本枚举：ComputeShaderParamNameVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ComputeShaderParamNameVariant {
@@ -19,7 +18,7 @@ impl crate::Parse for ComputeShaderParamNameVariant {
             let v = rdr.read_aligned_string()?;
             Ok(Self::V5_6(v))
         } else {
-            let v = ( { Ok(Box::new(FastPropertyName::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(FastPropertyName::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
         }
     }

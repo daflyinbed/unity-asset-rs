@@ -5,7 +5,6 @@ use crate::subclasses::human_handle::HumanHandle;
 use crate::subclasses::quaternionf::Quaternionf;
 use crate::subclasses::skeleton_bone::SkeletonBone;
 
-
 /// 版本枚举：HumanDescriptionMHumanVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum HumanDescriptionMHumanVariant {
@@ -19,11 +18,21 @@ impl crate::Parse for HumanDescriptionMHumanVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { HumanBone::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| HumanBone::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { HumanBone::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| HumanBone::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -42,11 +51,21 @@ impl crate::Parse for HumanDescriptionMSkeletonVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SkeletonBone::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| SkeletonBone::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SkeletonBone::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| SkeletonBone::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -115,37 +134,47 @@ impl crate::Parse for HumanDescription {
         let mut m_root_motion_bone_rotation = None;
         let mut m_has_extra_root = None;
         let mut m_skeleton_has_parents = None;
-            m_human = Some(HumanDescriptionMHumanVariant::parse(rdr, ver)?);
-            m_skeleton = Some(HumanDescriptionMSkeletonVariant::parse(rdr, ver)?);
+        m_human = Some(HumanDescriptionMHumanVariant::parse(rdr, ver)?);
+        m_skeleton = Some(HumanDescriptionMSkeletonVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(4, 3, 0) {
         } else {
-            m_handles = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { HumanHandle::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_handles = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| HumanHandle::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         }
-            m_arm_twist = Some(rdr.read_f32()?);
-            m_fore_arm_twist = Some(rdr.read_f32()?);
-            m_upper_leg_twist = Some(rdr.read_f32()?);
-            m_leg_twist = Some(rdr.read_f32()?);
-            m_arm_stretch = Some(rdr.read_f32()?);
-            m_leg_stretch = Some(rdr.read_f32()?);
-            m_feet_spacing = Some(rdr.read_f32()?);
+        m_arm_twist = Some(rdr.read_f32()?);
+        m_fore_arm_twist = Some(rdr.read_f32()?);
+        m_upper_leg_twist = Some(rdr.read_f32()?);
+        m_leg_twist = Some(rdr.read_f32()?);
+        m_arm_stretch = Some(rdr.read_f32()?);
+        m_leg_stretch = Some(rdr.read_f32()?);
+        m_feet_spacing = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             m_global_scale = Some(rdr.read_f32()?);
         } else {
         }
-            m_root_motion_bone_name = Some(rdr.read_aligned_string()?);
+        m_root_motion_bone_name = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(2018, 2, 13) {
-            m_has_translation_do_f = Some(HumanDescriptionMHasTranslationDoFVariant::parse(rdr, ver)?);
+            m_has_translation_do_f =
+                Some(HumanDescriptionMHasTranslationDoFVariant::parse(rdr, ver)?);
             m_has_extra_root = Some(rdr.read_bool()?);
             m_skeleton_has_parents = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
             m_root_motion_bone_rotation = Some(Quaternionf::parse(rdr, ver)?);
-            m_has_translation_do_f = Some(HumanDescriptionMHasTranslationDoFVariant::parse(rdr, ver)?);
+            m_has_translation_do_f =
+                Some(HumanDescriptionMHasTranslationDoFVariant::parse(rdr, ver)?);
             m_has_extra_root = Some(rdr.read_bool()?);
             m_skeleton_has_parents = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            m_has_translation_do_f = Some(HumanDescriptionMHasTranslationDoFVariant::parse(rdr, ver)?);
+            m_has_translation_do_f =
+                Some(HumanDescriptionMHasTranslationDoFVariant::parse(rdr, ver)?);
         } else {
         }
 

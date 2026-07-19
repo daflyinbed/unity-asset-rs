@@ -1,6 +1,5 @@
 //! 自动生成。请勿手动修改。
 
-
 /// 版本枚举：RayTracingShaderParamOffsetVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum RayTracingShaderParamOffsetVariant {
@@ -117,21 +116,21 @@ impl crate::Parse for RayTracingShaderParam {
         let mut row_count = None;
         let mut property_sheet_type = None;
         let mut col_count = None;
-            name = Some(rdr.read_aligned_string()?);
+        name = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(2020, 1, 0) {
             data_type = Some(rdr.read_i32()?);
             data_size = Some(rdr.read_u32()?);
         } else {
             r#type = Some(rdr.read_i32()?);
         }
-            offset = Some(RayTracingShaderParamOffsetVariant::parse(rdr, ver)?);
+        offset = Some(RayTracingShaderParamOffsetVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2020, 1, 0) {
             property_sheet_type = Some(rdr.read_i32()?);
         } else {
         }
-            array_size = Some(RayTracingShaderParamArraySizeVariant::parse(rdr, ver)?);
-            row_count = Some(RayTracingShaderParamRowCountVariant::parse(rdr, ver)?);
-            col_count = Some(RayTracingShaderParamColCountVariant::parse(rdr, ver)?);
+        array_size = Some(RayTracingShaderParamArraySizeVariant::parse(rdr, ver)?);
+        row_count = Some(RayTracingShaderParamRowCountVariant::parse(rdr, ver)?);
+        col_count = Some(RayTracingShaderParamColCountVariant::parse(rdr, ver)?);
 
         Ok(RayTracingShaderParam {
             name: name.unwrap(),

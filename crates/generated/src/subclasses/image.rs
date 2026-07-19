@@ -1,6 +1,5 @@
 //! 自动生成。请勿手动修改。
 
-
 /// 版本枚举：ImageMFormatVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ImageMFormatVariant {
@@ -40,7 +39,10 @@ impl crate::Parse for Image {
         let m_width = rdr.read_i32()?;
         let m_height = rdr.read_i32()?;
         let m_row_bytes = rdr.read_i32()?;
-        let image_data = ( { let n = rdr.read_i32()? as usize; rdr.read_bytes(n) } )?;
+        let image_data = ({
+            let n = rdr.read_i32()? as usize;
+            rdr.read_bytes(n)
+        })?;
         rdr.align(4)?;
 
         Ok(Image {

@@ -12,8 +12,6 @@ impl crate::Parse for NonAlignedStruct {
     ) -> Result<Self, R::Error> {
         let m_bool = rdr.read_bool()?;
 
-        Ok(NonAlignedStruct {
-            m_bool,
-        })
+        Ok(NonAlignedStruct { m_bool })
     }
 }

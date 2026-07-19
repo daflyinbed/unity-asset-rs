@@ -16,9 +16,6 @@ impl crate::Parse for VfxExposedMapping {
         let mapping = VfxMapping::parse(rdr, ver)?;
         let space = rdr.read_i32()?;
 
-        Ok(VfxExposedMapping {
-            mapping,
-            space,
-        })
+        Ok(VfxExposedMapping { mapping, space })
     }
 }

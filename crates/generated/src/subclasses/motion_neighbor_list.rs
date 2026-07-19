@@ -10,10 +10,13 @@ impl crate::Parse for MotionNeighborList {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_neighbor_array = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_neighbor_array = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| rdr.read_u32())
+                .collect::<Result<Vec<_>, _>>()
+        })?;
 
-        Ok(MotionNeighborList {
-            m_neighbor_array,
-        })
+        Ok(MotionNeighborList { m_neighbor_array })
     }
 }

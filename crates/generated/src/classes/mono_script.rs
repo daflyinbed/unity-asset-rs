@@ -2,7 +2,6 @@
 
 use crate::subclasses::hash128::Hash128;
 
-
 /// 版本枚举：MonoScriptMPropertiesHashVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum MonoScriptMPropertiesHashVariant {
@@ -16,7 +15,7 @@ impl crate::Parse for MonoScriptMPropertiesHashVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = ( { Ok(Box::new(Hash128::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(Hash128::parse(rdr, ver)?)) })?;
             Ok(Self::V5_0(v))
         } else {
             let v = rdr.read_u32()?;
@@ -47,12 +46,12 @@ impl crate::Parse for MonoScript {
         let mut m_namespace = None;
         let mut m_assembly_name = None;
         let mut m_is_editor_script = None;
-            m_name = Some(rdr.read_aligned_string()?);
-            m_execution_order = Some(rdr.read_i32()?);
-            m_properties_hash = Some(MonoScriptMPropertiesHashVariant::parse(rdr, ver)?);
-            m_class_name = Some(rdr.read_aligned_string()?);
-            m_namespace = Some(rdr.read_aligned_string()?);
-            m_assembly_name = Some(rdr.read_aligned_string()?);
+        m_name = Some(rdr.read_aligned_string()?);
+        m_execution_order = Some(rdr.read_i32()?);
+        m_properties_hash = Some(MonoScriptMPropertiesHashVariant::parse(rdr, ver)?);
+        m_class_name = Some(rdr.read_aligned_string()?);
+        m_namespace = Some(rdr.read_aligned_string()?);
+        m_assembly_name = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(2018, 2, 0) {
         } else {
             m_is_editor_script = Some(rdr.read_bool()?);

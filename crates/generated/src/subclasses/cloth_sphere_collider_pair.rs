@@ -16,9 +16,6 @@ impl crate::Parse for ClothSphereColliderPair {
         let first = crate::PPtr::parse(rdr, ver)?;
         let second = crate::PPtr::parse(rdr, ver)?;
 
-        Ok(ClothSphereColliderPair {
-            first,
-            second,
-        })
+        Ok(ClothSphereColliderPair { first, second })
     }
 }

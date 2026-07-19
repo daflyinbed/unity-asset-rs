@@ -10,7 +10,6 @@ use crate::subclasses::texture_parameter::TextureParameter;
 use crate::subclasses::uav_parameter::UavParameter;
 use crate::subclasses::vector_parameter::VectorParameter;
 
-
 /// 版本枚举：SerializedSubProgramMKeywordIndicesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum SerializedSubProgramMKeywordIndicesVariant {
@@ -24,11 +23,21 @@ impl crate::Parse for SerializedSubProgramMKeywordIndicesVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u16() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_u16())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u16() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_u16())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -47,11 +56,21 @@ impl crate::Parse for SerializedSubProgramMVectorParamsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VectorParameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| VectorParameter::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VectorParameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| VectorParameter::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -70,11 +89,21 @@ impl crate::Parse for SerializedSubProgramMMatrixParamsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MatrixParameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| MatrixParameter::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MatrixParameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| MatrixParameter::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -115,11 +144,21 @@ impl crate::Parse for SerializedSubProgramMTextureParamsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TextureParameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| TextureParameter::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TextureParameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| TextureParameter::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -138,11 +177,21 @@ impl crate::Parse for SerializedSubProgramMBufferParamsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { BufferBindingParameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| BufferBindingParameter::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { BufferBindingParameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| BufferBindingParameter::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -161,11 +210,21 @@ impl crate::Parse for SerializedSubProgramMConstantBuffersVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ConstantBuffer::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| ConstantBuffer::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ConstantBuffer::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| ConstantBuffer::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -184,11 +243,21 @@ impl crate::Parse for SerializedSubProgramMConstantBufferBindingsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { BufferBindingParameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| BufferBindingParameter::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { BufferBindingParameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| BufferBindingParameter::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -207,11 +276,21 @@ impl crate::Parse for SerializedSubProgramMUavParamsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { UavParameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| UavParameter::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { UavParameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| UavParameter::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -259,66 +338,125 @@ impl crate::Parse for SerializedSubProgram {
         let mut m_constant_buffer_bindings = None;
         let mut m_uav_params = None;
         let mut m_samplers = None;
-            m_blob_index = Some(rdr.read_u32()?);
-            m_channels = Some(ParserBindChannels::parse(rdr, ver)?);
+        m_blob_index = Some(rdr.read_u32()?);
+        m_channels = Some(ParserBindChannels::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2021, 2, 0) {
             m_keyword_indices = Some(SerializedSubProgramMKeywordIndicesVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_global_keyword_indices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u16() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_global_keyword_indices = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_u16())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_local_keyword_indices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u16() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_local_keyword_indices = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_u16())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else {
             m_keyword_indices = Some(SerializedSubProgramMKeywordIndicesVariant::parse(rdr, ver)?);
         }
-            m_shader_hardware_tier = Some(rdr.read_i8()?);
-            m_gpu_program_type = Some(rdr.read_i8()?);
-            rdr.align(4)?;
+        m_shader_hardware_tier = Some(rdr.read_i8()?);
+        m_gpu_program_type = Some(rdr.read_i8()?);
+        rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2021, 1, 1) {
             m_parameters = Some(SerializedProgramParameters::parse(rdr, ver)?);
-            m_shader_requirements = Some(SerializedSubProgramMShaderRequirementsVariant::parse(rdr, ver)?);
+            m_shader_requirements = Some(SerializedSubProgramMShaderRequirementsVariant::parse(
+                rdr, ver,
+            )?);
         } else if *ver >= crate::UnityVersion::new(2021, 1, 0) {
             m_vector_params = Some(SerializedSubProgramMVectorParamsVariant::parse(rdr, ver)?);
             m_matrix_params = Some(SerializedSubProgramMMatrixParamsVariant::parse(rdr, ver)?);
             m_texture_params = Some(SerializedSubProgramMTextureParamsVariant::parse(rdr, ver)?);
             m_buffer_params = Some(SerializedSubProgramMBufferParamsVariant::parse(rdr, ver)?);
-            m_constant_buffers = Some(SerializedSubProgramMConstantBuffersVariant::parse(rdr, ver)?);
-            m_constant_buffer_bindings = Some(SerializedSubProgramMConstantBufferBindingsVariant::parse(rdr, ver)?);
+            m_constant_buffers = Some(SerializedSubProgramMConstantBuffersVariant::parse(
+                rdr, ver,
+            )?);
+            m_constant_buffer_bindings = Some(
+                SerializedSubProgramMConstantBufferBindingsVariant::parse(rdr, ver)?,
+            );
             m_uav_params = Some(SerializedSubProgramMUavParamsVariant::parse(rdr, ver)?);
-            m_samplers = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SamplerParameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_samplers = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| SamplerParameter::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_shader_requirements = Some(SerializedSubProgramMShaderRequirementsVariant::parse(rdr, ver)?);
+            m_shader_requirements = Some(SerializedSubProgramMShaderRequirementsVariant::parse(
+                rdr, ver,
+            )?);
         } else if *ver >= crate::UnityVersion::new(2020, 3, 2) {
             m_parameters = Some(SerializedProgramParameters::parse(rdr, ver)?);
-            m_shader_requirements = Some(SerializedSubProgramMShaderRequirementsVariant::parse(rdr, ver)?);
+            m_shader_requirements = Some(SerializedSubProgramMShaderRequirementsVariant::parse(
+                rdr, ver,
+            )?);
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             m_vector_params = Some(SerializedSubProgramMVectorParamsVariant::parse(rdr, ver)?);
             m_matrix_params = Some(SerializedSubProgramMMatrixParamsVariant::parse(rdr, ver)?);
             m_texture_params = Some(SerializedSubProgramMTextureParamsVariant::parse(rdr, ver)?);
             m_buffer_params = Some(SerializedSubProgramMBufferParamsVariant::parse(rdr, ver)?);
-            m_constant_buffers = Some(SerializedSubProgramMConstantBuffersVariant::parse(rdr, ver)?);
-            m_constant_buffer_bindings = Some(SerializedSubProgramMConstantBufferBindingsVariant::parse(rdr, ver)?);
+            m_constant_buffers = Some(SerializedSubProgramMConstantBuffersVariant::parse(
+                rdr, ver,
+            )?);
+            m_constant_buffer_bindings = Some(
+                SerializedSubProgramMConstantBufferBindingsVariant::parse(rdr, ver)?,
+            );
             m_uav_params = Some(SerializedSubProgramMUavParamsVariant::parse(rdr, ver)?);
-            m_samplers = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SamplerParameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_samplers = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| SamplerParameter::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_shader_requirements = Some(SerializedSubProgramMShaderRequirementsVariant::parse(rdr, ver)?);
+            m_shader_requirements = Some(SerializedSubProgramMShaderRequirementsVariant::parse(
+                rdr, ver,
+            )?);
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             m_vector_params = Some(SerializedSubProgramMVectorParamsVariant::parse(rdr, ver)?);
             m_matrix_params = Some(SerializedSubProgramMMatrixParamsVariant::parse(rdr, ver)?);
             m_texture_params = Some(SerializedSubProgramMTextureParamsVariant::parse(rdr, ver)?);
             m_buffer_params = Some(SerializedSubProgramMBufferParamsVariant::parse(rdr, ver)?);
-            m_constant_buffers = Some(SerializedSubProgramMConstantBuffersVariant::parse(rdr, ver)?);
-            m_constant_buffer_bindings = Some(SerializedSubProgramMConstantBufferBindingsVariant::parse(rdr, ver)?);
+            m_constant_buffers = Some(SerializedSubProgramMConstantBuffersVariant::parse(
+                rdr, ver,
+            )?);
+            m_constant_buffer_bindings = Some(
+                SerializedSubProgramMConstantBufferBindingsVariant::parse(rdr, ver)?,
+            );
             m_uav_params = Some(SerializedSubProgramMUavParamsVariant::parse(rdr, ver)?);
-            m_samplers = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SamplerParameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_samplers = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| SamplerParameter::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else {
             m_vector_params = Some(SerializedSubProgramMVectorParamsVariant::parse(rdr, ver)?);
             m_matrix_params = Some(SerializedSubProgramMMatrixParamsVariant::parse(rdr, ver)?);
             m_texture_params = Some(SerializedSubProgramMTextureParamsVariant::parse(rdr, ver)?);
             m_buffer_params = Some(SerializedSubProgramMBufferParamsVariant::parse(rdr, ver)?);
-            m_constant_buffers = Some(SerializedSubProgramMConstantBuffersVariant::parse(rdr, ver)?);
-            m_constant_buffer_bindings = Some(SerializedSubProgramMConstantBufferBindingsVariant::parse(rdr, ver)?);
+            m_constant_buffers = Some(SerializedSubProgramMConstantBuffersVariant::parse(
+                rdr, ver,
+            )?);
+            m_constant_buffer_bindings = Some(
+                SerializedSubProgramMConstantBufferBindingsVariant::parse(rdr, ver)?,
+            );
             m_uav_params = Some(SerializedSubProgramMUavParamsVariant::parse(rdr, ver)?);
         }
 

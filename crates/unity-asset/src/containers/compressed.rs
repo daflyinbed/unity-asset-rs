@@ -20,12 +20,12 @@ const BROTLI_SIGNATURE: &[u8] = b"UnityWeb Compressed Content (brotli)";
 pub fn decompress_gzip(input: &[u8]) -> Result<Vec<u8>> {
     let mut decoder = flate2::read::GzDecoder::new(input);
     let mut out = Vec::new();
-    decoder
-        .read_to_end(&mut out)
-        .map_err(|e| DecompressSnafu {
+    decoder.read_to_end(&mut out).map_err(|e| {
+        DecompressSnafu {
             reason: format!("gzip 解压失败: {e}"),
         }
-        .build())?;
+        .build()
+    })?;
     log::debug!("gzip: {} bytes -> {} bytes", input.len(), out.len());
     Ok(out)
 }
@@ -37,12 +37,12 @@ pub fn decompress_gzip(input: &[u8]) -> Result<Vec<u8>> {
 pub fn decompress_brotli(input: &[u8]) -> Result<Vec<u8>> {
     let mut decoder = brotli::Decompressor::new(input, 4096);
     let mut out = Vec::new();
-    decoder
-        .read_to_end(&mut out)
-        .map_err(|e| DecompressSnafu {
+    decoder.read_to_end(&mut out).map_err(|e| {
+        DecompressSnafu {
             reason: format!("brotli 解压失败: {e}"),
         }
-        .build())?;
+        .build()
+    })?;
     log::debug!("brotli: {} bytes -> {} bytes", input.len(), out.len());
     Ok(out)
 }

@@ -3,7 +3,6 @@
 use crate::PPtr;
 use crate::subclasses::vector3f::Vector3f;
 
-
 /// 版本枚举：HeightmapMPrecomputedErrorVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum HeightmapMPrecomputedErrorVariant {
@@ -17,11 +16,21 @@ impl crate::Parse for HeightmapMPrecomputedErrorVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_f32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_f32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_f32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_f32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -40,11 +49,21 @@ impl crate::Parse for HeightmapMMinMaxPatchHeightsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_f32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_f32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_f32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_f32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -84,19 +103,36 @@ impl crate::Parse for Heightmap {
         let mut m_levels = None;
         let mut m_resolution = None;
         let mut m_scale = None;
-            m_heights = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i16() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+        m_heights = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_i16())
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            m_holes = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_holes = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n).map(|_| rdr.read_u8()).collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_holes_lod = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_holes_lod = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n).map(|_| rdr.read_u8()).collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_enable_holes_texture_compression = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else {
         }
-            m_precomputed_error = Some(HeightmapMPrecomputedErrorVariant::parse(rdr, ver)?);
-            m_min_max_patch_heights = Some(HeightmapMMinMaxPatchHeightsVariant::parse(rdr, ver)?);
+        m_precomputed_error = Some(HeightmapMPrecomputedErrorVariant::parse(rdr, ver)?);
+        m_min_max_patch_heights = Some(HeightmapMMinMaxPatchHeightsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2019, 3, 0) {
             m_resolution = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
@@ -108,8 +144,8 @@ impl crate::Parse for Heightmap {
             m_width = Some(rdr.read_i32()?);
             m_height = Some(rdr.read_i32()?);
         }
-            m_levels = Some(rdr.read_i32()?);
-            m_scale = Some(Vector3f::parse(rdr, ver)?);
+        m_levels = Some(rdr.read_i32()?);
+        m_scale = Some(Vector3f::parse(rdr, ver)?);
 
         Ok(Heightmap {
             m_heights: m_heights.unwrap(),

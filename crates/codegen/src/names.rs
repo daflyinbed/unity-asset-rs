@@ -8,8 +8,7 @@ const RUST_KEYWORDS: &[&str] = &[
     "as", "break", "const", "continue", "crate", "else", "enum", "extern", "false", "fn", "for",
     "if", "impl", "in", "let", "loop", "match", "mod", "move", "mut", "pub", "ref", "return",
     "self", "Self", "static", "struct", "super", "trait", "true", "type", "unsafe", "use", "where",
-    "while", "async", "await", "dyn",
-    // 弱保留（rustc 警告）
+    "while", "async", "await", "dyn", // 弱保留（rustc 警告）
     "abstract", "become", "box", "do", "final", "macro", "override", "priv", "typeof", "unsized",
     "virtual", "yield", "try",
 ];
@@ -54,19 +53,13 @@ pub fn to_rust_type_name(unity_name: &str) -> String {
 /// Rust 原始类型 + 关键字（不能作为 type 名）。
 /// 注意：`Self`、`macro` 等也包含。
 const RUST_PRIMITIVE_TYPES_OR_KEYWORDS: &[&str] = &[
-    "bool", "char", "i8", "i16", "i32", "i64", "i128", "isize",
-    "u8", "u16", "u32", "u64", "u128", "usize",
-    "f32", "f64",
-    "str", "String", "Vec", "Option", "Result",
-    "float", "double", "int", "void",  // Unity 用了这些
-    "Self", "self", "crate", "super", "mod",
-    "type", "fn", "struct", "enum", "trait", "impl",
-    "match", "if", "else", "for", "while", "loop",
-    "return", "break", "continue",
-    "let", "const", "static", "mut", "ref",
-    "move", "as", "in", "use", "pub", "where",
-    "async", "await", "dyn", "extern",
-    "true", "false",
+    "bool", "char", "i8", "i16", "i32", "i64", "i128", "isize", "u8", "u16", "u32", "u64", "u128",
+    "usize", "f32", "f64", "str", "String", "Vec", "Option", "Result", "float", "double", "int",
+    "void", // Unity 用了这些
+    "Self", "self", "crate", "super", "mod", "type", "fn", "struct", "enum", "trait", "impl",
+    "match", "if", "else", "for", "while", "loop", "return", "break", "continue", "let", "const",
+    "static", "mut", "ref", "move", "as", "in", "use", "pub", "where", "async", "await", "dyn",
+    "extern", "true", "false",
 ];
 
 /// snake_case 化。保留前缀（`m_Foo` → `m_foo`，不是 `foo`）。

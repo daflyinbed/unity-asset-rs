@@ -14,8 +14,6 @@ impl crate::Parse for TestObjectWithSerializedAnimationCurve {
     ) -> Result<Self, R::Error> {
         let m_curve = AnimationCurve::parse(rdr, ver)?;
 
-        Ok(TestObjectWithSerializedAnimationCurve {
-            m_curve,
-        })
+        Ok(TestObjectWithSerializedAnimationCurve { m_curve })
     }
 }

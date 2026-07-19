@@ -14,7 +14,12 @@ impl crate::Parse for ShaderIncludeReflection {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_functions = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ReflectedFunction::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_functions = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| ReflectedFunction::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
         let m_reflection_log = ErrorLog::parse(rdr, ver)?;
 

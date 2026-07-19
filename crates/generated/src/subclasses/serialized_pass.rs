@@ -5,7 +5,6 @@ use crate::subclasses::serialized_program::SerializedProgram;
 use crate::subclasses::serialized_shader_state::SerializedShaderState;
 use crate::subclasses::serialized_tag_map::SerializedTagMap;
 
-
 /// 版本枚举：SerializedPassMHasInstancingVariantVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum SerializedPassMHasInstancingVariantVariant {
@@ -81,47 +80,106 @@ impl crate::Parse for SerializedPass {
         let mut m_serialized_keyword_state_mask = None;
         if *ver >= crate::UnityVersion::new(2023, 1, 0) {
         } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            m_editor_data_hash = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Hash128::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_editor_data_hash = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| Hash128::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_platforms = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_platforms = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n).map(|_| rdr.read_u8()).collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            m_editor_data_hash = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Hash128::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_editor_data_hash = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| Hash128::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_platforms = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_platforms = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n).map(|_| rdr.read_u8()).collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_local_keyword_mask = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u16() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_local_keyword_mask = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_u16())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_global_keyword_mask = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u16() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_global_keyword_mask = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_u16())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else {
         }
-            m_name_indices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_type = Some(rdr.read_i32()?);
-            m_state = Some(SerializedShaderState::parse(rdr, ver)?);
-            m_program_mask = Some(rdr.read_u32()?);
-            prog_vertex = Some(SerializedProgram::parse(rdr, ver)?);
-            prog_fragment = Some(SerializedProgram::parse(rdr, ver)?);
-            prog_geometry = Some(SerializedProgram::parse(rdr, ver)?);
-            prog_hull = Some(SerializedProgram::parse(rdr, ver)?);
-            prog_domain = Some(SerializedProgram::parse(rdr, ver)?);
+        m_name_indices = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| {
+                        ({
+                            let a = rdr.read_aligned_string()?;
+                            let b = rdr.read_i32()?;
+                            Ok((a, b))
+                        })
+                    })
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        m_type = Some(rdr.read_i32()?);
+        m_state = Some(SerializedShaderState::parse(rdr, ver)?);
+        m_program_mask = Some(rdr.read_u32()?);
+        prog_vertex = Some(SerializedProgram::parse(rdr, ver)?);
+        prog_fragment = Some(SerializedProgram::parse(rdr, ver)?);
+        prog_geometry = Some(SerializedProgram::parse(rdr, ver)?);
+        prog_hull = Some(SerializedProgram::parse(rdr, ver)?);
+        prog_domain = Some(SerializedProgram::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2019, 3, 0) {
             prog_ray_tracing = Some(SerializedProgram::parse(rdr, ver)?);
         } else {
         }
-            m_has_instancing_variant = Some(SerializedPassMHasInstancingVariantVariant::parse(rdr, ver)?);
+        m_has_instancing_variant =
+            Some(SerializedPassMHasInstancingVariantVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2018, 1, 0) {
             m_has_procedural_instancing_variant = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else {
         }
-            m_use_name = Some(rdr.read_aligned_string()?);
-            m_name = Some(rdr.read_aligned_string()?);
-            m_texture_name = Some(rdr.read_aligned_string()?);
-            m_tags = Some(SerializedTagMap::parse(rdr, ver)?);
+        m_use_name = Some(rdr.read_aligned_string()?);
+        m_name = Some(rdr.read_aligned_string()?);
+        m_texture_name = Some(rdr.read_aligned_string()?);
+        m_tags = Some(SerializedTagMap::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2022, 1, 0) {
         } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            m_serialized_keyword_state_mask = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u16() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_serialized_keyword_state_mask = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_u16())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else {
         }

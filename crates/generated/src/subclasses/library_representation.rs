@@ -4,7 +4,6 @@ use crate::PPtr;
 use crate::subclasses::guid::Guid;
 use crate::subclasses::image::Image;
 
-
 /// 版本枚举：LibraryRepresentationObjectVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum LibraryRepresentationObjectVariant {
@@ -102,8 +101,8 @@ impl crate::Parse for LibraryRepresentation {
         let mut script_class_name = None;
         let mut flags = None;
         let mut local_identifier = None;
-            name = Some(rdr.read_aligned_string()?);
-            thumbnail = Some(Image::parse(rdr, ver)?);
+        name = Some(rdr.read_aligned_string()?);
+        thumbnail = Some(Image::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 1, 0) {
             guid = Some(Guid::parse(rdr, ver)?);
             path = Some(rdr.read_aligned_string()?);
@@ -111,12 +110,14 @@ impl crate::Parse for LibraryRepresentation {
         } else {
             object = Some(LibraryRepresentationObjectVariant::parse(rdr, ver)?);
         }
-            thumbnail_class_id = Some(LibraryRepresentationThumbnailClassIdVariant::parse(rdr, ver)?);
+        thumbnail_class_id = Some(LibraryRepresentationThumbnailClassIdVariant::parse(
+            rdr, ver,
+        )?);
         if *ver >= crate::UnityVersion::new(4, 0, 0) {
             flags = Some(LibraryRepresentationFlagsVariant::parse(rdr, ver)?);
         } else {
         }
-            script_class_name = Some(rdr.read_aligned_string()?);
+        script_class_name = Some(rdr.read_aligned_string()?);
 
         Ok(LibraryRepresentation {
             name: name.unwrap(),

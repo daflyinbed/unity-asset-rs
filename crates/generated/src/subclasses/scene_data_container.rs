@@ -13,10 +13,19 @@ impl crate::Parse for SceneDataContainer {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_scene_data = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SceneIdentifier::parse(rdr, ver)?; let b = HierarchicalSceneData::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_scene_data = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| {
+                    ({
+                        let a = SceneIdentifier::parse(rdr, ver)?;
+                        let b = HierarchicalSceneData::parse(rdr, ver)?;
+                        Ok((a, b))
+                    })
+                })
+                .collect::<Result<Vec<_>, _>>()
+        })?;
 
-        Ok(SceneDataContainer {
-            m_scene_data,
-        })
+        Ok(SceneDataContainer { m_scene_data })
     }
 }

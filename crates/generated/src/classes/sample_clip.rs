@@ -12,8 +12,6 @@ impl crate::Parse for SampleClip {
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
 
-        Ok(SampleClip {
-            m_name,
-        })
+        Ok(SampleClip { m_name })
     }
 }

@@ -7,7 +7,6 @@ use crate::subclasses::performance_reporting_settings::PerformanceReportingSetti
 use crate::subclasses::unity_analytics_settings::UnityAnalyticsSettings;
 use crate::subclasses::unity_purchasing_settings::UnityPurchasingSettings;
 
-
 /// 版本枚举：UnityConnectSettingsMTestConfigUrlVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum UnityConnectSettingsMTestConfigUrlVariant {
@@ -166,8 +165,8 @@ impl crate::Parse for UnityConnectSettings {
             crash_reporting_settings = Some(CrashReportingSettings::parse(rdr, ver)?);
         } else {
         }
-            unity_purchasing_settings = Some(UnityPurchasingSettings::parse(rdr, ver)?);
-            unity_analytics_settings = Some(UnityAnalyticsSettings::parse(rdr, ver)?);
+        unity_purchasing_settings = Some(UnityPurchasingSettings::parse(rdr, ver)?);
+        unity_analytics_settings = Some(UnityAnalyticsSettings::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
             unity_ads_settings = Some(UnityAdsSettings::parse(rdr, ver)?);
             performance_reporting_settings = Some(PerformanceReportingSettings::parse(rdr, ver)?);

@@ -40,9 +40,9 @@ impl crate::Parse for DistanceJoint2D {
         let mut m_break_action = None;
         let mut m_max_distance_only = None;
         let mut m_auto_configure_distance = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_enabled = Some(rdr.read_u8()?);
-            rdr.align(4)?;
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_enabled = Some(rdr.read_u8()?);
+        rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 0, 1) {
             m_enable_collision = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -50,7 +50,7 @@ impl crate::Parse for DistanceJoint2D {
             m_collide_connected = Some(rdr.read_bool()?);
             rdr.align(4)?;
         }
-            m_connected_rigid_body = Some(crate::PPtr::parse(rdr, ver)?);
+        m_connected_rigid_body = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             m_break_force = Some(rdr.read_f32()?);
             m_break_torque = Some(rdr.read_f32()?);
@@ -64,14 +64,14 @@ impl crate::Parse for DistanceJoint2D {
             rdr.align(4)?;
         } else {
         }
-            m_anchor = Some(Vector2f::parse(rdr, ver)?);
-            m_connected_anchor = Some(Vector2f::parse(rdr, ver)?);
+        m_anchor = Some(Vector2f::parse(rdr, ver)?);
+        m_connected_anchor = Some(Vector2f::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 3, 0) {
             m_auto_configure_distance = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else {
         }
-            m_distance = Some(rdr.read_f32()?);
+        m_distance = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(4, 5, 0) {
             m_max_distance_only = Some(rdr.read_bool()?);
             rdr.align(4)?;

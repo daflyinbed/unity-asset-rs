@@ -27,7 +27,6 @@ use crate::subclasses::uv_module::UvModule;
 use crate::subclasses::vector2f::Vector2f;
 use crate::subclasses::velocity_module::VelocityModule;
 
-
 /// 版本枚举：ParticleSystemStartDelayVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ParticleSystemStartDelayVariant {
@@ -42,11 +41,11 @@ impl crate::Parse for ParticleSystemStartDelayVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            let v = ( { Ok(Box::new(MinMaxCurve::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(MinMaxCurve::parse(rdr, ver)?)) })?;
             rdr.align(4)?;
             Ok(Self::V5_5(v))
         } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            let v = ( { Ok(Box::new(MinMaxCurve::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(MinMaxCurve::parse(rdr, ver)?)) })?;
             Ok(Self::V5_3(v))
         } else {
             let v = rdr.read_f32()?;
@@ -222,8 +221,8 @@ impl crate::Parse for ParticleSystem {
         let mut lights_module = None;
         let mut trail_module = None;
         let mut custom_data_module = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            length_in_sec = Some(rdr.read_f32()?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        length_in_sec = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2021, 1, 0) {
             simulation_speed = Some(rdr.read_f32()?);
             stop_action = Some(rdr.read_i32()?);
@@ -252,9 +251,9 @@ impl crate::Parse for ParticleSystem {
             speed = Some(rdr.read_f32()?);
             random_seed = Some(ParticleSystemRandomSeedVariant::parse(rdr, ver)?);
         }
-            looping = Some(rdr.read_bool()?);
-            prewarm = Some(rdr.read_bool()?);
-            play_on_awake = Some(rdr.read_bool()?);
+        looping = Some(rdr.read_bool()?);
+        prewarm = Some(rdr.read_bool()?);
+        play_on_awake = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(2021, 1, 0) {
             use_unscaled_time = Some(rdr.read_bool()?);
             auto_random_seed = Some(ParticleSystemAutoRandomSeedVariant::parse(rdr, ver)?);
@@ -270,7 +269,7 @@ impl crate::Parse for ParticleSystem {
             start_delay = Some(ParticleSystemStartDelayVariant::parse(rdr, ver)?);
         } else {
         }
-            move_with_transform = Some(ParticleSystemMoveWithTransformVariant::parse(rdr, ver)?);
+        move_with_transform = Some(ParticleSystemMoveWithTransformVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
             move_with_custom_transform = Some(crate::PPtr::parse(rdr, ver)?);
             scaling_mode = Some(rdr.read_i32()?);
@@ -283,14 +282,14 @@ impl crate::Parse for ParticleSystem {
             scaling_mode = Some(rdr.read_i32()?);
         } else {
         }
-            initial_module = Some(InitialModule::parse(rdr, ver)?);
-            shape_module = Some(ShapeModule::parse(rdr, ver)?);
-            emission_module = Some(EmissionModule::parse(rdr, ver)?);
-            size_module = Some(SizeModule::parse(rdr, ver)?);
-            rotation_module = Some(RotationModule::parse(rdr, ver)?);
-            color_module = Some(ColorModule::parse(rdr, ver)?);
-            uv_module = Some(UvModule::parse(rdr, ver)?);
-            velocity_module = Some(VelocityModule::parse(rdr, ver)?);
+        initial_module = Some(InitialModule::parse(rdr, ver)?);
+        shape_module = Some(ShapeModule::parse(rdr, ver)?);
+        emission_module = Some(EmissionModule::parse(rdr, ver)?);
+        size_module = Some(SizeModule::parse(rdr, ver)?);
+        rotation_module = Some(RotationModule::parse(rdr, ver)?);
+        color_module = Some(ColorModule::parse(rdr, ver)?);
+        uv_module = Some(UvModule::parse(rdr, ver)?);
+        velocity_module = Some(VelocityModule::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2020, 1, 0) {
             inherit_velocity_module = Some(InheritVelocityModule::parse(rdr, ver)?);
             lifetime_by_emitter_speed_module = Some(LifetimeByEmitterSpeedModule::parse(rdr, ver)?);
@@ -298,25 +297,25 @@ impl crate::Parse for ParticleSystem {
             inherit_velocity_module = Some(InheritVelocityModule::parse(rdr, ver)?);
         } else {
         }
-            force_module = Some(ForceModule::parse(rdr, ver)?);
+        force_module = Some(ForceModule::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(4, 0, 0) {
             external_forces_module = Some(ExternalForcesModule::parse(rdr, ver)?);
         } else {
         }
-            clamp_velocity_module = Some(ClampVelocityModule::parse(rdr, ver)?);
+        clamp_velocity_module = Some(ClampVelocityModule::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
             noise_module = Some(NoiseModule::parse(rdr, ver)?);
         } else {
         }
-            size_by_speed_module = Some(SizeBySpeedModule::parse(rdr, ver)?);
-            rotation_by_speed_module = Some(RotationBySpeedModule::parse(rdr, ver)?);
-            color_by_speed_module = Some(ColorBySpeedModule::parse(rdr, ver)?);
-            collision_module = Some(CollisionModule::parse(rdr, ver)?);
+        size_by_speed_module = Some(SizeBySpeedModule::parse(rdr, ver)?);
+        rotation_by_speed_module = Some(RotationBySpeedModule::parse(rdr, ver)?);
+        color_by_speed_module = Some(ColorBySpeedModule::parse(rdr, ver)?);
+        collision_module = Some(CollisionModule::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
             trigger_module = Some(TriggerModule::parse(rdr, ver)?);
         } else {
         }
-            sub_module = Some(SubModule::parse(rdr, ver)?);
+        sub_module = Some(SubModule::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
             lights_module = Some(LightsModule::parse(rdr, ver)?);
             trail_module = Some(TrailModule::parse(rdr, ver)?);

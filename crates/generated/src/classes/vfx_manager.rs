@@ -41,13 +41,13 @@ impl crate::Parse for VfxManager {
         let mut m_max_capacity = None;
         let mut m_runtime_resources = None;
         let mut m_batch_empty_lifetime = None;
-            m_indirect_shader = Some(crate::PPtr::parse(rdr, ver)?);
-            m_copy_buffer_shader = Some(crate::PPtr::parse(rdr, ver)?);
+        m_indirect_shader = Some(crate::PPtr::parse(rdr, ver)?);
+        m_copy_buffer_shader = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 1, 0) {
             m_prefix_sum_shader = Some(crate::PPtr::parse(rdr, ver)?);
         } else {
         }
-            m_sort_shader = Some(crate::PPtr::parse(rdr, ver)?);
+        m_sort_shader = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2023, 1, 17) {
             m_strip_update_shader = Some(crate::PPtr::parse(rdr, ver)?);
             m_empty_shader = Some(crate::PPtr::parse(rdr, ver)?);
@@ -65,9 +65,9 @@ impl crate::Parse for VfxManager {
             m_strip_update_shader = Some(crate::PPtr::parse(rdr, ver)?);
         } else {
         }
-            m_render_pipe_settings_path = Some(rdr.read_aligned_string()?);
-            m_fixed_time_step = Some(rdr.read_f32()?);
-            m_max_delta_time = Some(rdr.read_f32()?);
+        m_render_pipe_settings_path = Some(rdr.read_aligned_string()?);
+        m_fixed_time_step = Some(rdr.read_f32()?);
+        m_max_delta_time = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2023, 1, 0) {
             m_max_scrub_time = Some(rdr.read_f32()?);
             m_max_capacity = Some(rdr.read_u32()?);

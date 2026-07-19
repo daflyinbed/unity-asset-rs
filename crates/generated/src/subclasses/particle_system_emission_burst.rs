@@ -2,7 +2,6 @@
 
 use crate::subclasses::min_max_curve::MinMaxCurve;
 
-
 /// 版本枚举：ParticleSystemEmissionBurstCycleCountVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ParticleSystemEmissionBurstCycleCountVariant {
@@ -47,15 +46,17 @@ impl crate::Parse for ParticleSystemEmissionBurst {
         let mut cycle_count = None;
         let mut repeat_interval = None;
         let mut probability = None;
-            time = Some(rdr.read_f32()?);
+        time = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             count_curve = Some(MinMaxCurve::parse(rdr, ver)?);
         } else {
             min_count = Some(rdr.read_u32()?);
             max_count = Some(rdr.read_u32()?);
         }
-            cycle_count = Some(ParticleSystemEmissionBurstCycleCountVariant::parse(rdr, ver)?);
-            repeat_interval = Some(rdr.read_f32()?);
+        cycle_count = Some(ParticleSystemEmissionBurstCycleCountVariant::parse(
+            rdr, ver,
+        )?);
+        repeat_interval = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2018, 3, 0) {
             probability = Some(rdr.read_f32()?);
         } else {

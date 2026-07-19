@@ -3,7 +3,6 @@
 use crate::PPtr;
 use crate::subclasses::vector3f::Vector3f;
 
-
 /// 版本枚举：SpringJointMEnablePreprocessingVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum SpringJointMEnablePreprocessingVariant {
@@ -71,13 +70,13 @@ impl crate::Parse for SpringJoint {
         let mut m_enable_preprocessing = None;
         let mut m_mass_scale = None;
         let mut m_connected_mass_scale = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_connected_body = Some(crate::PPtr::parse(rdr, ver)?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_connected_body = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2020, 2, 0) {
             m_connected_articulation_body = Some(crate::PPtr::parse(rdr, ver)?);
         } else {
         }
-            m_anchor = Some(Vector3f::parse(rdr, ver)?);
+        m_anchor = Some(Vector3f::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 0, 48) {
             m_auto_configure_connected_anchor = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -93,16 +92,16 @@ impl crate::Parse for SpringJoint {
             m_connected_anchor = Some(Vector3f::parse(rdr, ver)?);
         } else {
         }
-            m_spring = Some(rdr.read_f32()?);
-            m_damper = Some(rdr.read_f32()?);
-            m_min_distance = Some(rdr.read_f32()?);
-            m_max_distance = Some(rdr.read_f32()?);
+        m_spring = Some(rdr.read_f32()?);
+        m_damper = Some(rdr.read_f32()?);
+        m_min_distance = Some(rdr.read_f32()?);
+        m_max_distance = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(5, 2, 3) {
             m_tolerance = Some(rdr.read_f32()?);
         } else {
         }
-            m_break_force = Some(rdr.read_f32()?);
-            m_break_torque = Some(rdr.read_f32()?);
+        m_break_force = Some(rdr.read_f32()?);
+        m_break_torque = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             m_enable_collision = Some(rdr.read_bool()?);
             m_enable_preprocessing = Some(SpringJointMEnablePreprocessingVariant::parse(rdr, ver)?);

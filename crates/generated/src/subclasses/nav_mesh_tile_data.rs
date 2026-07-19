@@ -13,7 +13,10 @@ impl crate::Parse for NavMeshTileData {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_mesh_data = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_mesh_data = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n).map(|_| rdr.read_u8()).collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
         let m_hash = if *ver >= crate::UnityVersion::new(5, 6, 0) {
             Some(Hash128::parse(rdr, ver)?)

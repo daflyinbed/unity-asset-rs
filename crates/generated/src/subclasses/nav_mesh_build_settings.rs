@@ -2,7 +2,6 @@
 
 use crate::subclasses::nav_mesh_build_debug_settings::NavMeshBuildDebugSettings;
 
-
 /// 版本枚举：NavMeshBuildSettingsManualCellSizeVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum NavMeshBuildSettingsManualCellSizeVariant {
@@ -116,33 +115,39 @@ impl crate::Parse for NavMeshBuildSettings {
         let mut max_job_workers = None;
         let mut keep_tiles = None;
         let mut preserve_tiles_outside_bounds = None;
-            agent_type_id = Some(rdr.read_i32()?);
-            agent_radius = Some(rdr.read_f32()?);
-            agent_height = Some(rdr.read_f32()?);
-            agent_slope = Some(rdr.read_f32()?);
-            agent_climb = Some(rdr.read_f32()?);
-            ledge_drop_height = Some(rdr.read_f32()?);
-            max_jump_across_distance = Some(rdr.read_f32()?);
-            min_region_area = Some(rdr.read_f32()?);
-            manual_cell_size = Some(NavMeshBuildSettingsManualCellSizeVariant::parse(rdr, ver)?);
-            cell_size = Some(rdr.read_f32()?);
-            manual_tile_size = Some(NavMeshBuildSettingsManualTileSizeVariant::parse(rdr, ver)?);
-            tile_size = Some(rdr.read_i32()?);
+        agent_type_id = Some(rdr.read_i32()?);
+        agent_radius = Some(rdr.read_f32()?);
+        agent_height = Some(rdr.read_f32()?);
+        agent_slope = Some(rdr.read_f32()?);
+        agent_climb = Some(rdr.read_f32()?);
+        ledge_drop_height = Some(rdr.read_f32()?);
+        max_jump_across_distance = Some(rdr.read_f32()?);
+        min_region_area = Some(rdr.read_f32()?);
+        manual_cell_size = Some(NavMeshBuildSettingsManualCellSizeVariant::parse(rdr, ver)?);
+        cell_size = Some(rdr.read_f32()?);
+        manual_tile_size = Some(NavMeshBuildSettingsManualTileSizeVariant::parse(rdr, ver)?);
+        tile_size = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             build_height_mesh = Some(rdr.read_i32()?);
             max_job_workers = Some(rdr.read_u32()?);
             preserve_tiles_outside_bounds = Some(rdr.read_i32()?);
             debug = Some(NavMeshBuildDebugSettings::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            accurate_placement = Some(NavMeshBuildSettingsAccuratePlacementVariant::parse(rdr, ver)?);
+            accurate_placement = Some(NavMeshBuildSettingsAccuratePlacementVariant::parse(
+                rdr, ver,
+            )?);
             max_job_workers = Some(rdr.read_u32()?);
             keep_tiles = Some(rdr.read_i32()?);
             debug = Some(NavMeshBuildDebugSettings::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            accurate_placement = Some(NavMeshBuildSettingsAccuratePlacementVariant::parse(rdr, ver)?);
+            accurate_placement = Some(NavMeshBuildSettingsAccuratePlacementVariant::parse(
+                rdr, ver,
+            )?);
             debug = Some(NavMeshBuildDebugSettings::parse(rdr, ver)?);
         } else {
-            accurate_placement = Some(NavMeshBuildSettingsAccuratePlacementVariant::parse(rdr, ver)?);
+            accurate_placement = Some(NavMeshBuildSettingsAccuratePlacementVariant::parse(
+                rdr, ver,
+            )?);
         }
 
         Ok(NavMeshBuildSettings {

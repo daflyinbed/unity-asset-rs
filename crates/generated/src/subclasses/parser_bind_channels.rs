@@ -2,7 +2,6 @@
 
 use crate::subclasses::shader_bind_channel::ShaderBindChannel;
 
-
 /// 版本枚举：ParserBindChannelsMSourceMapVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ParserBindChannelsMSourceMapVariant {
@@ -35,7 +34,12 @@ impl crate::Parse for ParserBindChannels {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_channels = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ShaderBindChannel::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_channels = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| ShaderBindChannel::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
         let m_source_map = ParserBindChannelsMSourceMapVariant::parse(rdr, ver)?;
 

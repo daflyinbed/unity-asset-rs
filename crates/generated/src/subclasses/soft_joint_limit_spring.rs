@@ -14,9 +14,6 @@ impl crate::Parse for SoftJointLimitSpring {
         let spring = rdr.read_f32()?;
         let damper = rdr.read_f32()?;
 
-        Ok(SoftJointLimitSpring {
-            spring,
-            damper,
-        })
+        Ok(SoftJointLimitSpring { spring, damper })
     }
 }

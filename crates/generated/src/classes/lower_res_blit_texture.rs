@@ -1,6 +1,5 @@
 //! 自动生成。请勿手动修改。
 
-
 /// 版本枚举：LowerResBlitTextureMDownscaleFallbackVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum LowerResBlitTextureMDownscaleFallbackVariant {
@@ -40,18 +39,22 @@ impl crate::Parse for LowerResBlitTexture {
         let mut m_forced_fallback_format = None;
         let mut m_is_alpha_channel_optional = None;
         let mut m_downscale_fallback = None;
-            m_name = Some(rdr.read_aligned_string()?);
+        m_name = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
             m_is_alpha_channel_optional = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
             m_forced_fallback_format = Some(rdr.read_i32()?);
-            m_downscale_fallback = Some(LowerResBlitTextureMDownscaleFallbackVariant::parse(rdr, ver)?);
+            m_downscale_fallback = Some(LowerResBlitTextureMDownscaleFallbackVariant::parse(
+                rdr, ver,
+            )?);
             m_is_alpha_channel_optional = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
             m_forced_fallback_format = Some(rdr.read_i32()?);
-            m_downscale_fallback = Some(LowerResBlitTextureMDownscaleFallbackVariant::parse(rdr, ver)?);
+            m_downscale_fallback = Some(LowerResBlitTextureMDownscaleFallbackVariant::parse(
+                rdr, ver,
+            )?);
         } else {
         }
 

@@ -17,7 +17,18 @@ impl crate::Parse for NetworkManager {
     ) -> Result<Self, R::Error> {
         let m_debug_level = rdr.read_i32()?;
         let m_sendrate = rdr.read_f32()?;
-        let m_asset_to_prefab = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = Guid::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_asset_to_prefab = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| {
+                    ({
+                        let a = Guid::parse(rdr, ver)?;
+                        let b = crate::PPtr::parse(rdr, ver)?;
+                        Ok((a, b))
+                    })
+                })
+                .collect::<Result<Vec<_>, _>>()
+        })?;
 
         Ok(NetworkManager {
             m_debug_level,

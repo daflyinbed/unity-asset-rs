@@ -12,10 +12,19 @@ impl crate::Parse for NameToObjectMap_TextAsset {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_object_to_name = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = crate::PPtr::parse(rdr, ver)?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_object_to_name = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| {
+                    ({
+                        let a = crate::PPtr::parse(rdr, ver)?;
+                        let b = rdr.read_aligned_string()?;
+                        Ok((a, b))
+                    })
+                })
+                .collect::<Result<Vec<_>, _>>()
+        })?;
 
-        Ok(NameToObjectMap_TextAsset {
-            m_object_to_name,
-        })
+        Ok(NameToObjectMap_TextAsset { m_object_to_name })
     }
 }

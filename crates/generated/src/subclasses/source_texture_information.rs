@@ -19,9 +19,9 @@ impl crate::Parse for SourceTextureInformation {
         let mut does_texture_contain_alpha = None;
         let mut does_texture_contain_color = None;
         let mut source_was_hdr = None;
-            width = Some(rdr.read_i32()?);
-            height = Some(rdr.read_i32()?);
-            does_texture_contain_alpha = Some(rdr.read_bool()?);
+        width = Some(rdr.read_i32()?);
+        height = Some(rdr.read_i32()?);
+        does_texture_contain_alpha = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             source_was_hdr = Some(rdr.read_bool()?);
             rdr.align(4)?;

@@ -4,7 +4,6 @@ use crate::PPtr;
 use crate::subclasses::static_batch_info::StaticBatchInfo;
 use crate::subclasses::vector4f::Vector4f;
 
-
 /// 版本枚举：SpriteMaskMReflectionProbeUsageVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum SpriteMaskMReflectionProbeUsageVariant {
@@ -141,7 +140,8 @@ pub struct SpriteMask {
     pub m_materials: Vec<PPtr>,
     pub m_ray_tracing_accel_struct_build_flags_override: Option<u8>,
     pub m_static_batch_info: StaticBatchInfo,
-    pub m_ray_tracing_accel_struct_build_flags: Option<SpriteMaskMRayTracingAccelStructBuildFlagsVariant>,
+    pub m_ray_tracing_accel_struct_build_flags:
+        Option<SpriteMaskMRayTracingAccelStructBuildFlagsVariant>,
     pub m_static_batch_root: PPtr,
     pub m_small_mesh_culling: Option<u8>,
     pub m_probe_anchor: PPtr,
@@ -212,10 +212,10 @@ impl crate::Parse for SpriteMask {
         let mut m_sprite_sort_point = None;
         let mut m_mask_interaction = None;
         let mut m_mask_source = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_enabled = Some(rdr.read_bool()?);
-            m_cast_shadows = Some(rdr.read_u8()?);
-            m_receive_shadows = Some(rdr.read_u8()?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_enabled = Some(rdr.read_bool()?);
+        m_cast_shadows = Some(rdr.read_u8()?);
+        m_receive_shadows = Some(rdr.read_u8()?);
         if *ver >= crate::UnityVersion::new(2021, 1, 0) {
             m_dynamic_occludee = Some(rdr.read_u8()?);
             m_static_shadow_caster = Some(rdr.read_u8()?);
@@ -223,14 +223,16 @@ impl crate::Parse for SpriteMask {
             m_dynamic_occludee = Some(rdr.read_u8()?);
         } else {
         }
-            m_motion_vectors = Some(rdr.read_u8()?);
-            m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(SpriteMaskMReflectionProbeUsageVariant::parse(rdr, ver)?);
+        m_motion_vectors = Some(rdr.read_u8()?);
+        m_light_probe_usage = Some(rdr.read_u8()?);
+        m_reflection_probe_usage = Some(SpriteMaskMReflectionProbeUsageVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 2, 0) {
             m_ray_tracing_mode = Some(SpriteMaskMRayTracingModeVariant::parse(rdr, ver)?);
             m_ray_trace_procedural = Some(SpriteMaskMRayTraceProceduralVariant::parse(rdr, ver)?);
             m_ray_tracing_accel_struct_build_flags_override = Some(rdr.read_u8()?);
-            m_ray_tracing_accel_struct_build_flags = Some(SpriteMaskMRayTracingAccelStructBuildFlagsVariant::parse(rdr, ver)?);
+            m_ray_tracing_accel_struct_build_flags = Some(
+                SpriteMaskMRayTracingAccelStructBuildFlagsVariant::parse(rdr, ver)?,
+            );
             m_small_mesh_culling = Some(rdr.read_u8()?);
             rdr.align(4)?;
             m_force_mesh_lod = Some(rdr.read_i16()?);
@@ -242,7 +244,9 @@ impl crate::Parse for SpriteMask {
             m_ray_tracing_mode = Some(SpriteMaskMRayTracingModeVariant::parse(rdr, ver)?);
             m_ray_trace_procedural = Some(SpriteMaskMRayTraceProceduralVariant::parse(rdr, ver)?);
             m_ray_tracing_accel_struct_build_flags_override = Some(rdr.read_u8()?);
-            m_ray_tracing_accel_struct_build_flags = Some(SpriteMaskMRayTracingAccelStructBuildFlagsVariant::parse(rdr, ver)?);
+            m_ray_tracing_accel_struct_build_flags = Some(
+                SpriteMaskMRayTracingAccelStructBuildFlagsVariant::parse(rdr, ver)?,
+            );
             m_small_mesh_culling = Some(rdr.read_u8()?);
             rdr.align(4)?;
             m_rendering_layer_mask = Some(rdr.read_u32()?);
@@ -251,7 +255,9 @@ impl crate::Parse for SpriteMask {
             m_ray_tracing_mode = Some(SpriteMaskMRayTracingModeVariant::parse(rdr, ver)?);
             m_ray_trace_procedural = Some(SpriteMaskMRayTraceProceduralVariant::parse(rdr, ver)?);
             m_ray_tracing_accel_struct_build_flags_override = Some(rdr.read_u8()?);
-            m_ray_tracing_accel_struct_build_flags = Some(SpriteMaskMRayTracingAccelStructBuildFlagsVariant::parse(rdr, ver)?);
+            m_ray_tracing_accel_struct_build_flags = Some(
+                SpriteMaskMRayTracingAccelStructBuildFlagsVariant::parse(rdr, ver)?,
+            );
             m_rendering_layer_mask = Some(rdr.read_u32()?);
             m_renderer_priority = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
@@ -270,28 +276,35 @@ impl crate::Parse for SpriteMask {
             m_rendering_layer_mask = Some(rdr.read_u32()?);
         } else {
         }
-            m_lightmap_index = Some(rdr.read_u16()?);
-            m_lightmap_index_dynamic = Some(rdr.read_u16()?);
-            m_lightmap_tiling_offset = Some(Vector4f::parse(rdr, ver)?);
-            m_lightmap_tiling_offset_dynamic = Some(Vector4f::parse(rdr, ver)?);
-            m_materials = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            m_static_batch_info = Some(StaticBatchInfo::parse(rdr, ver)?);
-            m_static_batch_root = Some(crate::PPtr::parse(rdr, ver)?);
-            m_probe_anchor = Some(crate::PPtr::parse(rdr, ver)?);
-            m_light_probe_volume_override = Some(crate::PPtr::parse(rdr, ver)?);
-            rdr.align(4)?;
-            m_sorting_layer_id = Some(rdr.read_i32()?);
-            m_sorting_layer = Some(rdr.read_i16()?);
-            m_sorting_order = Some(rdr.read_i16()?);
-            rdr.align(4)?;
+        m_lightmap_index = Some(rdr.read_u16()?);
+        m_lightmap_index_dynamic = Some(rdr.read_u16()?);
+        m_lightmap_tiling_offset = Some(Vector4f::parse(rdr, ver)?);
+        m_lightmap_tiling_offset_dynamic = Some(Vector4f::parse(rdr, ver)?);
+        m_materials = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
+        m_static_batch_info = Some(StaticBatchInfo::parse(rdr, ver)?);
+        m_static_batch_root = Some(crate::PPtr::parse(rdr, ver)?);
+        m_probe_anchor = Some(crate::PPtr::parse(rdr, ver)?);
+        m_light_probe_volume_override = Some(crate::PPtr::parse(rdr, ver)?);
+        rdr.align(4)?;
+        m_sorting_layer_id = Some(rdr.read_i32()?);
+        m_sorting_layer = Some(rdr.read_i16()?);
+        m_sorting_order = Some(rdr.read_i16()?);
+        rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(6000, 3, 0) {
             m_mask_interaction = Some(rdr.read_i32()?);
             rdr.align(4)?;
         } else {
         }
-            m_sprite = Some(crate::PPtr::parse(rdr, ver)?);
-            m_mask_alpha_cutoff = Some(rdr.read_f32()?);
+        m_sprite = Some(crate::PPtr::parse(rdr, ver)?);
+        m_mask_alpha_cutoff = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2019, 1, 7) {
             m_front_sorting_layer_id = Some(rdr.read_i32()?);
             m_back_sorting_layer_id = Some(rdr.read_i32()?);
@@ -301,12 +314,12 @@ impl crate::Parse for SpriteMask {
             m_back_sorting_layer_id = Some(rdr.read_i32()?);
         } else {
         }
-            m_front_sorting_layer = Some(rdr.read_i16()?);
-            m_back_sorting_layer = Some(rdr.read_i16()?);
-            m_front_sorting_order = Some(rdr.read_i16()?);
-            m_back_sorting_order = Some(rdr.read_i16()?);
-            m_is_custom_range_active = Some(rdr.read_bool()?);
-            rdr.align(4)?;
+        m_front_sorting_layer = Some(rdr.read_i16()?);
+        m_back_sorting_layer = Some(rdr.read_i16()?);
+        m_front_sorting_order = Some(rdr.read_i16()?);
+        m_back_sorting_order = Some(rdr.read_i16()?);
+        m_is_custom_range_active = Some(rdr.read_bool()?);
+        rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2023, 1, 0) {
             m_sprite_sort_point = Some(SpriteMaskMSpriteSortPointVariant::parse(rdr, ver)?);
             m_mask_source = Some(rdr.read_i32()?);

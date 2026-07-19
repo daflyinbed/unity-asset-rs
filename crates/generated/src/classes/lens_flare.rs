@@ -29,18 +29,18 @@ impl crate::Parse for LensFlare {
         let mut m_ignore_layers = None;
         let mut m_fade_speed = None;
         let mut m_directional = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_enabled = Some(rdr.read_u8()?);
-            rdr.align(4)?;
-            m_flare = Some(crate::PPtr::parse(rdr, ver)?);
-            m_color = Some(ColorRgbAf::parse(rdr, ver)?);
-            m_brightness = Some(rdr.read_f32()?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_enabled = Some(rdr.read_u8()?);
+        rdr.align(4)?;
+        m_flare = Some(crate::PPtr::parse(rdr, ver)?);
+        m_color = Some(ColorRgbAf::parse(rdr, ver)?);
+        m_brightness = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(4, 3, 0) {
             m_fade_speed = Some(rdr.read_f32()?);
         } else {
         }
-            m_ignore_layers = Some(BitField::parse(rdr, ver)?);
-            m_directional = Some(rdr.read_bool()?);
+        m_ignore_layers = Some(BitField::parse(rdr, ver)?);
+        m_directional = Some(rdr.read_bool()?);
 
         Ok(LensFlare {
             m_game_object: m_game_object.unwrap(),

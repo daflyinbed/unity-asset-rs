@@ -24,14 +24,14 @@ impl crate::Parse for SkeletonBone {
         let mut m_rotation = None;
         let mut m_scale = None;
         let mut m_transform_modified = None;
-            m_name = Some(rdr.read_aligned_string()?);
+        m_name = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
             m_parent_name = Some(rdr.read_aligned_string()?);
         } else {
         }
-            m_position = Some(Vector3f::parse(rdr, ver)?);
-            m_rotation = Some(Quaternionf::parse(rdr, ver)?);
-            m_scale = Some(Vector3f::parse(rdr, ver)?);
+        m_position = Some(Vector3f::parse(rdr, ver)?);
+        m_rotation = Some(Quaternionf::parse(rdr, ver)?);
+        m_scale = Some(Vector3f::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
         } else {
             m_transform_modified = Some(rdr.read_bool()?);

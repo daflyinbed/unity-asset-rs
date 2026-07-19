@@ -14,8 +14,6 @@ impl crate::Parse for LodRenderer {
     ) -> Result<Self, R::Error> {
         let renderer = crate::PPtr::parse(rdr, ver)?;
 
-        Ok(LodRenderer {
-            renderer,
-        })
+        Ok(LodRenderer { renderer })
     }
 }

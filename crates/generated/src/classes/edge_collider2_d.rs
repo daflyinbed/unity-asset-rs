@@ -4,7 +4,6 @@ use crate::PPtr;
 use crate::subclasses::bit_field::BitField;
 use crate::subclasses::vector2f::Vector2f;
 
-
 /// 版本枚举：EdgeCollider2DMIsTriggerVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum EdgeCollider2DMIsTriggerVariant {
@@ -41,11 +40,21 @@ impl crate::Parse for EdgeCollider2DMPointsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| Vector2f::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| Vector2f::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -133,14 +142,14 @@ impl crate::Parse for EdgeCollider2D {
         let mut m_use_adjacent_end_point = None;
         let mut m_composite_operation = None;
         let mut m_composite_order = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_enabled = Some(rdr.read_u8()?);
-            rdr.align(4)?;
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_enabled = Some(rdr.read_u8()?);
+        rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 3, 0) {
             m_density = Some(rdr.read_f32()?);
         } else {
         }
-            m_material = Some(crate::PPtr::parse(rdr, ver)?);
+        m_material = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             m_include_layers = Some(BitField::parse(rdr, ver)?);
             m_exclude_layers = Some(BitField::parse(rdr, ver)?);
@@ -151,7 +160,7 @@ impl crate::Parse for EdgeCollider2D {
             m_callback_layers = Some(BitField::parse(rdr, ver)?);
         } else {
         }
-            m_is_trigger = Some(EdgeCollider2DMIsTriggerVariant::parse(rdr, ver)?);
+        m_is_trigger = Some(EdgeCollider2DMIsTriggerVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2023, 1, 0) {
             m_used_by_effector = Some(EdgeCollider2DMUsedByEffectorVariant::parse(rdr, ver)?);
             m_composite_operation = Some(rdr.read_i32()?);
@@ -169,7 +178,7 @@ impl crate::Parse for EdgeCollider2D {
             m_offset = Some(Vector2f::parse(rdr, ver)?);
         } else {
         }
-            m_points = Some(EdgeCollider2DMPointsVariant::parse(rdr, ver)?);
+        m_points = Some(EdgeCollider2DMPointsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2020, 1, 0) {
             m_adjacent_start_point = Some(Vector2f::parse(rdr, ver)?);
             m_adjacent_end_point = Some(Vector2f::parse(rdr, ver)?);

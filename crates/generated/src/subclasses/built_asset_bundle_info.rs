@@ -1,6 +1,5 @@
 //! 自动生成。请勿手动修改。
 
-
 /// 版本枚举：BuiltAssetBundleInfoPackagedFileIndicesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum BuiltAssetBundleInfoPackagedFileIndicesVariant {
@@ -14,11 +13,21 @@ impl crate::Parse for BuiltAssetBundleInfoPackagedFileIndicesVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_u32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_u32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -37,7 +46,8 @@ impl crate::Parse for BuiltAssetBundleInfo {
     ) -> Result<Self, R::Error> {
         let bundle_name = rdr.read_aligned_string()?;
         let bundle_archive_file = rdr.read_u32()?;
-        let packaged_file_indices = BuiltAssetBundleInfoPackagedFileIndicesVariant::parse(rdr, ver)?;
+        let packaged_file_indices =
+            BuiltAssetBundleInfoPackagedFileIndicesVariant::parse(rdr, ver)?;
 
         Ok(BuiltAssetBundleInfo {
             bundle_name,

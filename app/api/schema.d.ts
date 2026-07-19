@@ -139,6 +139,150 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/environment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get_environment"];
+        put: operations["replace_environment"];
+        post?: never;
+        delete: operations["clear_environment"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/environment/collections": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["list_environment_collections"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/environment/collections/{cid}/objects": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["list_environment_objects"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/environment/collections/{cid}/objects/{pid}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get_environment_object"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/environment/collections/{cid}/objects/{pid}/png": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["export_environment_object_png"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/environment/containers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["list_environment_containers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/environment/sources": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["add_source"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/environment/sources/{sid}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["remove_source"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/environment/sources/{sid}/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["refresh_source"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -190,6 +334,11 @@ export interface components {
             name_fixed: string;
             unity_version: string;
         };
+        CollectionListResponse: {
+            items: components["schemas"]["CollectionItem"][];
+            /** Format: int64 */
+            revision: number;
+        };
         /**
          * @description container 条目(AssetBundle.m_Container / ResourceManager.m_Container 聚合后的一条)。
          *
@@ -215,6 +364,20 @@ export interface components {
              *     ResourceManager 为 `null`。切片内解引用失败的位置为 `null`(保留下标对应关系)。
              */
             preload?: (null | components["schemas"]["ObjectRefDto"])[] | null;
+        };
+        ContainerListResponse: {
+            items: components["schemas"]["ContainerEntryDto"][];
+            /** Format: int64 */
+            revision: number;
+        };
+        EnvironmentSummary: {
+            collections: number;
+            failures: number;
+            objects: number;
+            resources: number;
+            /** Format: int64 */
+            revision: number;
+            sources: components["schemas"]["SourceItem"][];
         };
         /** @description POST /bundles 的 body。 */
         LoadBody: {
@@ -254,6 +417,11 @@ export interface components {
         ObjectDto: components["schemas"]["ObjectMeta"] & {
             detail?: null | components["schemas"]["ObjectDetail"];
         };
+        ObjectListResponse: {
+            items: components["schemas"]["ObjectMeta"][];
+            /** Format: int64 */
+            revision: number;
+        };
         /** @description 对象元数据。列表项和详情头部共用。 */
         ObjectMeta: {
             /** Format: int32 */
@@ -263,22 +431,47 @@ export interface components {
             name: string;
             /** @description "typed" / "mono" / "dynamic"。 */
             parse_status: string;
-            /** Format: int64 */
-            path_id: number;
+            /** @description 十进制字符串，避免 JavaScript JSON number 丢失 i64 精度。 */
+            path_id: string;
         };
         /** @description 对象引用(collection 下标 + path_id)。寻址需带 collection,因 path_id 全局不唯一。 */
         ObjectRefDto: {
             /** @description collection 下标(见 `list_collections` 的 index)。 */
             collection: number;
+            /** @description 十进制字符串，避免 JavaScript JSON number 丢失 i64 精度。 */
+            path_id: string;
+        };
+        ObjectResponse: {
+            object: components["schemas"]["ObjectDto"];
             /** Format: int64 */
-            path_id: number;
+            revision: number;
         };
         PPtrJson: {
             /** Format: int32 */
             file_id: number;
-            /** Format: int64 */
-            path_id: number;
+            /** @description 十进制字符串，避免 JavaScript JSON number 丢失 i64 精度。 */
+            path_id: string;
         };
+        ReplaceEnvironmentBody: {
+            sources: components["schemas"]["SourceInput"][];
+        };
+        SourceInput: {
+            arknights?: boolean;
+            /** @description Electron/SQLite 分配的稳定 source id；Rust 只把它当作不透明字符串。 */
+            id: string;
+            kind: components["schemas"]["SourceKind"];
+            path: string;
+        };
+        SourceItem: {
+            arknights: boolean;
+            /** @description 该 source 实际加载的文件。目录 source 会展开为递归扫描后命中的文件列表。 */
+            files: string[];
+            id: string;
+            kind: components["schemas"]["SourceKind"];
+            path: string;
+        };
+        /** @enum {string} */
+        SourceKind: "file" | "directory";
         Value: unknown;
     };
     responses: never;
@@ -506,6 +699,8 @@ export interface operations {
             query?: {
                 /** @description 传 `"full"` 附带原始 dump(typed → Debug 字符串,dynamic/mono → Value 递归 JSON)。 */
                 detail?: string | null;
+                /** @description 活动 Environment API 的可选 revision；legacy bundle 路由忽略。 */
+                revision?: number | null;
             };
             header?: never;
             path: {
@@ -513,8 +708,8 @@ export interface operations {
                 bid: string;
                 /** @description collection 下标 */
                 cid: number;
-                /** @description 对象 path_id(collection 内唯一) */
-                pid: number;
+                /** @description 对象 path_id 十进制字符串(collection 内唯一) */
+                pid: string;
             };
             cookie?: never;
         };
@@ -527,6 +722,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ObjectDto"];
+                };
+            };
+            /** @description path_id 不是合法 i64 十进制字符串 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
                 };
             };
             /** @description bundle/collection/object 不存在 */
@@ -549,8 +753,8 @@ export interface operations {
                 bid: string;
                 /** @description collection 下标 */
                 cid: number;
-                /** @description 对象 path_id(须为 Texture2D/Sprite) */
-                pid: number;
+                /** @description 对象 path_id 十进制字符串(须为 Texture2D/Sprite) */
+                pid: string;
             };
             cookie?: never;
         };
@@ -601,6 +805,8 @@ export interface operations {
                 path?: string | null;
                 /** @description 按宿主类型过滤:`"AssetBundle"` / `"ResourceManager"`。 */
                 kind?: string | null;
+                /** @description 活动 Environment API 的可选 revision；legacy bundle 路由忽略。 */
+                revision?: number | null;
             };
             header?: never;
             path: {
@@ -622,6 +828,411 @@ export interface operations {
             };
             /** @description bundle 未加载 */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    get_environment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnvironmentSummary"];
+                };
+            };
+        };
+    };
+    replace_environment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReplaceEnvironmentBody"];
+            };
+        };
+        responses: {
+            /** @description 原子替换活动 Environment */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnvironmentSummary"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    clear_environment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnvironmentSummary"];
+                };
+            };
+        };
+    };
+    list_environment_collections: {
+        parameters: {
+            query?: {
+                /** @description 若提供且与当前 revision 不同，返回 409，避免把旧句柄用于新 Environment。 */
+                revision?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectionListResponse"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    list_environment_objects: {
+        parameters: {
+            query?: {
+                /** @description 若提供且与当前 revision 不同，返回 409，避免把旧句柄用于新 Environment。 */
+                revision?: number | null;
+            };
+            header?: never;
+            path: {
+                cid: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ObjectListResponse"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    get_environment_object: {
+        parameters: {
+            query?: {
+                /** @description 传 `"full"` 附带原始 dump(typed → Debug 字符串,dynamic/mono → Value 递归 JSON)。 */
+                detail?: string | null;
+                /** @description 活动 Environment API 的可选 revision；legacy bundle 路由忽略。 */
+                revision?: number | null;
+            };
+            header?: never;
+            path: {
+                cid: number;
+                /** @description path_id 十进制字符串 */
+                pid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ObjectResponse"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    export_environment_object_png: {
+        parameters: {
+            query?: {
+                /** @description 若提供且与当前 revision 不同，返回 409，避免把旧句柄用于新 Environment。 */
+                revision?: number | null;
+            };
+            header?: never;
+            path: {
+                cid: number;
+                /** @description path_id 十进制字符串 */
+                pid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "image/png": unknown;
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    list_environment_containers: {
+        parameters: {
+            query?: {
+                /** @description 按 path 精确匹配过滤(multidict 场景下返回该 path 的全部条目)。 */
+                path?: string | null;
+                /** @description 按宿主类型过滤:`"AssetBundle"` / `"ResourceManager"`。 */
+                kind?: string | null;
+                /** @description 活动 Environment API 的可选 revision；legacy bundle 路由忽略。 */
+                revision?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContainerListResponse"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    add_source: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SourceInput"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnvironmentSummary"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    remove_source: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                sid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnvironmentSummary"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    refresh_source: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                sid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnvironmentSummary"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            422: {
                 headers: {
                     [name: string]: unknown;
                 };

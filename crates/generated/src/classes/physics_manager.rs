@@ -4,7 +4,6 @@ use crate::PPtr;
 use crate::subclasses::aabb::Aabb;
 use crate::subclasses::vector3f::Vector3f;
 
-
 /// 版本枚举：PhysicsManagerMDefaultMaterialVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum PhysicsManagerMDefaultMaterialVariant {
@@ -91,11 +90,21 @@ impl crate::Parse for PhysicsManagerMLayerCollisionMatrixVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_u32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_u32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -264,7 +273,8 @@ pub struct PhysicsManager {
     pub m_layer_collision_matrix: PhysicsManagerMLayerCollisionMatrixVariant,
     pub m_enable_pcm: Option<bool>,
     pub m_cloth_inter_collision_distance: Option<f32>,
-    pub m_cloth_inter_collision_stiffness: Option<PhysicsManagerMClothInterCollisionStiffnessVariant>,
+    pub m_cloth_inter_collision_stiffness:
+        Option<PhysicsManagerMClothInterCollisionStiffnessVariant>,
     pub m_auto_simulation: Option<bool>,
     pub m_contacts_generation: Option<i32>,
     pub m_auto_sync_transforms: Option<bool>,
@@ -346,9 +356,9 @@ impl crate::Parse for PhysicsManager {
         let mut m_release_scene_buffers = None;
         let mut m_log_verbosity = None;
         let mut m_incremental_static_broadphase = None;
-            m_gravity = Some(Vector3f::parse(rdr, ver)?);
-            m_default_material = Some(PhysicsManagerMDefaultMaterialVariant::parse(rdr, ver)?);
-            m_bounce_threshold = Some(rdr.read_f32()?);
+        m_gravity = Some(Vector3f::parse(rdr, ver)?);
+        m_default_material = Some(PhysicsManagerMDefaultMaterialVariant::parse(rdr, ver)?);
+        m_bounce_threshold = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2023, 1, 0) {
             m_default_max_depenetration_velocity = Some(rdr.read_f32()?);
             m_sleep_threshold = Some(rdr.read_f32()?);
@@ -357,9 +367,12 @@ impl crate::Parse for PhysicsManager {
             m_default_solver_velocity_iterations = Some(rdr.read_i32()?);
             m_queries_hit_backfaces = Some(rdr.read_bool()?);
             m_queries_hit_triggers = Some(rdr.read_bool()?);
-            m_enable_adaptive_force = Some(PhysicsManagerMEnableAdaptiveForceVariant::parse(rdr, ver)?);
+            m_enable_adaptive_force =
+                Some(PhysicsManagerMEnableAdaptiveForceVariant::parse(rdr, ver)?);
             m_cloth_inter_collision_distance = Some(rdr.read_f32()?);
-            m_cloth_inter_collision_stiffness = Some(PhysicsManagerMClothInterCollisionStiffnessVariant::parse(rdr, ver)?);
+            m_cloth_inter_collision_stiffness = Some(
+                PhysicsManagerMClothInterCollisionStiffnessVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
             m_default_max_depenetration_velocity = Some(rdr.read_f32()?);
             m_sleep_threshold = Some(rdr.read_f32()?);
@@ -368,9 +381,12 @@ impl crate::Parse for PhysicsManager {
             m_default_solver_velocity_iterations = Some(rdr.read_i32()?);
             m_queries_hit_backfaces = Some(rdr.read_bool()?);
             m_queries_hit_triggers = Some(rdr.read_bool()?);
-            m_enable_adaptive_force = Some(PhysicsManagerMEnableAdaptiveForceVariant::parse(rdr, ver)?);
+            m_enable_adaptive_force =
+                Some(PhysicsManagerMEnableAdaptiveForceVariant::parse(rdr, ver)?);
             m_cloth_inter_collision_distance = Some(rdr.read_f32()?);
-            m_cloth_inter_collision_stiffness = Some(PhysicsManagerMClothInterCollisionStiffnessVariant::parse(rdr, ver)?);
+            m_cloth_inter_collision_stiffness = Some(
+                PhysicsManagerMClothInterCollisionStiffnessVariant::parse(rdr, ver)?,
+            );
             m_contacts_generation = Some(rdr.read_i32()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
@@ -380,9 +396,12 @@ impl crate::Parse for PhysicsManager {
             m_default_solver_velocity_iterations = Some(rdr.read_i32()?);
             m_queries_hit_backfaces = Some(rdr.read_bool()?);
             m_queries_hit_triggers = Some(rdr.read_bool()?);
-            m_enable_adaptive_force = Some(PhysicsManagerMEnableAdaptiveForceVariant::parse(rdr, ver)?);
+            m_enable_adaptive_force =
+                Some(PhysicsManagerMEnableAdaptiveForceVariant::parse(rdr, ver)?);
             m_cloth_inter_collision_distance = Some(rdr.read_f32()?);
-            m_cloth_inter_collision_stiffness = Some(PhysicsManagerMClothInterCollisionStiffnessVariant::parse(rdr, ver)?);
+            m_cloth_inter_collision_stiffness = Some(
+                PhysicsManagerMClothInterCollisionStiffnessVariant::parse(rdr, ver)?,
+            );
             m_contacts_generation = Some(rdr.read_i32()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
@@ -392,7 +411,8 @@ impl crate::Parse for PhysicsManager {
             m_default_solver_velocity_iterations = Some(rdr.read_i32()?);
             m_queries_hit_backfaces = Some(rdr.read_bool()?);
             m_queries_hit_triggers = Some(rdr.read_bool()?);
-            m_enable_adaptive_force = Some(PhysicsManagerMEnableAdaptiveForceVariant::parse(rdr, ver)?);
+            m_enable_adaptive_force =
+                Some(PhysicsManagerMEnableAdaptiveForceVariant::parse(rdr, ver)?);
             m_enable_pcm = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
@@ -401,28 +421,34 @@ impl crate::Parse for PhysicsManager {
             m_solver_iteration_count = Some(rdr.read_i32()?);
             m_solver_velocity_iterations = Some(rdr.read_i32()?);
             m_queries_hit_triggers = Some(rdr.read_bool()?);
-            m_enable_adaptive_force = Some(PhysicsManagerMEnableAdaptiveForceVariant::parse(rdr, ver)?);
+            m_enable_adaptive_force =
+                Some(PhysicsManagerMEnableAdaptiveForceVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 2, 0) {
             m_sleep_threshold = Some(rdr.read_f32()?);
             m_default_contact_offset = Some(rdr.read_f32()?);
             m_solver_iteration_count = Some(rdr.read_i32()?);
             m_queries_hit_triggers = Some(rdr.read_bool()?);
-            m_enable_adaptive_force = Some(PhysicsManagerMEnableAdaptiveForceVariant::parse(rdr, ver)?);
+            m_enable_adaptive_force =
+                Some(PhysicsManagerMEnableAdaptiveForceVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_sleep_threshold = Some(rdr.read_f32()?);
             m_default_contact_offset = Some(rdr.read_f32()?);
             m_solver_iteration_count = Some(rdr.read_i32()?);
-            m_raycasts_hit_triggers = Some(PhysicsManagerMRaycastsHitTriggersVariant::parse(rdr, ver)?);
-            m_enable_adaptive_force = Some(PhysicsManagerMEnableAdaptiveForceVariant::parse(rdr, ver)?);
+            m_raycasts_hit_triggers =
+                Some(PhysicsManagerMRaycastsHitTriggersVariant::parse(rdr, ver)?);
+            m_enable_adaptive_force =
+                Some(PhysicsManagerMEnableAdaptiveForceVariant::parse(rdr, ver)?);
         } else {
             m_sleep_velocity = Some(rdr.read_f32()?);
             m_sleep_angular_velocity = Some(rdr.read_f32()?);
             m_max_angular_velocity = Some(rdr.read_f32()?);
             m_min_penetration_for_penalty = Some(rdr.read_f32()?);
             m_solver_iteration_count = Some(rdr.read_i32()?);
-            m_raycasts_hit_triggers = Some(PhysicsManagerMRaycastsHitTriggersVariant::parse(rdr, ver)?);
+            m_raycasts_hit_triggers =
+                Some(PhysicsManagerMRaycastsHitTriggersVariant::parse(rdr, ver)?);
         }
-            m_layer_collision_matrix = Some(PhysicsManagerMLayerCollisionMatrixVariant::parse(rdr, ver)?);
+        m_layer_collision_matrix =
+            Some(PhysicsManagerMLayerCollisionMatrixVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 3, 7) {
             m_simulation_mode = Some(rdr.read_i32()?);
             rdr.align(4)?;
@@ -438,7 +464,9 @@ impl crate::Parse for PhysicsManager {
             m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(rdr, ver)?);
             m_friction_type = Some(rdr.read_i32()?);
             m_enable_enhanced_determinism = Some(rdr.read_bool()?);
-            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(rdr, ver)?);
+            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(
+                rdr, ver,
+            )?);
             m_generate_on_trigger_stay_events = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_solver_type = Some(rdr.read_i32()?);
@@ -468,7 +496,9 @@ impl crate::Parse for PhysicsManager {
             m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(rdr, ver)?);
             m_friction_type = Some(rdr.read_i32()?);
             m_enable_enhanced_determinism = Some(rdr.read_bool()?);
-            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(rdr, ver)?);
+            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(
+                rdr, ver,
+            )?);
             m_generate_on_trigger_stay_events = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_solver_type = Some(rdr.read_i32()?);
@@ -496,7 +526,9 @@ impl crate::Parse for PhysicsManager {
             m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(rdr, ver)?);
             m_friction_type = Some(rdr.read_i32()?);
             m_enable_enhanced_determinism = Some(rdr.read_bool()?);
-            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(rdr, ver)?);
+            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(
+                rdr, ver,
+            )?);
             m_generate_on_trigger_stay_events = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_solver_type = Some(rdr.read_i32()?);
@@ -523,7 +555,9 @@ impl crate::Parse for PhysicsManager {
             m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(rdr, ver)?);
             m_friction_type = Some(rdr.read_i32()?);
             m_enable_enhanced_determinism = Some(rdr.read_bool()?);
-            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(rdr, ver)?);
+            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(
+                rdr, ver,
+            )?);
             m_generate_on_trigger_stay_events = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_solver_type = Some(rdr.read_i32()?);
@@ -545,7 +579,9 @@ impl crate::Parse for PhysicsManager {
             m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(rdr, ver)?);
             m_friction_type = Some(rdr.read_i32()?);
             m_enable_enhanced_determinism = Some(rdr.read_bool()?);
-            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(rdr, ver)?);
+            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(
+                rdr, ver,
+            )?);
             m_generate_on_trigger_stay_events = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_solver_type = Some(rdr.read_i32()?);
@@ -567,7 +603,9 @@ impl crate::Parse for PhysicsManager {
             m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(rdr, ver)?);
             m_friction_type = Some(rdr.read_i32()?);
             m_enable_enhanced_determinism = Some(rdr.read_bool()?);
-            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(rdr, ver)?);
+            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(
+                rdr, ver,
+            )?);
             m_solver_type = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_default_max_angular_speed = Some(rdr.read_f32()?);
@@ -589,7 +627,9 @@ impl crate::Parse for PhysicsManager {
             m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(rdr, ver)?);
             m_friction_type = Some(rdr.read_i32()?);
             m_enable_enhanced_determinism = Some(rdr.read_bool()?);
-            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(rdr, ver)?);
+            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(
+                rdr, ver,
+            )?);
             m_generate_on_trigger_stay_events = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_solver_type = Some(rdr.read_i32()?);
@@ -619,7 +659,9 @@ impl crate::Parse for PhysicsManager {
             m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(rdr, ver)?);
             m_friction_type = Some(rdr.read_i32()?);
             m_enable_enhanced_determinism = Some(rdr.read_bool()?);
-            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(rdr, ver)?);
+            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(
+                rdr, ver,
+            )?);
             m_generate_on_trigger_stay_events = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_solver_type = Some(rdr.read_i32()?);
@@ -647,7 +689,9 @@ impl crate::Parse for PhysicsManager {
             m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(rdr, ver)?);
             m_friction_type = Some(rdr.read_i32()?);
             m_enable_enhanced_determinism = Some(rdr.read_bool()?);
-            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(rdr, ver)?);
+            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(
+                rdr, ver,
+            )?);
             m_generate_on_trigger_stay_events = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_solver_type = Some(rdr.read_i32()?);
@@ -669,7 +713,9 @@ impl crate::Parse for PhysicsManager {
             m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(rdr, ver)?);
             m_friction_type = Some(rdr.read_i32()?);
             m_enable_enhanced_determinism = Some(rdr.read_bool()?);
-            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(rdr, ver)?);
+            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(
+                rdr, ver,
+            )?);
             m_generate_on_trigger_stay_events = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_solver_type = Some(rdr.read_i32()?);
@@ -691,7 +737,9 @@ impl crate::Parse for PhysicsManager {
             m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(rdr, ver)?);
             m_friction_type = Some(rdr.read_i32()?);
             m_enable_enhanced_determinism = Some(rdr.read_bool()?);
-            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(rdr, ver)?);
+            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(
+                rdr, ver,
+            )?);
             m_solver_type = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_default_max_angular_speed = Some(rdr.read_f32()?);
@@ -711,8 +759,12 @@ impl crate::Parse for PhysicsManager {
             m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(rdr, ver)?);
             m_friction_type = Some(rdr.read_i32()?);
             m_enable_enhanced_determinism = Some(rdr.read_bool()?);
-            m_enable_unified_heightmaps = Some(PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(rdr, ver)?);
-            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(rdr, ver)?);
+            m_enable_unified_heightmaps = Some(
+                PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(rdr, ver)?,
+            );
+            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(
+                rdr, ver,
+            )?);
             m_solver_type = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_default_max_angular_speed = Some(rdr.read_f32()?);
@@ -732,8 +784,12 @@ impl crate::Parse for PhysicsManager {
             m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(rdr, ver)?);
             m_friction_type = Some(rdr.read_i32()?);
             m_enable_enhanced_determinism = Some(rdr.read_bool()?);
-            m_enable_unified_heightmaps = Some(PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(rdr, ver)?);
-            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(rdr, ver)?);
+            m_enable_unified_heightmaps = Some(
+                PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(rdr, ver)?,
+            );
+            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(
+                rdr, ver,
+            )?);
             m_solver_type = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_default_max_angular_speed = Some(rdr.read_f32()?);
@@ -752,8 +808,12 @@ impl crate::Parse for PhysicsManager {
             m_broadphase_type = Some(PhysicsManagerMBroadphaseTypeVariant::parse(rdr, ver)?);
             m_friction_type = Some(rdr.read_i32()?);
             m_enable_enhanced_determinism = Some(rdr.read_bool()?);
-            m_enable_unified_heightmaps = Some(PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(rdr, ver)?);
-            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(rdr, ver)?);
+            m_enable_unified_heightmaps = Some(
+                PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(rdr, ver)?,
+            );
+            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(
+                rdr, ver,
+            )?);
             m_solver_type = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_default_max_angular_speed = Some(rdr.read_f32()?);
@@ -773,8 +833,12 @@ impl crate::Parse for PhysicsManager {
             m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(rdr, ver)?);
             m_friction_type = Some(rdr.read_i32()?);
             m_enable_enhanced_determinism = Some(rdr.read_bool()?);
-            m_enable_unified_heightmaps = Some(PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(rdr, ver)?);
-            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(rdr, ver)?);
+            m_enable_unified_heightmaps = Some(
+                PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(rdr, ver)?,
+            );
+            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(
+                rdr, ver,
+            )?);
             m_solver_type = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_default_max_angular_speed = Some(rdr.read_f32()?);
@@ -794,8 +858,12 @@ impl crate::Parse for PhysicsManager {
             m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(rdr, ver)?);
             m_friction_type = Some(rdr.read_i32()?);
             m_enable_enhanced_determinism = Some(rdr.read_bool()?);
-            m_enable_unified_heightmaps = Some(PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(rdr, ver)?);
-            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(rdr, ver)?);
+            m_enable_unified_heightmaps = Some(
+                PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(rdr, ver)?,
+            );
+            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(
+                rdr, ver,
+            )?);
             m_solver_type = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_default_max_angular_speed = Some(rdr.read_f32()?);
@@ -812,8 +880,12 @@ impl crate::Parse for PhysicsManager {
             m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(rdr, ver)?);
             m_friction_type = Some(rdr.read_i32()?);
             m_enable_enhanced_determinism = Some(rdr.read_bool()?);
-            m_enable_unified_heightmaps = Some(PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(rdr, ver)?);
-            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(rdr, ver)?);
+            m_enable_unified_heightmaps = Some(
+                PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(rdr, ver)?,
+            );
+            m_improved_patch_friction = Some(PhysicsManagerMImprovedPatchFrictionVariant::parse(
+                rdr, ver,
+            )?);
             m_solver_type = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_default_max_angular_speed = Some(rdr.read_f32()?);
@@ -830,7 +902,9 @@ impl crate::Parse for PhysicsManager {
             m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(rdr, ver)?);
             m_friction_type = Some(rdr.read_i32()?);
             m_enable_enhanced_determinism = Some(rdr.read_bool()?);
-            m_enable_unified_heightmaps = Some(PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(rdr, ver)?);
+            m_enable_unified_heightmaps = Some(
+                PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(rdr, ver)?,
+            );
             m_solver_type = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_default_max_angular_speed = Some(rdr.read_f32()?);
@@ -847,7 +921,9 @@ impl crate::Parse for PhysicsManager {
             m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(rdr, ver)?);
             m_friction_type = Some(rdr.read_i32()?);
             m_enable_enhanced_determinism = Some(rdr.read_bool()?);
-            m_enable_unified_heightmaps = Some(PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(rdr, ver)?);
+            m_enable_unified_heightmaps = Some(
+                PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(rdr, ver)?,
+            );
             m_default_max_angular_speed = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
             m_auto_simulation = Some(rdr.read_bool()?);
@@ -861,7 +937,9 @@ impl crate::Parse for PhysicsManager {
             m_world_subdivisions = Some(PhysicsManagerMWorldSubdivisionsVariant::parse(rdr, ver)?);
             m_friction_type = Some(rdr.read_i32()?);
             m_enable_enhanced_determinism = Some(rdr.read_bool()?);
-            m_enable_unified_heightmaps = Some(PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(rdr, ver)?);
+            m_enable_unified_heightmaps = Some(
+                PhysicsManagerMEnableUnifiedHeightmapsVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
             m_auto_simulation = Some(rdr.read_bool()?);
             m_auto_sync_transforms = Some(rdr.read_bool()?);

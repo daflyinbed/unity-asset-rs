@@ -17,9 +17,6 @@ impl crate::Parse for SketchUpImportScene {
         let name = rdr.read_aligned_string()?;
         rdr.align(4)?;
 
-        Ok(SketchUpImportScene {
-            camera,
-            name,
-        })
+        Ok(SketchUpImportScene { camera, name })
     }
 }

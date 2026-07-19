@@ -14,9 +14,6 @@ impl crate::Parse for ShaderBindChannel {
         let source = rdr.read_i8()?;
         let target = rdr.read_i8()?;
 
-        Ok(ShaderBindChannel {
-            source,
-            target,
-        })
+        Ok(ShaderBindChannel { source, target })
     }
 }

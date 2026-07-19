@@ -14,12 +14,27 @@ impl crate::Parse for VfxEventDesc {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let name = rdr.read_aligned_string()?;
-        let play_systems = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+        let play_systems = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| rdr.read_u32())
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
-        let stop_systems = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+        let stop_systems = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| rdr.read_u32())
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
         let init_systems = if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_u32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Some(v)
         } else {

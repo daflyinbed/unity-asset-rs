@@ -21,8 +21,8 @@ impl crate::Parse for LightBakingOutput {
         let mut lightmapping_mask = None;
         let mut lightmap_bake_mode = None;
         let mut is_baked = None;
-            probe_occlusion_light_index = Some(rdr.read_i32()?);
-            occlusion_mask_channel = Some(rdr.read_i32()?);
+        probe_occlusion_light_index = Some(rdr.read_i32()?);
+        occlusion_mask_channel = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2017, 3, 0) {
             lightmap_bake_mode = Some(LightmapBakeMode::parse(rdr, ver)?);
             is_baked = Some(rdr.read_bool()?);

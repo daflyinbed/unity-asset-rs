@@ -18,10 +18,6 @@ impl crate::Parse for NativeType {
         let b = rdr.read_f32()?;
         let embedded = EmbeddedNativeType::parse(rdr, ver)?;
 
-        Ok(NativeType {
-            a,
-            b,
-            embedded,
-        })
+        Ok(NativeType { a, b, embedded })
     }
 }

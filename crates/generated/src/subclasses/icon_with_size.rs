@@ -16,9 +16,6 @@ impl crate::Parse for IconWithSize {
         let m_icon = crate::PPtr::parse(rdr, ver)?;
         let m_size = rdr.read_i32()?;
 
-        Ok(IconWithSize {
-            m_icon,
-            m_size,
-        })
+        Ok(IconWithSize { m_icon, m_size })
     }
 }

@@ -3,7 +3,6 @@
 use crate::subclasses::guid::Guid;
 use crate::subclasses::hash128::Hash128;
 
-
 /// 版本枚举：BuildSettingsScenesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum BuildSettingsScenesVariant {
@@ -17,11 +16,21 @@ impl crate::Parse for BuildSettingsScenesVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_aligned_string())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_aligned_string())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -40,11 +49,21 @@ impl crate::Parse for BuildSettingsPreloadedPluginsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_aligned_string())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_aligned_string())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -63,11 +82,21 @@ impl crate::Parse for BuildSettingsEnabledVrDevicesVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_aligned_string())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_aligned_string())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -86,11 +115,21 @@ impl crate::Parse for BuildSettingsBuildTagsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_aligned_string())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_aligned_string())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -155,10 +194,32 @@ impl crate::Parse for BuildSettingsRuntimeClassHashesVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i32()?; let b = Hash128::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| {
+                        ({
+                            let a = rdr.read_i32()?;
+                            let b = Hash128::parse(rdr, ver)?;
+                            Ok((a, b))
+                        })
+                    })
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::V5_0(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i32()?; let b = rdr.read_u32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| {
+                        ({
+                            let a = rdr.read_i32()?;
+                            let b = rdr.read_u32()?;
+                            Ok((a, b))
+                        })
+                    })
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -177,11 +238,21 @@ impl crate::Parse for BuildSettingsMGraphicsApIsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_i32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_i32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -278,20 +349,34 @@ impl crate::Parse for BuildSettings {
             preloaded_plugins = Some(BuildSettingsPreloadedPluginsVariant::parse(rdr, ver)?);
             has_render_texture = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            levels = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            levels = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             preloaded_plugins = Some(BuildSettingsPreloadedPluginsVariant::parse(rdr, ver)?);
             has_render_texture = Some(rdr.read_bool()?);
         } else {
-            levels = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            levels = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             has_render_texture = Some(rdr.read_bool()?);
         }
-            has_pro_version = Some(rdr.read_bool()?);
+        has_pro_version = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(3, 5, 0) {
             is_no_watermark_build = Some(rdr.read_bool()?);
             is_prototyping_build = Some(rdr.read_bool()?);
         } else {
         }
-            is_educational_build = Some(rdr.read_bool()?);
+        is_educational_build = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(2018, 3, 0) {
             is_embedded = Some(rdr.read_bool()?);
             is_trial = Some(rdr.read_bool()?);
@@ -299,8 +384,8 @@ impl crate::Parse for BuildSettings {
             is_embedded = Some(rdr.read_bool()?);
         } else {
         }
-            has_publishing_rights = Some(rdr.read_bool()?);
-            has_shadows = Some(rdr.read_bool()?);
+        has_publishing_rights = Some(rdr.read_bool()?);
+        has_shadows = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(2018, 2, 9) {
             has_soft_shadows = Some(rdr.read_bool()?);
             has_local_light_shadows = Some(rdr.read_bool()?);
@@ -313,8 +398,8 @@ impl crate::Parse for BuildSettings {
             has_local_light_shadows = Some(rdr.read_bool()?);
         } else {
         }
-            has_advanced_version = Some(rdr.read_bool()?);
-            enable_dynamic_batching = Some(rdr.read_bool()?);
+        has_advanced_version = Some(rdr.read_bool()?);
+        enable_dynamic_batching = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(2022, 2, 2) {
             uses_on_mouse_events = Some(BuildSettingsUsesOnMouseEventsVariant::parse(rdr, ver)?);
             has_cluster_rendering = Some(rdr.read_bool()?);
@@ -341,7 +426,7 @@ impl crate::Parse for BuildSettings {
         } else {
             is_debug_build = Some(BuildSettingsIsDebugBuildVariant::parse(rdr, ver)?);
         }
-            m_version = Some(rdr.read_aligned_string()?);
+        m_version = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(2023, 3, 0) {
             m_auth_token = Some(rdr.read_aligned_string()?);
             m_graphics_ap_is = Some(BuildSettingsMGraphicsApIsVariant::parse(rdr, ver)?);
@@ -368,12 +453,38 @@ impl crate::Parse for BuildSettings {
         } else if *ver >= crate::UnityVersion::new(5, 1, 0) {
             m_auth_token = Some(rdr.read_aligned_string()?);
             runtime_class_hashes = Some(BuildSettingsRuntimeClassHashesVariant::parse(rdr, ver)?);
-            script_hashes = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = Hash128::parse(rdr, ver)?; let b = Hash128::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            script_hashes = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = Hash128::parse(rdr, ver)?;
+                                let b = Hash128::parse(rdr, ver)?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_graphics_ap_is = Some(BuildSettingsMGraphicsApIsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_auth_token = Some(rdr.read_aligned_string()?);
             runtime_class_hashes = Some(BuildSettingsRuntimeClassHashesVariant::parse(rdr, ver)?);
-            script_hashes = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = Hash128::parse(rdr, ver)?; let b = Hash128::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            script_hashes = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = Hash128::parse(rdr, ver)?;
+                                let b = Hash128::parse(rdr, ver)?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
             m_auth_token = Some(rdr.read_aligned_string()?);
             runtime_class_hashes = Some(BuildSettingsRuntimeClassHashesVariant::parse(rdr, ver)?);

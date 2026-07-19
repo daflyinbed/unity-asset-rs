@@ -17,7 +17,12 @@ impl crate::Parse for VisualEffectAsset {
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
         let m_infos = VisualEffectInfo::parse(rdr, ver)?;
-        let m_systems = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VfxSystemDesc::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_systems = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| VfxSystemDesc::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
 
         Ok(VisualEffectAsset {

@@ -23,13 +23,28 @@ impl crate::Parse for DetailPatch {
         } else {
             bounds = Some(Aabb::parse(rdr, ver)?);
         }
-            layer_indices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+        layer_indices = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n).map(|_| rdr.read_u8()).collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            coverage = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            coverage = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n).map(|_| rdr.read_u8()).collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else {
-            number_of_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            number_of_objects = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n).map(|_| rdr.read_u8()).collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         }
 

@@ -1,6 +1,5 @@
 //! 自动生成。请勿手动修改。
 
-
 /// 版本枚举：WebCamTextureMDownscaleFallbackVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum WebCamTextureMDownscaleFallbackVariant {
@@ -40,7 +39,7 @@ impl crate::Parse for WebCamTexture {
         let mut m_forced_fallback_format = None;
         let mut m_is_alpha_channel_optional = None;
         let mut m_downscale_fallback = None;
-            m_name = Some(rdr.read_aligned_string()?);
+        m_name = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
             m_is_alpha_channel_optional = Some(rdr.read_bool()?);
             rdr.align(4)?;

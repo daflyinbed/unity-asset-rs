@@ -14,11 +14,13 @@ impl crate::Parse for AvatarSkeletonMask {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
-        let elements = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AvatarSkeletonMaskElement::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let elements = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| AvatarSkeletonMaskElement::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
 
-        Ok(AvatarSkeletonMask {
-            m_name,
-            elements,
-        })
+        Ok(AvatarSkeletonMask { m_name, elements })
     }
 }

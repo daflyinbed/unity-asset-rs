@@ -4,7 +4,6 @@ use crate::PPtr;
 use crate::subclasses::guid::Guid;
 use crate::subclasses::serialized_shader::SerializedShader;
 
-
 /// 版本枚举：ShaderPlatformsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ShaderPlatformsVariant {
@@ -18,11 +17,21 @@ impl crate::Parse for ShaderPlatformsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_u32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_u32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -41,11 +50,21 @@ impl crate::Parse for ShaderMDependenciesVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -65,15 +84,37 @@ impl crate::Parse for ShaderOffsetsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| {
+                        ({
+                            let n = rdr.read_i32()? as usize;
+                            (0..n)
+                                .map(|_| rdr.read_u32())
+                                .collect::<Result<Vec<_>, _>>()
+                        })
+                    })
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2019_3(v))
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_u32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_u32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -93,15 +134,37 @@ impl crate::Parse for ShaderCompressedLengthsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| {
+                        ({
+                            let n = rdr.read_i32()? as usize;
+                            (0..n)
+                                .map(|_| rdr.read_u32())
+                                .collect::<Result<Vec<_>, _>>()
+                        })
+                    })
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2019_3(v))
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_u32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_u32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -121,15 +184,37 @@ impl crate::Parse for ShaderDecompressedLengthsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| {
+                        ({
+                            let n = rdr.read_i32()? as usize;
+                            (0..n)
+                                .map(|_| rdr.read_u32())
+                                .collect::<Result<Vec<_>, _>>()
+                        })
+                    })
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2019_3(v))
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_u32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_u32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -177,19 +262,44 @@ impl crate::Parse for Shader {
         let mut m_non_modifiable_textures = None;
         let mut m_asset_guid = None;
         let mut m_asset_local_identifier_in_file = None;
-            m_name = Some(rdr.read_aligned_string()?);
+        m_name = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(6000, 3, 0) {
             m_parsed_form = Some(SerializedShader::parse(rdr, ver)?);
             platforms = Some(ShaderPlatformsVariant::parse(rdr, ver)?);
             offsets = Some(ShaderOffsetsVariant::parse(rdr, ver)?);
             compressed_lengths = Some(ShaderCompressedLengthsVariant::parse(rdr, ver)?);
             decompressed_lengths = Some(ShaderDecompressedLengthsVariant::parse(rdr, ver)?);
-            compressed_blob = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            compressed_blob = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n).map(|_| rdr.read_u8()).collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            stage_counts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
+            stage_counts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_u32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_dependencies = Some(ShaderMDependenciesVariant::parse(rdr, ver)?);
-            m_non_modifiable_textures = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_non_modifiable_textures = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = crate::PPtr::parse(rdr, ver)?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_shader_is_baked = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_asset_guid = Some(Guid::parse(rdr, ver)?);
@@ -200,12 +310,37 @@ impl crate::Parse for Shader {
             offsets = Some(ShaderOffsetsVariant::parse(rdr, ver)?);
             compressed_lengths = Some(ShaderCompressedLengthsVariant::parse(rdr, ver)?);
             decompressed_lengths = Some(ShaderDecompressedLengthsVariant::parse(rdr, ver)?);
-            compressed_blob = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            compressed_blob = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n).map(|_| rdr.read_u8()).collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            stage_counts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
+            stage_counts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_u32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_dependencies = Some(ShaderMDependenciesVariant::parse(rdr, ver)?);
-            m_non_modifiable_textures = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_non_modifiable_textures = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = crate::PPtr::parse(rdr, ver)?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_shader_is_baked = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_asset_guid = Some(Guid::parse(rdr, ver)?);
@@ -215,12 +350,37 @@ impl crate::Parse for Shader {
             offsets = Some(ShaderOffsetsVariant::parse(rdr, ver)?);
             compressed_lengths = Some(ShaderCompressedLengthsVariant::parse(rdr, ver)?);
             decompressed_lengths = Some(ShaderDecompressedLengthsVariant::parse(rdr, ver)?);
-            compressed_blob = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            compressed_blob = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n).map(|_| rdr.read_u8()).collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            stage_counts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
+            stage_counts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_u32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_dependencies = Some(ShaderMDependenciesVariant::parse(rdr, ver)?);
-            m_non_modifiable_textures = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_non_modifiable_textures = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = crate::PPtr::parse(rdr, ver)?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_shader_is_baked = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
@@ -229,10 +389,28 @@ impl crate::Parse for Shader {
             offsets = Some(ShaderOffsetsVariant::parse(rdr, ver)?);
             compressed_lengths = Some(ShaderCompressedLengthsVariant::parse(rdr, ver)?);
             decompressed_lengths = Some(ShaderDecompressedLengthsVariant::parse(rdr, ver)?);
-            compressed_blob = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            compressed_blob = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n).map(|_| rdr.read_u8()).collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_dependencies = Some(ShaderMDependenciesVariant::parse(rdr, ver)?);
-            m_non_modifiable_textures = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_non_modifiable_textures = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = crate::PPtr::parse(rdr, ver)?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_shader_is_baked = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2021, 3, 12) {
@@ -241,12 +419,37 @@ impl crate::Parse for Shader {
             offsets = Some(ShaderOffsetsVariant::parse(rdr, ver)?);
             compressed_lengths = Some(ShaderCompressedLengthsVariant::parse(rdr, ver)?);
             decompressed_lengths = Some(ShaderDecompressedLengthsVariant::parse(rdr, ver)?);
-            compressed_blob = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            compressed_blob = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n).map(|_| rdr.read_u8()).collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            stage_counts = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
+            stage_counts = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_u32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_dependencies = Some(ShaderMDependenciesVariant::parse(rdr, ver)?);
-            m_non_modifiable_textures = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_non_modifiable_textures = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = crate::PPtr::parse(rdr, ver)?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_shader_is_baked = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
@@ -255,10 +458,28 @@ impl crate::Parse for Shader {
             offsets = Some(ShaderOffsetsVariant::parse(rdr, ver)?);
             compressed_lengths = Some(ShaderCompressedLengthsVariant::parse(rdr, ver)?);
             decompressed_lengths = Some(ShaderDecompressedLengthsVariant::parse(rdr, ver)?);
-            compressed_blob = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            compressed_blob = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n).map(|_| rdr.read_u8()).collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_dependencies = Some(ShaderMDependenciesVariant::parse(rdr, ver)?);
-            m_non_modifiable_textures = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_non_modifiable_textures = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = crate::PPtr::parse(rdr, ver)?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_shader_is_baked = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
@@ -267,7 +488,12 @@ impl crate::Parse for Shader {
             offsets = Some(ShaderOffsetsVariant::parse(rdr, ver)?);
             compressed_lengths = Some(ShaderCompressedLengthsVariant::parse(rdr, ver)?);
             decompressed_lengths = Some(ShaderDecompressedLengthsVariant::parse(rdr, ver)?);
-            compressed_blob = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            compressed_blob = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n).map(|_| rdr.read_u8()).collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_dependencies = Some(ShaderMDependenciesVariant::parse(rdr, ver)?);
             m_shader_is_baked = Some(rdr.read_bool()?);
@@ -276,7 +502,12 @@ impl crate::Parse for Shader {
             m_script = Some(rdr.read_aligned_string()?);
             m_path_name = Some(rdr.read_aligned_string()?);
             decompressed_size = Some(rdr.read_u32()?);
-            m_compressed_blob = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_compressed_blob = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n).map(|_| rdr.read_u8()).collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_dependencies = Some(ShaderMDependenciesVariant::parse(rdr, ver)?);
             m_shader_is_baked = Some(rdr.read_bool()?);

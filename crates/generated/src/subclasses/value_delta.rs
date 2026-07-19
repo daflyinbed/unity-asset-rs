@@ -14,9 +14,6 @@ impl crate::Parse for ValueDelta {
         let m_start = rdr.read_f32()?;
         let m_stop = rdr.read_f32()?;
 
-        Ok(ValueDelta {
-            m_start,
-            m_stop,
-        })
+        Ok(ValueDelta { m_start, m_stop })
     }
 }

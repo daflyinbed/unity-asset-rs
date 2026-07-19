@@ -15,8 +15,6 @@ impl crate::Parse for VrEditorSettings {
         let none = None::parse(rdr, ver)?;
         rdr.align(4)?;
 
-        Ok(VrEditorSettings {
-            none,
-        })
+        Ok(VrEditorSettings { none })
     }
 }

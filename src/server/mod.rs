@@ -36,6 +36,7 @@ use utoipa_axum::{router::OpenApiRouter, routes};
 use utoipa_scalar::{Scalar, Servable};
 
 pub mod dto;
+pub mod environment_routes;
 pub mod error;
 pub mod routes;
 pub mod state;
@@ -49,6 +50,7 @@ use state::{AppState, Bundles};
 #[openapi(
     tags(
         (name = "bundle", description = "Bundle 加载/卸载/查询"),
+        (name = "environment", description = "单一活动 Environment 与增量 source 管理"),
         (
             name = "collection",
             description = "AssetCollection(SerializedFile 逻辑分组)列表"
@@ -69,8 +71,7 @@ pub struct ApiDoc;
 /// 返回与 `/openapi.json` 完全相同的 OpenAPI 文档，供前端离线生成类型。
 pub fn openapi_json() -> Result<String, String> {
     let (_, openapi) = api_router().split_for_parts();
-    serde_json::to_string_pretty(&openapi)
-        .map_err(|e| format!("OpenAPI JSON 序列化失败: {e}"))
+    serde_json::to_string_pretty(&openapi).map_err(|e| format!("OpenAPI JSON 序列化失败: {e}"))
 }
 
 /// 启动 HTTP 服务,阻塞直到 server 退出。
@@ -88,7 +89,9 @@ pub async fn serve(addr: SocketAddr, root: PathBuf) -> Result<(), String> {
     let listener = tokio::net::TcpListener::bind(addr)
         .await
         .map_err(|e| format!("绑定 {addr} 失败: {e}"))?;
-    log::info!("serve: http://{addr}  (Scalar UI: http://{addr}/  OpenApi JSON: http://{addr}/openapi.json)");
+    log::info!(
+        "serve: http://{addr}  (Scalar UI: http://{addr}/  OpenApi JSON: http://{addr}/openapi.json)"
+    );
     axum::serve(listener, app)
         .await
         .map_err(|e| format!("server 退出: {e}"))?;
@@ -100,6 +103,8 @@ fn make_state(root_canon: PathBuf) -> AppState {
     AppState {
         bundles: std::sync::Arc::new(RwLock::new(Bundles::default())),
         root: std::sync::Arc::new(root_canon),
+        active: std::sync::Arc::new(RwLock::new(state::ActiveEnvironment::default())),
+        mutation: std::sync::Arc::new(tokio::sync::Mutex::new(())),
     }
 }
 
@@ -121,6 +126,17 @@ pub(crate) fn build_app(state: AppState) -> Router {
 fn api_router() -> OpenApiRouter<AppState> {
     OpenApiRouter::with_openapi(ApiDoc::openapi())
         .routes(routes!(routes::health))
+        .routes(routes!(environment_routes::get_environment))
+        .routes(routes!(environment_routes::replace_environment))
+        .routes(routes!(environment_routes::clear_environment))
+        .routes(routes!(environment_routes::add_source))
+        .routes(routes!(environment_routes::remove_source))
+        .routes(routes!(environment_routes::refresh_source))
+        .routes(routes!(environment_routes::list_collections))
+        .routes(routes!(environment_routes::list_objects))
+        .routes(routes!(environment_routes::get_object))
+        .routes(routes!(environment_routes::list_containers))
+        .routes(routes!(environment_routes::export_object_png))
         .routes(routes!(routes::list_bundles))
         .routes(routes!(routes::load_bundle))
         .routes(routes!(routes::clear_bundles))
@@ -139,9 +155,9 @@ mod tests {
     //! 无需起真实 TCP listener。fixture 走 `CARGO_MANIFEST_DIR`(根 crate = 仓库根)。
 
     use super::*;
-    use axum::body::{to_bytes, Body};
+    use axum::body::{Body, to_bytes};
     use axum::http::{Request, StatusCode};
-    use serde_json::{json, Value};
+    use serde_json::{Value, json};
     use tower::ServiceExt;
 
     /// example/ 目录(仓库根 + "example")。
@@ -153,16 +169,19 @@ mod tests {
     }
 
     async fn body_json(resp: axum::response::Response) -> Value {
-        let bytes = to_bytes(resp.into_body(), 1024 * 1024 * 16)
-            .await
-            .unwrap();
+        let bytes = to_bytes(resp.into_body(), 1024 * 1024 * 16).await.unwrap();
         serde_json::from_slice(&bytes).unwrap()
     }
 
     #[tokio::test]
     async fn health_ok() {
         let resp = app()
-            .oneshot(Request::builder().uri("/health").body(Body::empty()).unwrap())
+            .oneshot(
+                Request::builder()
+                    .uri("/health")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
             .await
             .unwrap();
         assert_eq!(resp.status(), StatusCode::OK);
@@ -173,12 +192,101 @@ mod tests {
     #[tokio::test]
     async fn empty_bundles_list() {
         let resp = app()
-            .oneshot(Request::builder().uri("/bundles").body(Body::empty()).unwrap())
+            .oneshot(
+                Request::builder()
+                    .uri("/bundles")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
             .await
             .unwrap();
         assert_eq!(resp.status(), StatusCode::OK);
         let v = body_json(resp).await;
         assert!(v.as_array().unwrap().is_empty());
+    }
+
+    #[tokio::test]
+    async fn active_environment_adds_and_removes_sources_with_revisions() {
+        let app = app();
+        let replace = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("PUT")
+                    .uri("/environment")
+                    .header("content-type", "application/json")
+                    .body(Body::from(
+                        serde_json::to_vec(&json!({
+                            "sources": [{
+                                "id": "first",
+                                "path": "char_002_amiya.ab",
+                                "kind": "file"
+                            }]
+                        }))
+                        .unwrap(),
+                    ))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(replace.status(), StatusCode::OK);
+        let first = body_json(replace).await;
+        assert_eq!(first["sources"].as_array().unwrap().len(), 1);
+        assert!(first["objects"].as_u64().unwrap() > 0);
+        let first_revision = first["revision"].as_u64().unwrap();
+
+        let add = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/environment/sources")
+                    .header("content-type", "application/json")
+                    .body(Body::from(
+                        serde_json::to_vec(&json!({
+                            "id": "second",
+                            "path": "Combine.unity3d",
+                            "kind": "file"
+                        }))
+                        .unwrap(),
+                    ))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(add.status(), StatusCode::CREATED);
+        let second = body_json(add).await;
+        assert_eq!(second["sources"].as_array().unwrap().len(), 2);
+        assert!(second["revision"].as_u64().unwrap() > first_revision);
+
+        let stale = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .uri(format!(
+                        "/environment/collections?revision={first_revision}"
+                    ))
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(stale.status(), StatusCode::CONFLICT);
+
+        let remove = app
+            .oneshot(
+                Request::builder()
+                    .method("DELETE")
+                    .uri("/environment/sources/first")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(remove.status(), StatusCode::OK);
+        let remaining = body_json(remove).await;
+        assert_eq!(remaining["sources"].as_array().unwrap().len(), 1);
+        assert_eq!(remaining["sources"][0]["id"], "second");
     }
 
     #[tokio::test]
@@ -219,7 +327,12 @@ mod tests {
         assert_eq!(body["cleared"], 1);
 
         let response = app
-            .oneshot(Request::builder().uri("/bundles").body(Body::empty()).unwrap())
+            .oneshot(
+                Request::builder()
+                    .uri("/bundles")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
             .await
             .unwrap();
         assert_eq!(body_json(response).await, json!([]));
@@ -256,7 +369,12 @@ mod tests {
         // GET /bundles 现在应有 1 条。
         let resp = app
             .clone()
-            .oneshot(Request::builder().uri("/bundles").body(Body::empty()).unwrap())
+            .oneshot(
+                Request::builder()
+                    .uri("/bundles")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
             .await
             .unwrap();
         let list = body_json(resp).await;
@@ -333,7 +451,7 @@ mod tests {
             .await
             .unwrap();
         let objs = body_json(resp).await;
-        let first_pid = objs[0]["path_id"].as_i64().unwrap();
+        let first_pid = objs[0]["path_id"].as_str().unwrap();
 
         // 不带 detail:无 detail 字段。
         let resp = app
@@ -347,7 +465,7 @@ mod tests {
             .await
             .unwrap();
         let obj = body_json(resp).await;
-        assert_eq!(obj["path_id"], first_pid);
+        assert_eq!(obj["path_id"].as_str(), Some(first_pid));
         assert!(obj.get("detail").is_none() || obj["detail"].is_null());
 
         // 带 detail=full:有 detail。
@@ -355,7 +473,9 @@ mod tests {
             .clone()
             .oneshot(
                 Request::builder()
-                    .uri(format!("/bundles/amiya2/collections/0/objects/{first_pid}?detail=full"))
+                    .uri(format!(
+                        "/bundles/amiya2/collections/0/objects/{first_pid}?detail=full"
+                    ))
                     .body(Body::empty())
                     .unwrap(),
             )
@@ -408,7 +528,7 @@ mod tests {
             .unwrap()
             .iter()
             .find(|o| o["class_name"].as_str() == Some("Texture2D"))
-            .map(|o| o["path_id"].as_i64().unwrap())
+            .map(|o| o["path_id"].as_str().unwrap())
             .expect("DownloadCommonUI 应有 Texture2D");
 
         // 导出 PNG。
@@ -423,13 +543,8 @@ mod tests {
             .await
             .unwrap();
         assert_eq!(resp.status(), StatusCode::OK);
-        assert_eq!(
-            resp.headers().get("content-type").unwrap(),
-            "image/png"
-        );
-        let bytes = to_bytes(resp.into_body(), 1024 * 1024 * 16)
-            .await
-            .unwrap();
+        assert_eq!(resp.headers().get("content-type").unwrap(), "image/png");
+        let bytes = to_bytes(resp.into_body(), 1024 * 1024 * 16).await.unwrap();
         // PNG magic header。
         assert_eq!(
             &bytes[..8],
@@ -555,7 +670,9 @@ mod tests {
         let entries = arr.as_array().unwrap();
         assert!(!entries.is_empty(), "amiya bundle 应有 container 条目");
         assert!(
-            entries.iter().all(|e| e["kind"].as_str() == Some("AssetBundle")),
+            entries
+                .iter()
+                .all(|e| e["kind"].as_str() == Some("AssetBundle")),
             "此 bundle 只应有 AssetBundle 类型的 container"
         );
         // host 字段必有,collection 在合法范围。
@@ -624,7 +741,9 @@ mod tests {
         let filtered = arr.as_array().unwrap();
         assert!(!filtered.is_empty(), "?path= 过滤应至少命中 1 条");
         assert!(
-            filtered.iter().all(|e| e["path"].as_str() == Some(first_path)),
+            filtered
+                .iter()
+                .all(|e| e["path"].as_str() == Some(first_path)),
             "?path= 过滤后所有条目 path 应一致"
         );
     }

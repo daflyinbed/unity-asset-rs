@@ -8,7 +8,6 @@ use crate::subclasses::preview_data::PreviewData;
 use crate::subclasses::sample_settings::SampleSettings;
 use crate::subclasses::source_asset_identifier::SourceAssetIdentifier;
 
-
 /// 版本枚举：AudioImporterMExternalObjectsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AudioImporterMExternalObjectsVariant {
@@ -22,11 +21,33 @@ impl crate::Parse for AudioImporterMExternalObjectsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| {
+                        ({
+                            let a = SourceAssetIdentifier::parse(rdr, ver)?;
+                            let b = crate::PPtr::parse(rdr, ver)?;
+                            Ok((a, b))
+                        })
+                    })
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2019_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| {
+                        ({
+                            let a = SourceAssetIdentifier::parse(rdr, ver)?;
+                            let b = crate::PPtr::parse(rdr, ver)?;
+                            Ok((a, b))
+                        })
+                    })
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -45,10 +66,32 @@ impl crate::Parse for AudioImporterMPlatformSettingOverridesVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2023, 3, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = SampleSettings::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| {
+                        ({
+                            let a = rdr.read_aligned_string()?;
+                            let b = SampleSettings::parse(rdr, ver)?;
+                            Ok((a, b))
+                        })
+                    })
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::V2023_3(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i32()?; let b = SampleSettings::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| {
+                        ({
+                            let a = rdr.read_i32()?;
+                            let b = SampleSettings::parse(rdr, ver)?;
+                            Ok((a, b))
+                        })
+                    })
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -90,11 +133,11 @@ impl crate::Parse for AudioImporterMOutputVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = ( { Ok(Box::new(AudioImporterOutput::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(AudioImporterOutput::parse(rdr, ver)?)) })?;
             rdr.align(4)?;
             Ok(Self::V5_0(v))
         } else {
-            let v = ( { Ok(Box::new(Output::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(Output::parse(rdr, ver)?)) })?;
             rdr.align(4)?;
             Ok(Self::Default(v))
         }
@@ -161,20 +204,33 @@ impl crate::Parse for AudioImporter {
         let mut m_user_data = None;
         let mut m_asset_bundle_name = None;
         let mut m_asset_bundle_variant = None;
-            m_name = Some(rdr.read_aligned_string()?);
+        m_name = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             m_external_objects = Some(AudioImporterMExternalObjectsVariant::parse(rdr, ver)?);
-            m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_used_file_i_ds = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i64())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_default_settings = Some(SampleSettings::parse(rdr, ver)?);
-            m_platform_setting_overrides = Some(AudioImporterMPlatformSettingOverridesVariant::parse(rdr, ver)?);
+            m_platform_setting_overrides = Some(
+                AudioImporterMPlatformSettingOverridesVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             m_external_objects = Some(AudioImporterMExternalObjectsVariant::parse(rdr, ver)?);
             m_default_settings = Some(SampleSettings::parse(rdr, ver)?);
-            m_platform_setting_overrides = Some(AudioImporterMPlatformSettingOverridesVariant::parse(rdr, ver)?);
+            m_platform_setting_overrides = Some(
+                AudioImporterMPlatformSettingOverridesVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_default_settings = Some(SampleSettings::parse(rdr, ver)?);
-            m_platform_setting_overrides = Some(AudioImporterMPlatformSettingOverridesVariant::parse(rdr, ver)?);
+            m_platform_setting_overrides = Some(
+                AudioImporterMPlatformSettingOverridesVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
             m_format = Some(rdr.read_i32()?);
             m_quality = Some(rdr.read_f32()?);
@@ -185,22 +241,45 @@ impl crate::Parse for AudioImporter {
             m_quality = Some(rdr.read_f32()?);
             m_stream = Some(rdr.read_i32()?);
             m_preview_data_length = Some(rdr.read_u32()?);
-            audio_preview_data = Some(( { let n = rdr.read_i32()? as usize; rdr.read_bytes(n) } )?);
+            audio_preview_data = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    rdr.read_bytes(n)
+                })?,
+            );
             rdr.align(4)?;
             m_3d = Some(AudioImporterM3dVariant::parse(rdr, ver)?);
         } else {
-            m_file_id_to_recycle_name = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i32()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_file_id_to_recycle_name = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_i32()?;
+                                let b = rdr.read_aligned_string()?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_old_hash_identity = Some(MdFour::parse(rdr, ver)?);
             m_new_hash_identity = Some(MdFour::parse(rdr, ver)?);
             m_format = Some(rdr.read_i32()?);
             m_quality = Some(rdr.read_f32()?);
             m_stream = Some(rdr.read_i32()?);
             m_preview_data_length = Some(rdr.read_u32()?);
-            audio_preview_data = Some(( { let n = rdr.read_i32()? as usize; rdr.read_bytes(n) } )?);
+            audio_preview_data = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    rdr.read_bytes(n)
+                })?,
+            );
             rdr.align(4)?;
             m_3d = Some(AudioImporterM3dVariant::parse(rdr, ver)?);
         }
-            m_force_to_mono = Some(rdr.read_bool()?);
+        m_force_to_mono = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             m_normalize = Some(rdr.read_bool()?);
             m_load_in_background = Some(rdr.read_bool()?);

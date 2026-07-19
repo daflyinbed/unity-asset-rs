@@ -3,7 +3,6 @@
 use crate::PPtr;
 use crate::subclasses::vector3f::Vector3f;
 
-
 /// 版本枚举：OcclusionAreaMIsViewVolumeVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum OcclusionAreaMIsViewVolumeVariant {
@@ -47,10 +46,10 @@ impl crate::Parse for OcclusionArea {
         let mut m_is_view_volume = None;
         let mut m_is_target_volume = None;
         let mut m_target_resolution = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_size = Some(Vector3f::parse(rdr, ver)?);
-            m_center = Some(Vector3f::parse(rdr, ver)?);
-            m_is_view_volume = Some(OcclusionAreaMIsViewVolumeVariant::parse(rdr, ver)?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_size = Some(Vector3f::parse(rdr, ver)?);
+        m_center = Some(Vector3f::parse(rdr, ver)?);
+        m_is_view_volume = Some(OcclusionAreaMIsViewVolumeVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(4, 3, 0) {
         } else {
             m_is_target_volume = Some(rdr.read_bool()?);

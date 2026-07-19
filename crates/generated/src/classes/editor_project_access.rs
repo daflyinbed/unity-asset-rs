@@ -12,8 +12,6 @@ impl crate::Parse for EditorProjectAccess {
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
 
-        Ok(EditorProjectAccess {
-            m_name,
-        })
+        Ok(EditorProjectAccess { m_name })
     }
 }

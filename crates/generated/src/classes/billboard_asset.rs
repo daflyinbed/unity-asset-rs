@@ -4,7 +4,6 @@ use crate::PPtr;
 use crate::subclasses::vector2f::Vector2f;
 use crate::subclasses::vector4f::Vector4f;
 
-
 /// 版本枚举：BillboardAssetImageTexCoordsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum BillboardAssetImageTexCoordsVariant {
@@ -18,11 +17,21 @@ impl crate::Parse for BillboardAssetImageTexCoordsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector4f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| Vector4f::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector4f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| Vector4f::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -42,14 +51,29 @@ impl crate::Parse for BillboardAssetVerticesVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| Vector2f::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| Vector2f::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::V5_3(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| Vector2f::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::Default(v))
         }
@@ -82,20 +106,32 @@ impl crate::Parse for BillboardAsset {
         let mut vertices = None;
         let mut indices = None;
         let mut material = None;
-            m_name = Some(rdr.read_aligned_string()?);
-            width = Some(rdr.read_f32()?);
-            bottom = Some(rdr.read_f32()?);
-            height = Some(rdr.read_f32()?);
-            image_tex_coords = Some(BillboardAssetImageTexCoordsVariant::parse(rdr, ver)?);
+        m_name = Some(rdr.read_aligned_string()?);
+        width = Some(rdr.read_f32()?);
+        bottom = Some(rdr.read_f32()?);
+        height = Some(rdr.read_f32()?);
+        image_tex_coords = Some(BillboardAssetImageTexCoordsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 3, 0) {
         } else {
-            rotated = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            rotated = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n).map(|_| rdr.read_u8()).collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         }
-            vertices = Some(BillboardAssetVerticesVariant::parse(rdr, ver)?);
-            indices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u16() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            material = Some(crate::PPtr::parse(rdr, ver)?);
+        vertices = Some(BillboardAssetVerticesVariant::parse(rdr, ver)?);
+        indices = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_u16())
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
+        material = Some(crate::PPtr::parse(rdr, ver)?);
 
         Ok(BillboardAsset {
             m_name: m_name.unwrap(),

@@ -9,7 +9,10 @@ use unity_asset::{
 };
 
 /// 默认 fixture(io 层测试同款)。
-const DEFAULT_BUNDLE: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/../../example/char_002_amiya.ab");
+const DEFAULT_BUNDLE: &str = concat!(
+    env!("CARGO_MANIFEST_DIR"),
+    "/../../example/char_002_amiya.ab"
+);
 /// example/ 目录(用于多 bundle / ResourceManager 场景)。
 const EXAMPLE_DIR: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/../../example");
 
@@ -88,7 +91,8 @@ fn asset_resolution_is_consistent_with_resolve_ref() {
             .and_then(|r| r.get())
             .unwrap_or_else(|| panic!("entry {:?} asset {:?} 应能 resolve", e.path, id));
         assert_eq!(
-            resolved.id(), id,
+            resolved.id(),
+            id,
             "entry {:?} resolve 后 id 应与 entry.asset 一致",
             e.path
         );
@@ -111,19 +115,12 @@ fn preload_slice_resolves_to_valid_objects() {
             let resolved = env
                 .resolve_ref(*id)
                 .and_then(|r| r.get())
-                .unwrap_or_else(|| {
-                    panic!(
-                        "entry {:?} preload[{i}] {:?} 应能 resolve",
-                        e.path, id
-                    )
-                });
+                .unwrap_or_else(|| panic!("entry {:?} preload[{i}] {:?} 应能 resolve", e.path, id));
             assert_eq!(resolved.id(), *id);
             checked_ids += 1;
         }
     }
-    eprintln!(
-        "preload 校验:{checked_slices} 个切片, {checked_ids} 个 PPtr"
-    );
+    eprintln!("preload 校验:{checked_slices} 个切片, {checked_ids} 个 PPtr");
 }
 
 #[test]
@@ -151,7 +148,10 @@ fn path_of_roundtrip_for_main_asset() {
             .entries()
             .iter()
             .find(|e2| e2.path == path_back);
-        assert!(matched_entry.is_some(), "path_of 返回的 path 应能在 entries 找到");
+        assert!(
+            matched_entry.is_some(),
+            "path_of 返回的 path 应能在 entries 找到"
+        );
         let matched_entry = matched_entry.unwrap();
         assert_eq!(
             matched_entry.asset,
@@ -219,12 +219,15 @@ fn path_uniqueness_is_multidict_preserved() {
     // 不强求必有重复,但 entries 长度应 >= 去重后 path 数。
     let env = load_env(DEFAULT_BUNDLE);
     let total = env.containers().len();
-    let unique: std::collections::HashSet<&str> =
-        env.containers().entries().iter().map(|e| e.path.as_str()).collect();
+    let unique: std::collections::HashSet<&str> = env
+        .containers()
+        .entries()
+        .iter()
+        .map(|e| e.path.as_str())
+        .collect();
     assert!(
         total >= unique.len(),
-        "entries 总数 ({total}) 应 >= 去重后 path 数 ({})"
-        ,
+        "entries 总数 ({total}) 应 >= 去重后 path 数 ({})",
         unique.len()
     );
 }

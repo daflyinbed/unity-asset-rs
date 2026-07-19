@@ -15,8 +15,18 @@ impl crate::Parse for HierarchyState {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let expanded = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
-        let selection = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let expanded = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| crate::PPtr::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
+        let selection = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| crate::PPtr::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         let scrollposition_x = rdr.read_f32()?;
         let scrollposition_y = rdr.read_f32()?;
 

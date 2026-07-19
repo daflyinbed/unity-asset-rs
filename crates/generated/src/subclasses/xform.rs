@@ -3,7 +3,6 @@
 use crate::subclasses::float3::float3;
 use crate::subclasses::float4::float4;
 
-
 /// 版本枚举：xformTVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum xformTVariant {
@@ -17,10 +16,10 @@ impl crate::Parse for xformTVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            let v = ( { Ok(Box::new(float3::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(float3::parse(rdr, ver)?)) })?;
             Ok(Self::V5_4(v))
         } else {
-            let v = ( { Ok(Box::new(float4::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(float4::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
         }
     }
@@ -39,10 +38,10 @@ impl crate::Parse for xformSVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            let v = ( { Ok(Box::new(float3::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(float3::parse(rdr, ver)?)) })?;
             Ok(Self::V5_4(v))
         } else {
-            let v = ( { Ok(Box::new(float4::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(float4::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
         }
     }
@@ -63,10 +62,6 @@ impl crate::Parse for xform {
         let q = float4::parse(rdr, ver)?;
         let s = xformSVariant::parse(rdr, ver)?;
 
-        Ok(xform {
-            t,
-            q,
-            s,
-        })
+        Ok(xform { t, q, s })
     }
 }

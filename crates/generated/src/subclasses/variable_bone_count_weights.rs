@@ -10,11 +10,14 @@ impl crate::Parse for VariableBoneCountWeights {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_data = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_data = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| rdr.read_u32())
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
 
-        Ok(VariableBoneCountWeights {
-            m_data,
-        })
+        Ok(VariableBoneCountWeights { m_data })
     }
 }

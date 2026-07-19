@@ -7,7 +7,6 @@ use crate::subclasses::sprite_bone::SpriteBone;
 use crate::subclasses::vector2f::Vector2f;
 use crate::subclasses::vector4f::Vector4f;
 
-
 /// 版本枚举：SpriteMetaDataMOutlineVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum SpriteMetaDataMOutlineVariant {
@@ -21,11 +20,35 @@ impl crate::Parse for SpriteMetaDataMOutlineVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| {
+                        ({
+                            let n = rdr.read_i32()? as usize;
+                            (0..n)
+                                .map(|_| Vector2f::parse(rdr, ver))
+                                .collect::<Result<Vec<_>, _>>()
+                        })
+                    })
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| {
+                        ({
+                            let n = rdr.read_i32()? as usize;
+                            (0..n)
+                                .map(|_| Vector2f::parse(rdr, ver))
+                                .collect::<Result<Vec<_>, _>>()
+                        })
+                    })
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -71,68 +94,229 @@ impl crate::Parse for SpriteMetaData {
         let mut m_indices = None;
         let mut m_edges = None;
         let mut m_weights = None;
-            m_name = Some(rdr.read_aligned_string()?);
-            m_rect = Some(Rectf::parse(rdr, ver)?);
-            m_alignment = Some(rdr.read_i32()?);
-            m_pivot = Some(Vector2f::parse(rdr, ver)?);
+        m_name = Some(rdr.read_aligned_string()?);
+        m_rect = Some(Rectf::parse(rdr, ver)?);
+        m_alignment = Some(rdr.read_i32()?);
+        m_pivot = Some(Vector2f::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2023, 3, 0) {
             m_border = Some(Vector4f::parse(rdr, ver)?);
             m_custom_data = Some(rdr.read_aligned_string()?);
             m_outline = Some(SpriteMetaDataMOutlineVariant::parse(rdr, ver)?);
-            m_physics_shape = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_physics_shape = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let n = rdr.read_i32()? as usize;
+                                (0..n)
+                                    .map(|_| Vector2f::parse(rdr, ver))
+                                    .collect::<Result<Vec<_>, _>>()
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_tessellation_detail = Some(rdr.read_f32()?);
-            m_bones = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SpriteBone::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_bones = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| SpriteBone::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_sprite_id = Some(rdr.read_aligned_string()?);
             m_internal_id = Some(rdr.read_i64()?);
-            m_vertices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_vertices = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| Vector2f::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_indices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_indices = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_edges = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { int2_storage::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_edges = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| int2_storage::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_weights = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { BoneWeights4::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_weights = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| BoneWeights4::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             m_border = Some(Vector4f::parse(rdr, ver)?);
             m_outline = Some(SpriteMetaDataMOutlineVariant::parse(rdr, ver)?);
-            m_physics_shape = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_physics_shape = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let n = rdr.read_i32()? as usize;
+                                (0..n)
+                                    .map(|_| Vector2f::parse(rdr, ver))
+                                    .collect::<Result<Vec<_>, _>>()
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_tessellation_detail = Some(rdr.read_f32()?);
-            m_bones = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SpriteBone::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_bones = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| SpriteBone::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_sprite_id = Some(rdr.read_aligned_string()?);
             m_internal_id = Some(rdr.read_i64()?);
-            m_vertices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_vertices = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| Vector2f::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_indices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_indices = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_edges = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { int2_storage::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_edges = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| int2_storage::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_weights = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { BoneWeights4::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_weights = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| BoneWeights4::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
             m_border = Some(Vector4f::parse(rdr, ver)?);
             m_outline = Some(SpriteMetaDataMOutlineVariant::parse(rdr, ver)?);
-            m_physics_shape = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_physics_shape = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let n = rdr.read_i32()? as usize;
+                                (0..n)
+                                    .map(|_| Vector2f::parse(rdr, ver))
+                                    .collect::<Result<Vec<_>, _>>()
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_tessellation_detail = Some(rdr.read_f32()?);
-            m_bones = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SpriteBone::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_bones = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| SpriteBone::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_sprite_id = Some(rdr.read_aligned_string()?);
-            m_vertices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_vertices = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| Vector2f::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_indices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_indices = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_edges = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { int2_storage::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_edges = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| int2_storage::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_weights = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { BoneWeights4::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_weights = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| BoneWeights4::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             m_border = Some(Vector4f::parse(rdr, ver)?);
             m_outline = Some(SpriteMetaDataMOutlineVariant::parse(rdr, ver)?);
-            m_physics_shape = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_physics_shape = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let n = rdr.read_i32()? as usize;
+                                (0..n)
+                                    .map(|_| Vector2f::parse(rdr, ver))
+                                    .collect::<Result<Vec<_>, _>>()
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_tessellation_detail = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {

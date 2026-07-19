@@ -2,7 +2,6 @@
 
 use crate::PPtr;
 
-
 /// 版本枚举：MovieTextureMDownscaleFallbackVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum MovieTextureMDownscaleFallbackVariant {
@@ -50,7 +49,7 @@ impl crate::Parse for MovieTexture {
         let mut m_downscale_fallback = None;
         let mut m_movie_data = None;
         let mut m_color_space = None;
-            m_name = Some(rdr.read_aligned_string()?);
+        m_name = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
             m_is_alpha_channel_optional = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -68,21 +67,36 @@ impl crate::Parse for MovieTexture {
             m_loop = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_audio_clip = Some(crate::PPtr::parse(rdr, ver)?);
-            m_movie_data = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_movie_data = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n).map(|_| rdr.read_u8()).collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_color_space = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
             m_loop = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_audio_clip = Some(crate::PPtr::parse(rdr, ver)?);
-            m_movie_data = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_movie_data = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n).map(|_| rdr.read_u8()).collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_color_space = Some(rdr.read_i32()?);
         } else {
             m_loop = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_audio_clip = Some(crate::PPtr::parse(rdr, ver)?);
-            m_movie_data = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_movie_data = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n).map(|_| rdr.read_u8()).collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         }
 

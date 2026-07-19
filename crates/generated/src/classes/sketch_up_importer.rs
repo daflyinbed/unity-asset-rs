@@ -9,7 +9,6 @@ use crate::subclasses::sketch_up_import_data::SketchUpImportData;
 use crate::subclasses::source_asset_identifier::SourceAssetIdentifier;
 use crate::subclasses::take_info::TakeInfo;
 
-
 /// 版本枚举：SketchUpImporterMSelectedNodesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum SketchUpImporterMSelectedNodesVariant {
@@ -23,11 +22,21 @@ impl crate::Parse for SketchUpImporterMSelectedNodesVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_i32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_i32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -46,11 +55,33 @@ impl crate::Parse for SketchUpImporterMExternalObjectsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| {
+                        ({
+                            let a = SourceAssetIdentifier::parse(rdr, ver)?;
+                            let b = crate::PPtr::parse(rdr, ver)?;
+                            Ok((a, b))
+                        })
+                    })
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2019_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| {
+                        ({
+                            let a = SourceAssetIdentifier::parse(rdr, ver)?;
+                            let b = crate::PPtr::parse(rdr, ver)?;
+                            Ok((a, b))
+                        })
+                    })
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -161,11 +192,21 @@ impl crate::Parse for SketchUpImporterMExtraExposedTransformPathsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_aligned_string())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_aligned_string())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -184,11 +225,21 @@ impl crate::Parse for SketchUpImporterMClipAnimationsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ClipAnimationInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| ClipAnimationInfo::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ClipAnimationInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| ClipAnimationInfo::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -207,11 +258,21 @@ impl crate::Parse for SketchUpImporterMLodScreenPercentagesVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_f32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_f32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_f32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_f32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -322,11 +383,21 @@ impl crate::Parse for SketchUpImporterMImportedTakeInfosVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TakeInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| TakeInfo::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TakeInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| TakeInfo::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -346,14 +417,29 @@ impl crate::Parse for SketchUpImporterMReferencedClipsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(6000, 0, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Guid::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| Guid::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::V6000_0(v))
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Guid::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| Guid::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Guid::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| Guid::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -372,11 +458,21 @@ impl crate::Parse for SketchUpImporterMImportedRootsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -611,7 +707,8 @@ pub struct SketchUpImporter {
     pub m_animation_import_warnings: String,
     pub m_animation_retargeting_warnings: String,
     pub m_animation_do_retargeting_warnings: SketchUpImporterMAnimationDoRetargetingWarningsVariant,
-    pub m_import_animated_custom_properties: Option<SketchUpImporterMImportAnimatedCustomPropertiesVariant>,
+    pub m_import_animated_custom_properties:
+        Option<SketchUpImporterMImportAnimatedCustomPropertiesVariant>,
     pub m_import_constraints: Option<bool>,
     pub m_animation_compression: i32,
     pub m_animation_rotation_error: f32,
@@ -695,9 +792,11 @@ pub struct SketchUpImporter {
     pub m_avatar_setup: Option<i32>,
     pub m_contains_animation: Option<bool>,
     pub calculate_blendshape_normals_delta_from_imported_normals: Option<bool>,
-    pub m_add_humanoid_extra_root_only_when_using_avatar: Option<SketchUpImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant>,
+    pub m_add_humanoid_extra_root_only_when_using_avatar:
+        Option<SketchUpImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant>,
     pub m_remap_materials_if_material_import_mode_is_none: Option<bool>,
-    pub m_import_blend_shape_deform_percent: Option<SketchUpImporterMImportBlendShapeDeformPercentVariant>,
+    pub m_import_blend_shape_deform_percent:
+        Option<SketchUpImporterMImportBlendShapeDeformPercentVariant>,
 }
 
 impl crate::Parse for SketchUpImporter {
@@ -841,101 +940,212 @@ impl crate::Parse for SketchUpImporter {
             rdr.align(4)?;
             m_sketch_up_import_data = Some(SketchUpImportData::parse(rdr, ver)?);
         }
-            m_name = Some(rdr.read_aligned_string()?);
+        m_name = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            m_internal_id_to_name_table = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = ( { let a = rdr.read_i32()?; let b = rdr.read_i64()?; Ok((a, b)) } )?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_internal_id_to_name_table = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = ({
+                                    let a = rdr.read_i32()?;
+                                    let b = rdr.read_i64()?;
+                                    Ok((a, b))
+                                })?;
+                                let b = rdr.read_aligned_string()?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_external_objects = Some(SketchUpImporterMExternalObjectsVariant::parse(rdr, ver)?);
-            m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_used_file_i_ds = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i64())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_supports_embedded_materials = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_material_import_mode = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_internal_id_to_name_table = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = ( { let a = rdr.read_i32()?; let b = rdr.read_i64()?; Ok((a, b)) } )?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_internal_id_to_name_table = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = ({
+                                    let a = rdr.read_i32()?;
+                                    let b = rdr.read_i64()?;
+                                    Ok((a, b))
+                                })?;
+                                let b = rdr.read_aligned_string()?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_external_objects = Some(SketchUpImporterMExternalObjectsVariant::parse(rdr, ver)?);
-            m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_used_file_i_ds = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i64())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_import_materials = Some(SketchUpImporterMImportMaterialsVariant::parse(rdr, ver)?);
             m_supports_embedded_materials = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            m_file_id_to_recycle_name = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i64()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_file_id_to_recycle_name = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_i64()?;
+                                let b = rdr.read_aligned_string()?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_external_objects = Some(SketchUpImporterMExternalObjectsVariant::parse(rdr, ver)?);
             m_import_materials = Some(SketchUpImporterMImportMaterialsVariant::parse(rdr, ver)?);
             m_supports_embedded_materials = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else {
-            m_file_id_to_recycle_name = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i64()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_file_id_to_recycle_name = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_i64()?;
+                                let b = rdr.read_aligned_string()?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_import_materials = Some(SketchUpImporterMImportMaterialsVariant::parse(rdr, ver)?);
         }
-            m_material_name = Some(rdr.read_i32()?);
-            m_material_search = Some(rdr.read_i32()?);
+        m_material_name = Some(rdr.read_i32()?);
+        m_material_search = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(6000, 6, 0) {
             m_material_location = Some(rdr.read_i32()?);
-            m_materials = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_materials = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| SourceAssetIdentifier::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else if *ver >= crate::UnityVersion::new(6000, 5, 0) {
             m_material_location = Some(rdr.read_i32()?);
             m_search_textures_globally = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_materials = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_materials = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| SourceAssetIdentifier::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             m_material_location = Some(rdr.read_i32()?);
-            m_materials = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SourceAssetIdentifier::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_materials = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| SourceAssetIdentifier::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else {
         }
-            m_legacy_generate_animations = Some(rdr.read_i32()?);
-            m_bake_simulation = Some(rdr.read_bool()?);
+        m_legacy_generate_animations = Some(rdr.read_i32()?);
+        m_bake_simulation = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
             m_resample_curves = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
             m_resample_rotations = Some(rdr.read_bool()?);
         } else {
         }
-            m_optimize_game_objects = Some(SketchUpImporterMOptimizeGameObjectsVariant::parse(rdr, ver)?);
+        m_optimize_game_objects = Some(SketchUpImporterMOptimizeGameObjectsVariant::parse(
+            rdr, ver,
+        )?);
         if *ver >= crate::UnityVersion::new(2021, 2, 0) {
             m_remove_constant_scale_curves = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else {
         }
-            m_motion_node_name = Some(rdr.read_aligned_string()?);
+        m_motion_node_name = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(2023, 1, 0) {
         } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
             m_rig_import_errors = Some(rdr.read_aligned_string()?);
             m_rig_import_warnings = Some(rdr.read_aligned_string()?);
         } else {
         }
-            m_animation_import_errors = Some(rdr.read_aligned_string()?);
-            m_animation_import_warnings = Some(rdr.read_aligned_string()?);
-            m_animation_retargeting_warnings = Some(rdr.read_aligned_string()?);
-            m_animation_do_retargeting_warnings = Some(SketchUpImporterMAnimationDoRetargetingWarningsVariant::parse(rdr, ver)?);
+        m_animation_import_errors = Some(rdr.read_aligned_string()?);
+        m_animation_import_warnings = Some(rdr.read_aligned_string()?);
+        m_animation_retargeting_warnings = Some(rdr.read_aligned_string()?);
+        m_animation_do_retargeting_warnings =
+            Some(SketchUpImporterMAnimationDoRetargetingWarningsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            m_import_animated_custom_properties = Some(SketchUpImporterMImportAnimatedCustomPropertiesVariant::parse(rdr, ver)?);
+            m_import_animated_custom_properties =
+                Some(SketchUpImporterMImportAnimatedCustomPropertiesVariant::parse(rdr, ver)?);
             m_import_constraints = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            m_import_animated_custom_properties = Some(SketchUpImporterMImportAnimatedCustomPropertiesVariant::parse(rdr, ver)?);
+            m_import_animated_custom_properties =
+                Some(SketchUpImporterMImportAnimatedCustomPropertiesVariant::parse(rdr, ver)?);
         } else {
         }
-            m_animation_compression = Some(rdr.read_i32()?);
-            m_animation_rotation_error = Some(rdr.read_f32()?);
-            m_animation_position_error = Some(rdr.read_f32()?);
-            m_animation_scale_error = Some(rdr.read_f32()?);
-            m_animation_wrap_mode = Some(rdr.read_i32()?);
-            m_extra_exposed_transform_paths = Some(SketchUpImporterMExtraExposedTransformPathsVariant::parse(rdr, ver)?);
+        m_animation_compression = Some(rdr.read_i32()?);
+        m_animation_rotation_error = Some(rdr.read_f32()?);
+        m_animation_position_error = Some(rdr.read_f32()?);
+        m_animation_scale_error = Some(rdr.read_f32()?);
+        m_animation_wrap_mode = Some(rdr.read_i32()?);
+        m_extra_exposed_transform_paths = Some(
+            SketchUpImporterMExtraExposedTransformPathsVariant::parse(rdr, ver)?,
+        );
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            m_extra_user_properties = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_extra_user_properties = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else {
         }
-            m_clip_animations = Some(SketchUpImporterMClipAnimationsVariant::parse(rdr, ver)?);
-            m_is_readable = Some(rdr.read_bool()?);
-            rdr.align(4)?;
-            m_lod_screen_percentages = Some(SketchUpImporterMLodScreenPercentagesVariant::parse(rdr, ver)?);
-            m_global_scale = Some(rdr.read_f32()?);
-            m_mesh_compression = Some(rdr.read_i32()?);
-            m_add_colliders = Some(rdr.read_bool()?);
+        m_clip_animations = Some(SketchUpImporterMClipAnimationsVariant::parse(rdr, ver)?);
+        m_is_readable = Some(rdr.read_bool()?);
+        rdr.align(4)?;
+        m_lod_screen_percentages = Some(SketchUpImporterMLodScreenPercentagesVariant::parse(
+            rdr, ver,
+        )?);
+        m_global_scale = Some(rdr.read_f32()?);
+        m_mesh_compression = Some(rdr.read_i32()?);
+        m_add_colliders = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(2022, 2, 19) {
             m_use_srgb_material_color = Some(rdr.read_bool()?);
             m_sort_hierarchy_by_name = Some(rdr.read_bool()?);
@@ -952,7 +1162,7 @@ impl crate::Parse for SketchUpImporter {
             m_import_visibility = Some(rdr.read_bool()?);
         } else {
         }
-            m_import_blend_shapes = Some(rdr.read_bool()?);
+        m_import_blend_shapes = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(2021, 2, 0) {
             m_import_cameras = Some(rdr.read_bool()?);
             m_import_lights = Some(rdr.read_bool()?);
@@ -970,15 +1180,15 @@ impl crate::Parse for SketchUpImporter {
             rdr.align(4)?;
         } else {
         }
-            swap_uv_channels = Some(rdr.read_bool()?);
-            generate_secondary_uv = Some(rdr.read_bool()?);
-            m_use_file_units = Some(rdr.read_bool()?);
+        swap_uv_channels = Some(rdr.read_bool()?);
+        generate_secondary_uv = Some(rdr.read_bool()?);
+        m_use_file_units = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
         } else {
             optimize_mesh_for_gpu = Some(rdr.read_bool()?);
         }
-            keep_quads = Some(rdr.read_bool()?);
-            weld_vertices = Some(SketchUpImporterWeldVerticesVariant::parse(rdr, ver)?);
+        keep_quads = Some(rdr.read_bool()?);
+        weld_vertices = Some(SketchUpImporterWeldVerticesVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 5, 0) {
             bake_axis_conversion = Some(rdr.read_bool()?);
             m_preserve_hierarchy = Some(rdr.read_bool()?);
@@ -1043,19 +1253,19 @@ impl crate::Parse for SketchUpImporter {
             index_format = Some(rdr.read_i32()?);
         } else {
         }
-            secondary_uv_angle_distortion = Some(rdr.read_f32()?);
-            secondary_uv_area_distortion = Some(rdr.read_f32()?);
-            secondary_uv_hard_angle = Some(rdr.read_f32()?);
+        secondary_uv_angle_distortion = Some(rdr.read_f32()?);
+        secondary_uv_area_distortion = Some(rdr.read_f32()?);
+        secondary_uv_hard_angle = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2020, 1, 0) {
             secondary_uv_margin_method = Some(rdr.read_i32()?);
             secondary_uv_min_lightmap_resolution = Some(rdr.read_f32()?);
             secondary_uv_min_object_scale = Some(rdr.read_f32()?);
         } else {
         }
-            secondary_uv_pack_margin = Some(rdr.read_f32()?);
-            m_use_file_scale = Some(rdr.read_bool()?);
-            rdr.align(4)?;
-            m_file_scale = Some(SketchUpImporterMFileScaleVariant::parse(rdr, ver)?);
+        secondary_uv_pack_margin = Some(rdr.read_f32()?);
+        m_use_file_scale = Some(rdr.read_bool()?);
+        rdr.align(4)?;
+        m_file_scale = Some(SketchUpImporterMFileScaleVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2021, 3, 36) {
             m_file_scale_unit = Some(rdr.read_aligned_string()?);
             m_file_scale_factor = Some(rdr.read_f32()?);
@@ -1079,97 +1289,129 @@ impl crate::Parse for SketchUpImporter {
             rdr.align(4)?;
         } else {
         }
-            normal_smooth_angle = Some(SketchUpImporterNormalSmoothAngleVariant::parse(rdr, ver)?);
+        normal_smooth_angle = Some(SketchUpImporterNormalSmoothAngleVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 3, 0) {
         } else {
             split_tangents_across_uv = Some(rdr.read_bool()?);
             rdr.align(4)?;
         }
-            normal_import_mode = Some(rdr.read_i32()?);
-            tangent_import_mode = Some(SketchUpImporterTangentImportModeVariant::parse(rdr, ver)?);
+        normal_import_mode = Some(rdr.read_i32()?);
+        tangent_import_mode = Some(SketchUpImporterTangentImportModeVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            normal_calculation_mode = Some(SketchUpImporterNormalCalculationModeVariant::parse(rdr, ver)?);
-            legacy_compute_all_normals_from_smoothing_groups_when_mesh_has_blend_shapes = Some(rdr.read_bool()?);
+            normal_calculation_mode = Some(SketchUpImporterNormalCalculationModeVariant::parse(
+                rdr, ver,
+            )?);
+            legacy_compute_all_normals_from_smoothing_groups_when_mesh_has_blend_shapes =
+                Some(rdr.read_bool()?);
             rdr.align(4)?;
             blend_shape_normal_import_mode = Some(rdr.read_i32()?);
-            normal_smoothing_source = Some(SketchUpImporterNormalSmoothingSourceVariant::parse(rdr, ver)?);
+            normal_smoothing_source = Some(SketchUpImporterNormalSmoothingSourceVariant::parse(
+                rdr, ver,
+            )?);
             calculate_blendshape_normals_delta_from_imported_normals = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            normal_calculation_mode = Some(SketchUpImporterNormalCalculationModeVariant::parse(rdr, ver)?);
-            legacy_compute_all_normals_from_smoothing_groups_when_mesh_has_blend_shapes = Some(rdr.read_bool()?);
+            normal_calculation_mode = Some(SketchUpImporterNormalCalculationModeVariant::parse(
+                rdr, ver,
+            )?);
+            legacy_compute_all_normals_from_smoothing_groups_when_mesh_has_blend_shapes =
+                Some(rdr.read_bool()?);
             rdr.align(4)?;
             blend_shape_normal_import_mode = Some(rdr.read_i32()?);
-            normal_smoothing_source = Some(SketchUpImporterNormalSmoothingSourceVariant::parse(rdr, ver)?);
+            normal_smoothing_source = Some(SketchUpImporterNormalSmoothingSourceVariant::parse(
+                rdr, ver,
+            )?);
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            normal_calculation_mode = Some(SketchUpImporterNormalCalculationModeVariant::parse(rdr, ver)?);
+            normal_calculation_mode = Some(SketchUpImporterNormalCalculationModeVariant::parse(
+                rdr, ver,
+            )?);
         } else {
         }
-            m_imported_take_infos = Some(SketchUpImporterMImportedTakeInfosVariant::parse(rdr, ver)?);
+        m_imported_take_infos = Some(SketchUpImporterMImportedTakeInfosVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
         } else {
             m_referenced_clips = Some(SketchUpImporterMReferencedClipsVariant::parse(rdr, ver)?);
         }
-            m_imported_roots = Some(SketchUpImporterMImportedRootsVariant::parse(rdr, ver)?);
-            m_has_extra_root = Some(SketchUpImporterMHasExtraRootVariant::parse(rdr, ver)?);
+        m_imported_roots = Some(SketchUpImporterMImportedRootsVariant::parse(rdr, ver)?);
+        m_has_extra_root = Some(SketchUpImporterMHasExtraRootVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            m_has_embedded_textures = Some(SketchUpImporterMHasEmbeddedTexturesVariant::parse(rdr, ver)?);
+            m_has_embedded_textures = Some(SketchUpImporterMHasEmbeddedTexturesVariant::parse(
+                rdr, ver,
+            )?);
             m_contains_animation = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_referenced_clips = Some(SketchUpImporterMReferencedClipsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_has_embedded_textures = Some(SketchUpImporterMHasEmbeddedTexturesVariant::parse(rdr, ver)?);
+            m_has_embedded_textures = Some(SketchUpImporterMHasEmbeddedTexturesVariant::parse(
+                rdr, ver,
+            )?);
             m_referenced_clips = Some(SketchUpImporterMReferencedClipsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            m_has_embedded_textures = Some(SketchUpImporterMHasEmbeddedTexturesVariant::parse(rdr, ver)?);
+            m_has_embedded_textures = Some(SketchUpImporterMHasEmbeddedTexturesVariant::parse(
+                rdr, ver,
+            )?);
         } else {
         }
-            m_import_animation = Some(SketchUpImporterMImportAnimationVariant::parse(rdr, ver)?);
+        m_import_animation = Some(SketchUpImporterMImportAnimationVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2019, 3, 0) {
         } else {
             m_copy_avatar = Some(rdr.read_bool()?);
             rdr.align(4)?;
         }
-            m_human_description = Some(HumanDescription::parse(rdr, ver)?);
-            m_last_human_description_avatar_source = Some(crate::PPtr::parse(rdr, ver)?);
+        m_human_description = Some(HumanDescription::parse(rdr, ver)?);
+        m_last_human_description_avatar_source = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2019, 3, 0) {
             m_auto_generate_avatar_mapping_if_unspecified = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else {
         }
-            m_animation_type = Some(rdr.read_i32()?);
+        m_animation_type = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2022, 1, 5) {
             m_humanoid_oversampling = Some(rdr.read_i32()?);
             m_avatar_setup = Some(rdr.read_i32()?);
-            m_add_humanoid_extra_root_only_when_using_avatar = Some(SketchUpImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant::parse(rdr, ver)?);
-            m_import_blend_shape_deform_percent = Some(SketchUpImporterMImportBlendShapeDeformPercentVariant::parse(rdr, ver)?);
+            m_add_humanoid_extra_root_only_when_using_avatar = Some(
+                SketchUpImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant::parse(rdr, ver)?,
+            );
+            m_import_blend_shape_deform_percent =
+                Some(SketchUpImporterMImportBlendShapeDeformPercentVariant::parse(rdr, ver)?);
             m_remap_materials_if_material_import_mode_is_none = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
             m_humanoid_oversampling = Some(rdr.read_i32()?);
             m_avatar_setup = Some(rdr.read_i32()?);
-            m_add_humanoid_extra_root_only_when_using_avatar = Some(SketchUpImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant::parse(rdr, ver)?);
-            m_import_blend_shape_deform_percent = Some(SketchUpImporterMImportBlendShapeDeformPercentVariant::parse(rdr, ver)?);
+            m_add_humanoid_extra_root_only_when_using_avatar = Some(
+                SketchUpImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant::parse(rdr, ver)?,
+            );
+            m_import_blend_shape_deform_percent =
+                Some(SketchUpImporterMImportBlendShapeDeformPercentVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2021, 3, 5) {
             m_humanoid_oversampling = Some(rdr.read_i32()?);
             m_avatar_setup = Some(rdr.read_i32()?);
-            m_add_humanoid_extra_root_only_when_using_avatar = Some(SketchUpImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant::parse(rdr, ver)?);
+            m_add_humanoid_extra_root_only_when_using_avatar = Some(
+                SketchUpImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant::parse(rdr, ver)?,
+            );
             m_remap_materials_if_material_import_mode_is_none = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2021, 1, 0) {
             m_humanoid_oversampling = Some(rdr.read_i32()?);
             m_avatar_setup = Some(rdr.read_i32()?);
-            m_add_humanoid_extra_root_only_when_using_avatar = Some(SketchUpImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant::parse(rdr, ver)?);
+            m_add_humanoid_extra_root_only_when_using_avatar = Some(
+                SketchUpImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2020, 3, 37) {
             m_humanoid_oversampling = Some(rdr.read_i32()?);
             m_avatar_setup = Some(rdr.read_i32()?);
-            m_add_humanoid_extra_root_only_when_using_avatar = Some(SketchUpImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant::parse(rdr, ver)?);
+            m_add_humanoid_extra_root_only_when_using_avatar = Some(
+                SketchUpImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant::parse(rdr, ver)?,
+            );
             m_remap_materials_if_material_import_mode_is_none = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
             m_humanoid_oversampling = Some(rdr.read_i32()?);
             m_avatar_setup = Some(rdr.read_i32()?);
-            m_add_humanoid_extra_root_only_when_using_avatar = Some(SketchUpImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant::parse(rdr, ver)?);
+            m_add_humanoid_extra_root_only_when_using_avatar = Some(
+                SketchUpImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
             m_humanoid_oversampling = Some(rdr.read_i32()?);
             m_avatar_setup = Some(rdr.read_i32()?);
@@ -1177,11 +1419,11 @@ impl crate::Parse for SketchUpImporter {
             m_humanoid_oversampling = Some(rdr.read_i32()?);
         } else {
         }
-            m_additional_bone = Some(rdr.read_bool()?);
-            rdr.align(4)?;
-            m_user_data = Some(rdr.read_aligned_string()?);
-            m_asset_bundle_name = Some(rdr.read_aligned_string()?);
-            m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
+        m_additional_bone = Some(rdr.read_bool()?);
+        rdr.align(4)?;
+        m_user_data = Some(rdr.read_aligned_string()?);
+        m_asset_bundle_name = Some(rdr.read_aligned_string()?);
+        m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(2019, 2, 0) {
             m_generate_back_face = Some(rdr.read_bool()?);
             m_merge_coplanar_faces = Some(rdr.read_bool()?);

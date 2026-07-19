@@ -3,11 +3,11 @@
 //!
 //! 参见 `docs/object-layer.md` §1/§5/§8（dispatch + fallback + MonoBehaviour）。
 
+use crate::Endian;
 use crate::cursor::Cursor;
 use crate::error::{Error, MonoBehaviourShellSnafu, Result};
 use crate::serialized_file::{ObjectInfo, SerializedFile};
-use crate::typetree::{interpret, interpret_mono_behaviour, PPtrValue, RefTypeTable, Value};
-use crate::Endian;
+use crate::typetree::{PPtrValue, RefTypeTable, Value, interpret, interpret_mono_behaviour};
 use generated::{ClassIDType, UnityObject};
 
 /// 解析结果：typed struct、动态 Value、或 MonoBehaviour（typed shell + 动态 structure）。
@@ -118,9 +118,8 @@ fn try_typed(
 /// `structure`（用户脚本字段）原样存入，不经 typed 投影。
 fn build_mono_behaviour(fields: Vec<(String, Value)>, structure: Value) -> Result<MonoBehaviour> {
     // 按名字查找字段值（shell 字段少，线性扫描即可）。
-    let find = |key: &str| -> Option<&Value> {
-        fields.iter().find(|(k, _)| k == key).map(|(_, v)| v)
-    };
+    let find =
+        |key: &str| -> Option<&Value> { fields.iter().find(|(k, _)| k == key).map(|(_, v)| v) };
 
     let m_game_object = take_pptr(find("m_GameObject"), "m_GameObject")?;
     let m_script = take_pptr(find("m_Script"), "m_Script")?;
@@ -133,7 +132,7 @@ fn build_mono_behaviour(fields: Vec<(String, Value)>, structure: Value) -> Resul
                 field: "m_Enabled".to_string(),
                 reason: format!("expected Bool or U8, got {:?}", v),
             }
-            .build())
+            .build());
         }
         None => {
             log::warn!("MonoBehaviour shell: m_Enabled missing, defaulting to false");
@@ -148,7 +147,7 @@ fn build_mono_behaviour(fields: Vec<(String, Value)>, structure: Value) -> Resul
                 field: "m_Name".to_string(),
                 reason: format!("expected String, got {:?}", v),
             }
-            .build())
+            .build());
         }
         None => String::new(),
     };
@@ -160,7 +159,7 @@ fn build_mono_behaviour(fields: Vec<(String, Value)>, structure: Value) -> Resul
                 field: "m_EditorClassIdentifier".to_string(),
                 reason: format!("expected String, got {:?}", v),
             }
-            .build())
+            .build());
         }
         None => None,
     };

@@ -59,17 +59,9 @@ pub struct RawEntry {
     pub flags: u32,
 }
 
-
-
-
-
 fn align_up(pos: usize, alignment: usize) -> usize {
     let r = pos % alignment;
-    if r == 0 {
-        pos
-    } else {
-        pos + (alignment - r)
-    }
+    if r == 0 { pos } else { pos + (alignment - r) }
 }
 
 /// 解析一个 UnityFS bundle（format 6/7/8）。
@@ -185,9 +177,7 @@ pub fn parse_unityfs(src: Bytes, registry: &Registry) -> Result<Bundle> {
         let size = bi.read_i64("node size")?;
         let flags = bi.read_u32("node flags")?;
         let path = bi.read_cstr("node path")?;
-        log::debug!(
-            "  node[{i}]: offset={offset} size={size} flags=0x{flags:08x} path={path:?}"
-        );
+        log::debug!("  node[{i}]: offset={offset} size={size} flags=0x{flags:08x} path={path:?}");
         nodes.push(Node {
             offset,
             size,
@@ -211,10 +201,7 @@ pub fn parse_unityfs(src: Bytes, registry: &Registry) -> Result<Bundle> {
     };
 
     // 逐块解压、拼接。
-    let total_uncompressed: u64 = blocks
-        .iter()
-        .map(|b| b.uncompressed_size as u64)
-        .sum();
+    let total_uncompressed: u64 = blocks.iter().map(|b| b.uncompressed_size as u64).sum();
     log::debug!(
         "block data starts at 0x{block_data_start:x}; {} blocks, total uncompressed={total_uncompressed}",
         blocks.len()
@@ -238,12 +225,15 @@ pub fn parse_unityfs(src: Bytes, registry: &Registry) -> Result<Bundle> {
             blk.uncompressed_size,
             comp_ct
         );
-        let out = registry.get(comp_ct)?.decompress(comp_bytes, blk.uncompressed_size as usize).map_err(
-            |e| DecompressSnafu {
-                reason: format!("block {i} 解压失败: {e}"),
-            }
-            .build(),
-        )?;
+        let out = registry
+            .get(comp_ct)?
+            .decompress(comp_bytes, blk.uncompressed_size as usize)
+            .map_err(|e| {
+                DecompressSnafu {
+                    reason: format!("block {i} 解压失败: {e}"),
+                }
+                .build()
+            })?;
         blob.extend_from_slice(&out);
         data_pos += comp_len;
     }

@@ -4,7 +4,6 @@ use crate::PPtr;
 use crate::subclasses::bit_field::BitField;
 use crate::subclasses::min_max_curve::MinMaxCurve;
 
-
 /// 版本枚举：CollisionModuleQualityVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum CollisionModuleQualityVariant {
@@ -98,9 +97,9 @@ impl crate::Parse for CollisionModule {
         let mut collision_messages = None;
         let mut collides_with_dynamic = None;
         let mut interior_collisions = None;
-            enabled = Some(rdr.read_bool()?);
-            rdr.align(4)?;
-            r#type = Some(rdr.read_i32()?);
+        enabled = Some(rdr.read_bool()?);
+        rdr.align(4)?;
+        r#type = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2020, 2, 0) {
             collision_mode = Some(rdr.read_i32()?);
             collider_force = Some(rdr.read_f32()?);
@@ -108,7 +107,14 @@ impl crate::Parse for CollisionModule {
             multiply_collider_force_by_particle_speed = Some(rdr.read_bool()?);
             multiply_collider_force_by_collision_angle = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_planes = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_planes = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| crate::PPtr::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_dampen = Some(MinMaxCurve::parse(rdr, ver)?);
             m_bounce = Some(MinMaxCurve::parse(rdr, ver)?);
@@ -151,7 +157,7 @@ impl crate::Parse for CollisionModule {
             bounce = Some(rdr.read_f32()?);
             energy_loss_on_collision = Some(rdr.read_f32()?);
         }
-            min_kill_speed = Some(rdr.read_f32()?);
+        min_kill_speed = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
             max_kill_speed = Some(rdr.read_f32()?);
             radius_scale = Some(rdr.read_f32()?);

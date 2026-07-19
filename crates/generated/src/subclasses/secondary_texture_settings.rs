@@ -13,7 +13,12 @@ impl crate::Parse for SecondaryTextureSettings {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let platform_settings = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TextureImporterPlatformSettings::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let platform_settings = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| TextureImporterPlatformSettings::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
         let s_rgb = rdr.read_bool()?;
         rdr.align(4)?;

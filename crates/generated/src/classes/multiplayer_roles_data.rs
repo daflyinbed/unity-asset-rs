@@ -17,7 +17,12 @@ impl crate::Parse for MultiplayerRolesData {
     ) -> Result<Self, R::Error> {
         let m_game_object = crate::PPtr::parse(rdr, ver)?;
         let m_game_object_roles_mask = rdr.read_i32()?;
-        let m_components_roles_masks = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ObjectRolePair::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_components_roles_masks = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| ObjectRolePair::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
 
         Ok(MultiplayerRolesData {

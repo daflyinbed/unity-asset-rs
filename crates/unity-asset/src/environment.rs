@@ -4,8 +4,7 @@
 //! 设计与命名参照 AssetRipper（`GameBundle` / `AssetCollection` / `ResourceFile` /
 //! `SpecialFileNames`）。详见 `docs/environment-layer.md`。
 
-use std::collections::HashSet;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 
 use bytes::Bytes;
@@ -19,9 +18,9 @@ use crate::format::{FileFormat, LoadedFile};
 use crate::names::fix_file_identifier;
 use crate::object_parser::{MonoBehaviour, ParsedObject};
 use crate::serialized_file::FileIdentifier;
+use crate::serialized_file::SerializedFile;
 use crate::typetree::PPtrValue;
 use crate::{Endian, Error, PPtr, UnityVersion};
-use crate::serialized_file::SerializedFile;
 
 /// 稳定的 collection 句柄。包装 `Environment.collections` 的 Vec 下标,
 /// 避免把内部存储布局(裸 `usize`)暴露成 API。未来调整存储、做按需解析或
@@ -41,6 +40,19 @@ impl CollectionId {
     /// 不要用来跨 `Environment` 实例传递(不同实例的下标不通用)。
     pub fn to_index(self) -> usize {
         self.0 as usize
+    }
+}
+
+/// 一个运行时输入源在 [`Environment`] 内的句柄。
+///
+/// 它只在同一个 Environment 生命周期内有效。增量删除/刷新用这个句柄标记来源，
+/// project、路径和持久化等上层概念不进入 Rust 库。
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+pub struct SourceId(u64);
+
+impl std::fmt::Display for SourceId {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
     }
 }
 
@@ -117,7 +129,10 @@ pub struct ObjectId {
 
 impl ObjectId {
     pub fn new(collection: CollectionId, path_id: i64) -> Self {
-        Self { collection, path_id }
+        Self {
+            collection,
+            path_id,
+        }
     }
 }
 
@@ -169,6 +184,13 @@ pub struct Environment {
     /// 全局 container 索引(AssetBundle.m_Container + ResourceManager.m_Container 聚合)。
     /// 在 [`crate::Loader::build`] 末尾、Phase B 依赖解析完成后 eager 构建。
     pub(crate) containers: crate::container::ContainerIndex,
+    /// 增量运行时的来源标记。普通 `Loader::build` 产物使用 `None`；当它被
+    /// `insert_source` 合并后统一改为对应 SourceId。
+    pub(crate) collection_sources: Vec<Option<SourceId>>,
+    pub(crate) resource_sources: Vec<Option<SourceId>>,
+    pub(crate) failure_sources: Vec<Option<SourceId>>,
+    pub(crate) source_ids: HashSet<SourceId>,
+    pub(crate) next_source_id: u64,
 }
 
 /// 一个已解析的对象。
@@ -206,6 +228,9 @@ pub struct AssetCollection {
     pub dependencies: Vec<Option<CollectionId>>,
     /// `path_id` → `Environment.objects` 索引(内部存储细节,非身份)。
     pub assets: HashMap<i64, usize>,
+    /// SerializedFile 原始 externals。初次 build 后仍保留，供增量 source 变更时
+    /// 不重新 parse 对象即可重建跨 collection 的依赖表。
+    pub(crate) externals: Vec<FileIdentifier>,
 }
 
 /// `.resS` / `.resource` 流数据。对齐 AssetRipper `ResourceFile`。
@@ -358,6 +383,194 @@ impl EnvironmentObject {
 }
 
 impl Environment {
+    /// 构造一个可接收增量 source 的空环境。
+    pub fn empty() -> Self {
+        Self {
+            objects: Vec::new(),
+            collections: Vec::new(),
+            resources: Vec::new(),
+            failures: Vec::new(),
+            dependency_provider: None,
+            resource_provider: None,
+            containers: crate::container::ContainerIndex::default(),
+            collection_sources: Vec::new(),
+            resource_sources: Vec::new(),
+            failure_sources: Vec::new(),
+            source_ids: HashSet::new(),
+            next_source_id: 1,
+        }
+    }
+
+    /// 把一个已经独立构建好的 Environment 作为新 source 合并进当前环境。
+    ///
+    /// 调用方应在锁外用 `Loader` 完成 `source` 的 IO、解压与对象解析；本方法只移动
+    /// 已解析结构、重映射句柄并重建轻量派生索引，因此不会重新解析已有 source。
+    pub fn insert_source(&mut self, source: Environment) -> SourceId {
+        let id = SourceId(self.next_source_id);
+        self.next_source_id = self.next_source_id.saturating_add(1);
+        self.append_source(id, source);
+        self.source_ids.insert(id);
+        self.rebuild_after_source_change();
+        id
+    }
+
+    /// 删除某个 source 的全部贡献。剩余对象不会重新解析；collection/object 下标会
+    /// 被压实，因此上层应把这次变更视作一个新 revision 并重新拉取快照。
+    pub fn remove_source(&mut self, source: SourceId) -> bool {
+        if !self.source_ids.remove(&source) {
+            return false;
+        }
+        self.remove_source_contributions(source);
+        self.rebuild_after_source_change();
+        true
+    }
+
+    /// 原子语义地替换一个 source 的已解析贡献，并保留 SourceId。
+    /// 新 source 应在调用本方法前构建完毕，解析失败不会触碰当前环境。
+    pub fn replace_source(&mut self, source: SourceId, replacement: Environment) -> bool {
+        if !self.source_ids.contains(&source) {
+            return false;
+        }
+        self.remove_source_contributions(source);
+        self.append_source(source, replacement);
+        self.rebuild_after_source_change();
+        true
+    }
+
+    pub fn source_count(&self) -> usize {
+        self.source_ids.len()
+    }
+
+    fn append_source(&mut self, source_id: SourceId, mut source: Environment) {
+        let collection_base = self.collections.len();
+        let object_base = self.objects.len();
+
+        for object in &mut source.objects {
+            object.collection = CollectionId::new(collection_base + object.collection.to_index());
+        }
+        for collection in &mut source.collections {
+            collection.dependencies.clear();
+            for object_index in collection.assets.values_mut() {
+                *object_index += object_base;
+            }
+        }
+        for failure in &mut source.failures {
+            if let ParseFailure::Object { collection, .. } = failure {
+                *collection = CollectionId::new(collection_base + collection.to_index());
+            }
+        }
+
+        let collection_count = source.collections.len();
+        let resource_count = source.resources.len();
+        let failure_count = source.failures.len();
+        self.objects.append(&mut source.objects);
+        self.collections.append(&mut source.collections);
+        self.resources.append(&mut source.resources);
+        self.failures.append(&mut source.failures);
+        self.collection_sources
+            .extend(std::iter::repeat_n(Some(source_id), collection_count));
+        self.resource_sources
+            .extend(std::iter::repeat_n(Some(source_id), resource_count));
+        self.failure_sources
+            .extend(std::iter::repeat_n(Some(source_id), failure_count));
+    }
+
+    fn remove_source_contributions(&mut self, source_id: SourceId) {
+        let old_collection_sources = std::mem::take(&mut self.collection_sources);
+        let mut collection_map = vec![None; self.collections.len()];
+        let mut collections = Vec::new();
+        let mut collection_sources = Vec::new();
+        for (old_index, (mut collection, owner)) in std::mem::take(&mut self.collections)
+            .into_iter()
+            .zip(old_collection_sources)
+            .enumerate()
+        {
+            if owner == Some(source_id) {
+                continue;
+            }
+            let new_id = CollectionId::new(collections.len());
+            collection_map[old_index] = Some(new_id);
+            collection.dependencies.clear();
+            collection.assets.clear();
+            collections.push(collection);
+            collection_sources.push(owner);
+        }
+        self.collections = collections;
+        self.collection_sources = collection_sources;
+
+        let mut objects = Vec::new();
+        for mut object in std::mem::take(&mut self.objects) {
+            let Some(new_collection) = collection_map[object.collection.to_index()] else {
+                continue;
+            };
+            object.collection = new_collection;
+            let object_index = objects.len();
+            self.collections[new_collection.to_index()]
+                .assets
+                .insert(object.path_id, object_index);
+            objects.push(object);
+        }
+        self.objects = objects;
+
+        let old_resource_sources = std::mem::take(&mut self.resource_sources);
+        let mut resources = Vec::new();
+        let mut resource_sources = Vec::new();
+        for (resource, owner) in std::mem::take(&mut self.resources)
+            .into_iter()
+            .zip(old_resource_sources)
+        {
+            if owner != Some(source_id) {
+                resources.push(resource);
+                resource_sources.push(owner);
+            }
+        }
+        self.resources = resources;
+        self.resource_sources = resource_sources;
+
+        let old_failure_sources = std::mem::take(&mut self.failure_sources);
+        let mut failures = Vec::new();
+        let mut failure_sources = Vec::new();
+        for (mut failure, owner) in std::mem::take(&mut self.failures)
+            .into_iter()
+            .zip(old_failure_sources)
+        {
+            if owner == Some(source_id) {
+                continue;
+            }
+            if let ParseFailure::Object { collection, .. } = &mut failure {
+                let Some(new_collection) = collection_map[collection.to_index()] else {
+                    continue;
+                };
+                *collection = new_collection;
+            }
+            failures.push(failure);
+            failure_sources.push(owner);
+        }
+        self.failures = failures;
+        self.failure_sources = failure_sources;
+    }
+
+    fn rebuild_after_source_change(&mut self) {
+        for (index, collection) in self.collections.iter_mut().enumerate() {
+            collection.dependencies.clear();
+            collection.dependencies.push(Some(CollectionId::new(index)));
+        }
+        for index in 0..self.collections.len() {
+            let targets = self.collections[index]
+                .externals
+                .iter()
+                .map(|external| {
+                    self.collections
+                        .iter()
+                        .position(|candidate| candidate.name_fixed == external.path_name)
+                        .map(CollectionId::new)
+                })
+                .collect::<Vec<_>>();
+            self.collections[index].dependencies.extend(targets);
+        }
+        self.build_container_index();
+    }
+
     /// Phase B：初始化依赖列表（全局 name_fixed 精确匹配 + [`DependencyProvider`] 懒加载）。
     ///
     /// 遍历 `pending` 中每个 collection 的 externals，按 `name_fixed` 在**全部**
@@ -412,10 +625,7 @@ impl Environment {
                         };
                         let provider = self.dependency_provider.clone(); // Arc clone，廉价
                         // provider 一定存在(has_provider 已校验);直接调 open。
-                        let opened = provider
-                            .as_ref()
-                            .expect("has_provider 已校验")
-                            .open(&req);
+                        let opened = provider.as_ref().expect("has_provider 已校验").open(&req);
                         match opened {
                             Ok(Some(named)) => {
                                 lazy_loads += 1;
@@ -464,7 +674,9 @@ impl Environment {
                         }
                     }
                 }
-                self.collections[col_id.to_index()].dependencies.push(target);
+                self.collections[col_id.to_index()]
+                    .dependencies
+                    .push(target);
             }
             i += 1;
         }
@@ -728,19 +940,13 @@ impl Environment {
     /// 常见场景入口。**无法**查 MonoBehaviour(114)——codegen 跳过 114,
     /// `ClassIDType` 无此变体;用 [`Environment::objects_of_class_id`] 配
     /// [`ClassId::MONO_BEHAVIOUR`] 查,或用便捷的 [`Environment::mono_behaviours`]。
-    pub fn objects_of_class(
-        &self,
-        cls: ClassIDType,
-    ) -> impl Iterator<Item = &EnvironmentObject> {
+    pub fn objects_of_class(&self, cls: ClassIDType) -> impl Iterator<Item = &EnvironmentObject> {
         let target = ClassId::from(cls);
         self.objects.iter().filter(move |o| o.class_id == target)
     }
 
     /// 按开集 [`ClassId`] 过滤对象(可表示 codegen 跳过的 class,如 MonoBehaviour)。
-    pub fn objects_of_class_id(
-        &self,
-        cls: ClassId,
-    ) -> impl Iterator<Item = &EnvironmentObject> {
+    pub fn objects_of_class_id(&self, cls: ClassId) -> impl Iterator<Item = &EnvironmentObject> {
         self.objects.iter().filter(move |o| o.class_id == cls)
     }
 
@@ -865,7 +1071,10 @@ fn process_leaves(
         let sf = match SerializedFile::parse(bytes.clone()) {
             Ok(sf) => sf,
             Err(e) => {
-                failures.push(ParseFailure::File { name: name.to_string(), error: e });
+                failures.push(ParseFailure::File {
+                    name: name.to_string(),
+                    error: e,
+                });
                 continue;
             }
         };
@@ -907,6 +1116,7 @@ fn process_leaves(
             endian,
             dependencies: vec![Some(col_id)], // [0] = self
             assets,
+            externals: externals.clone(),
         });
         pending.push((col_id, externals));
     }

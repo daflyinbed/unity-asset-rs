@@ -33,7 +33,20 @@ impl crate::Parse for SceneVisibilityState {
             m_scene_picking_data = Some(SceneDataContainer::parse(rdr, ver)?);
             m_isolation_mode = Some(rdr.read_bool()?);
         } else {
-            m_scene_data = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SceneIdentifier::parse(rdr, ver)?; let b = SceneVisibilityData::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_scene_data = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = SceneIdentifier::parse(rdr, ver)?;
+                                let b = SceneVisibilityData::parse(rdr, ver)?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_main_stage_isolated = Some(rdr.read_bool()?);
             m_prefab_stage_isolated = Some(rdr.read_bool()?);
         }

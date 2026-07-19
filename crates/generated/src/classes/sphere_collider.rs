@@ -4,7 +4,6 @@ use crate::PPtr;
 use crate::subclasses::bit_field::BitField;
 use crate::subclasses::vector3f::Vector3f;
 
-
 /// 版本枚举：SphereColliderMMaterialVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum SphereColliderMMaterialVariant {
@@ -55,24 +54,24 @@ impl crate::Parse for SphereCollider {
         let mut m_layer_override_priority = None;
         let mut m_center = None;
         let mut m_provides_contacts = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_material = Some(SphereColliderMMaterialVariant::parse(rdr, ver)?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_material = Some(SphereColliderMMaterialVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             m_include_layers = Some(BitField::parse(rdr, ver)?);
             m_exclude_layers = Some(BitField::parse(rdr, ver)?);
             m_layer_override_priority = Some(rdr.read_i32()?);
         } else {
         }
-            m_is_trigger = Some(rdr.read_bool()?);
+        m_is_trigger = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             m_provides_contacts = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else {
         }
-            m_enabled = Some(rdr.read_bool()?);
-            rdr.align(4)?;
-            m_radius = Some(rdr.read_f32()?);
-            m_center = Some(Vector3f::parse(rdr, ver)?);
+        m_enabled = Some(rdr.read_bool()?);
+        rdr.align(4)?;
+        m_radius = Some(rdr.read_f32()?);
+        m_center = Some(Vector3f::parse(rdr, ver)?);
 
         Ok(SphereCollider {
             m_game_object: m_game_object.unwrap(),

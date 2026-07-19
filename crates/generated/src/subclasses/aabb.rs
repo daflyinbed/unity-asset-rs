@@ -16,9 +16,6 @@ impl crate::Parse for Aabb {
         let m_center = Vector3f::parse(rdr, ver)?;
         let m_extent = Vector3f::parse(rdr, ver)?;
 
-        Ok(Aabb {
-            m_center,
-            m_extent,
-        })
+        Ok(Aabb { m_center, m_extent })
     }
 }

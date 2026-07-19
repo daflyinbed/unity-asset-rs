@@ -2,7 +2,6 @@
 
 use crate::subclasses::rational_time::RationalTime;
 
-
 /// 版本枚举：TimeManagerFixedTimestepVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TimeManagerFixedTimestepVariant {
@@ -16,7 +15,7 @@ impl crate::Parse for TimeManagerFixedTimestepVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            let v = ( { Ok(Box::new(RationalTime::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(RationalTime::parse(rdr, ver)?)) })?;
             Ok(Self::V2023_1(v))
         } else {
             let v = rdr.read_f32()?;

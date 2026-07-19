@@ -4,7 +4,6 @@ use crate::PPtr;
 use crate::subclasses::sprite_atlas_asset_data::SpriteAtlasAssetData;
 use crate::subclasses::sprite_atlas_editor_data::SpriteAtlasEditorData;
 
-
 /// 版本枚举：SpriteAtlasAssetMImporterDataVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum SpriteAtlasAssetMImporterDataVariant {
@@ -18,10 +17,10 @@ impl crate::Parse for SpriteAtlasAssetMImporterDataVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2022, 1, 0) {
-            let v = ( { Ok(Box::new(SpriteAtlasAssetData::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(SpriteAtlasAssetData::parse(rdr, ver)?)) })?;
             Ok(Self::V2022_1(v))
         } else {
-            let v = ( { Ok(Box::new(SpriteAtlasEditorData::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(SpriteAtlasEditorData::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
         }
     }

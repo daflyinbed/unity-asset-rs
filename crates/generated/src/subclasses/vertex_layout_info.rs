@@ -14,9 +14,17 @@ impl crate::Parse for VertexLayoutInfo {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let vertex_channels_info = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ChannelInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let vertex_channels_info = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| ChannelInfo::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
-        let vertex_strides = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
+        let vertex_strides = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n).map(|_| rdr.read_u8()).collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
         let vertex_stream_count = rdr.read_i32()?;
 

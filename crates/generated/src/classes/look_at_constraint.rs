@@ -35,16 +35,16 @@ impl crate::Parse for LookAtConstraint {
         let mut m_is_contraint_active = None;
         let mut m_active = None;
         let mut m_sources = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_enabled = Some(rdr.read_u8()?);
-            rdr.align(4)?;
-            m_weight = Some(rdr.read_f32()?);
-            m_rotation_at_rest = Some(Vector3f::parse(rdr, ver)?);
-            m_rotation_offset = Some(Vector3f::parse(rdr, ver)?);
-            m_roll = Some(rdr.read_f32()?);
-            m_world_up_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_use_up_object = Some(rdr.read_bool()?);
-            rdr.align(4)?;
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_enabled = Some(rdr.read_u8()?);
+        rdr.align(4)?;
+        m_weight = Some(rdr.read_f32()?);
+        m_rotation_at_rest = Some(Vector3f::parse(rdr, ver)?);
+        m_rotation_offset = Some(Vector3f::parse(rdr, ver)?);
+        m_roll = Some(rdr.read_f32()?);
+        m_world_up_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_use_up_object = Some(rdr.read_bool()?);
+        rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2022, 1, 0) {
             m_active = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -52,8 +52,15 @@ impl crate::Parse for LookAtConstraint {
             m_is_contraint_active = Some(rdr.read_bool()?);
             rdr.align(4)?;
         }
-            m_sources = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ConstraintSource::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+        m_sources = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| ConstraintSource::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
 
         Ok(LookAtConstraint {
             m_game_object: m_game_object.unwrap(),

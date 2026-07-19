@@ -3,7 +3,6 @@
 use crate::subclasses::min_max_curve::MinMaxCurve;
 use crate::subclasses::particle_system_emission_burst::ParticleSystemEmissionBurst;
 
-
 /// 版本枚举：EmissionModuleCnt0Variant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum EmissionModuleCnt0Variant {
@@ -85,11 +84,21 @@ impl crate::Parse for EmissionModuleMBurstsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ParticleSystemEmissionBurst::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| ParticleSystemEmissionBurst::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ParticleSystemEmissionBurst::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| ParticleSystemEmissionBurst::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -273,8 +282,8 @@ impl crate::Parse for EmissionModule {
         let mut cntmax2 = None;
         let mut time3 = None;
         let mut cntmax3 = None;
-            enabled = Some(rdr.read_bool()?);
-            rdr.align(4)?;
+        enabled = Some(rdr.read_bool()?);
+        rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
             rate_over_time = Some(MinMaxCurve::parse(rdr, ver)?);
             rate_over_distance = Some(MinMaxCurve::parse(rdr, ver)?);
@@ -320,7 +329,7 @@ impl crate::Parse for EmissionModule {
             time2 = Some(rdr.read_f32()?);
             time3 = Some(rdr.read_f32()?);
         }
-            m_burst_count = Some(EmissionModuleMBurstCountVariant::parse(rdr, ver)?);
+        m_burst_count = Some(EmissionModuleMBurstCountVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
             m_bursts = Some(EmissionModuleMBurstsVariant::parse(rdr, ver)?);
         } else {

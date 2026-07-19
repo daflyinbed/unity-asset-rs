@@ -6,7 +6,6 @@ use crate::subclasses::polygon2_d::Polygon2D;
 use crate::subclasses::sub_collider::SubCollider;
 use crate::subclasses::vector2f::Vector2f;
 
-
 /// 版本枚举：CompositeCollider2DMUsedByEffectorVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum CompositeCollider2DMUsedByEffectorVariant {
@@ -43,11 +42,21 @@ impl crate::Parse for CompositeCollider2DMColliderPathsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SubCollider::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| SubCollider::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SubCollider::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| SubCollider::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -113,11 +122,11 @@ impl crate::Parse for CompositeCollider2D {
         let mut m_composite_order = None;
         let mut m_use_delaunay_mesh = None;
         let mut m_composite_game_object = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_enabled = Some(rdr.read_u8()?);
-            rdr.align(4)?;
-            m_density = Some(rdr.read_f32()?);
-            m_material = Some(crate::PPtr::parse(rdr, ver)?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_enabled = Some(rdr.read_u8()?);
+        rdr.align(4)?;
+        m_density = Some(rdr.read_f32()?);
+        m_material = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             m_include_layers = Some(BitField::parse(rdr, ver)?);
             m_exclude_layers = Some(BitField::parse(rdr, ver)?);
@@ -128,8 +137,8 @@ impl crate::Parse for CompositeCollider2D {
             m_callback_layers = Some(BitField::parse(rdr, ver)?);
         } else {
         }
-            m_is_trigger = Some(rdr.read_bool()?);
-            m_used_by_effector = Some(CompositeCollider2DMUsedByEffectorVariant::parse(rdr, ver)?);
+        m_is_trigger = Some(rdr.read_bool()?);
+        m_used_by_effector = Some(CompositeCollider2DMUsedByEffectorVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2023, 1, 0) {
             m_composite_operation = Some(rdr.read_i32()?);
             m_composite_order = Some(rdr.read_i32()?);
@@ -137,13 +146,13 @@ impl crate::Parse for CompositeCollider2D {
             m_used_by_composite = Some(rdr.read_bool()?);
             rdr.align(4)?;
         }
-            m_offset = Some(Vector2f::parse(rdr, ver)?);
-            m_geometry_type = Some(rdr.read_i32()?);
-            m_generation_type = Some(rdr.read_i32()?);
-            m_edge_radius = Some(rdr.read_f32()?);
-            m_collider_paths = Some(CompositeCollider2DMColliderPathsVariant::parse(rdr, ver)?);
-            m_composite_paths = Some(Polygon2D::parse(rdr, ver)?);
-            m_vertex_distance = Some(rdr.read_f32()?);
+        m_offset = Some(Vector2f::parse(rdr, ver)?);
+        m_geometry_type = Some(rdr.read_i32()?);
+        m_generation_type = Some(rdr.read_i32()?);
+        m_edge_radius = Some(rdr.read_f32()?);
+        m_collider_paths = Some(CompositeCollider2DMColliderPathsVariant::parse(rdr, ver)?);
+        m_composite_paths = Some(Polygon2D::parse(rdr, ver)?);
+        m_vertex_distance = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2022, 1, 18) {
             m_offset_distance = Some(rdr.read_f32()?);
             m_use_delaunay_mesh = Some(rdr.read_bool()?);

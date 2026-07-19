@@ -24,16 +24,30 @@ impl crate::Parse for TerrainData {
         let mut m_detail_database = None;
         let mut m_heightmap = None;
         let mut m_preload_shaders = None;
-            m_name = Some(rdr.read_aligned_string()?);
-            m_splat_database = Some(SplatDatabase::parse(rdr, ver)?);
-            m_detail_database = Some(DetailDatabase::parse(rdr, ver)?);
-            m_heightmap = Some(Heightmap::parse(rdr, ver)?);
+        m_name = Some(rdr.read_aligned_string()?);
+        m_splat_database = Some(SplatDatabase::parse(rdr, ver)?);
+        m_detail_database = Some(DetailDatabase::parse(rdr, ver)?);
+        m_heightmap = Some(Heightmap::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2019, 2, 17) {
-            m_preload_shaders = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_preload_shaders = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| crate::PPtr::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
         } else if *ver >= crate::UnityVersion::new(2018, 4, 14) {
-            m_preload_shaders = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_preload_shaders = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| crate::PPtr::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else {
         }

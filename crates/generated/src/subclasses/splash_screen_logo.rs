@@ -17,9 +17,6 @@ impl crate::Parse for SplashScreenLogo {
         let duration = rdr.read_f32()?;
         rdr.align(4)?;
 
-        Ok(SplashScreenLogo {
-            logo,
-            duration,
-        })
+        Ok(SplashScreenLogo { logo, duration })
     }
 }

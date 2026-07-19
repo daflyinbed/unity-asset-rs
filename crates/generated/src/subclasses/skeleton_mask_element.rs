@@ -20,7 +20,7 @@ impl crate::Parse for SkeletonMaskElement {
         } else {
             m_index = Some(rdr.read_u32()?);
         }
-            m_weight = Some(rdr.read_f32()?);
+        m_weight = Some(rdr.read_f32()?);
 
         Ok(SkeletonMaskElement {
             m_index,

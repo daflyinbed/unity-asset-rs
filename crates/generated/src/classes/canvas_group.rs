@@ -23,17 +23,17 @@ impl crate::Parse for CanvasGroup {
         let mut m_interactable = None;
         let mut m_blocks_raycasts = None;
         let mut m_ignore_parent_groups = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(4, 6, 1) {
             m_enabled = Some(rdr.read_u8()?);
             rdr.align(4)?;
         } else {
         }
-            m_alpha = Some(rdr.read_f32()?);
-            m_interactable = Some(rdr.read_bool()?);
-            m_blocks_raycasts = Some(rdr.read_bool()?);
-            m_ignore_parent_groups = Some(rdr.read_bool()?);
-            rdr.align(4)?;
+        m_alpha = Some(rdr.read_f32()?);
+        m_interactable = Some(rdr.read_bool()?);
+        m_blocks_raycasts = Some(rdr.read_bool()?);
+        m_ignore_parent_groups = Some(rdr.read_bool()?);
+        rdr.align(4)?;
 
         Ok(CanvasGroup {
             m_game_object: m_game_object.unwrap(),

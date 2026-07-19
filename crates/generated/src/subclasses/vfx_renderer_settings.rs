@@ -21,8 +21,8 @@ impl crate::Parse for VfxRendererSettings {
         let mut ray_tracing_mode = None;
         let mut reflection_probe_usage = None;
         let mut light_probe_usage = None;
-            motion_vector_generation_mode = Some(rdr.read_i32()?);
-            shadow_casting_mode = Some(rdr.read_i32()?);
+        motion_vector_generation_mode = Some(rdr.read_i32()?);
+        shadow_casting_mode = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(6000, 3, 0) {
         } else if *ver >= crate::UnityVersion::new(2023, 1, 0) {
             ray_tracing_mode = Some(rdr.read_i32()?);

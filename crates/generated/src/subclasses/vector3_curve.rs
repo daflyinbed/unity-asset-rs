@@ -16,9 +16,6 @@ impl crate::Parse for Vector3Curve {
         let curve = AnimationCurve::parse(rdr, ver)?;
         let path = rdr.read_aligned_string()?;
 
-        Ok(Vector3Curve {
-            curve,
-            path,
-        })
+        Ok(Vector3Curve { curve, path })
     }
 }

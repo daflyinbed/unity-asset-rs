@@ -10,7 +10,7 @@
 
 use bytes::Bytes;
 
-use crate::bundle::{parse_unityfs, RawEntry};
+use crate::bundle::{RawEntry, parse_unityfs};
 use crate::containers::{compressed, rawweb, webfile};
 use crate::decompress::Registry;
 use crate::error::{Error, Result, UnsupportedFormatSnafu};
@@ -101,7 +101,10 @@ impl LoadedFile {
         out
     }
 
-    fn collect_leaves<'a>(&'a self, out: &mut Vec<(&'a str, &'a Bytes, Option<&'a str>, FileFormat)>) {
+    fn collect_leaves<'a>(
+        &'a self,
+        out: &mut Vec<(&'a str, &'a Bytes, Option<&'a str>, FileFormat)>,
+    ) {
         match self {
             LoadedFile::Leaf {
                 name,
@@ -130,10 +133,7 @@ impl LoadedFile {
     fn collect_failures<'a>(&'a self, out: &mut Vec<LoadedFailure<'a>>) {
         match self {
             LoadedFile::Failed {
-                name,
-                bytes,
-                error,
-                ..
+                name, bytes, error, ..
             } => out.push(LoadedFailure { name, bytes, error }),
             LoadedFile::Container { children, .. } => {
                 for child in children {
@@ -287,7 +287,10 @@ pub fn load_recursive(
     parent_revision: Option<&str>,
 ) -> Result<LoadedFile> {
     let fmt = sniff(&src);
-    log::debug!("load_recursive: name={name:?} sniff={fmt:?} ({} bytes)", src.len());
+    log::debug!(
+        "load_recursive: name={name:?} sniff={fmt:?} ({} bytes)",
+        src.len()
+    );
 
     match fmt {
         FileFormat::FileStreamBundle => {

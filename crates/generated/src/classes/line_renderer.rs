@@ -6,7 +6,6 @@ use crate::subclasses::static_batch_info::StaticBatchInfo;
 use crate::subclasses::vector3f::Vector3f;
 use crate::subclasses::vector4f::Vector4f;
 
-
 /// 版本枚举：LineRendererMEnabledVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum LineRendererMEnabledVariant {
@@ -118,11 +117,21 @@ impl crate::Parse for LineRendererMMaterialsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -191,11 +200,21 @@ impl crate::Parse for LineRendererMPositionsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector3f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| Vector3f::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector3f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| Vector3f::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -392,7 +411,8 @@ pub struct LineRenderer {
     pub m_ray_tracing_accel_struct_build_flags_override: Option<u8>,
     pub m_sorting_order: Option<LineRendererMSortingOrderVariant>,
     pub m_static_batch_info: Option<StaticBatchInfo>,
-    pub m_ray_tracing_accel_struct_build_flags: Option<LineRendererMRayTracingAccelStructBuildFlagsVariant>,
+    pub m_ray_tracing_accel_struct_build_flags:
+        Option<LineRendererMRayTracingAccelStructBuildFlagsVariant>,
     pub m_probe_anchor: Option<LineRendererMProbeAnchorVariant>,
     pub m_small_mesh_culling: Option<u8>,
     pub m_force_mesh_lod: Option<i16>,
@@ -447,20 +467,23 @@ impl crate::Parse for LineRenderer {
         let mut m_loop = None;
         let mut m_mask_interaction = None;
         let mut m_apply_active_color_space = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_enabled = Some(LineRendererMEnabledVariant::parse(rdr, ver)?);
-            m_cast_shadows = Some(LineRendererMCastShadowsVariant::parse(rdr, ver)?);
-            m_receive_shadows = Some(LineRendererMReceiveShadowsVariant::parse(rdr, ver)?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_enabled = Some(LineRendererMEnabledVariant::parse(rdr, ver)?);
+        m_cast_shadows = Some(LineRendererMCastShadowsVariant::parse(rdr, ver)?);
+        m_receive_shadows = Some(LineRendererMReceiveShadowsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 2, 0) {
             m_dynamic_occludee = Some(rdr.read_u8()?);
             m_static_shadow_caster = Some(rdr.read_u8()?);
             m_motion_vectors = Some(rdr.read_u8()?);
             m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(LineRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage =
+                Some(LineRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
             m_ray_tracing_mode = Some(LineRendererMRayTracingModeVariant::parse(rdr, ver)?);
             m_ray_trace_procedural = Some(LineRendererMRayTraceProceduralVariant::parse(rdr, ver)?);
             m_ray_tracing_accel_struct_build_flags_override = Some(rdr.read_u8()?);
-            m_ray_tracing_accel_struct_build_flags = Some(LineRendererMRayTracingAccelStructBuildFlagsVariant::parse(rdr, ver)?);
+            m_ray_tracing_accel_struct_build_flags = Some(
+                LineRendererMRayTracingAccelStructBuildFlagsVariant::parse(rdr, ver)?,
+            );
             m_small_mesh_culling = Some(rdr.read_u8()?);
             rdr.align(4)?;
             m_force_mesh_lod = Some(rdr.read_i16()?);
@@ -473,11 +496,14 @@ impl crate::Parse for LineRenderer {
             m_static_shadow_caster = Some(rdr.read_u8()?);
             m_motion_vectors = Some(rdr.read_u8()?);
             m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(LineRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage =
+                Some(LineRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
             m_ray_tracing_mode = Some(LineRendererMRayTracingModeVariant::parse(rdr, ver)?);
             m_ray_trace_procedural = Some(LineRendererMRayTraceProceduralVariant::parse(rdr, ver)?);
             m_ray_tracing_accel_struct_build_flags_override = Some(rdr.read_u8()?);
-            m_ray_tracing_accel_struct_build_flags = Some(LineRendererMRayTracingAccelStructBuildFlagsVariant::parse(rdr, ver)?);
+            m_ray_tracing_accel_struct_build_flags = Some(
+                LineRendererMRayTracingAccelStructBuildFlagsVariant::parse(rdr, ver)?,
+            );
             m_small_mesh_culling = Some(rdr.read_u8()?);
             rdr.align(4)?;
             m_rendering_layer_mask = Some(rdr.read_u32()?);
@@ -487,11 +513,14 @@ impl crate::Parse for LineRenderer {
             m_static_shadow_caster = Some(rdr.read_u8()?);
             m_motion_vectors = Some(rdr.read_u8()?);
             m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(LineRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage =
+                Some(LineRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
             m_ray_tracing_mode = Some(LineRendererMRayTracingModeVariant::parse(rdr, ver)?);
             m_ray_trace_procedural = Some(LineRendererMRayTraceProceduralVariant::parse(rdr, ver)?);
             m_ray_tracing_accel_struct_build_flags_override = Some(rdr.read_u8()?);
-            m_ray_tracing_accel_struct_build_flags = Some(LineRendererMRayTracingAccelStructBuildFlagsVariant::parse(rdr, ver)?);
+            m_ray_tracing_accel_struct_build_flags = Some(
+                LineRendererMRayTracingAccelStructBuildFlagsVariant::parse(rdr, ver)?,
+            );
             m_rendering_layer_mask = Some(rdr.read_u32()?);
             m_renderer_priority = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2021, 1, 0) {
@@ -499,7 +528,8 @@ impl crate::Parse for LineRenderer {
             m_static_shadow_caster = Some(rdr.read_u8()?);
             m_motion_vectors = Some(rdr.read_u8()?);
             m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(LineRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage =
+                Some(LineRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
             m_ray_tracing_mode = Some(LineRendererMRayTracingModeVariant::parse(rdr, ver)?);
             m_ray_trace_procedural = Some(LineRendererMRayTraceProceduralVariant::parse(rdr, ver)?);
             m_rendering_layer_mask = Some(rdr.read_u32()?);
@@ -508,7 +538,8 @@ impl crate::Parse for LineRenderer {
             m_dynamic_occludee = Some(rdr.read_u8()?);
             m_motion_vectors = Some(rdr.read_u8()?);
             m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(LineRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage =
+                Some(LineRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
             m_ray_tracing_mode = Some(LineRendererMRayTracingModeVariant::parse(rdr, ver)?);
             m_ray_trace_procedural = Some(LineRendererMRayTraceProceduralVariant::parse(rdr, ver)?);
             m_rendering_layer_mask = Some(rdr.read_u32()?);
@@ -517,7 +548,8 @@ impl crate::Parse for LineRenderer {
             m_dynamic_occludee = Some(rdr.read_u8()?);
             m_motion_vectors = Some(rdr.read_u8()?);
             m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(LineRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage =
+                Some(LineRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
             m_ray_tracing_mode = Some(LineRendererMRayTracingModeVariant::parse(rdr, ver)?);
             m_rendering_layer_mask = Some(rdr.read_u32()?);
             m_renderer_priority = Some(rdr.read_i32()?);
@@ -525,43 +557,54 @@ impl crate::Parse for LineRenderer {
             m_dynamic_occludee = Some(rdr.read_u8()?);
             m_motion_vectors = Some(rdr.read_u8()?);
             m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(LineRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage =
+                Some(LineRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
             m_rendering_layer_mask = Some(rdr.read_u32()?);
             m_renderer_priority = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
             m_dynamic_occludee = Some(rdr.read_u8()?);
             m_motion_vectors = Some(rdr.read_u8()?);
             m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(LineRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage =
+                Some(LineRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
             m_rendering_layer_mask = Some(rdr.read_u32()?);
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             m_dynamic_occludee = Some(rdr.read_u8()?);
             m_motion_vectors = Some(rdr.read_u8()?);
             m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(LineRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage =
+                Some(LineRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
             m_motion_vectors = Some(rdr.read_u8()?);
             m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(LineRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage =
+                Some(LineRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
         } else {
         }
-            m_lightmap_index = Some(LineRendererMLightmapIndexVariant::parse(rdr, ver)?);
+        m_lightmap_index = Some(LineRendererMLightmapIndexVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_lightmap_index_dynamic = Some(rdr.read_u16()?);
         } else {
         }
-            m_lightmap_tiling_offset = Some(Vector4f::parse(rdr, ver)?);
+        m_lightmap_tiling_offset = Some(Vector4f::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_lightmap_tiling_offset_dynamic = Some(Vector4f::parse(rdr, ver)?);
         } else {
         }
-            m_materials = Some(LineRendererMMaterialsVariant::parse(rdr, ver)?);
+        m_materials = Some(LineRendererMMaterialsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
             m_static_batch_info = Some(StaticBatchInfo::parse(rdr, ver)?);
         } else {
-            m_subset_indices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_subset_indices = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_u32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         }
-            m_static_batch_root = Some(crate::PPtr::parse(rdr, ver)?);
+        m_static_batch_root = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 3, 0) {
             m_probe_anchor = Some(LineRendererMProbeAnchorVariant::parse(rdr, ver)?);
             m_light_probe_volume_override = Some(crate::PPtr::parse(rdr, ver)?);
@@ -586,7 +629,8 @@ impl crate::Parse for LineRenderer {
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_use_light_probes = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_reflection_probe_usage = Some(LineRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage =
+                Some(LineRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
             m_probe_anchor = Some(LineRendererMProbeAnchorVariant::parse(rdr, ver)?);
             m_sorting_layer_id = Some(LineRendererMSortingLayerIdVariant::parse(rdr, ver)?);
             m_sorting_order = Some(LineRendererMSortingOrderVariant::parse(rdr, ver)?);
@@ -608,14 +652,14 @@ impl crate::Parse for LineRenderer {
             m_light_probe_anchor = Some(LineRendererMLightProbeAnchorVariant::parse(rdr, ver)?);
         } else {
         }
-            m_positions = Some(LineRendererMPositionsVariant::parse(rdr, ver)?);
-            m_parameters = Some(LineParameters::parse(rdr, ver)?);
+        m_positions = Some(LineRendererMPositionsVariant::parse(rdr, ver)?);
+        m_parameters = Some(LineParameters::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 3, 0) {
         } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
             m_mask_interaction = Some(LineRendererMMaskInteractionVariant::parse(rdr, ver)?);
         } else {
         }
-            m_use_world_space = Some(rdr.read_bool()?);
+        m_use_world_space = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(2022, 1, 0) {
             m_loop = Some(rdr.read_bool()?);
             m_apply_active_color_space = Some(rdr.read_bool()?);

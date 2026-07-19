@@ -1,6 +1,5 @@
 //! 自动生成。请勿手动修改。
 
-
 /// 版本枚举：TextureImportInstructionsAndroidEtc2FallbackDownscaleVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TextureImportInstructionsAndroidEtc2FallbackDownscaleVariant {
@@ -37,7 +36,8 @@ pub struct TextureImportInstructions {
     pub compression_quality: i32,
     pub depth: Option<i32>,
     pub cube_intermediate_size: Option<i32>,
-    pub android_etc2_fallback_downscale: Option<TextureImportInstructionsAndroidEtc2FallbackDownscaleVariant>,
+    pub android_etc2_fallback_downscale:
+        Option<TextureImportInstructionsAndroidEtc2FallbackDownscaleVariant>,
     pub cube_mode: Option<i32>,
     pub vt_only: Option<bool>,
     pub cube_layout: Option<i32>,
@@ -64,8 +64,8 @@ impl crate::Parse for TextureImportInstructions {
         let mut cube_mode = None;
         let mut vt_only = None;
         let mut cube_layout = None;
-            compressed_format = Some(rdr.read_i32()?);
-            uncompressed_format = Some(rdr.read_i32()?);
+        compressed_format = Some(rdr.read_i32()?);
+        uncompressed_format = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
             desired_format = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
@@ -74,15 +74,15 @@ impl crate::Parse for TextureImportInstructions {
         } else {
             recommended_format = Some(rdr.read_i32()?);
         }
-            usage_mode = Some(rdr.read_i32()?);
-            color_space = Some(rdr.read_i32()?);
+        usage_mode = Some(rdr.read_i32()?);
+        color_space = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
             android_etc2_fallback_format = Some(rdr.read_i32()?);
         } else {
         }
-            width = Some(rdr.read_i32()?);
-            height = Some(rdr.read_i32()?);
+        width = Some(rdr.read_i32()?);
+        height = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2020, 2, 0) {
             depth = Some(rdr.read_i32()?);
             cube_intermediate_size = Some(rdr.read_i32()?);
@@ -90,16 +90,20 @@ impl crate::Parse for TextureImportInstructions {
             cube_layout = Some(rdr.read_i32()?);
         } else {
         }
-            compression_quality = Some(rdr.read_i32()?);
+        compression_quality = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
             vt_only = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            android_etc2_fallback_downscale = Some(TextureImportInstructionsAndroidEtc2FallbackDownscaleVariant::parse(rdr, ver)?);
+            android_etc2_fallback_downscale = Some(
+                TextureImportInstructionsAndroidEtc2FallbackDownscaleVariant::parse(rdr, ver)?,
+            );
             vt_only = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            android_etc2_fallback_downscale = Some(TextureImportInstructionsAndroidEtc2FallbackDownscaleVariant::parse(rdr, ver)?);
+            android_etc2_fallback_downscale = Some(
+                TextureImportInstructionsAndroidEtc2FallbackDownscaleVariant::parse(rdr, ver)?,
+            );
         } else {
         }
 

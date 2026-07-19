@@ -14,9 +14,6 @@ impl crate::Parse for BuildStepMessage {
         let r#type = rdr.read_i32()?;
         let content = rdr.read_aligned_string()?;
 
-        Ok(BuildStepMessage {
-            r#type,
-            content,
-        })
+        Ok(BuildStepMessage { r#type, content })
     }
 }

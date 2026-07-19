@@ -25,7 +25,7 @@ impl crate::Parse for TextureParameter {
         let mut m_sampler_binding = None;
         let mut m_dim = None;
         let mut m_multi_sampled = None;
-            m_name_index = Some(rdr.read_i32()?);
+        m_name_index = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(6000, 6, 0) {
             m_binding = Some(Binding::parse(rdr, ver)?);
             m_sampler_binding = Some(Binding::parse(rdr, ver)?);
@@ -38,8 +38,8 @@ impl crate::Parse for TextureParameter {
             m_index = Some(rdr.read_i32()?);
             m_sampler_index = Some(rdr.read_i32()?);
         }
-            m_dim = Some(rdr.read_i8()?);
-            rdr.align(4)?;
+        m_dim = Some(rdr.read_i8()?);
+        rdr.align(4)?;
 
         Ok(TextureParameter {
             m_name_index: m_name_index.unwrap(),

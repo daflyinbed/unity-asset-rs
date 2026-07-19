@@ -3,7 +3,6 @@
 use crate::PPtr;
 use crate::subclasses::generic_binding::GenericBinding;
 
-
 /// 版本枚举：AnimationClipBindingConstantGenericBindingsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AnimationClipBindingConstantGenericBindingsVariant {
@@ -17,11 +16,21 @@ impl crate::Parse for AnimationClipBindingConstantGenericBindingsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { GenericBinding::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| GenericBinding::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { GenericBinding::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| GenericBinding::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -40,11 +49,21 @@ impl crate::Parse for AnimationClipBindingConstantPptrCurveMappingVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -61,7 +80,8 @@ impl crate::Parse for AnimationClipBindingConstant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let generic_bindings = AnimationClipBindingConstantGenericBindingsVariant::parse(rdr, ver)?;
-        let pptr_curve_mapping = AnimationClipBindingConstantPptrCurveMappingVariant::parse(rdr, ver)?;
+        let pptr_curve_mapping =
+            AnimationClipBindingConstantPptrCurveMappingVariant::parse(rdr, ver)?;
 
         Ok(AnimationClipBindingConstant {
             generic_bindings,

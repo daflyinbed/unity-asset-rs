@@ -15,7 +15,7 @@ impl crate::Parse for AssetDatabaseMetrics {
         let mut total_asset_count = None;
         let mut non_pro_asset_count = None;
         let mut non_pro_assets_created_after_pro_license = None;
-            total_asset_count = Some(rdr.read_i32()?);
+        total_asset_count = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2017, 4, 6) {
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
             non_pro_asset_count = Some(rdr.read_i32()?);

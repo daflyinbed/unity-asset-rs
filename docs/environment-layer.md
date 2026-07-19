@@ -11,6 +11,21 @@
 
 ---
 
+## 增量 source 运行时
+
+`Loader::build` 仍然对它收到的输入 eager parse；这不等于活动 Environment 每次变更都
+重读全部文件。服务端先在环境锁外把一个文件或目录构建成独立 Environment，再调用：
+
+- `Environment::insert_source`：只移动新 source 的已解析贡献；
+- `Environment::remove_source`：移除该 source 的 collection/object/resource/failure；
+- `Environment::replace_source`：新输入构建成功后替换原 source，保留 SourceId；
+- `Environment::empty`：为单一活动 Environment 建立聚合容器。
+
+`AssetCollection` 会保留原始 externals。增删 source 后，剩余对象不重新 parse，只压实
+Vec、重映射 CollectionId、重建依赖表与 container 索引。CollectionId 因此只在一次
+Environment revision 内稳定；桌面端在 mutation 后拉取全量快照。project/path/SQLite
+都不进入库层，Rust 的 `SourceId` 只是同一 Environment 生命周期内的来源句柄。
+
 ## 1. 定位与术语对齐
 
 Environment 层是对象解析层之上的**聚合层**：io 层交付 `LoadedFile`（递归再派发后的

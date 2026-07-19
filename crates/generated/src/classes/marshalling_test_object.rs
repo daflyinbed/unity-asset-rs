@@ -12,8 +12,6 @@ impl crate::Parse for MarshallingTestObject {
     ) -> Result<Self, R::Error> {
         let m_prop = rdr.read_i32()?;
 
-        Ok(MarshallingTestObject {
-            m_prop,
-        })
+        Ok(MarshallingTestObject { m_prop })
     }
 }

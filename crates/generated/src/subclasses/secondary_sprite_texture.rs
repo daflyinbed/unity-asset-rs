@@ -17,9 +17,6 @@ impl crate::Parse for SecondarySpriteTexture {
         let name = rdr.read_aligned_string()?;
         rdr.align(4)?;
 
-        Ok(SecondarySpriteTexture {
-            texture,
-            name,
-        })
+        Ok(SecondarySpriteTexture { texture, name })
     }
 }

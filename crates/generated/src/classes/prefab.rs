@@ -20,11 +20,12 @@ impl crate::Parse for Prefab {
         } else {
             None
         };
-        let m_contains_missing_serialize_reference_types = if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            Some(rdr.read_bool()?)
-        } else {
-            None
-        };
+        let m_contains_missing_serialize_reference_types =
+            if *ver >= crate::UnityVersion::new(2021, 2, 0) {
+                Some(rdr.read_bool()?)
+            } else {
+                None
+            };
 
         Ok(Prefab {
             m_root_game_object,

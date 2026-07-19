@@ -14,8 +14,6 @@ impl crate::Parse for SerializableManagedRefTestClass {
     ) -> Result<Self, R::Error> {
         let m_script = crate::PPtr::parse(rdr, ver)?;
 
-        Ok(SerializableManagedRefTestClass {
-            m_script,
-        })
+        Ok(SerializableManagedRefTestClass { m_script })
     }
 }

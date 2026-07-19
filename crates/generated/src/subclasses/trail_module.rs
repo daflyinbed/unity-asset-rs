@@ -4,7 +4,6 @@ use crate::subclasses::min_max_curve::MinMaxCurve;
 use crate::subclasses::min_max_gradient::MinMaxGradient;
 use crate::subclasses::vector2f::Vector2f;
 
-
 /// 版本枚举：TrailModuleInheritParticleColorVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TrailModuleInheritParticleColorVariant {
@@ -122,16 +121,16 @@ impl crate::Parse for TrailModule {
         let mut color_over_trail = None;
         let mut split_sub_emitter_ribbons = None;
         let mut attach_ribbons_to_transform = None;
-            enabled = Some(rdr.read_bool()?);
-            rdr.align(4)?;
+        enabled = Some(rdr.read_bool()?);
+        rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2017, 3, 0) {
             mode = Some(rdr.read_i32()?);
         } else {
         }
-            ratio = Some(rdr.read_f32()?);
-            lifetime = Some(MinMaxCurve::parse(rdr, ver)?);
-            min_vertex_distance = Some(rdr.read_f32()?);
-            texture_mode = Some(rdr.read_i32()?);
+        ratio = Some(rdr.read_f32()?);
+        lifetime = Some(MinMaxCurve::parse(rdr, ver)?);
+        min_vertex_distance = Some(rdr.read_f32()?);
+        texture_mode = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2022, 1, 0) {
             texture_scale = Some(Vector2f::parse(rdr, ver)?);
             ribbon_count = Some(rdr.read_i32()?);
@@ -143,26 +142,28 @@ impl crate::Parse for TrailModule {
             ribbon_count = Some(rdr.read_i32()?);
         } else {
         }
-            world_space = Some(rdr.read_bool()?);
-            die_with_particles = Some(rdr.read_bool()?);
-            size_affects_width = Some(rdr.read_bool()?);
-            size_affects_lifetime = Some(rdr.read_bool()?);
-            inherit_particle_color = Some(TrailModuleInheritParticleColorVariant::parse(rdr, ver)?);
+        world_space = Some(rdr.read_bool()?);
+        die_with_particles = Some(rdr.read_bool()?);
+        size_affects_width = Some(rdr.read_bool()?);
+        size_affects_lifetime = Some(rdr.read_bool()?);
+        inherit_particle_color = Some(TrailModuleInheritParticleColorVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2018, 3, 0) {
             generate_lighting_data = Some(TrailModuleGenerateLightingDataVariant::parse(rdr, ver)?);
-            split_sub_emitter_ribbons = Some(TrailModuleSplitSubEmitterRibbonsVariant::parse(rdr, ver)?);
+            split_sub_emitter_ribbons =
+                Some(TrailModuleSplitSubEmitterRibbonsVariant::parse(rdr, ver)?);
             attach_ribbons_to_transform = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
             generate_lighting_data = Some(TrailModuleGenerateLightingDataVariant::parse(rdr, ver)?);
-            split_sub_emitter_ribbons = Some(TrailModuleSplitSubEmitterRibbonsVariant::parse(rdr, ver)?);
+            split_sub_emitter_ribbons =
+                Some(TrailModuleSplitSubEmitterRibbonsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             generate_lighting_data = Some(TrailModuleGenerateLightingDataVariant::parse(rdr, ver)?);
         } else {
         }
-            color_over_lifetime = Some(MinMaxGradient::parse(rdr, ver)?);
-            width_over_trail = Some(MinMaxCurve::parse(rdr, ver)?);
-            color_over_trail = Some(MinMaxGradient::parse(rdr, ver)?);
+        color_over_lifetime = Some(MinMaxGradient::parse(rdr, ver)?);
+        width_over_trail = Some(MinMaxCurve::parse(rdr, ver)?);
+        color_over_trail = Some(MinMaxGradient::parse(rdr, ver)?);
 
         Ok(TrailModule {
             enabled: enabled.unwrap(),

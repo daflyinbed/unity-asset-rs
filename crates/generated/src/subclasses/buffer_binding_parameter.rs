@@ -19,7 +19,7 @@ impl crate::Parse for BufferBindingParameter {
         let mut m_index = None;
         let mut m_binding = None;
         let mut m_array_size = None;
-            m_name_index = Some(rdr.read_i32()?);
+        m_name_index = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(6000, 6, 0) {
             m_binding = Some(Binding::parse(rdr, ver)?);
             m_array_size = Some(rdr.read_i32()?);

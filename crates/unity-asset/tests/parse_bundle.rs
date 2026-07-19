@@ -3,10 +3,13 @@
 //! 期望值与 UnityPy 实测输出一致（首尾 16 字节 bit-for-bit 对照过）。
 
 use bytes::Bytes;
-use unity_asset::{load, load_bytes, FileFormat, LoadedFile};
+use unity_asset::{FileFormat, LoadedFile, load, load_bytes};
 
 // fixture 位于仓库根的 example/；从本 crate（crates/unity-asset）回溯两级。
-const AB_PATH: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/../../example/char_002_amiya.ab");
+const AB_PATH: &str = concat!(
+    env!("CARGO_MANIFEST_DIR"),
+    "/../../example/char_002_amiya.ab"
+);
 const EXPECTED_NAME: &str = "CAB-374c777ce38840c47301d29986e9f61f";
 const EXPECTED_SIZE: usize = 57416;
 const EXPECTED_FIRST16: [u8; 16] = [
@@ -88,6 +91,10 @@ fn node_offsets_stay_within_blob() {
 fn total_blob_matches_sum_of_node_sizes() {
     init_logger();
     let loaded = load(AB_PATH).expect("parse bundle");
-    let sum: usize = loaded.leaves().iter().map(|(_, bytes, _, _)| bytes.len()).sum();
+    let sum: usize = loaded
+        .leaves()
+        .iter()
+        .map(|(_, bytes, _, _)| bytes.len())
+        .sum();
     assert_eq!(sum, EXPECTED_SIZE, "sum of node sizes");
 }

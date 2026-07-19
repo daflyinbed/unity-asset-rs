@@ -74,9 +74,9 @@ pnpm lint:fix       # eslint . --fix
 
 ### Renderer（`app/`）
 
-- **文件路由**：`vite.config.ts` 用 `VueRouter({ routesFolder: "app/pages" })`，页面即 `app/pages/*.vue`（当前 `index.vue`→`/`、`zed.vue`→`/zed`，根页只是 Zed 工作台入口）。`app/router/index.ts` 用 `vue-router` v5 的 `vue-router/auto-routes` 实验性 API + `handleHotUpdate`。**改路由 = 增删 `app/pages/` 下文件**，不要手写路由表。
+- **文件路由**：`vite.config.ts` 用 `VueRouter({ routesFolder: "app/pages" })`，页面即 `app/pages/*.vue`（当前工作台为 `index.vue`→`/`）。`app/router/index.ts` 用 `vue-router` v5 的 `vue-router/auto-routes` 实验性 API + `handleHotUpdate`。**改路由 = 增删 `app/pages/` 下文件**，不要手写路由表。
 - **`typed-router.d.ts` 是自动生成的**（`@ts-nocheck`、标 `DO NOT MODIFY`、需提交）。改页面文件后 `pnpm dev`/`pnpm build` 会重生；勿手改。
-- **UnoCSS**（`uno.config.ts`）：语义色组 `accent`/`neutral`（各 1..10 + `contrast`），全部指向 CSS 变量 `--my-color-{group}-{n}`（值定义在 `app/style.css` `:root`，前端唯一主题源头）。**动态拼接的类名（如 `bg-accent-5`、`text-neutral-10`）必须在 `SAFELIST` 里登记**，否则 UnoCSS 扫描器漏检类不生效——新增动态类模式时记得扩 `SAFELIST`。另有独立背景色 `background`/`panel`/`surface`/`overlay`。
+- **UnoCSS**（`uno.config.ts`）：语义色组 `accent`/`neutral`/`danger`（各 1..10 + `contrast`），全部指向 CSS 变量 `--my-color-{group}-{n}`（值定义在 `app/style.css` `:root`，前端唯一主题源头）。编号是组件状态角色而不是任意明暗色阶，完整映射见 `docs/electron-app.md`「主题颜色语义」。**动态拼接的类名（如 `bg-accent-5`、`text-neutral-10`）必须在 `SAFELIST` 里登记**，否则 UnoCSS 扫描器漏检类不生效——新增动态类模式时记得扩 `SAFELIST`。另有通用背景色 `background`/`panel`/`surface`/`overlay`，以及区分桌面工作区层级的 `titlebar`/`statusbar`/`tabbar`/`drawer`。
 - **图标**：`unplugin-icons`（`compiler: "vue3"`、`defaultClass: "icon"`、`autoInstall: false`）+ `@iconify-json/lucide`。用法 `<i-lucide-xxx />`，类型由 `app/icons.d.ts`（`/// <reference types="unplugin-icons/types/vue3" />`）提供。要新图标集需装对应 `@iconify-json/*`。
 - **ESLint**：`eslint.config.ts` 用 `@xwbx/eslint-config`（`type: "app"`，开 vue/typescript/unocss/formatters）。扫描 `app/`、`electron/`、`shared/` 与前端配置；Rust/生成的 OpenAPI 文件等在 `ignores` 里。Rust 走 `cargo clippy`，别用 ESLint 之外的 prettier 单独跑（formatter 已并入 eslint 配置）。
 - **TS**：`tsconfig.app.json` 管 `app/**` + `shared/**` + 自动生成声明；`tsconfig.node.json` 管 `electron/**` + `shared/**` + Vite 配置。严格项 `noUnusedLocals`/`noUnusedParameters`/`erasableSyntaxOnly`/`noFallthroughCasesInSwitch` 全开。
@@ -105,6 +105,7 @@ pnpm lint:fix       # eslint . --fix
 - migration 只追加不修改；数据库访问只放 Electron main。
 - 新增动态拼接的 UnoCSS 类名必须同步登记到 `uno.config.ts` 的 `SAFELIST`。
 - 主题色统一在 `app/style.css` 的 CSS 变量里，组件用语义类引用，勿散落硬编码颜色。
+- **改动任何颜色相关 UnoCSS 类名前（`bg-*`/`text-*`/`border-*`/`fill-*` 涉及 `accent`/`neutral`/`danger`/`background`/`panel`/`surface`/`overlay`/`titlebar`/`statusbar`/`tabbar`/`drawer`），先读 `uno.config.ts` 头部注释里的「主题颜色语义」约定**。编号 `1..10` 是固定组件角色（hover 背景 / active 背景 / solid 背景 / 文字色 等），不是任意明暗色阶——选错号会破坏语义。改完类名后顺手核对一遍编号是否匹配对应角色（含对比同文件内类似状态已有的用法）。
 - ESLint 扫 `app/`、`electron/`、`shared/` 与前端配置；Rust 目录勿加 ESLint 例外或 prettier 配置。
 
 ## 参考实现 & 跨项目文档

@@ -4,7 +4,6 @@ use crate::subclasses::serialized_player_sub_program::SerializedPlayerSubProgram
 use crate::subclasses::serialized_program_parameters::SerializedProgramParameters;
 use crate::subclasses::serialized_sub_program::SerializedSubProgram;
 
-
 /// 版本枚举：SerializedProgramMSubProgramsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum SerializedProgramMSubProgramsVariant {
@@ -18,11 +17,21 @@ impl crate::Parse for SerializedProgramMSubProgramsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SerializedSubProgram::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| SerializedSubProgram::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SerializedSubProgram::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| SerializedSubProgram::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -46,23 +55,93 @@ impl crate::Parse for SerializedProgram {
         let mut m_player_sub_programs = None;
         let mut m_parameter_blob_indices = None;
         let mut m_serialized_keyword_state_mask = None;
-            m_sub_programs = Some(SerializedProgramMSubProgramsVariant::parse(rdr, ver)?);
+        m_sub_programs = Some(SerializedProgramMSubProgramsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2022, 1, 13) {
-            m_player_sub_programs = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SerializedPlayerSubProgram::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_player_sub_programs = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let n = rdr.read_i32()? as usize;
+                                (0..n)
+                                    .map(|_| SerializedPlayerSubProgram::parse(rdr, ver))
+                                    .collect::<Result<Vec<_>, _>>()
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_parameter_blob_indices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_parameter_blob_indices = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let n = rdr.read_i32()? as usize;
+                                (0..n)
+                                    .map(|_| rdr.read_u32())
+                                    .collect::<Result<Vec<_>, _>>()
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_common_parameters = Some(SerializedProgramParameters::parse(rdr, ver)?);
-            m_serialized_keyword_state_mask = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u16() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_serialized_keyword_state_mask = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_u16())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
             m_common_parameters = Some(SerializedProgramParameters::parse(rdr, ver)?);
-            m_serialized_keyword_state_mask = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u16() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_serialized_keyword_state_mask = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_u16())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2021, 3, 10) {
-            m_player_sub_programs = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SerializedPlayerSubProgram::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_player_sub_programs = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let n = rdr.read_i32()? as usize;
+                                (0..n)
+                                    .map(|_| SerializedPlayerSubProgram::parse(rdr, ver))
+                                    .collect::<Result<Vec<_>, _>>()
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_parameter_blob_indices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_parameter_blob_indices = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let n = rdr.read_i32()? as usize;
+                                (0..n)
+                                    .map(|_| rdr.read_u32())
+                                    .collect::<Result<Vec<_>, _>>()
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_common_parameters = Some(SerializedProgramParameters::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2021, 1, 1) {

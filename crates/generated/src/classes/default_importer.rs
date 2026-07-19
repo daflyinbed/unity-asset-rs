@@ -4,7 +4,6 @@ use crate::PPtr;
 use crate::subclasses::md_four::MdFour;
 use crate::subclasses::source_asset_identifier::SourceAssetIdentifier;
 
-
 /// 版本枚举：DefaultImporterMNameVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum DefaultImporterMNameVariant {
@@ -58,17 +57,50 @@ impl crate::Parse for DefaultImporter {
         let mut m_used_file_i_ds = None;
         let mut m_new_hash_identity = None;
         let mut m_asset_bundle_variant = None;
-            m_name = Some(DefaultImporterMNameVariant::parse(rdr, ver)?);
+        m_name = Some(DefaultImporterMNameVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_external_objects = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = SourceAssetIdentifier::parse(rdr, ver)?;
+                                let b = crate::PPtr::parse(rdr, ver)?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_used_file_i_ds = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i64())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_user_data = Some(rdr.read_aligned_string()?);
             m_asset_bundle_name = Some(rdr.read_aligned_string()?);
             m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            m_external_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_external_objects = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = SourceAssetIdentifier::parse(rdr, ver)?;
+                                let b = crate::PPtr::parse(rdr, ver)?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_user_data = Some(rdr.read_aligned_string()?);
             m_asset_bundle_name = Some(rdr.read_aligned_string()?);
@@ -81,7 +113,20 @@ impl crate::Parse for DefaultImporter {
             m_user_data = Some(rdr.read_aligned_string()?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
         } else {
-            m_file_id_to_recycle_name = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i32()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_file_id_to_recycle_name = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_i32()?;
+                                let b = rdr.read_aligned_string()?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_old_hash_identity = Some(MdFour::parse(rdr, ver)?);
             m_new_hash_identity = Some(MdFour::parse(rdr, ver)?);
         }

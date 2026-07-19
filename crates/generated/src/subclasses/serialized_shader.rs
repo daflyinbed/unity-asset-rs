@@ -5,7 +5,6 @@ use crate::subclasses::serialized_properties::SerializedProperties;
 use crate::subclasses::serialized_shader_dependency::SerializedShaderDependency;
 use crate::subclasses::serialized_sub_shader::SerializedSubShader;
 
-
 /// 版本枚举：SerializedShaderMSubShadersVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum SerializedShaderMSubShadersVariant {
@@ -19,11 +18,21 @@ impl crate::Parse for SerializedShaderMSubShadersVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SerializedSubShader::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| SerializedSubShader::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SerializedSubShader::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| SerializedSubShader::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -42,11 +51,21 @@ impl crate::Parse for SerializedShaderMDependenciesVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SerializedShaderDependency::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| SerializedShaderDependency::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SerializedShaderDependency::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| SerializedShaderDependency::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -80,26 +99,45 @@ impl crate::Parse for SerializedShader {
         let mut m_dependencies = None;
         let mut m_disable_no_subshaders_message = None;
         let mut m_custom_editor_for_render_pipelines = None;
-            m_prop_info = Some(SerializedProperties::parse(rdr, ver)?);
-            m_sub_shaders = Some(SerializedShaderMSubShadersVariant::parse(rdr, ver)?);
+        m_prop_info = Some(SerializedProperties::parse(rdr, ver)?);
+        m_sub_shaders = Some(SerializedShaderMSubShadersVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            m_keyword_names = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_keyword_names = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_keyword_flags = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_keyword_flags = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n).map(|_| rdr.read_u8()).collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else {
         }
-            m_name = Some(rdr.read_aligned_string()?);
-            m_custom_editor_name = Some(rdr.read_aligned_string()?);
-            m_fallback_name = Some(rdr.read_aligned_string()?);
-            m_dependencies = Some(SerializedShaderMDependenciesVariant::parse(rdr, ver)?);
+        m_name = Some(rdr.read_aligned_string()?);
+        m_custom_editor_name = Some(rdr.read_aligned_string()?);
+        m_fallback_name = Some(rdr.read_aligned_string()?);
+        m_dependencies = Some(SerializedShaderMDependenciesVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2021, 1, 0) {
-            m_custom_editor_for_render_pipelines = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SerializedCustomEditorForRenderPipeline::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_custom_editor_for_render_pipelines = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| SerializedCustomEditorForRenderPipeline::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else {
         }
-            m_disable_no_subshaders_message = Some(rdr.read_bool()?);
-            rdr.align(4)?;
+        m_disable_no_subshaders_message = Some(rdr.read_bool()?);
+        rdr.align(4)?;
 
         Ok(SerializedShader {
             m_prop_info: m_prop_info.unwrap(),

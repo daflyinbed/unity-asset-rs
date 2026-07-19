@@ -10,11 +10,14 @@ impl crate::Parse for LayoutDataOne {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_float_array = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_f32() }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_float_array = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| rdr.read_f32())
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
 
-        Ok(LayoutDataOne {
-            m_float_array,
-        })
+        Ok(LayoutDataOne { m_float_array })
     }
 }

@@ -2,7 +2,6 @@
 
 use crate::subclasses::color_rgb_af::ColorRgbAf;
 
-
 /// 版本枚举：TilemapRefCountedData_ColorRgbAfMRefCountVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TilemapRefCountedData_ColorRgbAfMRefCountVariant {

@@ -22,15 +22,15 @@ impl crate::Parse for AudioLowPassFilter {
         let mut m_cutoff_frequency = None;
         let mut m_lowpass_resonance_q = None;
         let mut lowpass_level_custom_curve = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_enabled = Some(rdr.read_u8()?);
-            rdr.align(4)?;
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_enabled = Some(rdr.read_u8()?);
+        rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 2, 0) {
         } else {
             m_cutoff_frequency = Some(rdr.read_f32()?);
         }
-            m_lowpass_resonance_q = Some(rdr.read_f32()?);
-            lowpass_level_custom_curve = Some(AnimationCurve::parse(rdr, ver)?);
+        m_lowpass_resonance_q = Some(rdr.read_f32()?);
+        lowpass_level_custom_curve = Some(AnimationCurve::parse(rdr, ver)?);
 
         Ok(AudioLowPassFilter {
             m_game_object: m_game_object.unwrap(),

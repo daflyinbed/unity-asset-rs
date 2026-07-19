@@ -4,7 +4,6 @@ use crate::PPtr;
 use crate::subclasses::static_batch_info::StaticBatchInfo;
 use crate::subclasses::vector4f::Vector4f;
 
-
 /// 版本枚举：MeshRendererMEnabledVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum MeshRendererMEnabledVariant {
@@ -116,11 +115,21 @@ impl crate::Parse for MeshRendererMMaterialsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -341,7 +350,8 @@ pub struct MeshRenderer {
     pub m_ray_tracing_accel_struct_build_flags_override: Option<u8>,
     pub m_sorting_order: Option<MeshRendererMSortingOrderVariant>,
     pub m_static_batch_info: Option<StaticBatchInfo>,
-    pub m_ray_tracing_accel_struct_build_flags: Option<MeshRendererMRayTracingAccelStructBuildFlagsVariant>,
+    pub m_ray_tracing_accel_struct_build_flags:
+        Option<MeshRendererMRayTracingAccelStructBuildFlagsVariant>,
     pub m_probe_anchor: Option<MeshRendererMProbeAnchorVariant>,
     pub m_small_mesh_culling: Option<u8>,
     pub m_force_mesh_lod: Option<i16>,
@@ -393,20 +403,23 @@ impl crate::Parse for MeshRenderer {
         let mut m_additional_vertex_streams = None;
         let mut m_enlighten_vertex_stream = None;
         let mut m_mask_interaction = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_enabled = Some(MeshRendererMEnabledVariant::parse(rdr, ver)?);
-            m_cast_shadows = Some(MeshRendererMCastShadowsVariant::parse(rdr, ver)?);
-            m_receive_shadows = Some(MeshRendererMReceiveShadowsVariant::parse(rdr, ver)?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_enabled = Some(MeshRendererMEnabledVariant::parse(rdr, ver)?);
+        m_cast_shadows = Some(MeshRendererMCastShadowsVariant::parse(rdr, ver)?);
+        m_receive_shadows = Some(MeshRendererMReceiveShadowsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 2, 0) {
             m_dynamic_occludee = Some(rdr.read_u8()?);
             m_static_shadow_caster = Some(rdr.read_u8()?);
             m_motion_vectors = Some(rdr.read_u8()?);
             m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(MeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage =
+                Some(MeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
             m_ray_tracing_mode = Some(MeshRendererMRayTracingModeVariant::parse(rdr, ver)?);
             m_ray_trace_procedural = Some(MeshRendererMRayTraceProceduralVariant::parse(rdr, ver)?);
             m_ray_tracing_accel_struct_build_flags_override = Some(rdr.read_u8()?);
-            m_ray_tracing_accel_struct_build_flags = Some(MeshRendererMRayTracingAccelStructBuildFlagsVariant::parse(rdr, ver)?);
+            m_ray_tracing_accel_struct_build_flags = Some(
+                MeshRendererMRayTracingAccelStructBuildFlagsVariant::parse(rdr, ver)?,
+            );
             m_small_mesh_culling = Some(rdr.read_u8()?);
             rdr.align(4)?;
             m_force_mesh_lod = Some(rdr.read_i16()?);
@@ -419,11 +432,14 @@ impl crate::Parse for MeshRenderer {
             m_static_shadow_caster = Some(rdr.read_u8()?);
             m_motion_vectors = Some(rdr.read_u8()?);
             m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(MeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage =
+                Some(MeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
             m_ray_tracing_mode = Some(MeshRendererMRayTracingModeVariant::parse(rdr, ver)?);
             m_ray_trace_procedural = Some(MeshRendererMRayTraceProceduralVariant::parse(rdr, ver)?);
             m_ray_tracing_accel_struct_build_flags_override = Some(rdr.read_u8()?);
-            m_ray_tracing_accel_struct_build_flags = Some(MeshRendererMRayTracingAccelStructBuildFlagsVariant::parse(rdr, ver)?);
+            m_ray_tracing_accel_struct_build_flags = Some(
+                MeshRendererMRayTracingAccelStructBuildFlagsVariant::parse(rdr, ver)?,
+            );
             m_small_mesh_culling = Some(rdr.read_u8()?);
             rdr.align(4)?;
             m_rendering_layer_mask = Some(rdr.read_u32()?);
@@ -433,11 +449,14 @@ impl crate::Parse for MeshRenderer {
             m_static_shadow_caster = Some(rdr.read_u8()?);
             m_motion_vectors = Some(rdr.read_u8()?);
             m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(MeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage =
+                Some(MeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
             m_ray_tracing_mode = Some(MeshRendererMRayTracingModeVariant::parse(rdr, ver)?);
             m_ray_trace_procedural = Some(MeshRendererMRayTraceProceduralVariant::parse(rdr, ver)?);
             m_ray_tracing_accel_struct_build_flags_override = Some(rdr.read_u8()?);
-            m_ray_tracing_accel_struct_build_flags = Some(MeshRendererMRayTracingAccelStructBuildFlagsVariant::parse(rdr, ver)?);
+            m_ray_tracing_accel_struct_build_flags = Some(
+                MeshRendererMRayTracingAccelStructBuildFlagsVariant::parse(rdr, ver)?,
+            );
             m_rendering_layer_mask = Some(rdr.read_u32()?);
             m_renderer_priority = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2021, 1, 0) {
@@ -445,7 +464,8 @@ impl crate::Parse for MeshRenderer {
             m_static_shadow_caster = Some(rdr.read_u8()?);
             m_motion_vectors = Some(rdr.read_u8()?);
             m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(MeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage =
+                Some(MeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
             m_ray_tracing_mode = Some(MeshRendererMRayTracingModeVariant::parse(rdr, ver)?);
             m_ray_trace_procedural = Some(MeshRendererMRayTraceProceduralVariant::parse(rdr, ver)?);
             m_rendering_layer_mask = Some(rdr.read_u32()?);
@@ -454,7 +474,8 @@ impl crate::Parse for MeshRenderer {
             m_dynamic_occludee = Some(rdr.read_u8()?);
             m_motion_vectors = Some(rdr.read_u8()?);
             m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(MeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage =
+                Some(MeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
             m_ray_tracing_mode = Some(MeshRendererMRayTracingModeVariant::parse(rdr, ver)?);
             m_ray_trace_procedural = Some(MeshRendererMRayTraceProceduralVariant::parse(rdr, ver)?);
             m_rendering_layer_mask = Some(rdr.read_u32()?);
@@ -463,7 +484,8 @@ impl crate::Parse for MeshRenderer {
             m_dynamic_occludee = Some(rdr.read_u8()?);
             m_motion_vectors = Some(rdr.read_u8()?);
             m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(MeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage =
+                Some(MeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
             m_ray_tracing_mode = Some(MeshRendererMRayTracingModeVariant::parse(rdr, ver)?);
             m_rendering_layer_mask = Some(rdr.read_u32()?);
             m_renderer_priority = Some(rdr.read_i32()?);
@@ -471,43 +493,54 @@ impl crate::Parse for MeshRenderer {
             m_dynamic_occludee = Some(rdr.read_u8()?);
             m_motion_vectors = Some(rdr.read_u8()?);
             m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(MeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage =
+                Some(MeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
             m_rendering_layer_mask = Some(rdr.read_u32()?);
             m_renderer_priority = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
             m_dynamic_occludee = Some(rdr.read_u8()?);
             m_motion_vectors = Some(rdr.read_u8()?);
             m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(MeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage =
+                Some(MeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
             m_rendering_layer_mask = Some(rdr.read_u32()?);
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             m_dynamic_occludee = Some(rdr.read_u8()?);
             m_motion_vectors = Some(rdr.read_u8()?);
             m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(MeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage =
+                Some(MeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
             m_motion_vectors = Some(rdr.read_u8()?);
             m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(MeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage =
+                Some(MeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
         } else {
         }
-            m_lightmap_index = Some(MeshRendererMLightmapIndexVariant::parse(rdr, ver)?);
+        m_lightmap_index = Some(MeshRendererMLightmapIndexVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_lightmap_index_dynamic = Some(rdr.read_u16()?);
         } else {
         }
-            m_lightmap_tiling_offset = Some(Vector4f::parse(rdr, ver)?);
+        m_lightmap_tiling_offset = Some(Vector4f::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_lightmap_tiling_offset_dynamic = Some(Vector4f::parse(rdr, ver)?);
         } else {
         }
-            m_materials = Some(MeshRendererMMaterialsVariant::parse(rdr, ver)?);
+        m_materials = Some(MeshRendererMMaterialsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
             m_static_batch_info = Some(StaticBatchInfo::parse(rdr, ver)?);
         } else {
-            m_subset_indices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_subset_indices = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_u32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         }
-            m_static_batch_root = Some(crate::PPtr::parse(rdr, ver)?);
+        m_static_batch_root = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 3, 0) {
             m_probe_anchor = Some(MeshRendererMProbeAnchorVariant::parse(rdr, ver)?);
             m_light_probe_volume_override = Some(crate::PPtr::parse(rdr, ver)?);
@@ -546,7 +579,8 @@ impl crate::Parse for MeshRenderer {
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_use_light_probes = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_reflection_probe_usage = Some(MeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage =
+                Some(MeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
             m_probe_anchor = Some(MeshRendererMProbeAnchorVariant::parse(rdr, ver)?);
             m_sorting_layer_id = Some(MeshRendererMSortingLayerIdVariant::parse(rdr, ver)?);
             m_sorting_order = Some(MeshRendererMSortingOrderVariant::parse(rdr, ver)?);

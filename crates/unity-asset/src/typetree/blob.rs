@@ -31,7 +31,9 @@ pub fn parse_blob(r: &mut Cursor, file_ver: u32) -> Result<(Vec<BlobNode>, Vec<u
     let node_struct_size = if has_ref_hash { 32 } else { 24 };
 
     let nodes_bytes = r.read_bytes(node_count * node_struct_size, "typetree nodes")?;
-    let str_buf = r.read_bytes(str_buf_size, "typetree string buffer")?.to_vec();
+    let str_buf = r
+        .read_bytes(str_buf_size, "typetree string buffer")?
+        .to_vec();
 
     let mut nr = Cursor::new(nodes_bytes, r.endian());
     let mut nodes = Vec::with_capacity(node_count);

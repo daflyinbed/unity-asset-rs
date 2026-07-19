@@ -27,20 +27,48 @@ impl crate::Parse for VfxEditorTaskDesc {
         let mut params = None;
         let mut processor = None;
         let mut shader_source_index = None;
-            r#type = Some(rdr.read_i32()?);
-            buffers = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VfxMapping::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+        r#type = Some(rdr.read_i32()?);
+        buffers = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| VfxMapping::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2019, 2, 0) {
-            temporary_buffers = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VfxMappingTemporary::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            temporary_buffers = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| VfxMappingTemporary::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else {
         }
-            values = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VfxMapping::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            params = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VfxMapping::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            processor = Some(crate::PPtr::parse(rdr, ver)?);
-            shader_source_index = Some(rdr.read_i32()?);
+        values = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| VfxMapping::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
+        params = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| VfxMapping::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
+        processor = Some(crate::PPtr::parse(rdr, ver)?);
+        shader_source_index = Some(rdr.read_i32()?);
 
         Ok(VfxEditorTaskDesc {
             r#type: r#type.unwrap(),

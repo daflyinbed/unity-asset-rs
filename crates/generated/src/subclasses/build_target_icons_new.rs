@@ -14,7 +14,12 @@ impl crate::Parse for BuildTargetIconsNew {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_build_target = rdr.read_aligned_string()?;
-        let m_icons = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { PlatformIcon::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_icons = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| PlatformIcon::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
 
         Ok(BuildTargetIconsNew {

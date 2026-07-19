@@ -23,9 +23,9 @@ impl crate::Parse for GroupConstant {
         let mut send_index = None;
         let mut solo = None;
         let mut bypass_effects = None;
-            parent_constant_index = Some(rdr.read_i32()?);
-            volume_index = Some(rdr.read_u32()?);
-            pitch_index = Some(rdr.read_u32()?);
+        parent_constant_index = Some(rdr.read_i32()?);
+        volume_index = Some(rdr.read_u32()?);
+        pitch_index = Some(rdr.read_u32()?);
         if *ver >= crate::UnityVersion::new(2021, 2, 1) {
         } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
             send_index = Some(rdr.read_u32()?);
@@ -40,10 +40,10 @@ impl crate::Parse for GroupConstant {
             send_index = Some(rdr.read_u32()?);
         } else {
         }
-            mute = Some(rdr.read_bool()?);
-            solo = Some(rdr.read_bool()?);
-            bypass_effects = Some(rdr.read_bool()?);
-            rdr.align(4)?;
+        mute = Some(rdr.read_bool()?);
+        solo = Some(rdr.read_bool()?);
+        bypass_effects = Some(rdr.read_bool()?);
+        rdr.align(4)?;
 
         Ok(GroupConstant {
             parent_constant_index: parent_constant_index.unwrap(),

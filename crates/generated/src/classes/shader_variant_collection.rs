@@ -15,11 +15,19 @@ impl crate::Parse for ShaderVariantCollection {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
-        let m_shaders = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = crate::PPtr::parse(rdr, ver)?; let b = ShaderInfo::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_shaders = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| {
+                    ({
+                        let a = crate::PPtr::parse(rdr, ver)?;
+                        let b = ShaderInfo::parse(rdr, ver)?;
+                        Ok((a, b))
+                    })
+                })
+                .collect::<Result<Vec<_>, _>>()
+        })?;
 
-        Ok(ShaderVariantCollection {
-            m_name,
-            m_shaders,
-        })
+        Ok(ShaderVariantCollection { m_name, m_shaders })
     }
 }

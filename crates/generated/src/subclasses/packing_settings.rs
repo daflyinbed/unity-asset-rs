@@ -1,6 +1,5 @@
 //! 自动生成。请勿手动修改。
 
-
 /// 版本枚举：PackingSettingsEnableTightPackingVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum PackingSettingsEnableTightPackingVariant {

@@ -31,16 +31,16 @@ impl crate::Parse for AudioChorusFilter {
         let mut m_rate = None;
         let mut m_depth = None;
         let mut m_feed_back = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_enabled = Some(rdr.read_u8()?);
-            rdr.align(4)?;
-            m_dry_mix = Some(rdr.read_f32()?);
-            m_wet_mix1 = Some(rdr.read_f32()?);
-            m_wet_mix2 = Some(rdr.read_f32()?);
-            m_wet_mix3 = Some(rdr.read_f32()?);
-            m_delay = Some(rdr.read_f32()?);
-            m_rate = Some(rdr.read_f32()?);
-            m_depth = Some(rdr.read_f32()?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_enabled = Some(rdr.read_u8()?);
+        rdr.align(4)?;
+        m_dry_mix = Some(rdr.read_f32()?);
+        m_wet_mix1 = Some(rdr.read_f32()?);
+        m_wet_mix2 = Some(rdr.read_f32()?);
+        m_wet_mix3 = Some(rdr.read_f32()?);
+        m_delay = Some(rdr.read_f32()?);
+        m_rate = Some(rdr.read_f32()?);
+        m_depth = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(4, 2, 0) {
         } else {
             m_feed_back = Some(rdr.read_f32()?);

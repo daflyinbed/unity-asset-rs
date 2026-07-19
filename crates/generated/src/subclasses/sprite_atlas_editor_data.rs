@@ -35,18 +35,45 @@ impl crate::Parse for SpriteAtlasEditorData {
         let mut bind_as_default = None;
         let mut is_atlas_v2 = None;
         let mut cached_data = None;
-            texture_settings = Some(TextureSettings::parse(rdr, ver)?);
-            platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TextureImporterPlatformSettings::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            packing_settings = Some(PackingSettings::parse(rdr, ver)?);
+        texture_settings = Some(TextureSettings::parse(rdr, ver)?);
+        platform_settings = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| TextureImporterPlatformSettings::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
+        packing_settings = Some(PackingSettings::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            secondary_texture_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = SecondaryTextureSettings::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            secondary_texture_settings = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = SecondaryTextureSettings::parse(rdr, ver)?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else {
         }
-            variant_multiplier = Some(rdr.read_f32()?);
-            packables = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+        variant_multiplier = Some(rdr.read_f32()?);
+        packables = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2020, 3, 19) {
         } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
             total_sprite_surface_area = Some(rdr.read_u32()?);
@@ -54,10 +81,10 @@ impl crate::Parse for SpriteAtlasEditorData {
         } else {
             total_sprite_surface_area = Some(rdr.read_u32()?);
         }
-            bind_as_default = Some(rdr.read_bool()?);
-            is_atlas_v2 = Some(rdr.read_bool()?);
-            rdr.align(4)?;
-            cached_data = Some(crate::PPtr::parse(rdr, ver)?);
+        bind_as_default = Some(rdr.read_bool()?);
+        is_atlas_v2 = Some(rdr.read_bool()?);
+        rdr.align(4)?;
+        cached_data = Some(crate::PPtr::parse(rdr, ver)?);
 
         Ok(SpriteAtlasEditorData {
             texture_settings: texture_settings.unwrap(),

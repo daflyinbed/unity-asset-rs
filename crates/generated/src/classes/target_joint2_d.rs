@@ -38,25 +38,25 @@ impl crate::Parse for TargetJoint2D {
         let mut m_max_force = None;
         let mut m_damping_ratio = None;
         let mut m_frequency = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_enabled = Some(rdr.read_u8()?);
-            rdr.align(4)?;
-            m_enable_collision = Some(rdr.read_bool()?);
-            rdr.align(4)?;
-            m_connected_rigid_body = Some(crate::PPtr::parse(rdr, ver)?);
-            m_break_force = Some(rdr.read_f32()?);
-            m_break_torque = Some(rdr.read_f32()?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_enabled = Some(rdr.read_u8()?);
+        rdr.align(4)?;
+        m_enable_collision = Some(rdr.read_bool()?);
+        rdr.align(4)?;
+        m_connected_rigid_body = Some(crate::PPtr::parse(rdr, ver)?);
+        m_break_force = Some(rdr.read_f32()?);
+        m_break_torque = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             m_break_action = Some(rdr.read_i32()?);
         } else {
         }
-            m_anchor = Some(Vector2f::parse(rdr, ver)?);
-            m_target = Some(Vector2f::parse(rdr, ver)?);
-            m_auto_configure_target = Some(rdr.read_bool()?);
-            rdr.align(4)?;
-            m_max_force = Some(rdr.read_f32()?);
-            m_damping_ratio = Some(rdr.read_f32()?);
-            m_frequency = Some(rdr.read_f32()?);
+        m_anchor = Some(Vector2f::parse(rdr, ver)?);
+        m_target = Some(Vector2f::parse(rdr, ver)?);
+        m_auto_configure_target = Some(rdr.read_bool()?);
+        rdr.align(4)?;
+        m_max_force = Some(rdr.read_f32()?);
+        m_damping_ratio = Some(rdr.read_f32()?);
+        m_frequency = Some(rdr.read_f32()?);
 
         Ok(TargetJoint2D {
             m_game_object: m_game_object.unwrap(),

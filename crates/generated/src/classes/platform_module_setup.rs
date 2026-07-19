@@ -12,11 +12,14 @@ impl crate::Parse for PlatformModuleSetup {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let modules = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Module::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let modules = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| Module::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
 
-        Ok(PlatformModuleSetup {
-            modules,
-        })
+        Ok(PlatformModuleSetup { modules })
     }
 }

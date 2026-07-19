@@ -2,7 +2,6 @@
 
 use crate::subclasses::vector3f::Vector3f;
 
-
 /// 版本枚举：SketchUpImportCameraIsPerspectiveVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum SketchUpImportCameraIsPerspectiveVariant {

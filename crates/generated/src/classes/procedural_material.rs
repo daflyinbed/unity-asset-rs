@@ -6,7 +6,6 @@ use crate::subclasses::hash128::Hash128;
 use crate::subclasses::substance_input::SubstanceInput;
 use crate::subclasses::unity_property_sheet::UnityPropertySheet;
 
-
 /// 版本枚举：ProceduralMaterialMShaderKeywordsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ProceduralMaterialMShaderKeywordsVariant {
@@ -23,7 +22,12 @@ impl crate::Parse for ProceduralMaterialMShaderKeywordsVariant {
             let v = rdr.read_aligned_string()?;
             Ok(Self::V5_0(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_aligned_string())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -65,11 +69,21 @@ impl crate::Parse for ProceduralMaterialMTexturesVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -88,11 +102,21 @@ impl crate::Parse for ProceduralMaterialMInputsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SubstanceInput::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| SubstanceInput::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SubstanceInput::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| SubstanceInput::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -111,11 +135,21 @@ impl crate::Parse for ProceduralMaterialDisabledShaderPassesVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_aligned_string())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_aligned_string())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -181,41 +215,119 @@ impl crate::Parse for ProceduralMaterial {
         let mut m_build_texture_stacks = None;
         let mut m_prototype_name = None;
         let mut m_hash = None;
-            m_name = Some(rdr.read_aligned_string()?);
-            m_shader = Some(crate::PPtr::parse(rdr, ver)?);
+        m_name = Some(rdr.read_aligned_string()?);
+        m_shader = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2021, 2, 18) {
-            m_valid_keywords = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_valid_keywords = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_invalid_keywords = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_invalid_keywords = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_lightmap_flags = Some(rdr.read_u32()?);
-            m_enable_instancing_variants = Some(ProceduralMaterialMEnableInstancingVariantsVariant::parse(rdr, ver)?);
+            m_enable_instancing_variants = Some(
+                ProceduralMaterialMEnableInstancingVariantsVariant::parse(rdr, ver)?,
+            );
             m_double_sided_gi = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_custom_render_queue = Some(rdr.read_i32()?);
-            string_tag_map = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            disabled_shader_passes = Some(ProceduralMaterialDisabledShaderPassesVariant::parse(rdr, ver)?);
+            string_tag_map = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = rdr.read_aligned_string()?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
+            disabled_shader_passes = Some(ProceduralMaterialDisabledShaderPassesVariant::parse(
+                rdr, ver,
+            )?);
         } else if *ver >= crate::UnityVersion::new(5, 6, 2) {
             m_shader_keywords = Some(ProceduralMaterialMShaderKeywordsVariant::parse(rdr, ver)?);
             m_lightmap_flags = Some(rdr.read_u32()?);
-            m_enable_instancing_variants = Some(ProceduralMaterialMEnableInstancingVariantsVariant::parse(rdr, ver)?);
+            m_enable_instancing_variants = Some(
+                ProceduralMaterialMEnableInstancingVariantsVariant::parse(rdr, ver)?,
+            );
             m_double_sided_gi = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_custom_render_queue = Some(rdr.read_i32()?);
-            string_tag_map = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            disabled_shader_passes = Some(ProceduralMaterialDisabledShaderPassesVariant::parse(rdr, ver)?);
+            string_tag_map = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = rdr.read_aligned_string()?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
+            disabled_shader_passes = Some(ProceduralMaterialDisabledShaderPassesVariant::parse(
+                rdr, ver,
+            )?);
         } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
             m_shader_keywords = Some(ProceduralMaterialMShaderKeywordsVariant::parse(rdr, ver)?);
             m_lightmap_flags = Some(rdr.read_u32()?);
-            m_enable_instancing_variants = Some(ProceduralMaterialMEnableInstancingVariantsVariant::parse(rdr, ver)?);
+            m_enable_instancing_variants = Some(
+                ProceduralMaterialMEnableInstancingVariantsVariant::parse(rdr, ver)?,
+            );
             m_custom_render_queue = Some(rdr.read_i32()?);
-            string_tag_map = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            disabled_shader_passes = Some(ProceduralMaterialDisabledShaderPassesVariant::parse(rdr, ver)?);
+            string_tag_map = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = rdr.read_aligned_string()?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
+            disabled_shader_passes = Some(ProceduralMaterialDisabledShaderPassesVariant::parse(
+                rdr, ver,
+            )?);
         } else if *ver >= crate::UnityVersion::new(5, 1, 0) {
             m_shader_keywords = Some(ProceduralMaterialMShaderKeywordsVariant::parse(rdr, ver)?);
             m_lightmap_flags = Some(rdr.read_u32()?);
             m_custom_render_queue = Some(rdr.read_i32()?);
-            string_tag_map = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            string_tag_map = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = rdr.read_aligned_string()?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_shader_keywords = Some(ProceduralMaterialMShaderKeywordsVariant::parse(rdr, ver)?);
             m_lightmap_flags = Some(rdr.read_u32()?);
@@ -227,9 +339,16 @@ impl crate::Parse for ProceduralMaterial {
             m_shader_keywords = Some(ProceduralMaterialMShaderKeywordsVariant::parse(rdr, ver)?);
         } else {
         }
-            m_saved_properties = Some(UnityPropertySheet::parse(rdr, ver)?);
+        m_saved_properties = Some(UnityPropertySheet::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            m_build_texture_stacks = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { BuildTextureStackReference::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_build_texture_stacks = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| BuildTextureStackReference::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
         } else if *ver >= crate::UnityVersion::new(4, 5, 0) {

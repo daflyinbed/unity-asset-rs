@@ -8,7 +8,6 @@ use crate::subclasses::sprite_render_data::SpriteRenderData;
 use crate::subclasses::vector2f::Vector2f;
 use crate::subclasses::vector4f::Vector4f;
 
-
 /// 版本枚举：SpriteMExtrudeVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum SpriteMExtrudeVariant {
@@ -70,30 +69,56 @@ impl crate::Parse for Sprite {
         let mut m_physics_shape = None;
         let mut m_bones = None;
         let mut m_scriptable_objects = None;
-            m_name = Some(rdr.read_aligned_string()?);
-            m_rect = Some(Rectf::parse(rdr, ver)?);
-            m_offset = Some(Vector2f::parse(rdr, ver)?);
+        m_name = Some(rdr.read_aligned_string()?);
+        m_rect = Some(Rectf::parse(rdr, ver)?);
+        m_offset = Some(Vector2f::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(4, 5, 0) {
             m_border = Some(Vector4f::parse(rdr, ver)?);
         } else {
         }
-            m_pixels_to_units = Some(rdr.read_f32()?);
+        m_pixels_to_units = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(5, 4, 2) {
             m_pivot = Some(Vector2f::parse(rdr, ver)?);
         } else {
         }
-            m_extrude = Some(SpriteMExtrudeVariant::parse(rdr, ver)?);
+        m_extrude = Some(SpriteMExtrudeVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            m_render_data_key = Some(( { let a = Guid::parse(rdr, ver)?; let b = rdr.read_i64()?; Ok((a, b)) } )?);
-            m_atlas_tags = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_render_data_key = Some(
+                ({
+                    let a = Guid::parse(rdr, ver)?;
+                    let b = rdr.read_i64()?;
+                    Ok((a, b))
+                })?,
+            );
+            m_atlas_tags = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_sprite_atlas = Some(crate::PPtr::parse(rdr, ver)?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             m_is_polygon = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_render_data_key = Some(( { let a = Guid::parse(rdr, ver)?; let b = rdr.read_i64()?; Ok((a, b)) } )?);
-            m_atlas_tags = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_render_data_key = Some(
+                ({
+                    let a = Guid::parse(rdr, ver)?;
+                    let b = rdr.read_i64()?;
+                    Ok((a, b))
+                })?,
+            );
+            m_atlas_tags = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_sprite_atlas = Some(crate::PPtr::parse(rdr, ver)?);
             rdr.align(4)?;
@@ -102,22 +127,85 @@ impl crate::Parse for Sprite {
             rdr.align(4)?;
         } else {
         }
-            m_rd = Some(SpriteRenderData::parse(rdr, ver)?);
-            rdr.align(4)?;
+        m_rd = Some(SpriteRenderData::parse(rdr, ver)?);
+        rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            m_physics_shape = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_physics_shape = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let n = rdr.read_i32()? as usize;
+                                (0..n)
+                                    .map(|_| Vector2f::parse(rdr, ver))
+                                    .collect::<Result<Vec<_>, _>>()
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_bones = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SpriteBone::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_bones = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| SpriteBone::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_scriptable_objects = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_scriptable_objects = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| crate::PPtr::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            m_physics_shape = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_physics_shape = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let n = rdr.read_i32()? as usize;
+                                (0..n)
+                                    .map(|_| Vector2f::parse(rdr, ver))
+                                    .collect::<Result<Vec<_>, _>>()
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_bones = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SpriteBone::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_bones = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| SpriteBone::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            m_physics_shape = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector2f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_physics_shape = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let n = rdr.read_i32()? as usize;
+                                (0..n)
+                                    .map(|_| Vector2f::parse(rdr, ver))
+                                    .collect::<Result<Vec<_>, _>>()
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else {
         }

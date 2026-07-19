@@ -9,6 +9,7 @@ use std::sync::Arc;
 
 use parking_lot::RwLock;
 use unity_asset::Environment;
+use unity_asset::SourceId;
 
 /// 全局共享状态,放进 axum `State`。
 #[derive(Clone)]
@@ -17,6 +18,36 @@ pub struct AppState {
     pub bundles: Arc<RwLock<Bundles>>,
     /// bundle 文件根目录(POST /load 的 `path` 相对它解析)。
     pub root: Arc<std::path::PathBuf>,
+    /// 桌面端当前激活的唯一 Environment。project 只存在于 Electron；Rust 只记录
+    /// client source id 到运行时 SourceId 的映射。
+    pub active: Arc<RwLock<ActiveEnvironment>>,
+    /// 串行化 source mutation；解析仍在锁外进行，commit 只短暂持写锁。
+    pub mutation: Arc<tokio::sync::Mutex<()>>,
+}
+
+pub struct SourceRecord {
+    pub runtime_id: SourceId,
+    pub path: std::path::PathBuf,
+    pub is_directory: bool,
+    pub arknights: bool,
+    /// 该 source 本次实际通过 Loader 格式嗅探并进入解析的磁盘文件。
+    pub files: Vec<std::path::PathBuf>,
+}
+
+pub struct ActiveEnvironment {
+    pub environment: Environment,
+    pub sources: HashMap<String, SourceRecord>,
+    pub revision: u64,
+}
+
+impl Default for ActiveEnvironment {
+    fn default() -> Self {
+        Self {
+            environment: Environment::empty(),
+            sources: HashMap::new(),
+            revision: 0,
+        }
+    }
 }
 
 /// 已加载 bundle 容器。

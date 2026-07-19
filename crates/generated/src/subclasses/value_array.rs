@@ -3,7 +3,6 @@
 use crate::subclasses::float3::float3;
 use crate::subclasses::float4::float4;
 
-
 /// 版本枚举：ValueArrayMPositionValuesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ValueArrayMPositionValuesVariant {
@@ -17,10 +16,20 @@ impl crate::Parse for ValueArrayMPositionValuesVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { float3::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| float3::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::V5_4(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { float4::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| float4::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -39,10 +48,20 @@ impl crate::Parse for ValueArrayMScaleValuesVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { float3::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| float3::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::V5_4(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { float4::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| float4::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -74,29 +93,106 @@ impl crate::Parse for ValueArray {
         let mut m_entity_id_values = None;
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
             m_position_values = Some(ValueArrayMPositionValuesVariant::parse(rdr, ver)?);
-            m_quaternion_values = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { float4::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_quaternion_values = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| float4::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_scale_values = Some(ValueArrayMScaleValuesVariant::parse(rdr, ver)?);
         } else {
-            m_bool_values = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_bool_values = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_bool())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_int_values = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_int_values = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         }
-            m_float_values = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_f32() }).collect::<Result<Vec<_>, _>>() } )?);
+        m_float_values = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_f32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
         if *ver >= crate::UnityVersion::new(6000, 2, 0) {
-            m_int_values = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
-            m_bool_values = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_int_values = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
+            m_bool_values = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_bool())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
-            m_entity_id_values = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_entity_id_values = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            m_int_values = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
-            m_bool_values = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_int_values = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
+            m_bool_values = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_bool())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
             m_position_values = Some(ValueArrayMPositionValuesVariant::parse(rdr, ver)?);
-            m_quaternion_values = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { float4::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_quaternion_values = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| float4::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_scale_values = Some(ValueArrayMScaleValuesVariant::parse(rdr, ver)?);
         } else {
-            m_vector_values = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { float4::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_vector_values = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| float4::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         }
 
         Ok(ValueArray {

@@ -22,10 +22,10 @@ impl crate::Parse for AudioImporterOutput {
         let mut editor_output_settings = None;
         let mut editor_output_container_format = None;
         let mut player_resource = None;
-            output_settings = Some(SampleSettings::parse(rdr, ver)?);
-            output_container_format = Some(rdr.read_i32()?);
-            editor_output_settings = Some(SampleSettings::parse(rdr, ver)?);
-            editor_output_container_format = Some(rdr.read_i32()?);
+        output_settings = Some(SampleSettings::parse(rdr, ver)?);
+        output_container_format = Some(rdr.read_i32()?);
+        editor_output_settings = Some(SampleSettings::parse(rdr, ver)?);
+        editor_output_container_format = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2018, 1, 0) {
         } else {
             player_resource = Some(StreamedResource::parse(rdr, ver)?);

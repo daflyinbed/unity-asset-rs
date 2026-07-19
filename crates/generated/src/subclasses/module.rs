@@ -14,7 +14,12 @@ impl crate::Parse for Module {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let name = rdr.read_aligned_string()?;
-        let dependencies = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+        let dependencies = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| rdr.read_aligned_string())
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
         let strippable = rdr.read_bool()?;
         let controlled_by_builtin_package = if *ver >= crate::UnityVersion::new(2018, 2, 0) {

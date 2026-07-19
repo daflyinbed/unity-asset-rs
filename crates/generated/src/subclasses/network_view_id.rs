@@ -14,9 +14,6 @@ impl crate::Parse for NetworkViewId {
         let m_id = rdr.read_u32()?;
         let m_type = rdr.read_u32()?;
 
-        Ok(NetworkViewId {
-            m_id,
-            m_type,
-        })
+        Ok(NetworkViewId { m_id, m_type })
     }
 }

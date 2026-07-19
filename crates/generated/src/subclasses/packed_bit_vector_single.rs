@@ -17,7 +17,10 @@ impl crate::Parse for PackedBitVector_Single {
         let m_num_items = rdr.read_u32()?;
         let m_range = rdr.read_f32()?;
         let m_start = rdr.read_f32()?;
-        let m_data = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_data = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n).map(|_| rdr.read_u8()).collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
         let m_bit_size = rdr.read_u8()?;
         rdr.align(4)?;

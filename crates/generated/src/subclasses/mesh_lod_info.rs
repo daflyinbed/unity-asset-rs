@@ -18,7 +18,12 @@ impl crate::Parse for MeshLodInfo {
         let m_lod_selection_curve = LodSelectionCurve::parse(rdr, ver)?;
         let m_num_levels = rdr.read_i32()?;
         rdr.align(4)?;
-        let m_sub_meshes = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MeshLodSubMesh::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_sub_meshes = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| MeshLodSubMesh::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
 
         Ok(MeshLodInfo {

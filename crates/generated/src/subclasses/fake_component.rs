@@ -14,8 +14,6 @@ impl crate::Parse for FakeComponent {
     ) -> Result<Self, R::Error> {
         let m_game_object = crate::PPtr::parse(rdr, ver)?;
 
-        Ok(FakeComponent {
-            m_game_object,
-        })
+        Ok(FakeComponent { m_game_object })
     }
 }

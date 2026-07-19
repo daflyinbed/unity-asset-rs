@@ -8,7 +8,6 @@ use crate::subclasses::tree_instance::TreeInstance;
 use crate::subclasses::tree_prototype::TreePrototype;
 use crate::subclasses::vector3f::Vector3f;
 
-
 /// 版本枚举：DetailDatabaseMPatchesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum DetailDatabaseMPatchesVariant {
@@ -22,11 +21,21 @@ impl crate::Parse for DetailDatabaseMPatchesVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { DetailPatch::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| DetailPatch::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { DetailPatch::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| DetailPatch::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -45,11 +54,21 @@ impl crate::Parse for DetailDatabaseMDetailPrototypesVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { DetailPrototype::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| DetailPrototype::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { DetailPrototype::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| DetailPrototype::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -68,11 +87,21 @@ impl crate::Parse for DetailDatabaseMRandomRotationsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector3f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| Vector3f::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector3f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| Vector3f::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -91,11 +120,21 @@ impl crate::Parse for DetailDatabaseMTreeInstancesVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TreeInstance::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| TreeInstance::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TreeInstance::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| TreeInstance::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -114,11 +153,21 @@ impl crate::Parse for DetailDatabaseMTreePrototypesVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TreePrototype::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| TreePrototype::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TreePrototype::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| TreePrototype::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -137,11 +186,21 @@ impl crate::Parse for DetailDatabaseMPreloadTextureAtlasDataVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -193,18 +252,18 @@ impl crate::Parse for DetailDatabase {
         let mut m_default_shaders_0 = None;
         let mut m_default_shaders_1 = None;
         let mut m_default_shaders_2 = None;
-            m_patches = Some(DetailDatabaseMPatchesVariant::parse(rdr, ver)?);
-            m_detail_prototypes = Some(DetailDatabaseMDetailPrototypesVariant::parse(rdr, ver)?);
-            m_patch_count = Some(rdr.read_i32()?);
-            m_patch_samples = Some(rdr.read_i32()?);
+        m_patches = Some(DetailDatabaseMPatchesVariant::parse(rdr, ver)?);
+        m_detail_prototypes = Some(DetailDatabaseMDetailPrototypesVariant::parse(rdr, ver)?);
+        m_patch_count = Some(rdr.read_i32()?);
+        m_patch_samples = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2020, 2, 0) {
         } else {
             m_random_rotations = Some(DetailDatabaseMRandomRotationsVariant::parse(rdr, ver)?);
         }
-            waving_grass_tint = Some(ColorRgbAf::parse(rdr, ver)?);
-            m_waving_grass_strength = Some(rdr.read_f32()?);
-            m_waving_grass_amount = Some(rdr.read_f32()?);
-            m_waving_grass_speed = Some(rdr.read_f32()?);
+        waving_grass_tint = Some(ColorRgbAf::parse(rdr, ver)?);
+        m_waving_grass_strength = Some(rdr.read_f32()?);
+        m_waving_grass_amount = Some(rdr.read_f32()?);
+        m_waving_grass_speed = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             m_detail_scatter_mode = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
@@ -214,9 +273,11 @@ impl crate::Parse for DetailDatabase {
             m_detail_mesh_grass_shader = Some(crate::PPtr::parse(rdr, ver)?);
         } else {
         }
-            m_tree_instances = Some(DetailDatabaseMTreeInstancesVariant::parse(rdr, ver)?);
-            m_tree_prototypes = Some(DetailDatabaseMTreePrototypesVariant::parse(rdr, ver)?);
-            m_preload_texture_atlas_data = Some(DetailDatabaseMPreloadTextureAtlasDataVariant::parse(rdr, ver)?);
+        m_tree_instances = Some(DetailDatabaseMTreeInstancesVariant::parse(rdr, ver)?);
+        m_tree_prototypes = Some(DetailDatabaseMTreePrototypesVariant::parse(rdr, ver)?);
+        m_preload_texture_atlas_data = Some(DetailDatabaseMPreloadTextureAtlasDataVariant::parse(
+            rdr, ver,
+        )?);
         if *ver >= crate::UnityVersion::new(2021, 2, 0) {
             m_default_shaders_0 = Some(crate::PPtr::parse(rdr, ver)?);
             m_default_shaders_1 = Some(crate::PPtr::parse(rdr, ver)?);

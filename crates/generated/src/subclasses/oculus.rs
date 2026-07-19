@@ -1,6 +1,5 @@
 //! 自动生成。请勿手动修改。
 
-
 /// 版本枚举：OculusDashSupportVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum OculusDashSupportVariant {
@@ -78,8 +77,8 @@ impl crate::Parse for Oculus {
         let mut low_overhead_mode = None;
         let mut protected_context = None;
         let mut v2_signing = None;
-            shared_depth_buffer = Some(rdr.read_bool()?);
-            dash_support = Some(OculusDashSupportVariant::parse(rdr, ver)?);
+        shared_depth_buffer = Some(rdr.read_bool()?);
+        dash_support = Some(OculusDashSupportVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2019, 2, 3) {
             low_overhead_mode = Some(OculusLowOverheadModeVariant::parse(rdr, ver)?);
             protected_context = Some(rdr.read_bool()?);

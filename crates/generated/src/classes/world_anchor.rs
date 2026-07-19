@@ -14,8 +14,6 @@ impl crate::Parse for WorldAnchor {
     ) -> Result<Self, R::Error> {
         let m_game_object = crate::PPtr::parse(rdr, ver)?;
 
-        Ok(WorldAnchor {
-            m_game_object,
-        })
+        Ok(WorldAnchor { m_game_object })
     }
 }

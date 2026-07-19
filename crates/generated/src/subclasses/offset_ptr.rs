@@ -5,7 +5,6 @@ use crate::subclasses::skeleton_pose::SkeletonPose;
 use crate::subclasses::value_array::ValueArray;
 use crate::subclasses::value_array_constant::ValueArrayConstant;
 
-
 /// 版本枚举：OffsetPtrDataVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum OffsetPtrDataVariant {
@@ -28,37 +27,37 @@ impl crate::Parse for OffsetPtrDataVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            let v = ( { Ok(Box::new(Clip::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(Clip::parse(rdr, ver)?)) })?;
             Ok(Self::V6000_5(v))
         } else if *ver >= crate::UnityVersion::new(6000, 2, 0) {
-            let v = ( { Ok(Box::new(ValueArray::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(ValueArray::parse(rdr, ver)?)) })?;
             Ok(Self::V6000_2(v))
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            let v = ( { Ok(Box::new(Clip::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(Clip::parse(rdr, ver)?)) })?;
             Ok(Self::V2018_3(v))
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
-            let v = ( { Ok(Box::new(ValueArrayConstant::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(ValueArrayConstant::parse(rdr, ver)?)) })?;
             Ok(Self::V2017_3(v))
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            let v = ( { Ok(Box::new(ValueArray::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(ValueArray::parse(rdr, ver)?)) })?;
             Ok(Self::V2017_2(v))
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { Ok(Box::new(ValueArrayConstant::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(ValueArrayConstant::parse(rdr, ver)?)) })?;
             Ok(Self::V2017_1(v))
         } else if *ver >= crate::UnityVersion::new(5, 6, 1) {
-            let v = ( { Ok(Box::new(SkeletonPose::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(SkeletonPose::parse(rdr, ver)?)) })?;
             Ok(Self::V5_6_1(v))
         } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            let v = ( { Ok(Box::new(ValueArrayConstant::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(ValueArrayConstant::parse(rdr, ver)?)) })?;
             Ok(Self::V5_6(v))
         } else if *ver >= crate::UnityVersion::new(5, 3, 5) {
-            let v = ( { Ok(Box::new(ValueArray::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(ValueArray::parse(rdr, ver)?)) })?;
             Ok(Self::V5_3_5(v))
         } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
-            let v = ( { Ok(Box::new(ValueArrayConstant::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(ValueArrayConstant::parse(rdr, ver)?)) })?;
             Ok(Self::V5_3(v))
         } else {
-            let v = ( { Ok(Box::new(ValueArray::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(ValueArray::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
         }
     }
@@ -75,8 +74,6 @@ impl crate::Parse for OffsetPtr {
     ) -> Result<Self, R::Error> {
         let data = OffsetPtrDataVariant::parse(rdr, ver)?;
 
-        Ok(OffsetPtr {
-            data,
-        })
+        Ok(OffsetPtr { data })
     }
 }

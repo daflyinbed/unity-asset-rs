@@ -3,7 +3,6 @@
 use crate::PPtr;
 use crate::subclasses::vector4f::Vector4f;
 
-
 /// 版本枚举：ClothRendererMLightProbeAnchorVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ClothRendererMLightProbeAnchorVariant {
@@ -88,15 +87,29 @@ impl crate::Parse for ClothRenderer {
         let mut m_sorting_layer = None;
         let mut m_sorting_layer_id = None;
         let mut m_sorting_order = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_enabled = Some(rdr.read_bool()?);
-            m_cast_shadows = Some(rdr.read_bool()?);
-            m_receive_shadows = Some(rdr.read_bool()?);
-            m_lightmap_index = Some(rdr.read_u8()?);
-            m_lightmap_tiling_offset = Some(Vector4f::parse(rdr, ver)?);
-            m_materials = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_subset_indices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
-            m_static_batch_root = Some(crate::PPtr::parse(rdr, ver)?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_enabled = Some(rdr.read_bool()?);
+        m_cast_shadows = Some(rdr.read_bool()?);
+        m_receive_shadows = Some(rdr.read_bool()?);
+        m_lightmap_index = Some(rdr.read_u8()?);
+        m_lightmap_tiling_offset = Some(Vector4f::parse(rdr, ver)?);
+        m_materials = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        m_subset_indices = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_u32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        m_static_batch_root = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(4, 5, 0) {
             m_use_light_probes = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -115,7 +128,7 @@ impl crate::Parse for ClothRenderer {
             m_light_probe_anchor = Some(ClothRendererMLightProbeAnchorVariant::parse(rdr, ver)?);
         } else {
         }
-            m_pause_when_not_visible = Some(rdr.read_bool()?);
+        m_pause_when_not_visible = Some(rdr.read_bool()?);
 
         Ok(ClothRenderer {
             m_game_object: m_game_object.unwrap(),

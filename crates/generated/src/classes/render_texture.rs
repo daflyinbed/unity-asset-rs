@@ -2,7 +2,6 @@
 
 use crate::subclasses::gl_texture_settings::GlTextureSettings;
 
-
 /// 版本枚举：RenderTextureMDownscaleFallbackVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum RenderTextureMDownscaleFallbackVariant {
@@ -194,7 +193,7 @@ impl crate::Parse for RenderTexture {
         let mut m_enable_compatible_format = None;
         let mut m_enable_random_write = None;
         let mut m_shadow_sampling_mode = None;
-            m_name = Some(rdr.read_aligned_string()?);
+        m_name = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
             m_is_alpha_channel_optional = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -208,8 +207,8 @@ impl crate::Parse for RenderTexture {
             m_downscale_fallback = Some(RenderTextureMDownscaleFallbackVariant::parse(rdr, ver)?);
         } else {
         }
-            m_width = Some(rdr.read_i32()?);
-            m_height = Some(rdr.read_i32()?);
+        m_width = Some(rdr.read_i32()?);
+        m_height = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2021, 2, 0) {
             m_anti_aliasing = Some(rdr.read_i32()?);
             m_mip_count = Some(rdr.read_i32()?);
@@ -224,7 +223,7 @@ impl crate::Parse for RenderTexture {
         } else {
             m_depth_format = Some(rdr.read_i32()?);
         }
-            m_color_format = Some(rdr.read_i32()?);
+        m_color_format = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(4, 0, 0) {
         } else if *ver >= crate::UnityVersion::new(3, 4, 1) {
             m_is_cubemap = Some(rdr.read_bool()?);
@@ -232,14 +231,16 @@ impl crate::Parse for RenderTexture {
             m_is_power_of_two = Some(rdr.read_bool()?);
             m_is_cubemap = Some(rdr.read_bool()?);
         }
-            m_mip_map = Some(RenderTextureMMipMapVariant::parse(rdr, ver)?);
+        m_mip_map = Some(RenderTextureMMipMapVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
             m_generate_mips = Some(rdr.read_bool()?);
             m_srgb = Some(RenderTextureMSrgbVariant::parse(rdr, ver)?);
             m_use_dynamic_scale = Some(rdr.read_bool()?);
             m_use_dynamic_scale_explicit = Some(rdr.read_bool()?);
             m_bind_ms = Some(RenderTextureMBindMsVariant::parse(rdr, ver)?);
-            m_enable_compatible_format = Some(RenderTextureMEnableCompatibleFormatVariant::parse(rdr, ver)?);
+            m_enable_compatible_format = Some(RenderTextureMEnableCompatibleFormatVariant::parse(
+                rdr, ver,
+            )?);
             m_enable_random_write = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2023, 1, 5) {
@@ -247,7 +248,9 @@ impl crate::Parse for RenderTexture {
             m_srgb = Some(RenderTextureMSrgbVariant::parse(rdr, ver)?);
             m_use_dynamic_scale = Some(rdr.read_bool()?);
             m_bind_ms = Some(RenderTextureMBindMsVariant::parse(rdr, ver)?);
-            m_enable_compatible_format = Some(RenderTextureMEnableCompatibleFormatVariant::parse(rdr, ver)?);
+            m_enable_compatible_format = Some(RenderTextureMEnableCompatibleFormatVariant::parse(
+                rdr, ver,
+            )?);
             m_enable_random_write = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2023, 1, 0) {
@@ -255,13 +258,17 @@ impl crate::Parse for RenderTexture {
             m_srgb = Some(RenderTextureMSrgbVariant::parse(rdr, ver)?);
             m_use_dynamic_scale = Some(rdr.read_bool()?);
             m_bind_ms = Some(RenderTextureMBindMsVariant::parse(rdr, ver)?);
-            m_enable_compatible_format = Some(RenderTextureMEnableCompatibleFormatVariant::parse(rdr, ver)?);
+            m_enable_compatible_format = Some(RenderTextureMEnableCompatibleFormatVariant::parse(
+                rdr, ver,
+            )?);
         } else if *ver >= crate::UnityVersion::new(2022, 3, 6) {
             m_generate_mips = Some(rdr.read_bool()?);
             m_srgb = Some(RenderTextureMSrgbVariant::parse(rdr, ver)?);
             m_use_dynamic_scale = Some(rdr.read_bool()?);
             m_bind_ms = Some(RenderTextureMBindMsVariant::parse(rdr, ver)?);
-            m_enable_compatible_format = Some(RenderTextureMEnableCompatibleFormatVariant::parse(rdr, ver)?);
+            m_enable_compatible_format = Some(RenderTextureMEnableCompatibleFormatVariant::parse(
+                rdr, ver,
+            )?);
             m_enable_random_write = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
@@ -269,13 +276,17 @@ impl crate::Parse for RenderTexture {
             m_srgb = Some(RenderTextureMSrgbVariant::parse(rdr, ver)?);
             m_use_dynamic_scale = Some(rdr.read_bool()?);
             m_bind_ms = Some(RenderTextureMBindMsVariant::parse(rdr, ver)?);
-            m_enable_compatible_format = Some(RenderTextureMEnableCompatibleFormatVariant::parse(rdr, ver)?);
+            m_enable_compatible_format = Some(RenderTextureMEnableCompatibleFormatVariant::parse(
+                rdr, ver,
+            )?);
         } else if *ver >= crate::UnityVersion::new(2021, 3, 29) {
             m_generate_mips = Some(rdr.read_bool()?);
             m_srgb = Some(RenderTextureMSrgbVariant::parse(rdr, ver)?);
             m_use_dynamic_scale = Some(rdr.read_bool()?);
             m_bind_ms = Some(RenderTextureMBindMsVariant::parse(rdr, ver)?);
-            m_enable_compatible_format = Some(RenderTextureMEnableCompatibleFormatVariant::parse(rdr, ver)?);
+            m_enable_compatible_format = Some(RenderTextureMEnableCompatibleFormatVariant::parse(
+                rdr, ver,
+            )?);
             m_enable_random_write = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
@@ -283,7 +294,9 @@ impl crate::Parse for RenderTexture {
             m_srgb = Some(RenderTextureMSrgbVariant::parse(rdr, ver)?);
             m_use_dynamic_scale = Some(rdr.read_bool()?);
             m_bind_ms = Some(RenderTextureMBindMsVariant::parse(rdr, ver)?);
-            m_enable_compatible_format = Some(RenderTextureMEnableCompatibleFormatVariant::parse(rdr, ver)?);
+            m_enable_compatible_format = Some(RenderTextureMEnableCompatibleFormatVariant::parse(
+                rdr, ver,
+            )?);
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
             m_generate_mips = Some(rdr.read_bool()?);
             m_srgb = Some(RenderTextureMSrgbVariant::parse(rdr, ver)?);
@@ -296,7 +309,7 @@ impl crate::Parse for RenderTexture {
             m_srgb = Some(RenderTextureMSrgbVariant::parse(rdr, ver)?);
         } else {
         }
-            m_texture_settings = Some(GlTextureSettings::parse(rdr, ver)?);
+        m_texture_settings = Some(GlTextureSettings::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2021, 2, 0) {
             m_dimension = Some(rdr.read_i32()?);
             m_volume_depth = Some(rdr.read_i32()?);

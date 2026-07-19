@@ -27,17 +27,17 @@ impl crate::Parse for SpriteBone {
         let mut length = None;
         let mut parent_id = None;
         let mut color = None;
-            name = Some(rdr.read_aligned_string()?);
-            rdr.align(4)?;
+        name = Some(rdr.read_aligned_string()?);
+        rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2021, 1, 0) {
             guid = Some(rdr.read_aligned_string()?);
             rdr.align(4)?;
         } else {
         }
-            position = Some(Vector3f::parse(rdr, ver)?);
-            rotation = Some(Quaternionf::parse(rdr, ver)?);
-            length = Some(rdr.read_f32()?);
-            parent_id = Some(rdr.read_i32()?);
+        position = Some(Vector3f::parse(rdr, ver)?);
+        rotation = Some(Quaternionf::parse(rdr, ver)?);
+        length = Some(rdr.read_f32()?);
+        parent_id = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2021, 1, 0) {
             color = Some(ColorRgba32::parse(rdr, ver)?);
         } else {

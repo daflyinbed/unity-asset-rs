@@ -18,11 +18,6 @@ impl crate::Parse for ColorRgbAf {
         let b = rdr.read_f32()?;
         let a = rdr.read_f32()?;
 
-        Ok(ColorRgbAf {
-            r,
-            g,
-            b,
-            a,
-        })
+        Ok(ColorRgbAf { r, g, b, a })
     }
 }

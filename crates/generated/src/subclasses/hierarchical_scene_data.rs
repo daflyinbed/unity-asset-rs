@@ -14,8 +14,6 @@ impl crate::Parse for HierarchicalSceneData {
     ) -> Result<Self, R::Error> {
         let m_scene_guid = Guid::parse(rdr, ver)?;
 
-        Ok(HierarchicalSceneData {
-            m_scene_guid,
-        })
+        Ok(HierarchicalSceneData { m_scene_guid })
     }
 }

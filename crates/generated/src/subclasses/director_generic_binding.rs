@@ -16,9 +16,6 @@ impl crate::Parse for DirectorGenericBinding {
         let key = crate::PPtr::parse(rdr, ver)?;
         let value = crate::PPtr::parse(rdr, ver)?;
 
-        Ok(DirectorGenericBinding {
-            key,
-            value,
-        })
+        Ok(DirectorGenericBinding { key, value })
     }
 }

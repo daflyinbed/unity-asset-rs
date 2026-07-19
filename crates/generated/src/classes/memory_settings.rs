@@ -1,16 +1,13 @@
 //! 自动生成。请勿手动修改。
 
 #[derive(Debug, Clone)]
-pub struct MemorySettings {
-}
+pub struct MemorySettings {}
 
 impl crate::Parse for MemorySettings {
     fn parse<R: crate::EndianReader>(
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-
-        Ok(MemorySettings {
-        })
+        Ok(MemorySettings {})
     }
 }

@@ -54,32 +54,93 @@ impl crate::Parse for Tilemap {
         let mut m_tile_anchor = None;
         let mut m_tile_orientation = None;
         let mut m_tile_orientation_matrix = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_enabled = Some(rdr.read_u8()?);
-            rdr.align(4)?;
-            m_tiles = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = int3_storage::parse(rdr, ver)?; let b = Tile::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_animated_tiles = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = int3_storage::parse(rdr, ver)?; let b = TileAnimationData::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_tile_asset_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TilemapRefCountedData_PPtr_Object_::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            m_tile_sprite_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TilemapRefCountedData_PPtr_Sprite_::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            m_tile_matrix_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TilemapRefCountedData_Matrix4x4f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            m_tile_color_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TilemapRefCountedData_ColorRgbAf::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_enabled = Some(rdr.read_u8()?);
+        rdr.align(4)?;
+        m_tiles = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| {
+                        ({
+                            let a = int3_storage::parse(rdr, ver)?;
+                            let b = Tile::parse(rdr, ver)?;
+                            Ok((a, b))
+                        })
+                    })
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        m_animated_tiles = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| {
+                        ({
+                            let a = int3_storage::parse(rdr, ver)?;
+                            let b = TileAnimationData::parse(rdr, ver)?;
+                            Ok((a, b))
+                        })
+                    })
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        m_tile_asset_array = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| TilemapRefCountedData_PPtr_Object_::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
+        m_tile_sprite_array = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| TilemapRefCountedData_PPtr_Sprite_::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
+        m_tile_matrix_array = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| TilemapRefCountedData_Matrix4x4f::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
+        m_tile_color_array = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| TilemapRefCountedData_ColorRgbAf::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            m_tile_object_to_instantiate_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TilemapRefCountedData_PPtr_GameObject_::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_tile_object_to_instantiate_array = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| TilemapRefCountedData_PPtr_GameObject_::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else {
         }
-            m_animation_frame_rate = Some(rdr.read_f32()?);
-            m_color = Some(ColorRgbAf::parse(rdr, ver)?);
-            m_origin = Some(int3_storage::parse(rdr, ver)?);
-            m_size = Some(int3_storage::parse(rdr, ver)?);
-            m_tile_anchor = Some(Vector3f::parse(rdr, ver)?);
-            m_tile_orientation = Some(rdr.read_i32()?);
-            rdr.align(4)?;
-            m_tile_orientation_matrix = Some(Matrix4x4f::parse(rdr, ver)?);
+        m_animation_frame_rate = Some(rdr.read_f32()?);
+        m_color = Some(ColorRgbAf::parse(rdr, ver)?);
+        m_origin = Some(int3_storage::parse(rdr, ver)?);
+        m_size = Some(int3_storage::parse(rdr, ver)?);
+        m_tile_anchor = Some(Vector3f::parse(rdr, ver)?);
+        m_tile_orientation = Some(rdr.read_i32()?);
+        rdr.align(4)?;
+        m_tile_orientation_matrix = Some(Matrix4x4f::parse(rdr, ver)?);
 
         Ok(Tilemap {
             m_game_object: m_game_object.unwrap(),

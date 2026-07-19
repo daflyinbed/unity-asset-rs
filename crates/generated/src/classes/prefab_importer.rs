@@ -4,7 +4,6 @@ use crate::PPtr;
 use crate::subclasses::guid::Guid;
 use crate::subclasses::source_asset_identifier::SourceAssetIdentifier;
 
-
 /// 版本枚举：PrefabImporterMExternalObjectsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum PrefabImporterMExternalObjectsVariant {
@@ -18,11 +17,33 @@ impl crate::Parse for PrefabImporterMExternalObjectsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| {
+                        ({
+                            let a = SourceAssetIdentifier::parse(rdr, ver)?;
+                            let b = crate::PPtr::parse(rdr, ver)?;
+                            Ok((a, b))
+                        })
+                    })
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2019_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| {
+                        ({
+                            let a = SourceAssetIdentifier::parse(rdr, ver)?;
+                            let b = crate::PPtr::parse(rdr, ver)?;
+                            Ok((a, b))
+                        })
+                    })
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -79,16 +100,30 @@ impl crate::Parse for PrefabImporter {
         let mut m_variant_parent_guid = None;
         let mut m_asset_bundle_name = None;
         let mut m_asset_bundle_variant = None;
-            m_name = Some(rdr.read_aligned_string()?);
-            m_external_objects = Some(PrefabImporterMExternalObjectsVariant::parse(rdr, ver)?);
+        m_name = Some(rdr.read_aligned_string()?);
+        m_external_objects = Some(PrefabImporterMExternalObjectsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_used_file_i_ds = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i64())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else {
         }
-            m_added_object_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            m_is_prefab_variant = Some(PrefabImporterMIsPrefabVariantVariant::parse(rdr, ver)?);
+        m_added_object_file_i_ds = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_i64())
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
+        m_is_prefab_variant = Some(PrefabImporterMIsPrefabVariantVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             m_variant_parent_guid = Some(Guid::parse(rdr, ver)?);
             rdr.align(4)?;
@@ -97,9 +132,9 @@ impl crate::Parse for PrefabImporter {
             m_unable_to_import_on_previous_domain_reload = Some(rdr.read_bool()?);
             rdr.align(4)?;
         }
-            m_user_data = Some(rdr.read_aligned_string()?);
-            m_asset_bundle_name = Some(rdr.read_aligned_string()?);
-            m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
+        m_user_data = Some(rdr.read_aligned_string()?);
+        m_asset_bundle_name = Some(rdr.read_aligned_string()?);
+        m_asset_bundle_variant = Some(rdr.read_aligned_string()?);
 
         Ok(PrefabImporter {
             m_name: m_name.unwrap(),

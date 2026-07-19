@@ -149,15 +149,19 @@ impl<'a> Cursor<'a> {
         let end = self.buf[start..]
             .iter()
             .position(|&b| b == 0)
-            .ok_or_else(|| TruncatedSnafu {
-                reason: what.to_string(),
-            }
-            .build())?;
+            .ok_or_else(|| {
+                TruncatedSnafu {
+                    reason: what.to_string(),
+                }
+                .build()
+            })?;
         let s = std::str::from_utf8(&self.buf[start..start + end])
-            .map_err(|e| DecompressSnafu {
-                reason: format!("非 UTF-8 字符串: {e}"),
-            }
-            .build())?
+            .map_err(|e| {
+                DecompressSnafu {
+                    reason: format!("非 UTF-8 字符串: {e}"),
+                }
+                .build()
+            })?
             .to_owned();
         self.pos = start + end + 1;
         Ok(s)
@@ -168,10 +172,12 @@ impl<'a> Cursor<'a> {
         let n = self.read_i32(what)? as usize;
         let b = self.take(n, what)?;
         let s = std::str::from_utf8(b)
-            .map_err(|e| DecompressSnafu {
-                reason: format!("非 UTF-8 字符串: {e}"),
-            }
-            .build())?
+            .map_err(|e| {
+                DecompressSnafu {
+                    reason: format!("非 UTF-8 字符串: {e}"),
+                }
+                .build()
+            })?
             .to_owned();
         self.align(4)?;
         Ok(s)
@@ -193,14 +199,16 @@ impl<'a> Cursor<'a> {
                 .pos
                 .checked_add(alignment - r)
                 .filter(|&p| p <= self.buf.len())
-                .ok_or_else(|| TruncatedSnafu {
-                    reason: format!(
-                        "align({alignment}) 越界（pos {} → buf len {}）",
-                        self.pos,
-                        self.buf.len()
-                    ),
-                }
-                .build())?;
+                .ok_or_else(|| {
+                    TruncatedSnafu {
+                        reason: format!(
+                            "align({alignment}) 越界（pos {} → buf len {}）",
+                            self.pos,
+                            self.buf.len()
+                        ),
+                    }
+                    .build()
+                })?;
         }
         Ok(())
     }

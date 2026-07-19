@@ -12,8 +12,6 @@ impl crate::Parse for DateTime {
     ) -> Result<Self, R::Error> {
         let ticks = rdr.read_i64()?;
 
-        Ok(DateTime {
-            ticks,
-        })
+        Ok(DateTime { ticks })
     }
 }

@@ -6,7 +6,6 @@ use crate::subclasses::joint_motor::JointMotor;
 use crate::subclasses::joint_spring::JointSpring;
 use crate::subclasses::vector3f::Vector3f;
 
-
 /// 版本枚举：HingeJointMUseLimitsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum HingeJointMUseLimitsVariant {
@@ -103,36 +102,36 @@ impl crate::Parse for HingeJoint {
         let mut m_enable_preprocessing = None;
         let mut m_mass_scale = None;
         let mut m_connected_mass_scale = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_connected_body = Some(crate::PPtr::parse(rdr, ver)?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_connected_body = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2020, 2, 0) {
             m_connected_articulation_body = Some(crate::PPtr::parse(rdr, ver)?);
         } else {
         }
-            m_anchor = Some(Vector3f::parse(rdr, ver)?);
-            m_axis = Some(Vector3f::parse(rdr, ver)?);
+        m_anchor = Some(Vector3f::parse(rdr, ver)?);
+        m_axis = Some(Vector3f::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(4, 3, 0) {
             m_auto_configure_connected_anchor = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_connected_anchor = Some(Vector3f::parse(rdr, ver)?);
         } else {
         }
-            m_use_spring = Some(rdr.read_bool()?);
-            rdr.align(4)?;
-            m_spring = Some(JointSpring::parse(rdr, ver)?);
-            m_use_motor = Some(rdr.read_bool()?);
-            rdr.align(4)?;
-            m_motor = Some(JointMotor::parse(rdr, ver)?);
-            m_use_limits = Some(HingeJointMUseLimitsVariant::parse(rdr, ver)?);
+        m_use_spring = Some(rdr.read_bool()?);
+        rdr.align(4)?;
+        m_spring = Some(JointSpring::parse(rdr, ver)?);
+        m_use_motor = Some(rdr.read_bool()?);
+        rdr.align(4)?;
+        m_motor = Some(JointMotor::parse(rdr, ver)?);
+        m_use_limits = Some(HingeJointMUseLimitsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             m_extended_limits = Some(rdr.read_bool()?);
             m_use_acceleration = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else {
         }
-            m_limits = Some(JointLimits::parse(rdr, ver)?);
-            m_break_force = Some(rdr.read_f32()?);
-            m_break_torque = Some(rdr.read_f32()?);
+        m_limits = Some(JointLimits::parse(rdr, ver)?);
+        m_break_force = Some(rdr.read_f32()?);
+        m_break_torque = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             m_enable_collision = Some(rdr.read_bool()?);
             m_enable_preprocessing = Some(HingeJointMEnablePreprocessingVariant::parse(rdr, ver)?);

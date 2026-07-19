@@ -2,7 +2,6 @@
 
 use crate::subclasses::streamed_resource::StreamedResource;
 
-
 /// 版本枚举：AudioClipMIsTrackerFormatVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AudioClipMIsTrackerFormatVariant {
@@ -87,7 +86,7 @@ impl crate::Parse for AudioClip {
         let mut m_legacy3_d = None;
         let mut m_resource = None;
         let mut m_compression_format = None;
-            m_name = Some(rdr.read_aligned_string()?);
+        m_name = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             m_load_type = Some(rdr.read_i32()?);
             m_channels = Some(rdr.read_i32()?);
@@ -133,7 +132,10 @@ impl crate::Parse for AudioClip {
                 let offset = rdr.read_u32()?;
                 crate::classes::audio_clip::AudioClipMAudioData::Streamed { size, offset }
             } else {
-                let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
+                let v = ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n).map(|_| rdr.read_u8()).collect::<Result<Vec<_>, _>>()
+                })?;
                 crate::classes::audio_clip::AudioClipMAudioData::Inline(v)
             });
             rdr.align(4)?;

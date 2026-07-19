@@ -12,11 +12,14 @@ impl crate::Parse for SpriteAtlasAssetData {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let packables = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let packables = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| crate::PPtr::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
 
-        Ok(SpriteAtlasAssetData {
-            packables,
-        })
+        Ok(SpriteAtlasAssetData { packables })
     }
 }

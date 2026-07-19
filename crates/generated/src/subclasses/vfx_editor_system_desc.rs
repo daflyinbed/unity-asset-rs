@@ -28,20 +28,41 @@ impl crate::Parse for VfxEditorSystemDesc {
         let mut name = None;
         let mut values = None;
         let mut tasks = None;
-            r#type = Some(rdr.read_i32()?);
-            flags = Some(rdr.read_i32()?);
-            capacity = Some(rdr.read_u32()?);
-            layer = Some(rdr.read_u32()?);
+        r#type = Some(rdr.read_i32()?);
+        flags = Some(rdr.read_i32()?);
+        capacity = Some(rdr.read_u32()?);
+        layer = Some(rdr.read_u32()?);
         if *ver >= crate::UnityVersion::new(2020, 1, 0) {
             name = Some(rdr.read_aligned_string()?);
         } else {
         }
-            buffers = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VfxMapping::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            values = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VfxMapping::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            tasks = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VfxEditorTaskDesc::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+        buffers = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| VfxMapping::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
+        values = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| VfxMapping::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
+        tasks = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| VfxEditorTaskDesc::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
 
         Ok(VfxEditorSystemDesc {
             r#type: r#type.unwrap(),

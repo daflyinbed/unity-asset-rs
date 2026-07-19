@@ -12,7 +12,10 @@ impl crate::Parse for bitset {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let bit_count = rdr.read_i32()?;
-        let bitblocks = ( { let n = rdr.read_i32()? as usize; rdr.read_bytes(n) } )?;
+        let bitblocks = ({
+            let n = rdr.read_i32()? as usize;
+            rdr.read_bytes(n)
+        })?;
         rdr.align(4)?;
 
         Ok(bitset {

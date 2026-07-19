@@ -24,6 +24,34 @@ export interface WorkspaceSnapshot {
   updatedAt: string;
 }
 
+export type WindowControlAction =
+  "minimize" | "toggle-maximize" | "open-devtools" | "close";
+
+export interface SelectedPath {
+  arknights: boolean;
+  kind: "file" | "directory";
+  name: string;
+  path: string;
+}
+
+export interface ProjectSource {
+  id: number;
+  projectId: number;
+  kind: "file" | "directory";
+  name: string;
+  path: string;
+  arknights: boolean;
+  sortOrder: number;
+}
+
+export interface ProjectSnapshot {
+  id: number;
+  name: string;
+  rootPath: string;
+  sources: ProjectSource[];
+  lastOpenedAt: string;
+}
+
 export interface IpcContract {
   "app:info": {
     request: Record<string, never>;
@@ -45,6 +73,42 @@ export interface IpcContract {
     request: { name: string; rootPath: string; state: JsonValue };
     response: WorkspaceSnapshot;
   };
+  "window:control": {
+    request: { action: WindowControlAction };
+    response: { maximized: boolean };
+  };
+  "files:pick": {
+    request: Record<string, never>;
+    response: SelectedPath[];
+  };
+  "files:inspect": {
+    request: { paths: string[] };
+    response: SelectedPath[];
+  };
+  "projects:list": {
+    request: Record<string, never>;
+    response: ProjectSnapshot[];
+  };
+  "projects:create": {
+    request: { name: string; sources: SelectedPath[] };
+    response: ProjectSnapshot;
+  };
+  "projects:open": {
+    request: { projectId: number };
+    response: ProjectSnapshot;
+  };
+  "projects:add-sources": {
+    request: { projectId: number; sources: SelectedPath[] };
+    response: ProjectSnapshot;
+  };
+  "projects:remove-source": {
+    request: { projectId: number; sourceId: number };
+    response: ProjectSnapshot;
+  };
+  "projects:refresh-source": {
+    request: { projectId: number; sourceId: number };
+    response: ProjectSnapshot;
+  };
 }
 
 export type IpcChannel = keyof IpcContract;
@@ -56,6 +120,7 @@ export interface ElectronBridge {
     channel: C,
     request: IpcRequest<C>,
   ) => Promise<IpcResult<IpcResponse<C>>>;
+  getPathForFile: (file: unknown) => string;
 }
 
 export const IPC_CHANNELS = [
@@ -64,4 +129,13 @@ export const IPC_CHANNELS = [
   "database:status",
   "workspace:load",
   "workspace:save",
+  "window:control",
+  "files:pick",
+  "files:inspect",
+  "projects:list",
+  "projects:create",
+  "projects:open",
+  "projects:add-sources",
+  "projects:remove-source",
+  "projects:refresh-source",
 ] as const satisfies readonly IpcChannel[];

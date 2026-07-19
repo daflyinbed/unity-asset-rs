@@ -18,11 +18,6 @@ impl crate::Parse for float4 {
         let z = rdr.read_f32()?;
         let w = rdr.read_f32()?;
 
-        Ok(float4 {
-            x,
-            y,
-            z,
-            w,
-        })
+        Ok(float4 { x, y, z, w })
     }
 }

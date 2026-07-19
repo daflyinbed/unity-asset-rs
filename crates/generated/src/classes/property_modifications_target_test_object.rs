@@ -19,18 +19,31 @@ impl crate::Parse for PropertyModificationsTargetTestObject {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_data = PropertyModificationsTargetTestNativeObject::parse(rdr, ver)?;
-        let m_array = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { PropertyModificationsTargetTestNativeObject::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_array = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| PropertyModificationsTargetTestNativeObject::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
         let m_float_test_value = rdr.read_f32()?;
         let m_bytes = if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n).map(|_| rdr.read_u8()).collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Some(v)
         } else {
             None
         };
         let m_floats = if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_f32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_f32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Some(v)
         } else {
@@ -42,7 +55,10 @@ impl crate::Parse for PropertyModificationsTargetTestObject {
             None
         };
         let byte_data = if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; rdr.read_bytes(n) } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                rdr.read_bytes(n)
+            })?;
             rdr.align(4)?;
             Some(v)
         } else {

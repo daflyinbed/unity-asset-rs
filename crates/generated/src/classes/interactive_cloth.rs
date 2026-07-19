@@ -52,7 +52,12 @@ impl crate::Parse for InteractiveCloth {
         let m_attachment_tear_factor = rdr.read_f32()?;
         let m_attachment_response = rdr.read_f32()?;
         let m_tear_factor = rdr.read_f32()?;
-        let m_attached_colliders = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ClothAttachment::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_attached_colliders = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| ClothAttachment::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
 
         Ok(InteractiveCloth {
             m_game_object,

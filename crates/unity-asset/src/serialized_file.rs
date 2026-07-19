@@ -5,10 +5,10 @@
 
 use bytes::Bytes;
 
+use crate::UnityVersion;
 use crate::cursor::{Cursor, Endian};
 use crate::error::{Result, SerializedFileSnafu, TruncatedSnafu};
 use crate::typetree::{self, RefTypeTable, TypeNode};
-use crate::UnityVersion;
 
 /// 解析后的 SerializedFile。
 pub struct SerializedFile {
@@ -74,17 +74,20 @@ impl ObjectInfo {
         let data = sf.data.as_ref();
         let s = self.byte_start as usize;
         let e = self.byte_size as usize;
-        let end = s.checked_add(e).filter(|&end| end <= data.len() && s <= end).ok_or_else(|| {
-            TruncatedSnafu {
-                reason: format!(
-                    "object {} bytes [{s}..{}] 越界（buf len {}）",
-                    self.path_id,
-                    s.saturating_add(e),
-                    data.len()
-                ),
-            }
-            .build()
-        })?;
+        let end = s
+            .checked_add(e)
+            .filter(|&end| end <= data.len() && s <= end)
+            .ok_or_else(|| {
+                TruncatedSnafu {
+                    reason: format!(
+                        "object {} bytes [{s}..{}] 越界（buf len {}）",
+                        self.path_id,
+                        s.saturating_add(e),
+                        data.len()
+                    ),
+                }
+                .build()
+            })?;
         Ok(&data[s..end])
     }
 
@@ -118,131 +121,144 @@ impl SerializedFile {
 }
 
 impl SerializedFile {
-/// 解析一个 SerializedFile。
-pub fn parse(bytes: Bytes) -> Result<SerializedFile> {
-    let buf: &[u8] = bytes.as_ref();
-    // prologue 是大端。
-    let mut r = Cursor::new(buf, Endian::Big);
+    /// 解析一个 SerializedFile。
+    pub fn parse(bytes: Bytes) -> Result<SerializedFile> {
+        let buf: &[u8] = bytes.as_ref();
+        // prologue 是大端。
+        let mut r = Cursor::new(buf, Endian::Big);
 
-    let metadata_size = r.read_u32("metadata size")? as u64;
-    let file_size = r.read_u32("file size")? as u64;
-    let version = r.read_u32("format version")?;
-    let mut data_offset = r.read_u32("data offset")? as u64;
+        let metadata_size = r.read_u32("metadata size")? as u64;
+        let file_size = r.read_u32("file size")? as u64;
+        let version = r.read_u32("format version")?;
+        let mut data_offset = r.read_u32("data offset")? as u64;
 
-    let endian = if version >= 9 {
-        let e = r.read_u8()?;
-        r.read_bytes(3, "reserved")?;
-        if version >= 22 {
-            // 大文件格式：metadata_size / file_size 此处不使用，消费即可
-            let _ = r.read_u32("metadata size (large)")?;
-            let _ = r.read_i64("file size (large)")?;
-            data_offset = r.read_i64("data offset (large)")? as u64;
-            let _unknown = r.read_i64("unknown")?;
-        }
-        if e == 0 {
-            Endian::Little
+        let endian = if version >= 9 {
+            let e = r.read_u8()?;
+            r.read_bytes(3, "reserved")?;
+            if version >= 22 {
+                // 大文件格式：metadata_size / file_size 此处不使用，消费即可
+                let _ = r.read_u32("metadata size (large)")?;
+                let _ = r.read_i64("file size (large)")?;
+                data_offset = r.read_i64("data offset (large)")? as u64;
+                let _unknown = r.read_i64("unknown")?;
+            }
+            if e == 0 { Endian::Little } else { Endian::Big }
         } else {
-            Endian::Big
-        }
-    } else {
-        // version < 9：endian 字节在文件末尾（file_size - metadata_size 处）
-        let pos = file_size.saturating_sub(metadata_size) as usize;
-        r.seek(pos)?;
-        let e = r.read_u8()?;
-        if e == 0 {
-            Endian::Little
+            // version < 9：endian 字节在文件末尾（file_size - metadata_size 处）
+            let pos = file_size.saturating_sub(metadata_size) as usize;
+            r.seek(pos)?;
+            let e = r.read_u8()?;
+            if e == 0 { Endian::Little } else { Endian::Big }
+        };
+        r.set_endian(endian);
+
+        let unity_version = if version >= 7 {
+            r.read_cstr("unity version")?
         } else {
-            Endian::Big
+            String::new()
+        };
+        if version >= 8 {
+            let _target_platform = r.read_i32("target platform")?;
         }
-    };
-    r.set_endian(endian);
+        let enable_type_tree = if version >= 13 { r.read_bool()? } else { true };
 
-    let unity_version = if version >= 7 {
-        r.read_cstr("unity version")?
-    } else {
-        String::new()
-    };
-    if version >= 8 {
-        let _target_platform = r.read_i32("target platform")?;
-    }
-    let enable_type_tree = if version >= 13 { r.read_bool()? } else { true };
+        // ReadTypes
+        let type_count = r.read_i32("type count")? as usize;
+        let mut types = Vec::with_capacity(type_count);
+        for _ in 0..type_count {
+            types.push(read_serialized_type(
+                &mut r,
+                version,
+                enable_type_tree,
+                false,
+            )?);
+        }
 
-    // ReadTypes
-    let type_count = r.read_i32("type count")? as usize;
-    let mut types = Vec::with_capacity(type_count);
-    for _ in 0..type_count {
-        types.push(read_serialized_type(&mut r, version, enable_type_tree, false)?);
-    }
+        // big_id_enabled（7 <= version < 14）
+        let big_id_enabled = if (7..14).contains(&version) {
+            r.read_i32("big id enabled")? != 0
+        } else {
+            false
+        };
 
-    // big_id_enabled（7 <= version < 14）
-    let big_id_enabled = if (7..14).contains(&version) {
-        r.read_i32("big id enabled")? != 0
-    } else {
-        false
-    };
+        // ReadObjects
+        let object_count = r.read_i32("object count")? as usize;
+        let mut objects = Vec::with_capacity(object_count);
+        for _ in 0..object_count {
+            objects.push(read_object_info(
+                &mut r,
+                version,
+                big_id_enabled,
+                data_offset,
+                &types,
+            )?);
+        }
 
-    // ReadObjects
-    let object_count = r.read_i32("object count")? as usize;
-    let mut objects = Vec::with_capacity(object_count);
-    for _ in 0..object_count {
-        objects.push(read_object_info(&mut r, version, big_id_enabled, data_offset, &types)?);
-    }
-
-    // ReadScripts（version >= 11）
-    if version >= 11 {
-        let script_count = r.read_i32("script count")? as usize;
-        for _ in 0..script_count {
-            let _file_idx = r.read_i32("script file idx")?;
-            if version < 14 {
-                let _ = r.read_i32("script local id")?;
-            } else {
-                r.align(4)?;
-                let _ = r.read_i64("script local id")?;
+        // ReadScripts（version >= 11）
+        if version >= 11 {
+            let script_count = r.read_i32("script count")? as usize;
+            for _ in 0..script_count {
+                let _file_idx = r.read_i32("script file idx")?;
+                if version < 14 {
+                    let _ = r.read_i32("script local id")?;
+                } else {
+                    r.align(4)?;
+                    let _ = r.read_i64("script local id")?;
+                }
             }
         }
-    }
 
-    // ReadExternals
-    let external_count = r.read_i32("external count")? as usize;
-    let mut externals = Vec::with_capacity(external_count);
-    for _ in 0..external_count {
-        if version >= 6 {
-            let _ = r.read_cstr("external temp")?;
+        // ReadExternals
+        let external_count = r.read_i32("external count")? as usize;
+        let mut externals = Vec::with_capacity(external_count);
+        for _ in 0..external_count {
+            if version >= 6 {
+                let _ = r.read_cstr("external temp")?;
+            }
+            let mut guid = [0u8; 16];
+            let mut type_ = 0i32;
+            if version >= 5 {
+                let guid_bytes = r.read_bytes(16, "external guid")?;
+                guid.copy_from_slice(guid_bytes);
+                type_ = r.read_i32("external type")?;
+            }
+            let path_name_origin = r.read_cstr("external path")?;
+            let path_name = crate::names::fix_file_identifier(&path_name_origin);
+            externals.push(FileIdentifier {
+                path_name_origin,
+                path_name,
+                guid,
+                type_,
+            });
         }
-        let mut guid = [0u8; 16];
-        let mut type_ = 0i32;
-        if version >= 5 {
-            let guid_bytes = r.read_bytes(16, "external guid")?;
-            guid.copy_from_slice(guid_bytes);
-            type_ = r.read_i32("external type")?;
+
+        // ReadRefTypes（version >= 20）
+        let mut ref_types = Vec::new();
+        if version >= 20 {
+            let ref_type_count = r.read_i32("ref type count")? as usize;
+            for _ in 0..ref_type_count {
+                ref_types.push(read_serialized_type(
+                    &mut r,
+                    version,
+                    enable_type_tree,
+                    true,
+                )?);
+            }
         }
-        let path_name_origin = r.read_cstr("external path")?;
-        let path_name = crate::names::fix_file_identifier(&path_name_origin);
-        externals.push(FileIdentifier { path_name_origin, path_name, guid, type_ });
-    }
 
-    // ReadRefTypes（version >= 20）
-    let mut ref_types = Vec::new();
-    if version >= 20 {
-        let ref_type_count = r.read_i32("ref type count")? as usize;
-        for _ in 0..ref_type_count {
-            ref_types.push(read_serialized_type(&mut r, version, enable_type_tree, true)?);
-        }
-    }
+        let unity_version_parsed = UnityVersion::parse(&unity_version);
 
-    let unity_version_parsed = UnityVersion::parse(&unity_version);
-
-    Ok(SerializedFile {
-        version,
-        unity_version,
-        unity_version_parsed,
-        endian,
-        types,
-        ref_types,
-        externals,
-        objects,
-        data: bytes,
-    })
+        Ok(SerializedFile {
+            version,
+            unity_version,
+            unity_version_parsed,
+            endian,
+            types,
+            ref_types,
+            externals,
+            objects,
+            data: bytes,
+        })
     }
 }
 
@@ -340,7 +356,10 @@ fn read_object_info(
 
     let type_idx = if version < 16 {
         let _class_id = r.read_u16("class id")? as i32;
-        types.iter().position(|t| t.class_id == type_id).unwrap_or(0)
+        types
+            .iter()
+            .position(|t| t.class_id == type_id)
+            .unwrap_or(0)
     } else {
         type_id as usize
     };

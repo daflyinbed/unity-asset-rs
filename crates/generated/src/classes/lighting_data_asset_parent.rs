@@ -12,8 +12,6 @@ impl crate::Parse for LightingDataAssetParent {
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
 
-        Ok(LightingDataAssetParent {
-            m_name,
-        })
+        Ok(LightingDataAssetParent { m_name })
     }
 }

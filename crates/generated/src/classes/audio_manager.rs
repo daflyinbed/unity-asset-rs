@@ -1,6 +1,5 @@
 //! 自动生成。请勿手动修改。
 
-
 /// 版本枚举：AudioManagerMDisableAudioVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AudioManagerMDisableAudioVariant {
@@ -102,7 +101,7 @@ impl crate::Parse for AudioManager {
         let mut m_audio_foundation = None;
         let mut m_output_channel_layout = None;
         let mut m_output_sampling_rate = None;
-            m_volume = Some(rdr.read_f32()?);
+        m_volume = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             rolloff_scale = Some(rdr.read_f32()?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
@@ -111,15 +110,15 @@ impl crate::Parse for AudioManager {
         } else {
             m_speed_of_sound = Some(rdr.read_f32()?);
         }
-            doppler_factor = Some(rdr.read_f32()?);
-            default_speaker_mode = Some(rdr.read_i32()?);
+        doppler_factor = Some(rdr.read_f32()?);
+        default_speaker_mode = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_sample_rate = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
         } else {
             rolloff_scale = Some(rdr.read_f32()?);
         }
-            m_dsp_buffer_size = Some(rdr.read_i32()?);
+        m_dsp_buffer_size = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(6000, 3, 0) {
             m_virtual_voice_count = Some(rdr.read_i32()?);
             m_real_voice_count = Some(AudioManagerMRealVoiceCountVariant::parse(rdr, ver)?);

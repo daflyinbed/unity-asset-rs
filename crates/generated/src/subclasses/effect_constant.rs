@@ -23,7 +23,12 @@ impl crate::Parse for EffectConstant {
         let prev_effect_index = rdr.read_u32()?;
         let bypass = rdr.read_bool()?;
         rdr.align(4)?;
-        let parameter_indices = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+        let parameter_indices = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| rdr.read_u32())
+                .collect::<Result<Vec<_>, _>>()
+        })?;
 
         Ok(EffectConstant {
             r#type,

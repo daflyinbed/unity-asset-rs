@@ -47,14 +47,14 @@ pub fn run(blob: &mut TpkTypeTree) {
 
     for (&class_id, info) in &blob.classes {
         for (ei, entry) in info.classes.iter().enumerate() {
-            let Some(cls) = entry.class.as_ref() else { continue };
+            let Some(cls) = entry.class.as_ref() else {
+                continue;
+            };
             let cur_name = name_str(blob, cls.name_index).to_string();
             let new_name = class_name_replacement(&cur_name)
                 .map(|s| s.to_string())
                 .unwrap_or(cur_name.clone());
-            let cur_base = cls
-                .base_index
-                .map(|b| name_str(blob, b).to_string());
+            let cur_base = cls.base_index.map(|b| name_str(blob, b).to_string());
             let final_base = cur_base.and_then(|b| {
                 class_name_replacement(&b)
                     .map(|s| s.to_string())
@@ -176,7 +176,11 @@ fn rename_one(blob: &mut TpkTypeTree, idx: u16) {
     // Keyframe → Keyframe_<m_Value 类型>（float → Single）
     if tn == "Keyframe" {
         if let Some(val_tn) = get_subnode_typename_by_name(blob, idx, "m_Value") {
-            let elem = if val_tn == "float" { "Single".to_string() } else { val_tn };
+            let elem = if val_tn == "float" {
+                "Single".to_string()
+            } else {
+                val_tn
+            };
             set_typename(blob, idx, format!("Keyframe_{elem}"));
         }
         return;
@@ -226,7 +230,14 @@ fn rename_one(blob: &mut TpkTypeTree, idx: u16) {
     // TilemapRefCountedData → TilemapRefCountedData_<m_Data 类型>
     if tn == "TilemapRefCountedData" {
         if let Some(data_tn) = get_subnode_typename_by_name(blob, idx, "m_Data") {
-            set_typename(blob, idx, format!("TilemapRefCountedData_{}", sanitize_type_for_compound(&data_tn)));
+            set_typename(
+                blob,
+                idx,
+                format!(
+                    "TilemapRefCountedData_{}",
+                    sanitize_type_for_compound(&data_tn)
+                ),
+            );
         }
         return;
     }
@@ -377,14 +388,22 @@ fn rename_one(blob: &mut TpkTypeTree, idx: u16) {
     // VFX 系列：VFXEntryExposed / VFXEntryExpressionValue / VFXField → _<元素类型>
     if tn == "VFXEntryExposed" || tn == "VFXEntryExpressionValue" {
         if let Some(elem) = get_subnode_typename_by_name(blob, idx, "m_Value") {
-            set_typename(blob, idx, format!("{tn}_{}", sanitize_type_for_compound(&elem)));
+            set_typename(
+                blob,
+                idx,
+                format!("{tn}_{}", sanitize_type_for_compound(&elem)),
+            );
         }
         return;
     }
     if tn == "VFXField"
         && let Some(elem) = get_vfx_field_element_type(blob, idx)
     {
-        set_typename(blob, idx, format!("VFXField_{}", sanitize_type_for_compound(&elem)));
+        set_typename(
+            blob,
+            idx,
+            format!("VFXField_{}", sanitize_type_for_compound(&elem)),
+        );
     }
 
     // Xform：m_T/m_S 按内层类型加后缀（4 → Vector4Float，3 → Vector3Float）
@@ -416,7 +435,12 @@ fn rename_one(blob: &mut TpkTypeTree, idx: u16) {
                 _ => "",
             };
             if !suffix.is_empty() {
-                try_rename_subnode(blob, idx, "m_PositionValues", &format!("m_PositionValues{suffix}"));
+                try_rename_subnode(
+                    blob,
+                    idx,
+                    "m_PositionValues",
+                    &format!("m_PositionValues{suffix}"),
+                );
             }
         }
         if let Some(scl_tn) = get_vector_data_typename(blob, idx, "m_ScaleValues") {
@@ -426,7 +450,12 @@ fn rename_one(blob: &mut TpkTypeTree, idx: u16) {
                 _ => "",
             };
             if !suffix.is_empty() {
-                try_rename_subnode(blob, idx, "m_ScaleValues", &format!("m_ScaleValues{suffix}"));
+                try_rename_subnode(
+                    blob,
+                    idx,
+                    "m_ScaleValues",
+                    &format!("m_ScaleValues{suffix}"),
+                );
             }
         }
     }
@@ -455,7 +484,8 @@ fn rename_one(blob: &mut TpkTypeTree, idx: u16) {
         }
         "GameObject" => {
             // 内层 pair(5.5 前) → ComponentPair，m_First→m_ClassID、m_Second→m_Component
-            if let Some(arr_idx) = get_subnode_by_type_and_name(blob, idx, "vector", "m_Component") {
+            if let Some(arr_idx) = get_subnode_by_type_and_name(blob, idx, "vector", "m_Component")
+            {
                 let pair_idx = blob.node_pool[arr_idx as usize].sub_nodes.first().copied();
                 if let Some(pi) = pair_idx {
                     let data_idx = blob.node_pool[pi as usize].sub_nodes.get(1).copied();
@@ -480,7 +510,11 @@ fn rename_one(blob: &mut TpkTypeTree, idx: u16) {
         "ParticleSystem" => {
             // m_StartDelay 按内层类型改：float → m_StartDelay_Single，否则 m_StartDelay_MinMaxCurve
             if let Some(t) = get_subnode_typename_by_name(blob, idx, "m_StartDelay") {
-                let new = if t == "float" { "m_StartDelay_Single" } else { "m_StartDelay_MinMaxCurve" };
+                let new = if t == "float" {
+                    "m_StartDelay_Single"
+                } else {
+                    "m_StartDelay_MinMaxCurve"
+                };
                 try_rename_subnode(blob, idx, "m_StartDelay", new);
             }
         }
@@ -529,7 +563,12 @@ fn rename_one(blob: &mut TpkTypeTree, idx: u16) {
             try_rename_subnode(blob, idx, "m_MotionSetCount", "m_SynchronizedLayerCount");
         }
         "Heightmap" => {
-            try_rename_subnode(blob, idx, "m_EnableSurfaceMaskTextureCompression", "m_EnableHolesTextureCompression");
+            try_rename_subnode(
+                blob,
+                idx,
+                "m_EnableSurfaceMaskTextureCompression",
+                "m_EnableHolesTextureCompression",
+            );
             try_rename_subnode(blob, idx, "m_SurfaceMask", "m_Holes");
             try_rename_subnode(blob, idx, "m_SurfaceMaskLOD", "m_HolesLOD");
         }
@@ -562,14 +601,24 @@ fn rename_one(blob: &mut TpkTypeTree, idx: u16) {
             }
         }
         "LayerConstant" => {
-            try_rename_subnode(blob, idx, "m_StateMachineMotionSetIndex", "m_StateMachineSynchronizedLayerIndex");
+            try_rename_subnode(
+                blob,
+                idx,
+                "m_StateMachineMotionSetIndex",
+                "m_StateMachineSynchronizedLayerIndex",
+            );
         }
         _ => {}
     }
 
     // LayerConstant 特殊字段名（无 m_ 前缀的带类型名前缀）
     if tn == "LayerConstant" || tn == "HumanLayerConstant" {
-        try_rename_subnode(blob, idx, "m__int__m_LayerBlendingMode", "m_LayerBlendingMode");
+        try_rename_subnode(
+            blob,
+            idx,
+            "m__int__m_LayerBlendingMode",
+            "m_LayerBlendingMode",
+        );
         // m__SInt32__m_* → 去掉 m__SInt32__ 前缀（AudioClip 3.5–5）
         rename_sint32_prefixed_children(blob, idx);
     }
@@ -630,7 +679,12 @@ fn rename_one(blob: &mut TpkTypeTree, idx: u16) {
     // Hash128 字段排序归一（m_Bytes_N_ → m_Bytes__N 或 m_Bytes_N，使顺序连续）
     if tn == "Hash128" {
         for i in 0..10 {
-            try_rename_subnode(blob, idx, &format!("m_Bytes_{i}_"), &format!("m_Bytes__{i}"));
+            try_rename_subnode(
+                blob,
+                idx,
+                &format!("m_Bytes_{i}_"),
+                &format!("m_Bytes__{i}"),
+            );
         }
         for i in 10..16 {
             try_rename_subnode(blob, idx, &format!("m_Bytes_{i}_"), &format!("m_Bytes_{i}"));
@@ -647,9 +701,15 @@ fn rename_one(blob: &mut TpkTypeTree, idx: u16) {
 fn get_curve_element_typename(blob: &TpkTypeTree, idx: u16) -> Option<String> {
     let curve_idx = get_subnode_by_type_and_name(blob, idx, "vector", "m_Curve")?;
     // curve 的 sub_nodes[0] = Array wrapper
-    let array_idx = blob.node_pool[curve_idx as usize].sub_nodes.first().copied()?;
+    let array_idx = blob.node_pool[curve_idx as usize]
+        .sub_nodes
+        .first()
+        .copied()?;
     // Array 的 sub_nodes: [size, data]
-    let data_idx = blob.node_pool[array_idx as usize].sub_nodes.get(1).copied()?;
+    let data_idx = blob.node_pool[array_idx as usize]
+        .sub_nodes
+        .get(1)
+        .copied()?;
     let data_tn = type_str(blob, data_idx);
     data_tn.strip_prefix("Keyframe_").map(|s| s.to_string())
 }
@@ -662,26 +722,47 @@ fn get_curve_element_typename(blob: &TpkTypeTree, idx: u16) -> Option<String> {
 /// 返回 `NameToObjectMap_X`（X 为 PPtr 目标，已去除 `PPtr<` / `>` 并 sanitize）。
 fn get_name_to_object_map_element_type(blob: &TpkTypeTree, idx: u16) -> Option<String> {
     let map_idx = get_subnode_by_type_and_name(blob, idx, "map", "m_ObjectToName")?;
-    let array_idx = blob.node_pool[map_idx as usize].sub_nodes.first().copied()?;
-    let pair_idx = blob.node_pool[array_idx as usize].sub_nodes.get(1).copied()?;
-    let first_idx = blob.node_pool[pair_idx as usize].sub_nodes.first().copied()?;
+    let array_idx = blob.node_pool[map_idx as usize]
+        .sub_nodes
+        .first()
+        .copied()?;
+    let pair_idx = blob.node_pool[array_idx as usize]
+        .sub_nodes
+        .get(1)
+        .copied()?;
+    let first_idx = blob.node_pool[pair_idx as usize]
+        .sub_nodes
+        .first()
+        .copied()?;
     let first_tn = type_str(blob, first_idx).to_string();
     // 支持 PPtr<X> 和 PPtr_X 两种形式
-    let target = if let Some(inner) = first_tn.strip_prefix("PPtr<").and_then(|s| s.strip_suffix('>')) {
+    let target = if let Some(inner) = first_tn
+        .strip_prefix("PPtr<")
+        .and_then(|s| s.strip_suffix('>'))
+    {
         inner
     } else if let Some(inner) = first_tn.strip_prefix("PPtr_") {
         inner.trim_end_matches('_')
     } else {
         return None;
     };
-    Some(format!("NameToObjectMap_{}", sanitize_type_for_compound(target)))
+    Some(format!(
+        "NameToObjectMap_{}",
+        sanitize_type_for_compound(target)
+    ))
 }
 
 /// VFXField → m_Array(vector) → Array → data 的类型。
 fn get_vfx_field_element_type(blob: &TpkTypeTree, idx: u16) -> Option<String> {
     let array_node_idx = get_subnode_by_type_and_name(blob, idx, "vector", "m_Array")?;
-    let arr_wrapper = blob.node_pool[array_node_idx as usize].sub_nodes.first().copied()?;
-    let data_idx = blob.node_pool[arr_wrapper as usize].sub_nodes.get(1).copied()?;
+    let arr_wrapper = blob.node_pool[array_node_idx as usize]
+        .sub_nodes
+        .first()
+        .copied()?;
+    let data_idx = blob.node_pool[arr_wrapper as usize]
+        .sub_nodes
+        .get(1)
+        .copied()?;
     Some(type_str(blob, data_idx).to_string())
 }
 
@@ -833,14 +914,16 @@ fn get_subnode_by_name(blob: &TpkTypeTree, idx: u16, field_name: &str) -> Option
 }
 
 /// ValueArray 等的 vector 字段内层 data 类型：vector → Array → data。
-fn get_vector_data_typename(
-    blob: &TpkTypeTree,
-    idx: u16,
-    field_name: &str,
-) -> Option<String> {
+fn get_vector_data_typename(blob: &TpkTypeTree, idx: u16, field_name: &str) -> Option<String> {
     let vec_idx = get_subnode_by_type_and_name(blob, idx, "vector", field_name)?;
-    let array_idx = blob.node_pool[vec_idx as usize].sub_nodes.first().copied()?;
-    let data_idx = blob.node_pool[array_idx as usize].sub_nodes.get(1).copied()?;
+    let array_idx = blob.node_pool[vec_idx as usize]
+        .sub_nodes
+        .first()
+        .copied()?;
+    let data_idx = blob.node_pool[array_idx as usize]
+        .sub_nodes
+        .get(1)
+        .copied()?;
     Some(type_str(blob, data_idx).to_string())
 }
 
@@ -865,7 +948,8 @@ fn rename_sint32_prefixed_children(blob: &mut TpkTypeTree, idx: u16) {
 fn sanitize_type_for_compound(s: &str) -> String {
     s.chars()
         .map(|c| match c {
-            '<' | '>' | '[' | ']' | ' ' | '\t' | '\n' | '\r' | '&' | '(' | ')' | ':' | '.' | '-' => '_',
+            '<' | '>' | '[' | ']' | ' ' | '\t' | '\n' | '\r' | '&' | '(' | ')' | ':' | '.'
+            | '-' => '_',
             _ => c,
         })
         .collect()

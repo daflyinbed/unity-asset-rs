@@ -105,11 +105,8 @@ impl TpkFile {
                 got: self.data_type,
             });
         }
-        let decompressed = compression::decompress(
-            self.compression,
-            &self.payload,
-            self.decompressed_size,
-        )?;
+        let decompressed =
+            compression::decompress(self.compression, &self.payload, self.decompressed_size)?;
         TpkTypeTree::read_from_bytes(&decompressed)
     }
 }
@@ -427,12 +424,12 @@ impl std::fmt::Display for UnityVersion {
 /// Unity 版本类型枚举。参考 AssetRipper `UnityVersionType.cs:6-41`。
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum UnityVersionType {
-    Alpha,       // 'a'
-    Beta,        // 'b'
-    China,       // 'c'
-    Final,       // 'f'
-    Patch,       // 'p'
-    Experimental,// 'x'
+    Alpha,        // 'a'
+    Beta,         // 'b'
+    China,        // 'c'
+    Final,        // 'f'
+    Patch,        // 'p'
+    Experimental, // 'x'
 }
 
 impl UnityVersionType {

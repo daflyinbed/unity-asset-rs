@@ -4,7 +4,6 @@ use crate::PPtr;
 use crate::subclasses::asset_bundle_script_info::AssetBundleScriptInfo;
 use crate::subclasses::asset_info::AssetInfo;
 
-
 /// 版本枚举：AssetBundleMPreloadTableVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AssetBundleMPreloadTableVariant {
@@ -18,11 +17,21 @@ impl crate::Parse for AssetBundleMPreloadTableVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -41,11 +50,21 @@ impl crate::Parse for AssetBundleMDependenciesVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_aligned_string())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_aligned_string())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -87,10 +106,23 @@ impl crate::Parse for AssetBundle {
         let mut m_path_flags = None;
         let mut m_explicit_data_layout = None;
         let mut m_scene_hashes = None;
-            m_name = Some(rdr.read_aligned_string()?);
-            m_preload_table = Some(AssetBundleMPreloadTableVariant::parse(rdr, ver)?);
-            m_container = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = AssetInfo::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_main_asset = Some(AssetInfo::parse(rdr, ver)?);
+        m_name = Some(rdr.read_aligned_string()?);
+        m_preload_table = Some(AssetBundleMPreloadTableVariant::parse(rdr, ver)?);
+        m_container = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| {
+                        ({
+                            let a = rdr.read_aligned_string()?;
+                            let b = AssetInfo::parse(rdr, ver)?;
+                            Ok((a, b))
+                        })
+                    })
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        m_main_asset = Some(AssetInfo::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2017, 3, 0) {
             m_runtime_compatibility = Some(rdr.read_u32()?);
             m_asset_bundle_name = Some(rdr.read_aligned_string()?);
@@ -99,7 +131,20 @@ impl crate::Parse for AssetBundle {
             rdr.align(4)?;
             m_explicit_data_layout = Some(rdr.read_i32()?);
             m_path_flags = Some(rdr.read_i32()?);
-            m_scene_hashes = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_scene_hashes = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = rdr.read_aligned_string()?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             m_runtime_compatibility = Some(rdr.read_u32()?);
             m_asset_bundle_name = Some(rdr.read_aligned_string()?);
@@ -114,7 +159,20 @@ impl crate::Parse for AssetBundle {
             m_is_streamed_scene_asset_bundle = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            m_class_version_map = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i32()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_class_version_map = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_i32()?;
+                                let b = rdr.read_i32()?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_runtime_compatibility = Some(rdr.read_u32()?);
             m_asset_bundle_name = Some(rdr.read_aligned_string()?);
             m_dependencies = Some(AssetBundleMDependenciesVariant::parse(rdr, ver)?);
@@ -127,14 +185,61 @@ impl crate::Parse for AssetBundle {
             m_is_streamed_scene_asset_bundle = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 2, 0) {
-            m_script_compatibility = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AssetBundleScriptInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_class_compatibility = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i32()?; let b = rdr.read_u32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_script_compatibility = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| AssetBundleScriptInfo::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
+            m_class_compatibility = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_i32()?;
+                                let b = rdr.read_u32()?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_runtime_compatibility = Some(rdr.read_u32()?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            m_script_compatibility = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AssetBundleScriptInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_class_compatibility = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i32()?; let b = rdr.read_u32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_script_compatibility = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| AssetBundleScriptInfo::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
+            m_class_compatibility = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_i32()?;
+                                let b = rdr.read_u32()?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else {
-            m_script_compatibility = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AssetBundleScriptInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_script_compatibility = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| AssetBundleScriptInfo::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         }
 
         Ok(AssetBundle {

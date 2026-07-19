@@ -1,6 +1,5 @@
 //! 自动生成。请勿手动修改。
 
-
 /// 版本枚举：UnityAnalyticsSettingsMInitializeOnStartupVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum UnityAnalyticsSettingsMInitializeOnStartupVariant {
@@ -89,30 +88,44 @@ impl crate::Parse for UnityAnalyticsSettings {
         let mut m_test_event_url = None;
         let mut m_package_requiring_core_stats_present = None;
         let mut m_test_config_url = None;
-            m_enabled = Some(rdr.read_bool()?);
+        m_enabled = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(2018, 3, 0) {
         } else {
-            m_initialize_on_startup = Some(UnityAnalyticsSettingsMInitializeOnStartupVariant::parse(rdr, ver)?);
+            m_initialize_on_startup = Some(
+                UnityAnalyticsSettingsMInitializeOnStartupVariant::parse(rdr, ver)?,
+            );
         }
-            m_test_mode = Some(UnityAnalyticsSettingsMTestModeVariant::parse(rdr, ver)?);
+        m_test_mode = Some(UnityAnalyticsSettingsMTestModeVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2022, 1, 21) {
-            m_initialize_on_startup = Some(UnityAnalyticsSettingsMInitializeOnStartupVariant::parse(rdr, ver)?);
+            m_initialize_on_startup = Some(
+                UnityAnalyticsSettingsMInitializeOnStartupVariant::parse(rdr, ver)?,
+            );
             m_package_requiring_core_stats_present = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
-            m_initialize_on_startup = Some(UnityAnalyticsSettingsMInitializeOnStartupVariant::parse(rdr, ver)?);
+            m_initialize_on_startup = Some(
+                UnityAnalyticsSettingsMInitializeOnStartupVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2021, 3, 12) {
-            m_initialize_on_startup = Some(UnityAnalyticsSettingsMInitializeOnStartupVariant::parse(rdr, ver)?);
+            m_initialize_on_startup = Some(
+                UnityAnalyticsSettingsMInitializeOnStartupVariant::parse(rdr, ver)?,
+            );
             m_package_requiring_core_stats_present = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2021, 1, 0) {
-            m_initialize_on_startup = Some(UnityAnalyticsSettingsMInitializeOnStartupVariant::parse(rdr, ver)?);
+            m_initialize_on_startup = Some(
+                UnityAnalyticsSettingsMInitializeOnStartupVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2020, 3, 41) {
-            m_initialize_on_startup = Some(UnityAnalyticsSettingsMInitializeOnStartupVariant::parse(rdr, ver)?);
+            m_initialize_on_startup = Some(
+                UnityAnalyticsSettingsMInitializeOnStartupVariant::parse(rdr, ver)?,
+            );
             m_package_requiring_core_stats_present = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            m_initialize_on_startup = Some(UnityAnalyticsSettingsMInitializeOnStartupVariant::parse(rdr, ver)?);
+            m_initialize_on_startup = Some(
+                UnityAnalyticsSettingsMInitializeOnStartupVariant::parse(rdr, ver)?,
+            );
         } else {
             m_test_event_url = Some(rdr.read_aligned_string()?);
             m_test_config_url = Some(rdr.read_aligned_string()?);

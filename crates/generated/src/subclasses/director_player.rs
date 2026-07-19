@@ -14,8 +14,6 @@ impl crate::Parse for DirectorPlayer {
     ) -> Result<Self, R::Error> {
         let m_game_object = crate::PPtr::parse(rdr, ver)?;
 
-        Ok(DirectorPlayer {
-            m_game_object,
-        })
+        Ok(DirectorPlayer { m_game_object })
     }
 }

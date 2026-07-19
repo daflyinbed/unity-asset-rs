@@ -14,9 +14,6 @@ impl crate::Parse for SerializedShaderDependency {
         let from = rdr.read_aligned_string()?;
         let to = rdr.read_aligned_string()?;
 
-        Ok(SerializedShaderDependency {
-            from,
-            to,
-        })
+        Ok(SerializedShaderDependency { from, to })
     }
 }

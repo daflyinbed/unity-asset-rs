@@ -15,13 +15,13 @@ impl crate::Parse for SortingLayerEntry {
         let mut name = None;
         let mut user_id = None;
         let mut unique_id = None;
-            name = Some(rdr.read_aligned_string()?);
+        name = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
         } else {
             user_id = Some(rdr.read_u32()?);
         }
-            unique_id = Some(rdr.read_u32()?);
-            rdr.align(4)?;
+        unique_id = Some(rdr.read_u32()?);
+        rdr.align(4)?;
 
         Ok(SortingLayerEntry {
             name: name.unwrap(),

@@ -3,7 +3,6 @@
 use crate::PPtr;
 use crate::subclasses::vector3f::Vector3f;
 
-
 /// 版本枚举：AnimatorStateMTransitionsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AnimatorStateMTransitionsVariant {
@@ -17,11 +16,21 @@ impl crate::Parse for AnimatorStateMTransitionsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -40,11 +49,21 @@ impl crate::Parse for AnimatorStateMStateMachineBehavioursVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -169,28 +188,46 @@ impl crate::Parse for AnimatorState {
         let mut m_mirror_parameter = None;
         let mut m_cycle_offset_parameter = None;
         let mut m_time_parameter = None;
-            m_name = Some(rdr.read_aligned_string()?);
-            m_speed = Some(rdr.read_f32()?);
+        m_name = Some(rdr.read_aligned_string()?);
+        m_speed = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_cycle_offset = Some(rdr.read_f32()?);
             m_transitions = Some(AnimatorStateMTransitionsVariant::parse(rdr, ver)?);
-            m_state_machine_behaviours = Some(AnimatorStateMStateMachineBehavioursVariant::parse(rdr, ver)?);
+            m_state_machine_behaviours = Some(AnimatorStateMStateMachineBehavioursVariant::parse(
+                rdr, ver,
+            )?);
         } else if *ver >= crate::UnityVersion::new(4, 1, 0) {
             m_cycle_offset = Some(rdr.read_f32()?);
-            m_motions = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_motions = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| crate::PPtr::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_parent_state_machine = Some(crate::PPtr::parse(rdr, ver)?);
         } else {
-            m_motions = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_motions = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| crate::PPtr::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_parent_state_machine = Some(crate::PPtr::parse(rdr, ver)?);
         }
-            m_position = Some(Vector3f::parse(rdr, ver)?);
-            m_ik_on_feet = Some(AnimatorStateMIkOnFeetVariant::parse(rdr, ver)?);
+        m_position = Some(Vector3f::parse(rdr, ver)?);
+        m_ik_on_feet = Some(AnimatorStateMIkOnFeetVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             m_write_default_values = Some(rdr.read_bool()?);
             m_mirror = Some(AnimatorStateMMirrorVariant::parse(rdr, ver)?);
             m_speed_parameter_active = Some(rdr.read_bool()?);
             m_mirror_parameter_active = Some(rdr.read_bool()?);
-            m_cycle_offset_parameter_active = Some(AnimatorStateMCycleOffsetParameterActiveVariant::parse(rdr, ver)?);
+            m_cycle_offset_parameter_active = Some(
+                AnimatorStateMCycleOffsetParameterActiveVariant::parse(rdr, ver)?,
+            );
             m_time_parameter_active = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_motion = Some(crate::PPtr::parse(rdr, ver)?);
@@ -199,7 +236,9 @@ impl crate::Parse for AnimatorState {
             m_mirror = Some(AnimatorStateMMirrorVariant::parse(rdr, ver)?);
             m_speed_parameter_active = Some(rdr.read_bool()?);
             m_mirror_parameter_active = Some(rdr.read_bool()?);
-            m_cycle_offset_parameter_active = Some(AnimatorStateMCycleOffsetParameterActiveVariant::parse(rdr, ver)?);
+            m_cycle_offset_parameter_active = Some(
+                AnimatorStateMCycleOffsetParameterActiveVariant::parse(rdr, ver)?,
+            );
             m_motion = Some(crate::PPtr::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_write_default_values = Some(rdr.read_bool()?);
@@ -209,7 +248,7 @@ impl crate::Parse for AnimatorState {
             m_mirror = Some(AnimatorStateMMirrorVariant::parse(rdr, ver)?);
         } else {
         }
-            m_tag = Some(rdr.read_aligned_string()?);
+        m_tag = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             m_speed_parameter = Some(rdr.read_aligned_string()?);
             m_mirror_parameter = Some(rdr.read_aligned_string()?);

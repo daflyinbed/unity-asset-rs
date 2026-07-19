@@ -14,8 +14,6 @@ impl crate::Parse for NativeObjectType {
     ) -> Result<Self, R::Error> {
         let m_inner = NativeType::parse(rdr, ver)?;
 
-        Ok(NativeObjectType {
-            m_inner,
-        })
+        Ok(NativeObjectType { m_inner })
     }
 }

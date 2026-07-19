@@ -14,8 +14,6 @@ impl crate::Parse for SerializableManagedHost {
     ) -> Result<Self, R::Error> {
         let m_script = crate::PPtr::parse(rdr, ver)?;
 
-        Ok(SerializableManagedHost {
-            m_script,
-        })
+        Ok(SerializableManagedHost { m_script })
     }
 }

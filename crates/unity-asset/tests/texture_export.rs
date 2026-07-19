@@ -11,15 +11,17 @@
 use std::io::Cursor;
 use std::path::Path;
 
+use generated::{ClassIDType, UnityObject};
 use unity_asset::texture_export::{
-    TextureFormat, decode_astc, decode_crunch, decode_uncompressed, texture_pixel_bytes,
-    write_png,
+    TextureFormat, decode_astc, decode_crunch, decode_uncompressed, texture_pixel_bytes, write_png,
 };
 use unity_asset::{Environment, Loader, ParsedObject, UnityVersion};
-use generated::{ClassIDType, UnityObject};
 
 /// 含 ASTC 纹理的标准 Unity bundle fixture（仓库根 example/；本 crate 回溯两级）。
-const UI_BUNDLE: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/../../example/DownloadCommonUI.unity3d");
+const UI_BUNDLE: &str = concat!(
+    env!("CARGO_MANIFEST_DIR"),
+    "/../../example/DownloadCommonUI.unity3d"
+);
 
 /// 加载 Environment（fixture 不存在时跳过，对齐 environment.rs 测试约定）。
 fn load_env(path: &str) -> Environment {
@@ -109,10 +111,7 @@ fn decode_output_is_not_blank() {
         let (w, h) = (t.m_width as u32, t.m_height as u32);
         let rgba = decode_astc(&bytes, w, h, fmt).expect("ASTC 解码应成功");
         // 至少应有非零像素（不是全黑 / 全透明）。统计 alpha>0 的像素占比。
-        let non_transparent = rgba
-            .chunks_exact(4)
-            .filter(|px| px[3] > 0)
-            .count();
+        let non_transparent = rgba.chunks_exact(4).filter(|px| px[3] > 0).count();
         assert!(
             non_transparent > 0,
             "解码结果不应全透明（atlas 纹理必有可见像素）",
@@ -165,8 +164,8 @@ fn decode_texture_and_env_decode_image_produce_same_pixels() {
     let ver = env.collections()[tex_obj.collection.to_index()].unity_version;
 
     // 底层统一入口。
-    let img_direct = unity_asset::export::decode_texture(t, &env, ver)
-        .expect("decode_texture 应成功");
+    let img_direct =
+        unity_asset::export::decode_texture(t, &env, ver).expect("decode_texture 应成功");
     // 高层入口(自动取版本)。
     let img_high = env
         .decode_image(tex_obj, &unity_asset::export::DecodeOptions::default())
@@ -182,7 +181,9 @@ fn decode_texture_and_env_decode_image_produce_same_pixels() {
 
     // DecodedImage::write_png 落盘应产出有效 PNG。
     let tmp = std::env::temp_dir().join("unity_stage7b_decode_image_test.png");
-    img_direct.write_png_path(&tmp).expect("write_png_path 应成功");
+    img_direct
+        .write_png_path(&tmp)
+        .expect("write_png_path 应成功");
     let bytes = std::fs::read(&tmp).expect("应能读回");
     assert_eq!(&bytes[..4], &[0x89, 0x50, 0x4E, 0x47], "应以 PNG 签名开头");
     let _ = std::fs::remove_file(&tmp);
@@ -318,7 +319,8 @@ fn uncompressed_signed_xor_signbit_8bit() {
     let out = decode_uncompressed(&[0xFF, 0x80], 1, 1, TextureFormat::Rg16Sign).unwrap();
     assert_eq!(out, [127, 0, 0, 255]);
     // RGBA32_SIGNED: [0xFF,0x80,0x01,0x7F] → 各 ^0x80 = [127,0,129,255]
-    let out = decode_uncompressed(&[0xFF, 0x80, 0x01, 0x7F], 1, 1, TextureFormat::Rgba32Sign).unwrap();
+    let out =
+        decode_uncompressed(&[0xFF, 0x80, 0x01, 0x7F], 1, 1, TextureFormat::Rgba32Sign).unwrap();
     assert_eq!(out, [127, 0, 129, 255]);
     // RGB24_SIGNED: [0xFF,0x80,0x01] → [127,0,129] + A=255
     let out = decode_uncompressed(&[0xFF, 0x80, 0x01], 1, 1, TextureFormat::Rgb24Sign).unwrap();
@@ -343,13 +345,26 @@ fn uncompressed_signed_xor_signbit_16bit() {
     let out = decode_uncompressed(&[0x00, 0x80], 1, 1, TextureFormat::R16Sign).unwrap();
     assert_eq!(out, [0, 0, 0, 255]);
     // RGBA64_SIGNED: 全 0xFFFF → 各 ^0x8000=0x7FFF → downscale16=127 → RGBA(127,127,127,127)
-    let out = decode_uncompressed(&[0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF], 1, 1, TextureFormat::Rgba64Sign).unwrap();
+    let out = decode_uncompressed(
+        &[0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF],
+        1,
+        1,
+        TextureFormat::Rgba64Sign,
+    )
+    .unwrap();
     assert_eq!(out, [127, 127, 127, 127]);
     // RGB48_SIGNED: 0xFFFF×3 → (127,127,127,255)
-    let out = decode_uncompressed(&[0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF], 1, 1, TextureFormat::Rgb48Sign).unwrap();
+    let out = decode_uncompressed(
+        &[0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF],
+        1,
+        1,
+        TextureFormat::Rgb48Sign,
+    )
+    .unwrap();
     assert_eq!(out, [127, 127, 127, 255]);
     // RG32_SIGNED: 0xFFFF×2 → (127,127,0,255)
-    let out = decode_uncompressed(&[0xFF, 0xFF, 0xFF, 0xFF], 1, 1, TextureFormat::Rg32Sign).unwrap();
+    let out =
+        decode_uncompressed(&[0xFF, 0xFF, 0xFF, 0xFF], 1, 1, TextureFormat::Rg32Sign).unwrap();
     assert_eq!(out, [127, 127, 0, 255]);
 }
 
@@ -367,7 +382,13 @@ fn uncompressed_rg32_downscale() {
 #[test]
 fn uncompressed_rgb48_downscale() {
     // RGB48: 3× LE u16。全 0xFFFF → (255,255,255,255)
-    let out = decode_uncompressed(&[0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF], 1, 1, TextureFormat::Rgb48).unwrap();
+    let out = decode_uncompressed(
+        &[0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF],
+        1,
+        1,
+        TextureFormat::Rgb48,
+    )
+    .unwrap();
     assert_eq!(out, [255, 255, 255, 255]);
     // 全 0x0000 → (0,0,0,255)
     let out = decode_uncompressed(&[0, 0, 0, 0, 0, 0], 1, 1, TextureFormat::Rgb48).unwrap();
@@ -379,14 +400,20 @@ fn uncompressed_rgba64_downscale() {
     // RGBA64: 4× LE u16。全 0xFFFF → (255,255,255,255)
     let out = decode_uncompressed(
         &[0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF],
-        1, 1, TextureFormat::Rgba64,
-    ).unwrap();
+        1,
+        1,
+        TextureFormat::Rgba64,
+    )
+    .unwrap();
     assert_eq!(out, [255, 255, 255, 255]);
     // 全 0x8000 → 各 downscale16(32768)=128 → (128,128,128,128)
     let out = decode_uncompressed(
         &[0x00, 0x80, 0x00, 0x80, 0x00, 0x80, 0x00, 0x80],
-        1, 1, TextureFormat::Rgba64,
-    ).unwrap();
+        1,
+        1,
+        TextureFormat::Rgba64,
+    )
+    .unwrap();
     assert_eq!(out, [128, 128, 128, 128]);
 }
 
@@ -445,10 +472,10 @@ fn uncompressed_hdr_argbfloat() {
     let f32_bytes = |v: f32| v.to_le_bytes();
     // ARGBFloat: 输入 [A,R,G,B]=[0.0,1.0,0.5,0.25] → 输出 [R,G,B,A]=[255,127,63,0]
     let mut inp = Vec::new();
-    inp.extend_from_slice(&f32_bytes(0.0));   // A
-    inp.extend_from_slice(&f32_bytes(1.0));   // R
-    inp.extend_from_slice(&f32_bytes(0.5));   // G
-    inp.extend_from_slice(&f32_bytes(0.25));  // B
+    inp.extend_from_slice(&f32_bytes(0.0)); // A
+    inp.extend_from_slice(&f32_bytes(1.0)); // R
+    inp.extend_from_slice(&f32_bytes(0.5)); // G
+    inp.extend_from_slice(&f32_bytes(0.25)); // B
     let out = decode_uncompressed(&inp, 1, 1, TextureFormat::ArgbFloat).unwrap();
     assert_eq!(out, [255, 127, 63, 0]);
 }
@@ -470,16 +497,40 @@ fn uncompressed_hdr_half_basic() {
     // 辅助：构造 LE fp16 bits。
     let f16_bits = |v: half::f16| v.to_le_bytes();
     // RHalf: 1.0 → 255
-    let out = decode_uncompressed(&f16_bits(half::f16::from_f32(1.0)), 1, 1, TextureFormat::RHalf).unwrap();
+    let out = decode_uncompressed(
+        &f16_bits(half::f16::from_f32(1.0)),
+        1,
+        1,
+        TextureFormat::RHalf,
+    )
+    .unwrap();
     assert_eq!(out, [255, 0, 0, 255]);
     // RHalf: 0.5 → 127
-    let out = decode_uncompressed(&f16_bits(half::f16::from_f32(0.5)), 1, 1, TextureFormat::RHalf).unwrap();
+    let out = decode_uncompressed(
+        &f16_bits(half::f16::from_f32(0.5)),
+        1,
+        1,
+        TextureFormat::RHalf,
+    )
+    .unwrap();
     assert_eq!(out, [127, 0, 0, 255]);
     // RHalf: 0.0 → 0
-    let out = decode_uncompressed(&f16_bits(half::f16::from_f32(0.0)), 1, 1, TextureFormat::RHalf).unwrap();
+    let out = decode_uncompressed(
+        &f16_bits(half::f16::from_f32(0.0)),
+        1,
+        1,
+        TextureFormat::RHalf,
+    )
+    .unwrap();
     assert_eq!(out, [0, 0, 0, 255]);
     // RHalf: -1.0 (负值) → 0 饱和
-    let out = decode_uncompressed(&f16_bits(half::f16::from_f32(-1.0)), 1, 1, TextureFormat::RHalf).unwrap();
+    let out = decode_uncompressed(
+        &f16_bits(half::f16::from_f32(-1.0)),
+        1,
+        1,
+        TextureFormat::RHalf,
+    )
+    .unwrap();
     assert_eq!(out, [0, 0, 0, 255]);
 }
 
@@ -607,11 +658,18 @@ fn flip_rows(rgba: &mut [u8], w: usize, h: usize) {
 }
 
 /// 第二段 block → RGBA8 解码器签名（bcn / etc 家族共用同一签名）。
-type BlockDecode = fn(&[u8], usize, usize, &mut [u8]) -> Result<(), texture_decoder_rs::DecodeError>;
+type BlockDecode =
+    fn(&[u8], usize, usize, &mut [u8]) -> Result<(), texture_decoder_rs::DecodeError>;
 
 /// 2D（单面）crunch：decode_crunch(data, fmt, ver) 应等于 golden `.bc` 经 block_decode 后
 /// Y 翻转。`fmt`+`ver` 决定走原始还是 Unity 变体路径（由调用方按 fixture 来源配对）。
-fn check_crunch_2d(subdir: &str, name: &str, block_decode: BlockDecode, fmt: TextureFormat, ver: UnityVersion) {
+fn check_crunch_2d(
+    subdir: &str,
+    name: &str,
+    block_decode: BlockDecode,
+    fmt: TextureFormat,
+    ver: UnityVersion,
+) {
     let (crn, bc) = match crunch_fixture(subdir, name) {
         Some(x) => x,
         None => {
@@ -651,7 +709,11 @@ fn check_crunch_cubemap(
     // 每面字节数 = (mip0: 2×2 + mip1: 1×1 + mip2: 1×1) × block_bytes = 6×bb。
     let face_total = 6 * block_bytes;
     let level0_len = 4 * block_bytes; // 2×2 block
-    assert_eq!(bc.len(), 6 * face_total, "fixture 应为 6 面 × {face_total} 字节");
+    assert_eq!(
+        bc.len(),
+        6 * face_total,
+        "fixture 应为 6 面 × {face_total} 字节"
+    );
 
     let out_w = fw;
     let out_h = fh * 6;
@@ -664,7 +726,11 @@ fn check_crunch_cubemap(
     // cubemap 不 Y 翻转。
 
     let (rgba, ow, oh) = decode_crunch(&crn, fmt, ver).expect("cubemap crunch decode");
-    assert_eq!((ow, oh), (out_w as u32, out_h as u32), "cubemap 输出高 = 面高×6");
+    assert_eq!(
+        (ow, oh),
+        (out_w as u32, out_h as u32),
+        "cubemap 输出高 = 面高×6"
+    );
     assert_eq!(rgba, expected, "cubemap 应 6 面纵向拼接 + 不 Y 翻转");
 }
 

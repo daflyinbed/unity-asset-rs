@@ -14,7 +14,18 @@ impl crate::Parse for ShaderCompilationInfo {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_snippets = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i32()?; let b = ShaderSnippet::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_snippets = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| {
+                    ({
+                        let a = rdr.read_i32()?;
+                        let b = ShaderSnippet::parse(rdr, ver)?;
+                        Ok((a, b))
+                    })
+                })
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         let m_mesh_components_from_snippets = rdr.read_u32()?;
         let m_has_surface_shaders = rdr.read_bool()?;
 

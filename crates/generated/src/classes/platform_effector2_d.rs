@@ -3,7 +3,6 @@
 use crate::PPtr;
 use crate::subclasses::bit_field::BitField;
 
-
 /// 版本枚举：PlatformEffector2DMUseOneWayVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum PlatformEffector2DMUseOneWayVariant {
@@ -69,15 +68,15 @@ impl crate::Parse for PlatformEffector2D {
         let mut m_use_one_way_grouping = None;
         let mut m_side_angle_variance = None;
         let mut m_side_arc = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_enabled = Some(rdr.read_u8()?);
-            rdr.align(4)?;
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_enabled = Some(rdr.read_u8()?);
+        rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 0, 2) {
             m_use_collider_mask = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else {
         }
-            m_collider_mask = Some(BitField::parse(rdr, ver)?);
+        m_collider_mask = Some(BitField::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
             m_rotational_offset = Some(rdr.read_f32()?);
             m_use_one_way = Some(PlatformEffector2DMUseOneWayVariant::parse(rdr, ver)?);

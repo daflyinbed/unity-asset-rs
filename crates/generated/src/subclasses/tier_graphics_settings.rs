@@ -1,6 +1,5 @@
 //! 自动生成。请勿手动修改。
 
-
 /// 版本枚举：TierGraphicsSettingsUseCascadedShadowMapsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TierGraphicsSettingsUseCascadedShadowMapsVariant {
@@ -46,13 +45,15 @@ impl crate::Parse for TierGraphicsSettings {
         let mut use_hdr = None;
         let mut enable_lppv = None;
         let mut prefer32_bit_shadow_maps = None;
-            rendering_path = Some(rdr.read_i32()?);
+        rendering_path = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
             hdr_mode = Some(rdr.read_i32()?);
             realtime_gicpu_usage = Some(rdr.read_i32()?);
         } else {
         }
-            use_cascaded_shadow_maps = Some(TierGraphicsSettingsUseCascadedShadowMapsVariant::parse(rdr, ver)?);
+        use_cascaded_shadow_maps = Some(TierGraphicsSettingsUseCascadedShadowMapsVariant::parse(
+            rdr, ver,
+        )?);
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             prefer32_bit_shadow_maps = Some(rdr.read_bool()?);
             enable_lppv = Some(rdr.read_bool()?);

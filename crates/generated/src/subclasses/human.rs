@@ -5,7 +5,6 @@ use crate::subclasses::handle::Handle;
 use crate::subclasses::offset_ptr::OffsetPtr;
 use crate::subclasses::xform::xform;
 
-
 /// 版本枚举：HumanMHasRightHandVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum HumanMHasRightHandVariant {
@@ -79,32 +78,67 @@ impl crate::Parse for Human {
         let mut m_has_left_hand = None;
         let mut m_has_right_hand = None;
         let mut m_has_t_do_f = None;
-            m_root_x = Some(xform::parse(rdr, ver)?);
-            m_skeleton = Some(OffsetPtr::parse(rdr, ver)?);
-            m_skeleton_pose = Some(OffsetPtr::parse(rdr, ver)?);
-            m_left_hand = Some(OffsetPtr::parse(rdr, ver)?);
-            m_right_hand = Some(OffsetPtr::parse(rdr, ver)?);
+        m_root_x = Some(xform::parse(rdr, ver)?);
+        m_skeleton = Some(OffsetPtr::parse(rdr, ver)?);
+        m_skeleton_pose = Some(OffsetPtr::parse(rdr, ver)?);
+        m_left_hand = Some(OffsetPtr::parse(rdr, ver)?);
+        m_right_hand = Some(OffsetPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2018, 2, 0) {
         } else {
-            m_handles = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Handle::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_collider_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Collider::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_handles = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| Handle::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
+            m_collider_array = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| Collider::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         }
-            m_human_bone_index = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
-            m_human_bone_mass = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_f32() }).collect::<Result<Vec<_>, _>>() } )?);
+        m_human_bone_index = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_i32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        m_human_bone_mass = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_f32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
         if *ver >= crate::UnityVersion::new(2018, 2, 0) {
         } else {
-            m_collider_index = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_collider_index = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         }
-            m_scale = Some(rdr.read_f32()?);
-            m_arm_twist = Some(rdr.read_f32()?);
-            m_fore_arm_twist = Some(rdr.read_f32()?);
-            m_upper_leg_twist = Some(rdr.read_f32()?);
-            m_leg_twist = Some(rdr.read_f32()?);
-            m_arm_stretch = Some(rdr.read_f32()?);
-            m_leg_stretch = Some(rdr.read_f32()?);
-            m_feet_spacing = Some(rdr.read_f32()?);
-            m_has_left_hand = Some(rdr.read_bool()?);
-            m_has_right_hand = Some(HumanMHasRightHandVariant::parse(rdr, ver)?);
+        m_scale = Some(rdr.read_f32()?);
+        m_arm_twist = Some(rdr.read_f32()?);
+        m_fore_arm_twist = Some(rdr.read_f32()?);
+        m_upper_leg_twist = Some(rdr.read_f32()?);
+        m_leg_twist = Some(rdr.read_f32()?);
+        m_arm_stretch = Some(rdr.read_f32()?);
+        m_leg_stretch = Some(rdr.read_f32()?);
+        m_feet_spacing = Some(rdr.read_f32()?);
+        m_has_left_hand = Some(rdr.read_bool()?);
+        m_has_right_hand = Some(HumanMHasRightHandVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 2, 0) {
             m_has_t_do_f = Some(rdr.read_bool()?);
             rdr.align(4)?;

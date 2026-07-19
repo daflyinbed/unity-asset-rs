@@ -14,9 +14,6 @@ impl crate::Parse for int2_storage {
         let x = rdr.read_i32()?;
         let y = rdr.read_i32()?;
 
-        Ok(int2_storage {
-            x,
-            y,
-        })
+        Ok(int2_storage { x, y })
     }
 }

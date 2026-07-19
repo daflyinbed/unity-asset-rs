@@ -2,7 +2,6 @@
 
 use crate::subclasses::min_max_curve::MinMaxCurve;
 
-
 /// 版本枚举：NoiseModuleRemapEnabledVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum NoiseModuleRemapEnabledVariant {

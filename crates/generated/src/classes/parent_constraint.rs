@@ -45,22 +45,36 @@ impl crate::Parse for ParentConstraint {
         let mut m_is_contraint_active = None;
         let mut m_active = None;
         let mut m_sources = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_enabled = Some(rdr.read_u8()?);
-            rdr.align(4)?;
-            m_weight = Some(rdr.read_f32()?);
-            m_translation_at_rest = Some(Vector3f::parse(rdr, ver)?);
-            m_rotation_at_rest = Some(Vector3f::parse(rdr, ver)?);
-            m_translation_offsets = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector3f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            m_rotation_offsets = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Vector3f::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            m_affect_translation_x = Some(rdr.read_bool()?);
-            m_affect_translation_y = Some(rdr.read_bool()?);
-            m_affect_translation_z = Some(rdr.read_bool()?);
-            m_affect_rotation_x = Some(rdr.read_bool()?);
-            m_affect_rotation_y = Some(rdr.read_bool()?);
-            m_affect_rotation_z = Some(rdr.read_bool()?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_enabled = Some(rdr.read_u8()?);
+        rdr.align(4)?;
+        m_weight = Some(rdr.read_f32()?);
+        m_translation_at_rest = Some(Vector3f::parse(rdr, ver)?);
+        m_rotation_at_rest = Some(Vector3f::parse(rdr, ver)?);
+        m_translation_offsets = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| Vector3f::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
+        m_rotation_offsets = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| Vector3f::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
+        m_affect_translation_x = Some(rdr.read_bool()?);
+        m_affect_translation_y = Some(rdr.read_bool()?);
+        m_affect_translation_z = Some(rdr.read_bool()?);
+        m_affect_rotation_x = Some(rdr.read_bool()?);
+        m_affect_rotation_y = Some(rdr.read_bool()?);
+        m_affect_rotation_z = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(2022, 1, 0) {
             m_active = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -68,8 +82,15 @@ impl crate::Parse for ParentConstraint {
             m_is_contraint_active = Some(rdr.read_bool()?);
             rdr.align(4)?;
         }
-            m_sources = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ConstraintSource::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+        m_sources = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| ConstraintSource::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
 
         Ok(ParentConstraint {
             m_game_object: m_game_object.unwrap(),

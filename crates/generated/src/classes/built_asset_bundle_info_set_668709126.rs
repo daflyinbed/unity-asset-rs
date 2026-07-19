@@ -2,7 +2,6 @@
 
 use crate::subclasses::built_asset_bundle_info::BuiltAssetBundleInfo;
 
-
 /// 版本枚举：BuiltAssetBundleInfoSet_668709126BundleInfosVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum BuiltAssetBundleInfoSet_668709126BundleInfosVariant {
@@ -16,11 +15,21 @@ impl crate::Parse for BuiltAssetBundleInfoSet_668709126BundleInfosVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { BuiltAssetBundleInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| BuiltAssetBundleInfo::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { BuiltAssetBundleInfo::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| BuiltAssetBundleInfo::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -37,8 +46,6 @@ impl crate::Parse for BuiltAssetBundleInfoSet_668709126 {
     ) -> Result<Self, R::Error> {
         let bundle_infos = BuiltAssetBundleInfoSet_668709126BundleInfosVariant::parse(rdr, ver)?;
 
-        Ok(BuiltAssetBundleInfoSet_668709126 {
-            bundle_infos,
-        })
+        Ok(BuiltAssetBundleInfoSet_668709126 { bundle_infos })
     }
 }

@@ -16,9 +16,6 @@ impl crate::Parse for SpriteCustomDataEntry {
         let m_value = rdr.read_aligned_string()?;
         rdr.align(4)?;
 
-        Ok(SpriteCustomDataEntry {
-            m_key,
-            m_value,
-        })
+        Ok(SpriteCustomDataEntry { m_key, m_value })
     }
 }

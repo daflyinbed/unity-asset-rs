@@ -11,7 +11,12 @@ impl crate::Parse for BlendDirectDataConstant {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_child_blend_event_id_array = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_child_blend_event_id_array = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| rdr.read_u32())
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         let m_normalized_blend_values = rdr.read_bool()?;
         rdr.align(4)?;
 

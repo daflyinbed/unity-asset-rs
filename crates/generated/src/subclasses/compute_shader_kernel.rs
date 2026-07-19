@@ -4,7 +4,6 @@ use crate::subclasses::compute_shader_builtin_sampler::ComputeShaderBuiltinSampl
 use crate::subclasses::compute_shader_resource::ComputeShaderResource;
 use crate::subclasses::fast_property_name::FastPropertyName;
 
-
 /// 版本枚举：ComputeShaderKernelNameVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ComputeShaderKernelNameVariant {
@@ -21,7 +20,7 @@ impl crate::Parse for ComputeShaderKernelNameVariant {
             let v = rdr.read_aligned_string()?;
             Ok(Self::V5_6(v))
         } else {
-            let v = ( { Ok(Box::new(FastPropertyName::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(FastPropertyName::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
         }
     }
@@ -40,11 +39,21 @@ impl crate::Parse for ComputeShaderKernelCbsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderResource::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| ComputeShaderResource::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderResource::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| ComputeShaderResource::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -63,11 +72,21 @@ impl crate::Parse for ComputeShaderKernelTexturesVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderResource::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| ComputeShaderResource::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderResource::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| ComputeShaderResource::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -86,11 +105,21 @@ impl crate::Parse for ComputeShaderKernelBuiltinSamplersVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderBuiltinSampler::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| ComputeShaderBuiltinSampler::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderBuiltinSampler::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| ComputeShaderBuiltinSampler::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -109,11 +138,21 @@ impl crate::Parse for ComputeShaderKernelInBuffersVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderResource::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| ComputeShaderResource::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderResource::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| ComputeShaderResource::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -132,11 +171,21 @@ impl crate::Parse for ComputeShaderKernelOutBuffersVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderResource::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| ComputeShaderResource::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ComputeShaderResource::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| ComputeShaderResource::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -171,23 +220,49 @@ impl crate::Parse for ComputeShaderKernel {
         let mut thread_group_size = None;
         let mut requirements = None;
         if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            cb_variant_indices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
+            cb_variant_indices = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_u32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else {
             name = Some(ComputeShaderKernelNameVariant::parse(rdr, ver)?);
         }
-            cbs = Some(ComputeShaderKernelCbsVariant::parse(rdr, ver)?);
-            textures = Some(ComputeShaderKernelTexturesVariant::parse(rdr, ver)?);
-            builtin_samplers = Some(ComputeShaderKernelBuiltinSamplersVariant::parse(rdr, ver)?);
-            in_buffers = Some(ComputeShaderKernelInBuffersVariant::parse(rdr, ver)?);
-            out_buffers = Some(ComputeShaderKernelOutBuffersVariant::parse(rdr, ver)?);
-            code = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+        cbs = Some(ComputeShaderKernelCbsVariant::parse(rdr, ver)?);
+        textures = Some(ComputeShaderKernelTexturesVariant::parse(rdr, ver)?);
+        builtin_samplers = Some(ComputeShaderKernelBuiltinSamplersVariant::parse(rdr, ver)?);
+        in_buffers = Some(ComputeShaderKernelInBuffersVariant::parse(rdr, ver)?);
+        out_buffers = Some(ComputeShaderKernelOutBuffersVariant::parse(rdr, ver)?);
+        code = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n).map(|_| rdr.read_u8()).collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2021, 1, 0) {
-            thread_group_size = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
+            thread_group_size = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_u32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             requirements = Some(rdr.read_i64()?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            thread_group_size = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
+            thread_group_size = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_u32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else {
         }
 

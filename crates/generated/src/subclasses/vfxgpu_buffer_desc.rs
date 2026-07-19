@@ -32,11 +32,18 @@ impl crate::Parse for VfxgpuBufferDesc {
         } else {
             r#type = Some(rdr.read_i32()?);
         }
-            size = Some(rdr.read_u32()?);
-            layout = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VfxLayoutElementDesc::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            capacity = Some(rdr.read_u32()?);
-            stride = Some(rdr.read_u32()?);
+        size = Some(rdr.read_u32()?);
+        layout = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| VfxLayoutElementDesc::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
+        capacity = Some(rdr.read_u32()?);
+        stride = Some(rdr.read_u32()?);
         if *ver >= crate::UnityVersion::new(6000, 6, 0) {
             mode = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(6000, 4, 4) {

@@ -2,7 +2,6 @@
 
 use crate::subclasses::vector3f::Vector3f;
 
-
 /// 版本枚举：MeshBlendShapeHasTangentsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum MeshBlendShapeHasTangentsVariant {
@@ -52,15 +51,15 @@ impl crate::Parse for MeshBlendShape {
         } else {
             name = Some(rdr.read_aligned_string()?);
         }
-            first_vertex = Some(rdr.read_u32()?);
-            vertex_count = Some(rdr.read_u32()?);
+        first_vertex = Some(rdr.read_u32()?);
+        vertex_count = Some(rdr.read_u32()?);
         if *ver >= crate::UnityVersion::new(4, 3, 0) {
         } else {
             aabb_min_delta = Some(Vector3f::parse(rdr, ver)?);
             aabb_max_delta = Some(Vector3f::parse(rdr, ver)?);
         }
-            has_normals = Some(rdr.read_bool()?);
-            has_tangents = Some(MeshBlendShapeHasTangentsVariant::parse(rdr, ver)?);
+        has_normals = Some(rdr.read_bool()?);
+        has_tangents = Some(MeshBlendShapeHasTangentsVariant::parse(rdr, ver)?);
 
         Ok(MeshBlendShape {
             name,

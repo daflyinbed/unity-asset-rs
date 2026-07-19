@@ -3,7 +3,6 @@
 use crate::subclasses::color_rgb_af::ColorRgbAf;
 use crate::subclasses::color_rgba32::ColorRgba32;
 
-
 /// 版本枚举：GradientKey0Variant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum GradientKey0Variant {
@@ -17,10 +16,10 @@ impl crate::Parse for GradientKey0Variant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            let v = ( { Ok(Box::new(ColorRgbAf::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(ColorRgbAf::parse(rdr, ver)?)) })?;
             Ok(Self::V5_6(v))
         } else {
-            let v = ( { Ok(Box::new(ColorRgba32::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(ColorRgba32::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
         }
     }
@@ -39,10 +38,10 @@ impl crate::Parse for GradientKey1Variant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            let v = ( { Ok(Box::new(ColorRgbAf::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(ColorRgbAf::parse(rdr, ver)?)) })?;
             Ok(Self::V5_6(v))
         } else {
-            let v = ( { Ok(Box::new(ColorRgba32::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(ColorRgba32::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
         }
     }
@@ -61,10 +60,10 @@ impl crate::Parse for GradientKey2Variant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            let v = ( { Ok(Box::new(ColorRgbAf::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(ColorRgbAf::parse(rdr, ver)?)) })?;
             Ok(Self::V5_6(v))
         } else {
-            let v = ( { Ok(Box::new(ColorRgba32::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(ColorRgba32::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
         }
     }
@@ -83,10 +82,10 @@ impl crate::Parse for GradientKey3Variant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            let v = ( { Ok(Box::new(ColorRgbAf::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(ColorRgbAf::parse(rdr, ver)?)) })?;
             Ok(Self::V5_6(v))
         } else {
-            let v = ( { Ok(Box::new(ColorRgba32::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(ColorRgba32::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
         }
     }
@@ -105,10 +104,10 @@ impl crate::Parse for GradientKey4Variant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            let v = ( { Ok(Box::new(ColorRgbAf::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(ColorRgbAf::parse(rdr, ver)?)) })?;
             Ok(Self::V5_6(v))
         } else {
-            let v = ( { Ok(Box::new(ColorRgba32::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(ColorRgba32::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
         }
     }
@@ -127,10 +126,10 @@ impl crate::Parse for GradientKey5Variant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            let v = ( { Ok(Box::new(ColorRgbAf::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(ColorRgbAf::parse(rdr, ver)?)) })?;
             Ok(Self::V5_6(v))
         } else {
-            let v = ( { Ok(Box::new(ColorRgba32::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(ColorRgba32::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
         }
     }
@@ -149,10 +148,10 @@ impl crate::Parse for GradientKey6Variant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            let v = ( { Ok(Box::new(ColorRgbAf::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(ColorRgbAf::parse(rdr, ver)?)) })?;
             Ok(Self::V5_6(v))
         } else {
-            let v = ( { Ok(Box::new(ColorRgba32::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(ColorRgba32::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
         }
     }
@@ -171,10 +170,10 @@ impl crate::Parse for GradientKey7Variant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            let v = ( { Ok(Box::new(ColorRgbAf::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(ColorRgbAf::parse(rdr, ver)?)) })?;
             Ok(Self::V5_6(v))
         } else {
-            let v = ( { Ok(Box::new(ColorRgba32::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(ColorRgba32::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
         }
     }

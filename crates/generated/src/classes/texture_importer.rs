@@ -11,7 +11,6 @@ use crate::subclasses::texture_importer_platform_settings::TextureImporterPlatfo
 use crate::subclasses::vector2f::Vector2f;
 use crate::subclasses::vector4f::Vector4f;
 
-
 /// 版本枚举：TextureImporterMFileIdToRecycleNameVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TextureImporterMFileIdToRecycleNameVariant {
@@ -25,10 +24,32 @@ impl crate::Parse for TextureImporterMFileIdToRecycleNameVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i64()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| {
+                        ({
+                            let a = rdr.read_i64()?;
+                            let b = rdr.read_aligned_string()?;
+                            Ok((a, b))
+                        })
+                    })
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::V5_0(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_i32()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| {
+                        ({
+                            let a = rdr.read_i32()?;
+                            let b = rdr.read_aligned_string()?;
+                            Ok((a, b))
+                        })
+                    })
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -47,11 +68,33 @@ impl crate::Parse for TextureImporterMExternalObjectsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| {
+                        ({
+                            let a = SourceAssetIdentifier::parse(rdr, ver)?;
+                            let b = crate::PPtr::parse(rdr, ver)?;
+                            Ok((a, b))
+                        })
+                    })
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2019_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = SourceAssetIdentifier::parse(rdr, ver)?; let b = crate::PPtr::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| {
+                        ({
+                            let a = SourceAssetIdentifier::parse(rdr, ver)?;
+                            let b = crate::PPtr::parse(rdr, ver)?;
+                            Ok((a, b))
+                        })
+                    })
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -166,11 +209,21 @@ impl crate::Parse for TextureImporterMPlatformSettingsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TextureImporterPlatformSettings::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| TextureImporterPlatformSettings::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TextureImporterPlatformSettings::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| TextureImporterPlatformSettings::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -189,10 +242,10 @@ impl crate::Parse for TextureImporterMOutputVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2018, 2, 1) {
-            let v = ( { Ok(Box::new(TextureImportOutput::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(TextureImportOutput::parse(rdr, ver)?)) })?;
             Ok(Self::V2018_2_1(v))
         } else {
-            let v = ( { Ok(Box::new(TextureImportOutput::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(TextureImportOutput::parse(rdr, ver)?)) })?;
             rdr.align(4)?;
             Ok(Self::Default(v))
         }
@@ -466,26 +519,53 @@ impl crate::Parse for TextureImporter {
         let mut m_cookie_light_type = None;
         let mut m_swizzle = None;
         let mut m_mipmap_limit_group_name = None;
-            m_name = Some(rdr.read_aligned_string()?);
+        m_name = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_internal_id_to_name_table = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = ( { let a = rdr.read_i32()?; let b = rdr.read_i64()?; Ok((a, b)) } )?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_internal_id_to_name_table = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = ({
+                                    let a = rdr.read_i32()?;
+                                    let b = rdr.read_i64()?;
+                                    Ok((a, b))
+                                })?;
+                                let b = rdr.read_aligned_string()?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_external_objects = Some(TextureImporterMExternalObjectsVariant::parse(rdr, ver)?);
-            m_used_file_i_ds = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i64() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_used_file_i_ds = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_i64())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            m_file_id_to_recycle_name = Some(TextureImporterMFileIdToRecycleNameVariant::parse(rdr, ver)?);
+            m_file_id_to_recycle_name =
+                Some(TextureImporterMFileIdToRecycleNameVariant::parse(rdr, ver)?);
             m_external_objects = Some(TextureImporterMExternalObjectsVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 5, 2) {
-            m_file_id_to_recycle_name = Some(TextureImporterMFileIdToRecycleNameVariant::parse(rdr, ver)?);
+            m_file_id_to_recycle_name =
+                Some(TextureImporterMFileIdToRecycleNameVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
         } else {
-            m_file_id_to_recycle_name = Some(TextureImporterMFileIdToRecycleNameVariant::parse(rdr, ver)?);
+            m_file_id_to_recycle_name =
+                Some(TextureImporterMFileIdToRecycleNameVariant::parse(rdr, ver)?);
             m_old_hash_identity = Some(MdFour::parse(rdr, ver)?);
             m_new_hash_identity = Some(MdFour::parse(rdr, ver)?);
         }
-            m_mip_map_mode = Some(rdr.read_i32()?);
-            m_enable_mip_map = Some(rdr.read_i32()?);
+        m_mip_map_mode = Some(rdr.read_i32()?);
+        m_enable_mip_map = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
             m_s_rgb_texture = Some(rdr.read_i32()?);
             m_linear_texture = Some(rdr.read_i32()?);
@@ -495,23 +575,23 @@ impl crate::Parse for TextureImporter {
         } else {
             m_correct_gamma = Some(rdr.read_i32()?);
         }
-            m_fade_out = Some(rdr.read_i32()?);
-            m_border_mip_map = Some(rdr.read_i32()?);
+        m_fade_out = Some(rdr.read_i32()?);
+        m_border_mip_map = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             m_mip_maps_preserve_coverage = Some(rdr.read_i32()?);
             m_alpha_test_reference_value = Some(rdr.read_f32()?);
         } else {
         }
-            m_mip_map_fade_distance_start = Some(rdr.read_i32()?);
-            m_mip_map_fade_distance_end = Some(rdr.read_i32()?);
-            m_convert_to_normal_map = Some(rdr.read_i32()?);
-            m_external_normal_map = Some(rdr.read_i32()?);
+        m_mip_map_fade_distance_start = Some(rdr.read_i32()?);
+        m_mip_map_fade_distance_end = Some(rdr.read_i32()?);
+        m_convert_to_normal_map = Some(rdr.read_i32()?);
+        m_external_normal_map = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(3, 5, 0) {
         } else {
             m_is_readable = Some(TextureImporterMIsReadableVariant::parse(rdr, ver)?);
         }
-            m_height_scale = Some(rdr.read_f32()?);
-            m_normal_map_filter = Some(rdr.read_i32()?);
+        m_height_scale = Some(rdr.read_f32()?);
+        m_normal_map_filter = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             m_flip_green_channel = Some(rdr.read_i32()?);
             m_is_readable = Some(TextureImporterMIsReadableVariant::parse(rdr, ver)?);
@@ -545,8 +625,8 @@ impl crate::Parse for TextureImporter {
             m_is_readable = Some(TextureImporterMIsReadableVariant::parse(rdr, ver)?);
         } else {
         }
-            m_gray_scale_to_alpha = Some(TextureImporterMGrayScaleToAlphaVariant::parse(rdr, ver)?);
-            m_generate_cubemap = Some(rdr.read_i32()?);
+        m_gray_scale_to_alpha = Some(TextureImporterMGrayScaleToAlphaVariant::parse(rdr, ver)?);
+        m_generate_cubemap = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
             m_cubemap_convolution = Some(rdr.read_i32()?);
             m_seamless_cubemap = Some(rdr.read_i32()?);
@@ -559,11 +639,11 @@ impl crate::Parse for TextureImporter {
             m_seamless_cubemap = Some(rdr.read_i32()?);
         } else {
         }
-            m_format = Some(TextureImporterMFormatVariant::parse(rdr, ver)?);
-            m_max_texture_size = Some(rdr.read_i32()?);
-            m_texture_settings = Some(GlTextureSettings::parse(rdr, ver)?);
-            m_npot_scale = Some(rdr.read_i32()?);
-            m_lightmap = Some(rdr.read_i32()?);
+        m_format = Some(TextureImporterMFormatVariant::parse(rdr, ver)?);
+        m_max_texture_size = Some(rdr.read_i32()?);
+        m_texture_settings = Some(GlTextureSettings::parse(rdr, ver)?);
+        m_npot_scale = Some(rdr.read_i32()?);
+        m_lightmap = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2017, 3, 1) {
             m_compression_quality = Some(rdr.read_i32()?);
             m_sprite_mode = Some(rdr.read_i32()?);
@@ -676,7 +756,7 @@ impl crate::Parse for TextureImporter {
             m_compression_quality = Some(rdr.read_i32()?);
         } else {
         }
-            m_texture_type = Some(TextureImporterMTextureTypeVariant::parse(rdr, ver)?);
+        m_texture_type = Some(TextureImporterMTextureTypeVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2022, 1, 13) {
             m_texture_shape = Some(rdr.read_i32()?);
             m_single_channel_component = Some(rdr.read_i32()?);
@@ -686,7 +766,8 @@ impl crate::Parse for TextureImporter {
             m_compression_quality_set = Some(rdr.read_i32()?);
             m_texture_format_set = Some(TextureImporterMTextureFormatSetVariant::parse(rdr, ver)?);
             m_ignore_png_gamma = Some(rdr.read_i32()?);
-            m_apply_gamma_decoding = Some(TextureImporterMApplyGammaDecodingVariant::parse(rdr, ver)?);
+            m_apply_gamma_decoding =
+                Some(TextureImporterMApplyGammaDecodingVariant::parse(rdr, ver)?);
             m_swizzle = Some(TextureImporterMSwizzleVariant::parse(rdr, ver)?);
             m_cookie_light_type = Some(rdr.read_i32()?);
             rdr.align(4)?;
@@ -699,7 +780,8 @@ impl crate::Parse for TextureImporter {
             m_compression_quality_set = Some(rdr.read_i32()?);
             m_texture_format_set = Some(TextureImporterMTextureFormatSetVariant::parse(rdr, ver)?);
             m_ignore_png_gamma = Some(rdr.read_i32()?);
-            m_apply_gamma_decoding = Some(TextureImporterMApplyGammaDecodingVariant::parse(rdr, ver)?);
+            m_apply_gamma_decoding =
+                Some(TextureImporterMApplyGammaDecodingVariant::parse(rdr, ver)?);
             m_swizzle = Some(TextureImporterMSwizzleVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2021, 3, 9) {
             m_texture_shape = Some(rdr.read_i32()?);
@@ -710,7 +792,8 @@ impl crate::Parse for TextureImporter {
             m_compression_quality_set = Some(rdr.read_i32()?);
             m_texture_format_set = Some(TextureImporterMTextureFormatSetVariant::parse(rdr, ver)?);
             m_ignore_png_gamma = Some(rdr.read_i32()?);
-            m_apply_gamma_decoding = Some(TextureImporterMApplyGammaDecodingVariant::parse(rdr, ver)?);
+            m_apply_gamma_decoding =
+                Some(TextureImporterMApplyGammaDecodingVariant::parse(rdr, ver)?);
             m_cookie_light_type = Some(rdr.read_i32()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2021, 1, 0) {
@@ -722,7 +805,8 @@ impl crate::Parse for TextureImporter {
             m_compression_quality_set = Some(rdr.read_i32()?);
             m_texture_format_set = Some(TextureImporterMTextureFormatSetVariant::parse(rdr, ver)?);
             m_ignore_png_gamma = Some(rdr.read_i32()?);
-            m_apply_gamma_decoding = Some(TextureImporterMApplyGammaDecodingVariant::parse(rdr, ver)?);
+            m_apply_gamma_decoding =
+                Some(TextureImporterMApplyGammaDecodingVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2020, 3, 38) {
             m_texture_shape = Some(rdr.read_i32()?);
             m_single_channel_component = Some(rdr.read_i32()?);
@@ -732,7 +816,8 @@ impl crate::Parse for TextureImporter {
             m_compression_quality_set = Some(rdr.read_i32()?);
             m_texture_format_set = Some(TextureImporterMTextureFormatSetVariant::parse(rdr, ver)?);
             m_ignore_png_gamma = Some(rdr.read_i32()?);
-            m_apply_gamma_decoding = Some(TextureImporterMApplyGammaDecodingVariant::parse(rdr, ver)?);
+            m_apply_gamma_decoding =
+                Some(TextureImporterMApplyGammaDecodingVariant::parse(rdr, ver)?);
             m_cookie_light_type = Some(rdr.read_i32()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
@@ -744,7 +829,8 @@ impl crate::Parse for TextureImporter {
             m_compression_quality_set = Some(rdr.read_i32()?);
             m_texture_format_set = Some(TextureImporterMTextureFormatSetVariant::parse(rdr, ver)?);
             m_ignore_png_gamma = Some(rdr.read_i32()?);
-            m_apply_gamma_decoding = Some(TextureImporterMApplyGammaDecodingVariant::parse(rdr, ver)?);
+            m_apply_gamma_decoding =
+                Some(TextureImporterMApplyGammaDecodingVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
             m_texture_shape = Some(rdr.read_i32()?);
             m_single_channel_component = Some(rdr.read_i32()?);
@@ -752,14 +838,16 @@ impl crate::Parse for TextureImporter {
             m_compression_quality_set = Some(rdr.read_i32()?);
             m_texture_format_set = Some(TextureImporterMTextureFormatSetVariant::parse(rdr, ver)?);
             m_ignore_png_gamma = Some(rdr.read_i32()?);
-            m_apply_gamma_decoding = Some(TextureImporterMApplyGammaDecodingVariant::parse(rdr, ver)?);
+            m_apply_gamma_decoding =
+                Some(TextureImporterMApplyGammaDecodingVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2019, 3, 6) {
             m_texture_shape = Some(rdr.read_i32()?);
             m_single_channel_component = Some(rdr.read_i32()?);
             m_max_texture_size_set = Some(rdr.read_i32()?);
             m_compression_quality_set = Some(rdr.read_i32()?);
             m_texture_format_set = Some(TextureImporterMTextureFormatSetVariant::parse(rdr, ver)?);
-            m_apply_gamma_decoding = Some(TextureImporterMApplyGammaDecodingVariant::parse(rdr, ver)?);
+            m_apply_gamma_decoding =
+                Some(TextureImporterMApplyGammaDecodingVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
             m_texture_shape = Some(rdr.read_i32()?);
             m_single_channel_component = Some(rdr.read_i32()?);
@@ -777,7 +865,7 @@ impl crate::Parse for TextureImporter {
             m_source_texture_information = Some(SourceTextureInformation::parse(rdr, ver)?);
             rdr.align(4)?;
         }
-            m_platform_settings = Some(TextureImporterMPlatformSettingsVariant::parse(rdr, ver)?);
+        m_platform_settings = Some(TextureImporterMPlatformSettingsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             m_sprite_sheet = Some(SpriteSheetMetaData::parse(rdr, ver)?);
             m_mipmap_limit_group_name = Some(rdr.read_aligned_string()?);

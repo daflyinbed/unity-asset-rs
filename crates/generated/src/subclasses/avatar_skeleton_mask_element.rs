@@ -14,9 +14,6 @@ impl crate::Parse for AvatarSkeletonMaskElement {
         let path = rdr.read_aligned_string()?;
         let weight = rdr.read_f32()?;
 
-        Ok(AvatarSkeletonMaskElement {
-            path,
-            weight,
-        })
+        Ok(AvatarSkeletonMaskElement { path, weight })
     }
 }

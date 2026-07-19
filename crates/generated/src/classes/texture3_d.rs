@@ -3,7 +3,6 @@
 use crate::subclasses::gl_texture_settings::GlTextureSettings;
 use crate::subclasses::streaming_info::StreamingInfo;
 
-
 /// 版本枚举：Texture3DMDownscaleFallbackVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum Texture3DMDownscaleFallbackVariant {
@@ -169,7 +168,7 @@ impl crate::Parse for Texture3D {
         let mut m_stream_data = None;
         let mut m_usage_mode = None;
         let mut m_lightmap_format = None;
-            m_name = Some(rdr.read_aligned_string()?);
+        m_name = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
             m_is_alpha_channel_optional = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -192,8 +191,8 @@ impl crate::Parse for Texture3D {
             m_downscale_fallback = Some(Texture3DMDownscaleFallbackVariant::parse(rdr, ver)?);
         } else {
         }
-            m_width = Some(rdr.read_i32()?);
-            m_height = Some(rdr.read_i32()?);
+        m_width = Some(rdr.read_i32()?);
+        m_height = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             m_depth = Some(rdr.read_i32()?);
             m_mip_count = Some(rdr.read_i32()?);
@@ -220,7 +219,7 @@ impl crate::Parse for Texture3D {
             m_depth = Some(rdr.read_i32()?);
             m_dimension = Some(rdr.read_i32()?);
         }
-            m_texture_settings = Some(GlTextureSettings::parse(rdr, ver)?);
+        m_texture_settings = Some(GlTextureSettings::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2020, 2, 0) {
             m_usage_mode = Some(rdr.read_i32()?);
             m_is_readable = Some(Texture3DMIsReadableVariant::parse(rdr, ver)?);
@@ -233,8 +232,13 @@ impl crate::Parse for Texture3D {
         } else {
             m_lightmap_format = Some(rdr.read_i32()?);
         }
-            image_data = Some(( { let n = rdr.read_i32()? as usize; rdr.read_bytes(n) } )?);
-            rdr.align(4)?;
+        image_data = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                rdr.read_bytes(n)
+            })?,
+        );
+        rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
             m_stream_data = Some(StreamingInfo::parse(rdr, ver)?);
         } else {

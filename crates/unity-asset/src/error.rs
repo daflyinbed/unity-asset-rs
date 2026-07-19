@@ -37,7 +37,11 @@ pub enum Error {
     NegativeArrayLen { len: i32 },
 
     #[snafu(display("referenced type not found: {class} {ns} {asm}"))]
-    RefTypeNotFound { class: String, ns: String, asm: String },
+    RefTypeNotFound {
+        class: String,
+        ns: String,
+        asm: String,
+    },
 
     #[snafu(display("empty type tree"))]
     EmptyTypeTree,

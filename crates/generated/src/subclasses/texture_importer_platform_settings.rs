@@ -1,6 +1,5 @@
 //! 自动生成。请勿手动修改。
 
-
 /// 版本枚举：TextureImporterPlatformSettingsMAllowsAlphaSplittingVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TextureImporterPlatformSettingsMAllowsAlphaSplittingVariant {
@@ -63,7 +62,8 @@ pub struct TextureImporterPlatformSettings {
     pub m_resize_algorithm: Option<i32>,
     pub m_compression_quality: Option<i32>,
     pub m_texture_compression: Option<i32>,
-    pub m_allows_alpha_splitting: Option<TextureImporterPlatformSettingsMAllowsAlphaSplittingVariant>,
+    pub m_allows_alpha_splitting:
+        Option<TextureImporterPlatformSettingsMAllowsAlphaSplittingVariant>,
     pub m_crunched_compression: Option<bool>,
     pub m_overridden: Option<TextureImporterPlatformSettingsMOverriddenVariant>,
     pub m_android_etc2_fallback_override: Option<i32>,
@@ -88,19 +88,22 @@ impl crate::Parse for TextureImporterPlatformSettings {
         let mut m_android_etc2_fallback_override = None;
         let mut m_ignore_platform_support = None;
         let mut m_force_maximum_compression_quality_bc6h_bc7 = None;
-            m_build_target = Some(rdr.read_aligned_string()?);
-            m_max_texture_size = Some(rdr.read_i32()?);
+        m_build_target = Some(rdr.read_aligned_string()?);
+        m_max_texture_size = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             m_resize_algorithm = Some(rdr.read_i32()?);
         } else {
         }
-            m_format = Some(rdr.read_i32()?);
+        m_format = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
             m_texture_compression = Some(rdr.read_i32()?);
             m_compression_quality = Some(rdr.read_i32()?);
             m_crunched_compression = Some(rdr.read_bool()?);
-            m_allows_alpha_splitting = Some(TextureImporterPlatformSettingsMAllowsAlphaSplittingVariant::parse(rdr, ver)?);
-            m_overridden = Some(TextureImporterPlatformSettingsMOverriddenVariant::parse(rdr, ver)?);
+            m_allows_alpha_splitting =
+                Some(TextureImporterPlatformSettingsMAllowsAlphaSplittingVariant::parse(rdr, ver)?);
+            m_overridden = Some(TextureImporterPlatformSettingsMOverriddenVariant::parse(
+                rdr, ver,
+            )?);
             m_ignore_platform_support = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_android_etc2_fallback_override = Some(rdr.read_i32()?);
@@ -109,16 +112,22 @@ impl crate::Parse for TextureImporterPlatformSettings {
             m_texture_compression = Some(rdr.read_i32()?);
             m_compression_quality = Some(rdr.read_i32()?);
             m_crunched_compression = Some(rdr.read_bool()?);
-            m_allows_alpha_splitting = Some(TextureImporterPlatformSettingsMAllowsAlphaSplittingVariant::parse(rdr, ver)?);
-            m_overridden = Some(TextureImporterPlatformSettingsMOverriddenVariant::parse(rdr, ver)?);
+            m_allows_alpha_splitting =
+                Some(TextureImporterPlatformSettingsMAllowsAlphaSplittingVariant::parse(rdr, ver)?);
+            m_overridden = Some(TextureImporterPlatformSettingsMOverriddenVariant::parse(
+                rdr, ver,
+            )?);
             m_android_etc2_fallback_override = Some(rdr.read_i32()?);
             m_force_maximum_compression_quality_bc6h_bc7 = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2022, 2, 20) {
             m_texture_compression = Some(rdr.read_i32()?);
             m_compression_quality = Some(rdr.read_i32()?);
             m_crunched_compression = Some(rdr.read_bool()?);
-            m_allows_alpha_splitting = Some(TextureImporterPlatformSettingsMAllowsAlphaSplittingVariant::parse(rdr, ver)?);
-            m_overridden = Some(TextureImporterPlatformSettingsMOverriddenVariant::parse(rdr, ver)?);
+            m_allows_alpha_splitting =
+                Some(TextureImporterPlatformSettingsMAllowsAlphaSplittingVariant::parse(rdr, ver)?);
+            m_overridden = Some(TextureImporterPlatformSettingsMOverriddenVariant::parse(
+                rdr, ver,
+            )?);
             m_ignore_platform_support = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_android_etc2_fallback_override = Some(rdr.read_i32()?);
@@ -127,26 +136,36 @@ impl crate::Parse for TextureImporterPlatformSettings {
             m_texture_compression = Some(rdr.read_i32()?);
             m_compression_quality = Some(rdr.read_i32()?);
             m_crunched_compression = Some(rdr.read_bool()?);
-            m_allows_alpha_splitting = Some(TextureImporterPlatformSettingsMAllowsAlphaSplittingVariant::parse(rdr, ver)?);
-            m_overridden = Some(TextureImporterPlatformSettingsMOverriddenVariant::parse(rdr, ver)?);
+            m_allows_alpha_splitting =
+                Some(TextureImporterPlatformSettingsMAllowsAlphaSplittingVariant::parse(rdr, ver)?);
+            m_overridden = Some(TextureImporterPlatformSettingsMOverriddenVariant::parse(
+                rdr, ver,
+            )?);
             m_android_etc2_fallback_override = Some(rdr.read_i32()?);
             m_force_maximum_compression_quality_bc6h_bc7 = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
             m_texture_compression = Some(rdr.read_i32()?);
             m_compression_quality = Some(rdr.read_i32()?);
             m_crunched_compression = Some(rdr.read_bool()?);
-            m_allows_alpha_splitting = Some(TextureImporterPlatformSettingsMAllowsAlphaSplittingVariant::parse(rdr, ver)?);
-            m_overridden = Some(TextureImporterPlatformSettingsMOverriddenVariant::parse(rdr, ver)?);
+            m_allows_alpha_splitting =
+                Some(TextureImporterPlatformSettingsMAllowsAlphaSplittingVariant::parse(rdr, ver)?);
+            m_overridden = Some(TextureImporterPlatformSettingsMOverriddenVariant::parse(
+                rdr, ver,
+            )?);
             m_android_etc2_fallback_override = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
             m_texture_compression = Some(rdr.read_i32()?);
             m_compression_quality = Some(rdr.read_i32()?);
             m_crunched_compression = Some(rdr.read_bool()?);
-            m_allows_alpha_splitting = Some(TextureImporterPlatformSettingsMAllowsAlphaSplittingVariant::parse(rdr, ver)?);
-            m_overridden = Some(TextureImporterPlatformSettingsMOverriddenVariant::parse(rdr, ver)?);
+            m_allows_alpha_splitting =
+                Some(TextureImporterPlatformSettingsMAllowsAlphaSplittingVariant::parse(rdr, ver)?);
+            m_overridden = Some(TextureImporterPlatformSettingsMOverriddenVariant::parse(
+                rdr, ver,
+            )?);
         } else if *ver >= crate::UnityVersion::new(5, 2, 0) {
             m_compression_quality = Some(rdr.read_i32()?);
-            m_allows_alpha_splitting = Some(TextureImporterPlatformSettingsMAllowsAlphaSplittingVariant::parse(rdr, ver)?);
+            m_allows_alpha_splitting =
+                Some(TextureImporterPlatformSettingsMAllowsAlphaSplittingVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
             m_compression_quality = Some(rdr.read_i32()?);
         } else {

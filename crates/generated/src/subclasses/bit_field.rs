@@ -12,8 +12,6 @@ impl crate::Parse for BitField {
     ) -> Result<Self, R::Error> {
         let m_bits = rdr.read_u32()?;
 
-        Ok(BitField {
-            m_bits,
-        })
+        Ok(BitField { m_bits })
     }
 }

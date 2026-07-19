@@ -14,9 +14,6 @@ impl crate::Parse for Vector2Long {
         let x = rdr.read_i64()?;
         let y = rdr.read_i64()?;
 
-        Ok(Vector2Long {
-            x,
-            y,
-        })
+        Ok(Vector2Long { x, y })
     }
 }

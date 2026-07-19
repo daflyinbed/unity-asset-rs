@@ -14,8 +14,6 @@ impl crate::Parse for Pipeline {
     ) -> Result<Self, R::Error> {
         let m_game_object = crate::PPtr::parse(rdr, ver)?;
 
-        Ok(Pipeline {
-            m_game_object,
-        })
+        Ok(Pipeline { m_game_object })
     }
 }

@@ -27,15 +27,29 @@ impl crate::Parse for VisualEffectResource {
         let mut m_settings = None;
         let mut m_infos = None;
         let mut m_systems = None;
-            m_name = Some(rdr.read_aligned_string()?);
-            m_graph = Some(crate::PPtr::parse(rdr, ver)?);
+        m_name = Some(rdr.read_aligned_string()?);
+        m_graph = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2020, 1, 0) {
             m_settings = Some(VisualEffectSettings::parse(rdr, ver)?);
         } else {
-            m_shader_sources = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VfxShaderSourceDesc::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_shader_sources = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| VfxShaderSourceDesc::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_infos = Some(VisualEffectInfo::parse(rdr, ver)?);
-            m_systems = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VfxEditorSystemDesc::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_systems = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| VfxEditorSystemDesc::parse(rdr, ver))
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         }
 

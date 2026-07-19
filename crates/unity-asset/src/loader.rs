@@ -28,15 +28,15 @@ use std::sync::Arc;
 
 use bytes::Bytes;
 
+use crate::CollectionId;
 use crate::decompress::Registry;
 use crate::environment::{
-    phase_a, AssetCollection, DependencyProvider, Environment, EnvironmentObject, ParseFailure,
-    ResourceFile, ResourceProvider,
+    AssetCollection, DependencyProvider, Environment, EnvironmentObject, ParseFailure,
+    ResourceFile, ResourceProvider, phase_a,
 };
 use crate::error::{Error, Result};
 use crate::format::LoadedFile;
 use crate::serialized_file::FileIdentifier;
-use crate::CollectionId;
 
 /// 声明式加载器入口。由 [`Loader::builder`] 构造,经 [`LoaderBuilder::build`] 执行。
 ///
@@ -128,7 +128,11 @@ impl LoaderBuilder {
     /// 严格模式:任何 Error 级 diagnostic 都让 build 失败(Warning 级仍进入 report)。
     pub fn build_strict(self) -> Result<LoadReport> {
         let report = self.build()?;
-        if report.diagnostics.iter().any(|d| d.severity == Severity::Error) {
+        if report
+            .diagnostics
+            .iter()
+            .any(|d| d.severity == Severity::Error)
+        {
             let msg = report
                 .diagnostics
                 .iter()
@@ -172,12 +176,12 @@ impl Loader {
         let mut failures: Vec<ParseFailure> = Vec::new();
         let mut pending: Vec<(CollectionId, Vec<FileIdentifier>)> = Vec::new();
         let mut diagnostics: Vec<Diagnostic> = Vec::new();
+        let mut loaded_files: Vec<PathBuf> = Vec::new();
 
         for src in self.sources {
             match src {
                 Source::Path(p) => {
-                    let bytes = std::fs::read(&p)
-                        .map_err(|e| Error::Io { source: e })?;
+                    let bytes = std::fs::read(&p).map_err(|e| Error::Io { source: e })?;
                     let loaded = crate::format::load_recursive(
                         Bytes::from(bytes),
                         &p.to_string_lossy(),
@@ -192,14 +196,10 @@ impl Loader {
                         &mut failures,
                         &mut pending,
                     );
+                    loaded_files.push(p);
                 }
                 Source::Bytes { name, bytes } => {
-                    let loaded = crate::format::load_recursive(
-                        bytes,
-                        &name,
-                        &self.registry,
-                        None,
-                    )?;
+                    let loaded = crate::format::load_recursive(bytes, &name, &self.registry, None)?;
                     phase_a(
                         loaded,
                         &mut objects,
@@ -223,8 +223,8 @@ impl Loader {
                     let mut any = false;
                     for entry in walk_files(&dir)? {
                         if crate::detect::looks_like_loadable_path(&entry)? {
-                            let bytes = std::fs::read(&entry)
-                                .map_err(|e| Error::Io { source: e })?;
+                            let bytes =
+                                std::fs::read(&entry).map_err(|e| Error::Io { source: e })?;
                             let loaded = crate::format::load_recursive(
                                 Bytes::from(bytes),
                                 &entry.to_string_lossy(),
@@ -239,6 +239,7 @@ impl Loader {
                                 &mut failures,
                                 &mut pending,
                             );
+                            loaded_files.push(entry);
                             any = true;
                         } else {
                             diagnostics.push(Diagnostic::warning(format!(
@@ -260,6 +261,9 @@ impl Loader {
         // scan_dir 等非结构化警告先入 diagnostics(不依赖 failures)。
         let scan_diag_count = diagnostics.len();
 
+        let collection_count = collections.len();
+        let resource_count = resources.len();
+        let failure_count = failures.len();
         let mut env = Environment {
             objects,
             collections,
@@ -268,6 +272,11 @@ impl Loader {
             dependency_provider: self.dependency_provider,
             resource_provider: self.resource_provider,
             containers: crate::container::ContainerIndex::default(),
+            collection_sources: vec![None; collection_count],
+            resource_sources: vec![None; resource_count],
+            failure_sources: vec![None; failure_count],
+            source_ids: std::collections::HashSet::new(),
+            next_source_id: 1,
         };
         env.resolve_dependencies(&mut pending);
         env.prefetch_resources();
@@ -282,6 +291,7 @@ impl Loader {
         Ok(LoadReport {
             environment: env,
             diagnostics,
+            loaded_files,
         })
     }
 }
@@ -290,6 +300,7 @@ impl Loader {
 pub struct LoadReport {
     environment: Environment,
     diagnostics: Vec<Diagnostic>,
+    loaded_files: Vec<PathBuf>,
 }
 
 impl LoadReport {
@@ -301,6 +312,13 @@ impl LoadReport {
     /// 全部诊断(按生成顺序:scan_dir 跳过 → ParseFailure 投影 → provider 错误)。
     pub fn diagnostics(&self) -> &[Diagnostic] {
         &self.diagnostics
+    }
+
+    /// 本次 Loader 从磁盘实际接受并解析的文件路径。
+    ///
+    /// `scan_dir` 中被格式嗅探跳过的文件不在此列表；内存 bytes/loaded 输入也不在。
+    pub fn loaded_files(&self) -> &[PathBuf] {
+        &self.loaded_files
     }
 
     /// 是否存在任何 Error 级诊断。
@@ -363,19 +381,16 @@ impl Diagnostic {
     }
     fn from_failure(f: &ParseFailure) -> Self {
         match f {
-            ParseFailure::File { name, error } => Self::error(
-                format!("file 失败 {name}: {error}"),
-                DiagnosticKind::File,
-            ),
+            ParseFailure::File { name, error } => {
+                Self::error(format!("file 失败 {name}: {error}"), DiagnosticKind::File)
+            }
             ParseFailure::Object {
                 collection,
                 path_id,
                 class_id,
                 error,
             } => Self::error(
-                format!(
-                    "object 失败 col={collection} pid={path_id} cid={class_id}: {error}"
-                ),
+                format!("object 失败 col={collection} pid={path_id} cid={class_id}: {error}"),
                 DiagnosticKind::Object,
             ),
             ParseFailure::Container { name, error } => Self::error(

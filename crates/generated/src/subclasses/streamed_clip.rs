@@ -1,6 +1,5 @@
 //! 自动生成。请勿手动修改。
 
-
 /// 版本枚举：StreamedClipCurveCountVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum StreamedClipCurveCountVariant {
@@ -45,8 +44,15 @@ impl crate::Parse for StreamedClip {
         let mut data = None;
         let mut curve_count = None;
         let mut discrete_curve_count = None;
-            data = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
-            curve_count = Some(StreamedClipCurveCountVariant::parse(rdr, ver)?);
+        data = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_u32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        curve_count = Some(StreamedClipCurveCountVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2023, 2, 8) {
             discrete_curve_count = Some(rdr.read_u16()?);
         } else if *ver >= crate::UnityVersion::new(2023, 1, 0) {

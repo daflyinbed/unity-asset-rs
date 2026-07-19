@@ -366,7 +366,10 @@ impl TextureFormat {
     pub fn is_crunch(self) -> bool {
         matches!(
             self,
-            Self::Dxt1Crunched | Self::Dxt5Crunched | Self::EtcRgb4Crunched | Self::Etc2Rgba8Crunched
+            Self::Dxt1Crunched
+                | Self::Dxt5Crunched
+                | Self::EtcRgb4Crunched
+                | Self::Etc2Rgba8Crunched
         )
     }
 
@@ -505,19 +508,25 @@ pub enum TextureExportError {
     /// `std::error::Error`，故作为字段携带而非 source。两族解码器共用同一
     /// `DecodeError` 类型。
     #[snafu(display("解码失败: {err:?}"))]
-    Decode { err: texture_decoder_rs::DecodeError },
+    Decode {
+        err: texture_decoder_rs::DecodeError,
+    },
 
     /// Crunch 第一段解码失败（CRN 头解析 / Huffman / palette 损坏）。
     /// `CrnDecodeError` 与 `DecodeError` 是不同类型（同属 `texture_decoder_rs`
     /// 但各自独立），故单独成变体。BC1/BC3 第二段解码失败仍走 [`Decode`]。
     #[snafu(display("Crunch 解码失败: {err:?}"))]
-    CrunchDecode { err: texture_decoder_rs::crn::CrnDecodeError },
+    CrunchDecode {
+        err: texture_decoder_rs::crn::CrnDecodeError,
+    },
 
     /// Unity 变体 Crunch 第一段解码失败（Unity fork 的 reference-encoding bitstream
     /// 解析失败）。`CrnUnityDecodeError` 又是另一独立类型，故单独成变体。第二段 BC/ETC
     /// 解码失败仍走 [`Decode`]。
     #[snafu(display("Unity Crunch 解码失败: {err:?}"))]
-    CrunchUnityDecode { err: texture_decoder_rs::crn_unity::CrnUnityDecodeError },
+    CrunchUnityDecode {
+        err: texture_decoder_rs::crn_unity::CrnUnityDecodeError,
+    },
 
     /// PNG 编码 / 写入失败。
     #[snafu(display("写 PNG 失败: {source}"))]
@@ -610,8 +619,12 @@ pub fn decode_etc(
     let res = match fmt {
         TextureFormat::EtcRgb4 => texture_decoder_rs::etc::decode_etc1_rgb8(data, w, h, &mut out),
         TextureFormat::Etc2Rgb => texture_decoder_rs::etc::decode_etc2_rgb8(data, w, h, &mut out),
-        TextureFormat::Etc2Rgba1 => texture_decoder_rs::etc::decode_etc2_rgb8a1(data, w, h, &mut out),
-        TextureFormat::Etc2Rgba8 => texture_decoder_rs::etc::decode_etc2_rgba8(data, w, h, &mut out),
+        TextureFormat::Etc2Rgba1 => {
+            texture_decoder_rs::etc::decode_etc2_rgb8a1(data, w, h, &mut out)
+        }
+        TextureFormat::Etc2Rgba8 => {
+            texture_decoder_rs::etc::decode_etc2_rgba8(data, w, h, &mut out)
+        }
         TextureFormat::EacR => texture_decoder_rs::etc::decode_eac_r11(data, w, h, &mut out),
         TextureFormat::EacRSigned => {
             texture_decoder_rs::etc::decode_eac_signed_r11(data, w, h, &mut out)
@@ -726,7 +739,8 @@ pub fn decode_crunch(
 }
 
 /// 第二段 block → RGBA8 解码器签名（bcn / etc 家族共用同一签名）。
-type BlockDecode = fn(&[u8], usize, usize, &mut [u8]) -> Result<(), texture_decoder_rs::DecodeError>;
+type BlockDecode =
+    fn(&[u8], usize, usize, &mut [u8]) -> Result<(), texture_decoder_rs::DecodeError>;
 
 /// 把每面 level-0 的 block 字节逐面解 RGBA8、纵向拼接、按 cubemap 规则决定是否 Y 翻转。
 ///
@@ -770,7 +784,11 @@ fn decode_crunch_legacy(data: &[u8]) -> Result<(Vec<u8>, u32, u32), TextureExpor
     let missing = || TextureExportError::CrunchDecode {
         err: CrnDecodeError::InvalidHeader,
     };
-    let base_mip = tex.faces.first().and_then(|f| f.levels.first()).ok_or_else(missing)?;
+    let base_mip = tex
+        .faces
+        .first()
+        .and_then(|f| f.levels.first())
+        .ok_or_else(missing)?;
     let (face_w, face_h) = (base_mip.width as usize, base_mip.height as usize);
 
     // BC1/BC3 分派由 CRN 头 format 决定（权威）。原始 crunch 只产 BC1/BC3。
@@ -783,7 +801,12 @@ fn decode_crunch_legacy(data: &[u8]) -> Result<(Vec<u8>, u32, u32), TextureExpor
     let face_mips: Vec<&[u8]> = tex
         .faces
         .iter()
-        .map(|f| f.levels.first().map(|m| m.data.as_slice()).ok_or_else(missing))
+        .map(|f| {
+            f.levels
+                .first()
+                .map(|m| m.data.as_slice())
+                .ok_or_else(missing)
+        })
         .collect::<Result<_, _>>()?;
 
     stitch_crunch_faces(&face_mips, face_w, face_h, block_decode)
@@ -800,7 +823,11 @@ fn decode_crunch_unity(data: &[u8]) -> Result<(Vec<u8>, u32, u32), TextureExport
     let missing = || TextureExportError::CrunchUnityDecode {
         err: CrnUnityDecodeError::InvalidHeader,
     };
-    let base_mip = tex.faces.first().and_then(|f| f.levels.first()).ok_or_else(missing)?;
+    let base_mip = tex
+        .faces
+        .first()
+        .and_then(|f| f.levels.first())
+        .ok_or_else(missing)?;
     let (face_w, face_h) = (base_mip.width as usize, base_mip.height as usize);
 
     // block 格式分派由 CRN 头 format 决定（权威）。Unity 变体覆盖 BC1/BC3/ETC1/ETC2_RGBA8。
@@ -814,7 +841,12 @@ fn decode_crunch_unity(data: &[u8]) -> Result<(Vec<u8>, u32, u32), TextureExport
     let face_mips: Vec<&[u8]> = tex
         .faces
         .iter()
-        .map(|f| f.levels.first().map(|m| m.data.as_slice()).ok_or_else(missing))
+        .map(|f| {
+            f.levels
+                .first()
+                .map(|m| m.data.as_slice())
+                .ok_or_else(missing)
+        })
         .collect::<Result<_, _>>()?;
 
     stitch_crunch_faces(&face_mips, face_w, face_h, block_decode)
@@ -1187,7 +1219,8 @@ pub fn decode_uncompressed(
                 let a = f32::from_le_bytes([data[b], data[b + 1], data[b + 2], data[b + 3]]);
                 let r = f32::from_le_bytes([data[b + 4], data[b + 5], data[b + 6], data[b + 7]]);
                 let g = f32::from_le_bytes([data[b + 8], data[b + 9], data[b + 10], data[b + 11]]);
-                let bl = f32::from_le_bytes([data[b + 12], data[b + 13], data[b + 14], data[b + 15]]);
+                let bl =
+                    f32::from_le_bytes([data[b + 12], data[b + 13], data[b + 14], data[b + 15]]);
                 let o = i * 4;
                 out[o] = f32_to_u8(r);
                 out[o + 1] = f32_to_u8(g);
@@ -1215,7 +1248,8 @@ pub fn decode_uncompressed(
             for i in 0..n {
                 let b = i * 4;
                 let r = half::f16::from_bits(u16::from_le_bytes([data[b], data[b + 1]])).to_f32();
-                let g = half::f16::from_bits(u16::from_le_bytes([data[b + 2], data[b + 3]])).to_f32();
+                let g =
+                    half::f16::from_bits(u16::from_le_bytes([data[b + 2], data[b + 3]])).to_f32();
                 let o = i * 4;
                 out[o] = f32_to_u8(r);
                 out[o + 1] = f32_to_u8(g);
@@ -1230,9 +1264,12 @@ pub fn decode_uncompressed(
             for i in 0..n {
                 let b = i * 8;
                 let r = half::f16::from_bits(u16::from_le_bytes([data[b], data[b + 1]])).to_f32();
-                let g = half::f16::from_bits(u16::from_le_bytes([data[b + 2], data[b + 3]])).to_f32();
-                let bl = half::f16::from_bits(u16::from_le_bytes([data[b + 4], data[b + 5]])).to_f32();
-                let a = half::f16::from_bits(u16::from_le_bytes([data[b + 6], data[b + 7]])).to_f32();
+                let g =
+                    half::f16::from_bits(u16::from_le_bytes([data[b + 2], data[b + 3]])).to_f32();
+                let bl =
+                    half::f16::from_bits(u16::from_le_bytes([data[b + 4], data[b + 5]])).to_f32();
+                let a =
+                    half::f16::from_bits(u16::from_le_bytes([data[b + 6], data[b + 7]])).to_f32();
                 let o = i * 4;
                 out[o] = f32_to_u8(r);
                 out[o + 1] = f32_to_u8(g);
@@ -1277,7 +1314,8 @@ pub fn decode_uncompressed(
                 let r = f32::from_le_bytes([data[b], data[b + 1], data[b + 2], data[b + 3]]);
                 let g = f32::from_le_bytes([data[b + 4], data[b + 5], data[b + 6], data[b + 7]]);
                 let bl = f32::from_le_bytes([data[b + 8], data[b + 9], data[b + 10], data[b + 11]]);
-                let a = f32::from_le_bytes([data[b + 12], data[b + 13], data[b + 14], data[b + 15]]);
+                let a =
+                    f32::from_le_bytes([data[b + 12], data[b + 13], data[b + 14], data[b + 15]]);
                 let o = i * 4;
                 out[o] = f32_to_u8(r);
                 out[o + 1] = f32_to_u8(g);
@@ -1339,8 +1377,7 @@ pub(crate) fn flip_vertical_in_place(buf: &mut [u8], width: usize, height: usize
     let mut bottom = height.saturating_sub(1);
     while top < bottom {
         let (a, b) = buf.split_at_mut(bottom * stride);
-        a[top * stride..top * stride + stride]
-            .swap_with_slice(&mut b[..stride]);
+        a[top * stride..top * stride + stride].swap_with_slice(&mut b[..stride]);
         top += 1;
         bottom -= 1;
     }
@@ -1365,13 +1402,14 @@ pub fn write_png(
             actual: rgba.len(),
         });
     }
-    let img: image::RgbaImage = image::ImageBuffer::from_raw(width, height, rgba)
-        .ok_or(TextureExportError::BufferSize {
+    let img: image::RgbaImage = image::ImageBuffer::from_raw(width, height, rgba).ok_or(
+        TextureExportError::BufferSize {
             width,
             height,
             expected,
             actual: 0,
-        })?;
+        },
+    )?;
     // image::DynamicImage::write_to 需 `Write + Seek`，用 Cursor 包装提供 Seek，
     // 再把缓冲一次性写到底层 writer。
     let mut cur = std::io::Cursor::new(Vec::new());

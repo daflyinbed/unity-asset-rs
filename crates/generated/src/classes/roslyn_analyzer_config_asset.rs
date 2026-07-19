@@ -12,8 +12,6 @@ impl crate::Parse for RoslynAnalyzerConfigAsset {
     ) -> Result<Self, R::Error> {
         let m_name = rdr.read_aligned_string()?;
 
-        Ok(RoslynAnalyzerConfigAsset {
-            m_name,
-        })
+        Ok(RoslynAnalyzerConfigAsset { m_name })
     }
 }

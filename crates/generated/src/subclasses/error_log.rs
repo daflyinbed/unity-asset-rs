@@ -13,7 +13,12 @@ impl crate::Parse for ErrorLog {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_messages = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Message::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_messages = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| Message::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
         let m_has_errors = rdr.read_bool()?;
 

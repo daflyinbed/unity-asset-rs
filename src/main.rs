@@ -20,11 +20,12 @@ use generated::classes::texture2_d::Texture2DMNameVariant;
 
 mod server;
 
-use unity_asset::{
-    load_with, ClassId, CompressionType, ContainerEntry, ContainerKind, Decompressor, Environment,
-    Error, LoadedFile, Loader, ObjectId, ParsedObject, ParseFailure, Registry, UnityVersion, Value,
-};
 use generated::{ClassIDType, UnityObject};
+use unity_asset::{
+    ClassId, CompressionType, ContainerEntry, ContainerKind, Decompressor, Environment, Error,
+    LoadedFile, Loader, ObjectId, ParseFailure, ParsedObject, Registry, UnityVersion, Value,
+    load_with,
+};
 
 #[derive(Parser)]
 #[command(
@@ -236,10 +237,7 @@ fn cmd_list(header: Option<&BundleHeader>, env: &Environment) -> Result<(), Stri
             .format_version
             .map(|v| format!("v{v}"))
             .unwrap_or_else(|| "?".to_string());
-        let ur = h
-            .unity_revision
-            .clone()
-            .unwrap_or_else(|| "?".to_string());
+        let ur = h.unity_revision.clone().unwrap_or_else(|| "?".to_string());
         println!(
             "bundle: format {fv}, engine {ur}, {} internal files",
             h.files.len()
@@ -258,7 +256,10 @@ fn cmd_list(header: Option<&BundleHeader>, env: &Environment) -> Result<(), Stri
     for (col_idx, col) in env.collections().iter().enumerate() {
         println!(
             "\n== collection[{col_idx}] {} (unity={}, endian={:?}, {} assets) ==",
-            col.name, col.unity_version, col.endian, col.assets.len()
+            col.name,
+            col.unity_version,
+            col.endian,
+            col.assets.len()
         );
         // 收集本 collection 的对象并按 path_id 排序，便于人眼定位。
         let mut rows: Vec<(i64, &unity_asset::EnvironmentObject)> = col
@@ -364,11 +365,7 @@ fn cmd_object(env: &Environment, path_id: i64) -> Result<(), String> {
 ///
 /// 默认正向视图(path → asset);`--reverse` 切到反向视图(object → path)。
 /// `--kind` 按宿主类型过滤(非法值报错退出)。multidict(同 path 多条)全部保留。
-fn cmd_containers(
-    env: &Environment,
-    reverse: bool,
-    kind: Option<&str>,
-) -> Result<(), String> {
+fn cmd_containers(env: &Environment, reverse: bool, kind: Option<&str>) -> Result<(), String> {
     // kind 字符串 → ContainerKind;非法值显式报错(避免静默返回空列表误导用户)。
     let kind_filter: Option<ContainerKind> = match kind {
         None => None,
@@ -395,10 +392,7 @@ fn cmd_containers(
 
     if !reverse {
         // 正向视图:path → asset
-        println!(
-            "{:<12}  {:<50}  {:<24}  preload",
-            "kind", "path", "asset"
-        );
+        println!("{:<12}  {:<50}  {:<24}  preload", "kind", "path", "asset");
         println!("{}", "-".repeat(100));
         for e in &entries {
             let kind_str = kind_label(e.kind);
@@ -448,10 +442,7 @@ fn cmd_containers(
         // 按 (collection 下标, path_id) 排序输出,便于人眼定位。
         let mut flat: Vec<(ObjectId, Vec<RevRow>)> = by_obj.into_iter().collect();
         flat.sort_by_key(|(id, _)| (id.collection.to_index(), id.path_id));
-        println!(
-            "{:<24}  {:<12}  {:<8}  path",
-            "object", "kind", "via"
-        );
+        println!("{:<24}  {:<12}  {:<8}  path", "object", "kind", "via");
         println!("{}", "-".repeat(100));
         for (id, paths) in &flat {
             let obj_str = format_ref(env, *id);
@@ -522,8 +513,7 @@ fn cmd_export(
                 continue;
             };
             let t: &Texture2D = t;
-            let name =
-                texture_name(&t.m_name).unwrap_or_else(|| format!("tex_{}", obj.path_id));
+            let name = texture_name(&t.m_name).unwrap_or_else(|| format!("tex_{}", obj.path_id));
 
             let fmt = match TextureFormat::from_i32(t.m_format) {
                 Some(f) if f.is_supported() => f,
@@ -565,9 +555,7 @@ fn cmd_export(
         }
     }
 
-    println!(
-        "纹理汇总: 导出 {tex_exported}, 跳过 {tex_skipped}, 失败 {tex_failed}",
-    );
+    println!("纹理汇总: 导出 {tex_exported}, 跳过 {tex_skipped}, 失败 {tex_failed}",);
 
     let mut spr_exported = 0usize;
     let mut spr_skipped = 0usize;
@@ -603,9 +591,7 @@ fn cmd_export(
         }
     }
 
-    println!(
-        "Sprite 汇总: 导出 {spr_exported}, 跳过 {spr_skipped}, 失败 {spr_failed}",
-    );
+    println!("Sprite 汇总: 导出 {spr_exported}, 跳过 {spr_skipped}, 失败 {spr_failed}",);
 
     let total_failed = tex_failed + spr_failed;
     if total_failed > 0 {
@@ -663,8 +649,9 @@ pub(crate) struct AkLz4Decompressor;
 impl Decompressor for AkLz4Decompressor {
     fn decompress(&self, input: &[u8], expected: usize) -> Result<Vec<u8>, Error> {
         let mut out = vec![0u8; expected];
-        lz4inv::decompress(input, &mut out)
-            .map_err(|e| Error::Decompress { reason: e.to_string() })?;
+        lz4inv::decompress(input, &mut out).map_err(|e| Error::Decompress {
+            reason: e.to_string(),
+        })?;
         Ok(out)
     }
 }
@@ -744,7 +731,9 @@ fn texture_name(v: &Texture2DMNameVariant) -> Option<String> {
 fn dynamic_name(v: &Value) -> String {
     if let Value::Struct(fields) = v {
         for (k, val) in fields {
-            if k == "m_Name" && let Value::String(s) = val {
+            if k == "m_Name"
+                && let Value::String(s) = val
+            {
                 return s.clone();
             }
         }

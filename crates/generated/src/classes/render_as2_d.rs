@@ -69,7 +69,12 @@ impl crate::Parse for RenderAs2D {
         let m_lightmap_index_dynamic = rdr.read_u16()?;
         let m_lightmap_tiling_offset = Vector4f::parse(rdr, ver)?;
         let m_lightmap_tiling_offset_dynamic = Vector4f::parse(rdr, ver)?;
-        let m_materials = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_materials = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| crate::PPtr::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
         let m_static_batch_info = StaticBatchInfo::parse(rdr, ver)?;
         let m_static_batch_root = crate::PPtr::parse(rdr, ver)?;

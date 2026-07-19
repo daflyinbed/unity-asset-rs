@@ -13,8 +13,6 @@ impl crate::Parse for PropertyNameNested {
         let id = rdr.read_aligned_string()?;
         rdr.align(4)?;
 
-        Ok(PropertyNameNested {
-            id,
-        })
+        Ok(PropertyNameNested { id })
     }
 }

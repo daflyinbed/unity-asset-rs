@@ -1,6 +1,5 @@
 //! 自动生成。请勿手动修改。
 
-
 /// 版本枚举：StreamInfoStrideVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum StreamInfoStrideVariant {
@@ -43,9 +42,9 @@ impl crate::Parse for StreamInfo {
         let mut align = None;
         let mut divider_op = None;
         let mut frequency = None;
-            channel_mask = Some(rdr.read_u32()?);
-            offset = Some(rdr.read_u32()?);
-            stride = Some(StreamInfoStrideVariant::parse(rdr, ver)?);
+        channel_mask = Some(rdr.read_u32()?);
+        offset = Some(rdr.read_u32()?);
+        stride = Some(StreamInfoStrideVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(4, 0, 0) {
             divider_op = Some(rdr.read_u8()?);
             frequency = Some(rdr.read_u16()?);

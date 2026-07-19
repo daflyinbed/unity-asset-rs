@@ -24,15 +24,15 @@ impl crate::Parse for SizeBySpeedModule {
         let mut y = None;
         let mut z = None;
         let mut separate_axes = None;
-            enabled = Some(rdr.read_bool()?);
-            rdr.align(4)?;
-            curve = Some(MinMaxCurve::parse(rdr, ver)?);
+        enabled = Some(rdr.read_bool()?);
+        rdr.align(4)?;
+        curve = Some(MinMaxCurve::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
             y = Some(MinMaxCurve::parse(rdr, ver)?);
             z = Some(MinMaxCurve::parse(rdr, ver)?);
         } else {
         }
-            range = Some(Vector2f::parse(rdr, ver)?);
+        range = Some(Vector2f::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
             separate_axes = Some(rdr.read_bool()?);
             rdr.align(4)?;

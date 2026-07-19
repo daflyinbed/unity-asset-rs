@@ -1,6 +1,6 @@
 use std::path::{Path, PathBuf};
 
-use unity_asset_codegen::{emit::emit_all, run_pipeline, TpkFile};
+use unity_asset_codegen::{TpkFile, emit::emit_all, run_pipeline};
 
 fn main() {
     env_logger::init();
@@ -8,7 +8,10 @@ fn main() {
     let args: Vec<String> = std::env::args().collect();
     if args.len() != 3 {
         eprintln!("用法: {} <type_tree.tpk> <out_dir>", args[0]);
-        eprintln!("示例: {} crates/codegen/tests/fixtures/type_tree.tpk crates/generated/src", args[0]);
+        eprintln!(
+            "示例: {} crates/codegen/tests/fixtures/type_tree.tpk crates/generated/src",
+            args[0]
+        );
         std::process::exit(2);
     }
 
@@ -26,7 +29,11 @@ fn run(tpk_path: &Path, out_dir: &Path) -> Result<(), Box<dyn std::error::Error>
     let tpk = TpkFile::read_from_path(tpk_path)?;
     let blob = tpk.into_type_tree()?;
 
-    eprintln!("TPK: {} versions, {} classes", blob.versions.len(), blob.classes.len());
+    eprintln!(
+        "TPK: {} versions, {} classes",
+        blob.versions.len(),
+        blob.classes.len()
+    );
 
     eprintln!("跑 pass 管线...");
     let state = run_pipeline(blob);

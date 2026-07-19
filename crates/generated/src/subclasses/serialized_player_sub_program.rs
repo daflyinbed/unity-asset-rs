@@ -14,7 +14,12 @@ impl crate::Parse for SerializedPlayerSubProgram {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_blob_index = rdr.read_u32()?;
-        let m_keyword_indices = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u16() }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_keyword_indices = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| rdr.read_u16())
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
         let m_shader_requirements = rdr.read_i64()?;
         let m_gpu_program_type = rdr.read_i8()?;

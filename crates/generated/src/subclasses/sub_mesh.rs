@@ -29,8 +29,8 @@ impl crate::Parse for SubMesh {
         let mut base_vertex = None;
         let mut vertex_count = None;
         let mut local_aabb = None;
-            first_byte = Some(rdr.read_u32()?);
-            index_count = Some(rdr.read_u32()?);
+        first_byte = Some(rdr.read_u32()?);
+        index_count = Some(rdr.read_u32()?);
         if *ver >= crate::UnityVersion::new(2017, 3, 0) {
             topology = Some(rdr.read_i32()?);
             base_vertex = Some(rdr.read_u32()?);
@@ -40,9 +40,9 @@ impl crate::Parse for SubMesh {
             is_tri_strip = Some(rdr.read_u32()?);
             triangle_count = Some(rdr.read_u32()?);
         }
-            first_vertex = Some(rdr.read_u32()?);
-            vertex_count = Some(rdr.read_u32()?);
-            local_aabb = Some(Aabb::parse(rdr, ver)?);
+        first_vertex = Some(rdr.read_u32()?);
+        vertex_count = Some(rdr.read_u32()?);
+        local_aabb = Some(Aabb::parse(rdr, ver)?);
 
         Ok(SubMesh {
             first_byte: first_byte.unwrap(),

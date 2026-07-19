@@ -5,7 +5,6 @@ use crate::subclasses::aabb::Aabb;
 use crate::subclasses::static_batch_info::StaticBatchInfo;
 use crate::subclasses::vector4f::Vector4f;
 
-
 /// 版本枚举：SkinnedMeshRendererMEnabledVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum SkinnedMeshRendererMEnabledVariant {
@@ -117,11 +116,21 @@ impl crate::Parse for SkinnedMeshRendererMMaterialsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -281,11 +290,21 @@ impl crate::Parse for SkinnedMeshRendererMBonesVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V4_3(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -396,11 +415,21 @@ impl crate::Parse for SkinnedMeshRendererMBlendShapeWeightsVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_f32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_f32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_f32() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_f32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -438,7 +467,8 @@ pub struct SkinnedMeshRenderer {
     pub m_bones: SkinnedMeshRendererMBonesVariant,
     pub m_sorting_order: Option<SkinnedMeshRendererMSortingOrderVariant>,
     pub m_static_batch_info: Option<StaticBatchInfo>,
-    pub m_ray_tracing_accel_struct_build_flags: Option<SkinnedMeshRendererMRayTracingAccelStructBuildFlagsVariant>,
+    pub m_ray_tracing_accel_struct_build_flags:
+        Option<SkinnedMeshRendererMRayTracingAccelStructBuildFlagsVariant>,
     pub m_aabb: Aabb,
     pub m_probe_anchor: Option<SkinnedMeshRendererMProbeAnchorVariant>,
     pub m_small_mesh_culling: Option<u8>,
@@ -500,20 +530,25 @@ impl crate::Parse for SkinnedMeshRenderer {
         let mut m_blend_shape_weights = None;
         let mut m_skinned_motion_vectors = None;
         let mut m_mask_interaction = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_enabled = Some(SkinnedMeshRendererMEnabledVariant::parse(rdr, ver)?);
-            m_cast_shadows = Some(SkinnedMeshRendererMCastShadowsVariant::parse(rdr, ver)?);
-            m_receive_shadows = Some(SkinnedMeshRendererMReceiveShadowsVariant::parse(rdr, ver)?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_enabled = Some(SkinnedMeshRendererMEnabledVariant::parse(rdr, ver)?);
+        m_cast_shadows = Some(SkinnedMeshRendererMCastShadowsVariant::parse(rdr, ver)?);
+        m_receive_shadows = Some(SkinnedMeshRendererMReceiveShadowsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 2, 0) {
             m_dynamic_occludee = Some(rdr.read_u8()?);
             m_static_shadow_caster = Some(rdr.read_u8()?);
             m_motion_vectors = Some(rdr.read_u8()?);
             m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(SkinnedMeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage = Some(
+                SkinnedMeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?,
+            );
             m_ray_tracing_mode = Some(SkinnedMeshRendererMRayTracingModeVariant::parse(rdr, ver)?);
-            m_ray_trace_procedural = Some(SkinnedMeshRendererMRayTraceProceduralVariant::parse(rdr, ver)?);
+            m_ray_trace_procedural = Some(SkinnedMeshRendererMRayTraceProceduralVariant::parse(
+                rdr, ver,
+            )?);
             m_ray_tracing_accel_struct_build_flags_override = Some(rdr.read_u8()?);
-            m_ray_tracing_accel_struct_build_flags = Some(SkinnedMeshRendererMRayTracingAccelStructBuildFlagsVariant::parse(rdr, ver)?);
+            m_ray_tracing_accel_struct_build_flags =
+                Some(SkinnedMeshRendererMRayTracingAccelStructBuildFlagsVariant::parse(rdr, ver)?);
             m_small_mesh_culling = Some(rdr.read_u8()?);
             rdr.align(4)?;
             m_force_mesh_lod = Some(rdr.read_i16()?);
@@ -526,11 +561,16 @@ impl crate::Parse for SkinnedMeshRenderer {
             m_static_shadow_caster = Some(rdr.read_u8()?);
             m_motion_vectors = Some(rdr.read_u8()?);
             m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(SkinnedMeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage = Some(
+                SkinnedMeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?,
+            );
             m_ray_tracing_mode = Some(SkinnedMeshRendererMRayTracingModeVariant::parse(rdr, ver)?);
-            m_ray_trace_procedural = Some(SkinnedMeshRendererMRayTraceProceduralVariant::parse(rdr, ver)?);
+            m_ray_trace_procedural = Some(SkinnedMeshRendererMRayTraceProceduralVariant::parse(
+                rdr, ver,
+            )?);
             m_ray_tracing_accel_struct_build_flags_override = Some(rdr.read_u8()?);
-            m_ray_tracing_accel_struct_build_flags = Some(SkinnedMeshRendererMRayTracingAccelStructBuildFlagsVariant::parse(rdr, ver)?);
+            m_ray_tracing_accel_struct_build_flags =
+                Some(SkinnedMeshRendererMRayTracingAccelStructBuildFlagsVariant::parse(rdr, ver)?);
             m_small_mesh_culling = Some(rdr.read_u8()?);
             rdr.align(4)?;
             m_rendering_layer_mask = Some(rdr.read_u32()?);
@@ -540,11 +580,16 @@ impl crate::Parse for SkinnedMeshRenderer {
             m_static_shadow_caster = Some(rdr.read_u8()?);
             m_motion_vectors = Some(rdr.read_u8()?);
             m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(SkinnedMeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage = Some(
+                SkinnedMeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?,
+            );
             m_ray_tracing_mode = Some(SkinnedMeshRendererMRayTracingModeVariant::parse(rdr, ver)?);
-            m_ray_trace_procedural = Some(SkinnedMeshRendererMRayTraceProceduralVariant::parse(rdr, ver)?);
+            m_ray_trace_procedural = Some(SkinnedMeshRendererMRayTraceProceduralVariant::parse(
+                rdr, ver,
+            )?);
             m_ray_tracing_accel_struct_build_flags_override = Some(rdr.read_u8()?);
-            m_ray_tracing_accel_struct_build_flags = Some(SkinnedMeshRendererMRayTracingAccelStructBuildFlagsVariant::parse(rdr, ver)?);
+            m_ray_tracing_accel_struct_build_flags =
+                Some(SkinnedMeshRendererMRayTracingAccelStructBuildFlagsVariant::parse(rdr, ver)?);
             m_rendering_layer_mask = Some(rdr.read_u32()?);
             m_renderer_priority = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2021, 1, 0) {
@@ -552,25 +597,35 @@ impl crate::Parse for SkinnedMeshRenderer {
             m_static_shadow_caster = Some(rdr.read_u8()?);
             m_motion_vectors = Some(rdr.read_u8()?);
             m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(SkinnedMeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage = Some(
+                SkinnedMeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?,
+            );
             m_ray_tracing_mode = Some(SkinnedMeshRendererMRayTracingModeVariant::parse(rdr, ver)?);
-            m_ray_trace_procedural = Some(SkinnedMeshRendererMRayTraceProceduralVariant::parse(rdr, ver)?);
+            m_ray_trace_procedural = Some(SkinnedMeshRendererMRayTraceProceduralVariant::parse(
+                rdr, ver,
+            )?);
             m_rendering_layer_mask = Some(rdr.read_u32()?);
             m_renderer_priority = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
             m_dynamic_occludee = Some(rdr.read_u8()?);
             m_motion_vectors = Some(rdr.read_u8()?);
             m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(SkinnedMeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage = Some(
+                SkinnedMeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?,
+            );
             m_ray_tracing_mode = Some(SkinnedMeshRendererMRayTracingModeVariant::parse(rdr, ver)?);
-            m_ray_trace_procedural = Some(SkinnedMeshRendererMRayTraceProceduralVariant::parse(rdr, ver)?);
+            m_ray_trace_procedural = Some(SkinnedMeshRendererMRayTraceProceduralVariant::parse(
+                rdr, ver,
+            )?);
             m_rendering_layer_mask = Some(rdr.read_u32()?);
             m_renderer_priority = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
             m_dynamic_occludee = Some(rdr.read_u8()?);
             m_motion_vectors = Some(rdr.read_u8()?);
             m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(SkinnedMeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage = Some(
+                SkinnedMeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?,
+            );
             m_ray_tracing_mode = Some(SkinnedMeshRendererMRayTracingModeVariant::parse(rdr, ver)?);
             m_rendering_layer_mask = Some(rdr.read_u32()?);
             m_renderer_priority = Some(rdr.read_i32()?);
@@ -578,43 +633,58 @@ impl crate::Parse for SkinnedMeshRenderer {
             m_dynamic_occludee = Some(rdr.read_u8()?);
             m_motion_vectors = Some(rdr.read_u8()?);
             m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(SkinnedMeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage = Some(
+                SkinnedMeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?,
+            );
             m_rendering_layer_mask = Some(rdr.read_u32()?);
             m_renderer_priority = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
             m_dynamic_occludee = Some(rdr.read_u8()?);
             m_motion_vectors = Some(rdr.read_u8()?);
             m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(SkinnedMeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage = Some(
+                SkinnedMeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?,
+            );
             m_rendering_layer_mask = Some(rdr.read_u32()?);
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             m_dynamic_occludee = Some(rdr.read_u8()?);
             m_motion_vectors = Some(rdr.read_u8()?);
             m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(SkinnedMeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage = Some(
+                SkinnedMeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
             m_motion_vectors = Some(rdr.read_u8()?);
             m_light_probe_usage = Some(rdr.read_u8()?);
-            m_reflection_probe_usage = Some(SkinnedMeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage = Some(
+                SkinnedMeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?,
+            );
         } else {
         }
-            m_lightmap_index = Some(SkinnedMeshRendererMLightmapIndexVariant::parse(rdr, ver)?);
+        m_lightmap_index = Some(SkinnedMeshRendererMLightmapIndexVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_lightmap_index_dynamic = Some(rdr.read_u16()?);
         } else {
         }
-            m_lightmap_tiling_offset = Some(Vector4f::parse(rdr, ver)?);
+        m_lightmap_tiling_offset = Some(Vector4f::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_lightmap_tiling_offset_dynamic = Some(Vector4f::parse(rdr, ver)?);
         } else {
         }
-            m_materials = Some(SkinnedMeshRendererMMaterialsVariant::parse(rdr, ver)?);
+        m_materials = Some(SkinnedMeshRendererMMaterialsVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 5, 0) {
             m_static_batch_info = Some(StaticBatchInfo::parse(rdr, ver)?);
         } else {
-            m_subset_indices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_subset_indices = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_u32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         }
-            m_static_batch_root = Some(crate::PPtr::parse(rdr, ver)?);
+        m_static_batch_root = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 3, 0) {
             m_probe_anchor = Some(SkinnedMeshRendererMProbeAnchorVariant::parse(rdr, ver)?);
             m_light_probe_volume_override = Some(crate::PPtr::parse(rdr, ver)?);
@@ -640,46 +710,58 @@ impl crate::Parse for SkinnedMeshRenderer {
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_use_light_probes = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_reflection_probe_usage = Some(SkinnedMeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?);
+            m_reflection_probe_usage = Some(
+                SkinnedMeshRendererMReflectionProbeUsageVariant::parse(rdr, ver)?,
+            );
             m_probe_anchor = Some(SkinnedMeshRendererMProbeAnchorVariant::parse(rdr, ver)?);
             m_sorting_layer_id = Some(SkinnedMeshRendererMSortingLayerIdVariant::parse(rdr, ver)?);
             m_sorting_order = Some(SkinnedMeshRendererMSortingOrderVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 5, 0) {
             m_use_light_probes = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_light_probe_anchor = Some(SkinnedMeshRendererMLightProbeAnchorVariant::parse(rdr, ver)?);
+            m_light_probe_anchor = Some(SkinnedMeshRendererMLightProbeAnchorVariant::parse(
+                rdr, ver,
+            )?);
             m_sorting_layer_id = Some(SkinnedMeshRendererMSortingLayerIdVariant::parse(rdr, ver)?);
             m_sorting_order = Some(SkinnedMeshRendererMSortingOrderVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
             m_use_light_probes = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_light_probe_anchor = Some(SkinnedMeshRendererMLightProbeAnchorVariant::parse(rdr, ver)?);
+            m_light_probe_anchor = Some(SkinnedMeshRendererMLightProbeAnchorVariant::parse(
+                rdr, ver,
+            )?);
             m_sorting_layer = Some(rdr.read_i16()?);
             m_sorting_order = Some(SkinnedMeshRendererMSortingOrderVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
             m_use_light_probes = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_light_probe_anchor = Some(SkinnedMeshRendererMLightProbeAnchorVariant::parse(rdr, ver)?);
+            m_light_probe_anchor = Some(SkinnedMeshRendererMLightProbeAnchorVariant::parse(
+                rdr, ver,
+            )?);
         } else {
         }
-            m_quality = Some(rdr.read_i32()?);
-            m_update_when_offscreen = Some(SkinnedMeshRendererMUpdateWhenOffscreenVariant::parse(rdr, ver)?);
+        m_quality = Some(rdr.read_i32()?);
+        m_update_when_offscreen = Some(SkinnedMeshRendererMUpdateWhenOffscreenVariant::parse(
+            rdr, ver,
+        )?);
         if *ver >= crate::UnityVersion::new(5, 4, 0) {
             m_skinned_motion_vectors = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else {
         }
-            m_mesh = Some(crate::PPtr::parse(rdr, ver)?);
-            m_bones = Some(SkinnedMeshRendererMBonesVariant::parse(rdr, ver)?);
+        m_mesh = Some(crate::PPtr::parse(rdr, ver)?);
+        m_bones = Some(SkinnedMeshRendererMBonesVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(4, 3, 0) {
-            m_blend_shape_weights = Some(SkinnedMeshRendererMBlendShapeWeightsVariant::parse(rdr, ver)?);
+            m_blend_shape_weights = Some(SkinnedMeshRendererMBlendShapeWeightsVariant::parse(
+                rdr, ver,
+            )?);
             m_root_bone = Some(crate::PPtr::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
             m_root_bone = Some(crate::PPtr::parse(rdr, ver)?);
         } else {
         }
-            m_aabb = Some(Aabb::parse(rdr, ver)?);
-            m_dirty_aabb = Some(SkinnedMeshRendererMDirtyAabbVariant::parse(rdr, ver)?);
+        m_aabb = Some(Aabb::parse(rdr, ver)?);
+        m_dirty_aabb = Some(SkinnedMeshRendererMDirtyAabbVariant::parse(rdr, ver)?);
 
         Ok(SkinnedMeshRenderer {
             m_game_object: m_game_object.unwrap(),

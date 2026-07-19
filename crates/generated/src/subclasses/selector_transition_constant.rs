@@ -14,7 +14,12 @@ impl crate::Parse for SelectorTransitionConstant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         let m_destination = rdr.read_u32()?;
-        let m_condition_constant_array = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { OffsetPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_condition_constant_array = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| OffsetPtr::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
 
         Ok(SelectorTransitionConstant {
             m_destination,

@@ -14,7 +14,12 @@ impl crate::Parse for SelectorStateConstant {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_transition_constant_array = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { OffsetPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_transition_constant_array = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| OffsetPtr::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         let m_full_path_id = rdr.read_u32()?;
         let m_is_entry = rdr.read_bool()?;
         rdr.align(4)?;

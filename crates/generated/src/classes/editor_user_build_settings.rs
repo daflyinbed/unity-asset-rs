@@ -4,7 +4,6 @@ use crate::PPtr;
 use crate::subclasses::guid::Guid;
 use crate::subclasses::platform_settings_data_editor::PlatformSettingsData_Editor;
 
-
 /// 版本枚举：EditorUserBuildSettingsMBuildLocationVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum EditorUserBuildSettingsMBuildLocationVariant {
@@ -18,11 +17,21 @@ impl crate::Parse for EditorUserBuildSettingsMBuildLocationVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_aligned_string())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_aligned_string())
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -413,21 +422,24 @@ pub struct EditorUserBuildSettings {
     pub m_selected_black_berry_subtarget: Option<i32>,
     pub m_generate_metro_reference_projects: Option<bool>,
     pub m_selected_metro_build_and_run_deploy_target: Option<i32>,
-    pub m_selected_black_berry_build_type: Option<EditorUserBuildSettingsMSelectedBlackBerryBuildTypeVariant>,
+    pub m_selected_black_berry_build_type:
+        Option<EditorUserBuildSettingsMSelectedBlackBerryBuildTypeVariant>,
     pub m_web_gl_optimization_level: Option<i32>,
     pub m_wsa_holographic_remoting: Option<bool>,
     pub m_selected_tizen_subtarget: Option<i32>,
     pub m_selected_wsasdk: Option<i32>,
     pub m_compress_files_in_package: Option<bool>,
     pub m_build_with_code_coverage: Option<bool>,
-    pub m_selected_wsa_build_and_run_deploy_target: Option<EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant>,
+    pub m_selected_wsa_build_and_run_deploy_target:
+        Option<EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant>,
     pub m_explicit_divide_by_zero_checks: Option<bool>,
     pub m_symlink_sources: Option<bool>,
     pub m_generate_wsa_reference_projects: Option<bool>,
     pub m_wii_u_enable_net_api: Option<EditorUserBuildSettingsMWiiUEnableNetApiVariant>,
     pub m_move_package_to_disc_outer_edge: Option<bool>,
     pub m_force_installation: Option<bool>,
-    pub m_export_as_google_android_project: Option<EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant>,
+    pub m_export_as_google_android_project:
+        Option<EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant>,
     pub m_xbox_one_streaming_install_launch_chunk_range: Option<i32>,
     pub m_selected_wsauwp_build_type: Option<i32>,
     pub m_selected_xbox_one_deploy_method: Option<i32>,
@@ -437,18 +449,21 @@ pub struct EditorUserBuildSettings {
     pub m_selected_wsauwpsdk: Option<String>,
     pub m_create_solution_file_for_switch: Option<bool>,
     pub m_create_rom_file_for_switch: Option<bool>,
-    pub m_nvn_graphics_debugger_for_switch: Option<EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant>,
+    pub m_nvn_graphics_debugger_for_switch:
+        Option<EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant>,
     pub m_enable_rom_compression_for_switch: Option<bool>,
     pub m_nvn_shader_debugging: Option<EditorUserBuildSettingsMNvnShaderDebuggingVariant>,
     pub m_generate_nintendo_switch_shader_info: Option<bool>,
     pub m_save_adf_for_switch: Option<bool>,
-    pub m_force_optimize_script_compilation: Option<EditorUserBuildSettingsMForceOptimizeScriptCompilationVariant>,
+    pub m_force_optimize_script_compilation:
+        Option<EditorUserBuildSettingsMForceOptimizeScriptCompilationVariant>,
     pub m_xbox_one_username: Option<String>,
     pub m_enable_debug_pad_for_switch: Option<bool>,
     pub m_rom_compression_type_for_switch: Option<i32>,
     pub m_nvn_draw_validation_light: Option<bool>,
     pub m_xbox_one_network_share_path: Option<String>,
-    pub m_redirect_writes_to_host_mount_for_switch: Option<EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant>,
+    pub m_redirect_writes_to_host_mount_for_switch:
+        Option<EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant>,
     pub m_nvn_draw_validation: Option<bool>,
     pub m_rom_compression_level_for_switch: Option<i32>,
     pub m_nvn_draw_validation_heavy: Option<bool>,
@@ -458,7 +473,8 @@ pub struct EditorUserBuildSettings {
     pub m_build_app_bundle: Option<EditorUserBuildSettingsMBuildAppBundleVariant>,
     pub m_use_legacy_nvn_pool_allocator_for_switch: Option<bool>,
     pub m_htcs_script_debugging_for_switch: Option<bool>,
-    pub m_android_create_symbols_zip: Option<EditorUserBuildSettingsMAndroidCreateSymbolsZipVariant>,
+    pub m_android_create_symbols_zip:
+        Option<EditorUserBuildSettingsMAndroidCreateSymbolsZipVariant>,
     pub m_ps5_keep_package_files: Option<bool>,
     pub m_selected_wsauwpvs_version: Option<String>,
     pub m_android_use_legacy_sdk_tools: Option<bool>,
@@ -474,7 +490,8 @@ pub struct EditorUserBuildSettings {
     pub m_ps5_workspace_name: Option<String>,
     pub m_override_max_texture_size: Option<i32>,
     pub m_selected_wsa_architecture: Option<String>,
-    pub m_override_texture_compression: Option<EditorUserBuildSettingsMOverrideTextureCompressionVariant>,
+    pub m_override_texture_compression:
+        Option<EditorUserBuildSettingsMOverrideTextureCompressionVariant>,
     pub m_il2_cpp_code_generation: Option<i32>,
     pub m_facebook_create_package_for_submission: Option<bool>,
     pub m_enable_host_io_for_switch: Option<bool>,
@@ -655,8 +672,10 @@ impl crate::Parse for EditorUserBuildSettings {
         let mut m_active_profile_path = None;
         let mut m_active_build_profile = None;
         let mut m_build_output_to_build_metadata_map = None;
-            m_build_location = Some(EditorUserBuildSettingsMBuildLocationVariant::parse(rdr, ver)?);
-            m_active_build_target = Some(rdr.read_i32()?);
+        m_build_location = Some(EditorUserBuildSettingsMBuildLocationVariant::parse(
+            rdr, ver,
+        )?);
+        m_active_build_target = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(6000, 0, 4) {
             m_active_platform_guid = Some(Guid::parse(rdr, ver)?);
             m_selected_build_target = Some(rdr.read_i32()?);
@@ -668,13 +687,13 @@ impl crate::Parse for EditorUserBuildSettings {
             m_active_build_target_group = Some(rdr.read_i32()?);
         } else {
         }
-            m_selected_build_target_group = Some(rdr.read_i32()?);
+        m_selected_build_target_group = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2021, 2, 0) {
             m_active_build_platform_group_name = Some(rdr.read_aligned_string()?);
             m_selected_build_platform_group_name = Some(rdr.read_aligned_string()?);
         } else {
         }
-            m_selected_standalone_target = Some(rdr.read_i32()?);
+        m_selected_standalone_target = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2021, 2, 0) {
             m_selected_standalone_build_subtarget = Some(rdr.read_i32()?);
             m_active_standalone_build_subtarget = Some(rdr.read_i32()?);
@@ -683,7 +702,7 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_facebook_target = Some(rdr.read_i32()?);
         } else {
         }
-            m_architecture_flags = Some(rdr.read_i32()?);
+        m_architecture_flags = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
             m_selected_ps4_subtarget = Some(rdr.read_i32()?);
             m_ps4_hardware_target = Some(rdr.read_i32()?);
@@ -695,7 +714,20 @@ impl crate::Parse for EditorUserBuildSettings {
             m_android_debug_minification = Some(rdr.read_i32()?);
             m_android_device_socket_address = Some(rdr.read_aligned_string()?);
             m_android_current_deployment_target_id = Some(rdr.read_aligned_string()?);
-            m_selected_compression_type = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_selected_compression_type = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = rdr.read_i32()?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else if *ver >= crate::UnityVersion::new(2023, 1, 0) {
             m_selected_ps4_subtarget = Some(rdr.read_i32()?);
             m_ps4_hardware_target = Some(rdr.read_i32()?);
@@ -708,7 +740,20 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_android_etc2_fallback = Some(rdr.read_i32()?);
             m_android_device_socket_address = Some(rdr.read_aligned_string()?);
             m_android_current_deployment_target_id = Some(rdr.read_aligned_string()?);
-            m_selected_compression_type = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_selected_compression_type = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = rdr.read_i32()?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else if *ver >= crate::UnityVersion::new(2022, 3, 70) {
             m_selected_ps4_subtarget = Some(rdr.read_i32()?);
             m_ps4_hardware_target = Some(rdr.read_i32()?);
@@ -721,8 +766,34 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_android_etc2_fallback = Some(rdr.read_i32()?);
             m_android_device_socket_address = Some(rdr.read_aligned_string()?);
             m_android_current_deployment_target_id = Some(rdr.read_aligned_string()?);
-            m_selected_compression_type = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
-            m_selected_diagnostic_setting = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_selected_compression_type = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = rdr.read_i32()?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
+            m_selected_diagnostic_setting = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = rdr.read_i32()?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
             m_selected_ps4_subtarget = Some(rdr.read_i32()?);
             m_ps4_hardware_target = Some(rdr.read_i32()?);
@@ -735,7 +806,20 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_android_etc2_fallback = Some(rdr.read_i32()?);
             m_android_device_socket_address = Some(rdr.read_aligned_string()?);
             m_android_current_deployment_target_id = Some(rdr.read_aligned_string()?);
-            m_selected_compression_type = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_selected_compression_type = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = rdr.read_i32()?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
             m_selected_ps4_subtarget = Some(rdr.read_i32()?);
             m_ps4_hardware_target = Some(rdr.read_i32()?);
@@ -748,7 +832,20 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_android_etc2_fallback = Some(rdr.read_i32()?);
             m_android_device_socket_address = Some(rdr.read_aligned_string()?);
             m_android_current_deployment_target_id = Some(rdr.read_aligned_string()?);
-            m_selected_compression_type = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_selected_compression_type = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = rdr.read_i32()?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_facebook_access_token = Some(rdr.read_aligned_string()?);
         } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
             m_selected_psp2_subtarget = Some(rdr.read_i32()?);
@@ -763,7 +860,20 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_android_etc2_fallback = Some(rdr.read_i32()?);
             m_android_device_socket_address = Some(rdr.read_aligned_string()?);
             m_android_current_deployment_target_id = Some(rdr.read_aligned_string()?);
-            m_selected_compression_type = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_selected_compression_type = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = rdr.read_i32()?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_facebook_access_token = Some(rdr.read_aligned_string()?);
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
             m_selected_psp2_subtarget = Some(rdr.read_i32()?);
@@ -781,7 +891,20 @@ impl crate::Parse for EditorUserBuildSettings {
             m_android_debug_minification = Some(rdr.read_i32()?);
             m_selected_android_etc2_fallback = Some(rdr.read_i32()?);
             m_android_device_socket_address = Some(rdr.read_aligned_string()?);
-            m_selected_compression_type = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_selected_compression_type = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = rdr.read_i32()?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_facebook_access_token = Some(rdr.read_aligned_string()?);
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
             m_selected_psp2_subtarget = Some(rdr.read_i32()?);
@@ -798,7 +921,20 @@ impl crate::Parse for EditorUserBuildSettings {
             m_android_release_minification = Some(rdr.read_i32()?);
             m_android_debug_minification = Some(rdr.read_i32()?);
             m_android_device_socket_address = Some(rdr.read_aligned_string()?);
-            m_selected_compression_type = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_i32()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_selected_compression_type = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = rdr.read_i32()?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_facebook_access_token = Some(rdr.read_aligned_string()?);
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             m_selected_psp2_subtarget = Some(rdr.read_i32()?);
@@ -908,7 +1044,7 @@ impl crate::Parse for EditorUserBuildSettings {
         } else {
             m_selected_wii_subtarget = Some(rdr.read_i32()?);
         }
-            m_development = Some(rdr.read_bool()?);
+        m_development = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(2019, 3, 0) {
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             m_dataless_player = Some(rdr.read_bool()?);
@@ -919,7 +1055,7 @@ impl crate::Parse for EditorUserBuildSettings {
             m_web_gl_use_pre_built_unity_engine = Some(rdr.read_bool()?);
         } else {
         }
-            m_connect_profiler = Some(rdr.read_bool()?);
+        m_connect_profiler = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(6000, 5, 0) {
             m_build_with_deep_profiling_support = Some(rdr.read_bool()?);
             m_build_with_code_coverage = Some(rdr.read_bool()?);
@@ -927,7 +1063,7 @@ impl crate::Parse for EditorUserBuildSettings {
             m_build_with_deep_profiling_support = Some(rdr.read_bool()?);
         } else {
         }
-            m_allow_debugging = Some(rdr.read_bool()?);
+        m_allow_debugging = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             m_wait_for_player_connection = Some(rdr.read_bool()?);
         } else if *ver >= crate::UnityVersion::new(2018, 2, 0) {
@@ -941,7 +1077,7 @@ impl crate::Parse for EditorUserBuildSettings {
             m_web_player_offline_deployment = Some(rdr.read_bool()?);
             m_web_player_na_cl_support = Some(rdr.read_bool()?);
         }
-            m_install_in_build_folder = Some(rdr.read_bool()?);
+        m_install_in_build_folder = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(6000, 4, 0) {
             m_symlink_sources = Some(rdr.read_bool()?);
             m_symlink_trampoline = Some(rdr.read_bool()?);
@@ -953,7 +1089,8 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_divide_by_zero_checks = Some(rdr.read_bool()?);
             m_explicit_array_bounds_checks = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
             m_create_rom_file_for_switch = Some(rdr.read_bool()?);
             m_enable_rom_compression_for_switch = Some(rdr.read_bool()?);
             m_save_adf_for_switch = Some(rdr.read_bool()?);
@@ -961,9 +1098,12 @@ impl crate::Parse for EditorUserBuildSettings {
             m_rom_compression_type_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_level_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_config_for_switch = Some(rdr.read_aligned_string()?);
-            m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
+            m_nvn_graphics_debugger_for_switch =
+                Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_generate_nintendo_switch_shader_info = Some(rdr.read_bool()?);
-            m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
+            m_nvn_shader_debugging = Some(
+                EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?,
+            );
             m_nvn_aftermath_level = Some(rdr.read_i32()?);
             m_nvn_draw_validation_light = Some(rdr.read_bool()?);
             m_nvn_draw_validation_heavy = Some(rdr.read_bool()?);
@@ -973,9 +1113,12 @@ impl crate::Parse for EditorUserBuildSettings {
             m_enable_host_io_for_switch = Some(rdr.read_bool()?);
             m_htcs_script_debugging_for_switch = Some(rdr.read_bool()?);
             m_use_legacy_nvn_pool_allocator_for_switch = Some(rdr.read_bool()?);
-            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(rdr, ver)?);
+            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(
+                rdr, ver,
+            )?);
             m_override_max_texture_size = Some(rdr.read_i32()?);
-            m_override_texture_compression = Some(EditorUserBuildSettingsMOverrideTextureCompressionVariant::parse(rdr, ver)?);
+            m_override_texture_compression =
+                Some(EditorUserBuildSettingsMOverrideTextureCompressionVariant::parse(rdr, ver)?);
             m_android_create_symbols = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(6000, 1, 0) {
             m_symlink_sources = Some(rdr.read_bool()?);
@@ -988,7 +1131,8 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_divide_by_zero_checks = Some(rdr.read_bool()?);
             m_explicit_array_bounds_checks = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
             m_create_rom_file_for_switch = Some(rdr.read_bool()?);
             m_enable_rom_compression_for_switch = Some(rdr.read_bool()?);
             m_save_adf_for_switch = Some(rdr.read_bool()?);
@@ -996,9 +1140,12 @@ impl crate::Parse for EditorUserBuildSettings {
             m_rom_compression_type_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_level_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_config_for_switch = Some(rdr.read_aligned_string()?);
-            m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
+            m_nvn_graphics_debugger_for_switch =
+                Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_generate_nintendo_switch_shader_info = Some(rdr.read_bool()?);
-            m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
+            m_nvn_shader_debugging = Some(
+                EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?,
+            );
             m_nvn_aftermath = Some(rdr.read_bool()?);
             m_nvn_draw_validation_light = Some(rdr.read_bool()?);
             m_nvn_draw_validation_heavy = Some(rdr.read_bool()?);
@@ -1008,9 +1155,12 @@ impl crate::Parse for EditorUserBuildSettings {
             m_enable_host_io_for_switch = Some(rdr.read_bool()?);
             m_htcs_script_debugging_for_switch = Some(rdr.read_bool()?);
             m_use_legacy_nvn_pool_allocator_for_switch = Some(rdr.read_bool()?);
-            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(rdr, ver)?);
+            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(
+                rdr, ver,
+            )?);
             m_override_max_texture_size = Some(rdr.read_i32()?);
-            m_override_texture_compression = Some(EditorUserBuildSettingsMOverrideTextureCompressionVariant::parse(rdr, ver)?);
+            m_override_texture_compression =
+                Some(EditorUserBuildSettingsMOverrideTextureCompressionVariant::parse(rdr, ver)?);
             m_android_create_symbols = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(6000, 0, 61) {
             m_symlink_sources = Some(rdr.read_bool()?);
@@ -1023,7 +1173,8 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_divide_by_zero_checks = Some(rdr.read_bool()?);
             m_explicit_array_bounds_checks = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
             m_create_rom_file_for_switch = Some(rdr.read_bool()?);
             m_enable_rom_compression_for_switch = Some(rdr.read_bool()?);
             m_save_adf_for_switch = Some(rdr.read_bool()?);
@@ -1031,9 +1182,12 @@ impl crate::Parse for EditorUserBuildSettings {
             m_rom_compression_type_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_level_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_config_for_switch = Some(rdr.read_aligned_string()?);
-            m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
+            m_nvn_graphics_debugger_for_switch =
+                Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_generate_nintendo_switch_shader_info = Some(rdr.read_bool()?);
-            m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
+            m_nvn_shader_debugging = Some(
+                EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?,
+            );
             m_nvn_aftermath_level = Some(rdr.read_i32()?);
             m_nvn_draw_validation_light = Some(rdr.read_bool()?);
             m_nvn_draw_validation_heavy = Some(rdr.read_bool()?);
@@ -1043,9 +1197,12 @@ impl crate::Parse for EditorUserBuildSettings {
             m_enable_host_io_for_switch = Some(rdr.read_bool()?);
             m_htcs_script_debugging_for_switch = Some(rdr.read_bool()?);
             m_use_legacy_nvn_pool_allocator_for_switch = Some(rdr.read_bool()?);
-            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(rdr, ver)?);
+            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(
+                rdr, ver,
+            )?);
             m_override_max_texture_size = Some(rdr.read_i32()?);
-            m_override_texture_compression = Some(EditorUserBuildSettingsMOverrideTextureCompressionVariant::parse(rdr, ver)?);
+            m_override_texture_compression =
+                Some(EditorUserBuildSettingsMOverrideTextureCompressionVariant::parse(rdr, ver)?);
             m_android_create_symbols = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2023, 3, 0) {
             m_symlink_sources = Some(rdr.read_bool()?);
@@ -1058,7 +1215,8 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_divide_by_zero_checks = Some(rdr.read_bool()?);
             m_explicit_array_bounds_checks = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
             m_create_rom_file_for_switch = Some(rdr.read_bool()?);
             m_enable_rom_compression_for_switch = Some(rdr.read_bool()?);
             m_save_adf_for_switch = Some(rdr.read_bool()?);
@@ -1066,9 +1224,12 @@ impl crate::Parse for EditorUserBuildSettings {
             m_rom_compression_type_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_level_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_config_for_switch = Some(rdr.read_aligned_string()?);
-            m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
+            m_nvn_graphics_debugger_for_switch =
+                Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_generate_nintendo_switch_shader_info = Some(rdr.read_bool()?);
-            m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
+            m_nvn_shader_debugging = Some(
+                EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?,
+            );
             m_nvn_aftermath = Some(rdr.read_bool()?);
             m_nvn_draw_validation_light = Some(rdr.read_bool()?);
             m_nvn_draw_validation_heavy = Some(rdr.read_bool()?);
@@ -1078,9 +1239,12 @@ impl crate::Parse for EditorUserBuildSettings {
             m_enable_host_io_for_switch = Some(rdr.read_bool()?);
             m_htcs_script_debugging_for_switch = Some(rdr.read_bool()?);
             m_use_legacy_nvn_pool_allocator_for_switch = Some(rdr.read_bool()?);
-            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(rdr, ver)?);
+            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(
+                rdr, ver,
+            )?);
             m_override_max_texture_size = Some(rdr.read_i32()?);
-            m_override_texture_compression = Some(EditorUserBuildSettingsMOverrideTextureCompressionVariant::parse(rdr, ver)?);
+            m_override_texture_compression =
+                Some(EditorUserBuildSettingsMOverrideTextureCompressionVariant::parse(rdr, ver)?);
             m_android_create_symbols = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2023, 1, 4) {
             m_symlink_sources = Some(rdr.read_bool()?);
@@ -1093,7 +1257,8 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_divide_by_zero_checks = Some(rdr.read_bool()?);
             m_explicit_array_bounds_checks = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
             m_create_rom_file_for_switch = Some(rdr.read_bool()?);
             m_enable_rom_compression_for_switch = Some(rdr.read_bool()?);
             m_save_adf_for_switch = Some(rdr.read_bool()?);
@@ -1101,20 +1266,28 @@ impl crate::Parse for EditorUserBuildSettings {
             m_rom_compression_type_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_level_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_config_for_switch = Some(rdr.read_aligned_string()?);
-            m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
+            m_nvn_graphics_debugger_for_switch =
+                Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_generate_nintendo_switch_shader_info = Some(rdr.read_bool()?);
-            m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
+            m_nvn_shader_debugging = Some(
+                EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?,
+            );
             m_nvn_draw_validation_light = Some(rdr.read_bool()?);
             m_nvn_draw_validation_heavy = Some(rdr.read_bool()?);
             m_enable_memory_tracker_for_switch = Some(rdr.read_bool()?);
             m_wait_for_switch_memory_tracker_on_startup = Some(rdr.read_bool()?);
             m_enable_debug_pad_for_switch = Some(rdr.read_bool()?);
-            m_redirect_writes_to_host_mount_for_switch = Some(EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?);
+            m_redirect_writes_to_host_mount_for_switch = Some(
+                EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?,
+            );
             m_htcs_script_debugging_for_switch = Some(rdr.read_bool()?);
             m_use_legacy_nvn_pool_allocator_for_switch = Some(rdr.read_bool()?);
-            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(rdr, ver)?);
+            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(
+                rdr, ver,
+            )?);
             m_override_max_texture_size = Some(rdr.read_i32()?);
-            m_override_texture_compression = Some(EditorUserBuildSettingsMOverrideTextureCompressionVariant::parse(rdr, ver)?);
+            m_override_texture_compression =
+                Some(EditorUserBuildSettingsMOverrideTextureCompressionVariant::parse(rdr, ver)?);
             m_android_create_symbols = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2023, 1, 0) {
             m_symlink_sources = Some(rdr.read_bool()?);
@@ -1127,7 +1300,8 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_divide_by_zero_checks = Some(rdr.read_bool()?);
             m_explicit_array_bounds_checks = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
             m_create_rom_file_for_switch = Some(rdr.read_bool()?);
             m_enable_rom_compression_for_switch = Some(rdr.read_bool()?);
             m_save_adf_for_switch = Some(rdr.read_bool()?);
@@ -1135,19 +1309,27 @@ impl crate::Parse for EditorUserBuildSettings {
             m_rom_compression_type_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_level_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_config_for_switch = Some(rdr.read_aligned_string()?);
-            m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
+            m_nvn_graphics_debugger_for_switch =
+                Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_generate_nintendo_switch_shader_info = Some(rdr.read_bool()?);
-            m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
+            m_nvn_shader_debugging = Some(
+                EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?,
+            );
             m_nvn_draw_validation_light = Some(rdr.read_bool()?);
             m_nvn_draw_validation_heavy = Some(rdr.read_bool()?);
             m_enable_heap_inspector_for_switch = Some(rdr.read_bool()?);
             m_enable_debug_pad_for_switch = Some(rdr.read_bool()?);
-            m_redirect_writes_to_host_mount_for_switch = Some(EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?);
+            m_redirect_writes_to_host_mount_for_switch = Some(
+                EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?,
+            );
             m_htcs_script_debugging_for_switch = Some(rdr.read_bool()?);
             m_use_legacy_nvn_pool_allocator_for_switch = Some(rdr.read_bool()?);
-            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(rdr, ver)?);
+            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(
+                rdr, ver,
+            )?);
             m_override_max_texture_size = Some(rdr.read_i32()?);
-            m_override_texture_compression = Some(EditorUserBuildSettingsMOverrideTextureCompressionVariant::parse(rdr, ver)?);
+            m_override_texture_compression =
+                Some(EditorUserBuildSettingsMOverrideTextureCompressionVariant::parse(rdr, ver)?);
             m_android_create_symbols = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2022, 3, 57) {
             m_symlink_sources = Some(rdr.read_bool()?);
@@ -1160,7 +1342,8 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_divide_by_zero_checks = Some(rdr.read_bool()?);
             m_explicit_array_bounds_checks = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
             m_create_rom_file_for_switch = Some(rdr.read_bool()?);
             m_enable_rom_compression_for_switch = Some(rdr.read_bool()?);
             m_save_adf_for_switch = Some(rdr.read_bool()?);
@@ -1168,22 +1351,30 @@ impl crate::Parse for EditorUserBuildSettings {
             m_rom_compression_type_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_level_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_config_for_switch = Some(rdr.read_aligned_string()?);
-            m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
+            m_nvn_graphics_debugger_for_switch =
+                Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_generate_nintendo_switch_shader_info = Some(rdr.read_bool()?);
-            m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
+            m_nvn_shader_debugging = Some(
+                EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?,
+            );
             m_nvn_aftermath = Some(rdr.read_bool()?);
             m_nvn_draw_validation_light = Some(rdr.read_bool()?);
             m_nvn_draw_validation_heavy = Some(rdr.read_bool()?);
             m_enable_memory_tracker_for_switch = Some(rdr.read_bool()?);
             m_wait_for_switch_memory_tracker_on_startup = Some(rdr.read_bool()?);
             m_enable_debug_pad_for_switch = Some(rdr.read_bool()?);
-            m_redirect_writes_to_host_mount_for_switch = Some(EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?);
+            m_redirect_writes_to_host_mount_for_switch = Some(
+                EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?,
+            );
             m_htcs_script_debugging_for_switch = Some(rdr.read_bool()?);
             m_use_legacy_nvn_pool_allocator_for_switch = Some(rdr.read_bool()?);
             m_enable_unpublishable_errors_for_switch = Some(rdr.read_bool()?);
-            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(rdr, ver)?);
+            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(
+                rdr, ver,
+            )?);
             m_override_max_texture_size = Some(rdr.read_i32()?);
-            m_override_texture_compression = Some(EditorUserBuildSettingsMOverrideTextureCompressionVariant::parse(rdr, ver)?);
+            m_override_texture_compression =
+                Some(EditorUserBuildSettingsMOverrideTextureCompressionVariant::parse(rdr, ver)?);
             m_android_create_symbols = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2022, 3, 49) {
             m_symlink_sources = Some(rdr.read_bool()?);
@@ -1196,7 +1387,8 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_divide_by_zero_checks = Some(rdr.read_bool()?);
             m_explicit_array_bounds_checks = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
             m_create_rom_file_for_switch = Some(rdr.read_bool()?);
             m_enable_rom_compression_for_switch = Some(rdr.read_bool()?);
             m_save_adf_for_switch = Some(rdr.read_bool()?);
@@ -1204,21 +1396,29 @@ impl crate::Parse for EditorUserBuildSettings {
             m_rom_compression_type_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_level_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_config_for_switch = Some(rdr.read_aligned_string()?);
-            m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
+            m_nvn_graphics_debugger_for_switch =
+                Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_generate_nintendo_switch_shader_info = Some(rdr.read_bool()?);
-            m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
+            m_nvn_shader_debugging = Some(
+                EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?,
+            );
             m_nvn_aftermath = Some(rdr.read_bool()?);
             m_nvn_draw_validation_light = Some(rdr.read_bool()?);
             m_nvn_draw_validation_heavy = Some(rdr.read_bool()?);
             m_enable_memory_tracker_for_switch = Some(rdr.read_bool()?);
             m_wait_for_switch_memory_tracker_on_startup = Some(rdr.read_bool()?);
             m_enable_debug_pad_for_switch = Some(rdr.read_bool()?);
-            m_redirect_writes_to_host_mount_for_switch = Some(EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?);
+            m_redirect_writes_to_host_mount_for_switch = Some(
+                EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?,
+            );
             m_htcs_script_debugging_for_switch = Some(rdr.read_bool()?);
             m_use_legacy_nvn_pool_allocator_for_switch = Some(rdr.read_bool()?);
-            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(rdr, ver)?);
+            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(
+                rdr, ver,
+            )?);
             m_override_max_texture_size = Some(rdr.read_i32()?);
-            m_override_texture_compression = Some(EditorUserBuildSettingsMOverrideTextureCompressionVariant::parse(rdr, ver)?);
+            m_override_texture_compression =
+                Some(EditorUserBuildSettingsMOverrideTextureCompressionVariant::parse(rdr, ver)?);
             m_android_create_symbols = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2022, 3, 5) {
             m_symlink_sources = Some(rdr.read_bool()?);
@@ -1231,7 +1431,8 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_divide_by_zero_checks = Some(rdr.read_bool()?);
             m_explicit_array_bounds_checks = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
             m_create_rom_file_for_switch = Some(rdr.read_bool()?);
             m_enable_rom_compression_for_switch = Some(rdr.read_bool()?);
             m_save_adf_for_switch = Some(rdr.read_bool()?);
@@ -1239,20 +1440,28 @@ impl crate::Parse for EditorUserBuildSettings {
             m_rom_compression_type_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_level_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_config_for_switch = Some(rdr.read_aligned_string()?);
-            m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
+            m_nvn_graphics_debugger_for_switch =
+                Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_generate_nintendo_switch_shader_info = Some(rdr.read_bool()?);
-            m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
+            m_nvn_shader_debugging = Some(
+                EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?,
+            );
             m_nvn_draw_validation_light = Some(rdr.read_bool()?);
             m_nvn_draw_validation_heavy = Some(rdr.read_bool()?);
             m_enable_memory_tracker_for_switch = Some(rdr.read_bool()?);
             m_wait_for_switch_memory_tracker_on_startup = Some(rdr.read_bool()?);
             m_enable_debug_pad_for_switch = Some(rdr.read_bool()?);
-            m_redirect_writes_to_host_mount_for_switch = Some(EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?);
+            m_redirect_writes_to_host_mount_for_switch = Some(
+                EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?,
+            );
             m_htcs_script_debugging_for_switch = Some(rdr.read_bool()?);
             m_use_legacy_nvn_pool_allocator_for_switch = Some(rdr.read_bool()?);
-            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(rdr, ver)?);
+            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(
+                rdr, ver,
+            )?);
             m_override_max_texture_size = Some(rdr.read_i32()?);
-            m_override_texture_compression = Some(EditorUserBuildSettingsMOverrideTextureCompressionVariant::parse(rdr, ver)?);
+            m_override_texture_compression =
+                Some(EditorUserBuildSettingsMOverrideTextureCompressionVariant::parse(rdr, ver)?);
             m_android_create_symbols = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
             m_symlink_sources = Some(rdr.read_bool()?);
@@ -1265,7 +1474,8 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_divide_by_zero_checks = Some(rdr.read_bool()?);
             m_explicit_array_bounds_checks = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
             m_create_rom_file_for_switch = Some(rdr.read_bool()?);
             m_enable_rom_compression_for_switch = Some(rdr.read_bool()?);
             m_save_adf_for_switch = Some(rdr.read_bool()?);
@@ -1273,19 +1483,27 @@ impl crate::Parse for EditorUserBuildSettings {
             m_rom_compression_type_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_level_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_config_for_switch = Some(rdr.read_aligned_string()?);
-            m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
+            m_nvn_graphics_debugger_for_switch =
+                Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_generate_nintendo_switch_shader_info = Some(rdr.read_bool()?);
-            m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
+            m_nvn_shader_debugging = Some(
+                EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?,
+            );
             m_nvn_draw_validation_light = Some(rdr.read_bool()?);
             m_nvn_draw_validation_heavy = Some(rdr.read_bool()?);
             m_enable_heap_inspector_for_switch = Some(rdr.read_bool()?);
             m_enable_debug_pad_for_switch = Some(rdr.read_bool()?);
-            m_redirect_writes_to_host_mount_for_switch = Some(EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?);
+            m_redirect_writes_to_host_mount_for_switch = Some(
+                EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?,
+            );
             m_htcs_script_debugging_for_switch = Some(rdr.read_bool()?);
             m_use_legacy_nvn_pool_allocator_for_switch = Some(rdr.read_bool()?);
-            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(rdr, ver)?);
+            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(
+                rdr, ver,
+            )?);
             m_override_max_texture_size = Some(rdr.read_i32()?);
-            m_override_texture_compression = Some(EditorUserBuildSettingsMOverrideTextureCompressionVariant::parse(rdr, ver)?);
+            m_override_texture_compression =
+                Some(EditorUserBuildSettingsMOverrideTextureCompressionVariant::parse(rdr, ver)?);
             m_android_create_symbols = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2021, 3, 29) {
             m_symlink_sources = Some(rdr.read_bool()?);
@@ -1298,7 +1516,8 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_divide_by_zero_checks = Some(rdr.read_bool()?);
             m_explicit_array_bounds_checks = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
             m_create_rom_file_for_switch = Some(rdr.read_bool()?);
             m_enable_rom_compression_for_switch = Some(rdr.read_bool()?);
             m_save_adf_for_switch = Some(rdr.read_bool()?);
@@ -1306,20 +1525,28 @@ impl crate::Parse for EditorUserBuildSettings {
             m_rom_compression_type_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_level_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_config_for_switch = Some(rdr.read_aligned_string()?);
-            m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
+            m_nvn_graphics_debugger_for_switch =
+                Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_generate_nintendo_switch_shader_info = Some(rdr.read_bool()?);
-            m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
+            m_nvn_shader_debugging = Some(
+                EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?,
+            );
             m_nvn_draw_validation_light = Some(rdr.read_bool()?);
             m_nvn_draw_validation_heavy = Some(rdr.read_bool()?);
             m_enable_memory_tracker_for_switch = Some(rdr.read_bool()?);
             m_wait_for_switch_memory_tracker_on_startup = Some(rdr.read_bool()?);
             m_enable_debug_pad_for_switch = Some(rdr.read_bool()?);
-            m_redirect_writes_to_host_mount_for_switch = Some(EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?);
+            m_redirect_writes_to_host_mount_for_switch = Some(
+                EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?,
+            );
             m_htcs_script_debugging_for_switch = Some(rdr.read_bool()?);
             m_use_legacy_nvn_pool_allocator_for_switch = Some(rdr.read_bool()?);
-            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(rdr, ver)?);
+            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(
+                rdr, ver,
+            )?);
             m_override_max_texture_size = Some(rdr.read_i32()?);
-            m_override_texture_compression = Some(EditorUserBuildSettingsMOverrideTextureCompressionVariant::parse(rdr, ver)?);
+            m_override_texture_compression =
+                Some(EditorUserBuildSettingsMOverrideTextureCompressionVariant::parse(rdr, ver)?);
             m_il2_cpp_code_generation = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_android_create_symbols = Some(rdr.read_i32()?);
@@ -1334,7 +1561,8 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_divide_by_zero_checks = Some(rdr.read_bool()?);
             m_explicit_array_bounds_checks = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
             m_create_rom_file_for_switch = Some(rdr.read_bool()?);
             m_enable_rom_compression_for_switch = Some(rdr.read_bool()?);
             m_save_adf_for_switch = Some(rdr.read_bool()?);
@@ -1342,19 +1570,27 @@ impl crate::Parse for EditorUserBuildSettings {
             m_rom_compression_type_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_level_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_config_for_switch = Some(rdr.read_aligned_string()?);
-            m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
+            m_nvn_graphics_debugger_for_switch =
+                Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_generate_nintendo_switch_shader_info = Some(rdr.read_bool()?);
-            m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
+            m_nvn_shader_debugging = Some(
+                EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?,
+            );
             m_nvn_draw_validation_light = Some(rdr.read_bool()?);
             m_nvn_draw_validation_heavy = Some(rdr.read_bool()?);
             m_enable_heap_inspector_for_switch = Some(rdr.read_bool()?);
             m_enable_debug_pad_for_switch = Some(rdr.read_bool()?);
-            m_redirect_writes_to_host_mount_for_switch = Some(EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?);
+            m_redirect_writes_to_host_mount_for_switch = Some(
+                EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?,
+            );
             m_htcs_script_debugging_for_switch = Some(rdr.read_bool()?);
             m_use_legacy_nvn_pool_allocator_for_switch = Some(rdr.read_bool()?);
-            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(rdr, ver)?);
+            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(
+                rdr, ver,
+            )?);
             m_override_max_texture_size = Some(rdr.read_i32()?);
-            m_override_texture_compression = Some(EditorUserBuildSettingsMOverrideTextureCompressionVariant::parse(rdr, ver)?);
+            m_override_texture_compression =
+                Some(EditorUserBuildSettingsMOverrideTextureCompressionVariant::parse(rdr, ver)?);
             m_il2_cpp_code_generation = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_android_create_symbols = Some(rdr.read_i32()?);
@@ -1369,26 +1605,37 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_divide_by_zero_checks = Some(rdr.read_bool()?);
             m_explicit_array_bounds_checks = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
             m_create_rom_file_for_switch = Some(rdr.read_bool()?);
-            m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
+            m_nvn_graphics_debugger_for_switch =
+                Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_generate_nintendo_switch_shader_info = Some(rdr.read_bool()?);
-            m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
+            m_nvn_shader_debugging = Some(
+                EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?,
+            );
             m_nvn_draw_validation_light = Some(rdr.read_bool()?);
             m_nvn_draw_validation_heavy = Some(rdr.read_bool()?);
             m_enable_heap_inspector_for_switch = Some(rdr.read_bool()?);
             m_enable_debug_pad_for_switch = Some(rdr.read_bool()?);
-            m_redirect_writes_to_host_mount_for_switch = Some(EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?);
+            m_redirect_writes_to_host_mount_for_switch = Some(
+                EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?,
+            );
             m_htcs_script_debugging_for_switch = Some(rdr.read_bool()?);
             m_use_legacy_nvn_pool_allocator_for_switch = Some(rdr.read_bool()?);
-            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(rdr, ver)?);
+            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(
+                rdr, ver,
+            )?);
             m_override_max_texture_size = Some(rdr.read_i32()?);
-            m_override_texture_compression = Some(EditorUserBuildSettingsMOverrideTextureCompressionVariant::parse(rdr, ver)?);
+            m_override_texture_compression =
+                Some(EditorUserBuildSettingsMOverrideTextureCompressionVariant::parse(rdr, ver)?);
             m_il2_cpp_code_generation = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_android_create_symbols = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2021, 1, 5) {
-            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(rdr, ver)?);
+            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(
+                rdr, ver,
+            )?);
             m_symlink_trampoline = Some(rdr.read_bool()?);
             m_need_submission_materials = Some(rdr.read_bool()?);
             m_compress_with_ps_arc = Some(rdr.read_bool()?);
@@ -1400,22 +1647,32 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_array_bounds_checks = Some(rdr.read_bool()?);
             m_enable_headless_mode = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
             m_create_rom_file_for_switch = Some(rdr.read_bool()?);
-            m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
+            m_nvn_graphics_debugger_for_switch =
+                Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_generate_nintendo_switch_shader_info = Some(rdr.read_bool()?);
-            m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
+            m_nvn_shader_debugging = Some(
+                EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?,
+            );
             m_nvn_draw_validation_light = Some(rdr.read_bool()?);
             m_nvn_draw_validation_heavy = Some(rdr.read_bool()?);
             m_enable_heap_inspector_for_switch = Some(rdr.read_bool()?);
             m_enable_debug_pad_for_switch = Some(rdr.read_bool()?);
-            m_redirect_writes_to_host_mount_for_switch = Some(EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?);
+            m_redirect_writes_to_host_mount_for_switch = Some(
+                EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?,
+            );
             m_htcs_script_debugging_for_switch = Some(rdr.read_bool()?);
             m_use_legacy_nvn_pool_allocator_for_switch = Some(rdr.read_bool()?);
-            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(rdr, ver)?);
+            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(
+                rdr, ver,
+            )?);
             m_android_create_symbols = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2021, 1, 0) {
-            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(rdr, ver)?);
+            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(
+                rdr, ver,
+            )?);
             m_symlink_trampoline = Some(rdr.read_bool()?);
             m_need_submission_materials = Some(rdr.read_bool()?);
             m_compress_with_ps_arc = Some(rdr.read_bool()?);
@@ -1427,21 +1684,31 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_array_bounds_checks = Some(rdr.read_bool()?);
             m_enable_headless_mode = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
             m_create_rom_file_for_switch = Some(rdr.read_bool()?);
-            m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
-            m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
+            m_nvn_graphics_debugger_for_switch =
+                Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
+            m_nvn_shader_debugging = Some(
+                EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?,
+            );
             m_nvn_draw_validation_light = Some(rdr.read_bool()?);
             m_nvn_draw_validation_heavy = Some(rdr.read_bool()?);
             m_enable_heap_inspector_for_switch = Some(rdr.read_bool()?);
             m_enable_debug_pad_for_switch = Some(rdr.read_bool()?);
-            m_redirect_writes_to_host_mount_for_switch = Some(EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?);
+            m_redirect_writes_to_host_mount_for_switch = Some(
+                EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?,
+            );
             m_htcs_script_debugging_for_switch = Some(rdr.read_bool()?);
             m_use_legacy_nvn_pool_allocator_for_switch = Some(rdr.read_bool()?);
-            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(rdr, ver)?);
+            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(
+                rdr, ver,
+            )?);
             m_android_create_symbols = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2020, 3, 31) {
-            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(rdr, ver)?);
+            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(
+                rdr, ver,
+            )?);
             m_symlink_trampoline = Some(rdr.read_bool()?);
             m_need_submission_materials = Some(rdr.read_bool()?);
             m_compress_with_ps_arc = Some(rdr.read_bool()?);
@@ -1453,7 +1720,8 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_array_bounds_checks = Some(rdr.read_bool()?);
             m_enable_headless_mode = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
             m_create_rom_file_for_switch = Some(rdr.read_bool()?);
             m_enable_rom_compression_for_switch = Some(rdr.read_bool()?);
             m_save_adf_for_switch = Some(rdr.read_bool()?);
@@ -1461,20 +1729,30 @@ impl crate::Parse for EditorUserBuildSettings {
             m_rom_compression_type_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_level_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_config_for_switch = Some(rdr.read_aligned_string()?);
-            m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
+            m_nvn_graphics_debugger_for_switch =
+                Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_generate_nintendo_switch_shader_info = Some(rdr.read_bool()?);
-            m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
+            m_nvn_shader_debugging = Some(
+                EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?,
+            );
             m_nvn_draw_validation_light = Some(rdr.read_bool()?);
             m_nvn_draw_validation_heavy = Some(rdr.read_bool()?);
             m_enable_heap_inspector_for_switch = Some(rdr.read_bool()?);
             m_enable_debug_pad_for_switch = Some(rdr.read_bool()?);
-            m_redirect_writes_to_host_mount_for_switch = Some(EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?);
+            m_redirect_writes_to_host_mount_for_switch = Some(
+                EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?,
+            );
             m_htcs_script_debugging_for_switch = Some(rdr.read_bool()?);
             m_use_legacy_nvn_pool_allocator_for_switch = Some(rdr.read_bool()?);
-            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(rdr, ver)?);
-            m_android_create_symbols_zip = Some(EditorUserBuildSettingsMAndroidCreateSymbolsZipVariant::parse(rdr, ver)?);
+            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(
+                rdr, ver,
+            )?);
+            m_android_create_symbols_zip =
+                Some(EditorUserBuildSettingsMAndroidCreateSymbolsZipVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2020, 3, 7) {
-            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(rdr, ver)?);
+            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(
+                rdr, ver,
+            )?);
             m_symlink_trampoline = Some(rdr.read_bool()?);
             m_need_submission_materials = Some(rdr.read_bool()?);
             m_compress_with_ps_arc = Some(rdr.read_bool()?);
@@ -1486,22 +1764,33 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_array_bounds_checks = Some(rdr.read_bool()?);
             m_enable_headless_mode = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
             m_create_rom_file_for_switch = Some(rdr.read_bool()?);
-            m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
+            m_nvn_graphics_debugger_for_switch =
+                Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_generate_nintendo_switch_shader_info = Some(rdr.read_bool()?);
-            m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
+            m_nvn_shader_debugging = Some(
+                EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?,
+            );
             m_nvn_draw_validation_light = Some(rdr.read_bool()?);
             m_nvn_draw_validation_heavy = Some(rdr.read_bool()?);
             m_enable_heap_inspector_for_switch = Some(rdr.read_bool()?);
             m_enable_debug_pad_for_switch = Some(rdr.read_bool()?);
-            m_redirect_writes_to_host_mount_for_switch = Some(EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?);
+            m_redirect_writes_to_host_mount_for_switch = Some(
+                EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?,
+            );
             m_htcs_script_debugging_for_switch = Some(rdr.read_bool()?);
             m_use_legacy_nvn_pool_allocator_for_switch = Some(rdr.read_bool()?);
-            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(rdr, ver)?);
-            m_android_create_symbols_zip = Some(EditorUserBuildSettingsMAndroidCreateSymbolsZipVariant::parse(rdr, ver)?);
+            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(
+                rdr, ver,
+            )?);
+            m_android_create_symbols_zip =
+                Some(EditorUserBuildSettingsMAndroidCreateSymbolsZipVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2020, 3, 4) {
-            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(rdr, ver)?);
+            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(
+                rdr, ver,
+            )?);
             m_symlink_trampoline = Some(rdr.read_bool()?);
             m_need_submission_materials = Some(rdr.read_bool()?);
             m_compress_with_ps_arc = Some(rdr.read_bool()?);
@@ -1513,21 +1802,32 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_array_bounds_checks = Some(rdr.read_bool()?);
             m_enable_headless_mode = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
             m_create_rom_file_for_switch = Some(rdr.read_bool()?);
-            m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
-            m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
+            m_nvn_graphics_debugger_for_switch =
+                Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
+            m_nvn_shader_debugging = Some(
+                EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?,
+            );
             m_nvn_draw_validation_light = Some(rdr.read_bool()?);
             m_nvn_draw_validation_heavy = Some(rdr.read_bool()?);
             m_enable_heap_inspector_for_switch = Some(rdr.read_bool()?);
             m_enable_debug_pad_for_switch = Some(rdr.read_bool()?);
-            m_redirect_writes_to_host_mount_for_switch = Some(EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?);
+            m_redirect_writes_to_host_mount_for_switch = Some(
+                EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?,
+            );
             m_htcs_script_debugging_for_switch = Some(rdr.read_bool()?);
             m_use_legacy_nvn_pool_allocator_for_switch = Some(rdr.read_bool()?);
-            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(rdr, ver)?);
-            m_android_create_symbols_zip = Some(EditorUserBuildSettingsMAndroidCreateSymbolsZipVariant::parse(rdr, ver)?);
+            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(
+                rdr, ver,
+            )?);
+            m_android_create_symbols_zip =
+                Some(EditorUserBuildSettingsMAndroidCreateSymbolsZipVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(rdr, ver)?);
+            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(
+                rdr, ver,
+            )?);
             m_symlink_trampoline = Some(rdr.read_bool()?);
             m_need_submission_materials = Some(rdr.read_bool()?);
             m_compress_with_ps_arc = Some(rdr.read_bool()?);
@@ -1539,20 +1839,31 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_array_bounds_checks = Some(rdr.read_bool()?);
             m_enable_headless_mode = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
             m_create_rom_file_for_switch = Some(rdr.read_bool()?);
-            m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
-            m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
+            m_nvn_graphics_debugger_for_switch =
+                Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
+            m_nvn_shader_debugging = Some(
+                EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?,
+            );
             m_nvn_draw_validation_light = Some(rdr.read_bool()?);
             m_nvn_draw_validation_heavy = Some(rdr.read_bool()?);
             m_enable_heap_inspector_for_switch = Some(rdr.read_bool()?);
             m_enable_debug_pad_for_switch = Some(rdr.read_bool()?);
-            m_redirect_writes_to_host_mount_for_switch = Some(EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?);
+            m_redirect_writes_to_host_mount_for_switch = Some(
+                EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?,
+            );
             m_htcs_script_debugging_for_switch = Some(rdr.read_bool()?);
-            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(rdr, ver)?);
-            m_android_create_symbols_zip = Some(EditorUserBuildSettingsMAndroidCreateSymbolsZipVariant::parse(rdr, ver)?);
+            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(
+                rdr, ver,
+            )?);
+            m_android_create_symbols_zip =
+                Some(EditorUserBuildSettingsMAndroidCreateSymbolsZipVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2019, 4, 38) {
-            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(rdr, ver)?);
+            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(
+                rdr, ver,
+            )?);
             m_symlink_trampoline = Some(rdr.read_bool()?);
             m_need_submission_materials = Some(rdr.read_bool()?);
             m_compress_with_ps_arc = Some(rdr.read_bool()?);
@@ -1564,7 +1875,8 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_array_bounds_checks = Some(rdr.read_bool()?);
             m_enable_headless_mode = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
             m_create_solution_file_for_switch = Some(rdr.read_bool()?);
             m_create_rom_file_for_switch = Some(rdr.read_bool()?);
             m_enable_rom_compression_for_switch = Some(rdr.read_bool()?);
@@ -1573,16 +1885,24 @@ impl crate::Parse for EditorUserBuildSettings {
             m_rom_compression_type_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_level_for_switch = Some(rdr.read_i32()?);
             m_rom_compression_config_for_switch = Some(rdr.read_aligned_string()?);
-            m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
+            m_nvn_graphics_debugger_for_switch =
+                Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_generate_nintendo_switch_shader_info = Some(rdr.read_bool()?);
-            m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
+            m_nvn_shader_debugging = Some(
+                EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?,
+            );
             m_nvn_draw_validation = Some(rdr.read_bool()?);
             m_enable_heap_inspector_for_switch = Some(rdr.read_bool()?);
             m_enable_debug_pad_for_switch = Some(rdr.read_bool()?);
-            m_redirect_writes_to_host_mount_for_switch = Some(EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?);
+            m_redirect_writes_to_host_mount_for_switch = Some(
+                EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?,
+            );
             m_use_legacy_nvn_pool_allocator_for_switch = Some(rdr.read_bool()?);
-            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(rdr, ver)?);
-            m_android_create_symbols_zip = Some(EditorUserBuildSettingsMAndroidCreateSymbolsZipVariant::parse(rdr, ver)?);
+            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(
+                rdr, ver,
+            )?);
+            m_android_create_symbols_zip =
+                Some(EditorUserBuildSettingsMAndroidCreateSymbolsZipVariant::parse(rdr, ver)?);
             m_ps5_keep_package_files = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_selected_ps5_subtarget = Some(rdr.read_i32()?);
@@ -1590,7 +1910,9 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_ps5_compression_level = Some(rdr.read_i32()?);
             m_ps5_workspace_name = Some(rdr.read_aligned_string()?);
         } else if *ver >= crate::UnityVersion::new(2019, 4, 25) {
-            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(rdr, ver)?);
+            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(
+                rdr, ver,
+            )?);
             m_symlink_trampoline = Some(rdr.read_bool()?);
             m_need_submission_materials = Some(rdr.read_bool()?);
             m_compress_with_ps_arc = Some(rdr.read_bool()?);
@@ -1602,19 +1924,28 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_array_bounds_checks = Some(rdr.read_bool()?);
             m_enable_headless_mode = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
             m_create_solution_file_for_switch = Some(rdr.read_bool()?);
             m_create_rom_file_for_switch = Some(rdr.read_bool()?);
-            m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
+            m_nvn_graphics_debugger_for_switch =
+                Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_generate_nintendo_switch_shader_info = Some(rdr.read_bool()?);
-            m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
+            m_nvn_shader_debugging = Some(
+                EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?,
+            );
             m_nvn_draw_validation = Some(rdr.read_bool()?);
             m_enable_heap_inspector_for_switch = Some(rdr.read_bool()?);
             m_enable_debug_pad_for_switch = Some(rdr.read_bool()?);
-            m_redirect_writes_to_host_mount_for_switch = Some(EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?);
+            m_redirect_writes_to_host_mount_for_switch = Some(
+                EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?,
+            );
             m_use_legacy_nvn_pool_allocator_for_switch = Some(rdr.read_bool()?);
-            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(rdr, ver)?);
-            m_android_create_symbols_zip = Some(EditorUserBuildSettingsMAndroidCreateSymbolsZipVariant::parse(rdr, ver)?);
+            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(
+                rdr, ver,
+            )?);
+            m_android_create_symbols_zip =
+                Some(EditorUserBuildSettingsMAndroidCreateSymbolsZipVariant::parse(rdr, ver)?);
             m_ps5_keep_package_files = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_selected_ps5_subtarget = Some(rdr.read_i32()?);
@@ -1622,7 +1953,9 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_ps5_compression_level = Some(rdr.read_i32()?);
             m_ps5_workspace_name = Some(rdr.read_aligned_string()?);
         } else if *ver >= crate::UnityVersion::new(2019, 4, 24) {
-            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(rdr, ver)?);
+            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(
+                rdr, ver,
+            )?);
             m_symlink_trampoline = Some(rdr.read_bool()?);
             m_need_submission_materials = Some(rdr.read_bool()?);
             m_compress_with_ps_arc = Some(rdr.read_bool()?);
@@ -1634,18 +1967,27 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_array_bounds_checks = Some(rdr.read_bool()?);
             m_enable_headless_mode = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
             m_create_solution_file_for_switch = Some(rdr.read_bool()?);
             m_create_rom_file_for_switch = Some(rdr.read_bool()?);
-            m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
-            m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
+            m_nvn_graphics_debugger_for_switch =
+                Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
+            m_nvn_shader_debugging = Some(
+                EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?,
+            );
             m_nvn_draw_validation = Some(rdr.read_bool()?);
             m_enable_heap_inspector_for_switch = Some(rdr.read_bool()?);
             m_enable_debug_pad_for_switch = Some(rdr.read_bool()?);
-            m_redirect_writes_to_host_mount_for_switch = Some(EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?);
+            m_redirect_writes_to_host_mount_for_switch = Some(
+                EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?,
+            );
             m_use_legacy_nvn_pool_allocator_for_switch = Some(rdr.read_bool()?);
-            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(rdr, ver)?);
-            m_android_create_symbols_zip = Some(EditorUserBuildSettingsMAndroidCreateSymbolsZipVariant::parse(rdr, ver)?);
+            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(
+                rdr, ver,
+            )?);
+            m_android_create_symbols_zip =
+                Some(EditorUserBuildSettingsMAndroidCreateSymbolsZipVariant::parse(rdr, ver)?);
             m_ps5_keep_package_files = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_selected_ps5_subtarget = Some(rdr.read_i32()?);
@@ -1653,7 +1995,9 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_ps5_compression_level = Some(rdr.read_i32()?);
             m_ps5_workspace_name = Some(rdr.read_aligned_string()?);
         } else if *ver >= crate::UnityVersion::new(2019, 4, 23) {
-            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(rdr, ver)?);
+            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(
+                rdr, ver,
+            )?);
             m_symlink_trampoline = Some(rdr.read_bool()?);
             m_need_submission_materials = Some(rdr.read_bool()?);
             m_compress_with_ps_arc = Some(rdr.read_bool()?);
@@ -1665,17 +2009,26 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_array_bounds_checks = Some(rdr.read_bool()?);
             m_enable_headless_mode = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
             m_create_solution_file_for_switch = Some(rdr.read_bool()?);
             m_create_rom_file_for_switch = Some(rdr.read_bool()?);
-            m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
-            m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
+            m_nvn_graphics_debugger_for_switch =
+                Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
+            m_nvn_shader_debugging = Some(
+                EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?,
+            );
             m_nvn_draw_validation = Some(rdr.read_bool()?);
             m_enable_heap_inspector_for_switch = Some(rdr.read_bool()?);
             m_enable_debug_pad_for_switch = Some(rdr.read_bool()?);
-            m_redirect_writes_to_host_mount_for_switch = Some(EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?);
-            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(rdr, ver)?);
-            m_android_create_symbols_zip = Some(EditorUserBuildSettingsMAndroidCreateSymbolsZipVariant::parse(rdr, ver)?);
+            m_redirect_writes_to_host_mount_for_switch = Some(
+                EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?,
+            );
+            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(
+                rdr, ver,
+            )?);
+            m_android_create_symbols_zip =
+                Some(EditorUserBuildSettingsMAndroidCreateSymbolsZipVariant::parse(rdr, ver)?);
             m_ps5_keep_package_files = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_selected_ps5_subtarget = Some(rdr.read_i32()?);
@@ -1683,7 +2036,9 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_ps5_compression_level = Some(rdr.read_i32()?);
             m_ps5_workspace_name = Some(rdr.read_aligned_string()?);
         } else if *ver >= crate::UnityVersion::new(2019, 2, 11) {
-            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(rdr, ver)?);
+            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(
+                rdr, ver,
+            )?);
             m_symlink_trampoline = Some(rdr.read_bool()?);
             m_need_submission_materials = Some(rdr.read_bool()?);
             m_compress_with_ps_arc = Some(rdr.read_bool()?);
@@ -1695,19 +2050,30 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_array_bounds_checks = Some(rdr.read_bool()?);
             m_enable_headless_mode = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
             m_create_solution_file_for_switch = Some(rdr.read_bool()?);
             m_create_rom_file_for_switch = Some(rdr.read_bool()?);
-            m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
-            m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
+            m_nvn_graphics_debugger_for_switch =
+                Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
+            m_nvn_shader_debugging = Some(
+                EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?,
+            );
             m_nvn_draw_validation = Some(rdr.read_bool()?);
             m_enable_heap_inspector_for_switch = Some(rdr.read_bool()?);
             m_enable_debug_pad_for_switch = Some(rdr.read_bool()?);
-            m_redirect_writes_to_host_mount_for_switch = Some(EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?);
-            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(rdr, ver)?);
-            m_android_create_symbols_zip = Some(EditorUserBuildSettingsMAndroidCreateSymbolsZipVariant::parse(rdr, ver)?);
+            m_redirect_writes_to_host_mount_for_switch = Some(
+                EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?,
+            );
+            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(
+                rdr, ver,
+            )?);
+            m_android_create_symbols_zip =
+                Some(EditorUserBuildSettingsMAndroidCreateSymbolsZipVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(rdr, ver)?);
+            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(
+                rdr, ver,
+            )?);
             m_symlink_trampoline = Some(rdr.read_bool()?);
             m_need_submission_materials = Some(rdr.read_bool()?);
             m_compress_with_ps_arc = Some(rdr.read_bool()?);
@@ -1719,18 +2085,28 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_array_bounds_checks = Some(rdr.read_bool()?);
             m_enable_headless_mode = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
             m_create_solution_file_for_switch = Some(rdr.read_bool()?);
             m_create_rom_file_for_switch = Some(rdr.read_bool()?);
-            m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
-            m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
+            m_nvn_graphics_debugger_for_switch =
+                Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
+            m_nvn_shader_debugging = Some(
+                EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?,
+            );
             m_nvn_draw_validation = Some(rdr.read_bool()?);
             m_enable_heap_inspector_for_switch = Some(rdr.read_bool()?);
             m_enable_debug_pad_for_switch = Some(rdr.read_bool()?);
-            m_redirect_writes_to_host_mount_for_switch = Some(EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?);
-            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(rdr, ver)?);
+            m_redirect_writes_to_host_mount_for_switch = Some(
+                EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?,
+            );
+            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(
+                rdr, ver,
+            )?);
         } else if *ver >= crate::UnityVersion::new(2018, 4, 35) {
-            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(rdr, ver)?);
+            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(
+                rdr, ver,
+            )?);
             m_symlink_trampoline = Some(rdr.read_bool()?);
             m_need_submission_materials = Some(rdr.read_bool()?);
             m_compress_with_ps_arc = Some(rdr.read_bool()?);
@@ -1742,21 +2118,32 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_array_bounds_checks = Some(rdr.read_bool()?);
             m_enable_headless_mode = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
             m_create_solution_file_for_switch = Some(rdr.read_bool()?);
             m_create_rom_file_for_switch = Some(rdr.read_bool()?);
-            m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
+            m_nvn_graphics_debugger_for_switch =
+                Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_generate_nintendo_switch_shader_info = Some(rdr.read_bool()?);
-            m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
+            m_nvn_shader_debugging = Some(
+                EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?,
+            );
             m_nvn_draw_validation = Some(rdr.read_bool()?);
             m_enable_heap_inspector_for_switch = Some(rdr.read_bool()?);
             m_enable_debug_pad_for_switch = Some(rdr.read_bool()?);
-            m_redirect_writes_to_host_mount_for_switch = Some(EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?);
+            m_redirect_writes_to_host_mount_for_switch = Some(
+                EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?,
+            );
             m_android_use_legacy_sdk_tools = Some(rdr.read_bool()?);
-            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(rdr, ver)?);
-            m_android_create_symbols_zip = Some(EditorUserBuildSettingsMAndroidCreateSymbolsZipVariant::parse(rdr, ver)?);
+            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(
+                rdr, ver,
+            )?);
+            m_android_create_symbols_zip =
+                Some(EditorUserBuildSettingsMAndroidCreateSymbolsZipVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2018, 4, 13) {
-            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(rdr, ver)?);
+            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(
+                rdr, ver,
+            )?);
             m_symlink_trampoline = Some(rdr.read_bool()?);
             m_need_submission_materials = Some(rdr.read_bool()?);
             m_compress_with_ps_arc = Some(rdr.read_bool()?);
@@ -1768,20 +2155,31 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_array_bounds_checks = Some(rdr.read_bool()?);
             m_enable_headless_mode = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
             m_create_solution_file_for_switch = Some(rdr.read_bool()?);
             m_create_rom_file_for_switch = Some(rdr.read_bool()?);
-            m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
-            m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
+            m_nvn_graphics_debugger_for_switch =
+                Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
+            m_nvn_shader_debugging = Some(
+                EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?,
+            );
             m_nvn_draw_validation = Some(rdr.read_bool()?);
             m_enable_heap_inspector_for_switch = Some(rdr.read_bool()?);
             m_enable_debug_pad_for_switch = Some(rdr.read_bool()?);
-            m_redirect_writes_to_host_mount_for_switch = Some(EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?);
+            m_redirect_writes_to_host_mount_for_switch = Some(
+                EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?,
+            );
             m_android_use_legacy_sdk_tools = Some(rdr.read_bool()?);
-            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(rdr, ver)?);
-            m_android_create_symbols_zip = Some(EditorUserBuildSettingsMAndroidCreateSymbolsZipVariant::parse(rdr, ver)?);
+            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(
+                rdr, ver,
+            )?);
+            m_android_create_symbols_zip =
+                Some(EditorUserBuildSettingsMAndroidCreateSymbolsZipVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
-            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(rdr, ver)?);
+            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(
+                rdr, ver,
+            )?);
             m_symlink_trampoline = Some(rdr.read_bool()?);
             m_need_submission_materials = Some(rdr.read_bool()?);
             m_compress_with_ps_arc = Some(rdr.read_bool()?);
@@ -1793,19 +2191,29 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_array_bounds_checks = Some(rdr.read_bool()?);
             m_enable_headless_mode = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
             m_create_solution_file_for_switch = Some(rdr.read_bool()?);
             m_create_rom_file_for_switch = Some(rdr.read_bool()?);
-            m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
-            m_nvn_shader_debugging = Some(EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?);
+            m_nvn_graphics_debugger_for_switch =
+                Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
+            m_nvn_shader_debugging = Some(
+                EditorUserBuildSettingsMNvnShaderDebuggingVariant::parse(rdr, ver)?,
+            );
             m_nvn_draw_validation = Some(rdr.read_bool()?);
             m_enable_heap_inspector_for_switch = Some(rdr.read_bool()?);
             m_enable_debug_pad_for_switch = Some(rdr.read_bool()?);
-            m_redirect_writes_to_host_mount_for_switch = Some(EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?);
+            m_redirect_writes_to_host_mount_for_switch = Some(
+                EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?,
+            );
             m_android_use_legacy_sdk_tools = Some(rdr.read_bool()?);
-            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(rdr, ver)?);
+            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(
+                rdr, ver,
+            )?);
         } else if *ver >= crate::UnityVersion::new(2018, 1, 0) {
-            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(rdr, ver)?);
+            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(
+                rdr, ver,
+            )?);
             m_symlink_trampoline = Some(rdr.read_bool()?);
             m_need_submission_materials = Some(rdr.read_bool()?);
             m_compress_with_ps_arc = Some(rdr.read_bool()?);
@@ -1817,14 +2225,20 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_array_bounds_checks = Some(rdr.read_bool()?);
             m_enable_headless_mode = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
             m_create_solution_file_for_switch = Some(rdr.read_bool()?);
             m_create_rom_file_for_switch = Some(rdr.read_bool()?);
-            m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
+            m_nvn_graphics_debugger_for_switch =
+                Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_enable_debug_pad_for_switch = Some(rdr.read_bool()?);
-            m_redirect_writes_to_host_mount_for_switch = Some(EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?);
+            m_redirect_writes_to_host_mount_for_switch = Some(
+                EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2017, 4, 17) {
-            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(rdr, ver)?);
+            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(
+                rdr, ver,
+            )?);
             m_symlink_trampoline = Some(rdr.read_bool()?);
             m_need_submission_materials = Some(rdr.read_bool()?);
             m_compress_with_ps_arc = Some(rdr.read_bool()?);
@@ -1834,16 +2248,26 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_divide_by_zero_checks = Some(rdr.read_bool()?);
             m_enable_headless_mode = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_wii_u_enable_net_api = Some(EditorUserBuildSettingsMWiiUEnableNetApiVariant::parse(rdr, ver)?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_wii_u_enable_net_api = Some(EditorUserBuildSettingsMWiiUEnableNetApiVariant::parse(
+                rdr, ver,
+            )?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
             m_create_solution_file_for_switch = Some(rdr.read_bool()?);
             m_create_rom_file_for_switch = Some(rdr.read_bool()?);
-            m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
+            m_nvn_graphics_debugger_for_switch =
+                Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_enable_debug_pad_for_switch = Some(rdr.read_bool()?);
-            m_redirect_writes_to_host_mount_for_switch = Some(EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?);
-            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(rdr, ver)?);
+            m_redirect_writes_to_host_mount_for_switch = Some(
+                EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?,
+            );
+            m_build_app_bundle = Some(EditorUserBuildSettingsMBuildAppBundleVariant::parse(
+                rdr, ver,
+            )?);
         } else if *ver >= crate::UnityVersion::new(5, 6, 3) {
-            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(rdr, ver)?);
+            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(
+                rdr, ver,
+            )?);
             m_symlink_trampoline = Some(rdr.read_bool()?);
             m_need_submission_materials = Some(rdr.read_bool()?);
             m_compress_with_ps_arc = Some(rdr.read_bool()?);
@@ -1853,15 +2277,23 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_divide_by_zero_checks = Some(rdr.read_bool()?);
             m_enable_headless_mode = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_wii_u_enable_net_api = Some(EditorUserBuildSettingsMWiiUEnableNetApiVariant::parse(rdr, ver)?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_wii_u_enable_net_api = Some(EditorUserBuildSettingsMWiiUEnableNetApiVariant::parse(
+                rdr, ver,
+            )?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
             m_create_solution_file_for_switch = Some(rdr.read_bool()?);
             m_create_rom_file_for_switch = Some(rdr.read_bool()?);
-            m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
+            m_nvn_graphics_debugger_for_switch =
+                Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_enable_debug_pad_for_switch = Some(rdr.read_bool()?);
-            m_redirect_writes_to_host_mount_for_switch = Some(EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?);
+            m_redirect_writes_to_host_mount_for_switch = Some(
+                EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(5, 6, 2) {
-            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(rdr, ver)?);
+            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(
+                rdr, ver,
+            )?);
             m_symlink_trampoline = Some(rdr.read_bool()?);
             m_need_submission_materials = Some(rdr.read_bool()?);
             m_compress_with_ps_arc = Some(rdr.read_bool()?);
@@ -1870,15 +2302,23 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_divide_by_zero_checks = Some(rdr.read_bool()?);
             m_enable_headless_mode = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_wii_u_enable_net_api = Some(EditorUserBuildSettingsMWiiUEnableNetApiVariant::parse(rdr, ver)?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_wii_u_enable_net_api = Some(EditorUserBuildSettingsMWiiUEnableNetApiVariant::parse(
+                rdr, ver,
+            )?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
             m_create_solution_file_for_switch = Some(rdr.read_bool()?);
             m_create_rom_file_for_switch = Some(rdr.read_bool()?);
-            m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
+            m_nvn_graphics_debugger_for_switch =
+                Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
             m_enable_debug_pad_for_switch = Some(rdr.read_bool()?);
-            m_redirect_writes_to_host_mount_for_switch = Some(EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?);
+            m_redirect_writes_to_host_mount_for_switch = Some(
+                EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
-            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(rdr, ver)?);
+            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(
+                rdr, ver,
+            )?);
             m_symlink_trampoline = Some(rdr.read_bool()?);
             m_need_submission_materials = Some(rdr.read_bool()?);
             m_compress_with_ps_arc = Some(rdr.read_bool()?);
@@ -1887,13 +2327,19 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_divide_by_zero_checks = Some(rdr.read_bool()?);
             m_enable_headless_mode = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_wii_u_enable_net_api = Some(EditorUserBuildSettingsMWiiUEnableNetApiVariant::parse(rdr, ver)?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_wii_u_enable_net_api = Some(EditorUserBuildSettingsMWiiUEnableNetApiVariant::parse(
+                rdr, ver,
+            )?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
             m_create_solution_file_for_switch = Some(rdr.read_bool()?);
             m_create_rom_file_for_switch = Some(rdr.read_bool()?);
-            m_nvn_graphics_debugger_for_switch = Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
+            m_nvn_graphics_debugger_for_switch =
+                Some(EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 5, 1) {
-            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(rdr, ver)?);
+            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(
+                rdr, ver,
+            )?);
             m_symlink_trampoline = Some(rdr.read_bool()?);
             m_need_submission_materials = Some(rdr.read_bool()?);
             m_compress_with_ps_arc = Some(rdr.read_bool()?);
@@ -1902,10 +2348,15 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_divide_by_zero_checks = Some(rdr.read_bool()?);
             m_enable_headless_mode = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_wii_u_enable_net_api = Some(EditorUserBuildSettingsMWiiUEnableNetApiVariant::parse(rdr, ver)?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_wii_u_enable_net_api = Some(EditorUserBuildSettingsMWiiUEnableNetApiVariant::parse(
+                rdr, ver,
+            )?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
-            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(rdr, ver)?);
+            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(
+                rdr, ver,
+            )?);
             m_symlink_trampoline = Some(rdr.read_bool()?);
             m_need_submission_materials = Some(rdr.read_bool()?);
             m_compress_with_ps_arc = Some(rdr.read_bool()?);
@@ -1913,10 +2364,15 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_divide_by_zero_checks = Some(rdr.read_bool()?);
             m_enable_headless_mode = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_wii_u_enable_net_api = Some(EditorUserBuildSettingsMWiiUEnableNetApiVariant::parse(rdr, ver)?);
-            m_export_as_google_android_project = Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
+            m_wii_u_enable_net_api = Some(EditorUserBuildSettingsMWiiUEnableNetApiVariant::parse(
+                rdr, ver,
+            )?);
+            m_export_as_google_android_project =
+                Some(EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
-            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(rdr, ver)?);
+            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(
+                rdr, ver,
+            )?);
             m_symlink_trampoline = Some(rdr.read_bool()?);
             m_need_submission_materials = Some(rdr.read_bool()?);
             m_compress_with_ps_arc = Some(rdr.read_bool()?);
@@ -1924,9 +2380,13 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_divide_by_zero_checks = Some(rdr.read_bool()?);
             m_enable_headless_mode = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_wii_u_enable_net_api = Some(EditorUserBuildSettingsMWiiUEnableNetApiVariant::parse(rdr, ver)?);
+            m_wii_u_enable_net_api = Some(EditorUserBuildSettingsMWiiUEnableNetApiVariant::parse(
+                rdr, ver,
+            )?);
         } else if *ver >= crate::UnityVersion::new(5, 2, 0) {
-            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(rdr, ver)?);
+            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(
+                rdr, ver,
+            )?);
             m_symlink_trampoline = Some(rdr.read_bool()?);
             m_selected_ios_build_type = Some(rdr.read_i32()?);
             m_need_submission_materials = Some(rdr.read_bool()?);
@@ -1934,10 +2394,14 @@ impl crate::Parse for EditorUserBuildSettings {
             m_explicit_null_checks = Some(rdr.read_bool()?);
             m_enable_headless_mode = Some(rdr.read_bool()?);
             m_build_scripts_only = Some(rdr.read_bool()?);
-            m_wii_u_enable_net_api = Some(EditorUserBuildSettingsMWiiUEnableNetApiVariant::parse(rdr, ver)?);
+            m_wii_u_enable_net_api = Some(EditorUserBuildSettingsMWiiUEnableNetApiVariant::parse(
+                rdr, ver,
+            )?);
             m_web_gl_optimization_level = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(5, 1, 0) {
-            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(rdr, ver)?);
+            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(
+                rdr, ver,
+            )?);
             m_symlink_trampoline = Some(rdr.read_bool()?);
             m_selected_ios_build_type = Some(rdr.read_i32()?);
             m_need_submission_materials = Some(rdr.read_bool()?);
@@ -1949,7 +2413,9 @@ impl crate::Parse for EditorUserBuildSettings {
             rdr.align(4)?;
             m_web_gl_optimization_level = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(rdr, ver)?);
+            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(
+                rdr, ver,
+            )?);
             m_need_submission_materials = Some(rdr.read_bool()?);
             m_compress_with_ps_arc = Some(rdr.read_bool()?);
             m_explicit_null_checks = Some(rdr.read_bool()?);
@@ -1959,26 +2425,34 @@ impl crate::Parse for EditorUserBuildSettings {
             rdr.align(4)?;
             m_web_gl_optimization_level = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(4, 2, 0) {
-            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(rdr, ver)?);
+            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(
+                rdr, ver,
+            )?);
             m_explicit_null_checks = Some(rdr.read_bool()?);
             m_enable_headless_mode = Some(rdr.read_bool()?);
             m_web_player_deploy_online = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(rdr, ver)?);
+            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(
+                rdr, ver,
+            )?);
             m_explicit_null_checks = Some(rdr.read_bool()?);
             m_web_player_deploy_online = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(3, 5, 0) {
-            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(rdr, ver)?);
+            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(
+                rdr, ver,
+            )?);
             m_explicit_null_checks = Some(rdr.read_bool()?);
             m_xbox_compressed_xex = Some(rdr.read_bool()?);
             m_web_player_deploy_online = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else {
-            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(rdr, ver)?);
+            m_symlink_libraries = Some(EditorUserBuildSettingsMSymlinkLibrariesVariant::parse(
+                rdr, ver,
+            )?);
         }
-            m_selected_android_subtarget = Some(rdr.read_i32()?);
+        m_selected_android_subtarget = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(6000, 6, 0) {
             m_selected_web_gl_subtarget = Some(rdr.read_i32()?);
             m_web_gl_client_platform = Some(rdr.read_i32()?);
@@ -1990,7 +2464,9 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_wsa_min_uwpsdk = Some(rdr.read_aligned_string()?);
             m_selected_wsa_architecture = Some(rdr.read_aligned_string()?);
             m_selected_wsauwpvs_version = Some(rdr.read_aligned_string()?);
-            m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
+            m_selected_wsa_build_and_run_deploy_target = Some(
+                EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?,
+            );
             m_selected_windows_build_and_run_deploy_target = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_windows_device_portal_address = Some(rdr.read_aligned_string()?);
@@ -1999,7 +2475,20 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_drive = Some(rdr.read_i32()?);
             m_macos_xcode_build_config = Some(rdr.read_i32()?);
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_platform_settings = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = PlatformSettingsData_Editor::parse(rdr, ver)?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_selected_embedded_linux_architecture = Some(rdr.read_i32()?);
             m_selected_qnx_os_version = Some(rdr.read_i32()?);
             m_selected_qnx_architecture = Some(rdr.read_i32()?);
@@ -2021,7 +2510,9 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_wsa_min_uwpsdk = Some(rdr.read_aligned_string()?);
             m_selected_wsa_architecture = Some(rdr.read_aligned_string()?);
             m_selected_wsauwpvs_version = Some(rdr.read_aligned_string()?);
-            m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
+            m_selected_wsa_build_and_run_deploy_target = Some(
+                EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?,
+            );
             m_selected_windows_build_and_run_deploy_target = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_windows_device_portal_address = Some(rdr.read_aligned_string()?);
@@ -2030,7 +2521,20 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_drive = Some(rdr.read_i32()?);
             m_macos_xcode_build_config = Some(rdr.read_i32()?);
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_platform_settings = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = PlatformSettingsData_Editor::parse(rdr, ver)?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_selected_embedded_linux_architecture = Some(rdr.read_i32()?);
             m_selected_qnx_os_version = Some(rdr.read_i32()?);
             m_selected_qnx_architecture = Some(rdr.read_i32()?);
@@ -2041,7 +2545,20 @@ impl crate::Parse for EditorUserBuildSettings {
             m_remote_device_exports = Some(rdr.read_aligned_string()?);
             m_path_on_remote_device = Some(rdr.read_aligned_string()?);
             m_active_build_profile = Some(crate::PPtr::parse(rdr, ver)?);
-            m_build_output_to_build_metadata_map = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_build_output_to_build_metadata_map = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = rdr.read_aligned_string()?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else if *ver >= crate::UnityVersion::new(6000, 0, 20) {
             m_selected_web_gl_subtarget = Some(rdr.read_i32()?);
             m_web_gl_client_platform = Some(rdr.read_i32()?);
@@ -2053,7 +2570,9 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_wsa_min_uwpsdk = Some(rdr.read_aligned_string()?);
             m_selected_wsa_architecture = Some(rdr.read_aligned_string()?);
             m_selected_wsauwpvs_version = Some(rdr.read_aligned_string()?);
-            m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
+            m_selected_wsa_build_and_run_deploy_target = Some(
+                EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?,
+            );
             m_selected_windows_build_and_run_deploy_target = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_windows_device_portal_address = Some(rdr.read_aligned_string()?);
@@ -2062,7 +2581,20 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_drive = Some(rdr.read_i32()?);
             m_macos_xcode_build_config = Some(rdr.read_i32()?);
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_platform_settings = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = PlatformSettingsData_Editor::parse(rdr, ver)?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_selected_embedded_linux_architecture = Some(rdr.read_i32()?);
             m_selected_qnx_os_version = Some(rdr.read_i32()?);
             m_selected_qnx_architecture = Some(rdr.read_i32()?);
@@ -2084,7 +2616,9 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_wsa_min_uwpsdk = Some(rdr.read_aligned_string()?);
             m_selected_wsa_architecture = Some(rdr.read_aligned_string()?);
             m_selected_wsauwpvs_version = Some(rdr.read_aligned_string()?);
-            m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
+            m_selected_wsa_build_and_run_deploy_target = Some(
+                EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?,
+            );
             m_selected_windows_build_and_run_deploy_target = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_windows_device_portal_address = Some(rdr.read_aligned_string()?);
@@ -2093,7 +2627,20 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_drive = Some(rdr.read_i32()?);
             m_macos_xcode_build_config = Some(rdr.read_i32()?);
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_platform_settings = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = PlatformSettingsData_Editor::parse(rdr, ver)?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_selected_embedded_linux_architecture = Some(rdr.read_i32()?);
             m_selected_qnx_os_version = Some(rdr.read_i32()?);
             m_selected_qnx_architecture = Some(rdr.read_i32()?);
@@ -2115,7 +2662,9 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_wsa_min_uwpsdk = Some(rdr.read_aligned_string()?);
             m_selected_wsa_architecture = Some(rdr.read_aligned_string()?);
             m_selected_wsauwpvs_version = Some(rdr.read_aligned_string()?);
-            m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
+            m_selected_wsa_build_and_run_deploy_target = Some(
+                EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?,
+            );
             m_selected_windows_build_and_run_deploy_target = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_windows_device_portal_address = Some(rdr.read_aligned_string()?);
@@ -2124,7 +2673,20 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_drive = Some(rdr.read_i32()?);
             m_macos_xcode_build_config = Some(rdr.read_i32()?);
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_platform_settings = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = PlatformSettingsData_Editor::parse(rdr, ver)?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_selected_embedded_linux_architecture = Some(rdr.read_i32()?);
             m_selected_qnx_os_version = Some(rdr.read_i32()?);
             m_selected_qnx_architecture = Some(rdr.read_i32()?);
@@ -2144,7 +2706,9 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_wsa_min_uwpsdk = Some(rdr.read_aligned_string()?);
             m_selected_wsa_architecture = Some(rdr.read_aligned_string()?);
             m_selected_wsauwpvs_version = Some(rdr.read_aligned_string()?);
-            m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
+            m_selected_wsa_build_and_run_deploy_target = Some(
+                EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?,
+            );
             m_selected_windows_build_and_run_deploy_target = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_windows_device_portal_address = Some(rdr.read_aligned_string()?);
@@ -2153,7 +2717,20 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_drive = Some(rdr.read_i32()?);
             m_macos_xcode_build_config = Some(rdr.read_i32()?);
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_platform_settings = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = PlatformSettingsData_Editor::parse(rdr, ver)?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_selected_embedded_linux_architecture = Some(rdr.read_i32()?);
             m_selected_qnx_os_version = Some(rdr.read_i32()?);
             m_selected_qnx_architecture = Some(rdr.read_i32()?);
@@ -2170,7 +2747,9 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_wsa_min_uwpsdk = Some(rdr.read_aligned_string()?);
             m_selected_wsa_architecture = Some(rdr.read_aligned_string()?);
             m_selected_wsauwpvs_version = Some(rdr.read_aligned_string()?);
-            m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
+            m_selected_wsa_build_and_run_deploy_target = Some(
+                EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?,
+            );
             m_selected_windows_build_and_run_deploy_target = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_windows_device_portal_address = Some(rdr.read_aligned_string()?);
@@ -2179,7 +2758,20 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_drive = Some(rdr.read_i32()?);
             m_macos_xcode_build_config = Some(rdr.read_i32()?);
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_platform_settings = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = PlatformSettingsData_Editor::parse(rdr, ver)?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_selected_embedded_linux_architecture = Some(rdr.read_i32()?);
             m_selected_qnx_os_version = Some(rdr.read_i32()?);
             m_selected_qnx_architecture = Some(rdr.read_i32()?);
@@ -2196,14 +2788,29 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_wsa_min_uwpsdk = Some(rdr.read_aligned_string()?);
             m_selected_wsa_architecture = Some(rdr.read_aligned_string()?);
             m_selected_wsauwpvs_version = Some(rdr.read_aligned_string()?);
-            m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
+            m_selected_wsa_build_and_run_deploy_target = Some(
+                EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?,
+            );
             m_windows_device_portal_address = Some(rdr.read_aligned_string()?);
             m_windows_device_portal_username = Some(rdr.read_aligned_string()?);
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_drive = Some(rdr.read_i32()?);
             m_macos_xcode_build_config = Some(rdr.read_i32()?);
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_platform_settings = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = PlatformSettingsData_Editor::parse(rdr, ver)?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_selected_embedded_linux_architecture = Some(rdr.read_i32()?);
             m_selected_qnx_os_version = Some(rdr.read_i32()?);
             m_selected_qnx_architecture = Some(rdr.read_i32()?);
@@ -2220,14 +2827,29 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_wsa_min_uwpsdk = Some(rdr.read_aligned_string()?);
             m_selected_wsa_architecture = Some(rdr.read_aligned_string()?);
             m_selected_wsauwpvs_version = Some(rdr.read_aligned_string()?);
-            m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
+            m_selected_wsa_build_and_run_deploy_target = Some(
+                EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?,
+            );
             m_windows_device_portal_address = Some(rdr.read_aligned_string()?);
             m_windows_device_portal_username = Some(rdr.read_aligned_string()?);
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_drive = Some(rdr.read_i32()?);
             m_macos_xcode_build_config = Some(rdr.read_i32()?);
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_platform_settings = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = PlatformSettingsData_Editor::parse(rdr, ver)?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_selected_embedded_linux_architecture = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2021, 2, 14) {
             m_selected_web_gl_subtarget = Some(rdr.read_i32()?);
@@ -2236,14 +2858,29 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_wsa_min_uwpsdk = Some(rdr.read_aligned_string()?);
             m_selected_wsa_architecture = Some(rdr.read_aligned_string()?);
             m_selected_wsauwpvs_version = Some(rdr.read_aligned_string()?);
-            m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
+            m_selected_wsa_build_and_run_deploy_target = Some(
+                EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?,
+            );
             m_windows_device_portal_address = Some(rdr.read_aligned_string()?);
             m_windows_device_portal_username = Some(rdr.read_aligned_string()?);
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_drive = Some(rdr.read_i32()?);
             m_macos_xcode_build_config = Some(rdr.read_i32()?);
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_platform_settings = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = PlatformSettingsData_Editor::parse(rdr, ver)?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_selected_embedded_linux_architecture = Some(rdr.read_i32()?);
             m_remote_device_info = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -2258,14 +2895,29 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_wsa_min_uwpsdk = Some(rdr.read_aligned_string()?);
             m_selected_wsa_architecture = Some(rdr.read_aligned_string()?);
             m_selected_wsauwpvs_version = Some(rdr.read_aligned_string()?);
-            m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
+            m_selected_wsa_build_and_run_deploy_target = Some(
+                EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?,
+            );
             m_windows_device_portal_address = Some(rdr.read_aligned_string()?);
             m_windows_device_portal_username = Some(rdr.read_aligned_string()?);
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_drive = Some(rdr.read_i32()?);
             m_macos_xcode_build_config = Some(rdr.read_i32()?);
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_platform_settings = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = PlatformSettingsData_Editor::parse(rdr, ver)?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             m_selected_embedded_linux_architecture = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(2019, 2, 0) {
             m_selected_wsa_subtarget = Some(rdr.read_i32()?);
@@ -2274,13 +2926,28 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_wsa_min_uwpsdk = Some(rdr.read_aligned_string()?);
             m_selected_wsa_architecture = Some(rdr.read_aligned_string()?);
             m_selected_wsauwpvs_version = Some(rdr.read_aligned_string()?);
-            m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
+            m_selected_wsa_build_and_run_deploy_target = Some(
+                EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?,
+            );
             m_windows_device_portal_address = Some(rdr.read_aligned_string()?);
             m_windows_device_portal_username = Some(rdr.read_aligned_string()?);
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_drive = Some(rdr.read_i32()?);
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_platform_settings = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = PlatformSettingsData_Editor::parse(rdr, ver)?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
             m_selected_wsa_subtarget = Some(rdr.read_i32()?);
             m_selected_wsauwp_build_type = Some(rdr.read_i32()?);
@@ -2288,13 +2955,28 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_wsa_min_uwpsdk = Some(rdr.read_aligned_string()?);
             m_selected_wsa_architecture = Some(rdr.read_aligned_string()?);
             m_selected_wsauwpvs_version = Some(rdr.read_aligned_string()?);
-            m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
+            m_selected_wsa_build_and_run_deploy_target = Some(
+                EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?,
+            );
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_drive = Some(rdr.read_i32()?);
             m_xbox_one_username = Some(rdr.read_aligned_string()?);
             m_xbox_one_network_share_path = Some(rdr.read_aligned_string()?);
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_platform_settings = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = PlatformSettingsData_Editor::parse(rdr, ver)?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else if *ver >= crate::UnityVersion::new(2018, 3, 0) {
             m_selected_wsa_subtarget = Some(rdr.read_i32()?);
             m_selected_wsauwp_build_type = Some(rdr.read_i32()?);
@@ -2302,42 +2984,95 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_wsa_min_uwpsdk = Some(rdr.read_aligned_string()?);
             m_selected_wsa_architecture = Some(rdr.read_aligned_string()?);
             m_selected_wsauwpvs_version = Some(rdr.read_aligned_string()?);
-            m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
+            m_selected_wsa_build_and_run_deploy_target = Some(
+                EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?,
+            );
             m_generate_wsa_reference_projects = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_wsa_dot_net_native_enabled = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_wsa_dot_net_native_enabled = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_bool())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_drive = Some(rdr.read_i32()?);
             m_xbox_one_username = Some(rdr.read_aligned_string()?);
             m_xbox_one_network_share_path = Some(rdr.read_aligned_string()?);
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_platform_settings = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = PlatformSettingsData_Editor::parse(rdr, ver)?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else if *ver >= crate::UnityVersion::new(2018, 2, 0) {
             m_selected_wsa_subtarget = Some(rdr.read_i32()?);
             m_selected_wsauwp_build_type = Some(rdr.read_i32()?);
             m_selected_wsauwpsdk = Some(rdr.read_aligned_string()?);
             m_selected_wsauwpvs_version = Some(rdr.read_aligned_string()?);
-            m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
+            m_selected_wsa_build_and_run_deploy_target = Some(
+                EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?,
+            );
             m_generate_wsa_reference_projects = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_wsa_dot_net_native_enabled = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_wsa_dot_net_native_enabled = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_bool())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_drive = Some(rdr.read_i32()?);
             m_xbox_one_username = Some(rdr.read_aligned_string()?);
             m_xbox_one_network_share_path = Some(rdr.read_aligned_string()?);
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_platform_settings = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = PlatformSettingsData_Editor::parse(rdr, ver)?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else if *ver >= crate::UnityVersion::new(2017, 3, 0) {
             m_selected_wsa_subtarget = Some(rdr.read_i32()?);
             m_selected_wsauwp_build_type = Some(rdr.read_i32()?);
             m_selected_wsauwpsdk = Some(rdr.read_aligned_string()?);
             m_selected_wsauwpvs_version = Some(rdr.read_aligned_string()?);
-            m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
+            m_selected_wsa_build_and_run_deploy_target = Some(
+                EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?,
+            );
             m_generate_wsa_reference_projects = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_wsa_dot_net_native_enabled = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_wsa_dot_net_native_enabled = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_bool())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_selected_tizen_subtarget = Some(rdr.read_i32()?);
             rdr.align(4)?;
@@ -2345,15 +3080,37 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_xbox_one_username = Some(rdr.read_aligned_string()?);
             m_xbox_one_network_share_path = Some(rdr.read_aligned_string()?);
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_platform_settings = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = PlatformSettingsData_Editor::parse(rdr, ver)?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             m_selected_wsa_subtarget = Some(rdr.read_i32()?);
             m_selected_wsauwp_build_type = Some(rdr.read_i32()?);
             m_selected_wsauwpsdk = Some(rdr.read_aligned_string()?);
-            m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
+            m_selected_wsa_build_and_run_deploy_target = Some(
+                EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?,
+            );
             m_generate_wsa_reference_projects = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_wsa_dot_net_native_enabled = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_wsa_dot_net_native_enabled = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_bool())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_selected_tizen_subtarget = Some(rdr.read_i32()?);
             rdr.align(4)?;
@@ -2363,16 +3120,38 @@ impl crate::Parse for EditorUserBuildSettings {
             m_xbox_one_network_share_path = Some(rdr.read_aligned_string()?);
             m_facebook_create_package_for_submission = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_platform_settings = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = PlatformSettingsData_Editor::parse(rdr, ver)?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else if *ver >= crate::UnityVersion::new(5, 6, 0) {
             m_selected_wsa_subtarget = Some(rdr.read_i32()?);
             m_selected_wsasdk = Some(rdr.read_i32()?);
             m_selected_wsauwp_build_type = Some(rdr.read_i32()?);
             m_selected_wsauwpsdk = Some(rdr.read_aligned_string()?);
-            m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
+            m_selected_wsa_build_and_run_deploy_target = Some(
+                EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?,
+            );
             m_generate_wsa_reference_projects = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_wsa_dot_net_native_enabled = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_wsa_dot_net_native_enabled = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_bool())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_selected_tizen_subtarget = Some(rdr.read_i32()?);
             rdr.align(4)?;
@@ -2380,19 +3159,43 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_xbox_one_username = Some(rdr.read_aligned_string()?);
             m_xbox_one_network_share_path = Some(rdr.read_aligned_string()?);
-            m_force_optimize_script_compilation = Some(EditorUserBuildSettingsMForceOptimizeScriptCompilationVariant::parse(rdr, ver)?);
+            m_force_optimize_script_compilation = Some(
+                EditorUserBuildSettingsMForceOptimizeScriptCompilationVariant::parse(rdr, ver)?,
+            );
             m_facebook_create_package_for_submission = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_platform_settings = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = PlatformSettingsData_Editor::parse(rdr, ver)?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else if *ver >= crate::UnityVersion::new(5, 5, 2) {
             m_selected_wsa_subtarget = Some(rdr.read_i32()?);
             m_selected_wsasdk = Some(rdr.read_i32()?);
             m_selected_wsauwp_build_type = Some(rdr.read_i32()?);
             m_selected_wsauwpsdk = Some(rdr.read_aligned_string()?);
-            m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
+            m_selected_wsa_build_and_run_deploy_target = Some(
+                EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?,
+            );
             m_generate_wsa_reference_projects = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_wsa_dot_net_native_enabled = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_wsa_dot_net_native_enabled = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_bool())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_selected_tizen_subtarget = Some(rdr.read_i32()?);
             rdr.align(4)?;
@@ -2400,16 +3203,40 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_xbox_one_username = Some(rdr.read_aligned_string()?);
             m_xbox_one_network_share_path = Some(rdr.read_aligned_string()?);
-            m_force_optimize_script_compilation = Some(EditorUserBuildSettingsMForceOptimizeScriptCompilationVariant::parse(rdr, ver)?);
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_force_optimize_script_compilation = Some(
+                EditorUserBuildSettingsMForceOptimizeScriptCompilationVariant::parse(rdr, ver)?,
+            );
+            m_platform_settings = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = PlatformSettingsData_Editor::parse(rdr, ver)?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else if *ver >= crate::UnityVersion::new(5, 5, 0) {
             m_selected_wsa_subtarget = Some(rdr.read_i32()?);
             m_selected_wsasdk = Some(rdr.read_i32()?);
             m_selected_wsauwp_build_type = Some(rdr.read_i32()?);
-            m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
+            m_selected_wsa_build_and_run_deploy_target = Some(
+                EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?,
+            );
             m_generate_wsa_reference_projects = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_wsa_dot_net_native_enabled = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_wsa_dot_net_native_enabled = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_bool())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_selected_tizen_subtarget = Some(rdr.read_i32()?);
             rdr.align(4)?;
@@ -2417,15 +3244,39 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_xbox_one_username = Some(rdr.read_aligned_string()?);
             m_xbox_one_network_share_path = Some(rdr.read_aligned_string()?);
-            m_force_optimize_script_compilation = Some(EditorUserBuildSettingsMForceOptimizeScriptCompilationVariant::parse(rdr, ver)?);
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_force_optimize_script_compilation = Some(
+                EditorUserBuildSettingsMForceOptimizeScriptCompilationVariant::parse(rdr, ver)?,
+            );
+            m_platform_settings = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = PlatformSettingsData_Editor::parse(rdr, ver)?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else if *ver >= crate::UnityVersion::new(5, 4, 0) {
             m_selected_wsasdk = Some(rdr.read_i32()?);
             m_selected_wsauwp_build_type = Some(rdr.read_i32()?);
-            m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
+            m_selected_wsa_build_and_run_deploy_target = Some(
+                EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?,
+            );
             m_generate_wsa_reference_projects = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_wsa_dot_net_native_enabled = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_wsa_dot_net_native_enabled = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_bool())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_selected_tizen_subtarget = Some(rdr.read_i32()?);
             rdr.align(4)?;
@@ -2433,57 +3284,95 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_xbox_one_username = Some(rdr.read_aligned_string()?);
             m_xbox_one_network_share_path = Some(rdr.read_aligned_string()?);
-            m_force_optimize_script_compilation = Some(EditorUserBuildSettingsMForceOptimizeScriptCompilationVariant::parse(rdr, ver)?);
-            m_platform_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = PlatformSettingsData_Editor::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_force_optimize_script_compilation = Some(
+                EditorUserBuildSettingsMForceOptimizeScriptCompilationVariant::parse(rdr, ver)?,
+            );
+            m_platform_settings = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = PlatformSettingsData_Editor::parse(rdr, ver)?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else if *ver >= crate::UnityVersion::new(5, 3, 0) {
             m_selected_wsasdk = Some(rdr.read_i32()?);
             m_selected_wsauwp_build_type = Some(rdr.read_i32()?);
-            m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
+            m_selected_wsa_build_and_run_deploy_target = Some(
+                EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?,
+            );
             m_generate_wsa_reference_projects = Some(rdr.read_bool()?);
             rdr.align(4)?;
-            m_wsa_dot_net_native_enabled = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_bool() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_wsa_dot_net_native_enabled = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_bool())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
             m_selected_black_berry_subtarget = Some(rdr.read_i32()?);
-            m_selected_black_berry_build_type = Some(EditorUserBuildSettingsMSelectedBlackBerryBuildTypeVariant::parse(rdr, ver)?);
+            m_selected_black_berry_build_type =
+                Some(EditorUserBuildSettingsMSelectedBlackBerryBuildTypeVariant::parse(rdr, ver)?);
             m_selected_tizen_subtarget = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
             m_xbox_one_username = Some(rdr.read_aligned_string()?);
             m_xbox_one_network_share_path = Some(rdr.read_aligned_string()?);
-            m_force_optimize_script_compilation = Some(EditorUserBuildSettingsMForceOptimizeScriptCompilationVariant::parse(rdr, ver)?);
+            m_force_optimize_script_compilation = Some(
+                EditorUserBuildSettingsMForceOptimizeScriptCompilationVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(5, 2, 2) {
             m_selected_wsasdk = Some(rdr.read_i32()?);
             m_selected_wsauwp_build_type = Some(rdr.read_i32()?);
-            m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
+            m_selected_wsa_build_and_run_deploy_target = Some(
+                EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?,
+            );
             m_generate_wsa_reference_projects = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_selected_black_berry_subtarget = Some(rdr.read_i32()?);
-            m_selected_black_berry_build_type = Some(EditorUserBuildSettingsMSelectedBlackBerryBuildTypeVariant::parse(rdr, ver)?);
+            m_selected_black_berry_build_type =
+                Some(EditorUserBuildSettingsMSelectedBlackBerryBuildTypeVariant::parse(rdr, ver)?);
             m_selected_tizen_subtarget = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
-            m_force_optimize_script_compilation = Some(EditorUserBuildSettingsMForceOptimizeScriptCompilationVariant::parse(rdr, ver)?);
+            m_force_optimize_script_compilation = Some(
+                EditorUserBuildSettingsMForceOptimizeScriptCompilationVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(5, 2, 0) {
             m_selected_wsasdk = Some(rdr.read_i32()?);
             m_selected_wsauwp_build_type = Some(rdr.read_i32()?);
-            m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
+            m_selected_wsa_build_and_run_deploy_target = Some(
+                EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?,
+            );
             m_generate_wsa_reference_projects = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_selected_black_berry_subtarget = Some(rdr.read_i32()?);
-            m_selected_black_berry_build_type = Some(EditorUserBuildSettingsMSelectedBlackBerryBuildTypeVariant::parse(rdr, ver)?);
+            m_selected_black_berry_build_type =
+                Some(EditorUserBuildSettingsMSelectedBlackBerryBuildTypeVariant::parse(rdr, ver)?);
             m_selected_tizen_subtarget = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
             m_selected_xbox_one_deploy_method = Some(rdr.read_i32()?);
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_selected_wsasdk = Some(rdr.read_i32()?);
-            m_selected_wsa_build_and_run_deploy_target = Some(EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?);
+            m_selected_wsa_build_and_run_deploy_target = Some(
+                EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant::parse(rdr, ver)?,
+            );
             m_generate_wsa_reference_projects = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_selected_black_berry_subtarget = Some(rdr.read_i32()?);
-            m_selected_black_berry_build_type = Some(EditorUserBuildSettingsMSelectedBlackBerryBuildTypeVariant::parse(rdr, ver)?);
+            m_selected_black_berry_build_type =
+                Some(EditorUserBuildSettingsMSelectedBlackBerryBuildTypeVariant::parse(rdr, ver)?);
             m_selected_tizen_subtarget = Some(rdr.read_i32()?);
             rdr.align(4)?;
             m_xbox_one_streaming_install_launch_chunk_range = Some(rdr.read_i32()?);
@@ -2496,7 +3385,8 @@ impl crate::Parse for EditorUserBuildSettings {
             m_generate_metro_reference_projects = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_selected_black_berry_subtarget = Some(rdr.read_i32()?);
-            m_selected_black_berry_build_type = Some(EditorUserBuildSettingsMSelectedBlackBerryBuildTypeVariant::parse(rdr, ver)?);
+            m_selected_black_berry_build_type =
+                Some(EditorUserBuildSettingsMSelectedBlackBerryBuildTypeVariant::parse(rdr, ver)?);
             m_selected_tizen_subtarget = Some(rdr.read_i32()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 5, 0) {
@@ -2506,7 +3396,8 @@ impl crate::Parse for EditorUserBuildSettings {
             m_generate_metro_reference_projects = Some(rdr.read_bool()?);
             rdr.align(4)?;
             m_selected_black_berry_subtarget = Some(rdr.read_i32()?);
-            m_selected_black_berry_build_type = Some(EditorUserBuildSettingsMSelectedBlackBerryBuildTypeVariant::parse(rdr, ver)?);
+            m_selected_black_berry_build_type =
+                Some(EditorUserBuildSettingsMSelectedBlackBerryBuildTypeVariant::parse(rdr, ver)?);
             m_selected_tizen_subtarget = Some(rdr.read_i32()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(4, 3, 0) {
@@ -2514,12 +3405,14 @@ impl crate::Parse for EditorUserBuildSettings {
             m_selected_metro_build_type = Some(rdr.read_i32()?);
             m_selected_metro_sdk = Some(rdr.read_i32()?);
             m_selected_black_berry_subtarget = Some(rdr.read_i32()?);
-            m_selected_black_berry_build_type = Some(EditorUserBuildSettingsMSelectedBlackBerryBuildTypeVariant::parse(rdr, ver)?);
+            m_selected_black_berry_build_type =
+                Some(EditorUserBuildSettingsMSelectedBlackBerryBuildTypeVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 2, 0) {
             m_selected_metro_target = Some(rdr.read_i32()?);
             m_selected_metro_build_type = Some(rdr.read_i32()?);
             m_selected_black_berry_subtarget = Some(rdr.read_i32()?);
-            m_selected_black_berry_build_type = Some(EditorUserBuildSettingsMSelectedBlackBerryBuildTypeVariant::parse(rdr, ver)?);
+            m_selected_black_berry_build_type =
+                Some(EditorUserBuildSettingsMSelectedBlackBerryBuildTypeVariant::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
             m_selected_metro_build_type = Some(rdr.read_i32()?);
         } else {

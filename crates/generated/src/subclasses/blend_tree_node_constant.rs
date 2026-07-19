@@ -41,12 +41,19 @@ impl crate::Parse for BlendTreeNodeConstant {
             m_blend_type = Some(rdr.read_u32()?);
         } else {
         }
-            m_blend_event_id = Some(rdr.read_u32()?);
+        m_blend_event_id = Some(rdr.read_u32()?);
         if *ver >= crate::UnityVersion::new(4, 1, 0) {
             m_blend_event_yid = Some(rdr.read_u32()?);
         } else {
         }
-            m_child_indices = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u32() }).collect::<Result<Vec<_>, _>>() } )?);
+        m_child_indices = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| rdr.read_u32())
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_blend1d_data = Some(OffsetPtr::parse(rdr, ver)?);
             m_blend2d_data = Some(OffsetPtr::parse(rdr, ver)?);
@@ -55,15 +62,22 @@ impl crate::Parse for BlendTreeNodeConstant {
             m_blend1d_data = Some(OffsetPtr::parse(rdr, ver)?);
             m_blend2d_data = Some(OffsetPtr::parse(rdr, ver)?);
         } else {
-            m_child_threshold_array = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_f32() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_child_threshold_array = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_f32())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         }
-            m_clip_id = Some(rdr.read_u32()?);
+        m_clip_id = Some(rdr.read_u32()?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
         } else if *ver >= crate::UnityVersion::new(4, 5, 2) {
             m_clip_index = Some(rdr.read_u32()?);
         } else {
         }
-            m_duration = Some(rdr.read_f32()?);
+        m_duration = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(4, 1, 3) {
             m_cycle_offset = Some(rdr.read_f32()?);
             m_mirror = Some(rdr.read_bool()?);

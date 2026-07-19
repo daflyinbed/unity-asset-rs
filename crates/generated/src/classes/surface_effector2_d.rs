@@ -32,17 +32,17 @@ impl crate::Parse for SurfaceEffector2D {
         let mut m_use_contact_force = None;
         let mut m_use_friction = None;
         let mut m_use_bounce = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_enabled = Some(rdr.read_u8()?);
-            rdr.align(4)?;
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_enabled = Some(rdr.read_u8()?);
+        rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 0, 2) {
             m_use_collider_mask = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else {
         }
-            m_collider_mask = Some(BitField::parse(rdr, ver)?);
-            m_speed = Some(rdr.read_f32()?);
-            m_speed_variation = Some(rdr.read_f32()?);
+        m_collider_mask = Some(BitField::parse(rdr, ver)?);
+        m_speed = Some(rdr.read_f32()?);
+        m_speed_variation = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(5, 0, 1) {
             m_force_scale = Some(rdr.read_f32()?);
             m_use_contact_force = Some(rdr.read_bool()?);

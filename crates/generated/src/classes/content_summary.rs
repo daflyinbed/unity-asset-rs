@@ -38,33 +38,48 @@ impl crate::Parse for ContentSummary {
         let mut m_object_count = None;
         let mut m_type_stats_list = None;
         let mut m_asset_stats_list = None;
-            m_serialized_file_size = Some(rdr.read_u64()?);
+        m_serialized_file_size = Some(rdr.read_u64()?);
         if *ver >= crate::UnityVersion::new(6000, 6, 0) {
             m_reused_serialized_file_size = Some(rdr.read_u64()?);
         } else {
             m_generated_file_size = Some(rdr.read_u64()?);
         }
-            m_size_reused_content_in_output_directory = Some(rdr.read_u64()?);
-            m_resource_data_size = Some(rdr.read_u64()?);
-            m_header_size = Some(rdr.read_u64()?);
-            m_serialized_file_count = Some(rdr.read_i32()?);
+        m_size_reused_content_in_output_directory = Some(rdr.read_u64()?);
+        m_resource_data_size = Some(rdr.read_u64()?);
+        m_header_size = Some(rdr.read_u64()?);
+        m_serialized_file_count = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(6000, 6, 0) {
             m_reused_serialized_file_count = Some(rdr.read_i32()?);
         } else {
             m_generated_file_count = Some(rdr.read_i32()?);
         }
-            m_resource_file_count = Some(rdr.read_i32()?);
-            m_object_count = Some(rdr.read_i32()?);
-            m_type_stats_list = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TypeStats::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            m_asset_stats_list = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { AssetStats::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+        m_resource_file_count = Some(rdr.read_i32()?);
+        m_object_count = Some(rdr.read_i32()?);
+        m_type_stats_list = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| TypeStats::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
+        m_asset_stats_list = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| AssetStats::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
 
         Ok(ContentSummary {
             m_serialized_file_size: m_serialized_file_size.unwrap(),
             m_generated_file_size,
             m_reused_serialized_file_size,
-            m_size_reused_content_in_output_directory: m_size_reused_content_in_output_directory.unwrap(),
+            m_size_reused_content_in_output_directory: m_size_reused_content_in_output_directory
+                .unwrap(),
             m_resource_data_size: m_resource_data_size.unwrap(),
             m_header_size: m_header_size.unwrap(),
             m_serialized_file_count: m_serialized_file_count.unwrap(),

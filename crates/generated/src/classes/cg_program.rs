@@ -15,8 +15,8 @@ impl crate::Parse for CgProgram {
         let mut m_name = None;
         let mut m_script = None;
         let mut m_path_name = None;
-            m_name = Some(rdr.read_aligned_string()?);
-            m_script = Some(rdr.read_aligned_string()?);
+        m_name = Some(rdr.read_aligned_string()?);
+        m_script = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
         } else {
             m_path_name = Some(rdr.read_aligned_string()?);

@@ -20,6 +20,9 @@ impl PPtr {
         } else {
             r.read_i32()? as i64
         };
-        Ok(PPtr { m_file_id, m_path_id })
+        Ok(PPtr {
+            m_file_id,
+            m_path_id,
+        })
     }
 }

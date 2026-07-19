@@ -5,7 +5,6 @@ use crate::subclasses::quaternionf::Quaternionf;
 use crate::subclasses::vector2f::Vector2f;
 use crate::subclasses::vector3f::Vector3f;
 
-
 /// 版本枚举：RectTransformMLocalScaleVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum RectTransformMLocalScaleVariant {
@@ -19,11 +18,11 @@ impl crate::Parse for RectTransformMLocalScaleVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            let v = ( { Ok(Box::new(Vector3f::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(Vector3f::parse(rdr, ver)?)) })?;
             rdr.align(4)?;
             Ok(Self::V2021_2(v))
         } else {
-            let v = ( { Ok(Box::new(Vector3f::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(Vector3f::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
         }
     }
@@ -42,11 +41,21 @@ impl crate::Parse for RectTransformMChildrenVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             rdr.align(4)?;
             Ok(Self::V2017_1(v))
         } else {
-            let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+            let v = ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -84,7 +93,7 @@ impl crate::Parse for RectTransform {
         let mut m_pivot = None;
         let mut m_father = None;
         let mut m_anchored_position = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(4, 6, 0) {
             m_local_rotation = Some(Quaternionf::parse(rdr, ver)?);
             m_local_position = Some(Vector3f::parse(rdr, ver)?);
@@ -93,15 +102,15 @@ impl crate::Parse for RectTransform {
             m_father = Some(crate::PPtr::parse(rdr, ver)?);
         } else {
         }
-            m_anchor_min = Some(Vector2f::parse(rdr, ver)?);
-            m_anchor_max = Some(Vector2f::parse(rdr, ver)?);
+        m_anchor_min = Some(Vector2f::parse(rdr, ver)?);
+        m_anchor_max = Some(Vector2f::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(4, 6, 0) {
             m_anchored_position = Some(Vector2f::parse(rdr, ver)?);
         } else {
             m_position = Some(Vector2f::parse(rdr, ver)?);
         }
-            m_size_delta = Some(Vector2f::parse(rdr, ver)?);
-            m_pivot = Some(Vector2f::parse(rdr, ver)?);
+        m_size_delta = Some(Vector2f::parse(rdr, ver)?);
+        m_pivot = Some(Vector2f::parse(rdr, ver)?);
 
         Ok(RectTransform {
             m_game_object: m_game_object.unwrap(),

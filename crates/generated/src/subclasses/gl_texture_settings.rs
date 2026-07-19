@@ -23,9 +23,9 @@ impl crate::Parse for GlTextureSettings {
         let mut m_wrap_u = None;
         let mut m_wrap_v = None;
         let mut m_wrap_w = None;
-            m_filter_mode = Some(rdr.read_i32()?);
-            m_aniso = Some(rdr.read_i32()?);
-            m_mip_bias = Some(rdr.read_f32()?);
+        m_filter_mode = Some(rdr.read_i32()?);
+        m_aniso = Some(rdr.read_i32()?);
+        m_mip_bias = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2017, 1, 0) {
             m_wrap_u = Some(rdr.read_i32()?);
             m_wrap_v = Some(rdr.read_i32()?);

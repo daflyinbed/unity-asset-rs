@@ -54,17 +54,17 @@ impl crate::Parse for DetailPrototype {
         let mut align_to_ground = None;
         let mut position_jitter = None;
         let mut target_coverage = None;
-            prototype = Some(crate::PPtr::parse(rdr, ver)?);
-            prototype_texture = Some(crate::PPtr::parse(rdr, ver)?);
-            min_width = Some(rdr.read_f32()?);
-            max_width = Some(rdr.read_f32()?);
-            min_height = Some(rdr.read_f32()?);
-            max_height = Some(rdr.read_f32()?);
+        prototype = Some(crate::PPtr::parse(rdr, ver)?);
+        prototype_texture = Some(crate::PPtr::parse(rdr, ver)?);
+        min_width = Some(rdr.read_f32()?);
+        max_width = Some(rdr.read_f32()?);
+        min_height = Some(rdr.read_f32()?);
+        max_height = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2021, 2, 0) {
             noise_seed = Some(rdr.read_i32()?);
         } else {
         }
-            noise_spread = Some(rdr.read_f32()?);
+        noise_spread = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             hole_test_radius = Some(rdr.read_f32()?);
             density = Some(rdr.read_f32()?);
@@ -73,14 +73,14 @@ impl crate::Parse for DetailPrototype {
         } else {
             bend_factor = Some(rdr.read_f32()?);
         }
-            healthy_color = Some(ColorRgbAf::parse(rdr, ver)?);
-            dry_color = Some(ColorRgbAf::parse(rdr, ver)?);
+        healthy_color = Some(ColorRgbAf::parse(rdr, ver)?);
+        dry_color = Some(ColorRgbAf::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2021, 2, 0) {
         } else {
             lightmap_factor = Some(rdr.read_f32()?);
         }
-            render_mode = Some(rdr.read_i32()?);
-            use_prototype_mesh = Some(rdr.read_i32()?);
+        render_mode = Some(rdr.read_i32()?);
+        use_prototype_mesh = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             use_instancing = Some(rdr.read_i32()?);
             use_density_scaling = Some(rdr.read_i32()?);

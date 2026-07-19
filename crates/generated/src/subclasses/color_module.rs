@@ -17,9 +17,6 @@ impl crate::Parse for ColorModule {
         rdr.align(4)?;
         let gradient = MinMaxGradient::parse(rdr, ver)?;
 
-        Ok(ColorModule {
-            enabled,
-            gradient,
-        })
+        Ok(ColorModule { enabled, gradient })
     }
 }

@@ -6,7 +6,6 @@ use crate::subclasses::joint_spring::JointSpring;
 use crate::subclasses::vector3f::Vector3f;
 use crate::subclasses::wheel_friction_curve::WheelFrictionCurve;
 
-
 /// 版本枚举：WheelColliderMEnabledVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum WheelColliderMEnabledVariant {
@@ -68,26 +67,26 @@ impl crate::Parse for WheelCollider {
         let mut m_exclude_layers = None;
         let mut m_layer_override_priority = None;
         let mut m_provides_contacts = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_center = Some(Vector3f::parse(rdr, ver)?);
-            m_radius = Some(rdr.read_f32()?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_center = Some(Vector3f::parse(rdr, ver)?);
+        m_radius = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
         } else {
             m_suspension_distance = Some(rdr.read_f32()?);
         }
-            m_suspension_spring = Some(JointSpring::parse(rdr, ver)?);
+        m_suspension_spring = Some(JointSpring::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_suspension_distance = Some(rdr.read_f32()?);
             m_force_app_point_distance = Some(rdr.read_f32()?);
         } else {
         }
-            m_mass = Some(rdr.read_f32()?);
+        m_mass = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             m_wheel_damping_rate = Some(rdr.read_f32()?);
         } else {
         }
-            m_forward_friction = Some(WheelFrictionCurve::parse(rdr, ver)?);
-            m_sideways_friction = Some(WheelFrictionCurve::parse(rdr, ver)?);
+        m_forward_friction = Some(WheelFrictionCurve::parse(rdr, ver)?);
+        m_sideways_friction = Some(WheelFrictionCurve::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             m_include_layers = Some(BitField::parse(rdr, ver)?);
             m_exclude_layers = Some(BitField::parse(rdr, ver)?);

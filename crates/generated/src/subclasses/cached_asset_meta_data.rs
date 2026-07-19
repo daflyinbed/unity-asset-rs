@@ -4,7 +4,6 @@ use crate::subclasses::guid::Guid;
 use crate::subclasses::hash128::Hash128;
 use crate::subclasses::md_four::MdFour;
 
-
 /// 版本枚举：CachedAssetMetaDataOriginalDigestVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum CachedAssetMetaDataOriginalDigestVariant {
@@ -18,10 +17,10 @@ impl crate::Parse for CachedAssetMetaDataOriginalDigestVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            let v = ( { Ok(Box::new(Hash128::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(Hash128::parse(rdr, ver)?)) })?;
             Ok(Self::V5_0(v))
         } else {
-            let v = ( { Ok(Box::new(MdFour::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(MdFour::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
         }
     }

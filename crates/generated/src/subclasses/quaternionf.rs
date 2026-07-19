@@ -18,11 +18,6 @@ impl crate::Parse for Quaternionf {
         let z = rdr.read_f32()?;
         let w = rdr.read_f32()?;
 
-        Ok(Quaternionf {
-            x,
-            y,
-            z,
-            w,
-        })
+        Ok(Quaternionf { x, y, z, w })
     }
 }

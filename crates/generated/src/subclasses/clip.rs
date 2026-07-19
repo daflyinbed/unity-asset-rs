@@ -22,8 +22,8 @@ impl crate::Parse for Clip {
         let mut m_dense_clip = None;
         let mut m_binding = None;
         let mut m_constant_clip = None;
-            m_streamed_clip = Some(StreamedClip::parse(rdr, ver)?);
-            m_dense_clip = Some(DenseClip::parse(rdr, ver)?);
+        m_streamed_clip = Some(StreamedClip::parse(rdr, ver)?);
+        m_dense_clip = Some(DenseClip::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2018, 3, 0) {
             m_constant_clip = Some(ConstantClip::parse(rdr, ver)?);
         } else if *ver >= crate::UnityVersion::new(4, 3, 0) {

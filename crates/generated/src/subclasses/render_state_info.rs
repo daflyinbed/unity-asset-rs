@@ -14,8 +14,6 @@ impl crate::Parse for RenderStateInfo {
     ) -> Result<Self, R::Error> {
         let render_state = RenderStateBlock::parse(rdr, ver)?;
 
-        Ok(RenderStateInfo {
-            render_state,
-        })
+        Ok(RenderStateInfo { render_state })
     }
 }

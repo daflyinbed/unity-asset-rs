@@ -10,10 +10,13 @@ impl crate::Parse for Hand {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_hand_bone_index = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_i32() }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_hand_bone_index = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| rdr.read_i32())
+                .collect::<Result<Vec<_>, _>>()
+        })?;
 
-        Ok(Hand {
-            m_hand_bone_index,
-        })
+        Ok(Hand { m_hand_bone_index })
     }
 }

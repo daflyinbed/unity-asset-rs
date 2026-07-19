@@ -14,9 +14,6 @@ impl crate::Parse for VfxMapping {
         let name_id = rdr.read_aligned_string()?;
         let index = rdr.read_i32()?;
 
-        Ok(VfxMapping {
-            name_id,
-            index,
-        })
+        Ok(VfxMapping { name_id, index })
     }
 }

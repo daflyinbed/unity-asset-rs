@@ -19,8 +19,8 @@ impl crate::Parse for SoftJointLimit {
         let mut spring = None;
         let mut contact_distance = None;
         let mut damper = None;
-            limit = Some(rdr.read_f32()?);
-            bounciness = Some(rdr.read_f32()?);
+        limit = Some(rdr.read_f32()?);
+        bounciness = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
             contact_distance = Some(rdr.read_f32()?);
         } else {

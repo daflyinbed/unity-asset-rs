@@ -21,10 +21,17 @@ impl crate::Parse for TileAnimationData {
         let mut m_animation_time_offset = None;
         let mut m_is_looping = None;
         let mut m_flags = None;
-            m_animated_sprites = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { crate::PPtr::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
-            m_animation_speed = Some(rdr.read_f32()?);
-            m_animation_time_offset = Some(rdr.read_f32()?);
+        m_animated_sprites = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| crate::PPtr::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
+        m_animation_speed = Some(rdr.read_f32()?);
+        m_animation_time_offset = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             m_flags = Some(rdr.read_u32()?);
             rdr.align(4)?;

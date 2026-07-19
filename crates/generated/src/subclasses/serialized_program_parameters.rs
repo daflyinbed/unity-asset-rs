@@ -25,21 +25,61 @@ impl crate::Parse for SerializedProgramParameters {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let m_vector_params = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { VectorParameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_vector_params = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| VectorParameter::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
-        let m_matrix_params = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { MatrixParameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_matrix_params = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| MatrixParameter::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
-        let m_texture_params = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { TextureParameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_texture_params = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| TextureParameter::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
-        let m_buffer_params = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { BufferBindingParameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_buffer_params = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| BufferBindingParameter::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
-        let m_constant_buffers = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ConstantBuffer::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_constant_buffers = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| ConstantBuffer::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
-        let m_constant_buffer_bindings = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { BufferBindingParameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_constant_buffer_bindings = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| BufferBindingParameter::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
-        let m_uav_params = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { UavParameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_uav_params = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| UavParameter::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
-        let m_samplers = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { SamplerParameter::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let m_samplers = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| SamplerParameter::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         rdr.align(4)?;
 
         Ok(SerializedProgramParameters {

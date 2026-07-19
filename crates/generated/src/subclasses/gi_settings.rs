@@ -23,17 +23,17 @@ impl crate::Parse for GiSettings {
         let mut m_environment_lighting_mode = None;
         let mut m_enable_baked_lightmaps = None;
         let mut m_enable_realtime_lightmaps = None;
-            m_bounce_scale = Some(rdr.read_f32()?);
-            m_indirect_output_scale = Some(rdr.read_f32()?);
-            m_albedo_boost = Some(rdr.read_f32()?);
+        m_bounce_scale = Some(rdr.read_f32()?);
+        m_indirect_output_scale = Some(rdr.read_f32()?);
+        m_albedo_boost = Some(rdr.read_f32()?);
         if *ver >= crate::UnityVersion::new(2018, 3, 0) {
         } else {
             m_temporal_coherence_threshold = Some(rdr.read_f32()?);
         }
-            m_environment_lighting_mode = Some(rdr.read_u32()?);
-            m_enable_baked_lightmaps = Some(rdr.read_bool()?);
-            m_enable_realtime_lightmaps = Some(rdr.read_bool()?);
-            rdr.align(4)?;
+        m_environment_lighting_mode = Some(rdr.read_u32()?);
+        m_enable_baked_lightmaps = Some(rdr.read_bool()?);
+        m_enable_realtime_lightmaps = Some(rdr.read_bool()?);
+        rdr.align(4)?;
 
         Ok(GiSettings {
             m_bounce_scale: m_bounce_scale.unwrap(),

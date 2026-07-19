@@ -112,12 +112,7 @@ pub fn parse_rawweb(src: Bytes, fmt: FileFormat, _registry: &Registry) -> Result
 
             // 解压后的流：directory 在开头，data 紧随。metadata_offset = 0。
             let data_bytes = Bytes::from(decompressed);
-            read_directory_and_data(
-                &data_bytes,
-                0,
-                0,
-                uncompressed_blocks_info_size,
-            )?
+            read_directory_and_data(&data_bytes, 0, 0, uncompressed_blocks_info_size)?
         }
         _ => unreachable!("parse_rawweb 只处理 WebBundle / RawBundle"),
     };
@@ -169,9 +164,7 @@ fn read_directory_and_data(
     if metadata_size > 0 {
         let actual = c.pos() - metadata_start;
         if actual != metadata_size {
-            log::warn!(
-                "rawweb: directory 实际大小 {actual} != 声明 metadata_size {metadata_size}"
-            );
+            log::warn!("rawweb: directory 实际大小 {actual} != 声明 metadata_size {metadata_size}");
         }
     }
 
@@ -252,10 +245,12 @@ fn decompress_lzma_size_stream(input: &[u8], expected: usize) -> Result<Vec<u8>>
             memlimit: None,
         },
     )
-    .map_err(|e| DecompressSnafu {
-        reason: format!("UnityWeb LZMA 解压失败: {e}"),
-    }
-    .build())?;
+    .map_err(|e| {
+        DecompressSnafu {
+            reason: format!("UnityWeb LZMA 解压失败: {e}"),
+        }
+        .build()
+    })?;
 
     Ok(out)
 }

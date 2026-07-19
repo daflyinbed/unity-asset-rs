@@ -14,9 +14,6 @@ impl crate::Parse for Hint {
         let m_key = rdr.read_aligned_string()?;
         let m_value = rdr.read_aligned_string()?;
 
-        Ok(Hint {
-            m_key,
-            m_value,
-        })
+        Ok(Hint { m_key, m_value })
     }
 }

@@ -19,9 +19,7 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
 
-use crate::ir::{
-    EmitClass, EmitField, EnumVariant, Pipeline, RustType, VersionGate,
-};
+use crate::ir::{EmitClass, EmitField, EnumVariant, Pipeline, RustType, VersionGate};
 use crate::names::to_rust_type_name;
 
 /// 把整个 Pipeline emit 到 `out_dir`。
@@ -30,11 +28,7 @@ pub fn emit_all(state: &Pipeline, out_dir: &Path) -> std::io::Result<()> {
     std::fs::create_dir_all(out_dir.join("subclasses"))?;
 
     // 只生成非抽象类（抽象父类 root 为空，字段已平铺到子类）
-    let emit_classes: Vec<&EmitClass> = state
-        .classes
-        .values()
-        .filter(|c| !c.is_abstract)
-        .collect();
+    let emit_classes: Vec<&EmitClass> = state.classes.values().filter(|c| !c.is_abstract).collect();
 
     // 主 class 的 Rust 名字集合。某些 main class（如 Vector3f、Collider、Scene）也被
     // 其他类按内嵌 struct（RustType::Subclass）引用 —— 这些引用必须指向 classes/ 而非
@@ -150,11 +144,7 @@ fn collect_imports(class: &EmitClass, main_names: &BTreeSet<String>) -> String {
     s
 }
 
-fn collect_type_imports(
-    t: &RustType,
-    out: &mut BTreeSet<String>,
-    main_names: &BTreeSet<String>,
-) {
+fn collect_type_imports(t: &RustType, out: &mut BTreeSet<String>, main_names: &BTreeSet<String>) {
     match t {
         RustType::Bool
         | RustType::I8
@@ -228,10 +218,7 @@ fn emit_versioned_enums(out: &mut String, class: &EmitClass) {
 /// emit 单个版本枚举定义 + 其 impl Parse。
 fn emit_versioned_enum(out: &mut String, name: &str, variants: &[EnumVariant]) {
     // 枚举定义
-    out.push_str(&format!(
-        "\n/// 版本枚举：{} 的类型跨版本变化。\n",
-        name
-    ));
+    out.push_str(&format!("\n/// 版本枚举：{} 的类型跨版本变化。\n", name));
     out.push_str("#[derive(Debug, Clone)]\n");
     out.push_str(&format!("pub enum {} {{\n", name));
     for v in variants {
@@ -352,10 +339,7 @@ fn emit_struct(out: &mut String, class: &EmitClass) {
 }
 
 fn emit_impl_parse(out: &mut String, class: &EmitClass) {
-    out.push_str(&format!(
-        "\nimpl crate::Parse for {} {{\n",
-        class.name
-    ));
+    out.push_str(&format!("\nimpl crate::Parse for {} {{\n", class.name));
     out.push_str(
         "    fn parse<R: crate::EndianReader>(\n        rdr: &mut R,\n        ver: &crate::UnityVersion,\n    ) -> Result<Self, R::Error> {\n",
     );
@@ -380,7 +364,10 @@ fn emit_impl_parse(out: &mut String, class: &EmitClass) {
     } else {
         for f in &class.own_fields {
             if matches!(f.version_gate, Some(VersionGate::Always)) {
-                out.push_str(&format!("            {}: {}.unwrap(),\n", f.rust_name, f.rust_name));
+                out.push_str(&format!(
+                    "            {}: {}.unwrap(),\n",
+                    f.rust_name, f.rust_name
+                ));
             } else {
                 out.push_str(&format!("            {},\n", f.rust_name));
             }
@@ -442,7 +429,15 @@ fn emit_versioned_field_reads(out: &mut String, class: &EmitClass) {
     let per_version_segs: Vec<Vec<Vec<String>>> = class
         .version_layouts
         .iter()
-        .map(|l| split_by_anchors(&l.fields.iter().map(|f| f.rust_name.clone()).collect::<Vec<_>>(), &anchors))
+        .map(|l| {
+            split_by_anchors(
+                &l.fields
+                    .iter()
+                    .map(|f| f.rust_name.clone())
+                    .collect::<Vec<_>>(),
+                &anchors,
+            )
+        })
         .collect();
 
     let n_slots = anchors.len() + 1;
@@ -455,7 +450,13 @@ fn emit_versioned_field_reads(out: &mut String, class: &EmitClass) {
             .map(|(l, segs)| (l.since, segs[slot].clone()))
             .collect();
 
-        emit_slot_segment(out, &class.name, &slot_entries, &own_map, &version_field_maps);
+        emit_slot_segment(
+            out,
+            &class.name,
+            &slot_entries,
+            &own_map,
+            &version_field_maps,
+        );
 
         // 锚点（slot 之后、下一个 slot 之前）线性读
         // 锚点在所有版本中都有且相对顺序一致，用 own_map 的 align_after 即可。
@@ -578,13 +579,17 @@ fn set_field_none(
     // 仅 pre-5.0 分支有 m_audio_data，故只在那个 else 分支命中。
     if class_name == "AudioClip" && fname == "m_audio_data" {
         out.push_str("            m_audio_data = Some(if m_stream == Some(2) {\n");
-        out.push_str("                // Streaming：u32 size; u32 offset; 指向 <collection>.resS\n");
+        out.push_str(
+            "                // Streaming：u32 size; u32 offset; 指向 <collection>.resS\n",
+        );
         out.push_str("                let size = rdr.read_u32()?;\n");
         out.push_str("                let offset = rdr.read_u32()?;\n");
         out.push_str("                crate::classes::audio_clip::AudioClipMAudioData::Streamed { size, offset }\n");
         out.push_str("            } else {\n");
         out.push_str("                let v = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_u8() }).collect::<Result<Vec<_>, _>>() } )?;\n");
-        out.push_str("                crate::classes::audio_clip::AudioClipMAudioData::Inline(v)\n");
+        out.push_str(
+            "                crate::classes::audio_clip::AudioClipMAudioData::Inline(v)\n",
+        );
         out.push_str("            });\n");
         out.push_str("            rdr.align(4)?;\n");
         return;
@@ -859,10 +864,7 @@ fn emit_class_id(main_classes: &[&EmitClass]) -> String {
     s.push_str("        match id {\n");
     for c in main_classes {
         if let Some(id) = c.class_id() {
-            s.push_str(&format!(
-                "            {id} => Some(Self::{}),\n",
-                c.name
-            ));
+            s.push_str(&format!("            {id} => Some(Self::{}),\n", c.name));
         }
     }
     s.push_str("            _ => None,\n");
@@ -885,8 +887,7 @@ fn snake_case(s: &str) -> String {
         if i > 0 && c.is_uppercase() {
             let prev = chars[i - 1];
             let next_lower = i + 1 < chars.len() && chars[i + 1].is_lowercase();
-            if prev.is_lowercase() || prev.is_ascii_digit() || (prev.is_uppercase() && next_lower)
-            {
+            if prev.is_lowercase() || prev.is_ascii_digit() || (prev.is_uppercase() && next_lower) {
                 out.push('_');
             }
         }

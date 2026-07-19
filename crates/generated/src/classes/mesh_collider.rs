@@ -3,7 +3,6 @@
 use crate::PPtr;
 use crate::subclasses::bit_field::BitField;
 
-
 /// 版本枚举：MeshColliderMMaterialVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum MeshColliderMMaterialVariant {
@@ -90,27 +89,27 @@ impl crate::Parse for MeshCollider {
         let mut m_cooking_options = None;
         let mut m_skin_width = None;
         let mut m_provides_contacts = None;
-            m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
-            m_material = Some(MeshColliderMMaterialVariant::parse(rdr, ver)?);
+        m_game_object = Some(crate::PPtr::parse(rdr, ver)?);
+        m_material = Some(MeshColliderMMaterialVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             m_include_layers = Some(BitField::parse(rdr, ver)?);
             m_exclude_layers = Some(BitField::parse(rdr, ver)?);
             m_layer_override_priority = Some(rdr.read_i32()?);
         } else {
         }
-            m_is_trigger = Some(rdr.read_bool()?);
+        m_is_trigger = Some(rdr.read_bool()?);
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             m_provides_contacts = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else {
         }
-            m_enabled = Some(rdr.read_bool()?);
-            rdr.align(4)?;
+        m_enabled = Some(rdr.read_bool()?);
+        rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(5, 0, 0) {
         } else {
             m_smooth_sphere_collisions = Some(rdr.read_bool()?);
         }
-            m_convex = Some(MeshColliderMConvexVariant::parse(rdr, ver)?);
+        m_convex = Some(MeshColliderMConvexVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(2018, 3, 0) {
             m_cooking_options = Some(rdr.read_i32()?);
             rdr.align(4)?;
@@ -124,7 +123,7 @@ impl crate::Parse for MeshCollider {
             m_skin_width = Some(rdr.read_f32()?);
         } else {
         }
-            m_mesh = Some(crate::PPtr::parse(rdr, ver)?);
+        m_mesh = Some(crate::PPtr::parse(rdr, ver)?);
 
         Ok(MeshCollider {
             m_game_object: m_game_object.unwrap(),

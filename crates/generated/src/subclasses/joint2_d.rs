@@ -14,8 +14,6 @@ impl crate::Parse for Joint2D {
     ) -> Result<Self, R::Error> {
         let m_game_object = crate::PPtr::parse(rdr, ver)?;
 
-        Ok(Joint2D {
-            m_game_object,
-        })
+        Ok(Joint2D { m_game_object })
     }
 }

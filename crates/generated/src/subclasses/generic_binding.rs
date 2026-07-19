@@ -2,7 +2,6 @@
 
 use crate::PPtr;
 
-
 /// 版本枚举：GenericBindingIsPPtrCurveVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum GenericBindingIsPPtrCurveVariant {
@@ -104,24 +103,28 @@ impl crate::Parse for GenericBinding {
         let mut is_int_curve = None;
         let mut is_serialize_reference_curve = None;
         let mut meta_data = None;
-            path = Some(rdr.read_u32()?);
-            attribute = Some(rdr.read_u32()?);
-            script = Some(crate::PPtr::parse(rdr, ver)?);
+        path = Some(rdr.read_u32()?);
+        attribute = Some(rdr.read_u32()?);
+        script = Some(crate::PPtr::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(5, 6, 0) {
             type_id = Some(rdr.read_i32()?);
         } else {
             class_id = Some(rdr.read_u16()?);
         }
-            custom_type = Some(rdr.read_u8()?);
-            is_p_ptr_curve = Some(GenericBindingIsPPtrCurveVariant::parse(rdr, ver)?);
+        custom_type = Some(rdr.read_u8()?);
+        is_p_ptr_curve = Some(GenericBindingIsPPtrCurveVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 5, 0) {
             is_int_curve = Some(GenericBindingIsIntCurveVariant::parse(rdr, ver)?);
-            is_serialize_reference_curve = Some(GenericBindingIsSerializeReferenceCurveVariant::parse(rdr, ver)?);
+            is_serialize_reference_curve = Some(
+                GenericBindingIsSerializeReferenceCurveVariant::parse(rdr, ver)?,
+            );
             meta_data = Some(rdr.read_u16()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             is_int_curve = Some(GenericBindingIsIntCurveVariant::parse(rdr, ver)?);
-            is_serialize_reference_curve = Some(GenericBindingIsSerializeReferenceCurveVariant::parse(rdr, ver)?);
+            is_serialize_reference_curve = Some(
+                GenericBindingIsSerializeReferenceCurveVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
             is_int_curve = Some(GenericBindingIsIntCurveVariant::parse(rdr, ver)?);
         } else {

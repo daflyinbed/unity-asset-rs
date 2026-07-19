@@ -39,7 +39,7 @@ impl crate::Parse for PhysicsMaterial {
         let mut friction_direction2 = None;
         let mut dynamic_friction2 = None;
         let mut static_friction2 = None;
-            m_name = Some(rdr.read_aligned_string()?);
+        m_name = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(2023, 3, 0) {
             m_dynamic_friction = Some(rdr.read_f32()?);
             m_static_friction = Some(rdr.read_f32()?);

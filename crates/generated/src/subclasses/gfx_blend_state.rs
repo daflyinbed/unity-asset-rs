@@ -14,7 +14,12 @@ impl crate::Parse for GfxBlendState {
         rdr: &mut R,
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
-        let rt = ( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { GfxRenderTargetBlendState::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?;
+        let rt = ({
+            let n = rdr.read_i32()? as usize;
+            (0..n)
+                .map(|_| GfxRenderTargetBlendState::parse(rdr, ver))
+                .collect::<Result<Vec<_>, _>>()
+        })?;
         let separate_mrt_blend = rdr.read_u8()?;
         let alpha_to_mask = rdr.read_u8()?;
         rdr.align(4)?;

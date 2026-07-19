@@ -16,9 +16,6 @@ impl crate::Parse for PPtrKeyframe {
         let time = rdr.read_f32()?;
         let value = crate::PPtr::parse(rdr, ver)?;
 
-        Ok(PPtrKeyframe {
-            time,
-            value,
-        })
+        Ok(PPtrKeyframe { time, value })
     }
 }

@@ -25,7 +25,6 @@ use crate::subclasses::vfx_field_vfx_entry_expression_value_vector2f::VfxField_V
 use crate::subclasses::vfx_field_vfx_entry_expression_value_vector3f::VfxField_VfxEntryExpressionValue_Vector3f;
 use crate::subclasses::vfx_field_vfx_entry_expression_value_vector4f::VfxField_VfxEntryExpressionValue_Vector4f;
 
-
 /// 版本枚举：VfxPropertySheetSerializedBaseMFloatVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum VfxPropertySheetSerializedBaseMFloatVariant {
@@ -47,34 +46,54 @@ impl crate::Parse for VfxPropertySheetSerializedBaseMFloatVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(6000, 6, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_float::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_float::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V6000_6(v))
         } else if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_float::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(VfxField_VfxEntryExposed_float::parse(rdr, ver)?)) })?;
             Ok(Self::V6000_5(v))
         } else if *ver >= crate::UnityVersion::new(2022, 3, 6) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_float::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_float::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2022_3_6(v))
         } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_float::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(VfxField_VfxEntryExposed_float::parse(rdr, ver)?)) })?;
             Ok(Self::V2022_2(v))
         } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_float::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_float::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2021_2(v))
         } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_float::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(VfxField_VfxEntryExposed_float::parse(rdr, ver)?)) })?;
             Ok(Self::V2020_2(v))
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_float::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_float::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2020_1(v))
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_float::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(VfxField_VfxEntryExposed_float::parse(rdr, ver)?)) })?;
             Ok(Self::V2019_3(v))
         } else if *ver >= crate::UnityVersion::new(2018, 4, 13) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_float::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_float::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2018_4_13(v))
         } else {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_float::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(VfxField_VfxEntryExposed_float::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
         }
     }
@@ -101,34 +120,74 @@ impl crate::Parse for VfxPropertySheetSerializedBaseMVector2fVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(6000, 6, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector2f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector2f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V6000_6(v))
         } else if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Vector2f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_Vector2f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V6000_5(v))
         } else if *ver >= crate::UnityVersion::new(2022, 3, 6) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector2f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector2f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2022_3_6(v))
         } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Vector2f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_Vector2f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2022_2(v))
         } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector2f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector2f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2021_2(v))
         } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Vector2f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_Vector2f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2020_2(v))
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector2f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector2f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2020_1(v))
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Vector2f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_Vector2f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2019_3(v))
         } else if *ver >= crate::UnityVersion::new(2018, 4, 13) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector2f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector2f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2018_4_13(v))
         } else {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Vector2f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_Vector2f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -155,34 +214,74 @@ impl crate::Parse for VfxPropertySheetSerializedBaseMVector3fVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(6000, 6, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector3f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector3f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V6000_6(v))
         } else if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Vector3f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_Vector3f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V6000_5(v))
         } else if *ver >= crate::UnityVersion::new(2022, 3, 6) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector3f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector3f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2022_3_6(v))
         } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Vector3f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_Vector3f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2022_2(v))
         } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector3f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector3f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2021_2(v))
         } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Vector3f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_Vector3f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2020_2(v))
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector3f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector3f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2020_1(v))
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Vector3f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_Vector3f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2019_3(v))
         } else if *ver >= crate::UnityVersion::new(2018, 4, 13) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector3f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector3f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2018_4_13(v))
         } else {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Vector3f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_Vector3f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -209,34 +308,74 @@ impl crate::Parse for VfxPropertySheetSerializedBaseMVector4fVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(6000, 6, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector4f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector4f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V6000_6(v))
         } else if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Vector4f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_Vector4f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V6000_5(v))
         } else if *ver >= crate::UnityVersion::new(2022, 3, 6) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector4f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector4f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2022_3_6(v))
         } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Vector4f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_Vector4f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2022_2(v))
         } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector4f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector4f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2021_2(v))
         } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Vector4f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_Vector4f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2020_2(v))
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector4f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector4f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2020_1(v))
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Vector4f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_Vector4f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2019_3(v))
         } else if *ver >= crate::UnityVersion::new(2018, 4, 13) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector4f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_Vector4f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2018_4_13(v))
         } else {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Vector4f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_Vector4f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -263,34 +402,54 @@ impl crate::Parse for VfxPropertySheetSerializedBaseMUintVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(6000, 6, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_UInt32::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_UInt32::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V6000_6(v))
         } else if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_UInt32::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(VfxField_VfxEntryExposed_UInt32::parse(rdr, ver)?)) })?;
             Ok(Self::V6000_5(v))
         } else if *ver >= crate::UnityVersion::new(2022, 3, 6) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_UInt32::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_UInt32::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2022_3_6(v))
         } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_UInt32::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(VfxField_VfxEntryExposed_UInt32::parse(rdr, ver)?)) })?;
             Ok(Self::V2022_2(v))
         } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_UInt32::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_UInt32::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2021_2(v))
         } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_UInt32::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(VfxField_VfxEntryExposed_UInt32::parse(rdr, ver)?)) })?;
             Ok(Self::V2020_2(v))
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_UInt32::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_UInt32::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2020_1(v))
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_UInt32::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(VfxField_VfxEntryExposed_UInt32::parse(rdr, ver)?)) })?;
             Ok(Self::V2019_3(v))
         } else if *ver >= crate::UnityVersion::new(2018, 4, 13) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_UInt32::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_UInt32::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2018_4_13(v))
         } else {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_UInt32::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(VfxField_VfxEntryExposed_UInt32::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
         }
     }
@@ -317,34 +476,54 @@ impl crate::Parse for VfxPropertySheetSerializedBaseMIntVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(6000, 6, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_SInt32::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_SInt32::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V6000_6(v))
         } else if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_SInt32::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(VfxField_VfxEntryExposed_SInt32::parse(rdr, ver)?)) })?;
             Ok(Self::V6000_5(v))
         } else if *ver >= crate::UnityVersion::new(2022, 3, 6) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_SInt32::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_SInt32::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2022_3_6(v))
         } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_SInt32::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(VfxField_VfxEntryExposed_SInt32::parse(rdr, ver)?)) })?;
             Ok(Self::V2022_2(v))
         } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_SInt32::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_SInt32::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2021_2(v))
         } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_SInt32::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(VfxField_VfxEntryExposed_SInt32::parse(rdr, ver)?)) })?;
             Ok(Self::V2020_2(v))
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_SInt32::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_SInt32::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2020_1(v))
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_SInt32::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(VfxField_VfxEntryExposed_SInt32::parse(rdr, ver)?)) })?;
             Ok(Self::V2019_3(v))
         } else if *ver >= crate::UnityVersion::new(2018, 4, 13) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_SInt32::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_SInt32::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2018_4_13(v))
         } else {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_SInt32::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(VfxField_VfxEntryExposed_SInt32::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
         }
     }
@@ -371,34 +550,74 @@ impl crate::Parse for VfxPropertySheetSerializedBaseMMatrix4x4fVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(6000, 6, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Matrix4x4f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(
+                    VfxField_VfxEntryExpressionValue_Matrix4x4f::parse(rdr, ver)?,
+                ))
+            })?;
             Ok(Self::V6000_6(v))
         } else if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Matrix4x4f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_Matrix4x4f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V6000_5(v))
         } else if *ver >= crate::UnityVersion::new(2022, 3, 6) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Matrix4x4f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(
+                    VfxField_VfxEntryExpressionValue_Matrix4x4f::parse(rdr, ver)?,
+                ))
+            })?;
             Ok(Self::V2022_3_6(v))
         } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Matrix4x4f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_Matrix4x4f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2022_2(v))
         } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Matrix4x4f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(
+                    VfxField_VfxEntryExpressionValue_Matrix4x4f::parse(rdr, ver)?,
+                ))
+            })?;
             Ok(Self::V2021_2(v))
         } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Matrix4x4f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_Matrix4x4f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2020_2(v))
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Matrix4x4f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(
+                    VfxField_VfxEntryExpressionValue_Matrix4x4f::parse(rdr, ver)?,
+                ))
+            })?;
             Ok(Self::V2020_1(v))
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Matrix4x4f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_Matrix4x4f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2019_3(v))
         } else if *ver >= crate::UnityVersion::new(2018, 4, 13) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Matrix4x4f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(
+                    VfxField_VfxEntryExpressionValue_Matrix4x4f::parse(rdr, ver)?,
+                ))
+            })?;
             Ok(Self::V2018_4_13(v))
         } else {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Matrix4x4f::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_Matrix4x4f::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -425,34 +644,74 @@ impl crate::Parse for VfxPropertySheetSerializedBaseMAnimationCurveVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(6000, 6, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_AnimationCurve::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(
+                    VfxField_VfxEntryExpressionValue_AnimationCurve::parse(rdr, ver)?,
+                ))
+            })?;
             Ok(Self::V6000_6(v))
         } else if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_AnimationCurve::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_AnimationCurve::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V6000_5(v))
         } else if *ver >= crate::UnityVersion::new(2022, 3, 6) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_AnimationCurve::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(
+                    VfxField_VfxEntryExpressionValue_AnimationCurve::parse(rdr, ver)?,
+                ))
+            })?;
             Ok(Self::V2022_3_6(v))
         } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_AnimationCurve::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_AnimationCurve::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2022_2(v))
         } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_AnimationCurve::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(
+                    VfxField_VfxEntryExpressionValue_AnimationCurve::parse(rdr, ver)?,
+                ))
+            })?;
             Ok(Self::V2021_2(v))
         } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_AnimationCurve::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_AnimationCurve::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2020_2(v))
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_AnimationCurve::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(
+                    VfxField_VfxEntryExpressionValue_AnimationCurve::parse(rdr, ver)?,
+                ))
+            })?;
             Ok(Self::V2020_1(v))
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_AnimationCurve::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_AnimationCurve::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2019_3(v))
         } else if *ver >= crate::UnityVersion::new(2018, 4, 13) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_AnimationCurve::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(
+                    VfxField_VfxEntryExpressionValue_AnimationCurve::parse(rdr, ver)?,
+                ))
+            })?;
             Ok(Self::V2018_4_13(v))
         } else {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_AnimationCurve::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_AnimationCurve::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -479,34 +738,74 @@ impl crate::Parse for VfxPropertySheetSerializedBaseMGradientVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(6000, 6, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Gradient::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_Gradient::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V6000_6(v))
         } else if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Gradient::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_Gradient::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V6000_5(v))
         } else if *ver >= crate::UnityVersion::new(2022, 3, 6) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Gradient::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_Gradient::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2022_3_6(v))
         } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Gradient::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_Gradient::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2022_2(v))
         } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Gradient::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_Gradient::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2021_2(v))
         } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Gradient::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_Gradient::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2020_2(v))
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Gradient::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_Gradient::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2020_1(v))
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Gradient::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_Gradient::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2019_3(v))
         } else if *ver >= crate::UnityVersion::new(2018, 4, 13) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_Gradient::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_Gradient::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2018_4_13(v))
         } else {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_Gradient::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_Gradient::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -534,37 +833,81 @@ impl crate::Parse for VfxPropertySheetSerializedBaseMNamedObjectVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(6000, 6, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_PPtr_Object_::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(
+                    VfxField_VfxEntryExpressionValue_PPtr_Object_::parse(rdr, ver)?,
+                ))
+            })?;
             Ok(Self::V6000_6(v))
         } else if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_PPtr_Object_::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_PPtr_Object_::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V6000_5(v))
         } else if *ver >= crate::UnityVersion::new(2022, 3, 6) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_PPtr_Object_::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(
+                    VfxField_VfxEntryExpressionValue_PPtr_Object_::parse(rdr, ver)?,
+                ))
+            })?;
             Ok(Self::V2022_3_6(v))
         } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_PPtr_Object_::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_PPtr_Object_::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2022_2(v))
         } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_PPtr_Object_::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(
+                    VfxField_VfxEntryExpressionValue_PPtr_Object_::parse(rdr, ver)?,
+                ))
+            })?;
             Ok(Self::V2021_2(v))
         } else if *ver >= crate::UnityVersion::new(2021, 1, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_PPtr_Object_::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_PPtr_Object_::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2021_1(v))
         } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_PPtr_NamedObject_::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_PPtr_NamedObject_::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2020_2(v))
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_PPtr_NamedObject_::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(
+                    VfxField_VfxEntryExpressionValue_PPtr_NamedObject_::parse(rdr, ver)?,
+                ))
+            })?;
             Ok(Self::V2020_1(v))
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_PPtr_NamedObject_::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_PPtr_NamedObject_::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2019_3(v))
         } else if *ver >= crate::UnityVersion::new(2018, 4, 13) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_PPtr_NamedObject_::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(
+                    VfxField_VfxEntryExpressionValue_PPtr_NamedObject_::parse(rdr, ver)?,
+                ))
+            })?;
             Ok(Self::V2018_4_13(v))
         } else {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_PPtr_NamedObject_::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExposed_PPtr_NamedObject_::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::Default(v))
         }
     }
@@ -591,34 +934,54 @@ impl crate::Parse for VfxPropertySheetSerializedBaseMBoolVariant {
         ver: &crate::UnityVersion,
     ) -> Result<Self, R::Error> {
         if *ver >= crate::UnityVersion::new(6000, 6, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_bool::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_bool::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V6000_6(v))
         } else if *ver >= crate::UnityVersion::new(6000, 5, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_bool::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(VfxField_VfxEntryExposed_bool::parse(rdr, ver)?)) })?;
             Ok(Self::V6000_5(v))
         } else if *ver >= crate::UnityVersion::new(2022, 3, 6) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_bool::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_bool::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2022_3_6(v))
         } else if *ver >= crate::UnityVersion::new(2022, 2, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_bool::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(VfxField_VfxEntryExposed_bool::parse(rdr, ver)?)) })?;
             Ok(Self::V2022_2(v))
         } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_bool::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_bool::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2021_2(v))
         } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_bool::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(VfxField_VfxEntryExposed_bool::parse(rdr, ver)?)) })?;
             Ok(Self::V2020_2(v))
         } else if *ver >= crate::UnityVersion::new(2020, 1, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_bool::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_bool::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2020_1(v))
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_bool::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(VfxField_VfxEntryExposed_bool::parse(rdr, ver)?)) })?;
             Ok(Self::V2019_3(v))
         } else if *ver >= crate::UnityVersion::new(2018, 4, 13) {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExpressionValue_bool::parse(rdr, ver)?)) } )?;
+            let v = ({
+                Ok(Box::new(VfxField_VfxEntryExpressionValue_bool::parse(
+                    rdr, ver,
+                )?))
+            })?;
             Ok(Self::V2018_4_13(v))
         } else {
-            let v = ( { Ok(Box::new(VfxField_VfxEntryExposed_bool::parse(rdr, ver)?)) } )?;
+            let v = ({ Ok(Box::new(VfxField_VfxEntryExposed_bool::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
         }
     }
@@ -650,7 +1013,8 @@ impl crate::Parse for VfxPropertySheetSerializedBase {
         let m_uint = VfxPropertySheetSerializedBaseMUintVariant::parse(rdr, ver)?;
         let m_int = VfxPropertySheetSerializedBaseMIntVariant::parse(rdr, ver)?;
         let m_matrix4x4f = VfxPropertySheetSerializedBaseMMatrix4x4fVariant::parse(rdr, ver)?;
-        let m_animation_curve = VfxPropertySheetSerializedBaseMAnimationCurveVariant::parse(rdr, ver)?;
+        let m_animation_curve =
+            VfxPropertySheetSerializedBaseMAnimationCurveVariant::parse(rdr, ver)?;
         let m_gradient = VfxPropertySheetSerializedBaseMGradientVariant::parse(rdr, ver)?;
         let m_named_object = VfxPropertySheetSerializedBaseMNamedObjectVariant::parse(rdr, ver)?;
         let m_bool = VfxPropertySheetSerializedBaseMBoolVariant::parse(rdr, ver)?;

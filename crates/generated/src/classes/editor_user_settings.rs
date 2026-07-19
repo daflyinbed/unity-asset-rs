@@ -2,7 +2,6 @@
 
 use crate::subclasses::config_setting::ConfigSetting;
 
-
 /// 版本枚举：EditorUserSettingsMVcDebugOutVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum EditorUserSettingsMVcDebugOutVariant {
@@ -199,170 +198,327 @@ impl crate::Parse for EditorUserSettings {
         let mut m_vc_scan_local_packages_on_connect = None;
         let mut m_compress_assets_on_import = None;
         if *ver >= crate::UnityVersion::new(5, 4, 2) {
-            m_config_settings = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = ConfigSetting::parse(rdr, ver)?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_config_settings = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = ConfigSetting::parse(rdr, ver)?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else if *ver >= crate::UnityVersion::new(4, 0, 0) {
-            m_config_values = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { ( { let a = rdr.read_aligned_string()?; let b = rdr.read_aligned_string()?; Ok((a, b)) } ) }).collect::<Result<Vec<_>, _>>() } )?);
+            m_config_values = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| {
+                            ({
+                                let a = rdr.read_aligned_string()?;
+                                let b = rdr.read_aligned_string()?;
+                                Ok((a, b))
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
         } else {
             m_vc_user_name = Some(rdr.read_aligned_string()?);
             m_vc_password = Some(rdr.read_aligned_string()?);
             m_vc_server = Some(rdr.read_aligned_string()?);
             m_vc_workspace = Some(rdr.read_aligned_string()?);
         }
-            m_vc_automatic_add = Some(rdr.read_bool()?);
-            m_vc_debug_com = Some(rdr.read_bool()?);
-            m_vc_debug_cmd = Some(rdr.read_bool()?);
-            m_vc_debug_out = Some(EditorUserSettingsMVcDebugOutVariant::parse(rdr, ver)?);
+        m_vc_automatic_add = Some(rdr.read_bool()?);
+        m_vc_debug_com = Some(rdr.read_bool()?);
+        m_vc_debug_cmd = Some(rdr.read_bool()?);
+        m_vc_debug_out = Some(EditorUserSettingsMVcDebugOutVariant::parse(rdr, ver)?);
         if *ver >= crate::UnityVersion::new(6000, 0, 7) {
-            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(rdr, ver)?);
+            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(
+                rdr, ver,
+            )?);
             m_desired_import_worker_count = Some(rdr.read_i32()?);
             m_standby_import_worker_count = Some(rdr.read_i32()?);
             m_idle_import_worker_shutdown_delay = Some(rdr.read_i32()?);
-            m_vc_show_failed_checkout = Some(EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?);
+            m_vc_show_failed_checkout = Some(
+                EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?,
+            );
             m_vc_overwrite_failed_checkout_assets = Some(rdr.read_bool()?);
             m_vc_project_overlay_icons = Some(rdr.read_bool()?);
             m_vc_hierarchy_overlay_icons = Some(rdr.read_bool()?);
             m_vc_other_overlay_icons = Some(rdr.read_bool()?);
-            m_vc_allow_async_update = Some(EditorUserSettingsMVcAllowAsyncUpdateVariant::parse(rdr, ver)?);
+            m_vc_allow_async_update = Some(EditorUserSettingsMVcAllowAsyncUpdateVariant::parse(
+                rdr, ver,
+            )?);
             m_vc_scan_local_packages_on_connect = Some(rdr.read_bool()?);
-            m_artifact_garbage_collection = Some(EditorUserSettingsMArtifactGarbageCollectionVariant::parse(rdr, ver)?);
+            m_artifact_garbage_collection = Some(
+                EditorUserSettingsMArtifactGarbageCollectionVariant::parse(rdr, ver)?,
+            );
             m_compress_assets_on_import = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2023, 2, 0) {
-            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(rdr, ver)?);
+            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(
+                rdr, ver,
+            )?);
             m_desired_import_worker_count = Some(rdr.read_i32()?);
             m_standby_import_worker_count = Some(rdr.read_i32()?);
             m_idle_import_worker_shutdown_delay = Some(rdr.read_i32()?);
-            m_vc_show_failed_checkout = Some(EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?);
+            m_vc_show_failed_checkout = Some(
+                EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?,
+            );
             m_vc_overwrite_failed_checkout_assets = Some(rdr.read_bool()?);
             m_vc_project_overlay_icons = Some(rdr.read_bool()?);
             m_vc_hierarchy_overlay_icons = Some(rdr.read_bool()?);
             m_vc_other_overlay_icons = Some(rdr.read_bool()?);
-            m_vc_allow_async_update = Some(EditorUserSettingsMVcAllowAsyncUpdateVariant::parse(rdr, ver)?);
-            m_artifact_garbage_collection = Some(EditorUserSettingsMArtifactGarbageCollectionVariant::parse(rdr, ver)?);
+            m_vc_allow_async_update = Some(EditorUserSettingsMVcAllowAsyncUpdateVariant::parse(
+                rdr, ver,
+            )?);
+            m_artifact_garbage_collection = Some(
+                EditorUserSettingsMArtifactGarbageCollectionVariant::parse(rdr, ver)?,
+            );
             m_compress_assets_on_import = Some(rdr.read_bool()?);
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2023, 1, 0) {
-            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(rdr, ver)?);
+            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(
+                rdr, ver,
+            )?);
             m_desired_import_worker_count = Some(rdr.read_i32()?);
             m_standby_import_worker_count = Some(rdr.read_i32()?);
             m_idle_import_worker_shutdown_delay = Some(rdr.read_i32()?);
-            m_vc_show_failed_checkout = Some(EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?);
+            m_vc_show_failed_checkout = Some(
+                EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?,
+            );
             m_vc_overwrite_failed_checkout_assets = Some(rdr.read_bool()?);
             m_vc_project_overlay_icons = Some(rdr.read_bool()?);
             m_vc_hierarchy_overlay_icons = Some(rdr.read_bool()?);
             m_vc_other_overlay_icons = Some(rdr.read_bool()?);
-            m_vc_allow_async_update = Some(EditorUserSettingsMVcAllowAsyncUpdateVariant::parse(rdr, ver)?);
-            m_artifact_garbage_collection = Some(EditorUserSettingsMArtifactGarbageCollectionVariant::parse(rdr, ver)?);
+            m_vc_allow_async_update = Some(EditorUserSettingsMVcAllowAsyncUpdateVariant::parse(
+                rdr, ver,
+            )?);
+            m_artifact_garbage_collection = Some(
+                EditorUserSettingsMArtifactGarbageCollectionVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2022, 3, 35) {
-            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(rdr, ver)?);
+            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(
+                rdr, ver,
+            )?);
             m_desired_import_worker_count = Some(rdr.read_i32()?);
             m_standby_import_worker_count = Some(rdr.read_i32()?);
             m_idle_import_worker_shutdown_delay = Some(rdr.read_i32()?);
-            m_vc_show_failed_checkout = Some(EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?);
+            m_vc_show_failed_checkout = Some(
+                EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?,
+            );
             m_vc_overwrite_failed_checkout_assets = Some(rdr.read_bool()?);
             m_vc_project_overlay_icons = Some(rdr.read_bool()?);
             m_vc_hierarchy_overlay_icons = Some(rdr.read_bool()?);
             m_vc_other_overlay_icons = Some(rdr.read_bool()?);
-            m_vc_allow_async_update = Some(EditorUserSettingsMVcAllowAsyncUpdateVariant::parse(rdr, ver)?);
+            m_vc_allow_async_update = Some(EditorUserSettingsMVcAllowAsyncUpdateVariant::parse(
+                rdr, ver,
+            )?);
             m_vc_scan_local_packages_on_connect = Some(rdr.read_bool()?);
-            m_artifact_garbage_collection = Some(EditorUserSettingsMArtifactGarbageCollectionVariant::parse(rdr, ver)?);
+            m_artifact_garbage_collection = Some(
+                EditorUserSettingsMArtifactGarbageCollectionVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2022, 1, 0) {
-            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(rdr, ver)?);
+            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(
+                rdr, ver,
+            )?);
             m_desired_import_worker_count = Some(rdr.read_i32()?);
             m_standby_import_worker_count = Some(rdr.read_i32()?);
             m_idle_import_worker_shutdown_delay = Some(rdr.read_i32()?);
-            m_vc_show_failed_checkout = Some(EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?);
+            m_vc_show_failed_checkout = Some(
+                EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?,
+            );
             m_vc_overwrite_failed_checkout_assets = Some(rdr.read_bool()?);
             m_vc_project_overlay_icons = Some(rdr.read_bool()?);
             m_vc_hierarchy_overlay_icons = Some(rdr.read_bool()?);
             m_vc_other_overlay_icons = Some(rdr.read_bool()?);
-            m_vc_allow_async_update = Some(EditorUserSettingsMVcAllowAsyncUpdateVariant::parse(rdr, ver)?);
-            m_artifact_garbage_collection = Some(EditorUserSettingsMArtifactGarbageCollectionVariant::parse(rdr, ver)?);
+            m_vc_allow_async_update = Some(EditorUserSettingsMVcAllowAsyncUpdateVariant::parse(
+                rdr, ver,
+            )?);
+            m_artifact_garbage_collection = Some(
+                EditorUserSettingsMArtifactGarbageCollectionVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2021, 3, 40) {
-            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(rdr, ver)?);
+            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(
+                rdr, ver,
+            )?);
             m_desired_import_worker_count = Some(rdr.read_i32()?);
             m_standby_import_worker_count = Some(rdr.read_i32()?);
             m_idle_import_worker_shutdown_delay = Some(rdr.read_i32()?);
-            m_vc_show_failed_checkout = Some(EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?);
+            m_vc_show_failed_checkout = Some(
+                EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?,
+            );
             m_vc_overwrite_failed_checkout_assets = Some(rdr.read_bool()?);
             m_vc_project_overlay_icons = Some(rdr.read_bool()?);
             m_vc_hierarchy_overlay_icons = Some(rdr.read_bool()?);
             m_vc_other_overlay_icons = Some(rdr.read_bool()?);
-            m_vc_allow_async_update = Some(EditorUserSettingsMVcAllowAsyncUpdateVariant::parse(rdr, ver)?);
+            m_vc_allow_async_update = Some(EditorUserSettingsMVcAllowAsyncUpdateVariant::parse(
+                rdr, ver,
+            )?);
             m_vc_scan_local_packages_on_connect = Some(rdr.read_bool()?);
-            m_artifact_garbage_collection = Some(EditorUserSettingsMArtifactGarbageCollectionVariant::parse(rdr, ver)?);
+            m_artifact_garbage_collection = Some(
+                EditorUserSettingsMArtifactGarbageCollectionVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2021, 2, 0) {
-            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(rdr, ver)?);
+            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(
+                rdr, ver,
+            )?);
             m_desired_import_worker_count = Some(rdr.read_i32()?);
             m_standby_import_worker_count = Some(rdr.read_i32()?);
             m_idle_import_worker_shutdown_delay = Some(rdr.read_i32()?);
-            m_vc_show_failed_checkout = Some(EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?);
+            m_vc_show_failed_checkout = Some(
+                EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?,
+            );
             m_vc_overwrite_failed_checkout_assets = Some(rdr.read_bool()?);
             m_vc_project_overlay_icons = Some(rdr.read_bool()?);
             m_vc_hierarchy_overlay_icons = Some(rdr.read_bool()?);
             m_vc_other_overlay_icons = Some(rdr.read_bool()?);
-            m_vc_allow_async_update = Some(EditorUserSettingsMVcAllowAsyncUpdateVariant::parse(rdr, ver)?);
-            m_artifact_garbage_collection = Some(EditorUserSettingsMArtifactGarbageCollectionVariant::parse(rdr, ver)?);
+            m_vc_allow_async_update = Some(EditorUserSettingsMVcAllowAsyncUpdateVariant::parse(
+                rdr, ver,
+            )?);
+            m_artifact_garbage_collection = Some(
+                EditorUserSettingsMArtifactGarbageCollectionVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2020, 2, 0) {
-            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(rdr, ver)?);
-            m_vc_show_failed_checkout = Some(EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?);
+            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(
+                rdr, ver,
+            )?);
+            m_vc_show_failed_checkout = Some(
+                EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?,
+            );
             m_vc_overwrite_failed_checkout_assets = Some(rdr.read_bool()?);
             m_vc_project_overlay_icons = Some(rdr.read_bool()?);
             m_vc_hierarchy_overlay_icons = Some(rdr.read_bool()?);
             m_vc_other_overlay_icons = Some(rdr.read_bool()?);
-            m_vc_allow_async_update = Some(EditorUserSettingsMVcAllowAsyncUpdateVariant::parse(rdr, ver)?);
+            m_vc_allow_async_update = Some(EditorUserSettingsMVcAllowAsyncUpdateVariant::parse(
+                rdr, ver,
+            )?);
         } else if *ver >= crate::UnityVersion::new(2019, 3, 0) {
-            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(rdr, ver)?);
-            m_vc_show_failed_checkout = Some(EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?);
+            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(
+                rdr, ver,
+            )?);
+            m_vc_show_failed_checkout = Some(
+                EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?,
+            );
             m_vc_overwrite_failed_checkout_assets = Some(rdr.read_bool()?);
             m_vc_overlay_icons = Some(rdr.read_bool()?);
-            m_vc_allow_async_update = Some(EditorUserSettingsMVcAllowAsyncUpdateVariant::parse(rdr, ver)?);
+            m_vc_allow_async_update = Some(EditorUserSettingsMVcAllowAsyncUpdateVariant::parse(
+                rdr, ver,
+            )?);
         } else if *ver >= crate::UnityVersion::new(2019, 2, 0) {
-            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(rdr, ver)?);
-            m_vc_show_failed_checkout = Some(EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?);
+            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(
+                rdr, ver,
+            )?);
+            m_vc_show_failed_checkout = Some(
+                EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?,
+            );
             m_vc_overwrite_failed_checkout_assets = Some(rdr.read_bool()?);
-            m_vc_allow_async_update = Some(EditorUserSettingsMVcAllowAsyncUpdateVariant::parse(rdr, ver)?);
+            m_vc_allow_async_update = Some(EditorUserSettingsMVcAllowAsyncUpdateVariant::parse(
+                rdr, ver,
+            )?);
             m_asset_pipeline_mode = Some(rdr.read_i32()?);
             m_cache_server_mode = Some(rdr.read_i32()?);
-            m_cache_servers = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { rdr.read_aligned_string() }).collect::<Result<Vec<_>, _>>() } )?);
+            m_cache_servers = Some(
+                ({
+                    let n = rdr.read_i32()? as usize;
+                    (0..n)
+                        .map(|_| rdr.read_aligned_string())
+                        .collect::<Result<Vec<_>, _>>()
+                })?,
+            );
             rdr.align(4)?;
         } else if *ver >= crate::UnityVersion::new(2019, 1, 11) {
-            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(rdr, ver)?);
-            m_vc_show_failed_checkout = Some(EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?);
+            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(
+                rdr, ver,
+            )?);
+            m_vc_show_failed_checkout = Some(
+                EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?,
+            );
             m_vc_overwrite_failed_checkout_assets = Some(rdr.read_bool()?);
-            m_vc_allow_async_update = Some(EditorUserSettingsMVcAllowAsyncUpdateVariant::parse(rdr, ver)?);
+            m_vc_allow_async_update = Some(EditorUserSettingsMVcAllowAsyncUpdateVariant::parse(
+                rdr, ver,
+            )?);
         } else if *ver >= crate::UnityVersion::new(2019, 1, 0) {
-            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(rdr, ver)?);
-            m_vc_show_failed_checkout = Some(EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?);
-            m_vc_allow_async_update = Some(EditorUserSettingsMVcAllowAsyncUpdateVariant::parse(rdr, ver)?);
+            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(
+                rdr, ver,
+            )?);
+            m_vc_show_failed_checkout = Some(
+                EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?,
+            );
+            m_vc_allow_async_update = Some(EditorUserSettingsMVcAllowAsyncUpdateVariant::parse(
+                rdr, ver,
+            )?);
         } else if *ver >= crate::UnityVersion::new(2018, 4, 5) {
-            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(rdr, ver)?);
-            m_vc_show_failed_checkout = Some(EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?);
+            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(
+                rdr, ver,
+            )?);
+            m_vc_show_failed_checkout = Some(
+                EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?,
+            );
             m_vc_overwrite_failed_checkout_assets = Some(rdr.read_bool()?);
-            m_vc_allow_async_update = Some(EditorUserSettingsMVcAllowAsyncUpdateVariant::parse(rdr, ver)?);
+            m_vc_allow_async_update = Some(EditorUserSettingsMVcAllowAsyncUpdateVariant::parse(
+                rdr, ver,
+            )?);
         } else if *ver >= crate::UnityVersion::new(2017, 2, 1) {
-            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(rdr, ver)?);
-            m_vc_show_failed_checkout = Some(EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?);
-            m_vc_allow_async_update = Some(EditorUserSettingsMVcAllowAsyncUpdateVariant::parse(rdr, ver)?);
+            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(
+                rdr, ver,
+            )?);
+            m_vc_show_failed_checkout = Some(
+                EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?,
+            );
+            m_vc_allow_async_update = Some(EditorUserSettingsMVcAllowAsyncUpdateVariant::parse(
+                rdr, ver,
+            )?);
         } else if *ver >= crate::UnityVersion::new(2017, 2, 0) {
-            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(rdr, ver)?);
-            m_vc_show_failed_checkout = Some(EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?);
+            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(
+                rdr, ver,
+            )?);
+            m_vc_show_failed_checkout = Some(
+                EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(2017, 1, 3) {
-            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(rdr, ver)?);
-            m_vc_show_failed_checkout = Some(EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?);
-            m_vc_allow_async_update = Some(EditorUserSettingsMVcAllowAsyncUpdateVariant::parse(rdr, ver)?);
+            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(
+                rdr, ver,
+            )?);
+            m_vc_show_failed_checkout = Some(
+                EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?,
+            );
+            m_vc_allow_async_update = Some(EditorUserSettingsMVcAllowAsyncUpdateVariant::parse(
+                rdr, ver,
+            )?);
         } else if *ver >= crate::UnityVersion::new(2017, 1, 0) {
-            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(rdr, ver)?);
-            m_vc_show_failed_checkout = Some(EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?);
+            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(
+                rdr, ver,
+            )?);
+            m_vc_show_failed_checkout = Some(
+                EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(5, 6, 6) {
-            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(rdr, ver)?);
-            m_vc_show_failed_checkout = Some(EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?);
-            m_vc_allow_async_update = Some(EditorUserSettingsMVcAllowAsyncUpdateVariant::parse(rdr, ver)?);
+            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(
+                rdr, ver,
+            )?);
+            m_vc_show_failed_checkout = Some(
+                EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?,
+            );
+            m_vc_allow_async_update = Some(EditorUserSettingsMVcAllowAsyncUpdateVariant::parse(
+                rdr, ver,
+            )?);
         } else if *ver >= crate::UnityVersion::new(5, 1, 0) {
-            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(rdr, ver)?);
-            m_vc_show_failed_checkout = Some(EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?);
+            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(
+                rdr, ver,
+            )?);
+            m_vc_show_failed_checkout = Some(
+                EditorUserSettingsMVcShowFailedCheckoutVariant::parse(rdr, ver)?,
+            );
         } else if *ver >= crate::UnityVersion::new(5, 0, 0) {
-            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(rdr, ver)?);
+            m_semantic_merge_mode = Some(EditorUserSettingsMSemanticMergeModeVariant::parse(
+                rdr, ver,
+            )?);
         } else {
         }
 

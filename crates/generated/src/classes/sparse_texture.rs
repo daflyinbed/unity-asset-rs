@@ -2,7 +2,6 @@
 
 use crate::subclasses::gl_texture_settings::GlTextureSettings;
 
-
 /// 版本枚举：SparseTextureMDownscaleFallbackVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum SparseTextureMDownscaleFallbackVariant {
@@ -76,7 +75,7 @@ impl crate::Parse for SparseTexture {
         let mut m_mip_count = None;
         let mut m_format = None;
         let mut m_texture_settings = None;
-            m_name = Some(rdr.read_aligned_string()?);
+        m_name = Some(rdr.read_aligned_string()?);
         if *ver >= crate::UnityVersion::new(2023, 2, 0) {
             m_is_alpha_channel_optional = Some(rdr.read_bool()?);
             rdr.align(4)?;
@@ -99,15 +98,15 @@ impl crate::Parse for SparseTexture {
             m_downscale_fallback = Some(SparseTextureMDownscaleFallbackVariant::parse(rdr, ver)?);
         } else {
         }
-            m_width = Some(rdr.read_i32()?);
-            m_height = Some(rdr.read_i32()?);
-            m_mip_count = Some(rdr.read_i32()?);
+        m_width = Some(rdr.read_i32()?);
+        m_height = Some(rdr.read_i32()?);
+        m_mip_count = Some(rdr.read_i32()?);
         if *ver >= crate::UnityVersion::new(2019, 1, 0) {
         } else {
             m_format = Some(SparseTextureMFormatVariant::parse(rdr, ver)?);
             m_color_space = Some(rdr.read_i32()?);
         }
-            m_texture_settings = Some(GlTextureSettings::parse(rdr, ver)?);
+        m_texture_settings = Some(GlTextureSettings::parse(rdr, ver)?);
 
         Ok(SparseTexture {
             m_name: m_name.unwrap(),

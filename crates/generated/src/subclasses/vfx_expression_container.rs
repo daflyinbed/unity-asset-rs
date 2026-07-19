@@ -2,7 +2,6 @@
 
 use crate::subclasses::expression::Expression;
 
-
 /// 版本枚举：VfxExpressionContainerMNeedsWorldToLocalVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum VfxExpressionContainerMNeedsWorldToLocalVariant {
@@ -54,8 +53,15 @@ impl crate::Parse for VfxExpressionContainer {
         let mut m_needs_main_camera = None;
         let mut m_dynamic_bake_curve_count = None;
         let mut m_dynamic_bake_gradient_count = None;
-            m_expressions = Some(( { let n = rdr.read_i32()? as usize; (0..n).map(|_| { Expression::parse(rdr, ver) }).collect::<Result<Vec<_>, _>>() } )?);
-            rdr.align(4)?;
+        m_expressions = Some(
+            ({
+                let n = rdr.read_i32()? as usize;
+                (0..n)
+                    .map(|_| Expression::parse(rdr, ver))
+                    .collect::<Result<Vec<_>, _>>()
+            })?,
+        );
+        rdr.align(4)?;
         if *ver >= crate::UnityVersion::new(2022, 2, 0) {
             m_max_common_expressions_index = Some(rdr.read_u32()?);
             m_constant_bake_curve_count = Some(rdr.read_u32()?);
@@ -66,8 +72,10 @@ impl crate::Parse for VfxExpressionContainer {
             m_max_common_expressions_index = Some(rdr.read_u32()?);
         } else {
         }
-            m_needs_local_to_world = Some(rdr.read_bool()?);
-            m_needs_world_to_local = Some(VfxExpressionContainerMNeedsWorldToLocalVariant::parse(rdr, ver)?);
+        m_needs_local_to_world = Some(rdr.read_bool()?);
+        m_needs_world_to_local = Some(VfxExpressionContainerMNeedsWorldToLocalVariant::parse(
+            rdr, ver,
+        )?);
         if *ver >= crate::UnityVersion::new(2022, 1, 0) {
             m_needs_main_camera = Some(rdr.read_bool()?);
             rdr.align(4)?;

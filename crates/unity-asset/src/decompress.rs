@@ -38,7 +38,12 @@ pub struct Lz4Decompressor;
 impl Decompressor for Lz4Decompressor {
     fn decompress(&self, input: &[u8], expected: usize) -> Result<Vec<u8>> {
         lz4_flex::block::decompress(input, expected)
-            .map_err(|e| DecompressSnafu { reason: e.to_string() }.build())
+            .map_err(|e| {
+                DecompressSnafu {
+                    reason: e.to_string(),
+                }
+                .build()
+            })
             .and_then(|out| {
                 if out.len() != expected {
                     return Err(Lz4SizeMismatchSnafu {
@@ -65,10 +70,7 @@ impl Decompressor for LzmaDecompressor {
     fn decompress(&self, input: &[u8], expected: usize) -> Result<Vec<u8>> {
         if input.len() < 5 {
             return Err(DecompressSnafu {
-                reason: format!(
-                    "LZMA 输入过短（{} 字节 < 5 字节 properties）",
-                    input.len()
-                ),
+                reason: format!("LZMA 输入过短（{} 字节 < 5 字节 properties）", input.len()),
             }
             .build());
         }
@@ -84,7 +86,12 @@ impl Decompressor for LzmaDecompressor {
                 memlimit: None,
             },
         )
-        .map_err(|e| DecompressSnafu { reason: e.to_string() }.build())?;
+        .map_err(|e| {
+            DecompressSnafu {
+                reason: e.to_string(),
+            }
+            .build()
+        })?;
         Ok(out)
     }
 }
@@ -125,13 +132,10 @@ impl Registry {
 
     /// 取已注册的解压器；未注册返回 `UnsupportedCompression` 错误。
     pub fn get(&self, ct: CompressionType) -> Result<&dyn Decompressor> {
-        self.entries
-            .get(&ct)
-            .map(|d| d.as_ref())
-            .ok_or_else(|| {
-                log::warn!("compression type {:?} not registered", ct);
-                UnsupportedCompressionSnafu { compression: ct.0 }.build()
-            })
+        self.entries.get(&ct).map(|d| d.as_ref()).ok_or_else(|| {
+            log::warn!("compression type {:?} not registered", ct);
+            UnsupportedCompressionSnafu { compression: ct.0 }.build()
+        })
     }
 }
 
