@@ -67,20 +67,27 @@ export function registerIpc(database: WorkspaceDatabase, rust: RustService) {
     const window = BrowserWindow.fromWebContents(event.sender);
     if (!window) throw new Error("No window is associated with this request");
 
-    if (action === "minimize") window.minimize();
-    if (action === "toggle-maximize") {
-      if (window.isMaximized()) window.unmaximize();
-      else window.maximize();
-    }
-    if (action === "open-devtools") {
-      const focusDevTools = () => event.sender.devToolsWebContents?.focus();
-      if (event.sender.isDevToolsOpened()) focusDevTools();
-      else {
-        event.sender.once("devtools-opened", focusDevTools);
-        event.sender.openDevTools({ mode: "detach" });
+    switch (action) {
+      case "minimize":
+        window.minimize();
+        break;
+      case "toggle-maximize":
+        if (window.isMaximized()) window.unmaximize();
+        else window.maximize();
+        break;
+      case "open-devtools": {
+        const focusDevTools = () => event.sender.devToolsWebContents?.focus();
+        if (event.sender.isDevToolsOpened()) focusDevTools();
+        else {
+          event.sender.once("devtools-opened", focusDevTools);
+          event.sender.openDevTools({ mode: "detach" });
+        }
+        break;
       }
+      case "close":
+        window.close();
+        break;
     }
-    if (action === "close") window.close();
 
     return { maximized: !window.isDestroyed() && window.isMaximized() };
   });
@@ -130,12 +137,12 @@ export function registerIpc(database: WorkspaceDatabase, rust: RustService) {
       if (!project) throw new Error(`Project ${projectId} does not exist`);
       return project;
     }
-    if (activeProjectId !== projectId) {
-      const project = database.getProject(projectId);
-      if (!project) throw new Error(`Project ${projectId} does not exist`);
-      await activateProject(project, rust);
-      activeProjectId = projectId;
-    }
+    activeProjectId = await ensureActiveProject(
+      database,
+      rust,
+      projectId,
+      activeProjectId,
+    );
     const before = database.getProject(projectId);
     if (!before) throw new Error(`Project ${projectId} does not exist`);
     const project = database.addSources(projectId, sources);
@@ -158,12 +165,12 @@ export function registerIpc(database: WorkspaceDatabase, rust: RustService) {
     return project;
   });
   handleIpc("projects:remove-source", async ({ projectId, sourceId }) => {
-    if (activeProjectId !== projectId) {
-      const project = database.getProject(projectId);
-      if (!project) throw new Error(`Project ${projectId} does not exist`);
-      await activateProject(project, rust);
-      activeProjectId = projectId;
-    }
+    activeProjectId = await ensureActiveProject(
+      database,
+      rust,
+      projectId,
+      activeProjectId,
+    );
     const before = database.getProject(projectId);
     if (!before) throw new Error(`Project ${projectId} does not exist`);
     await requestRust(
@@ -179,12 +186,12 @@ export function registerIpc(database: WorkspaceDatabase, rust: RustService) {
     }
   });
   handleIpc("projects:refresh-source", async ({ projectId, sourceId }) => {
-    if (activeProjectId !== projectId) {
-      const project = database.getProject(projectId);
-      if (!project) throw new Error(`Project ${projectId} does not exist`);
-      await activateProject(project, rust);
-      activeProjectId = projectId;
-    }
+    activeProjectId = await ensureActiveProject(
+      database,
+      rust,
+      projectId,
+      activeProjectId,
+    );
     await requestRust(
       rust,
       "POST",
@@ -192,6 +199,19 @@ export function registerIpc(database: WorkspaceDatabase, rust: RustService) {
     );
     return database.touchProject(projectId);
   });
+}
+
+async function ensureActiveProject(
+  database: WorkspaceDatabase,
+  rust: RustService,
+  projectId: number,
+  activeProjectId: number | null,
+): Promise<number> {
+  if (activeProjectId === projectId) return projectId;
+  const project = database.getProject(projectId);
+  if (!project) throw new Error(`Project ${projectId} does not exist`);
+  await activateProject(project, rust);
+  return projectId;
 }
 
 async function proxyRustRequest(

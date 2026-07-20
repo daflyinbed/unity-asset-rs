@@ -314,12 +314,15 @@ const projectName = computed(() => currentProject.value?.name ?? "");
 const unityVersion = ref("");
 
 const bundle = computed(() => ({
-  name: currentProject.value
-    ? `${currentProject.value.sources.length} ${currentProject.value.sources.length === 1 ? "source" : "sources"}`
-    : "",
+  name: sourceCountLabel(currentProject.value?.sources.length ?? 0),
   objects: assets.value.length,
   version: unityVersion.value,
 }));
+
+function sourceCountLabel(count: number): string {
+  if (count === 0) return "";
+  return `${count} ${count === 1 ? "source" : "sources"}`;
+}
 
 const drawerOpen = ref(true);
 const bottomOpen = ref(false);
@@ -390,7 +393,7 @@ async function loadTexturePreview(
     texturePreview.value = {
       loading: false,
       url: "",
-      error: error instanceof Error ? error.message : String(error),
+      error: toErrorMessage(error),
     };
   }
 }
@@ -609,7 +612,7 @@ async function loadSelected(selected: SelectedPath[], mode: OpenMode) {
     await refreshProjects();
     loadStatus.value = "";
   } catch (error) {
-    loadError.value = error instanceof Error ? error.message : String(error);
+    loadError.value = toErrorMessage(error);
     if (assets.value.length > 0) {
       logLines.value.push({
         t: new Date().toLocaleTimeString(),
@@ -793,7 +796,7 @@ async function openProject(projectId: number) {
     await refreshEnvironment();
     await refreshProjects();
   } catch (error) {
-    loadError.value = error instanceof Error ? error.message : String(error);
+    loadError.value = toErrorMessage(error);
   } finally {
     loading.value = false;
     loadStatus.value = "";
@@ -813,7 +816,7 @@ async function refreshSource(sourceId: number) {
     currentProject.value = result.value;
     await refreshEnvironment();
   } catch (error) {
-    loadError.value = error instanceof Error ? error.message : String(error);
+    loadError.value = toErrorMessage(error);
   } finally {
     loading.value = false;
     loadStatus.value = "";
@@ -834,7 +837,7 @@ async function removeSource(sourceId: number) {
     await refreshEnvironment();
     await refreshProjects();
   } catch (error) {
-    loadError.value = error instanceof Error ? error.message : String(error);
+    loadError.value = toErrorMessage(error);
   } finally {
     loading.value = false;
     loadStatus.value = "";
@@ -850,5 +853,9 @@ function apiError(error: unknown) {
     return String(error.error);
   }
   return String(error);
+}
+
+function toErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : String(error);
 }
 </script>

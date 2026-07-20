@@ -395,12 +395,7 @@
         <div
           class="mt-4 rounded-md bg-background px-3 py-2 text-[12px] text-neutral-10/60"
         >
-          <template v-if="unityVersion">Unity {{ unityVersion }}</template>
-          <template v-if="unityVersion && bundleName"> · </template>
-          <template v-if="bundleName">{{ bundleName }}</template>
-          <template v-if="!unityVersion && !bundleName"
-            >No bundle loaded</template
-          >
+          {{ aboutSummary }}
         </div>
         <div class="mt-5 flex justify-end">
           <DialogClose
@@ -445,7 +440,7 @@ import {
   TooltipRoot,
   TooltipTrigger,
 } from "reka-ui";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import type {
   ProjectSnapshot,
   ProjectSource,
@@ -459,7 +454,7 @@ interface LoadedSource {
   path: string;
 }
 
-defineProps<{
+const props = defineProps<{
   bundleName: string;
   loading: boolean;
   loadedSources: LoadedSource[];
@@ -482,6 +477,13 @@ const emit = defineEmits<{
 
 const aboutOpen = ref(false);
 const maximized = ref(false);
+
+const aboutSummary = computed(() => {
+  const parts: string[] = [];
+  if (props.unityVersion) parts.push(`Unity ${props.unityVersion}`);
+  if (props.bundleName) parts.push(props.bundleName);
+  return parts.length > 0 ? parts.join(" · ") : "No bundle loaded";
+});
 
 async function windowAction(action: WindowControlAction) {
   const result = await window.electron.invoke("window:control", { action });

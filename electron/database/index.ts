@@ -154,9 +154,7 @@ export class WorkspaceDatabase {
       this.#insertSources(projectId, sources);
       this.#touchProject(projectId);
     })();
-    const project = this.getProject(projectId);
-    if (!project) throw new Error(`Project ${projectId} does not exist`);
-    return project;
+    return this.#requireProject(projectId);
   }
 
   removeSource(projectId: number, sourceId: number): ProjectSnapshot {
@@ -165,17 +163,13 @@ export class WorkspaceDatabase {
       .run(sourceId, projectId).changes;
     if (!changed) throw new Error(`Source ${sourceId} does not exist`);
     this.#touchProject(projectId);
-    const project = this.getProject(projectId);
-    if (!project) throw new Error(`Project ${projectId} does not exist`);
-    return project;
+    return this.#requireProject(projectId);
   }
 
   touchProject(projectId: number): ProjectSnapshot {
     this.#assertProject(projectId);
     this.#touchProject(projectId);
-    const project = this.getProject(projectId);
-    if (!project) throw new Error(`Project ${projectId} does not exist`);
-    return project;
+    return this.#requireProject(projectId);
   }
 
   deleteProject(projectId: number) {
@@ -276,6 +270,12 @@ export class WorkspaceDatabase {
       .prepare("SELECT 1 FROM projects WHERE id = ?")
       .get(projectId);
     if (!found) throw new Error(`Project ${projectId} does not exist`);
+  }
+
+  #requireProject(projectId: number): ProjectSnapshot {
+    const project = this.getProject(projectId);
+    if (!project) throw new Error(`Project ${projectId} does not exist`);
+    return project;
   }
 
   #touchProject(projectId: number) {
