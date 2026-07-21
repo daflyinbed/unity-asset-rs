@@ -305,7 +305,10 @@ fn read_serialized_type(
     let mut ref_class_name = None;
     let mut ref_namespace = None;
     let mut ref_assembly = None;
-    if version >= 21 {
+    // Unity only serializes this tail together with an embedded type tree.
+    // In particular, player data commonly disables type trees entirely; in
+    // that case the next bytes already belong to the object table.
+    if enable_type_tree && version >= 21 {
         if is_ref_type {
             ref_class_name = Some(r.read_cstr("ref class name")?);
             ref_namespace = Some(r.read_cstr("ref namespace")?);
@@ -326,6 +329,48 @@ fn read_serialized_type(
         ref_namespace,
         ref_assembly,
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn version_22_without_type_tree_has_no_type_dependencies() {
+        let mut bytes = Vec::new();
+
+        // v22 prologue is big-endian, including the large-file header fields.
+        bytes.extend_from_slice(&0u32.to_be_bytes()); // legacy metadata size
+        bytes.extend_from_slice(&0u32.to_be_bytes()); // legacy file size
+        bytes.extend_from_slice(&22u32.to_be_bytes());
+        bytes.extend_from_slice(&0u32.to_be_bytes()); // legacy data offset
+        bytes.extend_from_slice(&[0, 0, 0, 0]); // little-endian + reserved
+        bytes.extend_from_slice(&0u32.to_be_bytes()); // metadata size
+        bytes.extend_from_slice(&0i64.to_be_bytes()); // file size
+        bytes.extend_from_slice(&0i64.to_be_bytes()); // data offset
+        bytes.extend_from_slice(&0i64.to_be_bytes()); // unknown
+
+        // Metadata is little-endian. A disabled type tree means the serialized
+        // type ends immediately after old_type_hash, with no dependency array.
+        bytes.extend_from_slice(b"2022.3.0f1\0");
+        bytes.extend_from_slice(&0i32.to_le_bytes()); // target platform
+        bytes.push(0); // enable type tree
+        bytes.extend_from_slice(&1i32.to_le_bytes()); // type count
+        bytes.extend_from_slice(&1i32.to_le_bytes()); // class id
+        bytes.push(0); // is stripped
+        bytes.extend_from_slice(&(-1i16).to_le_bytes()); // script type index
+        bytes.extend_from_slice(&[0; 16]); // old type hash
+        bytes.extend_from_slice(&0i32.to_le_bytes()); // object count
+        bytes.extend_from_slice(&0i32.to_le_bytes()); // script count
+        bytes.extend_from_slice(&0i32.to_le_bytes()); // external count
+        bytes.extend_from_slice(&0i32.to_le_bytes()); // ref type count
+
+        let file = SerializedFile::parse(Bytes::from(bytes)).unwrap();
+        assert_eq!(file.version, 22);
+        assert_eq!(file.types.len(), 1);
+        assert!(file.types[0].node.is_none());
+        assert!(file.objects.is_empty());
+    }
 }
 
 fn read_object_info(
