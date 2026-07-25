@@ -2,7 +2,7 @@
 
 ## What this repo is
 
-A Rust library + CLI for parsing Unity AssetBundles (UnityFS format)。长期目标：typed、高性能的 UnityPy/AssetStudio 替代，含 Python 绑定。**现为混合仓库**：Rust workspace（`src/` + `crates/`）+ Electron/Vue 3 桌面端（`electron/` + `app/`，pnpm/Vite）。renderer 通过类型安全 IPC 请求 main，main 代理 CLI `serve` 暴露的 REST；REST 类型由 Rust OpenAPI 自动生成。
+A Rust library + CLI for parsing Unity AssetBundles (UnityFS format)。长期目标：typed、高性能的 UnityPy/AssetStudio 替代，含 Python 绑定。**现为混合仓库**：Rust workspace（根 bin `src/` + `crates/`）+ Electron/Vue 3 桌面端（`electron/` + `app/`，pnpm/Vite）。renderer 通过类型安全 IPC 请求 main，main 代理 CLI `serve` 暴露的 REST；REST 类型由 Rust OpenAPI 自动生成。
 
 架构细节、设计理由、非显然约定见 [`docs/architecture.md`](docs/architecture.md);各层现状见 `docs/*-layer.md`。
 
@@ -13,7 +13,7 @@ Rust 依赖 `unity-core ← generated ← unity-asset`；`codegen` / `lz4inv` �
 <!-- prettier-ignore -->
 | crate / 目录                      | 职责                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/`（根 bin `unity-asset-rs`） | io + 对象解析 + 纹理/Sprite 导出 + bin（`main.rs`：`list`/`object`/`export`/`serve`/`openapi`，含 `--no-sprites`/`--only-sprites`/`--arknights`）。根 `lib.rs` 分 `pub mod io`/`typetree`/`types`/`export` 门面 + 顶层直转推荐入口(`Loader`/`Environment`/`CollectionId`/`ClassId`/`DecodedImage`)。`serve` 子命令在 `src/server/` 下,用 axum 0.8 把 list/object/export 能力通过 REST 暴露 + utoipa 自动生成 OpenApi 3.1(Scalar UI 挂 `/`,JSON 在 `/openapi.json`)。`main.rs` `#[tokio::main]` async;阻塞 IO/CPU 走 `spawn_blocking`;bundle 运行时按请求加载,`Arc<RwLock<HashMap<id, Arc<Environment>>>>` 共享;`DELETE /bundles` 清空全部内存状态供 Electron 切项目复用常驻服务;路径参数用 `{bid}` 语法(axum 0.8 + utoipa 一致);DTO 手写 + `#[derive(ToSchema)]`,错误响应 `ApiErrorBody` 带 schema,零 serde 侵入库 |
+| `src/`（根 bin `unity-asset-rs`） | CLI bin。`main.rs`：子命令 `list`/`object`/`export`/`containers`/`serve`/`openapi`，含顶层 `--arknights` 及 `export` 的 `--no-sprites`/`--only-sprites`。`#[tokio::main]` async；Arknights LZ4 变体 codec `AkLz4Decompressor` 放此层（遵守「不在库里硬编码游戏 codec」）。**库逻辑（io/对象解析/聚合/导出）在 `crates/unity-asset`，本 bin 只组装 CLI 与 HTTP**。`serve` 子命令在 `src/server/` 下，axum 0.8 + utoipa OpenApi 3.1（Scalar UI 挂 `/`，JSON 在 `/openapi.json`）。两套并存 REST：legacy `/bundles*`（按 bundle id 寻址，`POST/DELETE /bundles`，`Arc<RwLock<HashMap<id, Arc<Environment>>>>`）+ source-aware `/environment*`（单一活动 Environment，`PUT /environment` 原子替换、`/environment/sources` 增删、`revision` 防陈旧查询返回 409，Electron 桌面端用这套切项目不重启服务）。阻塞 IO/CPU 走 `spawn_blocking`；路径参数 `{bid}`/`{cid}`/`{pid}` 语法；DTO 手写 + `#[derive(ToSchema)]`，错误响应 `ApiErrorBody` 带 schema，零 serde 侵入库 |
 | `crates/unity-asset`              | 主库：解析 + Environment + 导出（`lib.rs` 门面 + `tests/`）                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | `crates/unity-core`               | 共享原语（零依赖）：`UnityVersion`/`Endian`/`EndianReader`/`Parse`/`PPtr`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | `crates/codegen`                  | 离线工具：TPK→Rust，只 emit 引用，不 link                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
@@ -34,10 +34,10 @@ cargo test                        # 全部测试
 cargo test --test parse_bundle    # io 层
 cargo test --test environment     # 聚合层
 cargo test --test texture_export  # 纹理导出（export feature）
-cargo test sprite_export          # Sprite（字节级单测在 src/sprite_export.rs）
+cargo test sprite_export          # Sprite（字节级单测在 crates/unity-asset/src/sprite_export.rs）
 cargo run                         # 遍历 example/，对象 + 解析状态 + 汇总（失败退出码 1）
-cargo run -- --arknights example/chararts/char_002_amiya.ab export -o /tmp/out
-cargo run -- serve -a 127.0.0.1:8080 -d example/   # axum HTTP 服务(POST /bundles 加载,GET .../objects/{pid}/png 导出 PNG,Scalar UI 在 /,OpenApi JSON 在 /openapi.json)
+cargo run -- --arknights example/chararts_char_002_amiya.ab export -o /tmp/out
+cargo run -- serve -a 127.0.0.1:8080 -d example/   # axum HTTP 服务;两套并存 REST:legacy `/bundles*`(按 bundle id 寻址)+ source-aware `/environment*`(单一活动 Environment,PUT 原子替换 + revision 防陈旧 409,桌面端用)。PNG 导出在 `.../objects/{pid}/png`,Scalar UI 在 /,OpenApi JSON 在 /openapi.json。端点全表见 src/server/mod.rs 文件头
 cargo run -- openapi -o app/api/openapi.json       # 离线输出与运行时 /openapi.json 相同的 schema
 cargo test --bin unity-asset-rs server::           # serve 子命令单元测试(含 OpenApi/Scalar 可达性,oneshot 打 router)
 # 重新生成 typed structs（改完 codegen 后必跑）：
@@ -86,14 +86,14 @@ pnpm lint:fix       # eslint . --fix
 
 **Rust**
 
-- **不在库里硬编码游戏特定 codec**——走 `Registry` 扩展点（`src/decompress.rs`），如 Arknights LZ4 变体放 CLI 层 `AkLz4Decompressor`。
-- **大端 cursor 不要换 `byteorder`**——`src/bundle.rs` 内联 cursor 是有意的。
+- **不在库里硬编码游戏特定 codec**——走 `Registry` 扩展点（`crates/unity-asset/src/decompress.rs`），如 Arknights LZ4 变体放 CLI 层 `AkLz4Decompressor`。
+- **大端 cursor 不要换 `byteorder`**——`crates/unity-asset/src/bundle.rs` 内联 cursor 是有意的。
 - **`Cursor` 是 crate-private**(`mod cursor`,非 `pub`)——seek/align/remaining 已做边界检查(越界返回 `Truncated` 错误)。新增功能不要重新 pub Cursor;用户面走 `EndianReader` trait 与高级解析入口(`SerializedFile::parse`/`ObjectInfo::parse`)。
 - **勿降 `opt-level=1`**（根 `Cargo.toml` `[profile.dev]`/`[profile.test]`）——降回 0 会在深嵌套 typetree 下溢出 2MB 测试线程栈。
 - **不要删/改 fixture** `example/char_002_amiya.ab` / `example/DownloadCommonUI.unity3d`。期望字节值（`EXPECTED_FIRST16` 等）是 **bit-for-bit 对照 UnityPy** 的，改=改 parser 语义。
 - **代码为准**——`Registry`/`Decompressor` vs ADR-0003 的 `DecompressorRegistry` 命名漂移，不迁就文档改名。
 - **拿不准格式/语义**：先看 `docs/`，再 grep 父目录参考实现（尤其 AssetRipper），不要自创逻辑。
-- 公共 API 刻意精简（`src/lib.rs`），export 遵循既有范围，勿随意扩 `pub`。
+- 公共 API 刻意精简（`crates/unity-asset/src/lib.rs`），export 遵循既有范围，勿随意扩 `pub`。
 - **改了 codegen 必须重生 `crates/generated/`**（见 Commands），不要手改生成产物，也不要对生成目录运行 `cargo fmt --all` 制造全量格式化 diff。
 
 **桌面端**

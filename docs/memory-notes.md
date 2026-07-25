@@ -14,7 +14,7 @@
 
 ### 解析完成后的生命周期快照
 
-`EnvironmentBuilder::build` 完成后，`Environment` 持有：
+`Loader::build` 完成后，`Environment` 持有：
 
 | 字段 | 内容 | 引用 blob？ |
 |---|---|---|
@@ -31,11 +31,11 @@ typed struct 和 `Value` 树都是自包含的——解析后不引用原始字�
 
 ### 问题
 
-`src/bundle.rs` 把所有 `BundleFile.bytes` 切为 `blob_bytes.slice(off..sz)`——
-全部共享同一 `Arc<[u8]>`。`Bytes::slice` **永远共享底层分配**：只要任何一个
-slice 存活，整个 blob 不会释放。
+`crates/unity-asset/src/bundle.rs` 把拼接出的 blob 按每个 node 切成
+`blob_bytes.slice(off..off+sz)` 塞进 `RawEntry.bytes`（`Bundle.entries`）——全部共享同一
+`Arc<[u8]>`。`Bytes::slice` **永远共享底层分配**：只要任何一个 slice 存活，整个 blob 不会释放。
 
-在 `phase_a`（builder 累积阶段）中：
+在 `process_leaves`（聚合层叶子遍历）中：
 - SerializedFile 的 .assets 区域解析成 owned 对象后不再需要
 - .resS 资源文件必须保留（供 `streaming_data()` 零拷贝取数）
 
@@ -43,9 +43,9 @@ slice 存活，整个 blob 不会释放。
 
 ### 修复
 
-`src/environment.rs` 收集 `ResourceFile` 时用 `Bytes::copy_from_slice(&bf.bytes)`
-detach 到独立分配。这样所有 SerializedFile 解析完毕后 blob Arc refcount 归零，
-整个解压 blob 被释放。
+`crates/unity-asset/src/environment.rs::process_leaves` 收集 `ResourceFile` 时用
+`Bytes::copy_from_slice(bytes)` detach 到独立分配。这样所有 SerializedFile 解析完毕后
+blob Arc refcount 归零，整个解压 blob 被释放。
 
 代价：拷贝一次资源数据（O(资源大小)）。收益：释放整个 blob（O(blob 大小)），
 含不再需要的 .assets 区域。
@@ -59,7 +59,7 @@ blob Arc 天然归零。修复只对**混合 bundle**（SerializedFile + .resS�
 
 ## Issue #2（待处理）：`ref_type_table()` 深拷贝 TypeNode 树
 
-**位置**：`src/serialized_file.rs:99-112`
+**位置**：`crates/unity-asset/src/serialized_file.rs:107-120`
 
 ```rust
 pub fn ref_type_table(&self) -> RefTypeTable {
@@ -84,7 +84,7 @@ SerializedFile 调用一次（`environment.rs`），用于该 SF 全部对象解
 
 ## Issue #3（待处理）：逐块解压的 double-buffer
 
-**位置**：`src/bundle.rs:231-238`
+**位置**：`crates/unity-asset/src/bundle.rs:228-237`
 
 ```rust
 let out = registry.get(comp_ct)?.decompress(comp_bytes, ...)?;  // 分配 Vec<u8>
@@ -95,7 +95,7 @@ blob.extend_from_slice(&out);                                    // 再拷贝进
 每个压缩块先解压进临时 `Vec<u8>`，再 `extend_from_slice` 拷贝进 blob。
 峰值内存 = blob 全量 + 最大单块大小。
 
-`IdentityDecompressor`（NONE 压缩，`decompress.rs:30-32`）尤甚：`input.to_vec()`
+`IdentityDecompressor`（NONE 压缩，`crates/unity-asset/src/decompress.rs:29-33`）尤甚：`input.to_vec()`
 先拷贝一次，`extend_from_slice` 再拷贝一次——**无压缩块被拷贝两次**。
 
 **修复方向**：`Decompressor` trait 增加
@@ -107,7 +107,7 @@ blob.extend_from_slice(&out);                                    // 再拷贝进
 
 ## Issue #4（待处理）：解释器数组预分配上限 4096
 
-**位置**：`src/typetree/interpret.rs:102`
+**位置**：`crates/unity-asset/src/typetree/interpret.rs:170`
 
 ```rust
 let mut out = Vec::with_capacity((size as usize).min(4096));

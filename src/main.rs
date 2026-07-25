@@ -101,7 +101,7 @@ enum Cmd {
     },
 }
 
-/// 在 `EnvironmentBuilder::loaded` move 之前捕获的头信息（仅单文件时有值）。
+/// 在 `Loader::builder().loaded()` move 之前捕获的头信息（仅单文件时有值）。
 struct BundleHeader {
     format_version: Option<u32>,
     unity_revision: Option<String>,

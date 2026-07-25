@@ -97,9 +97,10 @@
 | **继承** | 「parser 按继承链组合复用」，389 父类稳定的 class 用 `parent: ConcreteType`，23 父类变化的用 `parent: ParentEnum` 或扁平化 | **改为完全扁平 struct，无 parent 字段、无 parent enum**。TPK 的 release_root 已含全部继承链字段，p05 字段并集自动处理父类变化（差异体现为 `Option<T>` + VersionGate）。原因：abstract 父类的 release_root 为空、字段已平铺到子类，嵌套 parent 实际无意义 |
 | **内存** | 「arena（bumpalo）分配」 | 首版**按需 parse、无 arena**。对象由调用方逐个 `parse_object`，owned。bumpalo 列入路线图 |
 | **MonoBehaviour** | 未明说是否生成 | **完全不生成**（p04 跳过 classID=114）。运行时由 TypeTree 解释器处理 |
-| **生成规模** | 「约 2 万行」 | 实测 **93,544 行 / 940 文件**（366 main class + 571 subclass + 特殊文件），远超估算（含 subclass + 版本枚举） |
+| **生成规模** | 「约 2 万行」 | 实测 **108,279 行 / 940 文件**（361 main class struct + 574 subclass struct + 特殊文件），远超估算（含 subclass + 版本枚举） |
 | **类型变化** | 「类型归一化表消除命名差异」，真冲突落 Option + 版本 match | 新增 **`VersionedEnum`**：字段类型或 align 跨版本变化时生成版本枚举 + `impl Parse`，按版本选变体 |
 | **shared crate** | 未提 unity-core | 抽出 [`crates/unity-core`](../../crates/unity-core)（~150 行，零依赖），统一 `UnityVersion` / `Endian` / `EndianReader` / `Parse` / `PPtr` |
 | **字段顺序** | 未提 | 新增 **`version_layouts`**：字段顺序跨版本不兼容时（如新字段插在旧字段前）按版本分段读取（锚点 LCS） |
+| **产物分发**（实施备注 4） | 「输出到 `src/generated/`，通过主 crate 的 `build.rs` 在 `OUT_DIR` 编译」 | **改为 commit 生成产物**：独立 crate [`crates/generated`](../../crates/generated)（源码提交进仓库、独立编译缓存），不再用 `build.rs`/`OUT_DIR`。codegen 只 emit 引用 `unity-core`/`generated` 的源码字符串，自身不 link 它们（见 [`docs/codegen.md`](../codegen.md)） |
 
 正文其余部分（离线 codegen 决策、TPK 单一来源、全版本全覆盖、可维护性/性能收益）与实现一致，仍然成立。

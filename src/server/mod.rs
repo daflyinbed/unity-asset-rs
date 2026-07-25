@@ -1,6 +1,8 @@
 //! HTTP serve 子命令入口:axum router 装配 + OpenAPI 文档生成。
 //!
-//! 端点总览(路径参数用 `{}` 语法,axum 0.8 + utoipa 一致):
+//! 两套并存的 REST API(路径参数用 `{}` 语法,axum 0.8 + utoipa 一致):
+//!
+//! **A. legacy bundle API**(`/bundles*`,按 bundle id 寻址,多 bundle 并存):
 //!
 //! | Method | Path                                            | 作用                      |
 //! |--------|-------------------------------------------------|---------------------------|
@@ -15,6 +17,29 @@
 //! | GET    | `/bundles/{bid}/collections/{cid}/objects/{pid}` | 对象详情(?detail=full)   |
 //! | GET    | `/bundles/{bid}/collections/{cid}/objects/{pid}/png` | 导出 PNG(Texture2D/Sprite) |
 //! | GET    | `/bundles/{bid}/containers`                    | 列 container 条目(?path=/?kind=) |
+//!
+//! **B. source-aware environment API**(`/environment*`,单一活动 Environment,
+//! 桌面端切项目用,不重启服务):
+//!
+//! | Method | Path                                            | 作用                      |
+//! |--------|-------------------------------------------------|---------------------------|
+//! | GET    | `/environment`                                  | 活动 Environment 摘要     |
+//! | PUT    | `/environment`                                  | 原子替换全部 source       |
+//! | DELETE | `/environment`                                  | 清空活动 Environment      |
+//! | POST   | `/environment/sources`                          | 增量加 source             |
+//! | DELETE | `/environment/sources/{sid}`                    | 删 source                 |
+//! | POST   | `/environment/sources/{sid}/refresh`            | 重解析单个 source         |
+//! | GET    | `/environment/collections`                      | 列 collection(?revision=) |
+//! | GET    | `/environment/collections/{cid}/objects`        | 列对象(?revision=)        |
+//! | GET    | `/environment/containers`                       | 列 container(?revision=&path=&kind=) |
+//! | GET    | `/environment/collections/{cid}/objects/{pid}`  | 对象详情(?revision=&detail=full) |
+//! | GET    | `/environment/collections/{cid}/objects/{pid}/png` | 导出 PNG(export feature) |
+//!
+//! environment API 带 `revision` 防陈旧:`?revision=` 与当前值不符返回 409 Conflict
+//! (`stale environment revision`)。详见 `docs/electron-app.md`。
+//!
+//! | Method | Path                                            | 作用                      |
+//! |--------|-------------------------------------------------|---------------------------|
 //! | GET    | `/`                                             | Scalar UI(OpenApi 文档页) |
 //! | GET    | `/openapi.json`                                 | OpenApi JSON 文档         |
 //!

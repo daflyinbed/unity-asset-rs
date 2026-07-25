@@ -15,7 +15,7 @@ codegen 是一个**离线工具**（`crates/codegen`，bin + lib），从 `type_
 
 ```
 type_tree.tpk ──→ crates/codegen (p00–p06 + emit) ──→ crates/generated/src/*.rs
-                   2433 行手写                          ~9.4 万行 / 940 文件
+                   ~4.3 千行手写                        ~10.8 万行 / 940 文件
 ```
 
 ### 输入
@@ -58,7 +58,7 @@ type_tree.tpk ──→ crates/codegen (p00–p06 + emit) ──→ crates/gener
 ### 2.1 一个 class（Texture2D）
 
 ```rust
-// crates/generated/src/classes/texture_2_d.rs
+// crates/generated/src/classes/texture2_d.rs
 //! 自动生成。请勿手动修改。
 
 use crate::PPtr;
@@ -279,10 +279,14 @@ void                    →  void_
 
 | 类型 | 路径 |
 |---|---|
-| Unity class | `classes/{snake_name}.rs`（`texture_2_d.rs`） |
+| Unity class | `classes/{snake_name}.rs`（`texture2_d.rs`） |
 | Unity subclass | `subclasses/{snake_name}.rs` |
 | `enum UnityObject` | `unity_object.rs` |
 | `enum ClassIDType` | `class_id.rs` |
+
+文件名用 `heck::ToSnakeCase`（PascalCase → snake_case）。注意 heck **不在数字-字母
+边界插下划线**：`Texture2D → texture2_d`（不是 `texture_2_d`）、`Vector3f → vector3f`。
+类型名（§4.2）则原样保留数字-字母组合（`Texture2D`、`Vector3f`）。
 
 ---
 
@@ -449,7 +453,7 @@ TPK 节点的 `(type_name, 子树形态)` → Rust 类型 + parse 代码（`node
 ### 对齐
 
 某字段 parse 后是否 emit `rdr.align(4)?;` 由 `compute_align_after` 决定（与运行时
-解释器 `src/typetree/interpret.rs` 的 `walk` 及 AssetRipper `Pass100_FillReadMethods.cs`
+解释器 `crates/unity-asset/src/typetree/interpret.rs` 的 `walk` 及 AssetRipper `Pass100_FillReadMethods.cs`
 对齐口径一致）：
 
 - **非容器字段**（标量 / struct / PPtr / string）：检查自身 `meta_flag & 0x4000`
@@ -503,18 +507,18 @@ crates/generated/src/
 ├── classes/
 │   ├── mod.rs
 │   ├── game_object.rs        # struct GameObject { m_name, ... } + impl Parse
-│   ├── texture_2_d.rs
+│   ├── texture2_d.rs
 │   ├── audio_clip.rs
-│   └── ...                   # 366 个文件（不含抽象类、不含 MonoBehaviour）
+│   └── ...                   # 362 个文件（含 mod.rs；不含抽象类、不含 MonoBehaviour）
 └── subclasses/
     ├── mod.rs
     ├── vector3f.rs
     ├── streaming_info.rs
-    └── ...                   # 571 个文件
+    └── ...                   # 575 个文件（含 mod.rs）
 ```
 
-实测规模：**940 个 .rs 文件 / 93,544 行**（366 main class + 571 subclass + 3 个特殊
-文件 + 2 个 mod.rs）。标 `linguist-generated=true`（`.gitattributes`），GitHub diff
+实测规模：**940 个 .rs 文件 / 108,279 行**（361 main class struct + 574 subclass struct
++ 3 个特殊文件 + 2 个 mod.rs）。标 `linguist-generated=true`（`.gitattributes`），GitHub diff
 默认折叠。
 
 ---

@@ -3,8 +3,8 @@
 > 范围：从 io 层的 `LoadedFile::Leaf.bytes` 解析 SerializedFile（header / types[含内嵌
 > typetree] / objects / ref_types），并把每个对象解码——codegen'd typed struct 或
 > TypeTree 解释器，含 fallback。
-> 状态：**本文档描述已落地的实现**（与 `src/serialized_file.rs` + `src/typetree/` +
-> `src/object_parser.rs` + `crates/generated/` 一致）。
+> 状态：**本文档描述已落地的实现**（与 `crates/unity-asset/src/serialized_file.rs` + `crates/unity-asset/src/typetree/` +
+> `crates/unity-asset/src/object_parser.rs` + `crates/generated/` 一致）。
 > 上游：[ADR-0001](adr/0001-codegen-from-typetree-dumps.md)（codegen 决策）、
 > [`io-layer.md`](io-layer.md)（本层输入）、[`codegen.md`](codegen.md)（typed struct 来源）、
 > [`environment-layer.md`](environment-layer.md)（聚合层，eager 调用本层）。
@@ -68,7 +68,7 @@ ParsedObject { Typed(UnityObject) | Dynamic(Value) | MonoBehaviour(_) }
 
 ## 3. SerializedFile 二进制格式
 
-实现位置：`src/serialized_file.rs::parse`。prologue 是**大端**，读到 endian 字节后
+实现位置：`crates/unity-asset/src/serialized_file.rs::parse`。prologue 是**大端**，读到 endian 字节后
 `cursor.set_endian(...)` 切换。
 
 **已用 `char_002_amiya.ab` 探针实测确认**：version=17、file_size=57416（吻合总字节）、
@@ -206,7 +206,7 @@ impl SerializedFile {
 
 ## 4. TypeTree 模块
 
-实现位置：`src/typetree/`（`mod.rs` + `blob.rs` + `interpret.rs` + `common_string.rs`）。
+实现位置：`crates/unity-asset/src/typetree/`（`mod.rs` + `blob.rs` + `interpret.rs` + `common_string.rs`）。
 
 ### 4.1 TypeKind / TypeNode
 
@@ -242,11 +242,11 @@ impl TypeNode {
 
 `TypeKind::from_unity` 归一化别名表：`SInt32/int/Type*/EntityId→I32`、
 `unsigned int/UInt32→U32`、`long long/SInt64→I64`、`PPtr<…>→PPtr` 等（见
-`src/typetree/mod.rs`）。
+`crates/unity-asset/src/typetree/mod.rs`）。
 
 ### 4.2 blob 读取（参考 `TypeTreeNode.py:111-154`）
 
-实现位置：`src/typetree/blob.rs`。
+实现位置：`crates/unity-asset/src/typetree/blob.rs`。
 
 单节点磁盘布局 `{endian}hBBIIiii[Q]`（ver>=19 加 `u64 ref_type_hash`），定长 24（或 32）
 字节。先读 `i32 node_count` + `i32 str_buf_size`，再批量读节点 + 字符串缓冲。
@@ -269,7 +269,7 @@ buffer null-terminated；`bit31=1`→CommonString 表索引（§4.4）。
 
 ### 4.3 interpret（参考 `TypeTreeHelper.read_value:182-263`）
 
-实现位置：`src/typetree/interpret.rs`。
+实现位置：`crates/unity-asset/src/typetree/interpret.rs`。
 
 ```rust
 pub fn interpret(
@@ -296,7 +296,7 @@ pub fn interpret(
 
 ### 4.4 CommonString
 
-实现位置：`src/typetree/common_string.rs`。硬编码 113 条 `(u32 offset, &'static str)`，
+实现位置：`crates/unity-asset/src/typetree/common_string.rs`。硬编码 113 条 `(u32 offset, &'static str)`，
 从 AssetRipper `CommonString.cs` 抄录。
 
 ```rust
@@ -334,7 +334,7 @@ impl RefTypeTable {
 
 ## 5. dispatch：`object_parser.rs`（已实现）
 
-实现位置：`src/object_parser.rs`。这是 typed parse 和 TypeTree 解释器两套路径的汇合点。
+实现位置：`crates/unity-asset/src/object_parser.rs`。这是 typed parse 和 TypeTree 解释器两套路径的汇合点。
 
 ```rust
 pub enum ParsedObject {
@@ -453,7 +453,7 @@ typed/monobehaviour/dynamic/失败并统计汇总；`object` 子命令 dump 单�
 用，消除类型重复定义。
 
 ```rust
-// crates/unity-core/src/reader.rs
+// crates/unity-core/crates/unity-asset/src/reader.rs
 pub enum Endian { Little, Big }
 
 /// 字节序 reader 抽象。生成代码通过此 trait 读字节，
@@ -483,13 +483,13 @@ pub trait Parse: Sized {
 }
 ```
 
-`crates/unity-core/src/version.rs` 的 `UnityVersion { major, minor, build }` 带
-`parse("2017.4.39f1")` + 偏序比较；`src/pptr.rs` 的 `PPtr { m_file_id, m_path_id }`
+`crates/unity-core/crates/unity-asset/src/version.rs` 的 `UnityVersion { major, minor, build }` 带
+`parse("2017.4.39f1")` + 偏序比较；`crates/unity-asset/src/pptr.rs` 的 `PPtr { m_file_id, m_path_id }`
 非 generic（`m_path_id` 永远按 i64 读，老版本分支留给未来）。
 
 ### 6.1 Cursor 桥接
 
-主 crate 的 `Cursor`（`src/cursor.rs`，**crate-private**——`mod cursor`，不再 `pub`）
+主 crate 的 `Cursor`（`crates/unity-asset/src/cursor.rs`，**crate-private**——`mod cursor`，不再 `pub`）
 `impl unity_core::EndianReader for Cursor`，把各 `read_*` 委托给 Cursor 现有方法。
 这是 generated 代码能读字节的实际入口。
 
@@ -506,11 +506,11 @@ pub trait Parse: Sized {
 
 ## 7. 公共 API
 
-主 crate `src/lib.rs` 的导出分为**顶层直转**（面向普通用户）和**门面模块**
+主 crate `crates/unity-asset/src/lib.rs` 的导出分为**顶层直转**（面向普通用户）和**门面模块**
 （高级用户走全路径）：
 
 ```rust
-// 顶层直转（src/lib.rs）——常用类型免写全路径
+// 顶层直转（crates/unity-asset/src/lib.rs）——常用类型免写全路径
 pub use object_parser::{MonoBehaviour, ParsedObject};
 pub use format::{FileFormat, LoadedFile, load_recursive, sniff};
 pub use typetree::{Value, RefTypeTable, PPtrValue};
@@ -562,7 +562,7 @@ MonoBehaviour **不生成 codegen'd struct**（见 [`codegen.md`](codegen.md) §
 - **structure**：TypeTree 里 shell 之后的剩余字段，保持动态 `Value`（`Value::Struct`），
   调用方按名字 pattern-match 访问。
 
-实现：`interpret_mono_behaviour`（`src/typetree/interpret.rs`）在 TypeTree 节点层找
+实现：`interpret_mono_behaviour`（`crates/unity-asset/src/typetree/interpret.rs`）在 TypeTree 节点层找
 shell/structure 分界（`find_mono_behaviour_split`：顺序匹配引擎字段名集合，首个不匹配
 节点即 structure 起点），用共享 `Cursor` 分两段 `read_children`——对齐 AssetRipper
 `FindStartingIndexForMonoBehaviour` + `SerializableStructure.Read`。TypeTree 路径下
@@ -603,7 +603,7 @@ for o in env.mono_behaviours() {
 
 ## 9. 错误类型
 
-对象解析相关错误见 `src/error.rs`：
+对象解析相关错误见 `crates/unity-asset/src/error.rs`：
 
 - `SerializedFile { reason }` — SerializedFile 解析失败。
 - `TypeTreeSizeMismatch { expected, actual }` — 解释器走完后 pos 校验不通过（版本不匹配强信号）。

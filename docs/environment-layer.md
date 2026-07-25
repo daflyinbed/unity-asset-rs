@@ -2,7 +2,7 @@
 
 > 范围：从 io 层的 `LoadedFile` 树构建 `Environment`——eager parse 全部 SerializedFile 的对象，
 > 聚合 `.resS` 流数据，提供 PPtr 解引用与 streaming_data 取数。
-> 状态：**本文档描述已落地的实现**（与 `src/environment.rs` + `src/loader.rs` + `src/names.rs` 一致）。
+> 状态：**本文档描述已落地的实现**（与 `crates/unity-asset/src/environment.rs` + `crates/unity-asset/src/loader.rs` + `crates/unity-asset/src/names.rs` 一致）。
 > 上游：[`io-layer.md`](io-layer.md)（本层输入 `LoadedFile`）、
 > [`object-layer.md`](object-layer.md)（对象 dispatch `parse_object`）、
 > [`codegen.md`](codegen.md)（typed struct `UnityObject`）。
@@ -198,7 +198,7 @@ resource / 解析 FileIdentifier 时统一调 `fix_file_identifier`。
 ## 4. 前置改动：捕获 externals
 
 PPtr 跨文件解析的前提是 `SerializedFile` 不再丢弃 externals。当前
-`src/serialized_file.rs:182-193` 把 externals 全部 `let _ =` 丢弃——必须先捕获。
+`crates/unity-asset/src/serialized_file.rs:182-193` 把 externals 全部 `let _ =` 丢弃——必须先捕获。
 
 ```rust
 /// 对齐 AssetRipper FileIdentifier。
@@ -231,7 +231,7 @@ PPtr 的 `file_id` 含义（对齐 `AssetCollection.Dependencies`）：
 
 `Loader::build` 对每个输入源（`path` / `bytes` / `loaded` / `scan_dir`）跑一次
 io 层 `load_recursive`（产出 `LoadedFile` 树），再交给共享 helper `phase_a`
-（`src/environment.rs::phase_a`）灌进 `Environment` 的各 Vec：
+（`crates/unity-asset/src/environment.rs::phase_a`）灌进 `Environment` 的各 Vec：
 
 ```
 LoadedFile 叶子遍历（leaves()）：
@@ -389,18 +389,84 @@ pre-5.0 的 `m_audio_data` 字段类型是 codegen 生成的 `AudioClipMAudioDat
 （`Inline` / `Streamed`），把值依赖读取封装在枚举变体里——详见
 [codegen §11.1](codegen.md#111-值依赖读特判pre-50-audioclipmaudiodatapass505-rust-移植)。
 
+### 7.2 container 索引（AssetBundle.m_Container + ResourceManager.m_Container）
+
+实现位置：`crates/unity-asset/src/container.rs`。把已 parse 的两类宿主对象
+（`AssetBundle` classID=142 / `ResourceManager` classID=147）的 `m_Container` 字段抽出来，
+扁平展平成全局 `path → 主对象` 索引，挂在 `Environment` 上。`Loader::build` 末尾
+（Phase B 之后）调一次 `Environment::build_container_index` 构建；增量 source mutation
+（`insert_source`/`remove_source`/`replace_source`）后也会重建。
+
+两类 container 是同构机制的两个实例，用 `ContainerKind` 区分语义：
+
+| 宿主 | Unity 加载 API | value 形态 | path 形态 |
+|---|---|---|---|
+| `AssetBundle.m_Container` | `bundle.LoadAsset(name)` / Addressables | `AssetInfo`（含 `preload_index`/`preload_size` 切片） | `assets/ui/mainmenu.prefab` |
+| `ResourceManager.m_Container` | `Resources.Load(path)` | 裸 `PPtr`（无 preload 切片） | `Prefabs/MainMenu`（无扩展名） |
+
+```rust
+pub enum ContainerKind { AssetBundle, ResourceManager }
+
+pub struct ContainerEntry {
+    pub path: String,                       // 原文，未归一化
+    pub asset: Option<ObjectId>,            // 主对象；跨 bundle 失效引用 → None
+    pub host: ObjectId,                     // 宿主对象（AssetBundle/ResourceManager）id
+    pub kind: ContainerKind,
+    /// 仅 AssetBundle 有：m_PreloadTable 的 [preload_index, preload_index+preload_size)
+    /// 切片已 resolve 为 ObjectId 列表。越界或 ResourceManager → None。
+    /// Vec 内部 None 占位保留下标对应关系（对齐 UnityPy 切片语义）。
+    pub preload: Option<Vec<Option<ObjectId>>>,
+}
+
+pub struct ContainerIndex { /* entries: Vec<ContainerEntry> */ }
+impl ContainerIndex {
+    pub fn entries(&self) -> &[ContainerEntry];   // 含重复 key（multidict 语义）
+    pub fn len(&self) -> usize;
+    pub fn is_empty(&self) -> bool;
+}
+```
+
+> **命名澄清**：此处的 "container" 指 Unity 的 `m_Container` 索引（按路径加载对象的入口），
+> 与 `LoadedFile::Container`（io 层递归文件树的分支节点）、`ParseFailure::Container`
+> （io 层子条目递归 parse 失败）是**三个不同概念**，仅同名。
+
+**与 UnityPy 的关键差异**（跨工具对照见 [`../../docs/container-source-of-truth.md`]）：
+- 不跳过 `FileID != 0`——库保留全部跨 bundle 引用信息，用户可从 `entry.asset` 是否
+  落到 `host.collection` 之外自行判断。
+- eager 构建——Rust 无运行时 `register_cab`，无需惰性。
+- ResourceManager 不做「取最长路径」特例，用户按需在遍历 `entries()` 时自行处理。
+- 仅扁平 `Vec` + 线性扫描（典型 bundle 的 container 条目在数百量级，线性扫描足够），
+  保留 multidict（同一 path 多条）语义；需单值时取最后一条（对齐 UnityPy 覆盖语义）。
+
+访问入口：
+
+```rust
+impl Environment {
+    /// 全局 container 索引。
+    pub fn containers(&self) -> &ContainerIndex;
+
+    /// 反向查询：某对象所属的 container path（线性扫描；含 preload 派生条目）。
+    /// 取首个命中；要全部用 `containers().entries()` 自行过滤。
+    pub fn container_path_for(&self, obj: &EnvironmentObject) -> Option<&str>;
+}
+```
+
+CLI `containers` 子命令（`--reverse` 反向视图、`--kind AssetBundle|ResourceManager` 过滤）
+与 REST `/bundles/{bid}/containers`、`/environment/containers`（`?path=`/`?kind=`）
+均消费此索引。
+
 ---
 
 ## 8. 公共 API
 
-`src/lib.rs` 顶层导出（部分）：
+`crates/unity-asset/src/lib.rs` 顶层导出（部分）：
 
 ```rust
-// src/lib.rs
+// crates/unity-asset/src/lib.rs
 pub mod environment;
 pub mod loader;
 pub mod names;
-// …io / types / export 门面模块见 src/lib.rs
+// …io / types / export 门面模块见 crates/unity-asset/src/lib.rs
 
 pub use loader::{Diagnostic, DiagnosticKind, LoadReport, Loader, LoaderBuilder, Severity};
 pub use environment::{
@@ -558,8 +624,8 @@ for obj in env.objects() {
 
 | 阶段 | 内容 | 状态 |
 |---|---|---|
-| **Phase 1** | 捕获 externals：`src/serialized_file.rs` 新增 `FileIdentifier` + `SerializedFile.externals`；`src/lib.rs` 导出 | ✅ |
-| **Phase 2** | 新建 `src/environment.rs`：全部类型 + `fix_file_identifier`（`src/names.rs`）+ 两阶段构建 + resolve + streaming_data；`src/lib.rs` 导出 | ✅ |
+| **Phase 1** | 捕获 externals：`crates/unity-asset/src/serialized_file.rs` 新增 `FileIdentifier` + `SerializedFile.externals`；`crates/unity-asset/src/lib.rs` 导出 | ✅ |
+| **Phase 2** | 新建 `crates/unity-asset/src/environment.rs`：全部类型 + `fix_file_identifier`（`crates/unity-asset/src/names.rs`）+ 两阶段构建 + resolve + streaming_data；`crates/unity-asset/src/lib.rs` 导出 | ✅ |
 | **Phase 3** | 验证：`tests/environment.rs`（5 个集成测试）+ 全部 `example/` bundle 烟测（0 失败） | ✅ |
 
 ---
@@ -727,7 +793,7 @@ pub struct ProviderError(pub String);
 
 ### 13.4 gzip / brotli 嗅探
 
-`LoaderBuilder::scan_dir` 经 `src/detect.rs::looks_like_loadable_path` 嗅探 **UnityFS +
+`LoaderBuilder::scan_dir` 经 `crates/unity-asset/src/detect.rs::looks_like_loadable_path` 嗅探 **UnityFS +
 gzip + brotli** 三种外层格式。io 层 `format::load_recursive` 本就透明解压 gzip/brotli（解压后
 递归 sniff 内层），故 `scan_dir` 下游无需改——只需预过滤阶段识别这三种 magic：
 

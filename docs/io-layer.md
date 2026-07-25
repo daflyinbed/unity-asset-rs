@@ -1,8 +1,8 @@
 # 文件加载与解压层（io 层）
 
 > 范围：从用户输入（路径 / 字节）到 `LoadedFile`（递归再派发后的内部文件树 + 字节）。
-> 状态：**本文档描述已落地的实现**（与 `src/bundle.rs` + `src/format.rs` +
-> `src/decompress.rs` 一致）。
+> 状态：**本文档描述已落地的实现**（与 `crates/unity-asset/src/bundle.rs` + `crates/unity-asset/src/format.rs` +
+> `crates/unity-asset/src/decompress.rs` 一致）。
 > 上游：[ADR-0003](adr/0003-file-loading-and-decompression-layer.md)（io 层决策，含修订附录）、
 > [`object-layer.md`](object-layer.md)（本层产出的 `LoadedFile::Leaf.bytes` 交给对象解析）、
 > [`environment-layer.md`](environment-layer.md)（`Loader` 消费 `LoadedFile` 树跑聚合层）。
@@ -60,7 +60,7 @@ Leaf 含 name + bytes + sniff 结论；Failed 保留原始字节 + 错误）。
 
 ## 3. 公共 API
 
-实现位置：`src/lib.rs`（re-export）+ `src/format.rs` + `src/bundle.rs` + `src/decompress.rs`。
+实现位置：`crates/unity-asset/src/lib.rs`（re-export）+ `crates/unity-asset/src/format.rs` + `crates/unity-asset/src/bundle.rs` + `crates/unity-asset/src/decompress.rs`。
 
 ```rust
 /// 从文件路径加载 Unity 资产文件（递归再派发）。
@@ -171,8 +171,8 @@ pub struct RawEntry { pub name: String, pub bytes: Bytes, pub flags: u32 }
 
 ## 4. UnityFS 解析流程
 
-实现位置：`src/bundle.rs::parse`。UnityFS 在磁盘上是**大端**，用 **crate-private** 大端
-`Cursor`（`src/cursor.rs`，`mod cursor`——不再 `pub`）。`Cursor` 的 `seek` / `align` /
+实现位置：`crates/unity-asset/src/bundle.rs::parse`。UnityFS 在磁盘上是**大端**，用 **crate-private** 大端
+`Cursor`（`crates/unity-asset/src/cursor.rs`，`mod cursor`——不再 `pub`）。`Cursor` 的 `seek` / `align` /
 `remaining` 全做边界检查：`seek`/`align` 越界返回 `Truncated` 错误（不 panic），
 `remaining()` 用 `saturating_sub`（下溢归零）。**不要**换 `byteorder`，内联 cursor 是有意的，
 新增功能也不要重新 `pub` Cursor——用户面只通过 `EndianReader` trait 与高级解析入口
@@ -248,7 +248,7 @@ sniff + parse，最终产出 `LoadedFile` 树。
 
 ## 5. 可插拔解压器：`Decompressor` + `Registry`
 
-实现位置：`src/decompress.rs`。这是本层的核心扩展点。
+实现位置：`crates/unity-asset/src/decompress.rs`。这是本层的核心扩展点。
 
 ```rust
 /// 压缩类型。低 6 位 flag 的编码。
@@ -330,9 +330,9 @@ enum/sniff + 多容器格式（UnityWeb/UnityRaw/UnityWebData）+ gzip/brotli �
 | 项 | 设计要点 | 状态 |
 |---|---|---|
 | **递归再派发** | 每种格式只「识别 + 解析自身结构 + 列出原始子字节」；驱动器看到 Container 就对每个子条目重新 sniff + parse。同一套派发服务顶层与子条目，任意嵌套（如 `brotli(UnityFS(.assets))`）免费获得 | ✅ |
-| **格式闭集 enum + sniff** | `enum FileFormat { ... }` + `sniff(&[u8])` if/else 链 + `match parse`（`src/format.rs`） | ✅ |
-| **UnityWeb / UnityRaw / UnityWebData** | 旧版容器格式（`src/containers/rawweb.rs` + `src/containers/webfile.rs`） | ✅ |
-| **gzip / brotli 外层包裹** | 外层压缩包住上述任意一种容器，解压后递归 sniff（`src/containers/compressed.rs`） | ✅ |
+| **格式闭集 enum + sniff** | `enum FileFormat { ... }` + `sniff(&[u8])` if/else 链 + `match parse`（`crates/unity-asset/src/format.rs`） | ✅ |
+| **UnityWeb / UnityRaw / UnityWebData** | 旧版容器格式（`crates/unity-asset/src/containers/rawweb.rs` + `crates/unity-asset/src/containers/webfile.rs`） | ✅ |
+| **gzip / brotli 外层包裹** | 外层压缩包住上述任意一种容器，解压后递归 sniff（`crates/unity-asset/src/containers/compressed.rs`） | ✅ |
 | **CN 加密** | `0x100` flag，Unity CN。concrete `ArchiveStorageDecryptor { index, substitute }` + `CnKey` 配置项，在 UnityFS 解析器内按块 `decrypt_block` 后再解压（N=1，不抽象为 trait） | ⬜ |
 | **Loader / LoaderBuilder** | 高级门面：声明式 `.path()`/`.bytes()`/`.loaded()`/`.scan_dir()`/`.registry()`/`.dependency_provider()`/`.resource_provider()` 累积，`build() -> Result<LoadReport>` 统一跑 io + 对象 + 聚合层 Phase A/B；顶层 IO 错误 → `Err`，局部失败 → `LoadReport::diagnostics`。已落地，详见 [`environment-layer.md`](environment-layer.md) §8/§13 | ✅ |
 | **.resS 分离与 World** | `.resS` node 由聚合层（`Environment`）捕获为 `ResourceFile`，`StreamingInfo` 引用经 `streaming_data` 零拷贝取数。已落地，详见 [`environment-layer.md`](environment-layer.md) | ✅ |
@@ -352,7 +352,7 @@ eager parse；`.resS` 独立拷贝分离策略由聚合层完成（`Bytes::copy_
 
 ## 7. 错误类型
 
-io 层错误见 `src/error.rs`，遵循 `#[snafu(display(...))]` + `#[snafu(visibility(pub))]`
+io 层错误见 `crates/unity-asset/src/error.rs`，遵循 `#[snafu(display(...))]` + `#[snafu(visibility(pub))]`
 模式。io 相关变体：
 
 - `Io`（io::Error）
