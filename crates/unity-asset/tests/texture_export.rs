@@ -629,7 +629,7 @@ fn uncompressed_multi_row_y_flip() {
 
 // ── Crunch（原始 CRN v1.04 + Unity 变体；DXT1/DXT5/ETC1/ETC2A crunched）解码测试 ──
 //
-// 用 sibling crate `../texture-decoder-rs/tests/data/{crunch,crunch_unity}/` 下的 golden
+// 用同 workspace 的 `crates/texture-decoder-rs/tests/data/{crunch,crunch_unity}/` 下的 golden
 // fixture（由参考 C++ transcoder 生成的 `.crn`/`.bc` 对）验证 `decode_crunch`：版本分水岭
 // 分派（原始 vs Unity 变体）+ level-0 选取 + BC1/BC3/ETC1/ETC2_RGBA8 分派（由 CRN 头 format
 // 决定）+ cubemap 6 面纵向拼接 + Y 翻转规则（2D 翻、cubemap 不翻，对齐 AssetRipper）。
@@ -638,9 +638,9 @@ fn uncompressed_multi_row_y_flip() {
 /// 读 sibling crate 的 crunch fixture（`.crn` + `.bc`）；不存在返回 None（测试跳过）。
 /// `subdir` = `crunch`（原始）或 `crunch_unity`（Unity 变体）。
 fn crunch_fixture(subdir: &str, name: &str) -> Option<(Vec<u8>, Vec<u8>)> {
-    // sibling crate：crates/unity-asset → crates → unity-asset-rs → unity(dir) → texture-decoder-rs（4 级）
+    // 同 workspace：crates/unity-asset → crates/texture-decoder-rs（1 级）
     let base = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../../../../texture-decoder-rs/tests/data")
+        .join("../texture-decoder-rs/tests/data")
         .join(subdir);
     let crn = std::fs::read(base.join(format!("{name}.crn"))).ok()?;
     let bc = std::fs::read(base.join(format!("{name}.bc"))).ok()?;

@@ -1,0 +1,19 @@
+[submodule "crates/texture-decoder-rs/vendor/astc-encoder"]
+	path = crates/texture-decoder-rs/vendor/astc-encoder
+	url = https://github.com/ARM-software/astc-encoder.git
+[submodule "crates/texture-decoder-rs/vendor/bcdec"]
+	path = crates/texture-decoder-rs/vendor/bcdec
+	url = https://github.com/iOrange/bcdec.git
+[submodule "crates/texture-decoder-rs/vendor/compressonator"]
+	path = crates/texture-decoder-rs/vendor/compressonator
+	url = https://github.com/GPUOpen-Tools/compressonator.git
+[submodule "crates/texture-decoder-rs/vendor/crunch"]
+	path = crates/texture-decoder-rs/vendor/crunch
+	url = https://github.com/BinomialLLC/crunch.git
+[submodule "crates/texture-decoder-rs/vendor/etcpack"]
+	path = crates/texture-decoder-rs/vendor/etcpack
+	url = https://github.com/Ericsson/ETCPACK.git
+[submodule "crates/texture-decoder-rs/vendor/unity-crunch"]
+	path = crates/texture-decoder-rs/vendor/unity-crunch
+	url = https://github.com/Unity-Technologies/crunch.git
+	branch = unity

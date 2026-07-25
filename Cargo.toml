@@ -50,8 +50,9 @@ members = [
   "crates/codegen",
   "crates/generated",
   "crates/lz4inv",
+  "crates/texture-decoder-rs",
   "crates/unity-core",
-  "crates/unity-asset" 
+  "crates/unity-asset"
 ]
 resolver = "3"
 

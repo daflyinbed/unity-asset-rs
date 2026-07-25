@@ -1,0 +1,31 @@
+[package]
+name = "texture-decoder-rs"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+publish = false
+license = "Apache-2.0"
+description = "no_std, allocation-free ASTC LDR, ETC2/EAC, and BC1-BC7 texture block decoders"
+categories = ["graphics", "no-std"]
+keywords = ["texture", "astc", "etc2", "bcn", "decoder"]
+readme = "README.md"
+
+[dependencies]
+half = { version = "2.7.1", default-features = false }
+
+[features]
+# Enables the `crn` module, which decompresses every face and mip level of
+# Crunch (CRN v1.04) 2D textures and cubemaps into raw BC1/BC3 blocks. It
+# requires `alloc` for palette and returned hierarchy storage, so the crate is
+# no longer allocation-free with this feature enabled.
+crn = []
+# Enables the `crn_unity` module, a port of the Unity fork of Crunch
+# (`vendor/unity-crunch/inc/crn_decomp.h`). The Unity fork replaced the upstream
+# "chunk encoding" bitstream with an incompatible "reference encoding" scheme
+# and added ETC1/ETC2A support, so its files are not decodable by the `crn`
+# module and vice versa. Supports DXT1 (BC1), DXT5 (BC3), ETC_RGB4 (ETC1), and
+# ETC2_RGBA8. Like `crn`, it requires `alloc`.
+crn-unity = []
+
+[lib]
+path = "src/lib.rs"

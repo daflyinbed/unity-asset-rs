@@ -1,0 +1,5 @@
+/target
+/tools/gen_bcn_golden
+/tools/gen_bc6h_bcdec
+/tools/gen_crn_golden
+/tools/gen_crn_unity_golden
