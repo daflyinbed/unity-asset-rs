@@ -54,7 +54,7 @@ enum Cmd {
         #[arg(allow_hyphen_values = true)]
         path_id: i64,
     },
-    /// 导出 Texture2D / Sprite 为 PNG（支持 ASTC LDR / ETC1/ETC2/EAC / BCn/DXT / 未压缩格式）。
+    /// 导出 Texture2D / Sprite 为 PNG，并把 AudioClip 拆成 WAV/Ogg 等音频文件。
     Export {
         /// 输出目录（默认当前目录）。
         #[arg(long, short = 'o', default_value = ".")]
@@ -66,8 +66,14 @@ enum Cmd {
         #[arg(long)]
         no_sprites: bool,
         /// 只导出 Sprite（跳过 Texture2D）。
-        #[arg(long)]
+        #[arg(long, conflicts_with = "only_audio")]
         only_sprites: bool,
+        /// 不导出 AudioClip。
+        #[arg(long)]
+        no_audio: bool,
+        /// 只导出 AudioClip（跳过 Texture2D / Sprite）。
+        #[arg(long, conflicts_with = "no_audio")]
+        only_audio: bool,
     },
     /// 列出 container 索引(AssetBundle.m_Container + ResourceManager.m_Container 聚合)。
     ///
@@ -149,7 +155,17 @@ async fn run(cli: &Cli) -> Result<(), String> {
                     only,
                     no_sprites,
                     only_sprites,
-                } => cmd_export(&env, out, only, *no_sprites, *only_sprites),
+                    no_audio,
+                    only_audio,
+                } => cmd_export(
+                    &env,
+                    out,
+                    only,
+                    *no_sprites,
+                    *only_sprites,
+                    *no_audio,
+                    *only_audio,
+                ),
                 Cmd::Containers { reverse, kind } => {
                     cmd_containers(&env, *reverse, kind.as_deref())
                 }
@@ -482,7 +498,8 @@ fn format_ref(env: &Environment, id: ObjectId) -> String {
 /// 遍历全部 Texture2D（或 `only` 指定的 path_id），对 ASTC LDR / ETC1/ETC2/EAC /
 /// BCn/DXT / 未压缩格式解码 + 写 PNG；不支持的格式记 skip。随后遍历全部 Sprite
 /// （受 `--no-sprites` / `--only-sprites` 开关控制），从其 atlas 上裁出 textureRect +
-/// 可选 packing rotation / downscale，写 PNG。末尾汇总，有失败时返回 Err（退出码 1）。
+/// 可选 packing rotation / downscale，写 PNG。最后拆分 AudioClip 内的全部 FSB sample
+/// 并重建成 WAV/Ogg。末尾汇总，有失败时返回 Err（退出码 1）。
 #[cfg(feature = "export")]
 fn cmd_export(
     env: &Environment,
@@ -490,6 +507,8 @@ fn cmd_export(
     only: &[i64],
     no_sprites: bool,
     only_sprites: bool,
+    no_audio: bool,
+    only_audio: bool,
 ) -> Result<(), String> {
     use generated::classes::sprite::Sprite;
     use generated::classes::texture2_d::Texture2D;
@@ -502,7 +521,7 @@ fn cmd_export(
     let mut tex_skipped = 0usize;
     let mut tex_failed = 0usize;
 
-    if !only_sprites {
+    if !only_sprites && !only_audio {
         for obj in env.objects_of_class(ClassIDType::Texture2D) {
             if !only.is_empty() && !only.contains(&obj.path_id) {
                 continue;
@@ -561,7 +580,7 @@ fn cmd_export(
     let mut spr_skipped = 0usize;
     let mut spr_failed = 0usize;
 
-    if !no_sprites {
+    if !no_sprites && !only_audio {
         for obj in env.objects_of_class(ClassIDType::Sprite) {
             if !only.is_empty() && !only.contains(&obj.path_id) {
                 continue;
@@ -593,7 +612,74 @@ fn cmd_export(
 
     println!("Sprite 汇总: 导出 {spr_exported}, 跳过 {spr_skipped}, 失败 {spr_failed}",);
 
-    let total_failed = tex_failed + spr_failed;
+    let mut audio_exported = 0usize;
+    let mut audio_skipped = 0usize;
+    let mut audio_failed = 0usize;
+    let mut audio_paths = std::collections::HashSet::new();
+
+    if !no_audio && !only_sprites {
+        for obj in env.objects_of_class(ClassIDType::AudioClip) {
+            if !only.is_empty() && !only.contains(&obj.path_id) {
+                continue;
+            }
+            let ParsedObject::Typed(UnityObject::AudioClip(clip)) = &obj.object else {
+                audio_skipped += 1;
+                continue;
+            };
+            let name = if clip.m_name.is_empty() {
+                format!("audio_{}", obj.path_id)
+            } else {
+                clip.m_name.clone()
+            };
+            match unity_asset::audio_export::decode_audio(env, obj) {
+                Ok(samples) if samples.is_empty() => {
+                    println!("⊘ skip  {name}  FSB5 不含 sample");
+                    audio_skipped += 1;
+                }
+                Ok(samples) => {
+                    let multiple = samples.len() > 1;
+                    for (index, sample) in samples.into_iter().enumerate() {
+                        let stem = if multiple {
+                            let suffix = sample
+                                .sample_name
+                                .as_deref()
+                                .filter(|s| !s.is_empty())
+                                .map(sanitize_filename)
+                                .unwrap_or_else(|| format!("sample_{index}"));
+                            format!("{}_{}", sanitize_filename(&name), suffix)
+                        } else {
+                            sanitize_filename(&name)
+                        };
+                        let file = unique_output_path(
+                            out,
+                            &stem,
+                            sample.extension,
+                            obj.path_id,
+                            &mut audio_paths,
+                        );
+                        match std::fs::write(&file, sample.data) {
+                            Ok(()) => {
+                                println!("✓ ok    {name}  audio[{index}] -> {}", file.display());
+                                audio_exported += 1;
+                            }
+                            Err(e) => {
+                                println!("✗ fail  {name}  写 {} 失败: {e}", file.display());
+                                audio_failed += 1;
+                            }
+                        }
+                    }
+                }
+                Err(e) => {
+                    println!("✗ fail  {name}  {e}");
+                    audio_failed += 1;
+                }
+            }
+        }
+    }
+
+    println!("音频汇总: 导出 {audio_exported}, 跳过 {audio_skipped}, 失败 {audio_failed}");
+
+    let total_failed = tex_failed + spr_failed + audio_failed;
     if total_failed > 0 {
         Err(format!("有 {total_failed} 个导出失败"))
     } else {
@@ -625,8 +711,38 @@ fn cmd_export(
     _only: &[i64],
     _no_sprites: bool,
     _only_sprites: bool,
+    _no_audio: bool,
+    _only_audio: bool,
 ) -> Result<(), String> {
     Err("export 子命令需要 `export` feature（默认开启；当前构建关闭了它）".to_string())
+}
+
+/// 避免同名 AudioClip / FSB sample 静默覆盖：冲突时追加 path_id，再追加序号。
+#[cfg(feature = "export")]
+fn unique_output_path(
+    out: &Path,
+    stem: &str,
+    extension: &str,
+    path_id: i64,
+    used: &mut std::collections::HashSet<PathBuf>,
+) -> PathBuf {
+    let stem = if stem.is_empty() { "audio" } else { stem };
+    let first = out.join(stem).with_extension(extension);
+    if used.insert(first.clone()) && !first.exists() {
+        return first;
+    }
+    for index in 0usize.. {
+        let suffix = if index == 0 {
+            format!("{stem}_{path_id}")
+        } else {
+            format!("{stem}_{path_id}_{index}")
+        };
+        let candidate = out.join(suffix).with_extension(extension);
+        if used.insert(candidate.clone()) && !candidate.exists() {
+            return candidate;
+        }
+    }
+    unreachable!()
 }
 
 /// 把 m_name 里的路径非法字符（`[`, `]`, `/`, `\`, `:` 等）替换为 `_`。

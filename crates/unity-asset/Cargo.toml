@@ -12,7 +12,7 @@ path = "src/lib.rs"
 # 纹理导出（ASTC 解码 + PNG 编码）。默认开启，需要 image / texture-decoder-rs 重依赖；
 # 关闭后库不引入它们（CLI `export` 子命令在无 feature 时报不可用）。
 default = ["export"]
-export = ["dep:image", "dep:texture-decoder-rs", "dep:half"]
+export = ["dep:image", "dep:texture-decoder-rs", "dep:half", "dep:fsb-rs"]
 
 [dependencies]
 bytes = "1"
@@ -36,6 +36,8 @@ texture-decoder-rs = { path = "../texture-decoder-rs", optional = true, features
 # half（fp16 → fp32）：HDR 浮点未压缩格式（RHalf/RGHalf/RGBAHalf）解码用；
 # 与 texture-decoder-rs 同源（后者也依赖 half），不引入新外部 crate。
 half = { version = "2", default-features = false, features = ["bytemuck"], optional = true }
+# Fmod5Sharp 的 Rust port：AudioClip 内 FSB5 sample 拆分并重建为 WAV/Ogg。
+fsb-rs = { path = "../../../../fsb-rs", optional = true }
 
 [dev-dependencies]
 # 测试里构造 fp16 字面量（HDR 浮点格式单测）用；version/feature 对齐 export feature 的 half。

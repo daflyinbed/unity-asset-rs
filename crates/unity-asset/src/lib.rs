@@ -39,6 +39,8 @@ pub mod typetree;
 
 // ── 高级门面模块 ──
 #[cfg(feature = "export")]
+pub mod audio_export;
+#[cfg(feature = "export")]
 pub mod export;
 pub mod io;
 pub mod types;
