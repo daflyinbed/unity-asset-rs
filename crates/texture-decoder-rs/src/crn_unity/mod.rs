@@ -15,10 +15,11 @@
 //! space.
 //!
 //! Supported formats: DXT1 (BC1, 8 bytes/block), DXT5 (BC3, 16 bytes/block),
-//! ETC_RGB4 (ETC1, 8 bytes/block), and ETC2_RGBA8 (16 bytes/block). Cubemaps use
-//! +X, -X, +Y, -Y, +Z, -Z face order. Other Crunch formats are rejected. A
-//! segmented flag is accepted when every mip remains in-buffer; truly out-of-line
-//! level data returns [`CrnUnityDecodeError::UnsupportedSegmented`].
+//! ETC_RGB4 (ETC1, 8 bytes/block), ETC2_RGB8 (8 bytes/block), and ETC2_RGBA8
+//! (16 bytes/block). Cubemaps use +X, -X, +Y, -Y, +Z, -Z face order. Other
+//! Crunch formats are rejected. A segmented flag is accepted when every mip
+//! remains in-buffer; truly out-of-line level data returns
+//! [`CrnUnityDecodeError::UnsupportedSegmented`].
 
 mod decoder;
 

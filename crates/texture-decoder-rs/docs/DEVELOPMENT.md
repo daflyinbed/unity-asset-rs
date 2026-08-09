@@ -57,7 +57,7 @@ Regeneration is only necessary when deliberately updating fixtures:
 | Independent bcdec BC6H rounding cases | `tools/gen_bc6h_bcdec.sh` | `vendor/bcdec` submodule. |
 | BC6H/BC7 lookup tables | `python3 tools/gen_bcn_tables.py` | Python 3. Review the generated diff before committing. |
 | Crunch (CRN) DXT1/DXT5 | `tools/gen_crn_golden.sh` | `vendor/crunch` submodule with the `crnlib/crunch` CLI built. Needs the `crn` feature. |
-| Unity-fork Crunch DXT1/DXT5/ETC1/ETC2A | `tools/gen_crn_unity_golden.sh` | `vendor/unity-crunch` submodule (`unity` branch) with the `crnlib/crunch` CLI built. Needs the `crn-unity` feature. |
+| Unity-fork Crunch DXT1/DXT5/ETC1/ETC2/ETC2A/ETC1S/ETC2AS | `tools/gen_crn_unity_golden.sh` | `vendor/unity-crunch` submodule (`unity` branch). A missing CLI is built automatically in a temporary copy with the committed modern-GCC patch. Needs the `crn-unity` feature. |
 
 The shell scripts create ignored executables in `tools/`. Review all changed
 binary fixtures with the related tests, then run the everyday checks above.

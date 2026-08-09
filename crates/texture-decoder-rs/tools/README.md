@@ -86,13 +86,28 @@ support, so its fixtures live under `tests/data/crunch_unity/` and are consumed
 by the `crn-unity` cargo feature.
 
 The script reuses `gen_crn_source.py` for the 6×6 sources and the
-`vendor/unity-crunch/crnlib/crunch` CLI to compress DXT1, DXT5, ETC1 (ETC_RGB4),
-and ETC2A (ETC2_RGBA8) — both 2D and three-mip cubemaps — then transcodes each
-to a `.bc` golden in the natural tightly-packed block layout:
+`vendor/unity-crunch/crnlib/crunch` CLI to compress DXT1, DXT5, ETC1
+(ETC_RGB4), ETC2 (ETC2_RGB8), ETC2A (ETC2_RGBA8), and the ETC1S/ETC2AS
+single-subblock variants — both 2D and three-mip cubemaps — then transcodes
+each to a `.bc` golden in the natural tightly-packed block layout:
 
 ```sh
 tools/gen_crn_unity_golden.sh
 ```
 
-It requires the `vendor/unity-crunch` submodule with the `crnlib/crunch` CLI
-built. The generated `tools/gen_crn_unity_golden` executable is ignored by Git.
+It requires the `vendor/unity-crunch` submodule. If its CLI is absent, the
+generator runs `tools/build_unity_crunch.sh` automatically. That helper copies
+the pinned submodule to a temporary directory, applies
+`tools/patches/unity-crunch-modern-gcc.patch`, builds there, and copies only the
+ignored `crnlib/crunch` executable back into the vendor directory. The patch
+adds the compatibility fixes needed by current 64-bit GCC without modifying or
+forking the checked-out vendor sources.
+
+To build the CLI without regenerating fixtures:
+
+```sh
+tools/build_unity_crunch.sh
+```
+
+Set `JOBS` to override the default `nproc` parallelism. The generated
+`tools/gen_crn_unity_golden` executable is ignored by Git.

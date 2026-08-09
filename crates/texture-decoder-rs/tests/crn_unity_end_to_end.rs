@@ -150,6 +150,21 @@ fn decodes_etc2a_fixture_to_reference_blocks() {
 }
 
 #[test]
+fn decodes_etc2_fixture_to_reference_blocks() {
+    assert_fixture("etc2-6x6", CrnUnityFormat::Etc2Rgb8, 8);
+}
+
+#[test]
+fn decodes_etc1s_fixture_to_reference_blocks() {
+    assert_fixture("etc1s-6x6", CrnUnityFormat::Etc1Rgb4, 8);
+}
+
+#[test]
+fn decodes_etc2as_fixture_to_reference_blocks() {
+    assert_fixture("etc2as-6x6", CrnUnityFormat::Etc2Rgba8, 16);
+}
+
+#[test]
 fn decodes_all_dxt1_cubemap_faces_and_mips() {
     assert_cubemap_fixture("dxt1-cubemap-6x6", CrnUnityFormat::Bc1, 8);
 }
@@ -167,6 +182,21 @@ fn decodes_all_etc1_cubemap_faces_and_mips() {
 #[test]
 fn decodes_all_etc2a_cubemap_faces_and_mips() {
     assert_cubemap_fixture("etc2a-cubemap-6x6", CrnUnityFormat::Etc2Rgba8, 16);
+}
+
+#[test]
+fn decodes_all_etc2_cubemap_faces_and_mips() {
+    assert_cubemap_fixture("etc2-cubemap-6x6", CrnUnityFormat::Etc2Rgb8, 8);
+}
+
+#[test]
+fn decodes_all_etc1s_cubemap_faces_and_mips() {
+    assert_cubemap_fixture("etc1s-cubemap-6x6", CrnUnityFormat::Etc1Rgb4, 8);
+}
+
+#[test]
+fn decodes_all_etc2as_cubemap_faces_and_mips() {
+    assert_cubemap_fixture("etc2as-cubemap-6x6", CrnUnityFormat::Etc2Rgba8, 16);
 }
 
 #[test]

@@ -17,8 +17,8 @@ CLI="$CR/crnlib/crunch"
 INC="$CR/inc"
 
 if [[ ! -x "$CLI" ]]; then
-    echo "error: $CLI not found or not executable. Build the unity-crunch CLI first." >&2
-    exit 1
+    echo "$CLI not found; building it with tools/build_unity_crunch.sh"
+    tools/build_unity_crunch.sh
 fi
 if [[ ! -f "$INC/crn_decomp.h" ]]; then
     echo "error: $INC/crn_decomp.h not found." >&2
@@ -51,6 +51,18 @@ tools/gen_crn_unity_golden "$OUT/etc1-6x6.crn" "$OUT/etc1-6x6.bc"
     -ETC2A -fileformat crn -mipMode None -c 64 -s 64 -ca 64 -sa 64 -quality 128
 tools/gen_crn_unity_golden "$OUT/etc2a-6x6.crn" "$OUT/etc2a-6x6.bc"
 
+"$CLI" -quiet -file "$OUT/src-color-6x6.tga" -out "$OUT/etc2-6x6.crn" \
+    -ETC2 -fileformat crn -mipMode None -c 64 -s 64 -quality 128
+tools/gen_crn_unity_golden "$OUT/etc2-6x6.crn" "$OUT/etc2-6x6.bc"
+
+"$CLI" -quiet -file "$OUT/src-color-6x6.tga" -out "$OUT/etc1s-6x6.crn" \
+    -ETC1S -fileformat crn -mipMode None -c 64 -s 64 -quality 128
+tools/gen_crn_unity_golden "$OUT/etc1s-6x6.crn" "$OUT/etc1s-6x6.bc"
+
+"$CLI" -quiet -file "$OUT/src-alpha-6x6.tga" -out "$OUT/etc2as-6x6.crn" \
+    -ETC2AS -fileformat crn -mipMode None -c 64 -s 64 -ca 64 -sa 64 -quality 128
+tools/gen_crn_unity_golden "$OUT/etc2as-6x6.crn" "$OUT/etc2as-6x6.bc"
+
 # 4. Three-level cubemaps for each format. The DDS inputs store six faces in
 # the standard +X, -X, +Y, -Y, +Z, -Z order.
 "$CLI" -quiet -file "$OUT/src-color-cubemap-6x6.dds" \
@@ -78,6 +90,25 @@ tools/gen_crn_unity_golden \
     -c 64 -s 64 -ca 64 -sa 64 -quality 128
 tools/gen_crn_unity_golden \
     "$OUT/etc2a-cubemap-6x6.crn" "$OUT/etc2a-cubemap-6x6.bc"
+
+"$CLI" -quiet -file "$OUT/src-color-cubemap-6x6.dds" \
+    -out "$OUT/etc2-cubemap-6x6.crn" -ETC2 -fileformat crn \
+    -mipMode Generate -maxmips 3 -minmipsize 1 -c 64 -s 64 -quality 128
+tools/gen_crn_unity_golden \
+    "$OUT/etc2-cubemap-6x6.crn" "$OUT/etc2-cubemap-6x6.bc"
+
+"$CLI" -quiet -file "$OUT/src-color-cubemap-6x6.dds" \
+    -out "$OUT/etc1s-cubemap-6x6.crn" -ETC1S -fileformat crn \
+    -mipMode Generate -maxmips 3 -minmipsize 1 -c 64 -s 64 -quality 128
+tools/gen_crn_unity_golden \
+    "$OUT/etc1s-cubemap-6x6.crn" "$OUT/etc1s-cubemap-6x6.bc"
+
+"$CLI" -quiet -file "$OUT/src-alpha-cubemap-6x6.dds" \
+    -out "$OUT/etc2as-cubemap-6x6.crn" -ETC2AS -fileformat crn \
+    -mipMode Generate -maxmips 3 -minmipsize 1 \
+    -c 64 -s 64 -ca 64 -sa 64 -quality 128
+tools/gen_crn_unity_golden \
+    "$OUT/etc2as-cubemap-6x6.crn" "$OUT/etc2as-cubemap-6x6.bc"
 
 echo "wrote fixtures under $OUT/"
 ls -la "$OUT"/*.crn "$OUT"/*.bc

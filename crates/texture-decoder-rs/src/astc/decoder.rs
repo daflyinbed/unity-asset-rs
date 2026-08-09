@@ -47,6 +47,12 @@ fn decode_image(
     block_y: usize,
     output: &mut [u8],
 ) -> Result<(), DecodeError> {
+    // Avoid iterating an enormous number of empty block rows when one
+    // dimension is zero (for example width=0, height=usize::MAX).
+    if width == 0 || height == 0 {
+        return Ok(());
+    }
+
     let texels = width.checked_mul(height).ok_or(DecodeError::SizeOverflow)?;
     let output_len = texels.checked_mul(4).ok_or(DecodeError::SizeOverflow)?;
     if output.len() < output_len {
@@ -902,6 +908,12 @@ mod tests {
             decode_ldr_4_4(&[], usize::MAX, 2, &mut output),
             Err(DecodeError::SizeOverflow)
         );
+    }
+
+    #[test]
+    fn empty_images_with_huge_other_dimension_return_immediately() {
+        decode_ldr_4_4(&[], 0, usize::MAX, &mut []).unwrap();
+        decode_ldr_12_12(&[], usize::MAX, 0, &mut []).unwrap();
     }
 
     #[test]

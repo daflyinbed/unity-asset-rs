@@ -835,6 +835,7 @@ fn decode_crunch_unity(data: &[u8]) -> Result<(Vec<u8>, u32, u32), TextureExport
         CrnUnityFormat::Bc1 => texture_decoder_rs::bcn::decode_bc1,
         CrnUnityFormat::Bc3 => texture_decoder_rs::bcn::decode_bc3,
         CrnUnityFormat::Etc1Rgb4 => texture_decoder_rs::etc::decode_etc1_rgb8,
+        CrnUnityFormat::Etc2Rgb8 => texture_decoder_rs::etc::decode_etc2_rgb8,
         CrnUnityFormat::Etc2Rgba8 => texture_decoder_rs::etc::decode_etc2_rgba8,
     };
 

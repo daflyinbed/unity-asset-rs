@@ -12,6 +12,7 @@
 //! - `cCRNFmtDXT1`  (0)  → DXT1 / BC1, 8 bytes/block
 //! - `cCRNFmtDXT5`  (2)  → DXT5 / BC3, 16 bytes/block
 //! - `cCRNFmtETC1`  (10) → ETC_RGB4 / ETC1, 8 bytes/block
+//! - `cCRNFmtETC2`  (11) → ETC2_RGB8, 8 bytes/block
 //! - `cCRNFmtETC1S` (13) → ETC_RGB4 single-subblock, 8 bytes/block (via DXT1 unpacker)
 //! - `cCRNFmtETC2A` (12) → ETC2_RGBA8, 16 bytes/block
 //! - `cCRNFmtETC2AS`(14) → ETC2_RGBA8 single-subblock, 16 bytes/block (via DXT5 unpacker)
@@ -50,6 +51,8 @@ pub enum CrnUnityFormat {
     Bc3,
     /// ETC_RGB4 / ETC1, 8 bytes per block.
     Etc1Rgb4,
+    /// ETC2_RGB8, 8 bytes per block.
+    Etc2Rgb8,
     /// ETC2_RGBA8, 16 bytes per block.
     Etc2Rgba8,
 }
@@ -58,7 +61,7 @@ impl CrnUnityFormat {
     /// Physical block size in bytes for this format.
     pub const fn block_bytes(self) -> usize {
         match self {
-            CrnUnityFormat::Bc1 | CrnUnityFormat::Etc1Rgb4 => 8,
+            CrnUnityFormat::Bc1 | CrnUnityFormat::Etc1Rgb4 | CrnUnityFormat::Etc2Rgb8 => 8,
             CrnUnityFormat::Bc3 | CrnUnityFormat::Etc2Rgba8 => 16,
         }
     }
@@ -101,9 +104,11 @@ pub enum CrnUnityDecodeError {
     InputTooShort,
     /// A dimension or byte-count calculation overflowed.
     SizeOverflow,
+    /// Memory for the decoded texture could not be reserved.
+    AllocationFailed,
     /// The file signature is not `0x4878` (`"Hx"`).
     InvalidSignature,
-    /// The CRN format is not one of DXT1/DXT5/ETC1/ETC2A.
+    /// The CRN format is not one of the supported DXT or ETC variants.
     UnsupportedFormat,
     /// A header field has an illegal value (faces, offsets, missing palettes,
     /// ...).
@@ -153,6 +158,7 @@ const FMT_DXT5_XGXR: u8 = 4;
 const FMT_DXT5_XGBR: u8 = 5;
 const FMT_DXT5_AGBR: u8 = 6;
 const FMT_ETC1: u8 = 10;
+const FMT_ETC2: u8 = 11;
 const FMT_ETC2A: u8 = 12;
 // The "single subblock" ETC variants unpack via the DXT1/DXT5 paths.
 const FMT_ETC1S: u8 = 13;
@@ -307,29 +313,54 @@ impl Header {
         let tables_size = read_packed(input, 65, 2).ok_or(CrnUnityDecodeError::InputTooShort)?;
         let tables_ofs = read_packed(input, 67, 3).ok_or(CrnUnityDecodeError::InputTooShort)?;
 
-        // --- Validation matching `crnd_get_header` (crn_decomp.h:2175-2187) ---
-        // The reference's decompression entry point (`crnd_unpack_begin`) uses
-        // only these basic checks; the stricter structural validation (faces,
-        // dimensions, level ordering, offset coverage) lives in the optional
-        // `crnd_validate_file` API which the hot path never calls.
-        if header_size < CRN_HEADER_MIN_SIZE as u32 {
+        // This Rust API owns its output allocation, so apply the structural
+        // limits from `crnd_validate_file` in addition to `crnd_get_header`'s
+        // basic checks. Preserve the existing zero-dimension compatibility:
+        // unchecked reference paths clamp those dimensions to one.
+        if levels > CRN_MAX_LEVELS
+            || levels > 32 - core::cmp::max(width, height).max(1).leading_zeros()
+            || width > CRN_MAX_LEVEL_RESOLUTION
+            || height > CRN_MAX_LEVEL_RESOLUTION
+            || (faces != 1 && faces != 6)
+        {
             return Err(CrnUnityDecodeError::InvalidHeader);
-        }
-        if (input.len() as u32) < data_size {
-            return Err(CrnUnityDecodeError::InvalidHeader);
-        }
-        if flags & CRN_HEADER_FLAG_SEGMENTED != 0 {
-            return Err(CrnUnityDecodeError::UnsupportedSegmented);
         }
 
-        // Read the variably-sized level offset table directly from the input,
-        // matching the reference which accesses `m_pHeader->m_level_ofs[i]`
-        // regardless of `m_header_size`.
+        let offsets_size = (levels as usize)
+            .checked_mul(4)
+            .ok_or(CrnUnityDecodeError::InvalidHeader)?;
+        let required_header_size = LEVEL_OFS_OFFSET
+            .checked_add(offsets_size)
+            .ok_or(CrnUnityDecodeError::InvalidHeader)?;
+        if (header_size as usize) < required_header_size || header_size > data_size {
+            return Err(CrnUnityDecodeError::InvalidHeader);
+        }
+        if input.len() < required_header_size {
+            return Err(CrnUnityDecodeError::InputTooShort);
+        }
+        if input.len() < data_size as usize {
+            return Err(CrnUnityDecodeError::InvalidHeader);
+        }
+
         let mut level_offsets = Vec::with_capacity(levels as usize);
         for level in 0..levels as usize {
-            let offset = LEVEL_OFS_OFFSET + level * 4;
+            let offset = level
+                .checked_mul(4)
+                .and_then(|offset| LEVEL_OFS_OFFSET.checked_add(offset))
+                .ok_or(CrnUnityDecodeError::InvalidHeader)?;
             level_offsets
                 .push(read_packed(input, offset, 4).ok_or(CrnUnityDecodeError::InputTooShort)?);
+        }
+        if level_offsets.windows(2).any(|pair| pair[0] >= pair[1]) || level_offsets[0] < header_size
+        {
+            return Err(CrnUnityDecodeError::InvalidHeader);
+        }
+        if level_offsets[level_offsets.len() - 1] >= data_size {
+            return Err(if flags & CRN_HEADER_FLAG_SEGMENTED != 0 {
+                CrnUnityDecodeError::UnsupportedSegmented
+            } else {
+                CrnUnityDecodeError::InvalidHeader
+            });
         }
 
         Ok(Header {
@@ -510,10 +541,18 @@ impl HuffmanTable {
             }
         }
 
-        // The reference's `decoder_tables::init` performs no Kraft/oversubscription
-        // validation — it unconditionally builds the lookup table. Matching that
-        // behaviour lets us decode the same (occasionally buggy) models the
-        // reference accepts.
+        // Reject oversubscribed canonical code sets before deriving lookup
+        // indices. Incomplete sets (including a single one-bit symbol) are
+        // valid in Crunch, but the Kraft sum must never exceed one. The C++
+        // reference does not check this and can write past its lookup table;
+        // reproducing that behavior here would panic on a Vec index instead.
+        let mut remaining = 1i32;
+        for &count in num_codes.iter().skip(1) {
+            remaining = (remaining << 1) - count as i32;
+            if remaining < 0 {
+                return Err(CrnUnityDecodeError::InvalidStream);
+            }
+        }
 
         let mut min_codes = [0u32; MAX_EXPECTED_CODE_SIZE];
         let mut max_codes = [0u32; MAX_EXPECTED_CODE_SIZE + 1];
@@ -847,11 +886,14 @@ impl FormatFlags {
     fn new(format: u8) -> FormatFlags {
         // `has_etc_color_blocks`: color endpoints stored as 32-bit ETC words
         // (single delta model) instead of DXT's two RGB565 models.
-        let has_etc_color_blocks = matches!(format, FMT_ETC1 | FMT_ETC2A | FMT_ETC1S | FMT_ETC2AS);
+        let has_etc_color_blocks = matches!(
+            format,
+            FMT_ETC1 | FMT_ETC2 | FMT_ETC2A | FMT_ETC1S | FMT_ETC2AS
+        );
         // `has_subblocks`: ETC1/ETC2/ETC2A blocks have two flip-defined
         // subblocks, so each selector entry expands to two words. The "S"
         // variants have a single subblock and reuse the DXT selector layout.
-        let has_subblocks = matches!(format, FMT_ETC1 | FMT_ETC2A);
+        let has_subblocks = matches!(format, FMT_ETC1 | FMT_ETC2 | FMT_ETC2A);
         FormatFlags {
             has_etc_color_blocks,
             has_subblocks,
@@ -890,7 +932,7 @@ fn decode_color_endpoints(
         // and a fixed diff bit).
         for out_slot in out.iter_mut() {
             for b in (0..32).step_by(8) {
-                a = (a + (dm[0].decode(&mut reader)? << b)) & 0x1F1F1F1F;
+                a = a.wrapping_add(dm[0].decode(&mut reader)? << b) & 0x1F1F1F1F;
             }
             *out_slot = if flags.has_subblocks {
                 a
@@ -1253,6 +1295,36 @@ fn limit(x: &mut u32, n: u32) {
     *x = (*x & msk as u32) | (v as u32 & !(msk as u32));
 }
 
+/// Applies one reference-codec delta and validates the C++ single-subtract
+/// wrap before the result is used as a palette index.
+#[inline]
+fn advance_palette_index(
+    index: &mut u32,
+    delta: u32,
+    palette_len: u32,
+) -> Result<usize, CrnUnityDecodeError> {
+    *index = index.wrapping_add(delta);
+    limit(index, palette_len);
+    checked_palette_index(*index, palette_len)
+}
+
+#[inline]
+fn checked_palette_index(index: u32, palette_len: u32) -> Result<usize, CrnUnityDecodeError> {
+    if index >= palette_len {
+        return Err(CrnUnityDecodeError::InvalidStream);
+    }
+    Ok(index as usize)
+}
+
+fn zeroed_vec(len: usize) -> Result<Vec<u8>, CrnUnityDecodeError> {
+    let mut output = Vec::new();
+    output
+        .try_reserve_exact(len)
+        .map_err(|_| CrnUnityDecodeError::AllocationFailed)?;
+    output.resize(len, 0);
+    Ok(output)
+}
+
 /// Per-column predictor state retained across rows within one mip, mirroring
 /// `block_buffer_element` (`crn_decomp.h:3079-3084`). Only the fields each
 /// unpacker uses are meaningful; the others stay zero for non-alpha formats.
@@ -1316,9 +1388,11 @@ fn unpack_dxt1(
                     er
                 };
                 if endpoint_reference == 0 {
-                    color_endpoint_index = color_endpoint_index
-                        .wrapping_add(tables.endpoint_delta[0].decode(&mut reader)?);
-                    limit(&mut color_endpoint_index, num_color_endpoints);
+                    advance_palette_index(
+                        &mut color_endpoint_index,
+                        tables.endpoint_delta[0].decode(&mut reader)?,
+                        num_color_endpoints,
+                    )?;
                     cell.color_endpoint_index = color_endpoint_index as u16;
                 } else if endpoint_reference == 1 {
                     cell.color_endpoint_index = color_endpoint_index as u16;
@@ -1328,8 +1402,14 @@ fn unpack_dxt1(
                 let color_selector_index = tables.selector_delta[0].decode(&mut reader)?;
                 if visible {
                     let off = row_base + (x as usize) * block_bytes;
-                    let endpoints = palettes.color_endpoints[color_endpoint_index as usize];
-                    let selectors = palettes.color_selectors[color_selector_index as usize];
+                    let endpoint_index =
+                        checked_palette_index(color_endpoint_index, num_color_endpoints)?;
+                    let selector_index = checked_palette_index(
+                        color_selector_index,
+                        palettes.color_selectors.len() as u32,
+                    )?;
+                    let endpoints = palettes.color_endpoints[endpoint_index];
+                    let selectors = palettes.color_selectors[selector_index];
                     output[off..off + 4].copy_from_slice(&endpoints.to_le_bytes());
                     output[off + 4..off + 8].copy_from_slice(&selectors.to_le_bytes());
                 }
@@ -1387,13 +1467,17 @@ fn unpack_dxt5(
                     er
                 };
                 if endpoint_reference == 0 {
-                    color_endpoint_index = color_endpoint_index
-                        .wrapping_add(tables.endpoint_delta[0].decode(&mut reader)?);
-                    limit(&mut color_endpoint_index, num_color_endpoints);
+                    advance_palette_index(
+                        &mut color_endpoint_index,
+                        tables.endpoint_delta[0].decode(&mut reader)?,
+                        num_color_endpoints,
+                    )?;
                     cell.color_endpoint_index = color_endpoint_index as u16;
-                    alpha0_endpoint_index = alpha0_endpoint_index
-                        .wrapping_add(tables.endpoint_delta[1].decode(&mut reader)?);
-                    limit(&mut alpha0_endpoint_index, num_alpha_endpoints);
+                    advance_palette_index(
+                        &mut alpha0_endpoint_index,
+                        tables.endpoint_delta[1].decode(&mut reader)?,
+                        num_alpha_endpoints,
+                    )?;
                     cell.alpha0_endpoint_index = alpha0_endpoint_index as u16;
                 } else if endpoint_reference == 1 {
                     cell.color_endpoint_index = color_endpoint_index as u16;
@@ -1406,16 +1490,28 @@ fn unpack_dxt5(
                 let alpha0_selector_index = tables.selector_delta[1].decode(&mut reader)?;
                 if visible {
                     let off = row_base + (x as usize) * block_bytes;
-                    let sel_base = (alpha0_selector_index as usize) * 3;
+                    let color_endpoint_index =
+                        checked_palette_index(color_endpoint_index, num_color_endpoints)?;
+                    let alpha_endpoint_index =
+                        checked_palette_index(alpha0_endpoint_index, num_alpha_endpoints)?;
+                    let color_selector_index = checked_palette_index(
+                        color_selector_index,
+                        palettes.color_selectors.len() as u32,
+                    )?;
+                    let alpha_selector_index = checked_palette_index(
+                        alpha0_selector_index,
+                        (palettes.alpha_selectors.len() / 3) as u32,
+                    )?;
+                    let sel_base = alpha_selector_index * 3;
                     let a0 = u32::from(palettes.alpha_selectors[sel_base]);
                     let a1 = u32::from(palettes.alpha_selectors[sel_base + 1]);
                     let a2 = u32::from(palettes.alpha_selectors[sel_base + 2]);
 
-                    let dw0 = u32::from(palettes.alpha_endpoints[alpha0_endpoint_index as usize])
-                        | (a0 << 16);
+                    let dw0 =
+                        u32::from(palettes.alpha_endpoints[alpha_endpoint_index]) | (a0 << 16);
                     let dw1 = a1 | (a2 << 16);
-                    let dw2 = palettes.color_endpoints[color_endpoint_index as usize];
-                    let dw3 = palettes.color_selectors[color_selector_index as usize];
+                    let dw2 = palettes.color_endpoints[color_endpoint_index];
+                    let dw3 = palettes.color_selectors[color_selector_index];
 
                     output[off..off + 4].copy_from_slice(&dw0.to_le_bytes());
                     output[off + 4..off + 8].copy_from_slice(&dw1.to_le_bytes());
@@ -1482,9 +1578,11 @@ fn unpack_etc1(
                 // Subblock 0 color endpoint ladder.
                 let er0 = endpoint_reference & 3;
                 if er0 == 0 {
-                    color_endpoint_index = color_endpoint_index
-                        .wrapping_add(tables.endpoint_delta[0].decode(&mut reader)?);
-                    limit(&mut color_endpoint_index, num_color_endpoints);
+                    advance_palette_index(
+                        &mut color_endpoint_index,
+                        tables.endpoint_delta[0].decode(&mut reader)?,
+                        num_color_endpoints,
+                    )?;
                     buffer[x2].color_endpoint_index = color_endpoint_index as u16;
                 } else if er0 == 1 {
                     buffer[x2].color_endpoint_index = color_endpoint_index as u16;
@@ -1496,22 +1594,26 @@ fn unpack_etc1(
                 }
                 let er1 = endpoint_reference >> 2;
 
-                let e0 = palettes.color_endpoints[color_endpoint_index as usize];
+                let e0 = palettes.color_endpoints
+                    [checked_palette_index(color_endpoint_index, num_color_endpoints)?];
                 let selector_index = tables.selector_delta[0].decode(&mut reader)?;
 
                 // Subblock 1 color endpoint: advance only if its nibble != 0.
                 if er1 != 0 {
-                    color_endpoint_index = color_endpoint_index
-                        .wrapping_add(tables.endpoint_delta[0].decode(&mut reader)?);
-                    limit(&mut color_endpoint_index, num_color_endpoints);
+                    advance_palette_index(
+                        &mut color_endpoint_index,
+                        tables.endpoint_delta[0].decode(&mut reader)?,
+                        num_color_endpoints,
+                    )?;
                 }
                 diagonal_color_endpoint_index = buffer[x2 + 1].color_endpoint_index as u32;
                 buffer[x2 + 1].color_endpoint_index = color_endpoint_index as u16;
-                let e1 = palettes.color_endpoints[color_endpoint_index as usize];
+                let e1 = palettes.color_endpoints
+                    [checked_palette_index(color_endpoint_index, num_color_endpoints)?];
 
                 if visible {
                     let (block_endpoint, selector_word) =
-                        etc_pack_block(e0, e1, er1, selector_index as usize, palettes);
+                        etc_pack_block(e0, e1, er1, selector_index as usize, palettes)?;
                     let off = row_base + (x as usize) * block_bytes;
                     output[off..off + 4].copy_from_slice(&block_endpoint.to_le_bytes());
                     output[off + 4..off + 8].copy_from_slice(&selector_word.to_le_bytes());
@@ -1534,7 +1636,7 @@ fn etc_pack_block(
     er1: u8,
     selector_index: usize,
     palettes: &Palettes,
-) -> (u32, u32) {
+) -> Result<(u32, u32), CrnUnityDecodeError> {
     let e0b = e0.to_le_bytes();
     let e1b = e1.to_le_bytes();
     let flip: u8 = (er1 >> 1) ^ 1;
@@ -1558,8 +1660,15 @@ fn etc_pack_block(
     }
     block_endpoint[3] = (e0b[3] << 5) | (e1b[3] << 2) | (diff << 1) | flip;
     let block_word = u32::from_le_bytes(block_endpoint);
-    let selector_word = palettes.color_selectors[(selector_index << 1) | flip as usize];
-    (block_word, selector_word)
+    let selector_index = selector_index
+        .checked_mul(2)
+        .and_then(|index| index.checked_add(flip as usize))
+        .ok_or(CrnUnityDecodeError::InvalidStream)?;
+    let selector_word = *palettes
+        .color_selectors
+        .get(selector_index)
+        .ok_or(CrnUnityDecodeError::InvalidStream)?;
+    Ok((block_word, selector_word))
 }
 
 /// Decodes one mip's continuous face stream into raw ETC2_RGBA8 blocks.
@@ -1612,13 +1721,17 @@ fn unpack_etc2a(
                 // Subblock 0 color + alpha endpoints.
                 let er0 = endpoint_reference & 3;
                 if er0 == 0 {
-                    color_endpoint_index = color_endpoint_index
-                        .wrapping_add(tables.endpoint_delta[0].decode(&mut reader)?);
-                    limit(&mut color_endpoint_index, num_color_endpoints);
+                    advance_palette_index(
+                        &mut color_endpoint_index,
+                        tables.endpoint_delta[0].decode(&mut reader)?,
+                        num_color_endpoints,
+                    )?;
                     buffer[x2].color_endpoint_index = color_endpoint_index as u16;
-                    alpha0_endpoint_index = alpha0_endpoint_index
-                        .wrapping_add(tables.endpoint_delta[1].decode(&mut reader)?);
-                    limit(&mut alpha0_endpoint_index, num_alpha_endpoints);
+                    advance_palette_index(
+                        &mut alpha0_endpoint_index,
+                        tables.endpoint_delta[1].decode(&mut reader)?,
+                        num_alpha_endpoints,
+                    )?;
                     buffer[x2].alpha0_endpoint_index = alpha0_endpoint_index as u16;
                 } else if er0 == 1 {
                     buffer[x2].color_endpoint_index = color_endpoint_index as u16;
@@ -1634,17 +1747,21 @@ fn unpack_etc2a(
                 }
                 let er1 = endpoint_reference >> 2;
 
-                let e0 = palettes.color_endpoints[color_endpoint_index as usize];
+                let e0 = palettes.color_endpoints
+                    [checked_palette_index(color_endpoint_index, num_color_endpoints)?];
                 let color_selector_index = tables.selector_delta[0].decode(&mut reader)?;
                 let alpha0_selector_index = tables.selector_delta[1].decode(&mut reader)?;
 
                 // Subblock 1 color endpoint (advance if er1 nonzero).
                 if er1 != 0 {
-                    color_endpoint_index = color_endpoint_index
-                        .wrapping_add(tables.endpoint_delta[0].decode(&mut reader)?);
-                    limit(&mut color_endpoint_index, num_color_endpoints);
+                    advance_palette_index(
+                        &mut color_endpoint_index,
+                        tables.endpoint_delta[0].decode(&mut reader)?,
+                        num_color_endpoints,
+                    )?;
                 }
-                let e1 = palettes.color_endpoints[color_endpoint_index as usize];
+                let e1 = palettes.color_endpoints
+                    [checked_palette_index(color_endpoint_index, num_color_endpoints)?];
 
                 diagonal_color_endpoint_index = buffer[x2 + 1].color_endpoint_index as u32;
                 diagonal_alpha0_endpoint_index = buffer[x2 + 1].alpha0_endpoint_index as u32;
@@ -1653,17 +1770,22 @@ fn unpack_etc2a(
 
                 if visible {
                     let (block_endpoint, selector_word) =
-                        etc_pack_block(e0, e1, er1, color_selector_index as usize, palettes);
+                        etc_pack_block(e0, e1, er1, color_selector_index as usize, palettes)?;
 
                     let flip = (er1 >> 1) ^ 1;
-                    let sel_base =
-                        (alpha0_selector_index as usize) * 6 + if flip != 0 { 3 } else { 0 };
+                    let alpha_selector_index = checked_palette_index(
+                        alpha0_selector_index,
+                        (palettes.alpha_selectors.len() / 6) as u32,
+                    )?;
+                    let sel_base = alpha_selector_index * 6 + if flip != 0 { 3 } else { 0 };
                     let a0 = u32::from(palettes.alpha_selectors[sel_base]);
                     let a1 = u32::from(palettes.alpha_selectors[sel_base + 1]);
                     let a2 = u32::from(palettes.alpha_selectors[sel_base + 2]);
 
-                    let dw0 = u32::from(palettes.alpha_endpoints[alpha0_endpoint_index as usize])
-                        | (a0 << 16);
+                    let alpha_endpoint_index =
+                        checked_palette_index(alpha0_endpoint_index, num_alpha_endpoints)?;
+                    let dw0 =
+                        u32::from(palettes.alpha_endpoints[alpha_endpoint_index]) | (a0 << 16);
                     let dw1 = a1 | (a2 << 16);
 
                     let off = row_base + (x as usize) * block_bytes;
@@ -1682,11 +1804,25 @@ fn unpack_etc2a(
 // Public entry point
 // ---------------------------------------------------------------------------
 
+fn classify_format(format: u8) -> Result<(CrnUnityFormat, HasAlpha), CrnUnityDecodeError> {
+    match format {
+        FMT_DXT1 => Ok((CrnUnityFormat::Bc1, HasAlpha(false))),
+        FMT_DXT5 | FMT_DXT5_CCXY | FMT_DXT5_XGXR | FMT_DXT5_XGBR | FMT_DXT5_AGBR => {
+            Ok((CrnUnityFormat::Bc3, HasAlpha(true)))
+        }
+        FMT_ETC1 | FMT_ETC1S => Ok((CrnUnityFormat::Etc1Rgb4, HasAlpha(false))),
+        FMT_ETC2 => Ok((CrnUnityFormat::Etc2Rgb8, HasAlpha(false))),
+        FMT_ETC2A | FMT_ETC2AS => Ok((CrnUnityFormat::Etc2Rgba8, HasAlpha(true))),
+        _ => Err(CrnUnityDecodeError::UnsupportedFormat),
+    }
+}
+
 /// Decompress every face and mip of a Unity-fork Crunch file into raw DXT1,
-/// DXT5, ETC1, or ETC2_RGBA8 blocks.
+/// DXT5, ETC1, ETC2_RGB8, or ETC2_RGBA8 blocks.
 ///
 /// The CRN format is read from the header: DXT1 → BC1, DXT5 (and swizzled
-/// variants) → BC3, ETC1/ETC1S → ETC_RGB4, ETC2A → ETC2_RGBA8. ETC1S and
+/// variants) → BC3, ETC1/ETC1S → ETC_RGB4, ETC2 → ETC2_RGB8, and
+/// ETC2A/ETC2AS → ETC2_RGBA8. ETC1S and
 /// ETC2AS are single-subblock variants routed through the DXT1 and DXT5
 /// unpackers respectively, matching the Unity reference dispatch. All other
 /// formats return [`CrnUnityDecodeError::UnsupportedFormat`]. A 2D texture has one face;
@@ -1697,15 +1833,7 @@ fn unpack_etc2a(
 pub fn decode(input: &[u8]) -> Result<CrnUnityTexture, CrnUnityDecodeError> {
     let header = Header::parse(input)?;
 
-    let (format, has_alpha) = match header.format {
-        FMT_DXT1 => (CrnUnityFormat::Bc1, HasAlpha(false)),
-        FMT_DXT5 | FMT_DXT5_CCXY | FMT_DXT5_XGXR | FMT_DXT5_XGBR | FMT_DXT5_AGBR | FMT_ETC2AS => {
-            (CrnUnityFormat::Bc3, HasAlpha(true))
-        }
-        FMT_ETC1 | FMT_ETC1S => (CrnUnityFormat::Etc1Rgb4, HasAlpha(false)),
-        FMT_ETC2A => (CrnUnityFormat::Etc2Rgba8, HasAlpha(true)),
-        _ => return Err(CrnUnityDecodeError::UnsupportedFormat),
-    };
+    let (format, has_alpha) = classify_format(header.format)?;
 
     let block_bytes = format.block_bytes();
     let tables = Tables::decode(&header, input, has_alpha)?;
@@ -1745,7 +1873,7 @@ pub fn decode(input: &[u8]) -> Result<CrnUnityTexture, CrnUnityDecodeError> {
 
         let mut outputs = Vec::with_capacity(header.faces as usize);
         for _ in 0..header.faces {
-            outputs.push(vec![0u8; total]);
+            outputs.push(zeroed_vec(total)?);
         }
         match header.format {
             FMT_DXT1 | FMT_ETC1S => unpack_dxt1(
@@ -1765,7 +1893,7 @@ pub fn decode(input: &[u8]) -> Result<CrnUnityTexture, CrnUnityDecodeError> {
                 &palettes,
                 &mut outputs,
             )?,
-            FMT_ETC1 => unpack_etc1(
+            FMT_ETC1 | FMT_ETC2 => unpack_etc1(
                 level_data,
                 blocks_x,
                 blocks_y,
@@ -1800,4 +1928,106 @@ pub fn decode(input: &[u8]) -> Result<CrnUnityTexture, CrnUnityDecodeError> {
         format,
         faces,
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn synthetic_header(
+        width: u16,
+        height: u16,
+        levels: u8,
+        faces: u8,
+        level_offsets: &[u32],
+    ) -> Vec<u8> {
+        let parsed_levels = usize::from(levels.max(1));
+        assert_eq!(level_offsets.len(), parsed_levels);
+        let header_size = LEVEL_OFS_OFFSET + parsed_levels * 4;
+        let data_size = level_offsets.last().copied().unwrap() as usize + 16;
+        let mut data = vec![0u8; data_size];
+        data[0..2].copy_from_slice(&(CRN_SIG as u16).to_be_bytes());
+        data[2..4].copy_from_slice(&(header_size as u16).to_be_bytes());
+        data[6..10].copy_from_slice(&(data_size as u32).to_be_bytes());
+        data[12..14].copy_from_slice(&width.to_be_bytes());
+        data[14..16].copy_from_slice(&height.to_be_bytes());
+        data[16] = levels;
+        data[17] = faces;
+        for (index, offset) in level_offsets.iter().enumerate() {
+            let start = LEVEL_OFS_OFFSET + index * 4;
+            data[start..start + 4].copy_from_slice(&offset.to_be_bytes());
+        }
+        data
+    }
+
+    #[test]
+    fn huffman_table_rejects_oversubscribed_but_accepts_incomplete_code_lengths() {
+        assert!(matches!(
+            HuffmanTable::build(vec![1, 1, 1]),
+            Err(CrnUnityDecodeError::InvalidStream)
+        ));
+        HuffmanTable::build(vec![1]).expect("an incomplete single-symbol model is valid");
+    }
+
+    #[test]
+    fn format_tags_distinguish_etc_from_bc() {
+        assert_eq!(
+            classify_format(FMT_ETC2).map(|value| value.0),
+            Ok(CrnUnityFormat::Etc2Rgb8)
+        );
+        assert_eq!(
+            classify_format(FMT_ETC2AS).map(|value| value.0),
+            Ok(CrnUnityFormat::Etc2Rgba8)
+        );
+    }
+
+    #[test]
+    fn header_rejects_allocation_amplifiers_and_empty_levels() {
+        let normal = synthetic_header(4096, 4096, 1, 6, &[74]);
+        Header::parse(&normal).expect("maximum documented dimensions are valid");
+
+        let too_wide = synthetic_header(4097, 1, 1, 1, &[74]);
+        assert!(matches!(
+            Header::parse(&too_wide),
+            Err(CrnUnityDecodeError::InvalidHeader)
+        ));
+
+        let invalid_faces = synthetic_header(1, 1, 1, 255, &[74]);
+        assert!(matches!(
+            Header::parse(&invalid_faces),
+            Err(CrnUnityDecodeError::InvalidHeader)
+        ));
+
+        let too_many_levels = synthetic_header(1, 1, 17, 1, &[138; 17]);
+        assert!(matches!(
+            Header::parse(&too_many_levels),
+            Err(CrnUnityDecodeError::InvalidHeader)
+        ));
+
+        let repeated_level = synthetic_header(4, 4, 2, 1, &[78, 78]);
+        assert!(matches!(
+            Header::parse(&repeated_level),
+            Err(CrnUnityDecodeError::InvalidHeader)
+        ));
+
+        let excessive_mips = synthetic_header(4, 4, 4, 1, &[86, 87, 88, 89]);
+        assert!(matches!(
+            Header::parse(&excessive_mips),
+            Err(CrnUnityDecodeError::InvalidHeader)
+        ));
+    }
+
+    #[test]
+    fn palette_index_helpers_reject_out_of_range_values() {
+        let mut index = 1;
+        assert_eq!(advance_palette_index(&mut index, 2, 4), Ok(3));
+        assert_eq!(
+            advance_palette_index(&mut index, 8, 4),
+            Err(CrnUnityDecodeError::InvalidStream)
+        );
+        assert_eq!(
+            checked_palette_index(1, 1),
+            Err(CrnUnityDecodeError::InvalidStream)
+        );
+    }
 }

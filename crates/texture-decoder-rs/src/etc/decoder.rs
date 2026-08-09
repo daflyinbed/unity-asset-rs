@@ -159,6 +159,12 @@ fn decode_image<const BLOCK_BYTES: usize>(
     output: &mut [u8],
     decode: fn(&[u8; BLOCK_BYTES], &mut [u8]) -> Result<(), DecodeError>,
 ) -> Result<(), DecodeError> {
+    // Avoid iterating an enormous number of empty block rows when one
+    // dimension is zero (for example width=0, height=usize::MAX).
+    if width == 0 || height == 0 {
+        return Ok(());
+    }
+
     let output_len = width
         .checked_mul(height)
         .and_then(|value| value.checked_mul(4))
@@ -644,8 +650,8 @@ mod tests {
 
     #[test]
     fn empty_images_require_no_storage() {
-        decode_etc2_rgba8(&[], 0, 7, &mut []).unwrap();
-        decode_eac_rg11(&[], 9, 0, &mut []).unwrap();
+        decode_etc2_rgba8(&[], 0, usize::MAX, &mut []).unwrap();
+        decode_eac_rg11(&[], usize::MAX, 0, &mut []).unwrap();
     }
 
     #[test]

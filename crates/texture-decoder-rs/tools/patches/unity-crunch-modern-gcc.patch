@@ -1,0 +1,35 @@
+diff --git a/inc/crn_decomp.h b/inc/crn_decomp.h
+--- a/inc/crn_decomp.h
++++ b/inc/crn_decomp.h
+@@ -16,6 +16,7 @@
+ #include "crn_defs.h"
+ 
+ #include <stdlib.h>
++#include <stdint.h>
+ #include <stdio.h>
+ #ifdef WIN32
+ #include <memory.h>
+diff --git a/crnlib/Makefile b/crnlib/Makefile
+--- a/crnlib/Makefile
++++ b/crnlib/Makefile
+@@ -47,7 +47,6 @@ OBJECTS = \
+   crn_utils.o \
+   crn_value.o \
+   crn_vector.o \
+-  crn_zeng.o \
+   crn_texture_comp.o \
+   crn_texture_conversion.o \
+   crn_dds_comp.o \
+diff --git a/crnlib/crn_vector.cpp b/crnlib/crn_vector.cpp
+--- a/crnlib/crn_vector.cpp
++++ b/crnlib/crn_vector.cpp
+@@ -20,7 +20,7 @@ bool elemental_vector::increase_capacity(uint min_new_capacity, bool grow_hint,
+     return true;
+ 
+   size_t new_capacity = min_new_capacity;
+-  if ((grow_hint) && (!math::is_power_of_2(new_capacity)))
+-    new_capacity = math::next_pow2(new_capacity);
++  if ((grow_hint) && (!math::is_power_of_2(static_cast<uint64>(new_capacity))))
++    new_capacity = static_cast<size_t>(math::next_pow2(static_cast<uint64>(new_capacity)));
+ 
+   CRNLIB_ASSERT(new_capacity && (new_capacity > m_capacity));

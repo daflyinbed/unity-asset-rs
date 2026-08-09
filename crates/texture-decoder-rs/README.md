@@ -42,7 +42,7 @@ BC1/BC3 blocks, not RGBA8.
 | BC6H | `decode_bc6h_uf16`, `decode_bc6h_sf16` | `[R,G,B,255]`; clamped `f16`→8-bit (see below) |
 | BC7 | `decode_bc7` | the decoded RGBA |
 | CRN (`crn` feature) | `crn::decode` | Complete 2D/cubemap mip hierarchy as raw BC1/BC3 blocks |
-| CRN Unity (`crn-unity` feature) | `crn_unity::decode` | Complete 2D/cubemap mip hierarchy as raw BC1/BC3/ETC1/ETC2_RGBA8 blocks |
+| CRN Unity (`crn-unity` feature) | `crn_unity::decode` | Complete 2D/cubemap mip hierarchy as raw BC1/BC3/ETC1/ETC2_RGB8/ETC2_RGBA8 blocks |
 
 ### Half-float → 8-bit mapping (BC6H)
 
@@ -73,6 +73,13 @@ decode_bc1(&data, width, height, &mut image)?;
 Errors are reported via the `DecodeError` enum:
 `InputTooShort`, `OutputTooShort`, `SizeOverflow`, and `InvalidBlock`
 (e.g. a BC6H reserved mode or a BC7 all-zero block).
+
+Invalid physical blocks are rejected instead of being replaced with a reference
+decoder's diagnostic color. In particular, reserved BC6H modes return
+`InvalidBlock`, and invalid ASTC LDR or ETC1 differential blocks fail the image
+decode. BC2 and BC3 always use their specified four-color interpolation mode;
+they intentionally do not inherit Compressonator's BC1 three-color behavior
+when `color0 <= color1`.
 
 Public functions are grouped by format family: `texture_decoder_rs::astc::*`,
 `texture_decoder_rs::etc::*`, and `texture_decoder_rs::bcn::*`. Enable the

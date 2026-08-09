@@ -12,6 +12,7 @@
 // Build (see gen_crn_unity_golden.sh):
 //   g++ -O2 -std=c++17 -Ivendor/unity-crunch/inc gen_crn_unity_golden.cpp -o gen_crn_unity_golden
 #include <cstdio>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <vector>
