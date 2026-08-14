@@ -1,0 +1,16 @@
+[package]
+name = "fsb-rs"
+version = "0.1.0"
+edition = "2024"
+publish = false
+description = "FMOD 5 sound bank (FSB5) parser and audio rebuilder for Rust"
+license = "MIT"
+
+[dependencies]
+base64 = "0.22"
+ogg = "0.9"
+serde_json = "1"
+thiserror = "2"
+
+[dev-dependencies]
+lewton = "0.10"

@@ -37,7 +37,8 @@ texture-decoder-rs = { path = "../texture-decoder-rs", optional = true, features
 # 与 texture-decoder-rs 同源（后者也依赖 half），不引入新外部 crate。
 half = { version = "2", default-features = false, features = ["bytemuck"], optional = true }
 # Fmod5Sharp 的 Rust port：AudioClip 内 FSB5 sample 拆分并重建为 WAV/Ogg。
-fsb-rs = { path = "../../../../fsb-rs", optional = true }
+# 路径：crates/unity-asset → crates/fsb-rs（同级 workspace member，1 级）
+fsb-rs = { path = "../fsb-rs", optional = true }
 
 [dev-dependencies]
 # 测试里构造 fp16 字面量（HDR 浮点格式单测）用；version/feature 对齐 export feature 的 half。

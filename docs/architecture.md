@@ -13,7 +13,7 @@
    - **门面** `crates/unity-asset/src/export.rs`：`DecodedImage` 中间表示 + `decode_texture` 统一 5 路分派 + `Environment::decode_image` 高层入口（自动识别 Texture2D/Sprite）。底层原语在 `texture_export` / `sprite_export`。
    - **纹理** `crates/unity-asset/src/texture_export.rs`：`TextureFormat` 手写 enum（codegen 不产），ASTC LDR/ETC/BCn/Crunch/未压缩→PNG。
    - **Sprite** `crates/unity-asset/src/sprite_export.rs`：从 atlas Texture2D 裁 `textureRect` + packing rotation + downscale→PNG，对齐 AssetStudio `SpriteHelper.CutImage` / UnityPy。
-   - **音频** `crates/unity-asset/src/audio_export.rs`：复用 `Environment::audio_data` 取内联/`.resS` 字节；FSB5 经 `fsb-rs`（Fmod5Sharp Rust port）逐 sample 重建为 WAV/Ogg，旧版原始格式与 tracker module 按 AssetRipper 规则保留。
+   - **音频** `crates/unity-asset/src/audio_export.rs`：复用 `Environment::audio_data` 取内联/`.resS` 字节；FSB5 经同 workspace crate `crates/fsb-rs`（Fmod5Sharp Rust port）逐 sample 重建为 WAV/Ogg，旧版原始格式与 tracker module 按 AssetRipper 规则保留。
 
 **未实现**：CN 加密（`0x100` flag）、on-demand 逐块解压、SpillPolicy::AutoTempFile、bumpalo arena、Python 绑定（ADR-0002）。
 **暂缓**：ASTC HDR、PVRTC/ATC、BC6H SF16（走 UF16）、Tight mesh packing、alpha texture 合并、多输出格式、法线贴图。

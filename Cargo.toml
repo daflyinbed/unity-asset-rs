@@ -48,6 +48,7 @@ tower = { version = "0.5", features = [ "util" ] }
 [workspace]
 members = [
   "crates/codegen",
+  "crates/fsb-rs",
   "crates/generated",
   "crates/lz4inv",
   "crates/texture-decoder-rs",
