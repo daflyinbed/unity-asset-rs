@@ -58,6 +58,9 @@ cargo test
 
 `tests/fixtures/` 中的测试文件来自 Fmod5Sharp 的测试资源，覆盖 Vorbis、PCM16、
 GCADPCM 和 IMA ADPCM；Vorbis 输出还会通过 Ogg CRC/分页检查及实际解码验证。
+`tests/golden/*.body.bin` 由上游 Fmod5Sharp（commit `28951c6`）的
+FmodPcm/FmodGcadPcm/FmodImaAdPcm rebuilder 输出 dump 而来（WAV audio body，
+即 `wav[38..]`）；测试自包含，运行不依赖上游仓库。
 
 ## License
 
