@@ -89,6 +89,16 @@ pub struct RevisionQuery {
     pub revision: Option<u64>,
 }
 
+/// `/export` 端点的查询参数。
+#[derive(Deserialize, IntoParams)]
+pub struct ExportQuery {
+    /// 若提供且与当前 revision 不同，返回 409。
+    pub revision: Option<u64>,
+    /// AudioClip 含多个 FSB sample 时的索引，默认 0（响应头 `X-Sample-Count` 给出总数）。
+    #[serde(default)]
+    pub sample: Option<usize>,
+}
+
 fn summary(active: &ActiveEnvironment) -> EnvironmentSummary {
     let mut sources = active
         .sources
@@ -521,4 +531,199 @@ pub async fn export_object_png(
         "image/png".parse().expect("valid MIME"),
     );
     Ok(response)
+}
+
+/// 一个待导出的二进制文件(扩展名 + 字节),由 `export_object_file` 组装响应。
+#[cfg(feature = "export")]
+struct ExportedFile {
+    /// 不带点的文件扩展名(已 sanitize,只含字母数字)。
+    extension: String,
+    /// 原始文件名(用于 Content-Disposition),不含扩展名。
+    name: String,
+    /// AudioClip 的 sample 总数,其余类型为 1。
+    sample_count: usize,
+    data: Vec<u8>,
+}
+
+/// 导出对象的原始数据:AudioClip(WAV/Ogg/tracker,支持多 sample 索引)与
+/// TextAsset / Font / VideoClip / MovieTexture。响应头带
+/// `X-Export-Extension` / `X-Sample-Count` / `Content-Disposition`。
+#[cfg(feature = "export")]
+#[utoipa::path(
+    get, path = "/environment/collections/{cid}/objects/{pid}/export", tag = "object", operation_id = "export_environment_object_file",
+    params(("cid" = usize, Path), ("pid" = String, Path, description = "path_id 十进制字符串"), ExportQuery),
+    responses(
+        (status = 200, description = "导出文件二进制;头 X-Export-Extension / X-Sample-Count / Content-Disposition", content_type = "application/octet-stream"),
+        (status = 400, body = ApiErrorBody), (status = 404, body = ApiErrorBody),
+        (status = 409, body = ApiErrorBody), (status = 422, body = ApiErrorBody)
+    )
+)]
+pub async fn export_object_file(
+    State(state): State<AppState>,
+    AxumPath((collection_id, path_id)): AxumPath<(usize, String)>,
+    Query(query): Query<ExportQuery>,
+) -> Result<axum::response::Response, ApiError> {
+    use generated::UnityObject;
+    use unity_asset::ParsedObject;
+
+    let path_id = super::routes::parse_path_id(&path_id)?;
+    {
+        let active = state.active.read();
+        check_revision(active.revision, query.revision)?;
+        active
+            .environment
+            .collection_id(collection_id)
+            .ok_or(ApiError::NotFound)?;
+    }
+    let active = state.active.clone();
+    let sample_index = query.sample.unwrap_or(0);
+    let exported =
+        tokio::task::spawn_blocking(move || -> Result<ExportedFile, String> {
+            let active = active.read();
+            let collection = active
+                .environment
+                .collection_id(collection_id)
+                .ok_or_else(|| "collection 不存在".to_string())?;
+            let object = active
+                .environment
+                .resolve_local(collection, path_id)
+                .ok_or_else(|| "object 不存在".to_string())?;
+            let name = super::dto::ObjectMeta::from_obj(path_id, object).name;
+            let name = crate::sanitize_filename(&name);
+            match &object.object {
+                ParsedObject::Typed(UnityObject::AudioClip(_)) => {
+                    let samples =
+                        unity_asset::audio_export::decode_audio(&active.environment, object)
+                            .map_err(|error| error.to_string())?;
+                    if samples.is_empty() {
+                        return Err("FSB5 不含 sample".into());
+                    }
+                    let count = samples.len();
+                    let sample = samples
+                        .into_iter()
+                        .nth(sample_index)
+                        .ok_or_else(|| format!("sample 索引 {sample_index} 超出范围(共 {count})"))?;
+                    // 多 sample 时文件名带 FSB name table 的 sample 名,避免覆盖。
+                    let name = if count > 1 {
+                        let suffix = sample
+                            .sample_name
+                            .as_deref()
+                            .filter(|s| !s.is_empty())
+                            .map(crate::sanitize_filename)
+                            .unwrap_or_else(|| format!("sample_{sample_index}"));
+                        format!("{name}_{suffix}")
+                    } else {
+                        name
+                    };
+                    Ok(ExportedFile {
+                        extension: sample.extension.to_string(),
+                        name,
+                        sample_count: count,
+                        data: sample.data,
+                    })
+                }
+                // 二进制 m_script 的 TextAsset 落在 Dynamic（typed parse 因非法
+                // UTF-8 失败回退 TypeTree），export_raw 同样支持——对齐 AssetRipper
+                // 按原始字节导出的语义。
+                ParsedObject::Typed(
+                    UnityObject::TextAsset(_)
+                    | UnityObject::Font(_)
+                    | UnityObject::VideoClip(_)
+                    | UnityObject::MovieTexture(_),
+                ) => {
+                    let raw = unity_asset::misc_export::export_raw(&active.environment, object)
+                        .map_err(|error| error.to_string())?;
+                    Ok(ExportedFile {
+                        extension: sanitize_export_extension(&raw.extension),
+                        name,
+                        sample_count: 1,
+                        data: raw.data,
+                    })
+                }
+                ParsedObject::Dynamic(_)
+                    if object.class_id
+                        == unity_asset::ClassId::from(generated::ClassIDType::TextAsset) =>
+                {
+                    let raw = unity_asset::misc_export::export_raw(&active.environment, object)
+                        .map_err(|error| error.to_string())?;
+                    Ok(ExportedFile {
+                        extension: sanitize_export_extension(&raw.extension),
+                        name,
+                        sample_count: 1,
+                        data: raw.data,
+                    })
+                }
+                _ => Err("对象不是 AudioClip/TextAsset/Font/VideoClip/MovieTexture".into()),
+            }
+        })
+        .await
+        .map_err(|error| ApiError::Internal(format!("worker join 失败: {error}")))?
+        .map_err(ApiError::Export)?;
+    let mime = export_mime(&exported.extension);
+    let mut response = axum::response::Response::new(exported.data.into());
+    let headers = response.headers_mut();
+    headers.insert(
+        header::CONTENT_TYPE,
+        mime.parse().map_err(|_| ApiError::Internal("MIME 解析失败".into()))?,
+    );
+    // Content-Disposition：ASCII fallback + RFC 5987 filename*。
+    // `sanitize_filename` 不剥非 ASCII，而 `HeaderValue::from_str` 拒绝非 ASCII 字节，
+    // 若只发 `filename="..."`，CJK 资产名会整段丢失文件名提示。
+    let file_name = format!("{}.{}", exported.name, exported.extension);
+    let ascii_fallback: String = file_name
+        .chars()
+        .map(|c| {
+            if c.is_ascii() && !c.is_control() && c != '"' && c != '\\' {
+                c
+            } else {
+                '_'
+            }
+        })
+        .collect();
+    let encoded: String = file_name
+        .bytes()
+        .map(|b| format!("%{b:02X}"))
+        .collect();
+    if let Ok(value) = format!(
+        "inline; filename=\"{ascii_fallback}\"; filename*=UTF-8''{encoded}"
+    )
+    .parse()
+    {
+        headers.insert(header::CONTENT_DISPOSITION, value);
+    }
+    if let Ok(value) = exported.extension.parse() {
+        headers.insert("x-export-extension", value);
+    }
+    if let Ok(value) = exported.sample_count.to_string().parse() {
+        headers.insert("x-sample-count", value);
+    }
+    Ok(response)
+}
+
+/// 只保留字母数字,防止 header 注入 / 奇怪文件名。
+#[cfg(feature = "export")]
+fn sanitize_export_extension(ext: &str) -> String {
+    ext.chars()
+        .filter(|c| c.is_ascii_alphanumeric())
+        .take(16)
+        .collect()
+}
+
+#[cfg(feature = "export")]
+fn export_mime(ext: &str) -> &'static str {
+    match ext {
+        "wav" => "audio/wav",
+        "ogg" => "audio/ogg",
+        "mp3" => "audio/mpeg",
+        "m4a" => "audio/mp4",
+        "aif" => "audio/aiff",
+        "json" => "application/json",
+        "txt" => "text/plain",
+        "ttf" => "font/ttf",
+        "otf" => "font/otf",
+        "mp4" => "video/mp4",
+        "webm" => "video/webm",
+        "ogv" => "video/ogg",
+        _ => "application/octet-stream",
+    }
 }

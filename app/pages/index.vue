@@ -121,11 +121,25 @@
             class="h-full flex flex-col"
           >
             <PreviewCanvas
+              v-if="activeAsset.type === 'Texture2D'"
               :asset="activeAsset"
               class="min-h-0 flex-1"
               :error="texturePreview.error"
               :image-url="texturePreview.url"
               :loading="texturePreview.loading"
+            />
+            <FilePreview
+              v-else
+              :asset="activeAsset"
+              class="min-h-0 flex-1"
+              :error="filePreview.error"
+              :extension="filePreview.extension"
+              :loading="filePreview.loading"
+              :sample-count="filePreview.sampleCount"
+              :sample-index="filePreview.sampleIndex"
+              :text="filePreview.text"
+              :url="filePreview.url"
+              @select-sample="selectSample"
             />
             <div
               class="grid grid-cols-4 shrink-0 border-t border-neutral-5 bg-panel divide-x divide-neutral-5"
@@ -283,6 +297,7 @@ import { SplitterGroup, SplitterPanel, SplitterResizeHandle } from "reka-ui";
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { api } from "../api/client";
 import { formatSize } from "../assets";
+import FilePreview from "../components/asset/FilePreview.vue";
 import PreviewCanvas from "../components/asset/PreviewCanvas.vue";
 import DrawerBody from "../components/DrawerBody.vue";
 import DrawerHeader from "../components/DrawerHeader.vue";
@@ -345,11 +360,53 @@ const activeAsset = computed(() =>
 const texturePreview = ref({ loading: false, url: "", error: "" });
 let previewRequest = 0;
 
+// AudioClip/TextAsset/Font/VideoClip/MovieTexture 的 /export 预览。
+const EXPORT_TYPES = new Set([
+  "AudioClip",
+  "TextAsset",
+  "Font",
+  "VideoClip",
+  "MovieTexture",
+]);
+const filePreview = ref<{
+  loading: boolean;
+  url: string;
+  text: string | null;
+  extension: string;
+  sampleCount: number;
+  sampleIndex: number;
+  error: string;
+}>({
+  loading: false,
+  url: "",
+  text: null,
+  extension: "",
+  sampleCount: 1,
+  sampleIndex: 0,
+  error: "",
+});
+let fileRequest = 0;
+
 watch(
   [activeAsset, () => environment.value?.revision, () => activeTab.value?.mode],
-  ([asset, revision, mode]) => void loadTexturePreview(asset, revision, mode),
+  ([asset, revision, mode]) => {
+    void loadTexturePreview(asset, revision, mode);
+    // sample 不进 watcher 依赖：切资产/环境/模式总是从 0 重载，
+    // 避免上一个资产的 sample 索引泄漏到 sample 数更少的 AudioClip（422）。
+    void loadFilePreview(asset, revision, mode);
+  },
   { immediate: true },
 );
+
+// 用户点击 sample 按钮：显式带索引重载（不经 watcher）。
+function selectSample(index: number) {
+  void loadFilePreview(
+    activeAsset.value,
+    environment.value?.revision,
+    activeTab.value?.mode,
+    index,
+  );
+}
 
 async function loadTexturePreview(
   asset: Asset | null,
@@ -400,6 +457,80 @@ async function loadTexturePreview(
 
 function revokeTexturePreview() {
   if (texturePreview.value.url) URL.revokeObjectURL(texturePreview.value.url);
+}
+
+async function loadFilePreview(
+  asset: Asset | null,
+  revision?: number,
+  mode?: Mode,
+  sample = 0,
+) {
+  const request = ++fileRequest;
+  if (filePreview.value.url) URL.revokeObjectURL(filePreview.value.url);
+  filePreview.value = {
+    loading: false,
+    url: "",
+    text: null,
+    extension: "",
+    sampleCount: 1,
+    sampleIndex: sample,
+    error: "",
+  };
+  if (
+    !asset ||
+    !EXPORT_TYPES.has(asset.type) ||
+    revision === undefined ||
+    mode !== "preview"
+  )
+    return;
+
+  filePreview.value.loading = true;
+  const [collection] = asset.id.split(":");
+  try {
+    const result = await api.GET(
+      "/environment/collections/{cid}/objects/{pid}/export",
+      {
+        params: {
+          path: { cid: Number(collection), pid: asset.pathId },
+          query: { revision, sample },
+        },
+        parseAs: "blob",
+      },
+    );
+    if (request !== fileRequest) return;
+    if (result.error) throw new Error(apiError(result.error));
+
+    const blob = result.data as Blob;
+    const headers = result.response.headers;
+    const extension = headers.get("x-export-extension") ?? "";
+    const sampleCount = Number(headers.get("x-sample-count") ?? "1") || 1;
+    const text =
+      asset.type === "TextAsset" &&
+      (extension === "txt" || extension === "json")
+        ? await blob.text()
+        : null;
+    if (request !== fileRequest) return;
+    filePreview.value = {
+      loading: false,
+      url: URL.createObjectURL(blob),
+      text,
+      extension,
+      sampleCount,
+      sampleIndex: sample,
+      error: "",
+    };
+  } catch (error) {
+    if (request !== fileRequest) return;
+    filePreview.value = {
+      loading: false,
+      url: "",
+      text: null,
+      extension: "",
+      sampleCount: 1,
+      sampleIndex: sample,
+      error: toErrorMessage(error),
+    };
+  }
 }
 const editorTabs = computed(() =>
   tabs.value.map((tab) => {
@@ -681,6 +812,8 @@ onMounted(() => {
 onBeforeUnmount(() => {
   previewRequest++;
   revokeTexturePreview();
+  fileRequest++;
+  if (filePreview.value.url) URL.revokeObjectURL(filePreview.value.url);
   window.removeEventListener("keydown", onOpenShortcut);
 });
 

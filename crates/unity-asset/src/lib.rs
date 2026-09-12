@@ -42,6 +42,8 @@ pub mod typetree;
 pub mod audio_export;
 #[cfg(feature = "export")]
 pub mod export;
+#[cfg(feature = "export")]
+pub mod misc_export;
 pub mod io;
 pub mod types;
 

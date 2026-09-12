@@ -20,6 +20,7 @@ declare module 'vue' {
     ILucideCircleAlert: typeof import('~icons/lucide/circle-alert')['default']
     ILucideCircleCheck: typeof import('~icons/lucide/circle-check')['default']
     ILucideCopy: typeof import('~icons/lucide/copy')['default']
+    ILucideDownload: typeof import('~icons/lucide/download')['default']
     ILucideEye: typeof import('~icons/lucide/eye')['default']
     ILucideFile: typeof import('~icons/lucide/file')['default']
     ILucideFolder: typeof import('~icons/lucide/folder')['default']

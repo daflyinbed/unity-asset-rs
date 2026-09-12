@@ -8,6 +8,7 @@ import IconBox from "~icons/lucide/box";
 import IconFile from "~icons/lucide/file";
 import IconFileCode from "~icons/lucide/file-code";
 import IconFileText from "~icons/lucide/file-text";
+import IconFilm from "~icons/lucide/film";
 import IconImage from "~icons/lucide/image";
 import IconLayers from "~icons/lucide/layers";
 import IconMove from "~icons/lucide/move";
@@ -15,6 +16,8 @@ import IconMusic from "~icons/lucide/music";
 import IconPaintbrush from "~icons/lucide/paintbrush";
 import IconPalette from "~icons/lucide/palette";
 import IconPlay from "~icons/lucide/play";
+import IconType from "~icons/lucide/type";
+import IconVideo from "~icons/lucide/video";
 import type { Component } from "vue";
 
 const props = defineProps<{ type: string }>();
@@ -30,6 +33,9 @@ const MAP: Record<string, Component> = {
   TextAsset: IconFileText,
   AudioClip: IconMusic,
   AnimatorController: IconPlay,
+  Font: IconType,
+  VideoClip: IconVideo,
+  MovieTexture: IconFilm,
 };
 
 const icon = computed(() => MAP[props.type] ?? IconFile);

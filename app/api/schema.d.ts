@@ -203,6 +203,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/environment/collections/{cid}/objects/{pid}/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 导出对象的原始数据:AudioClip(WAV/Ogg/tracker,支持多 sample 索引)与
+         *     TextAsset / Font / VideoClip / MovieTexture。响应头带
+         *     `X-Export-Extension` / `X-Sample-Count` / `Content-Disposition`。
+         */
+        get: operations["export_environment_object_file"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/environment/collections/{cid}/objects/{pid}/png": {
         parameters: {
             query?: never;
@@ -1028,6 +1049,67 @@ export interface operations {
                 };
             };
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    export_environment_object_file: {
+        parameters: {
+            query?: {
+                /** @description 若提供且与当前 revision 不同，返回 409。 */
+                revision?: number | null;
+                /** @description AudioClip 含多个 FSB sample 时的索引，默认 0（响应头 `X-Sample-Count` 给出总数）。 */
+                sample?: number | null;
+            };
+            header?: never;
+            path: {
+                cid: number;
+                /** @description path_id 十进制字符串 */
+                pid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 导出文件二进制;头 X-Export-Extension / X-Sample-Count / Content-Disposition */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/octet-stream": unknown;
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            422: {
                 headers: {
                     [name: string]: unknown;
                 };

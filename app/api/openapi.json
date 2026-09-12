@@ -835,6 +835,110 @@
         }
       }
     },
+    "/environment/collections/{cid}/objects/{pid}/export": {
+      "get": {
+        "tags": [
+          "object"
+        ],
+        "summary": "导出对象的原始数据:AudioClip(WAV/Ogg/tracker,支持多 sample 索引)与\nTextAsset / Font / VideoClip / MovieTexture。响应头带\n`X-Export-Extension` / `X-Sample-Count` / `Content-Disposition`。",
+        "operationId": "export_environment_object_file",
+        "parameters": [
+          {
+            "name": "cid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "pid",
+            "in": "path",
+            "description": "path_id 十进制字符串",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "revision",
+            "in": "query",
+            "description": "若提供且与当前 revision 不同，返回 409。",
+            "required": false,
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "int64",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "sample",
+            "in": "query",
+            "description": "AudioClip 含多个 FSB sample 时的索引，默认 0（响应头 `X-Sample-Count` 给出总数）。",
+            "required": false,
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "导出文件二进制;头 X-Export-Extension / X-Sample-Count / Content-Disposition",
+            "content": {
+              "application/octet-stream": {}
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/environment/collections/{cid}/objects/{pid}/png": {
       "get": {
         "tags": [
@@ -1739,7 +1843,7 @@
     },
     {
       "name": "object",
-      "description": "对象元数据/详情(?detail=full)/PNG 导出"
+      "description": "对象元数据/详情(?detail=full)/PNG 与原始文件导出"
     },
     {
       "name": "container",

@@ -160,6 +160,7 @@ impl From<crate::sprite_export::SpriteExportError> for DecodeImageError {
 
 // 重新导出底层原语 + 高层导出函数,保持 `export` 模块作为单一入口。
 pub use crate::audio_export::{AudioExportError, DecodedAudio, decode_audio};
+pub use crate::misc_export::{ExportedRaw, MiscExportError, export_raw};
 pub use crate::sprite_export::{SpriteExportError, export_sprite, sprite_pixel_bytes};
 pub use crate::texture_export::{
     TextureFormat, decode_astc, decode_bcn, decode_crunch, decode_etc, decode_uncompressed,

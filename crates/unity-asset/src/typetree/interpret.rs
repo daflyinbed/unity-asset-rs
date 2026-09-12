@@ -132,9 +132,14 @@ fn walk(r: &mut Cursor, node: &TypeNode, ctx: Ctx) -> Result<Value> {
         TypeKind::String => {
             let n = r.read_i32("string len")? as usize;
             let b = r.read_bytes(n, "string data")?;
-            let s = String::from_utf8_lossy(b).into_owned();
             r.align(4)?;
-            Value::String(s)
+            // 非法 UTF-8 的字符串按原始字节保留（不静默损坏——对齐 UnityPy 的
+            // lossless bytes / AssetRipper `Utf8String.Data` 语义）；消费方按需
+            // lossy 展示。二进制 TextAsset 的 m_Script 导出依赖此行为。
+            match std::str::from_utf8(b) {
+                Ok(s) => Value::String(s.to_owned()),
+                Err(_) => Value::Bytes(b.to_vec()),
+            }
         }
         TypeKind::TypelessData => {
             let n = r.read_i32("typeless len")? as usize;
@@ -257,4 +262,55 @@ fn extract_ref_type(fields: &[(String, Value)]) -> Result<(String, String, Strin
             .unwrap_or_default()
     };
     Ok((find_str("class"), find_str("ns"), find_str("asm")))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn string_node(aligned: bool) -> TypeNode {
+        TypeNode {
+            kind: TypeKind::String,
+            name: "m_Script".to_string(),
+            byte_size: -1,
+            version: 0,
+            meta_flag: if aligned { ALIGN_MASK } else { 0 },
+            children: Vec::new(),
+        }
+    }
+
+    fn ver() -> UnityVersion {
+        UnityVersion::new(2019, 0, 0)
+    }
+
+    #[test]
+    fn valid_utf8_string_stays_string() {
+        // len=5 + "hello" + 3 字节 align padding（cursor 要求 padding 字节在流内）
+        let mut data = b"\x05\x00\x00\x00hello".to_vec();
+        data.extend_from_slice(&[0, 0, 0]);
+        let v = interpret(
+            &data,
+            &string_node(true),
+            &ver(),
+            Endian::Little,
+            &RefTypeTable::empty(),
+        )
+        .unwrap();
+        assert!(matches!(v, Value::String(s) if s == "hello"));
+    }
+
+    #[test]
+    fn binary_string_kept_as_bytes() {
+        // len=3 + 0xFF 0xFE 0x01 + 1 字节 align padding
+        let data = vec![3, 0, 0, 0, 0xff, 0xfe, 0x01, 0x00];
+        let v = interpret(
+            &data,
+            &string_node(true),
+            &ver(),
+            Endian::Little,
+            &RefTypeTable::empty(),
+        )
+        .unwrap();
+        assert!(matches!(v, Value::Bytes(b) if b == vec![0xff, 0xfe, 0x01]));
+    }
 }

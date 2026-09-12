@@ -225,12 +225,24 @@ impl Loader {
                         if crate::detect::looks_like_loadable_path(&entry)? {
                             let bytes =
                                 std::fs::read(&entry).map_err(|e| Error::Io { source: e })?;
-                            let loaded = crate::format::load_recursive(
+                            // 目录扫描是批量发现：单个文件解析失败（如变体压缩
+                            // 未注册对应 Decompressor）只 warn 跳过，不毁掉整个
+                            // 目录加载；显式单文件 Source 仍走 Err 传播。
+                            let loaded = match crate::format::load_recursive(
                                 Bytes::from(bytes),
                                 &entry.to_string_lossy(),
                                 &self.registry,
                                 None,
-                            )?;
+                            ) {
+                                Ok(loaded) => loaded,
+                                Err(e) => {
+                                    diagnostics.push(Diagnostic::warning(format!(
+                                        "scan_dir: 跳过解析失败文件: {} ({e})",
+                                        entry.display()
+                                    )));
+                                    continue;
+                                }
+                            };
                             phase_a(
                                 loaded,
                                 &mut objects,
@@ -339,7 +351,7 @@ impl LoadReport {
 pub enum Severity {
     /// 单文件/单对象/provider 等可恢复错误(记录但 build 不失败)。
     Error,
-    /// scan_dir 跳过非可加载文件、空目录等不影响结果的信息。
+    /// scan_dir 跳过非可加载/解析失败文件、空目录等不影响结果的信息。
     Warning,
 }
 

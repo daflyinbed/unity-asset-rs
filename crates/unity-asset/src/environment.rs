@@ -694,6 +694,7 @@ impl Environment {
     /// - **AudioClip** `m_resource.m_source`（post-5.0，`streamed_resource_data` 入口）。
     /// - **AudioClip** pre-5.0 `m_audio_data == Streamed`（`read_old_streamed_audio`
     ///   用 `collection.name + ".resS"` 隐式名）。
+    /// - **VideoClip** `m_external_resources.m_source`（`streamed_resource_data` 入口）。
     ///
     /// 无 provider 时 no-op。其他对象类型若有 streaming 引用会漏（`resolve_resource`
     /// 仍返回 `None`，与现状一致，不回归）。
@@ -725,6 +726,12 @@ impl Environment {
                     {
                         wanted.push((format!("{}.resS", col.name), o.collection));
                     }
+                }
+                // VideoClip 的视频字节在 m_external_resources 指向的外部流文件里。
+                ParsedObject::Typed(UnityObject::VideoClip(v))
+                    if !v.m_external_resources.m_source.is_empty() =>
+                {
+                    wanted.push((v.m_external_resources.m_source.clone(), o.collection));
                 }
                 _ => {}
             }

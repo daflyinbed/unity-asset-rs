@@ -34,6 +34,7 @@
 //! | GET    | `/environment/containers`                       | 列 container(?revision=&path=&kind=) |
 //! | GET    | `/environment/collections/{cid}/objects/{pid}`  | 对象详情(?revision=&detail=full) |
 //! | GET    | `/environment/collections/{cid}/objects/{pid}/png` | 导出 PNG(export feature) |
+//! | GET    | `/environment/collections/{cid}/objects/{pid}/export` | 导出原始文件(AudioClip/TextAsset/Font/VideoClip/MovieTexture,`?sample=` 选 FSB sample) |
 //!
 //! environment API 带 `revision` 防陈旧:`?revision=` 与当前值不符返回 409 Conflict
 //! (`stale environment revision`)。详见 `docs/electron-app.md`。
@@ -82,7 +83,7 @@ use state::{AppState, Bundles};
         ),
         (
             name = "object",
-            description = "对象元数据/详情(?detail=full)/PNG 导出"
+            description = "对象元数据/详情(?detail=full)/PNG 与原始文件导出"
         ),
         (
             name = "container",
@@ -162,6 +163,7 @@ fn api_router() -> OpenApiRouter<AppState> {
         .routes(routes!(environment_routes::get_object))
         .routes(routes!(environment_routes::list_containers))
         .routes(routes!(environment_routes::export_object_png))
+        .routes(routes!(environment_routes::export_object_file))
         .routes(routes!(routes::list_bundles))
         .routes(routes!(routes::load_bundle))
         .routes(routes!(routes::clear_bundles))
@@ -576,6 +578,93 @@ mod tests {
             &[0x89, b'P', b'N', b'G', 0x0D, 0x0A, 0x1A, 0x0A]
         );
         assert!(bytes.len() > 100);
+    }
+
+    #[cfg(feature = "export")]
+    #[tokio::test]
+    async fn export_font_file_from_environment() {
+        let app = app();
+        // Prefabs.unity3d 含 Font(FGO-Main-Font)。
+        let replace = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("PUT")
+                    .uri("/environment")
+                    .header("content-type", "application/json")
+                    .body(Body::from(
+                        serde_json::to_vec(&json!({
+                            "sources": [{
+                                "id": "prefabs",
+                                "path": "Prefabs.unity3d",
+                                "kind": "file"
+                            }]
+                        }))
+                        .unwrap(),
+                    ))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(replace.status(), StatusCode::OK);
+
+        // 找 Font 的 path_id。
+        let resp = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .uri("/environment/collections/0/objects")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        let objs = body_json(resp).await;
+        let items = objs["items"].as_array().expect("objects 响应应含 items");
+        let font_pid = items
+            .iter()
+            .find(|o| o["class_name"].as_str() == Some("Font"))
+            .map(|o| o["path_id"].as_str().unwrap())
+            .expect("Prefabs 应有 Font");
+
+        let resp = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .uri(format!("/environment/collections/0/objects/{font_pid}/export"))
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(resp.status(), StatusCode::OK);
+        assert_eq!(
+            resp.headers().get("x-export-extension").unwrap(),
+            "otf",
+            "FGO-Main-Font 应按 OTTO magic 导出为 otf"
+        );
+        assert_eq!(resp.headers().get("x-sample-count").unwrap(), "1");
+        let bytes = to_bytes(resp.into_body(), 1024 * 1024 * 16).await.unwrap();
+        assert!(bytes.starts_with(b"OTTO"), "字体数据应以 OTTO 开头");
+
+        // 非 audio/misc 类型 → 422。
+        let tex_pid = items
+            .iter()
+            .find(|o| o["class_name"].as_str() == Some("Texture2D"))
+            .map(|o| o["path_id"].as_str().unwrap());
+        if let Some(tex_pid) = tex_pid {
+            let resp = app
+                .clone()
+                .oneshot(
+                    Request::builder()
+                        .uri(format!("/environment/collections/0/objects/{tex_pid}/export"))
+                        .body(Body::empty())
+                        .unwrap(),
+                )
+                .await
+                .unwrap();
+            assert_eq!(resp.status(), StatusCode::UNPROCESSABLE_ENTITY);
+        }
     }
 
     #[tokio::test]

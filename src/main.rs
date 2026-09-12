@@ -147,7 +147,7 @@ async fn run(cli: &Cli) -> Result<(), String> {
         Cmd::List | Cmd::Object { .. } | Cmd::Export { .. } | Cmd::Containers { .. } => {
             let path = cli.path.as_deref().unwrap_or_else(|| Path::new("example"));
             let (header, env) = build_env(path, cli.arknights)?;
-            match cli.cmd.as_ref().unwrap() {
+            match cli.cmd.as_ref().unwrap_or(&Cmd::List) {
                 Cmd::List => cmd_list(header.as_ref(), &env),
                 Cmd::Object { path_id } => cmd_object(&env, *path_id),
                 Cmd::Export {
@@ -679,11 +679,84 @@ fn cmd_export(
 
     println!("音频汇总: 导出 {audio_exported}, 跳过 {audio_skipped}, 失败 {audio_failed}");
 
-    let total_failed = tex_failed + spr_failed + audio_failed;
+    let mut misc_exported = 0usize;
+    let mut misc_failed = 0usize;
+    let mut misc_paths = std::collections::HashSet::new();
+
+    if !only_sprites && !only_audio {
+        for cls in [
+            ClassIDType::TextAsset,
+            ClassIDType::Font,
+            ClassIDType::VideoClip,
+            ClassIDType::MovieTexture,
+        ] {
+            for obj in env.objects_of_class(cls) {
+                if !only.is_empty() && !only.contains(&obj.path_id) {
+                    continue;
+                }
+                let name =
+                    misc_object_name(obj).unwrap_or_else(|| format!("{cls:?}_{}", obj.path_id));
+                match unity_asset::misc_export::export_raw(env, obj) {
+                    Ok(raw) => {
+                        let stem = sanitize_filename(&name);
+                        let file = unique_output_path(
+                            out,
+                            &stem,
+                            &raw.extension,
+                            obj.path_id,
+                            &mut misc_paths,
+                        );
+                        match std::fs::write(&file, &raw.data) {
+                            Ok(()) => {
+                                println!("✓ ok    {name}  {cls:?} -> {}", file.display());
+                                misc_exported += 1;
+                            }
+                            Err(e) => {
+                                println!("✗ fail  {name}  写 {} 失败: {e}", file.display());
+                                misc_failed += 1;
+                            }
+                        }
+                    }
+                    Err(e) => {
+                        println!("✗ fail  {name}  {e}");
+                        misc_failed += 1;
+                    }
+                }
+            }
+        }
+    }
+
+    println!("杂项汇总: 导出 {misc_exported}, 失败 {misc_failed}");
+
+    let total_failed = tex_failed + spr_failed + audio_failed + misc_failed;
     if total_failed > 0 {
         Err(format!("有 {total_failed} 个导出失败"))
     } else {
         Ok(())
+    }
+}
+
+/// 杂项四类（TextAsset/Font/VideoClip/MovieTexture）取导出文件名。
+#[cfg(feature = "export")]
+fn misc_object_name(obj: &unity_asset::EnvironmentObject) -> Option<String> {
+    match &obj.object {
+        ParsedObject::Typed(UnityObject::TextAsset(t)) if !t.m_name.is_empty() => {
+            Some(t.m_name.clone())
+        }
+        ParsedObject::Typed(UnityObject::Font(f)) if !f.m_name.is_empty() => Some(f.m_name.clone()),
+        ParsedObject::Typed(UnityObject::VideoClip(v)) if !v.m_name.is_empty() => {
+            Some(v.m_name.clone())
+        }
+        ParsedObject::Typed(UnityObject::MovieTexture(m)) if !m.m_name.is_empty() => {
+            Some(m.m_name.clone())
+        }
+        // 二进制 m_script 的 TextAsset 落在 Dynamic（typed parse 失败回退 TypeTree），
+        // 从 typetree 值取 m_Name。
+        ParsedObject::Dynamic(v) => {
+            let name = dynamic_name(v);
+            (!name.is_empty()).then_some(name)
+        }
+        _ => None,
     }
 }
 
