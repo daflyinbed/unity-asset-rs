@@ -31,3 +31,43 @@ impl crate::Parse for GfxBlendState {
         })
     }
 }
+
+impl crate::ToValue for GfxBlendState {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("rt".to_string(), self.rt.to_value())),
+            Some((
+                "separateMRTBlend".to_string(),
+                self.separate_mrt_blend.to_value(),
+            )),
+            Some(("alphaToMask".to_string(), self.alpha_to_mask.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "rt" => (self.rt).inspect_value(path, offset, limit),
+                "separateMRTBlend" => (self.separate_mrt_blend).inspect_value(path, offset, limit),
+                "alphaToMask" => (self.alpha_to_mask).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.rt).inspect_value(path, offset, limit)).map(|v| ("rt".to_string(), v)),
+            ((self.separate_mrt_blend).inspect_value(path, offset, limit))
+                .map(|v| ("separateMRTBlend".to_string(), v)),
+            ((self.alpha_to_mask).inspect_value(path, offset, limit))
+                .map(|v| ("alphaToMask".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

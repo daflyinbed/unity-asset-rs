@@ -25,6 +25,21 @@ impl crate::Parse for VideoClipImporterOutputSourceHasAlphaVariant {
         }
     }
 }
+
+impl crate::ToValue for VideoClipImporterOutputSourceHasAlphaVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_3(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct VideoClipImporterOutput {
     pub format: Option<i32>,
@@ -206,5 +221,124 @@ impl crate::Parse for VideoClipImporterOutput {
             original_frame_count,
             encoded_settings,
         })
+    }
+}
+
+impl crate::ToValue for VideoClipImporterOutput {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            crate::opt_field("format", &self.format),
+            crate::opt_field("sourceFrameRate", &self.source_frame_rate),
+            crate::opt_field(
+                "sourcePixelAspectRatioNumerator",
+                &self.source_pixel_aspect_ratio_numerator,
+            ),
+            crate::opt_field("settings", &self.settings),
+            crate::opt_field("sourceFileSize", &self.source_file_size),
+            crate::opt_field(
+                "sourcePixelAspectRatioDenominator",
+                &self.source_pixel_aspect_ratio_denominator,
+            ),
+            crate::opt_field("encodedWidth", &self.encoded_width),
+            crate::opt_field("sourceAudioChannelCount", &self.source_audio_channel_count),
+            crate::opt_field("encodedHeight", &self.encoded_height),
+            crate::opt_field("sourceHasAlpha", &self.source_has_alpha),
+            crate::opt_field("encodedStartFrame", &self.encoded_start_frame),
+            crate::opt_field("sourceAudioSampleRate", &self.source_audio_sample_rate),
+            crate::opt_field("encodedEndFrame", &self.encoded_end_frame),
+            crate::opt_field("originalWidth", &self.original_width),
+            crate::opt_field("streamedResource", &self.streamed_resource),
+            crate::opt_field("originalHeight", &self.original_height),
+            crate::opt_field("transcodeSkipped", &self.transcode_skipped),
+            crate::opt_field("originalFrameCount", &self.original_frame_count),
+            crate::opt_field("encodedSettings", &self.encoded_settings),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "format" => (self.format).inspect_value(path, offset, limit),
+                "sourceFrameRate" => (self.source_frame_rate).inspect_value(path, offset, limit),
+                "sourcePixelAspectRatioNumerator" => {
+                    (self.source_pixel_aspect_ratio_numerator).inspect_value(path, offset, limit)
+                }
+                "settings" => (self.settings).inspect_value(path, offset, limit),
+                "sourceFileSize" => (self.source_file_size).inspect_value(path, offset, limit),
+                "sourcePixelAspectRatioDenominator" => {
+                    (self.source_pixel_aspect_ratio_denominator).inspect_value(path, offset, limit)
+                }
+                "encodedWidth" => (self.encoded_width).inspect_value(path, offset, limit),
+                "sourceAudioChannelCount" => {
+                    (self.source_audio_channel_count).inspect_value(path, offset, limit)
+                }
+                "encodedHeight" => (self.encoded_height).inspect_value(path, offset, limit),
+                "sourceHasAlpha" => (self.source_has_alpha).inspect_value(path, offset, limit),
+                "encodedStartFrame" => {
+                    (self.encoded_start_frame).inspect_value(path, offset, limit)
+                }
+                "sourceAudioSampleRate" => {
+                    (self.source_audio_sample_rate).inspect_value(path, offset, limit)
+                }
+                "encodedEndFrame" => (self.encoded_end_frame).inspect_value(path, offset, limit),
+                "originalWidth" => (self.original_width).inspect_value(path, offset, limit),
+                "streamedResource" => (self.streamed_resource).inspect_value(path, offset, limit),
+                "originalHeight" => (self.original_height).inspect_value(path, offset, limit),
+                "transcodeSkipped" => (self.transcode_skipped).inspect_value(path, offset, limit),
+                "originalFrameCount" => {
+                    (self.original_frame_count).inspect_value(path, offset, limit)
+                }
+                "encodedSettings" => (self.encoded_settings).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.format).inspect_value(path, offset, limit)).map(|v| ("format".to_string(), v)),
+            ((self.source_frame_rate).inspect_value(path, offset, limit))
+                .map(|v| ("sourceFrameRate".to_string(), v)),
+            ((self.source_pixel_aspect_ratio_numerator).inspect_value(path, offset, limit))
+                .map(|v| ("sourcePixelAspectRatioNumerator".to_string(), v)),
+            ((self.settings).inspect_value(path, offset, limit))
+                .map(|v| ("settings".to_string(), v)),
+            ((self.source_file_size).inspect_value(path, offset, limit))
+                .map(|v| ("sourceFileSize".to_string(), v)),
+            ((self.source_pixel_aspect_ratio_denominator).inspect_value(path, offset, limit))
+                .map(|v| ("sourcePixelAspectRatioDenominator".to_string(), v)),
+            ((self.encoded_width).inspect_value(path, offset, limit))
+                .map(|v| ("encodedWidth".to_string(), v)),
+            ((self.source_audio_channel_count).inspect_value(path, offset, limit))
+                .map(|v| ("sourceAudioChannelCount".to_string(), v)),
+            ((self.encoded_height).inspect_value(path, offset, limit))
+                .map(|v| ("encodedHeight".to_string(), v)),
+            ((self.source_has_alpha).inspect_value(path, offset, limit))
+                .map(|v| ("sourceHasAlpha".to_string(), v)),
+            ((self.encoded_start_frame).inspect_value(path, offset, limit))
+                .map(|v| ("encodedStartFrame".to_string(), v)),
+            ((self.source_audio_sample_rate).inspect_value(path, offset, limit))
+                .map(|v| ("sourceAudioSampleRate".to_string(), v)),
+            ((self.encoded_end_frame).inspect_value(path, offset, limit))
+                .map(|v| ("encodedEndFrame".to_string(), v)),
+            ((self.original_width).inspect_value(path, offset, limit))
+                .map(|v| ("originalWidth".to_string(), v)),
+            ((self.streamed_resource).inspect_value(path, offset, limit))
+                .map(|v| ("streamedResource".to_string(), v)),
+            ((self.original_height).inspect_value(path, offset, limit))
+                .map(|v| ("originalHeight".to_string(), v)),
+            ((self.transcode_skipped).inspect_value(path, offset, limit))
+                .map(|v| ("transcodeSkipped".to_string(), v)),
+            ((self.original_frame_count).inspect_value(path, offset, limit))
+                .map(|v| ("originalFrameCount".to_string(), v)),
+            ((self.encoded_settings).inspect_value(path, offset, limit))
+                .map(|v| ("encodedSettings".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

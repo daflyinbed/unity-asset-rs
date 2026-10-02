@@ -48,6 +48,21 @@ impl crate::Parse for Polygon2DMPathsVariant {
         }
     }
 }
+
+impl crate::ToValue for Polygon2DMPathsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct Polygon2D {
     pub m_paths: Polygon2DMPathsVariant,
@@ -61,5 +76,33 @@ impl crate::Parse for Polygon2D {
         let m_paths = Polygon2DMPathsVariant::parse(rdr, ver)?;
 
         Ok(Polygon2D { m_paths })
+    }
+}
+
+impl crate::ToValue for Polygon2D {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> =
+            [Some(("m_Paths".to_string(), self.m_paths.to_value()))]
+                .into_iter()
+                .flatten()
+                .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Paths" => (self.m_paths).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_paths).inspect_value(path, offset, limit)).map(|v| ("m_Paths".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

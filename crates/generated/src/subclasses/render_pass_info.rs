@@ -25,6 +25,21 @@ impl crate::Parse for RenderPassInfoSampleCountVariant {
         }
     }
 }
+
+impl crate::ToValue for RenderPassInfoSampleCountVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V6000_6(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_6(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct RenderPassInfo {
     pub attachments: Vec<AttachmentInfo>,
@@ -99,5 +114,87 @@ impl crate::Parse for RenderPassInfo {
             sample_count: sample_count.unwrap(),
             has_eye_texture,
         })
+    }
+}
+
+impl crate::ToValue for RenderPassInfo {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("attachments".to_string(), self.attachments.to_value())),
+            Some((
+                "attachmentCount".to_string(),
+                self.attachment_count.to_value(),
+            )),
+            Some(("subPasses".to_string(), self.sub_passes.to_value())),
+            Some(("subPassCount".to_string(), self.sub_pass_count.to_value())),
+            Some((
+                "depthAttachmentIndex".to_string(),
+                self.depth_attachment_index.to_value(),
+            )),
+            Some((
+                "shadingRateIndex".to_string(),
+                self.shading_rate_index.to_value(),
+            )),
+            Some((
+                "multiviewCount".to_string(),
+                self.multiview_count.to_value(),
+            )),
+            crate::opt_field("foveationImageIndex", &self.foveation_image_index),
+            Some(("sampleCount".to_string(), self.sample_count.to_value())),
+            crate::opt_field("hasEyeTexture", &self.has_eye_texture),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "attachments" => (self.attachments).inspect_value(path, offset, limit),
+                "attachmentCount" => (self.attachment_count).inspect_value(path, offset, limit),
+                "subPasses" => (self.sub_passes).inspect_value(path, offset, limit),
+                "subPassCount" => (self.sub_pass_count).inspect_value(path, offset, limit),
+                "depthAttachmentIndex" => {
+                    (self.depth_attachment_index).inspect_value(path, offset, limit)
+                }
+                "shadingRateIndex" => (self.shading_rate_index).inspect_value(path, offset, limit),
+                "multiviewCount" => (self.multiview_count).inspect_value(path, offset, limit),
+                "foveationImageIndex" => {
+                    (self.foveation_image_index).inspect_value(path, offset, limit)
+                }
+                "sampleCount" => (self.sample_count).inspect_value(path, offset, limit),
+                "hasEyeTexture" => (self.has_eye_texture).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.attachments).inspect_value(path, offset, limit))
+                .map(|v| ("attachments".to_string(), v)),
+            ((self.attachment_count).inspect_value(path, offset, limit))
+                .map(|v| ("attachmentCount".to_string(), v)),
+            ((self.sub_passes).inspect_value(path, offset, limit))
+                .map(|v| ("subPasses".to_string(), v)),
+            ((self.sub_pass_count).inspect_value(path, offset, limit))
+                .map(|v| ("subPassCount".to_string(), v)),
+            ((self.depth_attachment_index).inspect_value(path, offset, limit))
+                .map(|v| ("depthAttachmentIndex".to_string(), v)),
+            ((self.shading_rate_index).inspect_value(path, offset, limit))
+                .map(|v| ("shadingRateIndex".to_string(), v)),
+            ((self.multiview_count).inspect_value(path, offset, limit))
+                .map(|v| ("multiviewCount".to_string(), v)),
+            ((self.foveation_image_index).inspect_value(path, offset, limit))
+                .map(|v| ("foveationImageIndex".to_string(), v)),
+            ((self.sample_count).inspect_value(path, offset, limit))
+                .map(|v| ("sampleCount".to_string(), v)),
+            ((self.has_eye_texture).inspect_value(path, offset, limit))
+                .map(|v| ("hasEyeTexture".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

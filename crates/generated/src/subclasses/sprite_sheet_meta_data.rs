@@ -41,6 +41,21 @@ impl crate::Parse for SpriteSheetMetaDataMSpritesVariant {
     }
 }
 
+impl crate::ToValue for SpriteSheetMetaDataMSpritesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：SpriteSheetMetaDataMOutlineVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum SpriteSheetMetaDataMOutlineVariant {
@@ -84,6 +99,21 @@ impl crate::Parse for SpriteSheetMetaDataMOutlineVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for SpriteSheetMetaDataMOutlineVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -569,5 +599,91 @@ impl crate::Parse for SpriteSheetMetaData {
             m_name_file_id_table,
             m_sprite_custom_metadata,
         })
+    }
+}
+
+impl crate::ToValue for SpriteSheetMetaData {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Sprites".to_string(), self.m_sprites.to_value())),
+            crate::opt_field("m_Outline", &self.m_outline),
+            crate::opt_field("m_PhysicsShape", &self.m_physics_shape),
+            crate::opt_field("m_CustomData", &self.m_custom_data),
+            crate::opt_field("m_Bones", &self.m_bones),
+            crate::opt_field("m_SpriteID", &self.m_sprite_id),
+            crate::opt_field("m_Vertices", &self.m_vertices),
+            crate::opt_field("m_InternalID", &self.m_internal_id),
+            crate::opt_field("m_Indices", &self.m_indices),
+            crate::opt_field("m_Edges", &self.m_edges),
+            crate::opt_field("m_Weights", &self.m_weights),
+            crate::opt_field("m_SecondaryTextures", &self.m_secondary_textures),
+            crate::opt_field("m_NameFileIdTable", &self.m_name_file_id_table),
+            crate::opt_field("m_SpriteCustomMetadata", &self.m_sprite_custom_metadata),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Sprites" => (self.m_sprites).inspect_value(path, offset, limit),
+                "m_Outline" => (self.m_outline).inspect_value(path, offset, limit),
+                "m_PhysicsShape" => (self.m_physics_shape).inspect_value(path, offset, limit),
+                "m_CustomData" => (self.m_custom_data).inspect_value(path, offset, limit),
+                "m_Bones" => (self.m_bones).inspect_value(path, offset, limit),
+                "m_SpriteID" => (self.m_sprite_id).inspect_value(path, offset, limit),
+                "m_Vertices" => (self.m_vertices).inspect_value(path, offset, limit),
+                "m_InternalID" => (self.m_internal_id).inspect_value(path, offset, limit),
+                "m_Indices" => (self.m_indices).inspect_value(path, offset, limit),
+                "m_Edges" => (self.m_edges).inspect_value(path, offset, limit),
+                "m_Weights" => (self.m_weights).inspect_value(path, offset, limit),
+                "m_SecondaryTextures" => {
+                    (self.m_secondary_textures).inspect_value(path, offset, limit)
+                }
+                "m_NameFileIdTable" => {
+                    (self.m_name_file_id_table).inspect_value(path, offset, limit)
+                }
+                "m_SpriteCustomMetadata" => {
+                    (self.m_sprite_custom_metadata).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_sprites).inspect_value(path, offset, limit))
+                .map(|v| ("m_Sprites".to_string(), v)),
+            ((self.m_outline).inspect_value(path, offset, limit))
+                .map(|v| ("m_Outline".to_string(), v)),
+            ((self.m_physics_shape).inspect_value(path, offset, limit))
+                .map(|v| ("m_PhysicsShape".to_string(), v)),
+            ((self.m_custom_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_CustomData".to_string(), v)),
+            ((self.m_bones).inspect_value(path, offset, limit)).map(|v| ("m_Bones".to_string(), v)),
+            ((self.m_sprite_id).inspect_value(path, offset, limit))
+                .map(|v| ("m_SpriteID".to_string(), v)),
+            ((self.m_vertices).inspect_value(path, offset, limit))
+                .map(|v| ("m_Vertices".to_string(), v)),
+            ((self.m_internal_id).inspect_value(path, offset, limit))
+                .map(|v| ("m_InternalID".to_string(), v)),
+            ((self.m_indices).inspect_value(path, offset, limit))
+                .map(|v| ("m_Indices".to_string(), v)),
+            ((self.m_edges).inspect_value(path, offset, limit)).map(|v| ("m_Edges".to_string(), v)),
+            ((self.m_weights).inspect_value(path, offset, limit))
+                .map(|v| ("m_Weights".to_string(), v)),
+            ((self.m_secondary_textures).inspect_value(path, offset, limit))
+                .map(|v| ("m_SecondaryTextures".to_string(), v)),
+            ((self.m_name_file_id_table).inspect_value(path, offset, limit))
+                .map(|v| ("m_NameFileIdTable".to_string(), v)),
+            ((self.m_sprite_custom_metadata).inspect_value(path, offset, limit))
+                .map(|v| ("m_SpriteCustomMetadata".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

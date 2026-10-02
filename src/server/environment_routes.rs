@@ -9,7 +9,7 @@ use axum::Json;
 use axum::extract::{Path as AxumPath, Query, State};
 use axum::http::{StatusCode, header};
 use serde::{Deserialize, Serialize};
-use unity_asset::{Environment, Loader};
+use unity_asset::{Environment, Loader, ParseFailure};
 use utoipa::{IntoParams, ToSchema};
 
 use super::dto::{ContainerEntryDto, ObjectDetail, ObjectDto, ObjectMeta, is_image_class};
@@ -81,6 +81,38 @@ pub struct ContainerListResponse {
 pub struct ObjectResponse {
     pub revision: u64,
     pub object: ObjectDto,
+}
+
+/// 解析失败条目（`ParseFailure` 的扁平投影，不适用的字段省略）。
+#[derive(Serialize, ToSchema)]
+pub struct FailureDto {
+    /// "object" / "file" / "container"。
+    pub kind: &'static str,
+    pub error: String,
+    /// 仅 object 失败：collection 下标。
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub collection: Option<usize>,
+    /// 仅 object 失败：path_id 十进制字符串（防 JS i64 精度丢失）。
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub path_id: Option<String>,
+    /// 仅 object 失败：class_id。
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub class_id: Option<i32>,
+    /// 仅 object 失败：class 名（CLI `class_name` 同款）。
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub class_name: Option<String>,
+    /// 仅 object 失败：捕获的原始序列化字节数（0 = 越界未捕获）。
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub data_len: Option<u64>,
+    /// 仅 file/container 失败：原始 node 名。
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+}
+
+#[derive(Serialize, ToSchema)]
+pub struct FailuresResponse {
+    pub revision: u64,
+    pub items: Vec<FailureDto>,
 }
 
 #[derive(Deserialize, IntoParams)]
@@ -478,11 +510,74 @@ pub async fn get_object(
     }))
 }
 
+/// 按字段路径请求检查视图的一页，路径是 JSON 编码的字符串数组。
+#[derive(Deserialize, IntoParams)]
+pub struct InspectQuery {
+    pub revision: Option<u64>,
+    /// 例如 ["m_FontData"] 或 ["m_Components","0","component"]。
+    pub path: String,
+    /// 数组/字节下标；字符串使用 Unicode 字符下标。
+    #[serde(default)]
+    pub offset: usize,
+    /// 每页 1..256 个元素/字节/字符，默认 256。
+    pub limit: Option<usize>,
+}
+
+#[derive(Serialize, ToSchema)]
+pub struct InspectResponse {
+    pub revision: u64,
+    pub value: serde_json::Value,
+}
+
+#[utoipa::path(
+    get, path = "/environment/collections/{cid}/objects/{pid}/inspect", tag = "object",
+    operation_id = "inspect_environment_object",
+    params(("cid" = usize, Path), ("pid" = String, Path), InspectQuery),
+    responses((status = 200, body = InspectResponse), (status = 400, body = ApiErrorBody),
+        (status = 404, body = ApiErrorBody), (status = 409, body = ApiErrorBody))
+)]
+pub async fn inspect_object(
+    State(state): State<AppState>,
+    AxumPath((collection_id, path_id)): AxumPath<(usize, String)>,
+    Query(query): Query<InspectQuery>,
+) -> Result<Json<InspectResponse>, ApiError> {
+    let path_id = super::routes::parse_path_id(&path_id)?;
+    let path: Vec<String> = serde_json::from_str(&query.path)
+        .map_err(|_| ApiError::BadRequest("path 必须是 JSON 字符串数组".into()))?;
+    let limit = query.limit.unwrap_or(256);
+    if !(1..=256).contains(&limit) || path.len() > 64 {
+        return Err(ApiError::BadRequest(
+            "limit 必须为 1..256，路径深度不能超过 64".into(),
+        ));
+    }
+    tokio::task::spawn_blocking(move || {
+        let active = state.active.read();
+        // 在实际访问对象的同一把锁下校验，切换项目不能复用旧句柄。
+        check_revision(active.revision, query.revision)?;
+        let collection = active
+            .environment
+            .collection_id(collection_id)
+            .ok_or(ApiError::NotFound)?;
+        let object = active
+            .environment
+            .resolve_local(collection, path_id)
+            .ok_or(ApiError::NotFound)?;
+        let value = super::dto::inspect_parsed(&object.object, &path, query.offset, limit)
+            .ok_or(ApiError::NotFound)?;
+        Ok(Json(InspectResponse {
+            revision: active.revision,
+            value,
+        }))
+    })
+    .await
+    .map_err(|error| ApiError::Internal(format!("worker join 失败: {error}")))?
+}
+
 #[cfg(feature = "export")]
 #[utoipa::path(
     get, path = "/environment/collections/{cid}/objects/{pid}/png", tag = "object", operation_id = "export_environment_object_png",
     params(("cid" = usize, Path), ("pid" = String, Path, description = "path_id 十进制字符串"), RevisionQuery),
-    responses((status = 200, content_type = "image/png"), (status = 400, body = ApiErrorBody), (status = 404, body = ApiErrorBody), (status = 422, body = ApiErrorBody))
+    responses((status = 200, content_type = "image/png"), (status = 400, body = ApiErrorBody), (status = 404, body = ApiErrorBody), (status = 409, body = ApiErrorBody), (status = 422, body = ApiErrorBody))
 )]
 pub async fn export_object_png(
     State(state): State<AppState>,
@@ -491,36 +586,28 @@ pub async fn export_object_png(
 ) -> Result<axum::response::Response, ApiError> {
     use unity_asset::{DecodeOptions, DecodedImage, ParsedObject};
     let path_id = super::routes::parse_path_id(&path_id)?;
-    {
-        let active = state.active.read();
-        check_revision(active.revision, revision.revision)?;
-        active
-            .environment
-            .collection_id(collection_id)
-            .ok_or(ApiError::NotFound)?;
-    }
     let active = state.active.clone();
-    let decoded = tokio::task::spawn_blocking(move || -> Result<DecodedImage, String> {
+    let decoded = tokio::task::spawn_blocking(move || -> Result<DecodedImage, ApiError> {
         let active = active.read();
+        check_revision(active.revision, revision.revision)?;
         let collection = active
             .environment
             .collection_id(collection_id)
-            .ok_or_else(|| "collection 不存在".to_string())?;
+            .ok_or(ApiError::NotFound)?;
         let object = active
             .environment
             .resolve_local(collection, path_id)
-            .ok_or_else(|| "object 不存在".to_string())?;
+            .ok_or(ApiError::NotFound)?;
         if !matches!(&object.object, ParsedObject::Typed(value) if is_image_class(value)) {
-            return Err("对象不是 Texture2D/Sprite".into());
+            return Err(ApiError::Export("对象不是 Texture2D/Sprite".into()));
         }
         active
             .environment
             .decode_image(object, &DecodeOptions::default())
-            .map_err(|error| error.to_string())
+            .map_err(|error| ApiError::Export(error.to_string()))
     })
     .await
-    .map_err(|error| ApiError::Internal(format!("worker join 失败: {error}")))?
-    .map_err(ApiError::Export)?;
+    .map_err(|error| ApiError::Internal(format!("worker join 失败: {error}")))??;
     let mut bytes = Vec::with_capacity(decoded.rgba.len() / 2);
     decoded
         .write_png(&mut bytes)
@@ -546,7 +633,8 @@ struct ExportedFile {
 }
 
 /// 导出对象的原始数据:AudioClip(WAV/Ogg/tracker,支持多 sample 索引)与
-/// TextAsset / Font / VideoClip / MovieTexture。响应头带
+/// TextAsset / Font / VideoClip / MovieTexture;**其余任意对象兜底 dump 成
+/// JSON**(typed 经 codegen ToValue,dynamic/mono 经 TypeTree Value)。响应头带
 /// `X-Export-Extension` / `X-Sample-Count` / `Content-Disposition`。
 #[cfg(feature = "export")]
 #[utoipa::path(
@@ -567,104 +655,109 @@ pub async fn export_object_file(
     use unity_asset::ParsedObject;
 
     let path_id = super::routes::parse_path_id(&path_id)?;
-    {
-        let active = state.active.read();
+    let active = state.active.clone();
+    let sample_index = query.sample.unwrap_or(0);
+    let exported = tokio::task::spawn_blocking(move || -> Result<ExportedFile, ApiError> {
+        let active = active.read();
         check_revision(active.revision, query.revision)?;
-        active
+        let collection = active
             .environment
             .collection_id(collection_id)
             .ok_or(ApiError::NotFound)?;
-    }
-    let active = state.active.clone();
-    let sample_index = query.sample.unwrap_or(0);
-    let exported =
-        tokio::task::spawn_blocking(move || -> Result<ExportedFile, String> {
-            let active = active.read();
-            let collection = active
-                .environment
-                .collection_id(collection_id)
-                .ok_or_else(|| "collection 不存在".to_string())?;
-            let object = active
-                .environment
-                .resolve_local(collection, path_id)
-                .ok_or_else(|| "object 不存在".to_string())?;
-            let name = super::dto::ObjectMeta::from_obj(path_id, object).name;
-            let name = crate::sanitize_filename(&name);
-            match &object.object {
-                ParsedObject::Typed(UnityObject::AudioClip(_)) => {
-                    let samples =
-                        unity_asset::audio_export::decode_audio(&active.environment, object)
-                            .map_err(|error| error.to_string())?;
-                    if samples.is_empty() {
-                        return Err("FSB5 不含 sample".into());
-                    }
-                    let count = samples.len();
-                    let sample = samples
-                        .into_iter()
-                        .nth(sample_index)
-                        .ok_or_else(|| format!("sample 索引 {sample_index} 超出范围(共 {count})"))?;
-                    // 多 sample 时文件名带 FSB name table 的 sample 名,避免覆盖。
-                    let name = if count > 1 {
-                        let suffix = sample
-                            .sample_name
-                            .as_deref()
-                            .filter(|s| !s.is_empty())
-                            .map(crate::sanitize_filename)
-                            .unwrap_or_else(|| format!("sample_{sample_index}"));
-                        format!("{name}_{suffix}")
-                    } else {
-                        name
-                    };
-                    Ok(ExportedFile {
-                        extension: sample.extension.to_string(),
-                        name,
-                        sample_count: count,
-                        data: sample.data,
-                    })
+        let object = active
+            .environment
+            .resolve_local(collection, path_id)
+            .ok_or(ApiError::NotFound)?;
+        let name = super::dto::ObjectMeta::from_obj(path_id, object).name;
+        let name = crate::sanitize_filename(&name);
+        match &object.object {
+            ParsedObject::Typed(UnityObject::AudioClip(_)) => {
+                let samples = unity_asset::audio_export::decode_audio(&active.environment, object)
+                    .map_err(|error| ApiError::Export(error.to_string()))?;
+                if samples.is_empty() {
+                    return Err(ApiError::Export("FSB5 不含 sample".into()));
                 }
-                // 二进制 m_script 的 TextAsset 落在 Dynamic（typed parse 因非法
-                // UTF-8 失败回退 TypeTree），export_raw 同样支持——对齐 AssetRipper
-                // 按原始字节导出的语义。
-                ParsedObject::Typed(
-                    UnityObject::TextAsset(_)
-                    | UnityObject::Font(_)
-                    | UnityObject::VideoClip(_)
-                    | UnityObject::MovieTexture(_),
-                ) => {
-                    let raw = unity_asset::misc_export::export_raw(&active.environment, object)
-                        .map_err(|error| error.to_string())?;
-                    Ok(ExportedFile {
-                        extension: sanitize_export_extension(&raw.extension),
-                        name,
-                        sample_count: 1,
-                        data: raw.data,
-                    })
-                }
-                ParsedObject::Dynamic(_)
-                    if object.class_id
-                        == unity_asset::ClassId::from(generated::ClassIDType::TextAsset) =>
-                {
-                    let raw = unity_asset::misc_export::export_raw(&active.environment, object)
-                        .map_err(|error| error.to_string())?;
-                    Ok(ExportedFile {
-                        extension: sanitize_export_extension(&raw.extension),
-                        name,
-                        sample_count: 1,
-                        data: raw.data,
-                    })
-                }
-                _ => Err("对象不是 AudioClip/TextAsset/Font/VideoClip/MovieTexture".into()),
+                let count = samples.len();
+                let sample = samples.into_iter().nth(sample_index).ok_or_else(|| {
+                    ApiError::Export(format!("sample 索引 {sample_index} 超出范围(共 {count})"))
+                })?;
+                // 多 sample 时文件名带 FSB name table 的 sample 名,避免覆盖。
+                let name = if count > 1 {
+                    let suffix = sample
+                        .sample_name
+                        .as_deref()
+                        .filter(|s| !s.is_empty())
+                        .map(crate::sanitize_filename)
+                        .unwrap_or_else(|| format!("sample_{sample_index}"));
+                    format!("{name}_{suffix}")
+                } else {
+                    name
+                };
+                Ok(ExportedFile {
+                    extension: sample.extension.to_string(),
+                    name,
+                    sample_count: count,
+                    data: sample.data,
+                })
             }
-        })
-        .await
-        .map_err(|error| ApiError::Internal(format!("worker join 失败: {error}")))?
-        .map_err(ApiError::Export)?;
+            // 二进制 m_script 的 TextAsset 落在 Dynamic（typed parse 因非法
+            // UTF-8 失败回退 TypeTree），export_raw 同样支持——对齐 AssetRipper
+            // 按原始字节导出的语义。
+            ParsedObject::Typed(
+                UnityObject::TextAsset(_)
+                | UnityObject::Font(_)
+                | UnityObject::VideoClip(_)
+                | UnityObject::MovieTexture(_),
+            ) => {
+                let raw = unity_asset::misc_export::export_raw(&active.environment, object)
+                    .map_err(|error| ApiError::Export(error.to_string()))?;
+                Ok(ExportedFile {
+                    extension: sanitize_export_extension(&raw.extension),
+                    name,
+                    sample_count: 1,
+                    data: raw.data,
+                })
+            }
+            ParsedObject::Dynamic(_)
+                if object.class_id
+                    == unity_asset::ClassId::from(generated::ClassIDType::TextAsset) =>
+            {
+                let raw = unity_asset::misc_export::export_raw(&active.environment, object)
+                    .map_err(|error| ApiError::Export(error.to_string()))?;
+                Ok(ExportedFile {
+                    extension: sanitize_export_extension(&raw.extension),
+                    name,
+                    sample_count: 1,
+                    data: raw.data,
+                })
+            }
+            // 兜底：其余任意对象 → JSON dump（对齐 AssetRipper「JSON 是默认
+            // handler，专用 handler 覆盖之」；typed 经 codegen ToValue，dynamic/
+            // mono 本就是 Value）。非有限浮点/字节 base64 的规则见
+            // dto::value_to_json_full。
+            _ => {
+                let value = unity_asset::json_export::dump_object(object);
+                let jv = super::dto::value_to_json_full(&value);
+                let data = serde_json::to_vec_pretty(&jv)
+                    .map_err(|error| ApiError::Export(format!("JSON 序列化失败: {error}")))?;
+                Ok(ExportedFile {
+                    extension: "json".to_string(),
+                    name,
+                    sample_count: 1,
+                    data,
+                })
+            }
+        }
+    })
+    .await
+    .map_err(|error| ApiError::Internal(format!("worker join 失败: {error}")))??;
     let mime = export_mime(&exported.extension);
     let mut response = axum::response::Response::new(exported.data.into());
     let headers = response.headers_mut();
     headers.insert(
         header::CONTENT_TYPE,
-        mime.parse().map_err(|_| ApiError::Internal("MIME 解析失败".into()))?,
+        mime.parse()
+            .map_err(|_| ApiError::Internal("MIME 解析失败".into()))?,
     );
     // Content-Disposition：ASCII fallback + RFC 5987 filename*。
     // `sanitize_filename` 不剥非 ASCII，而 `HeaderValue::from_str` 拒绝非 ASCII 字节，
@@ -680,14 +773,9 @@ pub async fn export_object_file(
             }
         })
         .collect();
-    let encoded: String = file_name
-        .bytes()
-        .map(|b| format!("%{b:02X}"))
-        .collect();
-    if let Ok(value) = format!(
-        "inline; filename=\"{ascii_fallback}\"; filename*=UTF-8''{encoded}"
-    )
-    .parse()
+    let encoded: String = file_name.bytes().map(|b| format!("%{b:02X}")).collect();
+    if let Ok(value) =
+        format!("inline; filename=\"{ascii_fallback}\"; filename*=UTF-8''{encoded}").parse()
     {
         headers.insert(header::CONTENT_DISPOSITION, value);
     }
@@ -725,5 +813,178 @@ fn export_mime(ext: &str) -> &'static str {
         "webm" => "video/webm",
         "ogv" => "video/ogg",
         _ => "application/octet-stream",
+    }
+}
+
+/// 解析失败列表（object/file/container 三类，`FailureDto` 扁平投影）。
+/// object 类条目可经 `/environment/collections/{cid}/objects/{pid}/raw` 下载原始字节。
+#[utoipa::path(
+    get, path = "/environment/failures", tag = "environment", operation_id = "list_environment_failures",
+    params(RevisionQuery),
+    responses((status = 200, body = FailuresResponse), (status = 409, body = ApiErrorBody))
+)]
+pub async fn list_failures(
+    State(state): State<AppState>,
+    Query(query): Query<RevisionQuery>,
+) -> Result<Json<FailuresResponse>, ApiError> {
+    let active = state.active.read();
+    check_revision(active.revision, query.revision)?;
+    let items = active
+        .environment
+        .failures()
+        .iter()
+        .map(failure_dto)
+        .collect();
+    Ok(Json(FailuresResponse {
+        revision: active.revision,
+        items,
+    }))
+}
+
+/// `ParseFailure` → 扁平 DTO（抽出为纯函数便于单测：fixtures 全部解析成功，
+/// 经 HTTP 造不出非空列表——顶层损坏文件在 `Loader::build` 即 Err 422，
+/// 不会进 Environment failures）。
+fn failure_dto(failure: &ParseFailure) -> FailureDto {
+    match failure {
+        ParseFailure::Object {
+            collection,
+            path_id,
+            class_id,
+            error,
+            data,
+        } => FailureDto {
+            kind: "object",
+            error: error.to_string(),
+            collection: Some(collection.to_index()),
+            path_id: Some(path_id.to_string()),
+            class_id: Some(class_id.get()),
+            class_name: Some(crate::class_name(*class_id)),
+            data_len: Some(data.len() as u64),
+            name: None,
+        },
+        ParseFailure::File { name, error } => FailureDto {
+            kind: "file",
+            error: error.to_string(),
+            collection: None,
+            path_id: None,
+            class_id: None,
+            class_name: None,
+            data_len: None,
+            name: Some(name.clone()),
+        },
+        ParseFailure::Container { name, error } => FailureDto {
+            kind: "container",
+            error: error.to_string(),
+            collection: None,
+            path_id: None,
+            class_id: None,
+            class_name: None,
+            data_len: None,
+            name: Some(name.clone()),
+        },
+    }
+}
+
+/// 下载解析失败对象捕获的原始序列化字节（`ParseFailure::Object.data`，
+/// CLI `export --json` 的 `.bin` 兜底同源）。非失败对象 → 404。
+#[utoipa::path(
+    get, path = "/environment/collections/{cid}/objects/{pid}/raw", tag = "object", operation_id = "export_environment_object_raw",
+    params(("cid" = usize, Path), ("pid" = String, Path, description = "path_id 十进制字符串"), RevisionQuery),
+    responses(
+        (status = 200, description = "原始序列化字节;头 X-Export-Extension 恒为 bin", content_type = "application/octet-stream"),
+        (status = 400, body = ApiErrorBody), (status = 404, body = ApiErrorBody), (status = 409, body = ApiErrorBody)
+    )
+)]
+pub async fn export_object_raw(
+    State(state): State<AppState>,
+    AxumPath((collection_id, path_id)): AxumPath<(usize, String)>,
+    Query(query): Query<RevisionQuery>,
+) -> Result<axum::response::Response, ApiError> {
+    let path_id = super::routes::parse_path_id(&path_id)?;
+    let active = state.active.read();
+    check_revision(active.revision, query.revision)?;
+    let failure = active
+        .environment
+        .failures()
+        .iter()
+        .find_map(|failure| match failure {
+            ParseFailure::Object {
+                collection,
+                path_id: pid,
+                class_id,
+                data,
+                ..
+            } if collection.to_index() == collection_id && *pid == path_id => {
+                Some((crate::class_name(*class_id), data))
+            }
+            _ => None,
+        })
+        .ok_or(ApiError::NotFound)?;
+    let (class_name, data) = failure;
+    // 文件名恒为 ASCII（class 名 + 十进制 pid），无需 RFC 5987 多段编码。
+    let file_name = format!("{class_name}_{path_id}.bin");
+    let mut response = axum::response::Response::new(data.clone().into());
+    let headers = response.headers_mut();
+    headers.insert(
+        header::CONTENT_TYPE,
+        "application/octet-stream"
+            .parse()
+            .map_err(|_| ApiError::Internal("MIME 解析失败".into()))?,
+    );
+    if let Ok(value) = format!("inline; filename=\"{file_name}\"").parse() {
+        headers.insert(header::CONTENT_DISPOSITION, value);
+    }
+    if let Ok(value) = "bin".parse() {
+        headers.insert("x-export-extension", value);
+    }
+    Ok(response)
+}
+
+#[cfg(test)]
+mod failure_dto_tests {
+    use super::*;
+
+    /// 三类 ParseFailure → 扁平 DTO 的映射（fixtures 全部解析成功，经 HTTP
+    /// 造不出非空列表——顶层损坏文件在 Loader::build 即 Err 422）。
+    #[test]
+    fn maps_all_three_kinds() {
+        let container = failure_dto(&ParseFailure::Container {
+            name: "CAB-x.assets".to_string(),
+            error: unity_asset::Error::Truncated {
+                reason: "container bad".into(),
+            },
+        });
+        assert_eq!(container.kind, "container");
+        assert_eq!(container.name.as_deref(), Some("CAB-x.assets"));
+        assert!(container.error.contains("container bad"));
+        assert!(container.collection.is_none());
+        assert!(container.path_id.is_none());
+        assert!(container.data_len.is_none());
+
+        let file = failure_dto(&ParseFailure::File {
+            name: "leaf.assets".to_string(),
+            error: unity_asset::Error::Truncated {
+                reason: "file bad".into(),
+            },
+        });
+        assert_eq!(file.kind, "file");
+        assert_eq!(file.name.as_deref(), Some("leaf.assets"));
+
+        let object = failure_dto(&ParseFailure::Object {
+            collection: unity_asset::CollectionId::from_index(2),
+            path_id: -123,
+            class_id: unity_asset::ClassId::new(49),
+            error: unity_asset::Error::Truncated {
+                reason: "object bad".into(),
+            },
+            data: vec![1, 2, 3],
+        });
+        assert_eq!(object.kind, "object");
+        assert_eq!(object.collection, Some(2));
+        assert_eq!(object.path_id.as_deref(), Some("-123"));
+        assert_eq!(object.class_id, Some(49));
+        assert_eq!(object.class_name.as_deref(), Some("TextAsset"));
+        assert_eq!(object.data_len, Some(3));
+        assert!(object.name.is_none());
     }
 }

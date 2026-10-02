@@ -36,6 +36,21 @@ impl crate::Parse for SerializedProgramMSubProgramsVariant {
         }
     }
 }
+
+impl crate::ToValue for SerializedProgramMSubProgramsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct SerializedProgram {
     pub m_sub_programs: SerializedProgramMSubProgramsVariant,
@@ -159,5 +174,62 @@ impl crate::Parse for SerializedProgram {
             m_parameter_blob_indices,
             m_serialized_keyword_state_mask,
         })
+    }
+}
+
+impl crate::ToValue for SerializedProgram {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_SubPrograms".to_string(), self.m_sub_programs.to_value())),
+            crate::opt_field("m_CommonParameters", &self.m_common_parameters),
+            crate::opt_field("m_PlayerSubPrograms", &self.m_player_sub_programs),
+            crate::opt_field("m_ParameterBlobIndices", &self.m_parameter_blob_indices),
+            crate::opt_field(
+                "m_SerializedKeywordStateMask",
+                &self.m_serialized_keyword_state_mask,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_SubPrograms" => (self.m_sub_programs).inspect_value(path, offset, limit),
+                "m_CommonParameters" => {
+                    (self.m_common_parameters).inspect_value(path, offset, limit)
+                }
+                "m_PlayerSubPrograms" => {
+                    (self.m_player_sub_programs).inspect_value(path, offset, limit)
+                }
+                "m_ParameterBlobIndices" => {
+                    (self.m_parameter_blob_indices).inspect_value(path, offset, limit)
+                }
+                "m_SerializedKeywordStateMask" => {
+                    (self.m_serialized_keyword_state_mask).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_sub_programs).inspect_value(path, offset, limit))
+                .map(|v| ("m_SubPrograms".to_string(), v)),
+            ((self.m_common_parameters).inspect_value(path, offset, limit))
+                .map(|v| ("m_CommonParameters".to_string(), v)),
+            ((self.m_player_sub_programs).inspect_value(path, offset, limit))
+                .map(|v| ("m_PlayerSubPrograms".to_string(), v)),
+            ((self.m_parameter_blob_indices).inspect_value(path, offset, limit))
+                .map(|v| ("m_ParameterBlobIndices".to_string(), v)),
+            ((self.m_serialized_keyword_state_mask).inspect_value(path, offset, limit))
+                .map(|v| ("m_SerializedKeywordStateMask".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

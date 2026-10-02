@@ -108,3 +108,89 @@ impl crate::Parse for LineParameters {
         })
     }
 }
+
+impl crate::ToValue for LineParameters {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            crate::opt_field("startWidth", &self.start_width),
+            crate::opt_field("widthMultiplier", &self.width_multiplier),
+            crate::opt_field("endWidth", &self.end_width),
+            crate::opt_field("widthCurve", &self.width_curve),
+            crate::opt_field("m_StartColor", &self.m_start_color),
+            crate::opt_field("colorGradient", &self.color_gradient),
+            crate::opt_field("m_EndColor", &self.m_end_color),
+            crate::opt_field("numCornerVertices", &self.num_corner_vertices),
+            crate::opt_field("numCapVertices", &self.num_cap_vertices),
+            crate::opt_field("alignment", &self.alignment),
+            crate::opt_field("textureMode", &self.texture_mode),
+            crate::opt_field("generateLightingData", &self.generate_lighting_data),
+            crate::opt_field("shadowBias", &self.shadow_bias),
+            crate::opt_field("textureScale", &self.texture_scale),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "startWidth" => (self.start_width).inspect_value(path, offset, limit),
+                "widthMultiplier" => (self.width_multiplier).inspect_value(path, offset, limit),
+                "endWidth" => (self.end_width).inspect_value(path, offset, limit),
+                "widthCurve" => (self.width_curve).inspect_value(path, offset, limit),
+                "m_StartColor" => (self.m_start_color).inspect_value(path, offset, limit),
+                "colorGradient" => (self.color_gradient).inspect_value(path, offset, limit),
+                "m_EndColor" => (self.m_end_color).inspect_value(path, offset, limit),
+                "numCornerVertices" => {
+                    (self.num_corner_vertices).inspect_value(path, offset, limit)
+                }
+                "numCapVertices" => (self.num_cap_vertices).inspect_value(path, offset, limit),
+                "alignment" => (self.alignment).inspect_value(path, offset, limit),
+                "textureMode" => (self.texture_mode).inspect_value(path, offset, limit),
+                "generateLightingData" => {
+                    (self.generate_lighting_data).inspect_value(path, offset, limit)
+                }
+                "shadowBias" => (self.shadow_bias).inspect_value(path, offset, limit),
+                "textureScale" => (self.texture_scale).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.start_width).inspect_value(path, offset, limit))
+                .map(|v| ("startWidth".to_string(), v)),
+            ((self.width_multiplier).inspect_value(path, offset, limit))
+                .map(|v| ("widthMultiplier".to_string(), v)),
+            ((self.end_width).inspect_value(path, offset, limit))
+                .map(|v| ("endWidth".to_string(), v)),
+            ((self.width_curve).inspect_value(path, offset, limit))
+                .map(|v| ("widthCurve".to_string(), v)),
+            ((self.m_start_color).inspect_value(path, offset, limit))
+                .map(|v| ("m_StartColor".to_string(), v)),
+            ((self.color_gradient).inspect_value(path, offset, limit))
+                .map(|v| ("colorGradient".to_string(), v)),
+            ((self.m_end_color).inspect_value(path, offset, limit))
+                .map(|v| ("m_EndColor".to_string(), v)),
+            ((self.num_corner_vertices).inspect_value(path, offset, limit))
+                .map(|v| ("numCornerVertices".to_string(), v)),
+            ((self.num_cap_vertices).inspect_value(path, offset, limit))
+                .map(|v| ("numCapVertices".to_string(), v)),
+            ((self.alignment).inspect_value(path, offset, limit))
+                .map(|v| ("alignment".to_string(), v)),
+            ((self.texture_mode).inspect_value(path, offset, limit))
+                .map(|v| ("textureMode".to_string(), v)),
+            ((self.generate_lighting_data).inspect_value(path, offset, limit))
+                .map(|v| ("generateLightingData".to_string(), v)),
+            ((self.shadow_bias).inspect_value(path, offset, limit))
+                .map(|v| ("shadowBias".to_string(), v)),
+            ((self.texture_scale).inspect_value(path, offset, limit))
+                .map(|v| ("textureScale".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

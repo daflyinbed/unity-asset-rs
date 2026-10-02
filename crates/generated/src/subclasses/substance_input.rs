@@ -36,6 +36,21 @@ impl crate::Parse for SubstanceInputComponentLabelsVariant {
     }
 }
 
+impl crate::ToValue for SubstanceInputComponentLabelsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：SubstanceInputEnumValuesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum SubstanceInputEnumValuesVariant {
@@ -65,6 +80,21 @@ impl crate::Parse for SubstanceInputEnumValuesVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for SubstanceInputEnumValuesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -164,5 +194,93 @@ impl crate::Parse for SubstanceInput {
             altered_textures_uid: altered_textures_uid.unwrap(),
             enum_values: enum_values.unwrap(),
         })
+    }
+}
+
+impl crate::ToValue for SubstanceInput {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("name".to_string(), self.name.to_value())),
+            Some(("type".to_string(), self.r#type.to_value())),
+            crate::opt_field("group", &self.group),
+            crate::opt_field("label", &self.label),
+            Some(("value".to_string(), self.value.to_value())),
+            Some(("internalType".to_string(), self.internal_type.to_value())),
+            crate::opt_field("visibleIf", &self.visible_if),
+            Some(("internalIndex".to_string(), self.internal_index.to_value())),
+            Some(("minimum".to_string(), self.minimum.to_value())),
+            Some(("maximum".to_string(), self.maximum.to_value())),
+            crate::opt_field("internalIdentifier", &self.internal_identifier),
+            Some(("step".to_string(), self.step.to_value())),
+            Some(("flags".to_string(), self.flags.to_value())),
+            crate::opt_field("componentLabels", &self.component_labels),
+            Some((
+                "alteredTexturesUID".to_string(),
+                self.altered_textures_uid.to_value(),
+            )),
+            Some(("enumValues".to_string(), self.enum_values.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "name" => (self.name).inspect_value(path, offset, limit),
+                "type" => (self.r#type).inspect_value(path, offset, limit),
+                "group" => (self.group).inspect_value(path, offset, limit),
+                "label" => (self.label).inspect_value(path, offset, limit),
+                "value" => (self.value).inspect_value(path, offset, limit),
+                "internalType" => (self.internal_type).inspect_value(path, offset, limit),
+                "visibleIf" => (self.visible_if).inspect_value(path, offset, limit),
+                "internalIndex" => (self.internal_index).inspect_value(path, offset, limit),
+                "minimum" => (self.minimum).inspect_value(path, offset, limit),
+                "maximum" => (self.maximum).inspect_value(path, offset, limit),
+                "internalIdentifier" => {
+                    (self.internal_identifier).inspect_value(path, offset, limit)
+                }
+                "step" => (self.step).inspect_value(path, offset, limit),
+                "flags" => (self.flags).inspect_value(path, offset, limit),
+                "componentLabels" => (self.component_labels).inspect_value(path, offset, limit),
+                "alteredTexturesUID" => {
+                    (self.altered_textures_uid).inspect_value(path, offset, limit)
+                }
+                "enumValues" => (self.enum_values).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.name).inspect_value(path, offset, limit)).map(|v| ("name".to_string(), v)),
+            ((self.r#type).inspect_value(path, offset, limit)).map(|v| ("type".to_string(), v)),
+            ((self.group).inspect_value(path, offset, limit)).map(|v| ("group".to_string(), v)),
+            ((self.label).inspect_value(path, offset, limit)).map(|v| ("label".to_string(), v)),
+            ((self.value).inspect_value(path, offset, limit)).map(|v| ("value".to_string(), v)),
+            ((self.internal_type).inspect_value(path, offset, limit))
+                .map(|v| ("internalType".to_string(), v)),
+            ((self.visible_if).inspect_value(path, offset, limit))
+                .map(|v| ("visibleIf".to_string(), v)),
+            ((self.internal_index).inspect_value(path, offset, limit))
+                .map(|v| ("internalIndex".to_string(), v)),
+            ((self.minimum).inspect_value(path, offset, limit)).map(|v| ("minimum".to_string(), v)),
+            ((self.maximum).inspect_value(path, offset, limit)).map(|v| ("maximum".to_string(), v)),
+            ((self.internal_identifier).inspect_value(path, offset, limit))
+                .map(|v| ("internalIdentifier".to_string(), v)),
+            ((self.step).inspect_value(path, offset, limit)).map(|v| ("step".to_string(), v)),
+            ((self.flags).inspect_value(path, offset, limit)).map(|v| ("flags".to_string(), v)),
+            ((self.component_labels).inspect_value(path, offset, limit))
+                .map(|v| ("componentLabels".to_string(), v)),
+            ((self.altered_textures_uid).inspect_value(path, offset, limit))
+                .map(|v| ("alteredTexturesUID".to_string(), v)),
+            ((self.enum_values).inspect_value(path, offset, limit))
+                .map(|v| ("enumValues".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

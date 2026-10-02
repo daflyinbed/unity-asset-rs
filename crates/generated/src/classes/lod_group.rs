@@ -37,6 +37,21 @@ impl crate::Parse for LodGroupMLoDsVariant {
     }
 }
 
+impl crate::ToValue for LodGroupMLoDsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：LodGroupMEnabledVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum LodGroupMEnabledVariant {
@@ -60,6 +75,21 @@ impl crate::Parse for LodGroupMEnabledVariant {
     }
 }
 
+impl crate::ToValue for LodGroupMEnabledVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_0(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_0(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：LodGroupMAnimateCrossFadingVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum LodGroupMAnimateCrossFadingVariant {
@@ -79,6 +109,21 @@ impl crate::Parse for LodGroupMAnimateCrossFadingVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for LodGroupMAnimateCrossFadingVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2018_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2018_3(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -145,5 +190,85 @@ impl crate::Parse for LodGroup {
             m_last_lod_is_billboard,
             m_global_illumination_lod,
         })
+    }
+}
+
+impl crate::ToValue for LodGroup {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some((
+                "m_LocalReferencePoint".to_string(),
+                self.m_local_reference_point.to_value(),
+            )),
+            Some(("m_Size".to_string(), self.m_size.to_value())),
+            crate::opt_field(
+                "m_ScreenRelativeTransitionHeight",
+                &self.m_screen_relative_transition_height,
+            ),
+            Some(("m_LODs".to_string(), self.m_lo_ds.to_value())),
+            crate::opt_field("m_FadeMode", &self.m_fade_mode),
+            Some(("m_Enabled".to_string(), self.m_enabled.to_value())),
+            crate::opt_field("m_AnimateCrossFading", &self.m_animate_cross_fading),
+            crate::opt_field("m_LastLODIsBillboard", &self.m_last_lod_is_billboard),
+            crate::opt_field("m_GlobalIlluminationLOD", &self.m_global_illumination_lod),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_LocalReferencePoint" => {
+                    (self.m_local_reference_point).inspect_value(path, offset, limit)
+                }
+                "m_Size" => (self.m_size).inspect_value(path, offset, limit),
+                "m_ScreenRelativeTransitionHeight" => {
+                    (self.m_screen_relative_transition_height).inspect_value(path, offset, limit)
+                }
+                "m_LODs" => (self.m_lo_ds).inspect_value(path, offset, limit),
+                "m_FadeMode" => (self.m_fade_mode).inspect_value(path, offset, limit),
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "m_AnimateCrossFading" => {
+                    (self.m_animate_cross_fading).inspect_value(path, offset, limit)
+                }
+                "m_LastLODIsBillboard" => {
+                    (self.m_last_lod_is_billboard).inspect_value(path, offset, limit)
+                }
+                "m_GlobalIlluminationLOD" => {
+                    (self.m_global_illumination_lod).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_local_reference_point).inspect_value(path, offset, limit))
+                .map(|v| ("m_LocalReferencePoint".to_string(), v)),
+            ((self.m_size).inspect_value(path, offset, limit)).map(|v| ("m_Size".to_string(), v)),
+            ((self.m_screen_relative_transition_height).inspect_value(path, offset, limit))
+                .map(|v| ("m_ScreenRelativeTransitionHeight".to_string(), v)),
+            ((self.m_lo_ds).inspect_value(path, offset, limit)).map(|v| ("m_LODs".to_string(), v)),
+            ((self.m_fade_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_FadeMode".to_string(), v)),
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.m_animate_cross_fading).inspect_value(path, offset, limit))
+                .map(|v| ("m_AnimateCrossFading".to_string(), v)),
+            ((self.m_last_lod_is_billboard).inspect_value(path, offset, limit))
+                .map(|v| ("m_LastLODIsBillboard".to_string(), v)),
+            ((self.m_global_illumination_lod).inspect_value(path, offset, limit))
+                .map(|v| ("m_GlobalIlluminationLOD".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

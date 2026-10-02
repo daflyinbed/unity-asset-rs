@@ -25,6 +25,21 @@ impl crate::Parse for RenderSettingsMCustomReflectionVariant {
         }
     }
 }
+
+impl crate::ToValue for RenderSettingsMCustomReflectionVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2021_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2021_2(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct RenderSettings {
     pub m_fog: bool,
@@ -203,5 +218,201 @@ impl crate::Parse for RenderSettings {
             m_indirect_specular_color,
             m_use_radiance_ambient_probe,
         })
+    }
+}
+
+impl crate::ToValue for RenderSettings {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Fog".to_string(), self.m_fog.to_value())),
+            Some(("m_FogColor".to_string(), self.m_fog_color.to_value())),
+            Some(("m_FogMode".to_string(), self.m_fog_mode.to_value())),
+            Some(("m_FogDensity".to_string(), self.m_fog_density.to_value())),
+            Some((
+                "m_LinearFogStart".to_string(),
+                self.m_linear_fog_start.to_value(),
+            )),
+            Some((
+                "m_LinearFogEnd".to_string(),
+                self.m_linear_fog_end.to_value(),
+            )),
+            crate::opt_field("m_AmbientLight", &self.m_ambient_light),
+            crate::opt_field("m_AmbientSkyColor", &self.m_ambient_sky_color),
+            Some((
+                "m_SkyboxMaterial".to_string(),
+                self.m_skybox_material.to_value(),
+            )),
+            crate::opt_field("m_AmbientEquatorColor", &self.m_ambient_equator_color),
+            Some((
+                "m_HaloStrength".to_string(),
+                self.m_halo_strength.to_value(),
+            )),
+            crate::opt_field("m_AmbientGroundColor", &self.m_ambient_ground_color),
+            Some((
+                "m_FlareStrength".to_string(),
+                self.m_flare_strength.to_value(),
+            )),
+            crate::opt_field("m_AmbientIntensity", &self.m_ambient_intensity),
+            Some(("m_HaloTexture".to_string(), self.m_halo_texture.to_value())),
+            crate::opt_field("m_FlareFadeSpeed", &self.m_flare_fade_speed),
+            crate::opt_field("m_AmbientMode", &self.m_ambient_mode),
+            Some(("m_SpotCookie".to_string(), self.m_spot_cookie.to_value())),
+            crate::opt_field("m_SubtractiveShadowColor", &self.m_subtractive_shadow_color),
+            crate::opt_field("m_DefaultReflectionMode", &self.m_default_reflection_mode),
+            crate::opt_field(
+                "m_DefaultReflectionResolution",
+                &self.m_default_reflection_resolution,
+            ),
+            crate::opt_field("m_ReflectionBounces", &self.m_reflection_bounces),
+            crate::opt_field("m_ReflectionIntensity", &self.m_reflection_intensity),
+            crate::opt_field("m_CustomReflection", &self.m_custom_reflection),
+            crate::opt_field("m_AmbientProbe", &self.m_ambient_probe),
+            crate::opt_field("m_AmbientProbeInGamma", &self.m_ambient_probe_in_gamma),
+            crate::opt_field(
+                "m_GeneratedSkyboxReflection",
+                &self.m_generated_skybox_reflection,
+            ),
+            crate::opt_field("m_Sun", &self.m_sun),
+            crate::opt_field("m_IndirectSpecularColor", &self.m_indirect_specular_color),
+            crate::opt_field(
+                "m_UseRadianceAmbientProbe",
+                &self.m_use_radiance_ambient_probe,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Fog" => (self.m_fog).inspect_value(path, offset, limit),
+                "m_FogColor" => (self.m_fog_color).inspect_value(path, offset, limit),
+                "m_FogMode" => (self.m_fog_mode).inspect_value(path, offset, limit),
+                "m_FogDensity" => (self.m_fog_density).inspect_value(path, offset, limit),
+                "m_LinearFogStart" => (self.m_linear_fog_start).inspect_value(path, offset, limit),
+                "m_LinearFogEnd" => (self.m_linear_fog_end).inspect_value(path, offset, limit),
+                "m_AmbientLight" => (self.m_ambient_light).inspect_value(path, offset, limit),
+                "m_AmbientSkyColor" => {
+                    (self.m_ambient_sky_color).inspect_value(path, offset, limit)
+                }
+                "m_SkyboxMaterial" => (self.m_skybox_material).inspect_value(path, offset, limit),
+                "m_AmbientEquatorColor" => {
+                    (self.m_ambient_equator_color).inspect_value(path, offset, limit)
+                }
+                "m_HaloStrength" => (self.m_halo_strength).inspect_value(path, offset, limit),
+                "m_AmbientGroundColor" => {
+                    (self.m_ambient_ground_color).inspect_value(path, offset, limit)
+                }
+                "m_FlareStrength" => (self.m_flare_strength).inspect_value(path, offset, limit),
+                "m_AmbientIntensity" => {
+                    (self.m_ambient_intensity).inspect_value(path, offset, limit)
+                }
+                "m_HaloTexture" => (self.m_halo_texture).inspect_value(path, offset, limit),
+                "m_FlareFadeSpeed" => (self.m_flare_fade_speed).inspect_value(path, offset, limit),
+                "m_AmbientMode" => (self.m_ambient_mode).inspect_value(path, offset, limit),
+                "m_SpotCookie" => (self.m_spot_cookie).inspect_value(path, offset, limit),
+                "m_SubtractiveShadowColor" => {
+                    (self.m_subtractive_shadow_color).inspect_value(path, offset, limit)
+                }
+                "m_DefaultReflectionMode" => {
+                    (self.m_default_reflection_mode).inspect_value(path, offset, limit)
+                }
+                "m_DefaultReflectionResolution" => {
+                    (self.m_default_reflection_resolution).inspect_value(path, offset, limit)
+                }
+                "m_ReflectionBounces" => {
+                    (self.m_reflection_bounces).inspect_value(path, offset, limit)
+                }
+                "m_ReflectionIntensity" => {
+                    (self.m_reflection_intensity).inspect_value(path, offset, limit)
+                }
+                "m_CustomReflection" => {
+                    (self.m_custom_reflection).inspect_value(path, offset, limit)
+                }
+                "m_AmbientProbe" => (self.m_ambient_probe).inspect_value(path, offset, limit),
+                "m_AmbientProbeInGamma" => {
+                    (self.m_ambient_probe_in_gamma).inspect_value(path, offset, limit)
+                }
+                "m_GeneratedSkyboxReflection" => {
+                    (self.m_generated_skybox_reflection).inspect_value(path, offset, limit)
+                }
+                "m_Sun" => (self.m_sun).inspect_value(path, offset, limit),
+                "m_IndirectSpecularColor" => {
+                    (self.m_indirect_specular_color).inspect_value(path, offset, limit)
+                }
+                "m_UseRadianceAmbientProbe" => {
+                    (self.m_use_radiance_ambient_probe).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_fog).inspect_value(path, offset, limit)).map(|v| ("m_Fog".to_string(), v)),
+            ((self.m_fog_color).inspect_value(path, offset, limit))
+                .map(|v| ("m_FogColor".to_string(), v)),
+            ((self.m_fog_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_FogMode".to_string(), v)),
+            ((self.m_fog_density).inspect_value(path, offset, limit))
+                .map(|v| ("m_FogDensity".to_string(), v)),
+            ((self.m_linear_fog_start).inspect_value(path, offset, limit))
+                .map(|v| ("m_LinearFogStart".to_string(), v)),
+            ((self.m_linear_fog_end).inspect_value(path, offset, limit))
+                .map(|v| ("m_LinearFogEnd".to_string(), v)),
+            ((self.m_ambient_light).inspect_value(path, offset, limit))
+                .map(|v| ("m_AmbientLight".to_string(), v)),
+            ((self.m_ambient_sky_color).inspect_value(path, offset, limit))
+                .map(|v| ("m_AmbientSkyColor".to_string(), v)),
+            ((self.m_skybox_material).inspect_value(path, offset, limit))
+                .map(|v| ("m_SkyboxMaterial".to_string(), v)),
+            ((self.m_ambient_equator_color).inspect_value(path, offset, limit))
+                .map(|v| ("m_AmbientEquatorColor".to_string(), v)),
+            ((self.m_halo_strength).inspect_value(path, offset, limit))
+                .map(|v| ("m_HaloStrength".to_string(), v)),
+            ((self.m_ambient_ground_color).inspect_value(path, offset, limit))
+                .map(|v| ("m_AmbientGroundColor".to_string(), v)),
+            ((self.m_flare_strength).inspect_value(path, offset, limit))
+                .map(|v| ("m_FlareStrength".to_string(), v)),
+            ((self.m_ambient_intensity).inspect_value(path, offset, limit))
+                .map(|v| ("m_AmbientIntensity".to_string(), v)),
+            ((self.m_halo_texture).inspect_value(path, offset, limit))
+                .map(|v| ("m_HaloTexture".to_string(), v)),
+            ((self.m_flare_fade_speed).inspect_value(path, offset, limit))
+                .map(|v| ("m_FlareFadeSpeed".to_string(), v)),
+            ((self.m_ambient_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_AmbientMode".to_string(), v)),
+            ((self.m_spot_cookie).inspect_value(path, offset, limit))
+                .map(|v| ("m_SpotCookie".to_string(), v)),
+            ((self.m_subtractive_shadow_color).inspect_value(path, offset, limit))
+                .map(|v| ("m_SubtractiveShadowColor".to_string(), v)),
+            ((self.m_default_reflection_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_DefaultReflectionMode".to_string(), v)),
+            ((self.m_default_reflection_resolution).inspect_value(path, offset, limit))
+                .map(|v| ("m_DefaultReflectionResolution".to_string(), v)),
+            ((self.m_reflection_bounces).inspect_value(path, offset, limit))
+                .map(|v| ("m_ReflectionBounces".to_string(), v)),
+            ((self.m_reflection_intensity).inspect_value(path, offset, limit))
+                .map(|v| ("m_ReflectionIntensity".to_string(), v)),
+            ((self.m_custom_reflection).inspect_value(path, offset, limit))
+                .map(|v| ("m_CustomReflection".to_string(), v)),
+            ((self.m_ambient_probe).inspect_value(path, offset, limit))
+                .map(|v| ("m_AmbientProbe".to_string(), v)),
+            ((self.m_ambient_probe_in_gamma).inspect_value(path, offset, limit))
+                .map(|v| ("m_AmbientProbeInGamma".to_string(), v)),
+            ((self.m_generated_skybox_reflection).inspect_value(path, offset, limit))
+                .map(|v| ("m_GeneratedSkyboxReflection".to_string(), v)),
+            ((self.m_sun).inspect_value(path, offset, limit)).map(|v| ("m_Sun".to_string(), v)),
+            ((self.m_indirect_specular_color).inspect_value(path, offset, limit))
+                .map(|v| ("m_IndirectSpecularColor".to_string(), v)),
+            ((self.m_use_radiance_ambient_probe).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseRadianceAmbientProbe".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

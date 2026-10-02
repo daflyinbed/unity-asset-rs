@@ -28,6 +28,21 @@ impl crate::Parse for Physics2DSettingsMRaycastsHitTriggersVariant {
     }
 }
 
+impl crate::ToValue for Physics2DSettingsMRaycastsHitTriggersVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V4_5_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V4_5_3(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：Physics2DSettingsMLayerCollisionMatrixVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum Physics2DSettingsMLayerCollisionMatrixVariant {
@@ -61,6 +76,21 @@ impl crate::Parse for Physics2DSettingsMLayerCollisionMatrixVariant {
     }
 }
 
+impl crate::ToValue for Physics2DSettingsMLayerCollisionMatrixVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：Physics2DSettingsMChangeStopsCallbacksVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum Physics2DSettingsMChangeStopsCallbacksVariant {
@@ -84,6 +114,21 @@ impl crate::Parse for Physics2DSettingsMChangeStopsCallbacksVariant {
     }
 }
 
+impl crate::ToValue for Physics2DSettingsMChangeStopsCallbacksVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_6_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_6_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：Physics2DSettingsMCallbacksOnDisableVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum Physics2DSettingsMCallbacksOnDisableVariant {
@@ -103,6 +148,21 @@ impl crate::Parse for Physics2DSettingsMCallbacksOnDisableVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for Physics2DSettingsMCallbacksOnDisableVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_2(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -517,5 +577,263 @@ impl crate::Parse for Physics2DSettings {
             m_use_sub_step_contacts,
             m_physics_low_level_settings,
         })
+    }
+}
+
+impl crate::ToValue for Physics2DSettings {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Gravity".to_string(), self.m_gravity.to_value())),
+            Some((
+                "m_DefaultMaterial".to_string(),
+                self.m_default_material.to_value(),
+            )),
+            Some((
+                "m_VelocityIterations".to_string(),
+                self.m_velocity_iterations.to_value(),
+            )),
+            Some((
+                "m_PositionIterations".to_string(),
+                self.m_position_iterations.to_value(),
+            )),
+            crate::opt_field("m_RaycastsHitTriggers", &self.m_raycasts_hit_triggers),
+            crate::opt_field("m_VelocityThreshold", &self.m_velocity_threshold),
+            crate::opt_field("m_BounceThreshold", &self.m_bounce_threshold),
+            Some((
+                "m_LayerCollisionMatrix".to_string(),
+                self.m_layer_collision_matrix.to_value(),
+            )),
+            crate::opt_field("m_MaxLinearCorrection", &self.m_max_linear_correction),
+            crate::opt_field("m_MaxAngularCorrection", &self.m_max_angular_correction),
+            crate::opt_field("m_MaxTranslationSpeed", &self.m_max_translation_speed),
+            crate::opt_field("m_MaxRotationSpeed", &self.m_max_rotation_speed),
+            crate::opt_field("m_BaumgarteScale", &self.m_baumgarte_scale),
+            crate::opt_field(
+                "m_MinPenetrationForPenalty",
+                &self.m_min_penetration_for_penalty,
+            ),
+            crate::opt_field(
+                "m_BaumgarteTimeOfImpactScale",
+                &self.m_baumgarte_time_of_impact_scale,
+            ),
+            crate::opt_field("m_TimeToSleep", &self.m_time_to_sleep),
+            crate::opt_field("m_LinearSleepTolerance", &self.m_linear_sleep_tolerance),
+            crate::opt_field("m_AngularSleepTolerance", &self.m_angular_sleep_tolerance),
+            crate::opt_field("m_DefaultContactOffset", &self.m_default_contact_offset),
+            crate::opt_field("m_DeleteStopsCallbacks", &self.m_delete_stops_callbacks),
+            crate::opt_field("m_QueriesHitTriggers", &self.m_queries_hit_triggers),
+            crate::opt_field("m_AutoSimulation", &self.m_auto_simulation),
+            crate::opt_field("m_JobOptions", &self.m_job_options),
+            crate::opt_field("m_ContactThreshold", &self.m_contact_threshold),
+            crate::opt_field(
+                "m_RaycastsStartInColliders",
+                &self.m_raycasts_start_in_colliders,
+            ),
+            crate::opt_field(
+                "m_QueriesStartInColliders",
+                &self.m_queries_start_in_colliders,
+            ),
+            crate::opt_field("m_SimulationMode", &self.m_simulation_mode),
+            crate::opt_field("m_ChangeStopsCallbacks", &self.m_change_stops_callbacks),
+            crate::opt_field("m_SimulationLayers", &self.m_simulation_layers),
+            crate::opt_field("m_CallbacksOnDisable", &self.m_callbacks_on_disable),
+            crate::opt_field("m_MaxSubStepCount", &self.m_max_sub_step_count),
+            crate::opt_field("m_MinSubStepFPS", &self.m_min_sub_step_fps),
+            crate::opt_field("m_AutoSyncTransforms", &self.m_auto_sync_transforms),
+            crate::opt_field(
+                "m_ReuseCollisionCallbacks",
+                &self.m_reuse_collision_callbacks,
+            ),
+            crate::opt_field("m_UseSubStepping", &self.m_use_sub_stepping),
+            crate::opt_field("m_UseSubStepContacts", &self.m_use_sub_step_contacts),
+            crate::opt_field(
+                "m_PhysicsLowLevelSettings",
+                &self.m_physics_low_level_settings,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Gravity" => (self.m_gravity).inspect_value(path, offset, limit),
+                "m_DefaultMaterial" => (self.m_default_material).inspect_value(path, offset, limit),
+                "m_VelocityIterations" => {
+                    (self.m_velocity_iterations).inspect_value(path, offset, limit)
+                }
+                "m_PositionIterations" => {
+                    (self.m_position_iterations).inspect_value(path, offset, limit)
+                }
+                "m_RaycastsHitTriggers" => {
+                    (self.m_raycasts_hit_triggers).inspect_value(path, offset, limit)
+                }
+                "m_VelocityThreshold" => {
+                    (self.m_velocity_threshold).inspect_value(path, offset, limit)
+                }
+                "m_BounceThreshold" => (self.m_bounce_threshold).inspect_value(path, offset, limit),
+                "m_LayerCollisionMatrix" => {
+                    (self.m_layer_collision_matrix).inspect_value(path, offset, limit)
+                }
+                "m_MaxLinearCorrection" => {
+                    (self.m_max_linear_correction).inspect_value(path, offset, limit)
+                }
+                "m_MaxAngularCorrection" => {
+                    (self.m_max_angular_correction).inspect_value(path, offset, limit)
+                }
+                "m_MaxTranslationSpeed" => {
+                    (self.m_max_translation_speed).inspect_value(path, offset, limit)
+                }
+                "m_MaxRotationSpeed" => {
+                    (self.m_max_rotation_speed).inspect_value(path, offset, limit)
+                }
+                "m_BaumgarteScale" => (self.m_baumgarte_scale).inspect_value(path, offset, limit),
+                "m_MinPenetrationForPenalty" => {
+                    (self.m_min_penetration_for_penalty).inspect_value(path, offset, limit)
+                }
+                "m_BaumgarteTimeOfImpactScale" => {
+                    (self.m_baumgarte_time_of_impact_scale).inspect_value(path, offset, limit)
+                }
+                "m_TimeToSleep" => (self.m_time_to_sleep).inspect_value(path, offset, limit),
+                "m_LinearSleepTolerance" => {
+                    (self.m_linear_sleep_tolerance).inspect_value(path, offset, limit)
+                }
+                "m_AngularSleepTolerance" => {
+                    (self.m_angular_sleep_tolerance).inspect_value(path, offset, limit)
+                }
+                "m_DefaultContactOffset" => {
+                    (self.m_default_contact_offset).inspect_value(path, offset, limit)
+                }
+                "m_DeleteStopsCallbacks" => {
+                    (self.m_delete_stops_callbacks).inspect_value(path, offset, limit)
+                }
+                "m_QueriesHitTriggers" => {
+                    (self.m_queries_hit_triggers).inspect_value(path, offset, limit)
+                }
+                "m_AutoSimulation" => (self.m_auto_simulation).inspect_value(path, offset, limit),
+                "m_JobOptions" => (self.m_job_options).inspect_value(path, offset, limit),
+                "m_ContactThreshold" => {
+                    (self.m_contact_threshold).inspect_value(path, offset, limit)
+                }
+                "m_RaycastsStartInColliders" => {
+                    (self.m_raycasts_start_in_colliders).inspect_value(path, offset, limit)
+                }
+                "m_QueriesStartInColliders" => {
+                    (self.m_queries_start_in_colliders).inspect_value(path, offset, limit)
+                }
+                "m_SimulationMode" => (self.m_simulation_mode).inspect_value(path, offset, limit),
+                "m_ChangeStopsCallbacks" => {
+                    (self.m_change_stops_callbacks).inspect_value(path, offset, limit)
+                }
+                "m_SimulationLayers" => {
+                    (self.m_simulation_layers).inspect_value(path, offset, limit)
+                }
+                "m_CallbacksOnDisable" => {
+                    (self.m_callbacks_on_disable).inspect_value(path, offset, limit)
+                }
+                "m_MaxSubStepCount" => {
+                    (self.m_max_sub_step_count).inspect_value(path, offset, limit)
+                }
+                "m_MinSubStepFPS" => (self.m_min_sub_step_fps).inspect_value(path, offset, limit),
+                "m_AutoSyncTransforms" => {
+                    (self.m_auto_sync_transforms).inspect_value(path, offset, limit)
+                }
+                "m_ReuseCollisionCallbacks" => {
+                    (self.m_reuse_collision_callbacks).inspect_value(path, offset, limit)
+                }
+                "m_UseSubStepping" => (self.m_use_sub_stepping).inspect_value(path, offset, limit),
+                "m_UseSubStepContacts" => {
+                    (self.m_use_sub_step_contacts).inspect_value(path, offset, limit)
+                }
+                "m_PhysicsLowLevelSettings" => {
+                    (self.m_physics_low_level_settings).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_gravity).inspect_value(path, offset, limit))
+                .map(|v| ("m_Gravity".to_string(), v)),
+            ((self.m_default_material).inspect_value(path, offset, limit))
+                .map(|v| ("m_DefaultMaterial".to_string(), v)),
+            ((self.m_velocity_iterations).inspect_value(path, offset, limit))
+                .map(|v| ("m_VelocityIterations".to_string(), v)),
+            ((self.m_position_iterations).inspect_value(path, offset, limit))
+                .map(|v| ("m_PositionIterations".to_string(), v)),
+            ((self.m_raycasts_hit_triggers).inspect_value(path, offset, limit))
+                .map(|v| ("m_RaycastsHitTriggers".to_string(), v)),
+            ((self.m_velocity_threshold).inspect_value(path, offset, limit))
+                .map(|v| ("m_VelocityThreshold".to_string(), v)),
+            ((self.m_bounce_threshold).inspect_value(path, offset, limit))
+                .map(|v| ("m_BounceThreshold".to_string(), v)),
+            ((self.m_layer_collision_matrix).inspect_value(path, offset, limit))
+                .map(|v| ("m_LayerCollisionMatrix".to_string(), v)),
+            ((self.m_max_linear_correction).inspect_value(path, offset, limit))
+                .map(|v| ("m_MaxLinearCorrection".to_string(), v)),
+            ((self.m_max_angular_correction).inspect_value(path, offset, limit))
+                .map(|v| ("m_MaxAngularCorrection".to_string(), v)),
+            ((self.m_max_translation_speed).inspect_value(path, offset, limit))
+                .map(|v| ("m_MaxTranslationSpeed".to_string(), v)),
+            ((self.m_max_rotation_speed).inspect_value(path, offset, limit))
+                .map(|v| ("m_MaxRotationSpeed".to_string(), v)),
+            ((self.m_baumgarte_scale).inspect_value(path, offset, limit))
+                .map(|v| ("m_BaumgarteScale".to_string(), v)),
+            ((self.m_min_penetration_for_penalty).inspect_value(path, offset, limit))
+                .map(|v| ("m_MinPenetrationForPenalty".to_string(), v)),
+            ((self.m_baumgarte_time_of_impact_scale).inspect_value(path, offset, limit))
+                .map(|v| ("m_BaumgarteTimeOfImpactScale".to_string(), v)),
+            ((self.m_time_to_sleep).inspect_value(path, offset, limit))
+                .map(|v| ("m_TimeToSleep".to_string(), v)),
+            ((self.m_linear_sleep_tolerance).inspect_value(path, offset, limit))
+                .map(|v| ("m_LinearSleepTolerance".to_string(), v)),
+            ((self.m_angular_sleep_tolerance).inspect_value(path, offset, limit))
+                .map(|v| ("m_AngularSleepTolerance".to_string(), v)),
+            ((self.m_default_contact_offset).inspect_value(path, offset, limit))
+                .map(|v| ("m_DefaultContactOffset".to_string(), v)),
+            ((self.m_delete_stops_callbacks).inspect_value(path, offset, limit))
+                .map(|v| ("m_DeleteStopsCallbacks".to_string(), v)),
+            ((self.m_queries_hit_triggers).inspect_value(path, offset, limit))
+                .map(|v| ("m_QueriesHitTriggers".to_string(), v)),
+            ((self.m_auto_simulation).inspect_value(path, offset, limit))
+                .map(|v| ("m_AutoSimulation".to_string(), v)),
+            ((self.m_job_options).inspect_value(path, offset, limit))
+                .map(|v| ("m_JobOptions".to_string(), v)),
+            ((self.m_contact_threshold).inspect_value(path, offset, limit))
+                .map(|v| ("m_ContactThreshold".to_string(), v)),
+            ((self.m_raycasts_start_in_colliders).inspect_value(path, offset, limit))
+                .map(|v| ("m_RaycastsStartInColliders".to_string(), v)),
+            ((self.m_queries_start_in_colliders).inspect_value(path, offset, limit))
+                .map(|v| ("m_QueriesStartInColliders".to_string(), v)),
+            ((self.m_simulation_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_SimulationMode".to_string(), v)),
+            ((self.m_change_stops_callbacks).inspect_value(path, offset, limit))
+                .map(|v| ("m_ChangeStopsCallbacks".to_string(), v)),
+            ((self.m_simulation_layers).inspect_value(path, offset, limit))
+                .map(|v| ("m_SimulationLayers".to_string(), v)),
+            ((self.m_callbacks_on_disable).inspect_value(path, offset, limit))
+                .map(|v| ("m_CallbacksOnDisable".to_string(), v)),
+            ((self.m_max_sub_step_count).inspect_value(path, offset, limit))
+                .map(|v| ("m_MaxSubStepCount".to_string(), v)),
+            ((self.m_min_sub_step_fps).inspect_value(path, offset, limit))
+                .map(|v| ("m_MinSubStepFPS".to_string(), v)),
+            ((self.m_auto_sync_transforms).inspect_value(path, offset, limit))
+                .map(|v| ("m_AutoSyncTransforms".to_string(), v)),
+            ((self.m_reuse_collision_callbacks).inspect_value(path, offset, limit))
+                .map(|v| ("m_ReuseCollisionCallbacks".to_string(), v)),
+            ((self.m_use_sub_stepping).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseSubStepping".to_string(), v)),
+            ((self.m_use_sub_step_contacts).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseSubStepContacts".to_string(), v)),
+            ((self.m_physics_low_level_settings).inspect_value(path, offset, limit))
+                .map(|v| ("m_PhysicsLowLevelSettings".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

@@ -67,3 +67,56 @@ impl crate::Parse for Preset {
         })
     }
 }
+
+impl crate::ToValue for Preset {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some(("m_TargetType".to_string(), self.m_target_type.to_value())),
+            Some(("m_Properties".to_string(), self.m_properties.to_value())),
+            crate::opt_field("m_ExcludedProperties", &self.m_excluded_properties),
+            crate::opt_field("m_CoupledType", &self.m_coupled_type),
+            crate::opt_field("m_CoupledProperties", &self.m_coupled_properties),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_TargetType" => (self.m_target_type).inspect_value(path, offset, limit),
+                "m_Properties" => (self.m_properties).inspect_value(path, offset, limit),
+                "m_ExcludedProperties" => {
+                    (self.m_excluded_properties).inspect_value(path, offset, limit)
+                }
+                "m_CoupledType" => (self.m_coupled_type).inspect_value(path, offset, limit),
+                "m_CoupledProperties" => {
+                    (self.m_coupled_properties).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_target_type).inspect_value(path, offset, limit))
+                .map(|v| ("m_TargetType".to_string(), v)),
+            ((self.m_properties).inspect_value(path, offset, limit))
+                .map(|v| ("m_Properties".to_string(), v)),
+            ((self.m_excluded_properties).inspect_value(path, offset, limit))
+                .map(|v| ("m_ExcludedProperties".to_string(), v)),
+            ((self.m_coupled_type).inspect_value(path, offset, limit))
+                .map(|v| ("m_CoupledType".to_string(), v)),
+            ((self.m_coupled_properties).inspect_value(path, offset, limit))
+                .map(|v| ("m_CoupledProperties".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

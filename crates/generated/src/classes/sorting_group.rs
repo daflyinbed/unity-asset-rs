@@ -25,6 +25,21 @@ impl crate::Parse for SortingGroupMSortingOrderVariant {
     }
 }
 
+impl crate::ToValue for SortingGroupMSortingOrderVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2022_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2022_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：SortingGroupMSortAtRootVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum SortingGroupMSortAtRootVariant {
@@ -44,6 +59,21 @@ impl crate::Parse for SortingGroupMSortAtRootVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for SortingGroupMSortAtRootVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V6000_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_3(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -91,5 +121,68 @@ impl crate::Parse for SortingGroup {
             m_sort_at_root,
             m_sort3_d_as2_d,
         })
+    }
+}
+
+impl crate::ToValue for SortingGroup {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_Enabled".to_string(), self.m_enabled.to_value())),
+            Some((
+                "m_SortingLayerID".to_string(),
+                self.m_sorting_layer_id.to_value(),
+            )),
+            Some((
+                "m_SortingLayer".to_string(),
+                self.m_sorting_layer.to_value(),
+            )),
+            Some((
+                "m_SortingOrder".to_string(),
+                self.m_sorting_order.to_value(),
+            )),
+            crate::opt_field("m_SortAtRoot", &self.m_sort_at_root),
+            crate::opt_field("m_Sort3DAs2D", &self.m_sort3_d_as2_d),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "m_SortingLayerID" => (self.m_sorting_layer_id).inspect_value(path, offset, limit),
+                "m_SortingLayer" => (self.m_sorting_layer).inspect_value(path, offset, limit),
+                "m_SortingOrder" => (self.m_sorting_order).inspect_value(path, offset, limit),
+                "m_SortAtRoot" => (self.m_sort_at_root).inspect_value(path, offset, limit),
+                "m_Sort3DAs2D" => (self.m_sort3_d_as2_d).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.m_sorting_layer_id).inspect_value(path, offset, limit))
+                .map(|v| ("m_SortingLayerID".to_string(), v)),
+            ((self.m_sorting_layer).inspect_value(path, offset, limit))
+                .map(|v| ("m_SortingLayer".to_string(), v)),
+            ((self.m_sorting_order).inspect_value(path, offset, limit))
+                .map(|v| ("m_SortingOrder".to_string(), v)),
+            ((self.m_sort_at_root).inspect_value(path, offset, limit))
+                .map(|v| ("m_SortAtRoot".to_string(), v)),
+            ((self.m_sort3_d_as2_d).inspect_value(path, offset, limit))
+                .map(|v| ("m_Sort3DAs2D".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

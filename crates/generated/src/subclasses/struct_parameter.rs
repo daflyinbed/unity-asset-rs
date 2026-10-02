@@ -64,3 +64,67 @@ impl crate::Parse for StructParameter {
         })
     }
 }
+
+impl crate::ToValue for StructParameter {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_NameIndex".to_string(), self.m_name_index.to_value())),
+            crate::opt_field("m_Index", &self.m_index),
+            crate::opt_field(
+                "m_OffsetInConstantBuffer",
+                &self.m_offset_in_constant_buffer,
+            ),
+            Some(("m_ArraySize".to_string(), self.m_array_size.to_value())),
+            Some(("m_StructSize".to_string(), self.m_struct_size.to_value())),
+            Some((
+                "m_VectorMembers".to_string(),
+                self.m_vector_members.to_value(),
+            )),
+            Some((
+                "m_MatrixMembers".to_string(),
+                self.m_matrix_members.to_value(),
+            )),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_NameIndex" => (self.m_name_index).inspect_value(path, offset, limit),
+                "m_Index" => (self.m_index).inspect_value(path, offset, limit),
+                "m_OffsetInConstantBuffer" => {
+                    (self.m_offset_in_constant_buffer).inspect_value(path, offset, limit)
+                }
+                "m_ArraySize" => (self.m_array_size).inspect_value(path, offset, limit),
+                "m_StructSize" => (self.m_struct_size).inspect_value(path, offset, limit),
+                "m_VectorMembers" => (self.m_vector_members).inspect_value(path, offset, limit),
+                "m_MatrixMembers" => (self.m_matrix_members).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name_index).inspect_value(path, offset, limit))
+                .map(|v| ("m_NameIndex".to_string(), v)),
+            ((self.m_index).inspect_value(path, offset, limit)).map(|v| ("m_Index".to_string(), v)),
+            ((self.m_offset_in_constant_buffer).inspect_value(path, offset, limit))
+                .map(|v| ("m_OffsetInConstantBuffer".to_string(), v)),
+            ((self.m_array_size).inspect_value(path, offset, limit))
+                .map(|v| ("m_ArraySize".to_string(), v)),
+            ((self.m_struct_size).inspect_value(path, offset, limit))
+                .map(|v| ("m_StructSize".to_string(), v)),
+            ((self.m_vector_members).inspect_value(path, offset, limit))
+                .map(|v| ("m_VectorMembers".to_string(), v)),
+            ((self.m_matrix_members).inspect_value(path, offset, limit))
+                .map(|v| ("m_MatrixMembers".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

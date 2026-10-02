@@ -34,6 +34,13 @@ export interface SelectedPath {
   path: string;
 }
 
+export interface SaveFileRequest {
+  /** 保存对话框的默认文件名（main 侧取 basename，防路径注入）。 */
+  defaultName: string;
+  /** 要写入的字节。 */
+  data: ArrayBuffer;
+}
+
 export interface ProjectSource {
   id: number;
   projectId: number;
@@ -80,6 +87,11 @@ export interface IpcContract {
   "files:pick": {
     request: Record<string, never>;
     response: SelectedPath[];
+  };
+  "files:save": {
+    request: SaveFileRequest;
+    /** null = 用户在保存对话框取消。 */
+    response: { path: string } | null;
   };
   "files:inspect": {
     request: { paths: string[] };
@@ -131,6 +143,7 @@ export const IPC_CHANNELS = [
   "workspace:save",
   "window:control",
   "files:pick",
+  "files:save",
   "files:inspect",
   "projects:list",
   "projects:create",

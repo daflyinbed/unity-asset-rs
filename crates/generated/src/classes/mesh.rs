@@ -51,6 +51,21 @@ impl crate::Parse for MeshMSubMeshesVariant {
     }
 }
 
+impl crate::ToValue for MeshMSubMeshesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：MeshMMeshCompressionVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum MeshMMeshCompressionVariant {
@@ -70,6 +85,21 @@ impl crate::Parse for MeshMMeshCompressionVariant {
             let v = rdr.read_u8()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for MeshMMeshCompressionVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V4_0(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V4_0(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -107,6 +137,21 @@ impl crate::Parse for MeshMBindPoseVariant {
     }
 }
 
+impl crate::ToValue for MeshMBindPoseVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：MeshMSkinVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum MeshMSkinVariant {
@@ -136,6 +181,21 @@ impl crate::Parse for MeshMSkinVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for MeshMSkinVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -173,6 +233,21 @@ impl crate::Parse for MeshMBoneNameHashesVariant {
     }
 }
 
+impl crate::ToValue for MeshMBoneNameHashesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：MeshMMeshMetrics1Variant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum MeshMMeshMetrics1Variant {
@@ -192,6 +267,21 @@ impl crate::Parse for MeshMMeshMetrics1Variant {
         } else {
             let v = rdr.read_f32()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for MeshMMeshMetrics1Variant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2018_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2018_3(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -565,5 +655,213 @@ impl crate::Parse for Mesh {
             m_stream_data,
             m_mesh_lod_info,
         })
+    }
+}
+
+impl crate::ToValue for Mesh {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            crate::opt_field("m_Use16BitIndices", &self.m_use16_bit_indices),
+            Some(("m_SubMeshes".to_string(), self.m_sub_meshes.to_value())),
+            Some((
+                "m_MeshCompression".to_string(),
+                self.m_mesh_compression.to_value(),
+            )),
+            crate::opt_field("m_ShapesList", &self.m_shapes_list),
+            crate::opt_field("m_Shapes", &self.m_shapes),
+            Some(("m_IndexBuffer".to_string(), self.m_index_buffer.to_value())),
+            Some(("m_BindPose".to_string(), self.m_bind_pose.to_value())),
+            crate::opt_field("m_StreamCompression", &self.m_stream_compression),
+            crate::opt_field("m_ShapeVertices", &self.m_shape_vertices),
+            crate::opt_field("m_Skin", &self.m_skin),
+            crate::opt_field("m_IsReadable", &self.m_is_readable),
+            crate::opt_field("m_BoneNameHashes", &self.m_bone_name_hashes),
+            crate::opt_field("m_Vertices", &self.m_vertices),
+            crate::opt_field("m_KeepVertices", &self.m_keep_vertices),
+            crate::opt_field("m_RootBoneNameHash", &self.m_root_bone_name_hash),
+            crate::opt_field("m_VertexData", &self.m_vertex_data),
+            crate::opt_field("m_KeepIndices", &self.m_keep_indices),
+            crate::opt_field("m_BonesAABB", &self.m_bones_aabb),
+            Some((
+                "m_CompressedMesh".to_string(),
+                self.m_compressed_mesh.to_value(),
+            )),
+            crate::opt_field(
+                "m_VariableBoneCountWeights",
+                &self.m_variable_bone_count_weights,
+            ),
+            crate::opt_field("m_UV", &self.m_uv),
+            Some(("m_LocalAABB".to_string(), self.m_local_aabb.to_value())),
+            crate::opt_field("m_UV1", &self.m_uv1),
+            Some((
+                "m_MeshUsageFlags".to_string(),
+                self.m_mesh_usage_flags.to_value(),
+            )),
+            crate::opt_field("m_Tangents", &self.m_tangents),
+            crate::opt_field("m_IndexFormat", &self.m_index_format),
+            crate::opt_field("m_Normals", &self.m_normals),
+            crate::opt_field("m_Colors", &self.m_colors),
+            crate::opt_field("m_CollisionTriangles", &self.m_collision_triangles),
+            crate::opt_field("m_CollisionVertexCount", &self.m_collision_vertex_count),
+            crate::opt_field(
+                "m_BakedConvexCollisionMesh",
+                &self.m_baked_convex_collision_mesh,
+            ),
+            crate::opt_field(
+                "m_BakedTriangleCollisionMesh",
+                &self.m_baked_triangle_collision_mesh,
+            ),
+            crate::opt_field("m_MeshMetrics[0]", &self.m_mesh_metrics_0),
+            crate::opt_field("m_CookingOptions", &self.m_cooking_options),
+            crate::opt_field("m_MeshMetrics[1]", &self.m_mesh_metrics_1),
+            crate::opt_field("m_StreamData", &self.m_stream_data),
+            crate::opt_field("m_MeshLodInfo", &self.m_mesh_lod_info),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_Use16BitIndices" => {
+                    (self.m_use16_bit_indices).inspect_value(path, offset, limit)
+                }
+                "m_SubMeshes" => (self.m_sub_meshes).inspect_value(path, offset, limit),
+                "m_MeshCompression" => (self.m_mesh_compression).inspect_value(path, offset, limit),
+                "m_ShapesList" => (self.m_shapes_list).inspect_value(path, offset, limit),
+                "m_Shapes" => (self.m_shapes).inspect_value(path, offset, limit),
+                "m_IndexBuffer" => (self.m_index_buffer).inspect_value(path, offset, limit),
+                "m_BindPose" => (self.m_bind_pose).inspect_value(path, offset, limit),
+                "m_StreamCompression" => {
+                    (self.m_stream_compression).inspect_value(path, offset, limit)
+                }
+                "m_ShapeVertices" => (self.m_shape_vertices).inspect_value(path, offset, limit),
+                "m_Skin" => (self.m_skin).inspect_value(path, offset, limit),
+                "m_IsReadable" => (self.m_is_readable).inspect_value(path, offset, limit),
+                "m_BoneNameHashes" => (self.m_bone_name_hashes).inspect_value(path, offset, limit),
+                "m_Vertices" => (self.m_vertices).inspect_value(path, offset, limit),
+                "m_KeepVertices" => (self.m_keep_vertices).inspect_value(path, offset, limit),
+                "m_RootBoneNameHash" => {
+                    (self.m_root_bone_name_hash).inspect_value(path, offset, limit)
+                }
+                "m_VertexData" => (self.m_vertex_data).inspect_value(path, offset, limit),
+                "m_KeepIndices" => (self.m_keep_indices).inspect_value(path, offset, limit),
+                "m_BonesAABB" => (self.m_bones_aabb).inspect_value(path, offset, limit),
+                "m_CompressedMesh" => (self.m_compressed_mesh).inspect_value(path, offset, limit),
+                "m_VariableBoneCountWeights" => {
+                    (self.m_variable_bone_count_weights).inspect_value(path, offset, limit)
+                }
+                "m_UV" => (self.m_uv).inspect_value(path, offset, limit),
+                "m_LocalAABB" => (self.m_local_aabb).inspect_value(path, offset, limit),
+                "m_UV1" => (self.m_uv1).inspect_value(path, offset, limit),
+                "m_MeshUsageFlags" => (self.m_mesh_usage_flags).inspect_value(path, offset, limit),
+                "m_Tangents" => (self.m_tangents).inspect_value(path, offset, limit),
+                "m_IndexFormat" => (self.m_index_format).inspect_value(path, offset, limit),
+                "m_Normals" => (self.m_normals).inspect_value(path, offset, limit),
+                "m_Colors" => (self.m_colors).inspect_value(path, offset, limit),
+                "m_CollisionTriangles" => {
+                    (self.m_collision_triangles).inspect_value(path, offset, limit)
+                }
+                "m_CollisionVertexCount" => {
+                    (self.m_collision_vertex_count).inspect_value(path, offset, limit)
+                }
+                "m_BakedConvexCollisionMesh" => {
+                    (self.m_baked_convex_collision_mesh).inspect_value(path, offset, limit)
+                }
+                "m_BakedTriangleCollisionMesh" => {
+                    (self.m_baked_triangle_collision_mesh).inspect_value(path, offset, limit)
+                }
+                "m_MeshMetrics[0]" => (self.m_mesh_metrics_0).inspect_value(path, offset, limit),
+                "m_CookingOptions" => (self.m_cooking_options).inspect_value(path, offset, limit),
+                "m_MeshMetrics[1]" => (self.m_mesh_metrics_1).inspect_value(path, offset, limit),
+                "m_StreamData" => (self.m_stream_data).inspect_value(path, offset, limit),
+                "m_MeshLodInfo" => (self.m_mesh_lod_info).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_use16_bit_indices).inspect_value(path, offset, limit))
+                .map(|v| ("m_Use16BitIndices".to_string(), v)),
+            ((self.m_sub_meshes).inspect_value(path, offset, limit))
+                .map(|v| ("m_SubMeshes".to_string(), v)),
+            ((self.m_mesh_compression).inspect_value(path, offset, limit))
+                .map(|v| ("m_MeshCompression".to_string(), v)),
+            ((self.m_shapes_list).inspect_value(path, offset, limit))
+                .map(|v| ("m_ShapesList".to_string(), v)),
+            ((self.m_shapes).inspect_value(path, offset, limit))
+                .map(|v| ("m_Shapes".to_string(), v)),
+            ((self.m_index_buffer).inspect_value(path, offset, limit))
+                .map(|v| ("m_IndexBuffer".to_string(), v)),
+            ((self.m_bind_pose).inspect_value(path, offset, limit))
+                .map(|v| ("m_BindPose".to_string(), v)),
+            ((self.m_stream_compression).inspect_value(path, offset, limit))
+                .map(|v| ("m_StreamCompression".to_string(), v)),
+            ((self.m_shape_vertices).inspect_value(path, offset, limit))
+                .map(|v| ("m_ShapeVertices".to_string(), v)),
+            ((self.m_skin).inspect_value(path, offset, limit)).map(|v| ("m_Skin".to_string(), v)),
+            ((self.m_is_readable).inspect_value(path, offset, limit))
+                .map(|v| ("m_IsReadable".to_string(), v)),
+            ((self.m_bone_name_hashes).inspect_value(path, offset, limit))
+                .map(|v| ("m_BoneNameHashes".to_string(), v)),
+            ((self.m_vertices).inspect_value(path, offset, limit))
+                .map(|v| ("m_Vertices".to_string(), v)),
+            ((self.m_keep_vertices).inspect_value(path, offset, limit))
+                .map(|v| ("m_KeepVertices".to_string(), v)),
+            ((self.m_root_bone_name_hash).inspect_value(path, offset, limit))
+                .map(|v| ("m_RootBoneNameHash".to_string(), v)),
+            ((self.m_vertex_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_VertexData".to_string(), v)),
+            ((self.m_keep_indices).inspect_value(path, offset, limit))
+                .map(|v| ("m_KeepIndices".to_string(), v)),
+            ((self.m_bones_aabb).inspect_value(path, offset, limit))
+                .map(|v| ("m_BonesAABB".to_string(), v)),
+            ((self.m_compressed_mesh).inspect_value(path, offset, limit))
+                .map(|v| ("m_CompressedMesh".to_string(), v)),
+            ((self.m_variable_bone_count_weights).inspect_value(path, offset, limit))
+                .map(|v| ("m_VariableBoneCountWeights".to_string(), v)),
+            ((self.m_uv).inspect_value(path, offset, limit)).map(|v| ("m_UV".to_string(), v)),
+            ((self.m_local_aabb).inspect_value(path, offset, limit))
+                .map(|v| ("m_LocalAABB".to_string(), v)),
+            ((self.m_uv1).inspect_value(path, offset, limit)).map(|v| ("m_UV1".to_string(), v)),
+            ((self.m_mesh_usage_flags).inspect_value(path, offset, limit))
+                .map(|v| ("m_MeshUsageFlags".to_string(), v)),
+            ((self.m_tangents).inspect_value(path, offset, limit))
+                .map(|v| ("m_Tangents".to_string(), v)),
+            ((self.m_index_format).inspect_value(path, offset, limit))
+                .map(|v| ("m_IndexFormat".to_string(), v)),
+            ((self.m_normals).inspect_value(path, offset, limit))
+                .map(|v| ("m_Normals".to_string(), v)),
+            ((self.m_colors).inspect_value(path, offset, limit))
+                .map(|v| ("m_Colors".to_string(), v)),
+            ((self.m_collision_triangles).inspect_value(path, offset, limit))
+                .map(|v| ("m_CollisionTriangles".to_string(), v)),
+            ((self.m_collision_vertex_count).inspect_value(path, offset, limit))
+                .map(|v| ("m_CollisionVertexCount".to_string(), v)),
+            ((self.m_baked_convex_collision_mesh).inspect_value(path, offset, limit))
+                .map(|v| ("m_BakedConvexCollisionMesh".to_string(), v)),
+            ((self.m_baked_triangle_collision_mesh).inspect_value(path, offset, limit))
+                .map(|v| ("m_BakedTriangleCollisionMesh".to_string(), v)),
+            ((self.m_mesh_metrics_0).inspect_value(path, offset, limit))
+                .map(|v| ("m_MeshMetrics[0]".to_string(), v)),
+            ((self.m_cooking_options).inspect_value(path, offset, limit))
+                .map(|v| ("m_CookingOptions".to_string(), v)),
+            ((self.m_mesh_metrics_1).inspect_value(path, offset, limit))
+                .map(|v| ("m_MeshMetrics[1]".to_string(), v)),
+            ((self.m_stream_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_StreamData".to_string(), v)),
+            ((self.m_mesh_lod_info).inspect_value(path, offset, limit))
+                .map(|v| ("m_MeshLodInfo".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

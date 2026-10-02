@@ -33,6 +33,21 @@ impl crate::Parse for ProceduralMaterialMShaderKeywordsVariant {
     }
 }
 
+impl crate::ToValue for ProceduralMaterialMShaderKeywordsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_0(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_0(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：ProceduralMaterialMEnableInstancingVariantsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ProceduralMaterialMEnableInstancingVariantsVariant {
@@ -52,6 +67,21 @@ impl crate::Parse for ProceduralMaterialMEnableInstancingVariantsVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for ProceduralMaterialMEnableInstancingVariantsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_6_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_6_2(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -89,6 +119,21 @@ impl crate::Parse for ProceduralMaterialMTexturesVariant {
     }
 }
 
+impl crate::ToValue for ProceduralMaterialMTexturesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：ProceduralMaterialMInputsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ProceduralMaterialMInputsVariant {
@@ -122,6 +167,21 @@ impl crate::Parse for ProceduralMaterialMInputsVariant {
     }
 }
 
+impl crate::ToValue for ProceduralMaterialMInputsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：ProceduralMaterialDisabledShaderPassesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ProceduralMaterialDisabledShaderPassesVariant {
@@ -151,6 +211,21 @@ impl crate::Parse for ProceduralMaterialDisabledShaderPassesVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for ProceduralMaterialDisabledShaderPassesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -439,5 +514,149 @@ impl crate::Parse for ProceduralMaterial {
             m_prototype_name,
             m_hash,
         })
+    }
+}
+
+impl crate::ToValue for ProceduralMaterial {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some(("m_Shader".to_string(), self.m_shader.to_value())),
+            Some((
+                "m_SavedProperties".to_string(),
+                self.m_saved_properties.to_value(),
+            )),
+            crate::opt_field("m_ShaderKeywords", &self.m_shader_keywords),
+            crate::opt_field("m_ValidKeywords", &self.m_valid_keywords),
+            crate::opt_field("m_SubstancePackage", &self.m_substance_package),
+            crate::opt_field("m_Width", &self.m_width),
+            crate::opt_field("m_CustomRenderQueue", &self.m_custom_render_queue),
+            crate::opt_field("m_LightmapFlags", &self.m_lightmap_flags),
+            crate::opt_field("m_InvalidKeywords", &self.m_invalid_keywords),
+            crate::opt_field("m_MaximumSize", &self.m_maximum_size),
+            crate::opt_field("m_Height", &self.m_height),
+            crate::opt_field(
+                "m_EnableInstancingVariants",
+                &self.m_enable_instancing_variants,
+            ),
+            crate::opt_field("m_Textures", &self.m_textures),
+            crate::opt_field("stringTagMap", &self.string_tag_map),
+            crate::opt_field("m_DoubleSidedGI", &self.m_double_sided_gi),
+            crate::opt_field("m_Inputs", &self.m_inputs),
+            crate::opt_field("m_Flags", &self.m_flags),
+            crate::opt_field("m_LoadingBehavior", &self.m_loading_behavior),
+            crate::opt_field("m_GenerateMipmaps", &self.m_generate_mipmaps),
+            crate::opt_field("disabledShaderPasses", &self.disabled_shader_passes),
+            crate::opt_field("m_CacheSize", &self.m_cache_size),
+            crate::opt_field("m_AnimationUpdateRate", &self.m_animation_update_rate),
+            crate::opt_field("m_BuildTextureStacks", &self.m_build_texture_stacks),
+            crate::opt_field("m_PrototypeName", &self.m_prototype_name),
+            crate::opt_field("m_Hash", &self.m_hash),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_Shader" => (self.m_shader).inspect_value(path, offset, limit),
+                "m_SavedProperties" => (self.m_saved_properties).inspect_value(path, offset, limit),
+                "m_ShaderKeywords" => (self.m_shader_keywords).inspect_value(path, offset, limit),
+                "m_ValidKeywords" => (self.m_valid_keywords).inspect_value(path, offset, limit),
+                "m_SubstancePackage" => {
+                    (self.m_substance_package).inspect_value(path, offset, limit)
+                }
+                "m_Width" => (self.m_width).inspect_value(path, offset, limit),
+                "m_CustomRenderQueue" => {
+                    (self.m_custom_render_queue).inspect_value(path, offset, limit)
+                }
+                "m_LightmapFlags" => (self.m_lightmap_flags).inspect_value(path, offset, limit),
+                "m_InvalidKeywords" => (self.m_invalid_keywords).inspect_value(path, offset, limit),
+                "m_MaximumSize" => (self.m_maximum_size).inspect_value(path, offset, limit),
+                "m_Height" => (self.m_height).inspect_value(path, offset, limit),
+                "m_EnableInstancingVariants" => {
+                    (self.m_enable_instancing_variants).inspect_value(path, offset, limit)
+                }
+                "m_Textures" => (self.m_textures).inspect_value(path, offset, limit),
+                "stringTagMap" => (self.string_tag_map).inspect_value(path, offset, limit),
+                "m_DoubleSidedGI" => (self.m_double_sided_gi).inspect_value(path, offset, limit),
+                "m_Inputs" => (self.m_inputs).inspect_value(path, offset, limit),
+                "m_Flags" => (self.m_flags).inspect_value(path, offset, limit),
+                "m_LoadingBehavior" => (self.m_loading_behavior).inspect_value(path, offset, limit),
+                "m_GenerateMipmaps" => (self.m_generate_mipmaps).inspect_value(path, offset, limit),
+                "disabledShaderPasses" => {
+                    (self.disabled_shader_passes).inspect_value(path, offset, limit)
+                }
+                "m_CacheSize" => (self.m_cache_size).inspect_value(path, offset, limit),
+                "m_AnimationUpdateRate" => {
+                    (self.m_animation_update_rate).inspect_value(path, offset, limit)
+                }
+                "m_BuildTextureStacks" => {
+                    (self.m_build_texture_stacks).inspect_value(path, offset, limit)
+                }
+                "m_PrototypeName" => (self.m_prototype_name).inspect_value(path, offset, limit),
+                "m_Hash" => (self.m_hash).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_shader).inspect_value(path, offset, limit))
+                .map(|v| ("m_Shader".to_string(), v)),
+            ((self.m_saved_properties).inspect_value(path, offset, limit))
+                .map(|v| ("m_SavedProperties".to_string(), v)),
+            ((self.m_shader_keywords).inspect_value(path, offset, limit))
+                .map(|v| ("m_ShaderKeywords".to_string(), v)),
+            ((self.m_valid_keywords).inspect_value(path, offset, limit))
+                .map(|v| ("m_ValidKeywords".to_string(), v)),
+            ((self.m_substance_package).inspect_value(path, offset, limit))
+                .map(|v| ("m_SubstancePackage".to_string(), v)),
+            ((self.m_width).inspect_value(path, offset, limit)).map(|v| ("m_Width".to_string(), v)),
+            ((self.m_custom_render_queue).inspect_value(path, offset, limit))
+                .map(|v| ("m_CustomRenderQueue".to_string(), v)),
+            ((self.m_lightmap_flags).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightmapFlags".to_string(), v)),
+            ((self.m_invalid_keywords).inspect_value(path, offset, limit))
+                .map(|v| ("m_InvalidKeywords".to_string(), v)),
+            ((self.m_maximum_size).inspect_value(path, offset, limit))
+                .map(|v| ("m_MaximumSize".to_string(), v)),
+            ((self.m_height).inspect_value(path, offset, limit))
+                .map(|v| ("m_Height".to_string(), v)),
+            ((self.m_enable_instancing_variants).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableInstancingVariants".to_string(), v)),
+            ((self.m_textures).inspect_value(path, offset, limit))
+                .map(|v| ("m_Textures".to_string(), v)),
+            ((self.string_tag_map).inspect_value(path, offset, limit))
+                .map(|v| ("stringTagMap".to_string(), v)),
+            ((self.m_double_sided_gi).inspect_value(path, offset, limit))
+                .map(|v| ("m_DoubleSidedGI".to_string(), v)),
+            ((self.m_inputs).inspect_value(path, offset, limit))
+                .map(|v| ("m_Inputs".to_string(), v)),
+            ((self.m_flags).inspect_value(path, offset, limit)).map(|v| ("m_Flags".to_string(), v)),
+            ((self.m_loading_behavior).inspect_value(path, offset, limit))
+                .map(|v| ("m_LoadingBehavior".to_string(), v)),
+            ((self.m_generate_mipmaps).inspect_value(path, offset, limit))
+                .map(|v| ("m_GenerateMipmaps".to_string(), v)),
+            ((self.disabled_shader_passes).inspect_value(path, offset, limit))
+                .map(|v| ("disabledShaderPasses".to_string(), v)),
+            ((self.m_cache_size).inspect_value(path, offset, limit))
+                .map(|v| ("m_CacheSize".to_string(), v)),
+            ((self.m_animation_update_rate).inspect_value(path, offset, limit))
+                .map(|v| ("m_AnimationUpdateRate".to_string(), v)),
+            ((self.m_build_texture_stacks).inspect_value(path, offset, limit))
+                .map(|v| ("m_BuildTextureStacks".to_string(), v)),
+            ((self.m_prototype_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_PrototypeName".to_string(), v)),
+            ((self.m_hash).inspect_value(path, offset, limit)).map(|v| ("m_Hash".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

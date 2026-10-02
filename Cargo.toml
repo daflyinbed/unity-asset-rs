@@ -34,6 +34,8 @@ tokio = { version = "1", features = [
 ] }
 serde = { version = "1", features = [ "derive" ] }
 serde_json = "1"
+# JSON 兜底导出的 Bytes → base64（仅 CLI bin，库零 serde/base64）。
+base64 = "0.22"
 # serve 状态共享(非 async 锁——读锁不跨 await,标准 sync 锁即可,更轻量)。
 parking_lot = "0.12"
 # OpenAPI 自动生成 + Scalar UI(utoipa-axum 0.2 锁 axum 0.8,故 axum 必须升到 0.8)。

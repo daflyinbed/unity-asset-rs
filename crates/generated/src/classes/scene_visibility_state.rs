@@ -62,3 +62,70 @@ impl crate::Parse for SceneVisibilityState {
         })
     }
 }
+
+impl crate::ToValue for SceneVisibilityState {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            crate::opt_field("m_SceneData", &self.m_scene_data),
+            crate::opt_field("m_SceneVisibilityData", &self.m_scene_visibility_data),
+            crate::opt_field("m_MainStageIsolated", &self.m_main_stage_isolated),
+            crate::opt_field(
+                "m_SceneVisibilityDataIsolated",
+                &self.m_scene_visibility_data_isolated,
+            ),
+            crate::opt_field("m_PrefabStageIsolated", &self.m_prefab_stage_isolated),
+            crate::opt_field("m_ScenePickingData", &self.m_scene_picking_data),
+            crate::opt_field("m_IsolationMode", &self.m_isolation_mode),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_SceneData" => (self.m_scene_data).inspect_value(path, offset, limit),
+                "m_SceneVisibilityData" => {
+                    (self.m_scene_visibility_data).inspect_value(path, offset, limit)
+                }
+                "m_MainStageIsolated" => {
+                    (self.m_main_stage_isolated).inspect_value(path, offset, limit)
+                }
+                "m_SceneVisibilityDataIsolated" => {
+                    (self.m_scene_visibility_data_isolated).inspect_value(path, offset, limit)
+                }
+                "m_PrefabStageIsolated" => {
+                    (self.m_prefab_stage_isolated).inspect_value(path, offset, limit)
+                }
+                "m_ScenePickingData" => {
+                    (self.m_scene_picking_data).inspect_value(path, offset, limit)
+                }
+                "m_IsolationMode" => (self.m_isolation_mode).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_scene_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_SceneData".to_string(), v)),
+            ((self.m_scene_visibility_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_SceneVisibilityData".to_string(), v)),
+            ((self.m_main_stage_isolated).inspect_value(path, offset, limit))
+                .map(|v| ("m_MainStageIsolated".to_string(), v)),
+            ((self.m_scene_visibility_data_isolated).inspect_value(path, offset, limit))
+                .map(|v| ("m_SceneVisibilityDataIsolated".to_string(), v)),
+            ((self.m_prefab_stage_isolated).inspect_value(path, offset, limit))
+                .map(|v| ("m_PrefabStageIsolated".to_string(), v)),
+            ((self.m_scene_picking_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_ScenePickingData".to_string(), v)),
+            ((self.m_isolation_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_IsolationMode".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

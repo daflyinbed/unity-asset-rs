@@ -27,6 +27,21 @@ impl crate::Parse for QualitySettingSoftVegetationVariant {
     }
 }
 
+impl crate::ToValue for QualitySettingSoftVegetationVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_0(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_0(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：QualitySettingVSyncCountVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum QualitySettingVSyncCountVariant {
@@ -46,6 +61,21 @@ impl crate::Parse for QualitySettingVSyncCountVariant {
             let v = rdr.read_i32()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for QualitySettingVSyncCountVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V3_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V3_5(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -73,6 +103,21 @@ impl crate::Parse for QualitySettingMaximumLodLevelVariant {
     }
 }
 
+impl crate::ToValue for QualitySettingMaximumLodLevelVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V4_0(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V4_0(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：QualitySettingParticleRaycastBudgetVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum QualitySettingParticleRaycastBudgetVariant {
@@ -92,6 +137,21 @@ impl crate::Parse for QualitySettingParticleRaycastBudgetVariant {
             let v = rdr.read_i32()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for QualitySettingParticleRaycastBudgetVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_3(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -119,6 +179,21 @@ impl crate::Parse for QualitySettingBillboardsFaceCameraPositionVariant {
     }
 }
 
+impl crate::ToValue for QualitySettingBillboardsFaceCameraPositionVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2022_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2022_2(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：QualitySettingUseLegacyDetailDistributionVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum QualitySettingUseLegacyDetailDistributionVariant {
@@ -138,6 +213,21 @@ impl crate::Parse for QualitySettingUseLegacyDetailDistributionVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for QualitySettingUseLegacyDetailDistributionVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2023_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2023_2(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -165,6 +255,21 @@ impl crate::Parse for QualitySettingAsyncUploadBufferSizeVariant {
     }
 }
 
+impl crate::ToValue for QualitySettingAsyncUploadBufferSizeVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：QualitySettingResolutionScalingFixedDpiFactorVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum QualitySettingResolutionScalingFixedDpiFactorVariant {
@@ -184,6 +289,21 @@ impl crate::Parse for QualitySettingResolutionScalingFixedDpiFactorVariant {
             let v = rdr.read_f32()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for QualitySettingResolutionScalingFixedDpiFactorVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2019_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2019_3(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -718,5 +838,364 @@ impl crate::Parse for QualitySetting {
             terrain_fade_length,
             terrain_max_trees,
         })
+    }
+}
+
+impl crate::ToValue for QualitySetting {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some((
+                "pixelLightCount".to_string(),
+                self.pixel_light_count.to_value(),
+            )),
+            crate::opt_field("name", &self.name),
+            Some(("shadows".to_string(), self.shadows.to_value())),
+            Some((
+                "shadowResolution".to_string(),
+                self.shadow_resolution.to_value(),
+            )),
+            Some((
+                "shadowProjection".to_string(),
+                self.shadow_projection.to_value(),
+            )),
+            Some((
+                "shadowCascades".to_string(),
+                self.shadow_cascades.to_value(),
+            )),
+            Some((
+                "shadowDistance".to_string(),
+                self.shadow_distance.to_value(),
+            )),
+            crate::opt_field("blendWeights", &self.blend_weights),
+            crate::opt_field("textureQuality", &self.texture_quality),
+            crate::opt_field("shadowCascade2Split", &self.shadow_cascade2_split),
+            crate::opt_field("shadowNearPlaneOffset", &self.shadow_near_plane_offset),
+            Some((
+                "anisotropicTextures".to_string(),
+                self.anisotropic_textures.to_value(),
+            )),
+            crate::opt_field("shadowCascade4Split", &self.shadow_cascade4_split),
+            Some(("antiAliasing".to_string(), self.anti_aliasing.to_value())),
+            Some(("softParticles".to_string(), self.soft_particles.to_value())),
+            crate::opt_field("shadowmaskMode", &self.shadowmask_mode),
+            Some((
+                "softVegetation".to_string(),
+                self.soft_vegetation.to_value(),
+            )),
+            crate::opt_field("skinWeights", &self.skin_weights),
+            Some(("vSyncCount".to_string(), self.v_sync_count.to_value())),
+            crate::opt_field(
+                "globalTextureMipmapLimit",
+                &self.global_texture_mipmap_limit,
+            ),
+            crate::opt_field(
+                "textureMipmapLimitSettings",
+                &self.texture_mipmap_limit_settings,
+            ),
+            crate::opt_field("lodBias", &self.lod_bias),
+            crate::opt_field("maximumLODLevel", &self.maximum_lod_level),
+            crate::opt_field("realtimeReflectionProbes", &self.realtime_reflection_probes),
+            crate::opt_field("particleRaycastBudget", &self.particle_raycast_budget),
+            crate::opt_field(
+                "billboardsFaceCameraPosition",
+                &self.billboards_face_camera_position,
+            ),
+            crate::opt_field("realtimeGICPUUsage", &self.realtime_gicpu_usage),
+            crate::opt_field(
+                "useLegacyDetailDistribution",
+                &self.use_legacy_detail_distribution,
+            ),
+            crate::opt_field("adaptiveVsync", &self.adaptive_vsync),
+            crate::opt_field("asyncUploadTimeSlice", &self.async_upload_time_slice),
+            crate::opt_field("streamingMipmapsActive", &self.streaming_mipmaps_active),
+            crate::opt_field("asyncUploadBufferSize", &self.async_upload_buffer_size),
+            crate::opt_field(
+                "streamingMipmapsAddAllCameras",
+                &self.streaming_mipmaps_add_all_cameras,
+            ),
+            crate::opt_field(
+                "streamingMipmapsMemoryBudget",
+                &self.streaming_mipmaps_memory_budget,
+            ),
+            crate::opt_field("enableLODCrossFade", &self.enable_lod_cross_fade),
+            crate::opt_field("adaptiveVsyncExtraA", &self.adaptive_vsync_extra_a),
+            crate::opt_field(
+                "resolutionScalingFixedDPIFactor",
+                &self.resolution_scaling_fixed_dpi_factor,
+            ),
+            crate::opt_field(
+                "streamingMipmapsRenderersPerFrame",
+                &self.streaming_mipmaps_renderers_per_frame,
+            ),
+            crate::opt_field("adaptiveVsyncExtraB", &self.adaptive_vsync_extra_b),
+            crate::opt_field(
+                "streamingMipmapsMaxLevelReduction",
+                &self.streaming_mipmaps_max_level_reduction,
+            ),
+            crate::opt_field(
+                "streamingMipmapsMaxFileIORequests",
+                &self.streaming_mipmaps_max_file_io_requests,
+            ),
+            crate::opt_field("meshLodThreshold", &self.mesh_lod_threshold),
+            crate::opt_field(
+                "asyncUploadPersistentBuffer",
+                &self.async_upload_persistent_buffer,
+            ),
+            crate::opt_field("customRenderPipeline", &self.custom_render_pipeline),
+            crate::opt_field("terrainQualityOverrides", &self.terrain_quality_overrides),
+            crate::opt_field("terrainPixelError", &self.terrain_pixel_error),
+            crate::opt_field(
+                "terrainDetailDensityScale",
+                &self.terrain_detail_density_scale,
+            ),
+            crate::opt_field("terrainBasemapDistance", &self.terrain_basemap_distance),
+            crate::opt_field("terrainDetailDistance", &self.terrain_detail_distance),
+            crate::opt_field("terrainTreeDistance", &self.terrain_tree_distance),
+            crate::opt_field("terrainBillboardStart", &self.terrain_billboard_start),
+            crate::opt_field("terrainFadeLength", &self.terrain_fade_length),
+            crate::opt_field("terrainMaxTrees", &self.terrain_max_trees),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "pixelLightCount" => (self.pixel_light_count).inspect_value(path, offset, limit),
+                "name" => (self.name).inspect_value(path, offset, limit),
+                "shadows" => (self.shadows).inspect_value(path, offset, limit),
+                "shadowResolution" => (self.shadow_resolution).inspect_value(path, offset, limit),
+                "shadowProjection" => (self.shadow_projection).inspect_value(path, offset, limit),
+                "shadowCascades" => (self.shadow_cascades).inspect_value(path, offset, limit),
+                "shadowDistance" => (self.shadow_distance).inspect_value(path, offset, limit),
+                "blendWeights" => (self.blend_weights).inspect_value(path, offset, limit),
+                "textureQuality" => (self.texture_quality).inspect_value(path, offset, limit),
+                "shadowCascade2Split" => {
+                    (self.shadow_cascade2_split).inspect_value(path, offset, limit)
+                }
+                "shadowNearPlaneOffset" => {
+                    (self.shadow_near_plane_offset).inspect_value(path, offset, limit)
+                }
+                "anisotropicTextures" => {
+                    (self.anisotropic_textures).inspect_value(path, offset, limit)
+                }
+                "shadowCascade4Split" => {
+                    (self.shadow_cascade4_split).inspect_value(path, offset, limit)
+                }
+                "antiAliasing" => (self.anti_aliasing).inspect_value(path, offset, limit),
+                "softParticles" => (self.soft_particles).inspect_value(path, offset, limit),
+                "shadowmaskMode" => (self.shadowmask_mode).inspect_value(path, offset, limit),
+                "softVegetation" => (self.soft_vegetation).inspect_value(path, offset, limit),
+                "skinWeights" => (self.skin_weights).inspect_value(path, offset, limit),
+                "vSyncCount" => (self.v_sync_count).inspect_value(path, offset, limit),
+                "globalTextureMipmapLimit" => {
+                    (self.global_texture_mipmap_limit).inspect_value(path, offset, limit)
+                }
+                "textureMipmapLimitSettings" => {
+                    (self.texture_mipmap_limit_settings).inspect_value(path, offset, limit)
+                }
+                "lodBias" => (self.lod_bias).inspect_value(path, offset, limit),
+                "maximumLODLevel" => (self.maximum_lod_level).inspect_value(path, offset, limit),
+                "realtimeReflectionProbes" => {
+                    (self.realtime_reflection_probes).inspect_value(path, offset, limit)
+                }
+                "particleRaycastBudget" => {
+                    (self.particle_raycast_budget).inspect_value(path, offset, limit)
+                }
+                "billboardsFaceCameraPosition" => {
+                    (self.billboards_face_camera_position).inspect_value(path, offset, limit)
+                }
+                "realtimeGICPUUsage" => {
+                    (self.realtime_gicpu_usage).inspect_value(path, offset, limit)
+                }
+                "useLegacyDetailDistribution" => {
+                    (self.use_legacy_detail_distribution).inspect_value(path, offset, limit)
+                }
+                "adaptiveVsync" => (self.adaptive_vsync).inspect_value(path, offset, limit),
+                "asyncUploadTimeSlice" => {
+                    (self.async_upload_time_slice).inspect_value(path, offset, limit)
+                }
+                "streamingMipmapsActive" => {
+                    (self.streaming_mipmaps_active).inspect_value(path, offset, limit)
+                }
+                "asyncUploadBufferSize" => {
+                    (self.async_upload_buffer_size).inspect_value(path, offset, limit)
+                }
+                "streamingMipmapsAddAllCameras" => {
+                    (self.streaming_mipmaps_add_all_cameras).inspect_value(path, offset, limit)
+                }
+                "streamingMipmapsMemoryBudget" => {
+                    (self.streaming_mipmaps_memory_budget).inspect_value(path, offset, limit)
+                }
+                "enableLODCrossFade" => {
+                    (self.enable_lod_cross_fade).inspect_value(path, offset, limit)
+                }
+                "adaptiveVsyncExtraA" => {
+                    (self.adaptive_vsync_extra_a).inspect_value(path, offset, limit)
+                }
+                "resolutionScalingFixedDPIFactor" => {
+                    (self.resolution_scaling_fixed_dpi_factor).inspect_value(path, offset, limit)
+                }
+                "streamingMipmapsRenderersPerFrame" => {
+                    (self.streaming_mipmaps_renderers_per_frame).inspect_value(path, offset, limit)
+                }
+                "adaptiveVsyncExtraB" => {
+                    (self.adaptive_vsync_extra_b).inspect_value(path, offset, limit)
+                }
+                "streamingMipmapsMaxLevelReduction" => {
+                    (self.streaming_mipmaps_max_level_reduction).inspect_value(path, offset, limit)
+                }
+                "streamingMipmapsMaxFileIORequests" => {
+                    (self.streaming_mipmaps_max_file_io_requests).inspect_value(path, offset, limit)
+                }
+                "meshLodThreshold" => (self.mesh_lod_threshold).inspect_value(path, offset, limit),
+                "asyncUploadPersistentBuffer" => {
+                    (self.async_upload_persistent_buffer).inspect_value(path, offset, limit)
+                }
+                "customRenderPipeline" => {
+                    (self.custom_render_pipeline).inspect_value(path, offset, limit)
+                }
+                "terrainQualityOverrides" => {
+                    (self.terrain_quality_overrides).inspect_value(path, offset, limit)
+                }
+                "terrainPixelError" => {
+                    (self.terrain_pixel_error).inspect_value(path, offset, limit)
+                }
+                "terrainDetailDensityScale" => {
+                    (self.terrain_detail_density_scale).inspect_value(path, offset, limit)
+                }
+                "terrainBasemapDistance" => {
+                    (self.terrain_basemap_distance).inspect_value(path, offset, limit)
+                }
+                "terrainDetailDistance" => {
+                    (self.terrain_detail_distance).inspect_value(path, offset, limit)
+                }
+                "terrainTreeDistance" => {
+                    (self.terrain_tree_distance).inspect_value(path, offset, limit)
+                }
+                "terrainBillboardStart" => {
+                    (self.terrain_billboard_start).inspect_value(path, offset, limit)
+                }
+                "terrainFadeLength" => {
+                    (self.terrain_fade_length).inspect_value(path, offset, limit)
+                }
+                "terrainMaxTrees" => (self.terrain_max_trees).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.pixel_light_count).inspect_value(path, offset, limit))
+                .map(|v| ("pixelLightCount".to_string(), v)),
+            ((self.name).inspect_value(path, offset, limit)).map(|v| ("name".to_string(), v)),
+            ((self.shadows).inspect_value(path, offset, limit)).map(|v| ("shadows".to_string(), v)),
+            ((self.shadow_resolution).inspect_value(path, offset, limit))
+                .map(|v| ("shadowResolution".to_string(), v)),
+            ((self.shadow_projection).inspect_value(path, offset, limit))
+                .map(|v| ("shadowProjection".to_string(), v)),
+            ((self.shadow_cascades).inspect_value(path, offset, limit))
+                .map(|v| ("shadowCascades".to_string(), v)),
+            ((self.shadow_distance).inspect_value(path, offset, limit))
+                .map(|v| ("shadowDistance".to_string(), v)),
+            ((self.blend_weights).inspect_value(path, offset, limit))
+                .map(|v| ("blendWeights".to_string(), v)),
+            ((self.texture_quality).inspect_value(path, offset, limit))
+                .map(|v| ("textureQuality".to_string(), v)),
+            ((self.shadow_cascade2_split).inspect_value(path, offset, limit))
+                .map(|v| ("shadowCascade2Split".to_string(), v)),
+            ((self.shadow_near_plane_offset).inspect_value(path, offset, limit))
+                .map(|v| ("shadowNearPlaneOffset".to_string(), v)),
+            ((self.anisotropic_textures).inspect_value(path, offset, limit))
+                .map(|v| ("anisotropicTextures".to_string(), v)),
+            ((self.shadow_cascade4_split).inspect_value(path, offset, limit))
+                .map(|v| ("shadowCascade4Split".to_string(), v)),
+            ((self.anti_aliasing).inspect_value(path, offset, limit))
+                .map(|v| ("antiAliasing".to_string(), v)),
+            ((self.soft_particles).inspect_value(path, offset, limit))
+                .map(|v| ("softParticles".to_string(), v)),
+            ((self.shadowmask_mode).inspect_value(path, offset, limit))
+                .map(|v| ("shadowmaskMode".to_string(), v)),
+            ((self.soft_vegetation).inspect_value(path, offset, limit))
+                .map(|v| ("softVegetation".to_string(), v)),
+            ((self.skin_weights).inspect_value(path, offset, limit))
+                .map(|v| ("skinWeights".to_string(), v)),
+            ((self.v_sync_count).inspect_value(path, offset, limit))
+                .map(|v| ("vSyncCount".to_string(), v)),
+            ((self.global_texture_mipmap_limit).inspect_value(path, offset, limit))
+                .map(|v| ("globalTextureMipmapLimit".to_string(), v)),
+            ((self.texture_mipmap_limit_settings).inspect_value(path, offset, limit))
+                .map(|v| ("textureMipmapLimitSettings".to_string(), v)),
+            ((self.lod_bias).inspect_value(path, offset, limit))
+                .map(|v| ("lodBias".to_string(), v)),
+            ((self.maximum_lod_level).inspect_value(path, offset, limit))
+                .map(|v| ("maximumLODLevel".to_string(), v)),
+            ((self.realtime_reflection_probes).inspect_value(path, offset, limit))
+                .map(|v| ("realtimeReflectionProbes".to_string(), v)),
+            ((self.particle_raycast_budget).inspect_value(path, offset, limit))
+                .map(|v| ("particleRaycastBudget".to_string(), v)),
+            ((self.billboards_face_camera_position).inspect_value(path, offset, limit))
+                .map(|v| ("billboardsFaceCameraPosition".to_string(), v)),
+            ((self.realtime_gicpu_usage).inspect_value(path, offset, limit))
+                .map(|v| ("realtimeGICPUUsage".to_string(), v)),
+            ((self.use_legacy_detail_distribution).inspect_value(path, offset, limit))
+                .map(|v| ("useLegacyDetailDistribution".to_string(), v)),
+            ((self.adaptive_vsync).inspect_value(path, offset, limit))
+                .map(|v| ("adaptiveVsync".to_string(), v)),
+            ((self.async_upload_time_slice).inspect_value(path, offset, limit))
+                .map(|v| ("asyncUploadTimeSlice".to_string(), v)),
+            ((self.streaming_mipmaps_active).inspect_value(path, offset, limit))
+                .map(|v| ("streamingMipmapsActive".to_string(), v)),
+            ((self.async_upload_buffer_size).inspect_value(path, offset, limit))
+                .map(|v| ("asyncUploadBufferSize".to_string(), v)),
+            ((self.streaming_mipmaps_add_all_cameras).inspect_value(path, offset, limit))
+                .map(|v| ("streamingMipmapsAddAllCameras".to_string(), v)),
+            ((self.streaming_mipmaps_memory_budget).inspect_value(path, offset, limit))
+                .map(|v| ("streamingMipmapsMemoryBudget".to_string(), v)),
+            ((self.enable_lod_cross_fade).inspect_value(path, offset, limit))
+                .map(|v| ("enableLODCrossFade".to_string(), v)),
+            ((self.adaptive_vsync_extra_a).inspect_value(path, offset, limit))
+                .map(|v| ("adaptiveVsyncExtraA".to_string(), v)),
+            ((self.resolution_scaling_fixed_dpi_factor).inspect_value(path, offset, limit))
+                .map(|v| ("resolutionScalingFixedDPIFactor".to_string(), v)),
+            ((self.streaming_mipmaps_renderers_per_frame).inspect_value(path, offset, limit))
+                .map(|v| ("streamingMipmapsRenderersPerFrame".to_string(), v)),
+            ((self.adaptive_vsync_extra_b).inspect_value(path, offset, limit))
+                .map(|v| ("adaptiveVsyncExtraB".to_string(), v)),
+            ((self.streaming_mipmaps_max_level_reduction).inspect_value(path, offset, limit))
+                .map(|v| ("streamingMipmapsMaxLevelReduction".to_string(), v)),
+            ((self.streaming_mipmaps_max_file_io_requests).inspect_value(path, offset, limit))
+                .map(|v| ("streamingMipmapsMaxFileIORequests".to_string(), v)),
+            ((self.mesh_lod_threshold).inspect_value(path, offset, limit))
+                .map(|v| ("meshLodThreshold".to_string(), v)),
+            ((self.async_upload_persistent_buffer).inspect_value(path, offset, limit))
+                .map(|v| ("asyncUploadPersistentBuffer".to_string(), v)),
+            ((self.custom_render_pipeline).inspect_value(path, offset, limit))
+                .map(|v| ("customRenderPipeline".to_string(), v)),
+            ((self.terrain_quality_overrides).inspect_value(path, offset, limit))
+                .map(|v| ("terrainQualityOverrides".to_string(), v)),
+            ((self.terrain_pixel_error).inspect_value(path, offset, limit))
+                .map(|v| ("terrainPixelError".to_string(), v)),
+            ((self.terrain_detail_density_scale).inspect_value(path, offset, limit))
+                .map(|v| ("terrainDetailDensityScale".to_string(), v)),
+            ((self.terrain_basemap_distance).inspect_value(path, offset, limit))
+                .map(|v| ("terrainBasemapDistance".to_string(), v)),
+            ((self.terrain_detail_distance).inspect_value(path, offset, limit))
+                .map(|v| ("terrainDetailDistance".to_string(), v)),
+            ((self.terrain_tree_distance).inspect_value(path, offset, limit))
+                .map(|v| ("terrainTreeDistance".to_string(), v)),
+            ((self.terrain_billboard_start).inspect_value(path, offset, limit))
+                .map(|v| ("terrainBillboardStart".to_string(), v)),
+            ((self.terrain_fade_length).inspect_value(path, offset, limit))
+                .map(|v| ("terrainFadeLength".to_string(), v)),
+            ((self.terrain_max_trees).inspect_value(path, offset, limit))
+                .map(|v| ("terrainMaxTrees".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

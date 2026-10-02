@@ -82,3 +82,138 @@ impl crate::Parse for EllipsoidParticleEmitter {
         })
     }
 }
+
+impl crate::ToValue for EllipsoidParticleEmitter {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_Enabled".to_string(), self.m_enabled.to_value())),
+            Some(("m_Emit".to_string(), self.m_emit.to_value())),
+            Some(("minSize".to_string(), self.min_size.to_value())),
+            Some(("maxSize".to_string(), self.max_size.to_value())),
+            Some(("minEnergy".to_string(), self.min_energy.to_value())),
+            Some(("maxEnergy".to_string(), self.max_energy.to_value())),
+            Some(("minEmission".to_string(), self.min_emission.to_value())),
+            Some(("maxEmission".to_string(), self.max_emission.to_value())),
+            Some(("worldVelocity".to_string(), self.world_velocity.to_value())),
+            Some(("localVelocity".to_string(), self.local_velocity.to_value())),
+            Some(("rndVelocity".to_string(), self.rnd_velocity.to_value())),
+            Some((
+                "emitterVelocityScale".to_string(),
+                self.emitter_velocity_scale.to_value(),
+            )),
+            Some((
+                "tangentVelocity".to_string(),
+                self.tangent_velocity.to_value(),
+            )),
+            Some((
+                "angularVelocity".to_string(),
+                self.angular_velocity.to_value(),
+            )),
+            Some((
+                "rndAngularVelocity".to_string(),
+                self.rnd_angular_velocity.to_value(),
+            )),
+            Some(("rndRotation".to_string(), self.rnd_rotation.to_value())),
+            Some((
+                "Simulate in Worldspace?".to_string(),
+                self.simulate_in_worldspace.to_value(),
+            )),
+            Some(("m_OneShot".to_string(), self.m_one_shot.to_value())),
+            Some(("m_Ellipsoid".to_string(), self.m_ellipsoid.to_value())),
+            Some((
+                "m_MinEmitterRange".to_string(),
+                self.m_min_emitter_range.to_value(),
+            )),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "m_Emit" => (self.m_emit).inspect_value(path, offset, limit),
+                "minSize" => (self.min_size).inspect_value(path, offset, limit),
+                "maxSize" => (self.max_size).inspect_value(path, offset, limit),
+                "minEnergy" => (self.min_energy).inspect_value(path, offset, limit),
+                "maxEnergy" => (self.max_energy).inspect_value(path, offset, limit),
+                "minEmission" => (self.min_emission).inspect_value(path, offset, limit),
+                "maxEmission" => (self.max_emission).inspect_value(path, offset, limit),
+                "worldVelocity" => (self.world_velocity).inspect_value(path, offset, limit),
+                "localVelocity" => (self.local_velocity).inspect_value(path, offset, limit),
+                "rndVelocity" => (self.rnd_velocity).inspect_value(path, offset, limit),
+                "emitterVelocityScale" => {
+                    (self.emitter_velocity_scale).inspect_value(path, offset, limit)
+                }
+                "tangentVelocity" => (self.tangent_velocity).inspect_value(path, offset, limit),
+                "angularVelocity" => (self.angular_velocity).inspect_value(path, offset, limit),
+                "rndAngularVelocity" => {
+                    (self.rnd_angular_velocity).inspect_value(path, offset, limit)
+                }
+                "rndRotation" => (self.rnd_rotation).inspect_value(path, offset, limit),
+                "Simulate in Worldspace?" => {
+                    (self.simulate_in_worldspace).inspect_value(path, offset, limit)
+                }
+                "m_OneShot" => (self.m_one_shot).inspect_value(path, offset, limit),
+                "m_Ellipsoid" => (self.m_ellipsoid).inspect_value(path, offset, limit),
+                "m_MinEmitterRange" => {
+                    (self.m_min_emitter_range).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.m_emit).inspect_value(path, offset, limit)).map(|v| ("m_Emit".to_string(), v)),
+            ((self.min_size).inspect_value(path, offset, limit))
+                .map(|v| ("minSize".to_string(), v)),
+            ((self.max_size).inspect_value(path, offset, limit))
+                .map(|v| ("maxSize".to_string(), v)),
+            ((self.min_energy).inspect_value(path, offset, limit))
+                .map(|v| ("minEnergy".to_string(), v)),
+            ((self.max_energy).inspect_value(path, offset, limit))
+                .map(|v| ("maxEnergy".to_string(), v)),
+            ((self.min_emission).inspect_value(path, offset, limit))
+                .map(|v| ("minEmission".to_string(), v)),
+            ((self.max_emission).inspect_value(path, offset, limit))
+                .map(|v| ("maxEmission".to_string(), v)),
+            ((self.world_velocity).inspect_value(path, offset, limit))
+                .map(|v| ("worldVelocity".to_string(), v)),
+            ((self.local_velocity).inspect_value(path, offset, limit))
+                .map(|v| ("localVelocity".to_string(), v)),
+            ((self.rnd_velocity).inspect_value(path, offset, limit))
+                .map(|v| ("rndVelocity".to_string(), v)),
+            ((self.emitter_velocity_scale).inspect_value(path, offset, limit))
+                .map(|v| ("emitterVelocityScale".to_string(), v)),
+            ((self.tangent_velocity).inspect_value(path, offset, limit))
+                .map(|v| ("tangentVelocity".to_string(), v)),
+            ((self.angular_velocity).inspect_value(path, offset, limit))
+                .map(|v| ("angularVelocity".to_string(), v)),
+            ((self.rnd_angular_velocity).inspect_value(path, offset, limit))
+                .map(|v| ("rndAngularVelocity".to_string(), v)),
+            ((self.rnd_rotation).inspect_value(path, offset, limit))
+                .map(|v| ("rndRotation".to_string(), v)),
+            ((self.simulate_in_worldspace).inspect_value(path, offset, limit))
+                .map(|v| ("Simulate in Worldspace?".to_string(), v)),
+            ((self.m_one_shot).inspect_value(path, offset, limit))
+                .map(|v| ("m_OneShot".to_string(), v)),
+            ((self.m_ellipsoid).inspect_value(path, offset, limit))
+                .map(|v| ("m_Ellipsoid".to_string(), v)),
+            ((self.m_min_emitter_range).inspect_value(path, offset, limit))
+                .map(|v| ("m_MinEmitterRange".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

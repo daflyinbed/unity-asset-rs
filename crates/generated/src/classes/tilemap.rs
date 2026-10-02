@@ -162,3 +162,127 @@ impl crate::Parse for Tilemap {
         })
     }
 }
+
+impl crate::ToValue for Tilemap {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_Enabled".to_string(), self.m_enabled.to_value())),
+            Some(("m_Tiles".to_string(), self.m_tiles.to_value())),
+            Some((
+                "m_AnimatedTiles".to_string(),
+                self.m_animated_tiles.to_value(),
+            )),
+            Some((
+                "m_TileAssetArray".to_string(),
+                self.m_tile_asset_array.to_value(),
+            )),
+            Some((
+                "m_TileSpriteArray".to_string(),
+                self.m_tile_sprite_array.to_value(),
+            )),
+            Some((
+                "m_TileMatrixArray".to_string(),
+                self.m_tile_matrix_array.to_value(),
+            )),
+            Some((
+                "m_TileColorArray".to_string(),
+                self.m_tile_color_array.to_value(),
+            )),
+            Some((
+                "m_AnimationFrameRate".to_string(),
+                self.m_animation_frame_rate.to_value(),
+            )),
+            crate::opt_field(
+                "m_TileObjectToInstantiateArray",
+                &self.m_tile_object_to_instantiate_array,
+            ),
+            Some(("m_Color".to_string(), self.m_color.to_value())),
+            Some(("m_Origin".to_string(), self.m_origin.to_value())),
+            Some(("m_Size".to_string(), self.m_size.to_value())),
+            Some(("m_TileAnchor".to_string(), self.m_tile_anchor.to_value())),
+            Some((
+                "m_TileOrientation".to_string(),
+                self.m_tile_orientation.to_value(),
+            )),
+            Some((
+                "m_TileOrientationMatrix".to_string(),
+                self.m_tile_orientation_matrix.to_value(),
+            )),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "m_Tiles" => (self.m_tiles).inspect_value(path, offset, limit),
+                "m_AnimatedTiles" => (self.m_animated_tiles).inspect_value(path, offset, limit),
+                "m_TileAssetArray" => (self.m_tile_asset_array).inspect_value(path, offset, limit),
+                "m_TileSpriteArray" => {
+                    (self.m_tile_sprite_array).inspect_value(path, offset, limit)
+                }
+                "m_TileMatrixArray" => {
+                    (self.m_tile_matrix_array).inspect_value(path, offset, limit)
+                }
+                "m_TileColorArray" => (self.m_tile_color_array).inspect_value(path, offset, limit),
+                "m_AnimationFrameRate" => {
+                    (self.m_animation_frame_rate).inspect_value(path, offset, limit)
+                }
+                "m_TileObjectToInstantiateArray" => {
+                    (self.m_tile_object_to_instantiate_array).inspect_value(path, offset, limit)
+                }
+                "m_Color" => (self.m_color).inspect_value(path, offset, limit),
+                "m_Origin" => (self.m_origin).inspect_value(path, offset, limit),
+                "m_Size" => (self.m_size).inspect_value(path, offset, limit),
+                "m_TileAnchor" => (self.m_tile_anchor).inspect_value(path, offset, limit),
+                "m_TileOrientation" => (self.m_tile_orientation).inspect_value(path, offset, limit),
+                "m_TileOrientationMatrix" => {
+                    (self.m_tile_orientation_matrix).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.m_tiles).inspect_value(path, offset, limit)).map(|v| ("m_Tiles".to_string(), v)),
+            ((self.m_animated_tiles).inspect_value(path, offset, limit))
+                .map(|v| ("m_AnimatedTiles".to_string(), v)),
+            ((self.m_tile_asset_array).inspect_value(path, offset, limit))
+                .map(|v| ("m_TileAssetArray".to_string(), v)),
+            ((self.m_tile_sprite_array).inspect_value(path, offset, limit))
+                .map(|v| ("m_TileSpriteArray".to_string(), v)),
+            ((self.m_tile_matrix_array).inspect_value(path, offset, limit))
+                .map(|v| ("m_TileMatrixArray".to_string(), v)),
+            ((self.m_tile_color_array).inspect_value(path, offset, limit))
+                .map(|v| ("m_TileColorArray".to_string(), v)),
+            ((self.m_animation_frame_rate).inspect_value(path, offset, limit))
+                .map(|v| ("m_AnimationFrameRate".to_string(), v)),
+            ((self.m_tile_object_to_instantiate_array).inspect_value(path, offset, limit))
+                .map(|v| ("m_TileObjectToInstantiateArray".to_string(), v)),
+            ((self.m_color).inspect_value(path, offset, limit)).map(|v| ("m_Color".to_string(), v)),
+            ((self.m_origin).inspect_value(path, offset, limit))
+                .map(|v| ("m_Origin".to_string(), v)),
+            ((self.m_size).inspect_value(path, offset, limit)).map(|v| ("m_Size".to_string(), v)),
+            ((self.m_tile_anchor).inspect_value(path, offset, limit))
+                .map(|v| ("m_TileAnchor".to_string(), v)),
+            ((self.m_tile_orientation).inspect_value(path, offset, limit))
+                .map(|v| ("m_TileOrientation".to_string(), v)),
+            ((self.m_tile_orientation_matrix).inspect_value(path, offset, limit))
+                .map(|v| ("m_TileOrientationMatrix".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

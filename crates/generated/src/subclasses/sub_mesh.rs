@@ -57,3 +57,65 @@ impl crate::Parse for SubMesh {
         })
     }
 }
+
+impl crate::ToValue for SubMesh {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("firstByte".to_string(), self.first_byte.to_value())),
+            Some(("indexCount".to_string(), self.index_count.to_value())),
+            crate::opt_field("isTriStrip", &self.is_tri_strip),
+            crate::opt_field("topology", &self.topology),
+            crate::opt_field("triangleCount", &self.triangle_count),
+            Some(("firstVertex".to_string(), self.first_vertex.to_value())),
+            crate::opt_field("baseVertex", &self.base_vertex),
+            Some(("vertexCount".to_string(), self.vertex_count.to_value())),
+            Some(("localAABB".to_string(), self.local_aabb.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "firstByte" => (self.first_byte).inspect_value(path, offset, limit),
+                "indexCount" => (self.index_count).inspect_value(path, offset, limit),
+                "isTriStrip" => (self.is_tri_strip).inspect_value(path, offset, limit),
+                "topology" => (self.topology).inspect_value(path, offset, limit),
+                "triangleCount" => (self.triangle_count).inspect_value(path, offset, limit),
+                "firstVertex" => (self.first_vertex).inspect_value(path, offset, limit),
+                "baseVertex" => (self.base_vertex).inspect_value(path, offset, limit),
+                "vertexCount" => (self.vertex_count).inspect_value(path, offset, limit),
+                "localAABB" => (self.local_aabb).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.first_byte).inspect_value(path, offset, limit))
+                .map(|v| ("firstByte".to_string(), v)),
+            ((self.index_count).inspect_value(path, offset, limit))
+                .map(|v| ("indexCount".to_string(), v)),
+            ((self.is_tri_strip).inspect_value(path, offset, limit))
+                .map(|v| ("isTriStrip".to_string(), v)),
+            ((self.topology).inspect_value(path, offset, limit))
+                .map(|v| ("topology".to_string(), v)),
+            ((self.triangle_count).inspect_value(path, offset, limit))
+                .map(|v| ("triangleCount".to_string(), v)),
+            ((self.first_vertex).inspect_value(path, offset, limit))
+                .map(|v| ("firstVertex".to_string(), v)),
+            ((self.base_vertex).inspect_value(path, offset, limit))
+                .map(|v| ("baseVertex".to_string(), v)),
+            ((self.vertex_count).inspect_value(path, offset, limit))
+                .map(|v| ("vertexCount".to_string(), v)),
+            ((self.local_aabb).inspect_value(path, offset, limit))
+                .map(|v| ("localAABB".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

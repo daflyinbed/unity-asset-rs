@@ -38,6 +38,21 @@ impl crate::Parse for HumanDescriptionMHumanVariant {
     }
 }
 
+impl crate::ToValue for HumanDescriptionMHumanVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：HumanDescriptionMSkeletonVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum HumanDescriptionMSkeletonVariant {
@@ -71,6 +86,21 @@ impl crate::Parse for HumanDescriptionMSkeletonVariant {
     }
 }
 
+impl crate::ToValue for HumanDescriptionMSkeletonVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：HumanDescriptionMHasTranslationDoFVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum HumanDescriptionMHasTranslationDoFVariant {
@@ -90,6 +120,21 @@ impl crate::Parse for HumanDescriptionMHasTranslationDoFVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for HumanDescriptionMHasTranslationDoFVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_5(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -196,5 +241,114 @@ impl crate::Parse for HumanDescription {
             m_has_extra_root,
             m_skeleton_has_parents,
         })
+    }
+}
+
+impl crate::ToValue for HumanDescription {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Human".to_string(), self.m_human.to_value())),
+            Some(("m_Skeleton".to_string(), self.m_skeleton.to_value())),
+            crate::opt_field("m_Handles", &self.m_handles),
+            Some(("m_ArmTwist".to_string(), self.m_arm_twist.to_value())),
+            Some((
+                "m_ForeArmTwist".to_string(),
+                self.m_fore_arm_twist.to_value(),
+            )),
+            Some((
+                "m_UpperLegTwist".to_string(),
+                self.m_upper_leg_twist.to_value(),
+            )),
+            Some(("m_LegTwist".to_string(), self.m_leg_twist.to_value())),
+            Some(("m_ArmStretch".to_string(), self.m_arm_stretch.to_value())),
+            Some(("m_LegStretch".to_string(), self.m_leg_stretch.to_value())),
+            Some(("m_FeetSpacing".to_string(), self.m_feet_spacing.to_value())),
+            Some((
+                "m_RootMotionBoneName".to_string(),
+                self.m_root_motion_bone_name.to_value(),
+            )),
+            crate::opt_field("m_GlobalScale", &self.m_global_scale),
+            crate::opt_field("m_HasTranslationDoF", &self.m_has_translation_do_f),
+            crate::opt_field(
+                "m_RootMotionBoneRotation",
+                &self.m_root_motion_bone_rotation,
+            ),
+            crate::opt_field("m_HasExtraRoot", &self.m_has_extra_root),
+            crate::opt_field("m_SkeletonHasParents", &self.m_skeleton_has_parents),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Human" => (self.m_human).inspect_value(path, offset, limit),
+                "m_Skeleton" => (self.m_skeleton).inspect_value(path, offset, limit),
+                "m_Handles" => (self.m_handles).inspect_value(path, offset, limit),
+                "m_ArmTwist" => (self.m_arm_twist).inspect_value(path, offset, limit),
+                "m_ForeArmTwist" => (self.m_fore_arm_twist).inspect_value(path, offset, limit),
+                "m_UpperLegTwist" => (self.m_upper_leg_twist).inspect_value(path, offset, limit),
+                "m_LegTwist" => (self.m_leg_twist).inspect_value(path, offset, limit),
+                "m_ArmStretch" => (self.m_arm_stretch).inspect_value(path, offset, limit),
+                "m_LegStretch" => (self.m_leg_stretch).inspect_value(path, offset, limit),
+                "m_FeetSpacing" => (self.m_feet_spacing).inspect_value(path, offset, limit),
+                "m_RootMotionBoneName" => {
+                    (self.m_root_motion_bone_name).inspect_value(path, offset, limit)
+                }
+                "m_GlobalScale" => (self.m_global_scale).inspect_value(path, offset, limit),
+                "m_HasTranslationDoF" => {
+                    (self.m_has_translation_do_f).inspect_value(path, offset, limit)
+                }
+                "m_RootMotionBoneRotation" => {
+                    (self.m_root_motion_bone_rotation).inspect_value(path, offset, limit)
+                }
+                "m_HasExtraRoot" => (self.m_has_extra_root).inspect_value(path, offset, limit),
+                "m_SkeletonHasParents" => {
+                    (self.m_skeleton_has_parents).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_human).inspect_value(path, offset, limit)).map(|v| ("m_Human".to_string(), v)),
+            ((self.m_skeleton).inspect_value(path, offset, limit))
+                .map(|v| ("m_Skeleton".to_string(), v)),
+            ((self.m_handles).inspect_value(path, offset, limit))
+                .map(|v| ("m_Handles".to_string(), v)),
+            ((self.m_arm_twist).inspect_value(path, offset, limit))
+                .map(|v| ("m_ArmTwist".to_string(), v)),
+            ((self.m_fore_arm_twist).inspect_value(path, offset, limit))
+                .map(|v| ("m_ForeArmTwist".to_string(), v)),
+            ((self.m_upper_leg_twist).inspect_value(path, offset, limit))
+                .map(|v| ("m_UpperLegTwist".to_string(), v)),
+            ((self.m_leg_twist).inspect_value(path, offset, limit))
+                .map(|v| ("m_LegTwist".to_string(), v)),
+            ((self.m_arm_stretch).inspect_value(path, offset, limit))
+                .map(|v| ("m_ArmStretch".to_string(), v)),
+            ((self.m_leg_stretch).inspect_value(path, offset, limit))
+                .map(|v| ("m_LegStretch".to_string(), v)),
+            ((self.m_feet_spacing).inspect_value(path, offset, limit))
+                .map(|v| ("m_FeetSpacing".to_string(), v)),
+            ((self.m_root_motion_bone_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_RootMotionBoneName".to_string(), v)),
+            ((self.m_global_scale).inspect_value(path, offset, limit))
+                .map(|v| ("m_GlobalScale".to_string(), v)),
+            ((self.m_has_translation_do_f).inspect_value(path, offset, limit))
+                .map(|v| ("m_HasTranslationDoF".to_string(), v)),
+            ((self.m_root_motion_bone_rotation).inspect_value(path, offset, limit))
+                .map(|v| ("m_RootMotionBoneRotation".to_string(), v)),
+            ((self.m_has_extra_root).inspect_value(path, offset, limit))
+                .map(|v| ("m_HasExtraRoot".to_string(), v)),
+            ((self.m_skeleton_has_parents).inspect_value(path, offset, limit))
+                .map(|v| ("m_SkeletonHasParents".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

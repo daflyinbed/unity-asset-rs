@@ -28,6 +28,21 @@ impl crate::Parse for ReflectionProbeMImportanceVariant {
     }
 }
 
+impl crate::ToValue for ReflectionProbeMImportanceVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_4(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_4(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：ReflectionProbeMUseOcclusionCullingVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ReflectionProbeMUseOcclusionCullingVariant {
@@ -47,6 +62,21 @@ impl crate::Parse for ReflectionProbeMUseOcclusionCullingVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for ReflectionProbeMUseOcclusionCullingVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_4(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_4(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -174,5 +204,170 @@ impl crate::Parse for ReflectionProbe {
             m_custom_baked_texture: m_custom_baked_texture.unwrap(),
             m_baked_texture: m_baked_texture.unwrap(),
         })
+    }
+}
+
+impl crate::ToValue for ReflectionProbe {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_Enabled".to_string(), self.m_enabled.to_value())),
+            Some(("m_Type".to_string(), self.m_type.to_value())),
+            Some(("m_Mode".to_string(), self.m_mode.to_value())),
+            Some(("m_RefreshMode".to_string(), self.m_refresh_mode.to_value())),
+            Some((
+                "m_TimeSlicingMode".to_string(),
+                self.m_time_slicing_mode.to_value(),
+            )),
+            Some(("m_Resolution".to_string(), self.m_resolution.to_value())),
+            Some((
+                "m_UpdateFrequency".to_string(),
+                self.m_update_frequency.to_value(),
+            )),
+            Some(("m_Importance".to_string(), self.m_importance.to_value())),
+            Some(("m_BoxSize".to_string(), self.m_box_size.to_value())),
+            Some(("m_BoxOffset".to_string(), self.m_box_offset.to_value())),
+            Some(("m_NearClip".to_string(), self.m_near_clip.to_value())),
+            Some(("m_FarClip".to_string(), self.m_far_clip.to_value())),
+            Some((
+                "m_ShadowDistance".to_string(),
+                self.m_shadow_distance.to_value(),
+            )),
+            Some(("m_ClearFlags".to_string(), self.m_clear_flags.to_value())),
+            Some((
+                "m_BackGroundColor".to_string(),
+                self.m_back_ground_color.to_value(),
+            )),
+            Some(("m_CullingMask".to_string(), self.m_culling_mask.to_value())),
+            Some((
+                "m_IntensityMultiplier".to_string(),
+                self.m_intensity_multiplier.to_value(),
+            )),
+            crate::opt_field("m_BlendDistance", &self.m_blend_distance),
+            Some(("m_HDR".to_string(), self.m_hdr.to_value())),
+            Some((
+                "m_BoxProjection".to_string(),
+                self.m_box_projection.to_value(),
+            )),
+            Some((
+                "m_RenderDynamicObjects".to_string(),
+                self.m_render_dynamic_objects.to_value(),
+            )),
+            Some((
+                "m_UseOcclusionCulling".to_string(),
+                self.m_use_occlusion_culling.to_value(),
+            )),
+            Some((
+                "m_CustomBakedTexture".to_string(),
+                self.m_custom_baked_texture.to_value(),
+            )),
+            Some((
+                "m_BakedTexture".to_string(),
+                self.m_baked_texture.to_value(),
+            )),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "m_Type" => (self.m_type).inspect_value(path, offset, limit),
+                "m_Mode" => (self.m_mode).inspect_value(path, offset, limit),
+                "m_RefreshMode" => (self.m_refresh_mode).inspect_value(path, offset, limit),
+                "m_TimeSlicingMode" => {
+                    (self.m_time_slicing_mode).inspect_value(path, offset, limit)
+                }
+                "m_Resolution" => (self.m_resolution).inspect_value(path, offset, limit),
+                "m_UpdateFrequency" => (self.m_update_frequency).inspect_value(path, offset, limit),
+                "m_Importance" => (self.m_importance).inspect_value(path, offset, limit),
+                "m_BoxSize" => (self.m_box_size).inspect_value(path, offset, limit),
+                "m_BoxOffset" => (self.m_box_offset).inspect_value(path, offset, limit),
+                "m_NearClip" => (self.m_near_clip).inspect_value(path, offset, limit),
+                "m_FarClip" => (self.m_far_clip).inspect_value(path, offset, limit),
+                "m_ShadowDistance" => (self.m_shadow_distance).inspect_value(path, offset, limit),
+                "m_ClearFlags" => (self.m_clear_flags).inspect_value(path, offset, limit),
+                "m_BackGroundColor" => {
+                    (self.m_back_ground_color).inspect_value(path, offset, limit)
+                }
+                "m_CullingMask" => (self.m_culling_mask).inspect_value(path, offset, limit),
+                "m_IntensityMultiplier" => {
+                    (self.m_intensity_multiplier).inspect_value(path, offset, limit)
+                }
+                "m_BlendDistance" => (self.m_blend_distance).inspect_value(path, offset, limit),
+                "m_HDR" => (self.m_hdr).inspect_value(path, offset, limit),
+                "m_BoxProjection" => (self.m_box_projection).inspect_value(path, offset, limit),
+                "m_RenderDynamicObjects" => {
+                    (self.m_render_dynamic_objects).inspect_value(path, offset, limit)
+                }
+                "m_UseOcclusionCulling" => {
+                    (self.m_use_occlusion_culling).inspect_value(path, offset, limit)
+                }
+                "m_CustomBakedTexture" => {
+                    (self.m_custom_baked_texture).inspect_value(path, offset, limit)
+                }
+                "m_BakedTexture" => (self.m_baked_texture).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.m_type).inspect_value(path, offset, limit)).map(|v| ("m_Type".to_string(), v)),
+            ((self.m_mode).inspect_value(path, offset, limit)).map(|v| ("m_Mode".to_string(), v)),
+            ((self.m_refresh_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_RefreshMode".to_string(), v)),
+            ((self.m_time_slicing_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_TimeSlicingMode".to_string(), v)),
+            ((self.m_resolution).inspect_value(path, offset, limit))
+                .map(|v| ("m_Resolution".to_string(), v)),
+            ((self.m_update_frequency).inspect_value(path, offset, limit))
+                .map(|v| ("m_UpdateFrequency".to_string(), v)),
+            ((self.m_importance).inspect_value(path, offset, limit))
+                .map(|v| ("m_Importance".to_string(), v)),
+            ((self.m_box_size).inspect_value(path, offset, limit))
+                .map(|v| ("m_BoxSize".to_string(), v)),
+            ((self.m_box_offset).inspect_value(path, offset, limit))
+                .map(|v| ("m_BoxOffset".to_string(), v)),
+            ((self.m_near_clip).inspect_value(path, offset, limit))
+                .map(|v| ("m_NearClip".to_string(), v)),
+            ((self.m_far_clip).inspect_value(path, offset, limit))
+                .map(|v| ("m_FarClip".to_string(), v)),
+            ((self.m_shadow_distance).inspect_value(path, offset, limit))
+                .map(|v| ("m_ShadowDistance".to_string(), v)),
+            ((self.m_clear_flags).inspect_value(path, offset, limit))
+                .map(|v| ("m_ClearFlags".to_string(), v)),
+            ((self.m_back_ground_color).inspect_value(path, offset, limit))
+                .map(|v| ("m_BackGroundColor".to_string(), v)),
+            ((self.m_culling_mask).inspect_value(path, offset, limit))
+                .map(|v| ("m_CullingMask".to_string(), v)),
+            ((self.m_intensity_multiplier).inspect_value(path, offset, limit))
+                .map(|v| ("m_IntensityMultiplier".to_string(), v)),
+            ((self.m_blend_distance).inspect_value(path, offset, limit))
+                .map(|v| ("m_BlendDistance".to_string(), v)),
+            ((self.m_hdr).inspect_value(path, offset, limit)).map(|v| ("m_HDR".to_string(), v)),
+            ((self.m_box_projection).inspect_value(path, offset, limit))
+                .map(|v| ("m_BoxProjection".to_string(), v)),
+            ((self.m_render_dynamic_objects).inspect_value(path, offset, limit))
+                .map(|v| ("m_RenderDynamicObjects".to_string(), v)),
+            ((self.m_use_occlusion_culling).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseOcclusionCulling".to_string(), v)),
+            ((self.m_custom_baked_texture).inspect_value(path, offset, limit))
+                .map(|v| ("m_CustomBakedTexture".to_string(), v)),
+            ((self.m_baked_texture).inspect_value(path, offset, limit))
+                .map(|v| ("m_BakedTexture".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

@@ -27,6 +27,21 @@ impl crate::Parse for TransformMLocalScaleVariant {
     }
 }
 
+impl crate::ToValue for TransformMLocalScaleVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2021_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2021_2(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：TransformMChildrenVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TransformMChildrenVariant {
@@ -56,6 +71,21 @@ impl crate::Parse for TransformMChildrenVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for TransformMChildrenVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -89,5 +119,61 @@ impl crate::Parse for Transform {
             m_children,
             m_father,
         })
+    }
+}
+
+impl crate::ToValue for Transform {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some((
+                "m_LocalRotation".to_string(),
+                self.m_local_rotation.to_value(),
+            )),
+            Some((
+                "m_LocalPosition".to_string(),
+                self.m_local_position.to_value(),
+            )),
+            Some(("m_LocalScale".to_string(), self.m_local_scale.to_value())),
+            Some(("m_Children".to_string(), self.m_children.to_value())),
+            Some(("m_Father".to_string(), self.m_father.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_LocalRotation" => (self.m_local_rotation).inspect_value(path, offset, limit),
+                "m_LocalPosition" => (self.m_local_position).inspect_value(path, offset, limit),
+                "m_LocalScale" => (self.m_local_scale).inspect_value(path, offset, limit),
+                "m_Children" => (self.m_children).inspect_value(path, offset, limit),
+                "m_Father" => (self.m_father).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_local_rotation).inspect_value(path, offset, limit))
+                .map(|v| ("m_LocalRotation".to_string(), v)),
+            ((self.m_local_position).inspect_value(path, offset, limit))
+                .map(|v| ("m_LocalPosition".to_string(), v)),
+            ((self.m_local_scale).inspect_value(path, offset, limit))
+                .map(|v| ("m_LocalScale".to_string(), v)),
+            ((self.m_children).inspect_value(path, offset, limit))
+                .map(|v| ("m_Children".to_string(), v)),
+            ((self.m_father).inspect_value(path, offset, limit))
+                .map(|v| ("m_Father".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

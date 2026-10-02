@@ -47,3 +47,65 @@ impl crate::Parse for VfxRendererSettings {
         })
     }
 }
+
+impl crate::ToValue for VfxRendererSettings {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some((
+                "motionVectorGenerationMode".to_string(),
+                self.motion_vector_generation_mode.to_value(),
+            )),
+            Some((
+                "shadowCastingMode".to_string(),
+                self.shadow_casting_mode.to_value(),
+            )),
+            crate::opt_field("receiveShadows", &self.receive_shadows),
+            crate::opt_field("rayTracingMode", &self.ray_tracing_mode),
+            crate::opt_field("reflectionProbeUsage", &self.reflection_probe_usage),
+            crate::opt_field("lightProbeUsage", &self.light_probe_usage),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "motionVectorGenerationMode" => {
+                    (self.motion_vector_generation_mode).inspect_value(path, offset, limit)
+                }
+                "shadowCastingMode" => {
+                    (self.shadow_casting_mode).inspect_value(path, offset, limit)
+                }
+                "receiveShadows" => (self.receive_shadows).inspect_value(path, offset, limit),
+                "rayTracingMode" => (self.ray_tracing_mode).inspect_value(path, offset, limit),
+                "reflectionProbeUsage" => {
+                    (self.reflection_probe_usage).inspect_value(path, offset, limit)
+                }
+                "lightProbeUsage" => (self.light_probe_usage).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.motion_vector_generation_mode).inspect_value(path, offset, limit))
+                .map(|v| ("motionVectorGenerationMode".to_string(), v)),
+            ((self.shadow_casting_mode).inspect_value(path, offset, limit))
+                .map(|v| ("shadowCastingMode".to_string(), v)),
+            ((self.receive_shadows).inspect_value(path, offset, limit))
+                .map(|v| ("receiveShadows".to_string(), v)),
+            ((self.ray_tracing_mode).inspect_value(path, offset, limit))
+                .map(|v| ("rayTracingMode".to_string(), v)),
+            ((self.reflection_probe_usage).inspect_value(path, offset, limit))
+                .map(|v| ("reflectionProbeUsage".to_string(), v)),
+            ((self.light_probe_usage).inspect_value(path, offset, limit))
+                .map(|v| ("lightProbeUsage".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

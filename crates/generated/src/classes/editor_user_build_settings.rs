@@ -37,6 +37,21 @@ impl crate::Parse for EditorUserBuildSettingsMBuildLocationVariant {
     }
 }
 
+impl crate::ToValue for EditorUserBuildSettingsMBuildLocationVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：EditorUserBuildSettingsMSymlinkLibrariesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum EditorUserBuildSettingsMSymlinkLibrariesVariant {
@@ -60,6 +75,21 @@ impl crate::Parse for EditorUserBuildSettingsMSymlinkLibrariesVariant {
     }
 }
 
+impl crate::ToValue for EditorUserBuildSettingsMSymlinkLibrariesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V3_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V3_5(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：EditorUserBuildSettingsMSelectedBlackBerryBuildTypeVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum EditorUserBuildSettingsMSelectedBlackBerryBuildTypeVariant {
@@ -79,6 +109,21 @@ impl crate::Parse for EditorUserBuildSettingsMSelectedBlackBerryBuildTypeVariant
             let v = rdr.read_i32()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for EditorUserBuildSettingsMSelectedBlackBerryBuildTypeVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V4_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V4_5(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -110,6 +155,23 @@ impl crate::Parse for EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTarget
     }
 }
 
+impl crate::ToValue for EditorUserBuildSettingsMSelectedWsaBuildAndRunDeployTargetVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2019_1(v) => v.to_value(),
+            Self::V2023_1_10(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2019_1(v) => (v).inspect_value(path, offset, limit),
+            Self::V2023_1_10(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：EditorUserBuildSettingsMWiiUEnableNetApiVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum EditorUserBuildSettingsMWiiUEnableNetApiVariant {
@@ -129,6 +191,21 @@ impl crate::Parse for EditorUserBuildSettingsMWiiUEnableNetApiVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for EditorUserBuildSettingsMWiiUEnableNetApiVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_5(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -156,6 +233,21 @@ impl crate::Parse for EditorUserBuildSettingsMExportAsGoogleAndroidProjectVarian
     }
 }
 
+impl crate::ToValue for EditorUserBuildSettingsMExportAsGoogleAndroidProjectVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_6(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_6(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant {
@@ -175,6 +267,21 @@ impl crate::Parse for EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVarian
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for EditorUserBuildSettingsMNvnGraphicsDebuggerForSwitchVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_6_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_6_2(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -211,6 +318,25 @@ impl crate::Parse for EditorUserBuildSettingsMNvnShaderDebuggingVariant {
     }
 }
 
+impl crate::ToValue for EditorUserBuildSettingsMNvnShaderDebuggingVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V6000_0_61(v) => v.to_value(),
+            Self::V6000_1(v) => v.to_value(),
+            Self::V6000_4(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_0_61(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_1(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_4(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：EditorUserBuildSettingsMForceOptimizeScriptCompilationVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum EditorUserBuildSettingsMForceOptimizeScriptCompilationVariant {
@@ -234,6 +360,23 @@ impl crate::Parse for EditorUserBuildSettingsMForceOptimizeScriptCompilationVari
         } else {
             let v = rdr.read_bool()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for EditorUserBuildSettingsMForceOptimizeScriptCompilationVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_4(v) => v.to_value(),
+            Self::V5_6(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_4(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_6(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -266,6 +409,25 @@ impl crate::Parse for EditorUserBuildSettingsMRedirectWritesToHostMountForSwitch
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for EditorUserBuildSettingsMRedirectWritesToHostMountForSwitchVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_4_17(v) => v.to_value(),
+            Self::V2018_1(v) => v.to_value(),
+            Self::V2018_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_4_17(v) => (v).inspect_value(path, offset, limit),
+            Self::V2018_1(v) => (v).inspect_value(path, offset, limit),
+            Self::V2018_3(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -307,6 +469,27 @@ impl crate::Parse for EditorUserBuildSettingsMBuildAppBundleVariant {
     }
 }
 
+impl crate::ToValue for EditorUserBuildSettingsMBuildAppBundleVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2018_4_13(v) => v.to_value(),
+            Self::V2019_1(v) => v.to_value(),
+            Self::V2019_2_11(v) => v.to_value(),
+            Self::V2021_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2018_4_13(v) => (v).inspect_value(path, offset, limit),
+            Self::V2019_1(v) => (v).inspect_value(path, offset, limit),
+            Self::V2019_2_11(v) => (v).inspect_value(path, offset, limit),
+            Self::V2021_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：EditorUserBuildSettingsMAndroidCreateSymbolsZipVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum EditorUserBuildSettingsMAndroidCreateSymbolsZipVariant {
@@ -335,6 +518,23 @@ impl crate::Parse for EditorUserBuildSettingsMAndroidCreateSymbolsZipVariant {
     }
 }
 
+impl crate::ToValue for EditorUserBuildSettingsMAndroidCreateSymbolsZipVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2019_4_23(v) => v.to_value(),
+            Self::V2020_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2019_4_23(v) => (v).inspect_value(path, offset, limit),
+            Self::V2020_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：EditorUserBuildSettingsMOverrideTextureCompressionVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum EditorUserBuildSettingsMOverrideTextureCompressionVariant {
@@ -354,6 +554,21 @@ impl crate::Parse for EditorUserBuildSettingsMOverrideTextureCompressionVariant 
         } else {
             let v = rdr.read_i32()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for EditorUserBuildSettingsMOverrideTextureCompressionVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2022_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2022_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -3569,5 +3784,1162 @@ impl crate::Parse for EditorUserBuildSettings {
             m_active_build_profile,
             m_build_output_to_build_metadata_map,
         })
+    }
+}
+
+impl crate::ToValue for EditorUserBuildSettings {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some((
+                "m_BuildLocation".to_string(),
+                self.m_build_location.to_value(),
+            )),
+            Some((
+                "m_ActiveBuildTarget".to_string(),
+                self.m_active_build_target.to_value(),
+            )),
+            Some((
+                "m_SelectedBuildTargetGroup".to_string(),
+                self.m_selected_build_target_group.to_value(),
+            )),
+            crate::opt_field(
+                "m_ActiveBuildTargetGroup",
+                &self.m_active_build_target_group,
+            ),
+            crate::opt_field("m_SelectedBuildTarget", &self.m_selected_build_target),
+            crate::opt_field("m_ActivePlatformGuid", &self.m_active_platform_guid),
+            Some((
+                "m_SelectedStandaloneTarget".to_string(),
+                self.m_selected_standalone_target.to_value(),
+            )),
+            Some((
+                "m_ArchitectureFlags".to_string(),
+                self.m_architecture_flags.to_value(),
+            )),
+            crate::opt_field(
+                "m_ActiveBuildPlatformGroupName",
+                &self.m_active_build_platform_group_name,
+            ),
+            crate::opt_field("m_SelectedWiiSubtarget", &self.m_selected_wii_subtarget),
+            crate::opt_field("m_SelectedPSP2Subtarget", &self.m_selected_psp2_subtarget),
+            crate::opt_field("m_SelectedFacebookTarget", &self.m_selected_facebook_target),
+            crate::opt_field(
+                "m_SelectedBuildPlatformGroupName",
+                &self.m_selected_build_platform_group_name,
+            ),
+            Some(("m_Development".to_string(), self.m_development.to_value())),
+            crate::opt_field("m_SelectedWiiDebugLevel", &self.m_selected_wii_debug_level),
+            crate::opt_field("m_SelectedPS3Subtarget", &self.m_selected_ps3_subtarget),
+            crate::opt_field("m_SelectedPS4Subtarget", &self.m_selected_ps4_subtarget),
+            Some((
+                "m_ConnectProfiler".to_string(),
+                self.m_connect_profiler.to_value(),
+            )),
+            crate::opt_field("m_SelectedXboxSubtarget", &self.m_selected_xbox_subtarget),
+            crate::opt_field("m_PS4HardwareTarget", &self.m_ps4_hardware_target),
+            crate::opt_field(
+                "m_SelectedStandaloneBuildSubtarget",
+                &self.m_selected_standalone_build_subtarget,
+            ),
+            Some((
+                "m_AllowDebugging".to_string(),
+                self.m_allow_debugging.to_value(),
+            )),
+            crate::opt_field("m_SelectedXboxRunMethod", &self.m_selected_xbox_run_method),
+            crate::opt_field("m_SelectedPSMSubtarget", &self.m_selected_psm_subtarget),
+            crate::opt_field(
+                "m_ActiveStandaloneBuildSubtarget",
+                &self.m_active_standalone_build_subtarget,
+            ),
+            crate::opt_field("m_WebPlayerStreamed", &self.m_web_player_streamed),
+            crate::opt_field("m_SelectedIOSBuildType", &self.m_selected_ios_build_type),
+            crate::opt_field(
+                "m_SelectedWiiUDebugLevel",
+                &self.m_selected_wii_u_debug_level,
+            ),
+            crate::opt_field(
+                "m_WebPlayerOfflineDeployment",
+                &self.m_web_player_offline_deployment,
+            ),
+            crate::opt_field(
+                "m_SelectedWiiUBuildOutput",
+                &self.m_selected_wii_u_build_output,
+            ),
+            crate::opt_field("m_AndroidBuildSystem", &self.m_android_build_system),
+            crate::opt_field("m_WebPlayerNaClSupport", &self.m_web_player_na_cl_support),
+            crate::opt_field("m_SelectedWiiUBootMode", &self.m_selected_wii_u_boot_mode),
+            crate::opt_field("m_AndroidBuildType", &self.m_android_build_type),
+            Some((
+                "m_InstallInBuildFolder".to_string(),
+                self.m_install_in_build_folder.to_value(),
+            )),
+            crate::opt_field(
+                "m_AndroidReleaseMinification",
+                &self.m_android_release_minification,
+            ),
+            crate::opt_field("m_SymlinkLibraries", &self.m_symlink_libraries),
+            crate::opt_field(
+                "m_AndroidDebugMinification",
+                &self.m_android_debug_minification,
+            ),
+            Some((
+                "m_SelectedAndroidSubtarget".to_string(),
+                self.m_selected_android_subtarget.to_value(),
+            )),
+            crate::opt_field(
+                "m_SelectedAndroidETC2Fallback",
+                &self.m_selected_android_etc2_fallback,
+            ),
+            crate::opt_field(
+                "m_AndroidDeviceSocketAddress",
+                &self.m_android_device_socket_address,
+            ),
+            crate::opt_field("m_ExplicitNullChecks", &self.m_explicit_null_checks),
+            crate::opt_field(
+                "m_WebGLUsePreBuiltUnityEngine",
+                &self.m_web_gl_use_pre_built_unity_engine,
+            ),
+            crate::opt_field(
+                "m_AndroidCurrentDeploymentTargetId",
+                &self.m_android_current_deployment_target_id,
+            ),
+            crate::opt_field("m_EnableHeadlessMode", &self.m_enable_headless_mode),
+            crate::opt_field(
+                "m_SelectedCompressionType",
+                &self.m_selected_compression_type,
+            ),
+            crate::opt_field("m_XboxCompressedXex", &self.m_xbox_compressed_xex),
+            crate::opt_field("m_WebPlayerDeployOnline", &self.m_web_player_deploy_online),
+            crate::opt_field(
+                "m_NeedSubmissionMaterials",
+                &self.m_need_submission_materials,
+            ),
+            crate::opt_field("m_SymlinkTrampoline", &self.m_symlink_trampoline),
+            crate::opt_field("m_FacebookAccessToken", &self.m_facebook_access_token),
+            crate::opt_field("m_CompressWithPsArc", &self.m_compress_with_ps_arc),
+            crate::opt_field(
+                "m_SelectedMetroBuildType",
+                &self.m_selected_metro_build_type,
+            ),
+            crate::opt_field("m_SelectedMetroTarget", &self.m_selected_metro_target),
+            crate::opt_field(
+                "m_BuildWithDeepProfilingSupport",
+                &self.m_build_with_deep_profiling_support,
+            ),
+            crate::opt_field("m_DatalessPlayer", &self.m_dataless_player),
+            crate::opt_field("m_SelectedMetroSDK", &self.m_selected_metro_sdk),
+            crate::opt_field("m_BuildScriptsOnly", &self.m_build_scripts_only),
+            crate::opt_field(
+                "m_WaitForPlayerConnection",
+                &self.m_wait_for_player_connection,
+            ),
+            crate::opt_field(
+                "m_SelectedDiagnosticSetting",
+                &self.m_selected_diagnostic_setting,
+            ),
+            crate::opt_field(
+                "m_SelectedBlackBerrySubtarget",
+                &self.m_selected_black_berry_subtarget,
+            ),
+            crate::opt_field(
+                "m_GenerateMetroReferenceProjects",
+                &self.m_generate_metro_reference_projects,
+            ),
+            crate::opt_field(
+                "m_SelectedMetroBuildAndRunDeployTarget",
+                &self.m_selected_metro_build_and_run_deploy_target,
+            ),
+            crate::opt_field(
+                "m_SelectedBlackBerryBuildType",
+                &self.m_selected_black_berry_build_type,
+            ),
+            crate::opt_field(
+                "m_WebGLOptimizationLevel",
+                &self.m_web_gl_optimization_level,
+            ),
+            crate::opt_field("m_WsaHolographicRemoting", &self.m_wsa_holographic_remoting),
+            crate::opt_field("m_SelectedTizenSubtarget", &self.m_selected_tizen_subtarget),
+            crate::opt_field("m_SelectedWSASDK", &self.m_selected_wsasdk),
+            crate::opt_field(
+                "m_CompressFilesInPackage",
+                &self.m_compress_files_in_package,
+            ),
+            crate::opt_field("m_BuildWithCodeCoverage", &self.m_build_with_code_coverage),
+            crate::opt_field(
+                "m_SelectedWSABuildAndRunDeployTarget",
+                &self.m_selected_wsa_build_and_run_deploy_target,
+            ),
+            crate::opt_field(
+                "m_ExplicitDivideByZeroChecks",
+                &self.m_explicit_divide_by_zero_checks,
+            ),
+            crate::opt_field("m_SymlinkSources", &self.m_symlink_sources),
+            crate::opt_field(
+                "m_GenerateWSAReferenceProjects",
+                &self.m_generate_wsa_reference_projects,
+            ),
+            crate::opt_field("m_WiiUEnableNetAPI", &self.m_wii_u_enable_net_api),
+            crate::opt_field(
+                "m_MovePackageToDiscOuterEdge",
+                &self.m_move_package_to_disc_outer_edge,
+            ),
+            crate::opt_field("m_ForceInstallation", &self.m_force_installation),
+            crate::opt_field(
+                "m_ExportAsGoogleAndroidProject",
+                &self.m_export_as_google_android_project,
+            ),
+            crate::opt_field(
+                "m_XboxOneStreamingInstallLaunchChunkRange",
+                &self.m_xbox_one_streaming_install_launch_chunk_range,
+            ),
+            crate::opt_field(
+                "m_SelectedWSAUWPBuildType",
+                &self.m_selected_wsauwp_build_type,
+            ),
+            crate::opt_field(
+                "m_SelectedXboxOneDeployMethod",
+                &self.m_selected_xbox_one_deploy_method,
+            ),
+            crate::opt_field("m_SelectedWSASubtarget", &self.m_selected_wsa_subtarget),
+            crate::opt_field(
+                "m_ExplicitArrayBoundsChecks",
+                &self.m_explicit_array_bounds_checks,
+            ),
+            crate::opt_field(
+                "m_WSADotNetNativeEnabled",
+                &self.m_wsa_dot_net_native_enabled,
+            ),
+            crate::opt_field("m_SelectedWSAUWPSDK", &self.m_selected_wsauwpsdk),
+            crate::opt_field(
+                "m_CreateSolutionFileForSwitch",
+                &self.m_create_solution_file_for_switch,
+            ),
+            crate::opt_field(
+                "m_CreateRomFileForSwitch",
+                &self.m_create_rom_file_for_switch,
+            ),
+            crate::opt_field(
+                "m_NVNGraphicsDebuggerForSwitch",
+                &self.m_nvn_graphics_debugger_for_switch,
+            ),
+            crate::opt_field(
+                "m_EnableRomCompressionForSwitch",
+                &self.m_enable_rom_compression_for_switch,
+            ),
+            crate::opt_field("m_NVNShaderDebugging", &self.m_nvn_shader_debugging),
+            crate::opt_field(
+                "m_GenerateNintendoSwitchShaderInfo",
+                &self.m_generate_nintendo_switch_shader_info,
+            ),
+            crate::opt_field("m_SaveADFForSwitch", &self.m_save_adf_for_switch),
+            crate::opt_field(
+                "m_ForceOptimizeScriptCompilation",
+                &self.m_force_optimize_script_compilation,
+            ),
+            crate::opt_field("m_XboxOneUsername", &self.m_xbox_one_username),
+            crate::opt_field(
+                "m_EnableDebugPadForSwitch",
+                &self.m_enable_debug_pad_for_switch,
+            ),
+            crate::opt_field(
+                "m_RomCompressionTypeForSwitch",
+                &self.m_rom_compression_type_for_switch,
+            ),
+            crate::opt_field(
+                "m_NVNDrawValidationLight",
+                &self.m_nvn_draw_validation_light,
+            ),
+            crate::opt_field(
+                "m_XboxOneNetworkSharePath",
+                &self.m_xbox_one_network_share_path,
+            ),
+            crate::opt_field(
+                "m_RedirectWritesToHostMountForSwitch",
+                &self.m_redirect_writes_to_host_mount_for_switch,
+            ),
+            crate::opt_field("m_NVNDrawValidation", &self.m_nvn_draw_validation),
+            crate::opt_field(
+                "m_RomCompressionLevelForSwitch",
+                &self.m_rom_compression_level_for_switch,
+            ),
+            crate::opt_field(
+                "m_NVNDrawValidationHeavy",
+                &self.m_nvn_draw_validation_heavy,
+            ),
+            crate::opt_field(
+                "m_EnableHeapInspectorForSwitch",
+                &self.m_enable_heap_inspector_for_switch,
+            ),
+            crate::opt_field(
+                "m_RomCompressionConfigForSwitch",
+                &self.m_rom_compression_config_for_switch,
+            ),
+            crate::opt_field("m_PlatformSettings", &self.m_platform_settings),
+            crate::opt_field("m_BuildAppBundle", &self.m_build_app_bundle),
+            crate::opt_field(
+                "m_UseLegacyNvnPoolAllocatorForSwitch",
+                &self.m_use_legacy_nvn_pool_allocator_for_switch,
+            ),
+            crate::opt_field(
+                "m_HTCSScriptDebuggingForSwitch",
+                &self.m_htcs_script_debugging_for_switch,
+            ),
+            crate::opt_field(
+                "m_AndroidCreateSymbolsZip",
+                &self.m_android_create_symbols_zip,
+            ),
+            crate::opt_field("m_PS5KeepPackageFiles", &self.m_ps5_keep_package_files),
+            crate::opt_field(
+                "m_SelectedWSAUWPVSVersion",
+                &self.m_selected_wsauwpvs_version,
+            ),
+            crate::opt_field(
+                "m_AndroidUseLegacySdkTools",
+                &self.m_android_use_legacy_sdk_tools,
+            ),
+            crate::opt_field("m_SelectedPS5Subtarget", &self.m_selected_ps5_subtarget),
+            crate::opt_field("m_AndroidCreateSymbols", &self.m_android_create_symbols),
+            crate::opt_field("m_NVNAftermath", &self.m_nvn_aftermath),
+            crate::opt_field(
+                "m_SelectedPS5CompressionType",
+                &self.m_selected_ps5_compression_type,
+            ),
+            crate::opt_field(
+                "m_EnableMemoryTrackerForSwitch",
+                &self.m_enable_memory_tracker_for_switch,
+            ),
+            crate::opt_field("m_NVNAftermathLevel", &self.m_nvn_aftermath_level),
+            crate::opt_field(
+                "m_SelectedPS5CompressionLevel",
+                &self.m_selected_ps5_compression_level,
+            ),
+            crate::opt_field(
+                "m_WaitForSwitchMemoryTrackerOnStartup",
+                &self.m_wait_for_switch_memory_tracker_on_startup,
+            ),
+            crate::opt_field("m_SelectedWSAMinUWPSDK", &self.m_selected_wsa_min_uwpsdk),
+            crate::opt_field("m_PS5WorkspaceName", &self.m_ps5_workspace_name),
+            crate::opt_field(
+                "m_OverrideMaxTextureSize",
+                &self.m_override_max_texture_size,
+            ),
+            crate::opt_field(
+                "m_SelectedWSAArchitecture",
+                &self.m_selected_wsa_architecture,
+            ),
+            crate::opt_field(
+                "m_OverrideTextureCompression",
+                &self.m_override_texture_compression,
+            ),
+            crate::opt_field("m_Il2CppCodeGeneration", &self.m_il2_cpp_code_generation),
+            crate::opt_field(
+                "m_FacebookCreatePackageForSubmission",
+                &self.m_facebook_create_package_for_submission,
+            ),
+            crate::opt_field("m_EnableHostIOForSwitch", &self.m_enable_host_io_for_switch),
+            crate::opt_field(
+                "m_WindowsDevicePortalAddress",
+                &self.m_windows_device_portal_address,
+            ),
+            crate::opt_field(
+                "m_SelectedXboxOneDeployDrive",
+                &self.m_selected_xbox_one_deploy_drive,
+            ),
+            crate::opt_field(
+                "m_WindowsDevicePortalUsername",
+                &self.m_windows_device_portal_username,
+            ),
+            crate::opt_field(
+                "m_SelectedWebGLSubtarget",
+                &self.m_selected_web_gl_subtarget,
+            ),
+            crate::opt_field(
+                "m_EnableUnpublishableErrorsForSwitch",
+                &self.m_enable_unpublishable_errors_for_switch,
+            ),
+            crate::opt_field(
+                "m_WebGLClientBrowserType",
+                &self.m_web_gl_client_browser_type,
+            ),
+            crate::opt_field(
+                "m_WebGLClientBrowserPath",
+                &self.m_web_gl_client_browser_path,
+            ),
+            crate::opt_field("m_WebGLClientPlatform", &self.m_web_gl_client_platform),
+            crate::opt_field("m_macosXcodeBuildConfig", &self.m_macos_xcode_build_config),
+            crate::opt_field(
+                "m_SelectedWindowsBuildAndRunDeployTarget",
+                &self.m_selected_windows_build_and_run_deploy_target,
+            ),
+            crate::opt_field(
+                "m_SelectedEmbeddedLinuxArchitecture",
+                &self.m_selected_embedded_linux_architecture,
+            ),
+            crate::opt_field("m_RemoteDeviceInfo", &self.m_remote_device_info),
+            crate::opt_field("m_RemoteDeviceAddress", &self.m_remote_device_address),
+            crate::opt_field("m_RemoteDeviceUsername", &self.m_remote_device_username),
+            crate::opt_field("m_RemoteDeviceExports", &self.m_remote_device_exports),
+            crate::opt_field("m_PathOnRemoteDevice", &self.m_path_on_remote_device),
+            crate::opt_field("m_SelectedQNXOsVersion", &self.m_selected_qnx_os_version),
+            crate::opt_field(
+                "m_SelectedQNXArchitecture",
+                &self.m_selected_qnx_architecture,
+            ),
+            crate::opt_field("m_ActiveProfilePath", &self.m_active_profile_path),
+            crate::opt_field("m_ActiveBuildProfile", &self.m_active_build_profile),
+            crate::opt_field(
+                "m_BuildOutputToBuildMetadataMap",
+                &self.m_build_output_to_build_metadata_map,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_BuildLocation" => (self.m_build_location).inspect_value(path, offset, limit),
+                "m_ActiveBuildTarget" => {
+                    (self.m_active_build_target).inspect_value(path, offset, limit)
+                }
+                "m_SelectedBuildTargetGroup" => {
+                    (self.m_selected_build_target_group).inspect_value(path, offset, limit)
+                }
+                "m_ActiveBuildTargetGroup" => {
+                    (self.m_active_build_target_group).inspect_value(path, offset, limit)
+                }
+                "m_SelectedBuildTarget" => {
+                    (self.m_selected_build_target).inspect_value(path, offset, limit)
+                }
+                "m_ActivePlatformGuid" => {
+                    (self.m_active_platform_guid).inspect_value(path, offset, limit)
+                }
+                "m_SelectedStandaloneTarget" => {
+                    (self.m_selected_standalone_target).inspect_value(path, offset, limit)
+                }
+                "m_ArchitectureFlags" => {
+                    (self.m_architecture_flags).inspect_value(path, offset, limit)
+                }
+                "m_ActiveBuildPlatformGroupName" => {
+                    (self.m_active_build_platform_group_name).inspect_value(path, offset, limit)
+                }
+                "m_SelectedWiiSubtarget" => {
+                    (self.m_selected_wii_subtarget).inspect_value(path, offset, limit)
+                }
+                "m_SelectedPSP2Subtarget" => {
+                    (self.m_selected_psp2_subtarget).inspect_value(path, offset, limit)
+                }
+                "m_SelectedFacebookTarget" => {
+                    (self.m_selected_facebook_target).inspect_value(path, offset, limit)
+                }
+                "m_SelectedBuildPlatformGroupName" => {
+                    (self.m_selected_build_platform_group_name).inspect_value(path, offset, limit)
+                }
+                "m_Development" => (self.m_development).inspect_value(path, offset, limit),
+                "m_SelectedWiiDebugLevel" => {
+                    (self.m_selected_wii_debug_level).inspect_value(path, offset, limit)
+                }
+                "m_SelectedPS3Subtarget" => {
+                    (self.m_selected_ps3_subtarget).inspect_value(path, offset, limit)
+                }
+                "m_SelectedPS4Subtarget" => {
+                    (self.m_selected_ps4_subtarget).inspect_value(path, offset, limit)
+                }
+                "m_ConnectProfiler" => (self.m_connect_profiler).inspect_value(path, offset, limit),
+                "m_SelectedXboxSubtarget" => {
+                    (self.m_selected_xbox_subtarget).inspect_value(path, offset, limit)
+                }
+                "m_PS4HardwareTarget" => {
+                    (self.m_ps4_hardware_target).inspect_value(path, offset, limit)
+                }
+                "m_SelectedStandaloneBuildSubtarget" => {
+                    (self.m_selected_standalone_build_subtarget).inspect_value(path, offset, limit)
+                }
+                "m_AllowDebugging" => (self.m_allow_debugging).inspect_value(path, offset, limit),
+                "m_SelectedXboxRunMethod" => {
+                    (self.m_selected_xbox_run_method).inspect_value(path, offset, limit)
+                }
+                "m_SelectedPSMSubtarget" => {
+                    (self.m_selected_psm_subtarget).inspect_value(path, offset, limit)
+                }
+                "m_ActiveStandaloneBuildSubtarget" => {
+                    (self.m_active_standalone_build_subtarget).inspect_value(path, offset, limit)
+                }
+                "m_WebPlayerStreamed" => {
+                    (self.m_web_player_streamed).inspect_value(path, offset, limit)
+                }
+                "m_SelectedIOSBuildType" => {
+                    (self.m_selected_ios_build_type).inspect_value(path, offset, limit)
+                }
+                "m_SelectedWiiUDebugLevel" => {
+                    (self.m_selected_wii_u_debug_level).inspect_value(path, offset, limit)
+                }
+                "m_WebPlayerOfflineDeployment" => {
+                    (self.m_web_player_offline_deployment).inspect_value(path, offset, limit)
+                }
+                "m_SelectedWiiUBuildOutput" => {
+                    (self.m_selected_wii_u_build_output).inspect_value(path, offset, limit)
+                }
+                "m_AndroidBuildSystem" => {
+                    (self.m_android_build_system).inspect_value(path, offset, limit)
+                }
+                "m_WebPlayerNaClSupport" => {
+                    (self.m_web_player_na_cl_support).inspect_value(path, offset, limit)
+                }
+                "m_SelectedWiiUBootMode" => {
+                    (self.m_selected_wii_u_boot_mode).inspect_value(path, offset, limit)
+                }
+                "m_AndroidBuildType" => {
+                    (self.m_android_build_type).inspect_value(path, offset, limit)
+                }
+                "m_InstallInBuildFolder" => {
+                    (self.m_install_in_build_folder).inspect_value(path, offset, limit)
+                }
+                "m_AndroidReleaseMinification" => {
+                    (self.m_android_release_minification).inspect_value(path, offset, limit)
+                }
+                "m_SymlinkLibraries" => {
+                    (self.m_symlink_libraries).inspect_value(path, offset, limit)
+                }
+                "m_AndroidDebugMinification" => {
+                    (self.m_android_debug_minification).inspect_value(path, offset, limit)
+                }
+                "m_SelectedAndroidSubtarget" => {
+                    (self.m_selected_android_subtarget).inspect_value(path, offset, limit)
+                }
+                "m_SelectedAndroidETC2Fallback" => {
+                    (self.m_selected_android_etc2_fallback).inspect_value(path, offset, limit)
+                }
+                "m_AndroidDeviceSocketAddress" => {
+                    (self.m_android_device_socket_address).inspect_value(path, offset, limit)
+                }
+                "m_ExplicitNullChecks" => {
+                    (self.m_explicit_null_checks).inspect_value(path, offset, limit)
+                }
+                "m_WebGLUsePreBuiltUnityEngine" => {
+                    (self.m_web_gl_use_pre_built_unity_engine).inspect_value(path, offset, limit)
+                }
+                "m_AndroidCurrentDeploymentTargetId" => {
+                    (self.m_android_current_deployment_target_id).inspect_value(path, offset, limit)
+                }
+                "m_EnableHeadlessMode" => {
+                    (self.m_enable_headless_mode).inspect_value(path, offset, limit)
+                }
+                "m_SelectedCompressionType" => {
+                    (self.m_selected_compression_type).inspect_value(path, offset, limit)
+                }
+                "m_XboxCompressedXex" => {
+                    (self.m_xbox_compressed_xex).inspect_value(path, offset, limit)
+                }
+                "m_WebPlayerDeployOnline" => {
+                    (self.m_web_player_deploy_online).inspect_value(path, offset, limit)
+                }
+                "m_NeedSubmissionMaterials" => {
+                    (self.m_need_submission_materials).inspect_value(path, offset, limit)
+                }
+                "m_SymlinkTrampoline" => {
+                    (self.m_symlink_trampoline).inspect_value(path, offset, limit)
+                }
+                "m_FacebookAccessToken" => {
+                    (self.m_facebook_access_token).inspect_value(path, offset, limit)
+                }
+                "m_CompressWithPsArc" => {
+                    (self.m_compress_with_ps_arc).inspect_value(path, offset, limit)
+                }
+                "m_SelectedMetroBuildType" => {
+                    (self.m_selected_metro_build_type).inspect_value(path, offset, limit)
+                }
+                "m_SelectedMetroTarget" => {
+                    (self.m_selected_metro_target).inspect_value(path, offset, limit)
+                }
+                "m_BuildWithDeepProfilingSupport" => {
+                    (self.m_build_with_deep_profiling_support).inspect_value(path, offset, limit)
+                }
+                "m_DatalessPlayer" => (self.m_dataless_player).inspect_value(path, offset, limit),
+                "m_SelectedMetroSDK" => {
+                    (self.m_selected_metro_sdk).inspect_value(path, offset, limit)
+                }
+                "m_BuildScriptsOnly" => {
+                    (self.m_build_scripts_only).inspect_value(path, offset, limit)
+                }
+                "m_WaitForPlayerConnection" => {
+                    (self.m_wait_for_player_connection).inspect_value(path, offset, limit)
+                }
+                "m_SelectedDiagnosticSetting" => {
+                    (self.m_selected_diagnostic_setting).inspect_value(path, offset, limit)
+                }
+                "m_SelectedBlackBerrySubtarget" => {
+                    (self.m_selected_black_berry_subtarget).inspect_value(path, offset, limit)
+                }
+                "m_GenerateMetroReferenceProjects" => {
+                    (self.m_generate_metro_reference_projects).inspect_value(path, offset, limit)
+                }
+                "m_SelectedMetroBuildAndRunDeployTarget" => (self
+                    .m_selected_metro_build_and_run_deploy_target)
+                    .inspect_value(path, offset, limit),
+                "m_SelectedBlackBerryBuildType" => {
+                    (self.m_selected_black_berry_build_type).inspect_value(path, offset, limit)
+                }
+                "m_WebGLOptimizationLevel" => {
+                    (self.m_web_gl_optimization_level).inspect_value(path, offset, limit)
+                }
+                "m_WsaHolographicRemoting" => {
+                    (self.m_wsa_holographic_remoting).inspect_value(path, offset, limit)
+                }
+                "m_SelectedTizenSubtarget" => {
+                    (self.m_selected_tizen_subtarget).inspect_value(path, offset, limit)
+                }
+                "m_SelectedWSASDK" => (self.m_selected_wsasdk).inspect_value(path, offset, limit),
+                "m_CompressFilesInPackage" => {
+                    (self.m_compress_files_in_package).inspect_value(path, offset, limit)
+                }
+                "m_BuildWithCodeCoverage" => {
+                    (self.m_build_with_code_coverage).inspect_value(path, offset, limit)
+                }
+                "m_SelectedWSABuildAndRunDeployTarget" => (self
+                    .m_selected_wsa_build_and_run_deploy_target)
+                    .inspect_value(path, offset, limit),
+                "m_ExplicitDivideByZeroChecks" => {
+                    (self.m_explicit_divide_by_zero_checks).inspect_value(path, offset, limit)
+                }
+                "m_SymlinkSources" => (self.m_symlink_sources).inspect_value(path, offset, limit),
+                "m_GenerateWSAReferenceProjects" => {
+                    (self.m_generate_wsa_reference_projects).inspect_value(path, offset, limit)
+                }
+                "m_WiiUEnableNetAPI" => {
+                    (self.m_wii_u_enable_net_api).inspect_value(path, offset, limit)
+                }
+                "m_MovePackageToDiscOuterEdge" => {
+                    (self.m_move_package_to_disc_outer_edge).inspect_value(path, offset, limit)
+                }
+                "m_ForceInstallation" => {
+                    (self.m_force_installation).inspect_value(path, offset, limit)
+                }
+                "m_ExportAsGoogleAndroidProject" => {
+                    (self.m_export_as_google_android_project).inspect_value(path, offset, limit)
+                }
+                "m_XboxOneStreamingInstallLaunchChunkRange" => (self
+                    .m_xbox_one_streaming_install_launch_chunk_range)
+                    .inspect_value(path, offset, limit),
+                "m_SelectedWSAUWPBuildType" => {
+                    (self.m_selected_wsauwp_build_type).inspect_value(path, offset, limit)
+                }
+                "m_SelectedXboxOneDeployMethod" => {
+                    (self.m_selected_xbox_one_deploy_method).inspect_value(path, offset, limit)
+                }
+                "m_SelectedWSASubtarget" => {
+                    (self.m_selected_wsa_subtarget).inspect_value(path, offset, limit)
+                }
+                "m_ExplicitArrayBoundsChecks" => {
+                    (self.m_explicit_array_bounds_checks).inspect_value(path, offset, limit)
+                }
+                "m_WSADotNetNativeEnabled" => {
+                    (self.m_wsa_dot_net_native_enabled).inspect_value(path, offset, limit)
+                }
+                "m_SelectedWSAUWPSDK" => {
+                    (self.m_selected_wsauwpsdk).inspect_value(path, offset, limit)
+                }
+                "m_CreateSolutionFileForSwitch" => {
+                    (self.m_create_solution_file_for_switch).inspect_value(path, offset, limit)
+                }
+                "m_CreateRomFileForSwitch" => {
+                    (self.m_create_rom_file_for_switch).inspect_value(path, offset, limit)
+                }
+                "m_NVNGraphicsDebuggerForSwitch" => {
+                    (self.m_nvn_graphics_debugger_for_switch).inspect_value(path, offset, limit)
+                }
+                "m_EnableRomCompressionForSwitch" => {
+                    (self.m_enable_rom_compression_for_switch).inspect_value(path, offset, limit)
+                }
+                "m_NVNShaderDebugging" => {
+                    (self.m_nvn_shader_debugging).inspect_value(path, offset, limit)
+                }
+                "m_GenerateNintendoSwitchShaderInfo" => {
+                    (self.m_generate_nintendo_switch_shader_info).inspect_value(path, offset, limit)
+                }
+                "m_SaveADFForSwitch" => {
+                    (self.m_save_adf_for_switch).inspect_value(path, offset, limit)
+                }
+                "m_ForceOptimizeScriptCompilation" => {
+                    (self.m_force_optimize_script_compilation).inspect_value(path, offset, limit)
+                }
+                "m_XboxOneUsername" => {
+                    (self.m_xbox_one_username).inspect_value(path, offset, limit)
+                }
+                "m_EnableDebugPadForSwitch" => {
+                    (self.m_enable_debug_pad_for_switch).inspect_value(path, offset, limit)
+                }
+                "m_RomCompressionTypeForSwitch" => {
+                    (self.m_rom_compression_type_for_switch).inspect_value(path, offset, limit)
+                }
+                "m_NVNDrawValidationLight" => {
+                    (self.m_nvn_draw_validation_light).inspect_value(path, offset, limit)
+                }
+                "m_XboxOneNetworkSharePath" => {
+                    (self.m_xbox_one_network_share_path).inspect_value(path, offset, limit)
+                }
+                "m_RedirectWritesToHostMountForSwitch" => (self
+                    .m_redirect_writes_to_host_mount_for_switch)
+                    .inspect_value(path, offset, limit),
+                "m_NVNDrawValidation" => {
+                    (self.m_nvn_draw_validation).inspect_value(path, offset, limit)
+                }
+                "m_RomCompressionLevelForSwitch" => {
+                    (self.m_rom_compression_level_for_switch).inspect_value(path, offset, limit)
+                }
+                "m_NVNDrawValidationHeavy" => {
+                    (self.m_nvn_draw_validation_heavy).inspect_value(path, offset, limit)
+                }
+                "m_EnableHeapInspectorForSwitch" => {
+                    (self.m_enable_heap_inspector_for_switch).inspect_value(path, offset, limit)
+                }
+                "m_RomCompressionConfigForSwitch" => {
+                    (self.m_rom_compression_config_for_switch).inspect_value(path, offset, limit)
+                }
+                "m_PlatformSettings" => {
+                    (self.m_platform_settings).inspect_value(path, offset, limit)
+                }
+                "m_BuildAppBundle" => (self.m_build_app_bundle).inspect_value(path, offset, limit),
+                "m_UseLegacyNvnPoolAllocatorForSwitch" => (self
+                    .m_use_legacy_nvn_pool_allocator_for_switch)
+                    .inspect_value(path, offset, limit),
+                "m_HTCSScriptDebuggingForSwitch" => {
+                    (self.m_htcs_script_debugging_for_switch).inspect_value(path, offset, limit)
+                }
+                "m_AndroidCreateSymbolsZip" => {
+                    (self.m_android_create_symbols_zip).inspect_value(path, offset, limit)
+                }
+                "m_PS5KeepPackageFiles" => {
+                    (self.m_ps5_keep_package_files).inspect_value(path, offset, limit)
+                }
+                "m_SelectedWSAUWPVSVersion" => {
+                    (self.m_selected_wsauwpvs_version).inspect_value(path, offset, limit)
+                }
+                "m_AndroidUseLegacySdkTools" => {
+                    (self.m_android_use_legacy_sdk_tools).inspect_value(path, offset, limit)
+                }
+                "m_SelectedPS5Subtarget" => {
+                    (self.m_selected_ps5_subtarget).inspect_value(path, offset, limit)
+                }
+                "m_AndroidCreateSymbols" => {
+                    (self.m_android_create_symbols).inspect_value(path, offset, limit)
+                }
+                "m_NVNAftermath" => (self.m_nvn_aftermath).inspect_value(path, offset, limit),
+                "m_SelectedPS5CompressionType" => {
+                    (self.m_selected_ps5_compression_type).inspect_value(path, offset, limit)
+                }
+                "m_EnableMemoryTrackerForSwitch" => {
+                    (self.m_enable_memory_tracker_for_switch).inspect_value(path, offset, limit)
+                }
+                "m_NVNAftermathLevel" => {
+                    (self.m_nvn_aftermath_level).inspect_value(path, offset, limit)
+                }
+                "m_SelectedPS5CompressionLevel" => {
+                    (self.m_selected_ps5_compression_level).inspect_value(path, offset, limit)
+                }
+                "m_WaitForSwitchMemoryTrackerOnStartup" => (self
+                    .m_wait_for_switch_memory_tracker_on_startup)
+                    .inspect_value(path, offset, limit),
+                "m_SelectedWSAMinUWPSDK" => {
+                    (self.m_selected_wsa_min_uwpsdk).inspect_value(path, offset, limit)
+                }
+                "m_PS5WorkspaceName" => {
+                    (self.m_ps5_workspace_name).inspect_value(path, offset, limit)
+                }
+                "m_OverrideMaxTextureSize" => {
+                    (self.m_override_max_texture_size).inspect_value(path, offset, limit)
+                }
+                "m_SelectedWSAArchitecture" => {
+                    (self.m_selected_wsa_architecture).inspect_value(path, offset, limit)
+                }
+                "m_OverrideTextureCompression" => {
+                    (self.m_override_texture_compression).inspect_value(path, offset, limit)
+                }
+                "m_Il2CppCodeGeneration" => {
+                    (self.m_il2_cpp_code_generation).inspect_value(path, offset, limit)
+                }
+                "m_FacebookCreatePackageForSubmission" => (self
+                    .m_facebook_create_package_for_submission)
+                    .inspect_value(path, offset, limit),
+                "m_EnableHostIOForSwitch" => {
+                    (self.m_enable_host_io_for_switch).inspect_value(path, offset, limit)
+                }
+                "m_WindowsDevicePortalAddress" => {
+                    (self.m_windows_device_portal_address).inspect_value(path, offset, limit)
+                }
+                "m_SelectedXboxOneDeployDrive" => {
+                    (self.m_selected_xbox_one_deploy_drive).inspect_value(path, offset, limit)
+                }
+                "m_WindowsDevicePortalUsername" => {
+                    (self.m_windows_device_portal_username).inspect_value(path, offset, limit)
+                }
+                "m_SelectedWebGLSubtarget" => {
+                    (self.m_selected_web_gl_subtarget).inspect_value(path, offset, limit)
+                }
+                "m_EnableUnpublishableErrorsForSwitch" => (self
+                    .m_enable_unpublishable_errors_for_switch)
+                    .inspect_value(path, offset, limit),
+                "m_WebGLClientBrowserType" => {
+                    (self.m_web_gl_client_browser_type).inspect_value(path, offset, limit)
+                }
+                "m_WebGLClientBrowserPath" => {
+                    (self.m_web_gl_client_browser_path).inspect_value(path, offset, limit)
+                }
+                "m_WebGLClientPlatform" => {
+                    (self.m_web_gl_client_platform).inspect_value(path, offset, limit)
+                }
+                "m_macosXcodeBuildConfig" => {
+                    (self.m_macos_xcode_build_config).inspect_value(path, offset, limit)
+                }
+                "m_SelectedWindowsBuildAndRunDeployTarget" => (self
+                    .m_selected_windows_build_and_run_deploy_target)
+                    .inspect_value(path, offset, limit),
+                "m_SelectedEmbeddedLinuxArchitecture" => {
+                    (self.m_selected_embedded_linux_architecture).inspect_value(path, offset, limit)
+                }
+                "m_RemoteDeviceInfo" => {
+                    (self.m_remote_device_info).inspect_value(path, offset, limit)
+                }
+                "m_RemoteDeviceAddress" => {
+                    (self.m_remote_device_address).inspect_value(path, offset, limit)
+                }
+                "m_RemoteDeviceUsername" => {
+                    (self.m_remote_device_username).inspect_value(path, offset, limit)
+                }
+                "m_RemoteDeviceExports" => {
+                    (self.m_remote_device_exports).inspect_value(path, offset, limit)
+                }
+                "m_PathOnRemoteDevice" => {
+                    (self.m_path_on_remote_device).inspect_value(path, offset, limit)
+                }
+                "m_SelectedQNXOsVersion" => {
+                    (self.m_selected_qnx_os_version).inspect_value(path, offset, limit)
+                }
+                "m_SelectedQNXArchitecture" => {
+                    (self.m_selected_qnx_architecture).inspect_value(path, offset, limit)
+                }
+                "m_ActiveProfilePath" => {
+                    (self.m_active_profile_path).inspect_value(path, offset, limit)
+                }
+                "m_ActiveBuildProfile" => {
+                    (self.m_active_build_profile).inspect_value(path, offset, limit)
+                }
+                "m_BuildOutputToBuildMetadataMap" => {
+                    (self.m_build_output_to_build_metadata_map).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_build_location).inspect_value(path, offset, limit))
+                .map(|v| ("m_BuildLocation".to_string(), v)),
+            ((self.m_active_build_target).inspect_value(path, offset, limit))
+                .map(|v| ("m_ActiveBuildTarget".to_string(), v)),
+            ((self.m_selected_build_target_group).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedBuildTargetGroup".to_string(), v)),
+            ((self.m_active_build_target_group).inspect_value(path, offset, limit))
+                .map(|v| ("m_ActiveBuildTargetGroup".to_string(), v)),
+            ((self.m_selected_build_target).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedBuildTarget".to_string(), v)),
+            ((self.m_active_platform_guid).inspect_value(path, offset, limit))
+                .map(|v| ("m_ActivePlatformGuid".to_string(), v)),
+            ((self.m_selected_standalone_target).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedStandaloneTarget".to_string(), v)),
+            ((self.m_architecture_flags).inspect_value(path, offset, limit))
+                .map(|v| ("m_ArchitectureFlags".to_string(), v)),
+            ((self.m_active_build_platform_group_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_ActiveBuildPlatformGroupName".to_string(), v)),
+            ((self.m_selected_wii_subtarget).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedWiiSubtarget".to_string(), v)),
+            ((self.m_selected_psp2_subtarget).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedPSP2Subtarget".to_string(), v)),
+            ((self.m_selected_facebook_target).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedFacebookTarget".to_string(), v)),
+            ((self.m_selected_build_platform_group_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedBuildPlatformGroupName".to_string(), v)),
+            ((self.m_development).inspect_value(path, offset, limit))
+                .map(|v| ("m_Development".to_string(), v)),
+            ((self.m_selected_wii_debug_level).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedWiiDebugLevel".to_string(), v)),
+            ((self.m_selected_ps3_subtarget).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedPS3Subtarget".to_string(), v)),
+            ((self.m_selected_ps4_subtarget).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedPS4Subtarget".to_string(), v)),
+            ((self.m_connect_profiler).inspect_value(path, offset, limit))
+                .map(|v| ("m_ConnectProfiler".to_string(), v)),
+            ((self.m_selected_xbox_subtarget).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedXboxSubtarget".to_string(), v)),
+            ((self.m_ps4_hardware_target).inspect_value(path, offset, limit))
+                .map(|v| ("m_PS4HardwareTarget".to_string(), v)),
+            ((self.m_selected_standalone_build_subtarget).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedStandaloneBuildSubtarget".to_string(), v)),
+            ((self.m_allow_debugging).inspect_value(path, offset, limit))
+                .map(|v| ("m_AllowDebugging".to_string(), v)),
+            ((self.m_selected_xbox_run_method).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedXboxRunMethod".to_string(), v)),
+            ((self.m_selected_psm_subtarget).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedPSMSubtarget".to_string(), v)),
+            ((self.m_active_standalone_build_subtarget).inspect_value(path, offset, limit))
+                .map(|v| ("m_ActiveStandaloneBuildSubtarget".to_string(), v)),
+            ((self.m_web_player_streamed).inspect_value(path, offset, limit))
+                .map(|v| ("m_WebPlayerStreamed".to_string(), v)),
+            ((self.m_selected_ios_build_type).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedIOSBuildType".to_string(), v)),
+            ((self.m_selected_wii_u_debug_level).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedWiiUDebugLevel".to_string(), v)),
+            ((self.m_web_player_offline_deployment).inspect_value(path, offset, limit))
+                .map(|v| ("m_WebPlayerOfflineDeployment".to_string(), v)),
+            ((self.m_selected_wii_u_build_output).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedWiiUBuildOutput".to_string(), v)),
+            ((self.m_android_build_system).inspect_value(path, offset, limit))
+                .map(|v| ("m_AndroidBuildSystem".to_string(), v)),
+            ((self.m_web_player_na_cl_support).inspect_value(path, offset, limit))
+                .map(|v| ("m_WebPlayerNaClSupport".to_string(), v)),
+            ((self.m_selected_wii_u_boot_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedWiiUBootMode".to_string(), v)),
+            ((self.m_android_build_type).inspect_value(path, offset, limit))
+                .map(|v| ("m_AndroidBuildType".to_string(), v)),
+            ((self.m_install_in_build_folder).inspect_value(path, offset, limit))
+                .map(|v| ("m_InstallInBuildFolder".to_string(), v)),
+            ((self.m_android_release_minification).inspect_value(path, offset, limit))
+                .map(|v| ("m_AndroidReleaseMinification".to_string(), v)),
+            ((self.m_symlink_libraries).inspect_value(path, offset, limit))
+                .map(|v| ("m_SymlinkLibraries".to_string(), v)),
+            ((self.m_android_debug_minification).inspect_value(path, offset, limit))
+                .map(|v| ("m_AndroidDebugMinification".to_string(), v)),
+            ((self.m_selected_android_subtarget).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedAndroidSubtarget".to_string(), v)),
+            ((self.m_selected_android_etc2_fallback).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedAndroidETC2Fallback".to_string(), v)),
+            ((self.m_android_device_socket_address).inspect_value(path, offset, limit))
+                .map(|v| ("m_AndroidDeviceSocketAddress".to_string(), v)),
+            ((self.m_explicit_null_checks).inspect_value(path, offset, limit))
+                .map(|v| ("m_ExplicitNullChecks".to_string(), v)),
+            ((self.m_web_gl_use_pre_built_unity_engine).inspect_value(path, offset, limit))
+                .map(|v| ("m_WebGLUsePreBuiltUnityEngine".to_string(), v)),
+            ((self.m_android_current_deployment_target_id).inspect_value(path, offset, limit))
+                .map(|v| ("m_AndroidCurrentDeploymentTargetId".to_string(), v)),
+            ((self.m_enable_headless_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableHeadlessMode".to_string(), v)),
+            ((self.m_selected_compression_type).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedCompressionType".to_string(), v)),
+            ((self.m_xbox_compressed_xex).inspect_value(path, offset, limit))
+                .map(|v| ("m_XboxCompressedXex".to_string(), v)),
+            ((self.m_web_player_deploy_online).inspect_value(path, offset, limit))
+                .map(|v| ("m_WebPlayerDeployOnline".to_string(), v)),
+            ((self.m_need_submission_materials).inspect_value(path, offset, limit))
+                .map(|v| ("m_NeedSubmissionMaterials".to_string(), v)),
+            ((self.m_symlink_trampoline).inspect_value(path, offset, limit))
+                .map(|v| ("m_SymlinkTrampoline".to_string(), v)),
+            ((self.m_facebook_access_token).inspect_value(path, offset, limit))
+                .map(|v| ("m_FacebookAccessToken".to_string(), v)),
+            ((self.m_compress_with_ps_arc).inspect_value(path, offset, limit))
+                .map(|v| ("m_CompressWithPsArc".to_string(), v)),
+            ((self.m_selected_metro_build_type).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedMetroBuildType".to_string(), v)),
+            ((self.m_selected_metro_target).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedMetroTarget".to_string(), v)),
+            ((self.m_build_with_deep_profiling_support).inspect_value(path, offset, limit))
+                .map(|v| ("m_BuildWithDeepProfilingSupport".to_string(), v)),
+            ((self.m_dataless_player).inspect_value(path, offset, limit))
+                .map(|v| ("m_DatalessPlayer".to_string(), v)),
+            ((self.m_selected_metro_sdk).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedMetroSDK".to_string(), v)),
+            ((self.m_build_scripts_only).inspect_value(path, offset, limit))
+                .map(|v| ("m_BuildScriptsOnly".to_string(), v)),
+            ((self.m_wait_for_player_connection).inspect_value(path, offset, limit))
+                .map(|v| ("m_WaitForPlayerConnection".to_string(), v)),
+            ((self.m_selected_diagnostic_setting).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedDiagnosticSetting".to_string(), v)),
+            ((self.m_selected_black_berry_subtarget).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedBlackBerrySubtarget".to_string(), v)),
+            ((self.m_generate_metro_reference_projects).inspect_value(path, offset, limit))
+                .map(|v| ("m_GenerateMetroReferenceProjects".to_string(), v)),
+            ((self.m_selected_metro_build_and_run_deploy_target)
+                .inspect_value(path, offset, limit))
+            .map(|v| ("m_SelectedMetroBuildAndRunDeployTarget".to_string(), v)),
+            ((self.m_selected_black_berry_build_type).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedBlackBerryBuildType".to_string(), v)),
+            ((self.m_web_gl_optimization_level).inspect_value(path, offset, limit))
+                .map(|v| ("m_WebGLOptimizationLevel".to_string(), v)),
+            ((self.m_wsa_holographic_remoting).inspect_value(path, offset, limit))
+                .map(|v| ("m_WsaHolographicRemoting".to_string(), v)),
+            ((self.m_selected_tizen_subtarget).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedTizenSubtarget".to_string(), v)),
+            ((self.m_selected_wsasdk).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedWSASDK".to_string(), v)),
+            ((self.m_compress_files_in_package).inspect_value(path, offset, limit))
+                .map(|v| ("m_CompressFilesInPackage".to_string(), v)),
+            ((self.m_build_with_code_coverage).inspect_value(path, offset, limit))
+                .map(|v| ("m_BuildWithCodeCoverage".to_string(), v)),
+            ((self.m_selected_wsa_build_and_run_deploy_target).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedWSABuildAndRunDeployTarget".to_string(), v)),
+            ((self.m_explicit_divide_by_zero_checks).inspect_value(path, offset, limit))
+                .map(|v| ("m_ExplicitDivideByZeroChecks".to_string(), v)),
+            ((self.m_symlink_sources).inspect_value(path, offset, limit))
+                .map(|v| ("m_SymlinkSources".to_string(), v)),
+            ((self.m_generate_wsa_reference_projects).inspect_value(path, offset, limit))
+                .map(|v| ("m_GenerateWSAReferenceProjects".to_string(), v)),
+            ((self.m_wii_u_enable_net_api).inspect_value(path, offset, limit))
+                .map(|v| ("m_WiiUEnableNetAPI".to_string(), v)),
+            ((self.m_move_package_to_disc_outer_edge).inspect_value(path, offset, limit))
+                .map(|v| ("m_MovePackageToDiscOuterEdge".to_string(), v)),
+            ((self.m_force_installation).inspect_value(path, offset, limit))
+                .map(|v| ("m_ForceInstallation".to_string(), v)),
+            ((self.m_export_as_google_android_project).inspect_value(path, offset, limit))
+                .map(|v| ("m_ExportAsGoogleAndroidProject".to_string(), v)),
+            ((self.m_xbox_one_streaming_install_launch_chunk_range)
+                .inspect_value(path, offset, limit))
+            .map(|v| ("m_XboxOneStreamingInstallLaunchChunkRange".to_string(), v)),
+            ((self.m_selected_wsauwp_build_type).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedWSAUWPBuildType".to_string(), v)),
+            ((self.m_selected_xbox_one_deploy_method).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedXboxOneDeployMethod".to_string(), v)),
+            ((self.m_selected_wsa_subtarget).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedWSASubtarget".to_string(), v)),
+            ((self.m_explicit_array_bounds_checks).inspect_value(path, offset, limit))
+                .map(|v| ("m_ExplicitArrayBoundsChecks".to_string(), v)),
+            ((self.m_wsa_dot_net_native_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_WSADotNetNativeEnabled".to_string(), v)),
+            ((self.m_selected_wsauwpsdk).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedWSAUWPSDK".to_string(), v)),
+            ((self.m_create_solution_file_for_switch).inspect_value(path, offset, limit))
+                .map(|v| ("m_CreateSolutionFileForSwitch".to_string(), v)),
+            ((self.m_create_rom_file_for_switch).inspect_value(path, offset, limit))
+                .map(|v| ("m_CreateRomFileForSwitch".to_string(), v)),
+            ((self.m_nvn_graphics_debugger_for_switch).inspect_value(path, offset, limit))
+                .map(|v| ("m_NVNGraphicsDebuggerForSwitch".to_string(), v)),
+            ((self.m_enable_rom_compression_for_switch).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableRomCompressionForSwitch".to_string(), v)),
+            ((self.m_nvn_shader_debugging).inspect_value(path, offset, limit))
+                .map(|v| ("m_NVNShaderDebugging".to_string(), v)),
+            ((self.m_generate_nintendo_switch_shader_info).inspect_value(path, offset, limit))
+                .map(|v| ("m_GenerateNintendoSwitchShaderInfo".to_string(), v)),
+            ((self.m_save_adf_for_switch).inspect_value(path, offset, limit))
+                .map(|v| ("m_SaveADFForSwitch".to_string(), v)),
+            ((self.m_force_optimize_script_compilation).inspect_value(path, offset, limit))
+                .map(|v| ("m_ForceOptimizeScriptCompilation".to_string(), v)),
+            ((self.m_xbox_one_username).inspect_value(path, offset, limit))
+                .map(|v| ("m_XboxOneUsername".to_string(), v)),
+            ((self.m_enable_debug_pad_for_switch).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableDebugPadForSwitch".to_string(), v)),
+            ((self.m_rom_compression_type_for_switch).inspect_value(path, offset, limit))
+                .map(|v| ("m_RomCompressionTypeForSwitch".to_string(), v)),
+            ((self.m_nvn_draw_validation_light).inspect_value(path, offset, limit))
+                .map(|v| ("m_NVNDrawValidationLight".to_string(), v)),
+            ((self.m_xbox_one_network_share_path).inspect_value(path, offset, limit))
+                .map(|v| ("m_XboxOneNetworkSharePath".to_string(), v)),
+            ((self.m_redirect_writes_to_host_mount_for_switch).inspect_value(path, offset, limit))
+                .map(|v| ("m_RedirectWritesToHostMountForSwitch".to_string(), v)),
+            ((self.m_nvn_draw_validation).inspect_value(path, offset, limit))
+                .map(|v| ("m_NVNDrawValidation".to_string(), v)),
+            ((self.m_rom_compression_level_for_switch).inspect_value(path, offset, limit))
+                .map(|v| ("m_RomCompressionLevelForSwitch".to_string(), v)),
+            ((self.m_nvn_draw_validation_heavy).inspect_value(path, offset, limit))
+                .map(|v| ("m_NVNDrawValidationHeavy".to_string(), v)),
+            ((self.m_enable_heap_inspector_for_switch).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableHeapInspectorForSwitch".to_string(), v)),
+            ((self.m_rom_compression_config_for_switch).inspect_value(path, offset, limit))
+                .map(|v| ("m_RomCompressionConfigForSwitch".to_string(), v)),
+            ((self.m_platform_settings).inspect_value(path, offset, limit))
+                .map(|v| ("m_PlatformSettings".to_string(), v)),
+            ((self.m_build_app_bundle).inspect_value(path, offset, limit))
+                .map(|v| ("m_BuildAppBundle".to_string(), v)),
+            ((self.m_use_legacy_nvn_pool_allocator_for_switch).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseLegacyNvnPoolAllocatorForSwitch".to_string(), v)),
+            ((self.m_htcs_script_debugging_for_switch).inspect_value(path, offset, limit))
+                .map(|v| ("m_HTCSScriptDebuggingForSwitch".to_string(), v)),
+            ((self.m_android_create_symbols_zip).inspect_value(path, offset, limit))
+                .map(|v| ("m_AndroidCreateSymbolsZip".to_string(), v)),
+            ((self.m_ps5_keep_package_files).inspect_value(path, offset, limit))
+                .map(|v| ("m_PS5KeepPackageFiles".to_string(), v)),
+            ((self.m_selected_wsauwpvs_version).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedWSAUWPVSVersion".to_string(), v)),
+            ((self.m_android_use_legacy_sdk_tools).inspect_value(path, offset, limit))
+                .map(|v| ("m_AndroidUseLegacySdkTools".to_string(), v)),
+            ((self.m_selected_ps5_subtarget).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedPS5Subtarget".to_string(), v)),
+            ((self.m_android_create_symbols).inspect_value(path, offset, limit))
+                .map(|v| ("m_AndroidCreateSymbols".to_string(), v)),
+            ((self.m_nvn_aftermath).inspect_value(path, offset, limit))
+                .map(|v| ("m_NVNAftermath".to_string(), v)),
+            ((self.m_selected_ps5_compression_type).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedPS5CompressionType".to_string(), v)),
+            ((self.m_enable_memory_tracker_for_switch).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableMemoryTrackerForSwitch".to_string(), v)),
+            ((self.m_nvn_aftermath_level).inspect_value(path, offset, limit))
+                .map(|v| ("m_NVNAftermathLevel".to_string(), v)),
+            ((self.m_selected_ps5_compression_level).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedPS5CompressionLevel".to_string(), v)),
+            ((self.m_wait_for_switch_memory_tracker_on_startup).inspect_value(path, offset, limit))
+                .map(|v| ("m_WaitForSwitchMemoryTrackerOnStartup".to_string(), v)),
+            ((self.m_selected_wsa_min_uwpsdk).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedWSAMinUWPSDK".to_string(), v)),
+            ((self.m_ps5_workspace_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_PS5WorkspaceName".to_string(), v)),
+            ((self.m_override_max_texture_size).inspect_value(path, offset, limit))
+                .map(|v| ("m_OverrideMaxTextureSize".to_string(), v)),
+            ((self.m_selected_wsa_architecture).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedWSAArchitecture".to_string(), v)),
+            ((self.m_override_texture_compression).inspect_value(path, offset, limit))
+                .map(|v| ("m_OverrideTextureCompression".to_string(), v)),
+            ((self.m_il2_cpp_code_generation).inspect_value(path, offset, limit))
+                .map(|v| ("m_Il2CppCodeGeneration".to_string(), v)),
+            ((self.m_facebook_create_package_for_submission).inspect_value(path, offset, limit))
+                .map(|v| ("m_FacebookCreatePackageForSubmission".to_string(), v)),
+            ((self.m_enable_host_io_for_switch).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableHostIOForSwitch".to_string(), v)),
+            ((self.m_windows_device_portal_address).inspect_value(path, offset, limit))
+                .map(|v| ("m_WindowsDevicePortalAddress".to_string(), v)),
+            ((self.m_selected_xbox_one_deploy_drive).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedXboxOneDeployDrive".to_string(), v)),
+            ((self.m_windows_device_portal_username).inspect_value(path, offset, limit))
+                .map(|v| ("m_WindowsDevicePortalUsername".to_string(), v)),
+            ((self.m_selected_web_gl_subtarget).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedWebGLSubtarget".to_string(), v)),
+            ((self.m_enable_unpublishable_errors_for_switch).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableUnpublishableErrorsForSwitch".to_string(), v)),
+            ((self.m_web_gl_client_browser_type).inspect_value(path, offset, limit))
+                .map(|v| ("m_WebGLClientBrowserType".to_string(), v)),
+            ((self.m_web_gl_client_browser_path).inspect_value(path, offset, limit))
+                .map(|v| ("m_WebGLClientBrowserPath".to_string(), v)),
+            ((self.m_web_gl_client_platform).inspect_value(path, offset, limit))
+                .map(|v| ("m_WebGLClientPlatform".to_string(), v)),
+            ((self.m_macos_xcode_build_config).inspect_value(path, offset, limit))
+                .map(|v| ("m_macosXcodeBuildConfig".to_string(), v)),
+            ((self.m_selected_windows_build_and_run_deploy_target)
+                .inspect_value(path, offset, limit))
+            .map(|v| ("m_SelectedWindowsBuildAndRunDeployTarget".to_string(), v)),
+            ((self.m_selected_embedded_linux_architecture).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedEmbeddedLinuxArchitecture".to_string(), v)),
+            ((self.m_remote_device_info).inspect_value(path, offset, limit))
+                .map(|v| ("m_RemoteDeviceInfo".to_string(), v)),
+            ((self.m_remote_device_address).inspect_value(path, offset, limit))
+                .map(|v| ("m_RemoteDeviceAddress".to_string(), v)),
+            ((self.m_remote_device_username).inspect_value(path, offset, limit))
+                .map(|v| ("m_RemoteDeviceUsername".to_string(), v)),
+            ((self.m_remote_device_exports).inspect_value(path, offset, limit))
+                .map(|v| ("m_RemoteDeviceExports".to_string(), v)),
+            ((self.m_path_on_remote_device).inspect_value(path, offset, limit))
+                .map(|v| ("m_PathOnRemoteDevice".to_string(), v)),
+            ((self.m_selected_qnx_os_version).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedQNXOsVersion".to_string(), v)),
+            ((self.m_selected_qnx_architecture).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedQNXArchitecture".to_string(), v)),
+            ((self.m_active_profile_path).inspect_value(path, offset, limit))
+                .map(|v| ("m_ActiveProfilePath".to_string(), v)),
+            ((self.m_active_build_profile).inspect_value(path, offset, limit))
+                .map(|v| ("m_ActiveBuildProfile".to_string(), v)),
+            ((self.m_build_output_to_build_metadata_map).inspect_value(path, offset, limit))
+                .map(|v| ("m_BuildOutputToBuildMetadataMap".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

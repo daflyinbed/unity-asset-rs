@@ -767,3 +767,17 @@ release root 仍会被 p02 当 subclass 抽取），故 rename 也须覆盖每�
 - AssetRipper TPK 仓库：`https://github.com/AssetRipper/Tpk`
 - AssetRipper AssemblyDumper：`https://github.com/AssetRipper/AssetRipper/tree/master/Source/AssetRipper.AssemblyDumper`
 - TPK 黄金测试数字（1395 版本 / 412 class / 首版本 3.4）见 ADR-0001 §9
+
+
+## 对象值转换与分页检查
+
+生成类、子结构、版本枚举和 `UnityObject` 实现 unity-core 的 `ToValue`：
+`to_value` 返回完整值树，`inspect_value(path, offset, limit)` 直接按字段路径读取。
+键名使用生成 IR 的 Unity 字段名；版本门控的 None 字段省略，
+TypelessData 保留为 `Value::Bytes`。数组检查只转换请求页，嵌套数组先返回分页摘要。
+
+export feature 的 `dump_object` 统一 typed、dynamic 和 MonoBehaviour；
+MonoBehaviour 的 shell 与用户结构字段扁平合并。CLI `export --json`
+为没有专用导出器的对象输出 JSON，并为解析失败对象输出原始 .bin。
+JSON 文本化在 CLI/HTTP 层完成：字节用 base64，非有限浮点用字符串，
+完整导出不截断；库保持零 serde。

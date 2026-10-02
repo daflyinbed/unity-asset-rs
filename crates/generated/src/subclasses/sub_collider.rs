@@ -49,6 +49,21 @@ impl crate::Parse for SubColliderMColliderPathsVariant {
         }
     }
 }
+
+impl crate::ToValue for SubColliderMColliderPathsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct SubCollider {
     pub m_collider: PPtr,
@@ -67,5 +82,42 @@ impl crate::Parse for SubCollider {
             m_collider,
             m_collider_paths,
         })
+    }
+}
+
+impl crate::ToValue for SubCollider {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Collider".to_string(), self.m_collider.to_value())),
+            Some((
+                "m_ColliderPaths".to_string(),
+                self.m_collider_paths.to_value(),
+            )),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Collider" => (self.m_collider).inspect_value(path, offset, limit),
+                "m_ColliderPaths" => (self.m_collider_paths).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_collider).inspect_value(path, offset, limit))
+                .map(|v| ("m_Collider".to_string(), v)),
+            ((self.m_collider_paths).inspect_value(path, offset, limit))
+                .map(|v| ("m_ColliderPaths".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

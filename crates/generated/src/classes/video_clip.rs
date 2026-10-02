@@ -131,3 +131,125 @@ impl crate::Parse for VideoClip {
         })
     }
 }
+
+impl crate::ToValue for VideoClip {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some((
+                "m_OriginalPath".to_string(),
+                self.m_original_path.to_value(),
+            )),
+            Some(("m_ProxyWidth".to_string(), self.m_proxy_width.to_value())),
+            Some(("m_ProxyHeight".to_string(), self.m_proxy_height.to_value())),
+            Some(("Width".to_string(), self.width.to_value())),
+            Some(("Height".to_string(), self.height.to_value())),
+            Some(("m_FrameRate".to_string(), self.m_frame_rate.to_value())),
+            crate::opt_field("m_PixelAspecRatioNum", &self.m_pixel_aspec_ratio_num),
+            Some(("m_FrameCount".to_string(), self.m_frame_count.to_value())),
+            crate::opt_field("m_PixelAspecRatioDen", &self.m_pixel_aspec_ratio_den),
+            Some(("m_Format".to_string(), self.m_format.to_value())),
+            Some((
+                "m_AudioChannelCount".to_string(),
+                self.m_audio_channel_count.to_value(),
+            )),
+            Some((
+                "m_AudioSampleRate".to_string(),
+                self.m_audio_sample_rate.to_value(),
+            )),
+            Some((
+                "m_AudioLanguage".to_string(),
+                self.m_audio_language.to_value(),
+            )),
+            Some((
+                "m_ExternalResources".to_string(),
+                self.m_external_resources.to_value(),
+            )),
+            Some((
+                "m_HasSplitAlpha".to_string(),
+                self.m_has_split_alpha.to_value(),
+            )),
+            crate::opt_field("m_VideoShaders", &self.m_video_shaders),
+            crate::opt_field("m_sRGB", &self.m_s_rgb),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_OriginalPath" => (self.m_original_path).inspect_value(path, offset, limit),
+                "m_ProxyWidth" => (self.m_proxy_width).inspect_value(path, offset, limit),
+                "m_ProxyHeight" => (self.m_proxy_height).inspect_value(path, offset, limit),
+                "Width" => (self.width).inspect_value(path, offset, limit),
+                "Height" => (self.height).inspect_value(path, offset, limit),
+                "m_FrameRate" => (self.m_frame_rate).inspect_value(path, offset, limit),
+                "m_PixelAspecRatioNum" => {
+                    (self.m_pixel_aspec_ratio_num).inspect_value(path, offset, limit)
+                }
+                "m_FrameCount" => (self.m_frame_count).inspect_value(path, offset, limit),
+                "m_PixelAspecRatioDen" => {
+                    (self.m_pixel_aspec_ratio_den).inspect_value(path, offset, limit)
+                }
+                "m_Format" => (self.m_format).inspect_value(path, offset, limit),
+                "m_AudioChannelCount" => {
+                    (self.m_audio_channel_count).inspect_value(path, offset, limit)
+                }
+                "m_AudioSampleRate" => {
+                    (self.m_audio_sample_rate).inspect_value(path, offset, limit)
+                }
+                "m_AudioLanguage" => (self.m_audio_language).inspect_value(path, offset, limit),
+                "m_ExternalResources" => {
+                    (self.m_external_resources).inspect_value(path, offset, limit)
+                }
+                "m_HasSplitAlpha" => (self.m_has_split_alpha).inspect_value(path, offset, limit),
+                "m_VideoShaders" => (self.m_video_shaders).inspect_value(path, offset, limit),
+                "m_sRGB" => (self.m_s_rgb).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_original_path).inspect_value(path, offset, limit))
+                .map(|v| ("m_OriginalPath".to_string(), v)),
+            ((self.m_proxy_width).inspect_value(path, offset, limit))
+                .map(|v| ("m_ProxyWidth".to_string(), v)),
+            ((self.m_proxy_height).inspect_value(path, offset, limit))
+                .map(|v| ("m_ProxyHeight".to_string(), v)),
+            ((self.width).inspect_value(path, offset, limit)).map(|v| ("Width".to_string(), v)),
+            ((self.height).inspect_value(path, offset, limit)).map(|v| ("Height".to_string(), v)),
+            ((self.m_frame_rate).inspect_value(path, offset, limit))
+                .map(|v| ("m_FrameRate".to_string(), v)),
+            ((self.m_pixel_aspec_ratio_num).inspect_value(path, offset, limit))
+                .map(|v| ("m_PixelAspecRatioNum".to_string(), v)),
+            ((self.m_frame_count).inspect_value(path, offset, limit))
+                .map(|v| ("m_FrameCount".to_string(), v)),
+            ((self.m_pixel_aspec_ratio_den).inspect_value(path, offset, limit))
+                .map(|v| ("m_PixelAspecRatioDen".to_string(), v)),
+            ((self.m_format).inspect_value(path, offset, limit))
+                .map(|v| ("m_Format".to_string(), v)),
+            ((self.m_audio_channel_count).inspect_value(path, offset, limit))
+                .map(|v| ("m_AudioChannelCount".to_string(), v)),
+            ((self.m_audio_sample_rate).inspect_value(path, offset, limit))
+                .map(|v| ("m_AudioSampleRate".to_string(), v)),
+            ((self.m_audio_language).inspect_value(path, offset, limit))
+                .map(|v| ("m_AudioLanguage".to_string(), v)),
+            ((self.m_external_resources).inspect_value(path, offset, limit))
+                .map(|v| ("m_ExternalResources".to_string(), v)),
+            ((self.m_has_split_alpha).inspect_value(path, offset, limit))
+                .map(|v| ("m_HasSplitAlpha".to_string(), v)),
+            ((self.m_video_shaders).inspect_value(path, offset, limit))
+                .map(|v| ("m_VideoShaders".to_string(), v)),
+            ((self.m_s_rgb).inspect_value(path, offset, limit)).map(|v| ("m_sRGB".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

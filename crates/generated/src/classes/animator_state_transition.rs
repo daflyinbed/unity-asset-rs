@@ -36,6 +36,21 @@ impl crate::Parse for AnimatorStateTransitionMConditionsVariant {
     }
 }
 
+impl crate::ToValue for AnimatorStateTransitionMConditionsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：AnimatorStateTransitionMDestinationStateVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AnimatorStateTransitionMDestinationStateVariant {
@@ -54,6 +69,21 @@ impl crate::Parse for AnimatorStateTransitionMDestinationStateVariant {
         } else {
             let v = crate::PPtr::parse(rdr, ver)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for AnimatorStateTransitionMDestinationStateVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_0(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_0(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -77,6 +107,21 @@ impl crate::Parse for AnimatorStateTransitionMHasExitTimeVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for AnimatorStateTransitionMHasExitTimeVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -190,5 +235,124 @@ impl crate::Parse for AnimatorStateTransition {
             m_has_fixed_duration,
             m_ordered_interruption,
         })
+    }
+}
+
+impl crate::ToValue for AnimatorStateTransition {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            crate::opt_field("m_SourceState", &self.m_source_state),
+            Some(("m_Conditions".to_string(), self.m_conditions.to_value())),
+            Some((
+                "m_DestinationState".to_string(),
+                self.m_destination_state.to_value(),
+            )),
+            crate::opt_field(
+                "m_DestinationStateMachine",
+                &self.m_destination_state_machine,
+            ),
+            Some((
+                "m_TransitionDuration".to_string(),
+                self.m_transition_duration.to_value(),
+            )),
+            Some((
+                "m_TransitionOffset".to_string(),
+                self.m_transition_offset.to_value(),
+            )),
+            Some(("m_Solo".to_string(), self.m_solo.to_value())),
+            Some(("m_Mute".to_string(), self.m_mute.to_value())),
+            crate::opt_field("m_Atomic", &self.m_atomic),
+            crate::opt_field("m_IsExit", &self.m_is_exit),
+            crate::opt_field("m_CanTransitionToSelf", &self.m_can_transition_to_self),
+            crate::opt_field("m_ExitTime", &self.m_exit_time),
+            crate::opt_field("m_HasExitTime", &self.m_has_exit_time),
+            crate::opt_field("m_InterruptionSource", &self.m_interruption_source),
+            crate::opt_field("m_HasFixedDuration", &self.m_has_fixed_duration),
+            crate::opt_field("m_OrderedInterruption", &self.m_ordered_interruption),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_SourceState" => (self.m_source_state).inspect_value(path, offset, limit),
+                "m_Conditions" => (self.m_conditions).inspect_value(path, offset, limit),
+                "m_DestinationState" => {
+                    (self.m_destination_state).inspect_value(path, offset, limit)
+                }
+                "m_DestinationStateMachine" => {
+                    (self.m_destination_state_machine).inspect_value(path, offset, limit)
+                }
+                "m_TransitionDuration" => {
+                    (self.m_transition_duration).inspect_value(path, offset, limit)
+                }
+                "m_TransitionOffset" => {
+                    (self.m_transition_offset).inspect_value(path, offset, limit)
+                }
+                "m_Solo" => (self.m_solo).inspect_value(path, offset, limit),
+                "m_Mute" => (self.m_mute).inspect_value(path, offset, limit),
+                "m_Atomic" => (self.m_atomic).inspect_value(path, offset, limit),
+                "m_IsExit" => (self.m_is_exit).inspect_value(path, offset, limit),
+                "m_CanTransitionToSelf" => {
+                    (self.m_can_transition_to_self).inspect_value(path, offset, limit)
+                }
+                "m_ExitTime" => (self.m_exit_time).inspect_value(path, offset, limit),
+                "m_HasExitTime" => (self.m_has_exit_time).inspect_value(path, offset, limit),
+                "m_InterruptionSource" => {
+                    (self.m_interruption_source).inspect_value(path, offset, limit)
+                }
+                "m_HasFixedDuration" => {
+                    (self.m_has_fixed_duration).inspect_value(path, offset, limit)
+                }
+                "m_OrderedInterruption" => {
+                    (self.m_ordered_interruption).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_source_state).inspect_value(path, offset, limit))
+                .map(|v| ("m_SourceState".to_string(), v)),
+            ((self.m_conditions).inspect_value(path, offset, limit))
+                .map(|v| ("m_Conditions".to_string(), v)),
+            ((self.m_destination_state).inspect_value(path, offset, limit))
+                .map(|v| ("m_DestinationState".to_string(), v)),
+            ((self.m_destination_state_machine).inspect_value(path, offset, limit))
+                .map(|v| ("m_DestinationStateMachine".to_string(), v)),
+            ((self.m_transition_duration).inspect_value(path, offset, limit))
+                .map(|v| ("m_TransitionDuration".to_string(), v)),
+            ((self.m_transition_offset).inspect_value(path, offset, limit))
+                .map(|v| ("m_TransitionOffset".to_string(), v)),
+            ((self.m_solo).inspect_value(path, offset, limit)).map(|v| ("m_Solo".to_string(), v)),
+            ((self.m_mute).inspect_value(path, offset, limit)).map(|v| ("m_Mute".to_string(), v)),
+            ((self.m_atomic).inspect_value(path, offset, limit))
+                .map(|v| ("m_Atomic".to_string(), v)),
+            ((self.m_is_exit).inspect_value(path, offset, limit))
+                .map(|v| ("m_IsExit".to_string(), v)),
+            ((self.m_can_transition_to_self).inspect_value(path, offset, limit))
+                .map(|v| ("m_CanTransitionToSelf".to_string(), v)),
+            ((self.m_exit_time).inspect_value(path, offset, limit))
+                .map(|v| ("m_ExitTime".to_string(), v)),
+            ((self.m_has_exit_time).inspect_value(path, offset, limit))
+                .map(|v| ("m_HasExitTime".to_string(), v)),
+            ((self.m_interruption_source).inspect_value(path, offset, limit))
+                .map(|v| ("m_InterruptionSource".to_string(), v)),
+            ((self.m_has_fixed_duration).inspect_value(path, offset, limit))
+                .map(|v| ("m_HasFixedDuration".to_string(), v)),
+            ((self.m_ordered_interruption).inspect_value(path, offset, limit))
+                .map(|v| ("m_OrderedInterruption".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

@@ -115,3 +115,116 @@ impl crate::Parse for VfxManager {
         })
     }
 }
+
+impl crate::ToValue for VfxManager {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some((
+                "m_IndirectShader".to_string(),
+                self.m_indirect_shader.to_value(),
+            )),
+            Some((
+                "m_CopyBufferShader".to_string(),
+                self.m_copy_buffer_shader.to_value(),
+            )),
+            Some(("m_SortShader".to_string(), self.m_sort_shader.to_value())),
+            crate::opt_field("m_PrefixSumShader", &self.m_prefix_sum_shader),
+            Some((
+                "m_RenderPipeSettingsPath".to_string(),
+                self.m_render_pipe_settings_path.to_value(),
+            )),
+            crate::opt_field("m_StripUpdateShader", &self.m_strip_update_shader),
+            Some((
+                "m_FixedTimeStep".to_string(),
+                self.m_fixed_time_step.to_value(),
+            )),
+            crate::opt_field("m_EmptyShader", &self.m_empty_shader),
+            Some((
+                "m_MaxDeltaTime".to_string(),
+                self.m_max_delta_time.to_value(),
+            )),
+            crate::opt_field("m_CompiledVersion", &self.m_compiled_version),
+            crate::opt_field("m_MaxScrubTime", &self.m_max_scrub_time),
+            crate::opt_field("m_RuntimeVersion", &self.m_runtime_version),
+            crate::opt_field("m_MaxCapacity", &self.m_max_capacity),
+            crate::opt_field("m_RuntimeResources", &self.m_runtime_resources),
+            crate::opt_field("m_BatchEmptyLifetime", &self.m_batch_empty_lifetime),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_IndirectShader" => (self.m_indirect_shader).inspect_value(path, offset, limit),
+                "m_CopyBufferShader" => {
+                    (self.m_copy_buffer_shader).inspect_value(path, offset, limit)
+                }
+                "m_SortShader" => (self.m_sort_shader).inspect_value(path, offset, limit),
+                "m_PrefixSumShader" => {
+                    (self.m_prefix_sum_shader).inspect_value(path, offset, limit)
+                }
+                "m_RenderPipeSettingsPath" => {
+                    (self.m_render_pipe_settings_path).inspect_value(path, offset, limit)
+                }
+                "m_StripUpdateShader" => {
+                    (self.m_strip_update_shader).inspect_value(path, offset, limit)
+                }
+                "m_FixedTimeStep" => (self.m_fixed_time_step).inspect_value(path, offset, limit),
+                "m_EmptyShader" => (self.m_empty_shader).inspect_value(path, offset, limit),
+                "m_MaxDeltaTime" => (self.m_max_delta_time).inspect_value(path, offset, limit),
+                "m_CompiledVersion" => (self.m_compiled_version).inspect_value(path, offset, limit),
+                "m_MaxScrubTime" => (self.m_max_scrub_time).inspect_value(path, offset, limit),
+                "m_RuntimeVersion" => (self.m_runtime_version).inspect_value(path, offset, limit),
+                "m_MaxCapacity" => (self.m_max_capacity).inspect_value(path, offset, limit),
+                "m_RuntimeResources" => {
+                    (self.m_runtime_resources).inspect_value(path, offset, limit)
+                }
+                "m_BatchEmptyLifetime" => {
+                    (self.m_batch_empty_lifetime).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_indirect_shader).inspect_value(path, offset, limit))
+                .map(|v| ("m_IndirectShader".to_string(), v)),
+            ((self.m_copy_buffer_shader).inspect_value(path, offset, limit))
+                .map(|v| ("m_CopyBufferShader".to_string(), v)),
+            ((self.m_sort_shader).inspect_value(path, offset, limit))
+                .map(|v| ("m_SortShader".to_string(), v)),
+            ((self.m_prefix_sum_shader).inspect_value(path, offset, limit))
+                .map(|v| ("m_PrefixSumShader".to_string(), v)),
+            ((self.m_render_pipe_settings_path).inspect_value(path, offset, limit))
+                .map(|v| ("m_RenderPipeSettingsPath".to_string(), v)),
+            ((self.m_strip_update_shader).inspect_value(path, offset, limit))
+                .map(|v| ("m_StripUpdateShader".to_string(), v)),
+            ((self.m_fixed_time_step).inspect_value(path, offset, limit))
+                .map(|v| ("m_FixedTimeStep".to_string(), v)),
+            ((self.m_empty_shader).inspect_value(path, offset, limit))
+                .map(|v| ("m_EmptyShader".to_string(), v)),
+            ((self.m_max_delta_time).inspect_value(path, offset, limit))
+                .map(|v| ("m_MaxDeltaTime".to_string(), v)),
+            ((self.m_compiled_version).inspect_value(path, offset, limit))
+                .map(|v| ("m_CompiledVersion".to_string(), v)),
+            ((self.m_max_scrub_time).inspect_value(path, offset, limit))
+                .map(|v| ("m_MaxScrubTime".to_string(), v)),
+            ((self.m_runtime_version).inspect_value(path, offset, limit))
+                .map(|v| ("m_RuntimeVersion".to_string(), v)),
+            ((self.m_max_capacity).inspect_value(path, offset, limit))
+                .map(|v| ("m_MaxCapacity".to_string(), v)),
+            ((self.m_runtime_resources).inspect_value(path, offset, limit))
+                .map(|v| ("m_RuntimeResources".to_string(), v)),
+            ((self.m_batch_empty_lifetime).inspect_value(path, offset, limit))
+                .map(|v| ("m_BatchEmptyLifetime".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

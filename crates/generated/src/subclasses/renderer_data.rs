@@ -46,3 +46,82 @@ impl crate::Parse for RendererData {
         })
     }
 }
+
+impl crate::ToValue for RendererData {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("uvMesh".to_string(), self.uv_mesh.to_value())),
+            Some((
+                "terrainDynamicUVST".to_string(),
+                self.terrain_dynamic_uvst.to_value(),
+            )),
+            Some((
+                "terrainChunkDynamicUVST".to_string(),
+                self.terrain_chunk_dynamic_uvst.to_value(),
+            )),
+            Some(("lightmapIndex".to_string(), self.lightmap_index.to_value())),
+            Some((
+                "lightmapIndexDynamic".to_string(),
+                self.lightmap_index_dynamic.to_value(),
+            )),
+            Some(("lightmapST".to_string(), self.lightmap_st.to_value())),
+            Some((
+                "lightmapSTDynamic".to_string(),
+                self.lightmap_st_dynamic.to_value(),
+            )),
+            crate::opt_field("explicitProbeSetHash", &self.explicit_probe_set_hash),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "uvMesh" => (self.uv_mesh).inspect_value(path, offset, limit),
+                "terrainDynamicUVST" => {
+                    (self.terrain_dynamic_uvst).inspect_value(path, offset, limit)
+                }
+                "terrainChunkDynamicUVST" => {
+                    (self.terrain_chunk_dynamic_uvst).inspect_value(path, offset, limit)
+                }
+                "lightmapIndex" => (self.lightmap_index).inspect_value(path, offset, limit),
+                "lightmapIndexDynamic" => {
+                    (self.lightmap_index_dynamic).inspect_value(path, offset, limit)
+                }
+                "lightmapST" => (self.lightmap_st).inspect_value(path, offset, limit),
+                "lightmapSTDynamic" => {
+                    (self.lightmap_st_dynamic).inspect_value(path, offset, limit)
+                }
+                "explicitProbeSetHash" => {
+                    (self.explicit_probe_set_hash).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.uv_mesh).inspect_value(path, offset, limit)).map(|v| ("uvMesh".to_string(), v)),
+            ((self.terrain_dynamic_uvst).inspect_value(path, offset, limit))
+                .map(|v| ("terrainDynamicUVST".to_string(), v)),
+            ((self.terrain_chunk_dynamic_uvst).inspect_value(path, offset, limit))
+                .map(|v| ("terrainChunkDynamicUVST".to_string(), v)),
+            ((self.lightmap_index).inspect_value(path, offset, limit))
+                .map(|v| ("lightmapIndex".to_string(), v)),
+            ((self.lightmap_index_dynamic).inspect_value(path, offset, limit))
+                .map(|v| ("lightmapIndexDynamic".to_string(), v)),
+            ((self.lightmap_st).inspect_value(path, offset, limit))
+                .map(|v| ("lightmapST".to_string(), v)),
+            ((self.lightmap_st_dynamic).inspect_value(path, offset, limit))
+                .map(|v| ("lightmapSTDynamic".to_string(), v)),
+            ((self.explicit_probe_set_hash).inspect_value(path, offset, limit))
+                .map(|v| ("explicitProbeSetHash".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

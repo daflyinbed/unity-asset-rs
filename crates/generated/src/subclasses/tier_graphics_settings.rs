@@ -22,6 +22,21 @@ impl crate::Parse for TierGraphicsSettingsUseCascadedShadowMapsVariant {
         }
     }
 }
+
+impl crate::ToValue for TierGraphicsSettingsUseCascadedShadowMapsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_6(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_6(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct TierGraphicsSettings {
     pub rendering_path: i32,
@@ -78,5 +93,67 @@ impl crate::Parse for TierGraphicsSettings {
             enable_lppv,
             prefer32_bit_shadow_maps,
         })
+    }
+}
+
+impl crate::ToValue for TierGraphicsSettings {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("renderingPath".to_string(), self.rendering_path.to_value())),
+            Some((
+                "useCascadedShadowMaps".to_string(),
+                self.use_cascaded_shadow_maps.to_value(),
+            )),
+            crate::opt_field("hdrMode", &self.hdr_mode),
+            crate::opt_field("realtimeGICPUUsage", &self.realtime_gicpu_usage),
+            crate::opt_field("useHDR", &self.use_hdr),
+            crate::opt_field("enableLPPV", &self.enable_lppv),
+            crate::opt_field("prefer32BitShadowMaps", &self.prefer32_bit_shadow_maps),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "renderingPath" => (self.rendering_path).inspect_value(path, offset, limit),
+                "useCascadedShadowMaps" => {
+                    (self.use_cascaded_shadow_maps).inspect_value(path, offset, limit)
+                }
+                "hdrMode" => (self.hdr_mode).inspect_value(path, offset, limit),
+                "realtimeGICPUUsage" => {
+                    (self.realtime_gicpu_usage).inspect_value(path, offset, limit)
+                }
+                "useHDR" => (self.use_hdr).inspect_value(path, offset, limit),
+                "enableLPPV" => (self.enable_lppv).inspect_value(path, offset, limit),
+                "prefer32BitShadowMaps" => {
+                    (self.prefer32_bit_shadow_maps).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.rendering_path).inspect_value(path, offset, limit))
+                .map(|v| ("renderingPath".to_string(), v)),
+            ((self.use_cascaded_shadow_maps).inspect_value(path, offset, limit))
+                .map(|v| ("useCascadedShadowMaps".to_string(), v)),
+            ((self.hdr_mode).inspect_value(path, offset, limit))
+                .map(|v| ("hdrMode".to_string(), v)),
+            ((self.realtime_gicpu_usage).inspect_value(path, offset, limit))
+                .map(|v| ("realtimeGICPUUsage".to_string(), v)),
+            ((self.use_hdr).inspect_value(path, offset, limit)).map(|v| ("useHDR".to_string(), v)),
+            ((self.enable_lppv).inspect_value(path, offset, limit))
+                .map(|v| ("enableLPPV".to_string(), v)),
+            ((self.prefer32_bit_shadow_maps).inspect_value(path, offset, limit))
+                .map(|v| ("prefer32BitShadowMaps".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

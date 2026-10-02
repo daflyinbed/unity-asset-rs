@@ -36,6 +36,21 @@ impl crate::Parse for AudioMixerEffectControllerMParametersVariant {
         }
     }
 }
+
+impl crate::ToValue for AudioMixerEffectControllerMParametersVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct AudioMixerEffectController {
     pub m_name: String,
@@ -73,5 +88,65 @@ impl crate::Parse for AudioMixerEffectController {
             m_enable_wet_mix,
             m_bypass,
         })
+    }
+}
+
+impl crate::ToValue for AudioMixerEffectController {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some(("m_EffectID".to_string(), self.m_effect_id.to_value())),
+            Some(("m_EffectName".to_string(), self.m_effect_name.to_value())),
+            Some(("m_MixLevel".to_string(), self.m_mix_level.to_value())),
+            Some(("m_Parameters".to_string(), self.m_parameters.to_value())),
+            Some(("m_SendTarget".to_string(), self.m_send_target.to_value())),
+            Some((
+                "m_EnableWetMix".to_string(),
+                self.m_enable_wet_mix.to_value(),
+            )),
+            Some(("m_Bypass".to_string(), self.m_bypass.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_EffectID" => (self.m_effect_id).inspect_value(path, offset, limit),
+                "m_EffectName" => (self.m_effect_name).inspect_value(path, offset, limit),
+                "m_MixLevel" => (self.m_mix_level).inspect_value(path, offset, limit),
+                "m_Parameters" => (self.m_parameters).inspect_value(path, offset, limit),
+                "m_SendTarget" => (self.m_send_target).inspect_value(path, offset, limit),
+                "m_EnableWetMix" => (self.m_enable_wet_mix).inspect_value(path, offset, limit),
+                "m_Bypass" => (self.m_bypass).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_effect_id).inspect_value(path, offset, limit))
+                .map(|v| ("m_EffectID".to_string(), v)),
+            ((self.m_effect_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_EffectName".to_string(), v)),
+            ((self.m_mix_level).inspect_value(path, offset, limit))
+                .map(|v| ("m_MixLevel".to_string(), v)),
+            ((self.m_parameters).inspect_value(path, offset, limit))
+                .map(|v| ("m_Parameters".to_string(), v)),
+            ((self.m_send_target).inspect_value(path, offset, limit))
+                .map(|v| ("m_SendTarget".to_string(), v)),
+            ((self.m_enable_wet_mix).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableWetMix".to_string(), v)),
+            ((self.m_bypass).inspect_value(path, offset, limit))
+                .map(|v| ("m_Bypass".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

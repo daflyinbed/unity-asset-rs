@@ -24,6 +24,21 @@ impl crate::Parse for VfxExpressionContainerMNeedsWorldToLocalVariant {
         }
     }
 }
+
+impl crate::ToValue for VfxExpressionContainerMNeedsWorldToLocalVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2022_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2022_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct VfxExpressionContainer {
     pub m_expressions: Vec<Expression>,
@@ -97,5 +112,110 @@ impl crate::Parse for VfxExpressionContainer {
             m_dynamic_bake_curve_count,
             m_dynamic_bake_gradient_count,
         })
+    }
+}
+
+impl crate::ToValue for VfxExpressionContainer {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Expressions".to_string(), self.m_expressions.to_value())),
+            Some((
+                "m_NeedsLocalToWorld".to_string(),
+                self.m_needs_local_to_world.to_value(),
+            )),
+            crate::opt_field(
+                "m_MaxCommonExpressionsIndex",
+                &self.m_max_common_expressions_index,
+            ),
+            Some((
+                "m_NeedsWorldToLocal".to_string(),
+                self.m_needs_world_to_local.to_value(),
+            )),
+            crate::opt_field(
+                "m_ConstantBakeCurveCount",
+                &self.m_constant_bake_curve_count,
+            ),
+            crate::opt_field(
+                "m_NeededMainCameraBuffers",
+                &self.m_needed_main_camera_buffers,
+            ),
+            crate::opt_field(
+                "m_ConstantBakeGradientCount",
+                &self.m_constant_bake_gradient_count,
+            ),
+            crate::opt_field("m_NeedsMainCamera", &self.m_needs_main_camera),
+            crate::opt_field("m_DynamicBakeCurveCount", &self.m_dynamic_bake_curve_count),
+            crate::opt_field(
+                "m_DynamicBakeGradientCount",
+                &self.m_dynamic_bake_gradient_count,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Expressions" => (self.m_expressions).inspect_value(path, offset, limit),
+                "m_NeedsLocalToWorld" => {
+                    (self.m_needs_local_to_world).inspect_value(path, offset, limit)
+                }
+                "m_MaxCommonExpressionsIndex" => {
+                    (self.m_max_common_expressions_index).inspect_value(path, offset, limit)
+                }
+                "m_NeedsWorldToLocal" => {
+                    (self.m_needs_world_to_local).inspect_value(path, offset, limit)
+                }
+                "m_ConstantBakeCurveCount" => {
+                    (self.m_constant_bake_curve_count).inspect_value(path, offset, limit)
+                }
+                "m_NeededMainCameraBuffers" => {
+                    (self.m_needed_main_camera_buffers).inspect_value(path, offset, limit)
+                }
+                "m_ConstantBakeGradientCount" => {
+                    (self.m_constant_bake_gradient_count).inspect_value(path, offset, limit)
+                }
+                "m_NeedsMainCamera" => {
+                    (self.m_needs_main_camera).inspect_value(path, offset, limit)
+                }
+                "m_DynamicBakeCurveCount" => {
+                    (self.m_dynamic_bake_curve_count).inspect_value(path, offset, limit)
+                }
+                "m_DynamicBakeGradientCount" => {
+                    (self.m_dynamic_bake_gradient_count).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_expressions).inspect_value(path, offset, limit))
+                .map(|v| ("m_Expressions".to_string(), v)),
+            ((self.m_needs_local_to_world).inspect_value(path, offset, limit))
+                .map(|v| ("m_NeedsLocalToWorld".to_string(), v)),
+            ((self.m_max_common_expressions_index).inspect_value(path, offset, limit))
+                .map(|v| ("m_MaxCommonExpressionsIndex".to_string(), v)),
+            ((self.m_needs_world_to_local).inspect_value(path, offset, limit))
+                .map(|v| ("m_NeedsWorldToLocal".to_string(), v)),
+            ((self.m_constant_bake_curve_count).inspect_value(path, offset, limit))
+                .map(|v| ("m_ConstantBakeCurveCount".to_string(), v)),
+            ((self.m_needed_main_camera_buffers).inspect_value(path, offset, limit))
+                .map(|v| ("m_NeededMainCameraBuffers".to_string(), v)),
+            ((self.m_constant_bake_gradient_count).inspect_value(path, offset, limit))
+                .map(|v| ("m_ConstantBakeGradientCount".to_string(), v)),
+            ((self.m_needs_main_camera).inspect_value(path, offset, limit))
+                .map(|v| ("m_NeedsMainCamera".to_string(), v)),
+            ((self.m_dynamic_bake_curve_count).inspect_value(path, offset, limit))
+                .map(|v| ("m_DynamicBakeCurveCount".to_string(), v)),
+            ((self.m_dynamic_bake_gradient_count).inspect_value(path, offset, limit))
+                .map(|v| ("m_DynamicBakeGradientCount".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

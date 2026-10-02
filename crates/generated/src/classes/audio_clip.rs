@@ -25,6 +25,21 @@ impl crate::Parse for AudioClipMIsTrackerFormatVariant {
     }
 }
 
+impl crate::ToValue for AudioClipMIsTrackerFormatVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// pre-5.0 AudioClip.m_AudioData 的值依赖读取结果。
 /// 对齐 AssetRipper `Pass505_FixOldAudioClip` + `AudioClipHelper.ReadOldByteArray`：
 /// `m_Stream==2`（Streaming）时磁盘是 `u32 size; u32 offset;` 指向
@@ -36,6 +51,24 @@ pub enum AudioClipMAudioData {
     /// 流式（pre-5.0 且 m_Stream == 2）：u32 size; u32 offset;
     /// 指向 `<collection.name>.resS`，字节由 Environment 取。
     Streamed { size: u32, offset: u32 },
+}
+
+impl crate::ToValue for AudioClipMAudioData {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Inline(v) => crate::Value::Bytes(v.clone()),
+            Self::Streamed { size, offset } => crate::Value::Struct(vec![
+                ("size".to_string(), crate::Value::U32(*size)),
+                ("offset".to_string(), crate::Value::U32(*offset)),
+            ]),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Inline(v) => crate::inspect_bytes(v, path, offset, limit),
+            Self::Streamed { .. } => self.to_value().inspect_value(path, offset, limit),
+        }
+    }
 }
 #[derive(Debug, Clone)]
 pub struct AudioClip {
@@ -163,5 +196,116 @@ impl crate::Parse for AudioClip {
             m_resource,
             m_compression_format,
         })
+    }
+}
+
+impl crate::ToValue for AudioClip {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            crate::opt_field("m_Format", &self.m_format),
+            crate::opt_field("m_LoadType", &self.m_load_type),
+            crate::opt_field("m_Type", &self.m_type),
+            crate::opt_field("m_Channels", &self.m_channels),
+            crate::opt_field("m_3D", &self.m_3d),
+            crate::opt_field("m_Frequency", &self.m_frequency),
+            crate::opt_field("m_UseHardware", &self.m_use_hardware),
+            crate::opt_field("m_BitsPerSample", &self.m_bits_per_sample),
+            crate::opt_field("m_Stream", &self.m_stream),
+            crate::opt_field("m_Length", &self.m_length),
+            crate::opt_field("m_AudioData", &self.m_audio_data),
+            crate::opt_field("m_IsTrackerFormat", &self.m_is_tracker_format),
+            crate::opt_field("m_SubsoundIndex", &self.m_subsound_index),
+            crate::opt_field("m_Ambisonic", &self.m_ambisonic),
+            crate::opt_field("m_PreloadAudioData", &self.m_preload_audio_data),
+            crate::opt_field("m_LoadInBackground", &self.m_load_in_background),
+            crate::opt_field("m_Legacy3D", &self.m_legacy3_d),
+            crate::opt_field("m_Resource", &self.m_resource),
+            crate::opt_field("m_CompressionFormat", &self.m_compression_format),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_Format" => (self.m_format).inspect_value(path, offset, limit),
+                "m_LoadType" => (self.m_load_type).inspect_value(path, offset, limit),
+                "m_Type" => (self.m_type).inspect_value(path, offset, limit),
+                "m_Channels" => (self.m_channels).inspect_value(path, offset, limit),
+                "m_3D" => (self.m_3d).inspect_value(path, offset, limit),
+                "m_Frequency" => (self.m_frequency).inspect_value(path, offset, limit),
+                "m_UseHardware" => (self.m_use_hardware).inspect_value(path, offset, limit),
+                "m_BitsPerSample" => (self.m_bits_per_sample).inspect_value(path, offset, limit),
+                "m_Stream" => (self.m_stream).inspect_value(path, offset, limit),
+                "m_Length" => (self.m_length).inspect_value(path, offset, limit),
+                "m_AudioData" => self.m_audio_data.inspect_value(path, offset, limit),
+                "m_IsTrackerFormat" => {
+                    (self.m_is_tracker_format).inspect_value(path, offset, limit)
+                }
+                "m_SubsoundIndex" => (self.m_subsound_index).inspect_value(path, offset, limit),
+                "m_Ambisonic" => (self.m_ambisonic).inspect_value(path, offset, limit),
+                "m_PreloadAudioData" => {
+                    (self.m_preload_audio_data).inspect_value(path, offset, limit)
+                }
+                "m_LoadInBackground" => {
+                    (self.m_load_in_background).inspect_value(path, offset, limit)
+                }
+                "m_Legacy3D" => (self.m_legacy3_d).inspect_value(path, offset, limit),
+                "m_Resource" => (self.m_resource).inspect_value(path, offset, limit),
+                "m_CompressionFormat" => {
+                    (self.m_compression_format).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_format).inspect_value(path, offset, limit))
+                .map(|v| ("m_Format".to_string(), v)),
+            ((self.m_load_type).inspect_value(path, offset, limit))
+                .map(|v| ("m_LoadType".to_string(), v)),
+            ((self.m_type).inspect_value(path, offset, limit)).map(|v| ("m_Type".to_string(), v)),
+            ((self.m_channels).inspect_value(path, offset, limit))
+                .map(|v| ("m_Channels".to_string(), v)),
+            ((self.m_3d).inspect_value(path, offset, limit)).map(|v| ("m_3D".to_string(), v)),
+            ((self.m_frequency).inspect_value(path, offset, limit))
+                .map(|v| ("m_Frequency".to_string(), v)),
+            ((self.m_use_hardware).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseHardware".to_string(), v)),
+            ((self.m_bits_per_sample).inspect_value(path, offset, limit))
+                .map(|v| ("m_BitsPerSample".to_string(), v)),
+            ((self.m_stream).inspect_value(path, offset, limit))
+                .map(|v| ("m_Stream".to_string(), v)),
+            ((self.m_length).inspect_value(path, offset, limit))
+                .map(|v| ("m_Length".to_string(), v)),
+            (self.m_audio_data.inspect_value(path, offset, limit))
+                .map(|v| ("m_AudioData".to_string(), v)),
+            ((self.m_is_tracker_format).inspect_value(path, offset, limit))
+                .map(|v| ("m_IsTrackerFormat".to_string(), v)),
+            ((self.m_subsound_index).inspect_value(path, offset, limit))
+                .map(|v| ("m_SubsoundIndex".to_string(), v)),
+            ((self.m_ambisonic).inspect_value(path, offset, limit))
+                .map(|v| ("m_Ambisonic".to_string(), v)),
+            ((self.m_preload_audio_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_PreloadAudioData".to_string(), v)),
+            ((self.m_load_in_background).inspect_value(path, offset, limit))
+                .map(|v| ("m_LoadInBackground".to_string(), v)),
+            ((self.m_legacy3_d).inspect_value(path, offset, limit))
+                .map(|v| ("m_Legacy3D".to_string(), v)),
+            ((self.m_resource).inspect_value(path, offset, limit))
+                .map(|v| ("m_Resource".to_string(), v)),
+            ((self.m_compression_format).inspect_value(path, offset, limit))
+                .map(|v| ("m_CompressionFormat".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

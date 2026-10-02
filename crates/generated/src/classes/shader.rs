@@ -37,6 +37,21 @@ impl crate::Parse for ShaderPlatformsVariant {
     }
 }
 
+impl crate::ToValue for ShaderPlatformsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：ShaderMDependenciesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ShaderMDependenciesVariant {
@@ -66,6 +81,21 @@ impl crate::Parse for ShaderMDependenciesVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for ShaderMDependenciesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -120,6 +150,23 @@ impl crate::Parse for ShaderOffsetsVariant {
     }
 }
 
+impl crate::ToValue for ShaderOffsetsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+            Self::V2019_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+            Self::V2019_3(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：ShaderCompressedLengthsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ShaderCompressedLengthsVariant {
@@ -170,6 +217,23 @@ impl crate::Parse for ShaderCompressedLengthsVariant {
     }
 }
 
+impl crate::ToValue for ShaderCompressedLengthsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+            Self::V2019_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+            Self::V2019_3(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：ShaderDecompressedLengthsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ShaderDecompressedLengthsVariant {
@@ -216,6 +280,23 @@ impl crate::Parse for ShaderDecompressedLengthsVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for ShaderDecompressedLengthsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+            Self::V2019_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+            Self::V2019_3(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -542,5 +623,106 @@ impl crate::Parse for Shader {
             m_asset_guid,
             m_asset_local_identifier_in_file,
         })
+    }
+}
+
+impl crate::ToValue for Shader {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            crate::opt_field("m_Script", &self.m_script),
+            crate::opt_field("m_ParsedForm", &self.m_parsed_form),
+            crate::opt_field("m_PathName", &self.m_path_name),
+            crate::opt_field("platforms", &self.platforms),
+            crate::opt_field("m_Dependencies", &self.m_dependencies),
+            crate::opt_field("decompressedSize", &self.decompressed_size),
+            crate::opt_field("offsets", &self.offsets),
+            crate::opt_field("m_ShaderIsBaked", &self.m_shader_is_baked),
+            crate::opt_field("m_CompressedBlob", &self.m_compressed_blob),
+            crate::opt_field("compressedLengths", &self.compressed_lengths),
+            crate::opt_field("decompressedLengths", &self.decompressed_lengths),
+            crate::opt_field("compressedBlob", &self.compressed_blob),
+            crate::opt_field("stageCounts", &self.stage_counts),
+            crate::opt_field("m_NonModifiableTextures", &self.m_non_modifiable_textures),
+            crate::opt_field("m_AssetGUID", &self.m_asset_guid),
+            crate::opt_field(
+                "m_AssetLocalIdentifierInFile",
+                &self.m_asset_local_identifier_in_file,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_Script" => (self.m_script).inspect_value(path, offset, limit),
+                "m_ParsedForm" => (self.m_parsed_form).inspect_value(path, offset, limit),
+                "m_PathName" => (self.m_path_name).inspect_value(path, offset, limit),
+                "platforms" => (self.platforms).inspect_value(path, offset, limit),
+                "m_Dependencies" => (self.m_dependencies).inspect_value(path, offset, limit),
+                "decompressedSize" => (self.decompressed_size).inspect_value(path, offset, limit),
+                "offsets" => (self.offsets).inspect_value(path, offset, limit),
+                "m_ShaderIsBaked" => (self.m_shader_is_baked).inspect_value(path, offset, limit),
+                "m_CompressedBlob" => (self.m_compressed_blob).inspect_value(path, offset, limit),
+                "compressedLengths" => (self.compressed_lengths).inspect_value(path, offset, limit),
+                "decompressedLengths" => {
+                    (self.decompressed_lengths).inspect_value(path, offset, limit)
+                }
+                "compressedBlob" => (self.compressed_blob).inspect_value(path, offset, limit),
+                "stageCounts" => (self.stage_counts).inspect_value(path, offset, limit),
+                "m_NonModifiableTextures" => {
+                    (self.m_non_modifiable_textures).inspect_value(path, offset, limit)
+                }
+                "m_AssetGUID" => (self.m_asset_guid).inspect_value(path, offset, limit),
+                "m_AssetLocalIdentifierInFile" => {
+                    (self.m_asset_local_identifier_in_file).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_script).inspect_value(path, offset, limit))
+                .map(|v| ("m_Script".to_string(), v)),
+            ((self.m_parsed_form).inspect_value(path, offset, limit))
+                .map(|v| ("m_ParsedForm".to_string(), v)),
+            ((self.m_path_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_PathName".to_string(), v)),
+            ((self.platforms).inspect_value(path, offset, limit))
+                .map(|v| ("platforms".to_string(), v)),
+            ((self.m_dependencies).inspect_value(path, offset, limit))
+                .map(|v| ("m_Dependencies".to_string(), v)),
+            ((self.decompressed_size).inspect_value(path, offset, limit))
+                .map(|v| ("decompressedSize".to_string(), v)),
+            ((self.offsets).inspect_value(path, offset, limit)).map(|v| ("offsets".to_string(), v)),
+            ((self.m_shader_is_baked).inspect_value(path, offset, limit))
+                .map(|v| ("m_ShaderIsBaked".to_string(), v)),
+            ((self.m_compressed_blob).inspect_value(path, offset, limit))
+                .map(|v| ("m_CompressedBlob".to_string(), v)),
+            ((self.compressed_lengths).inspect_value(path, offset, limit))
+                .map(|v| ("compressedLengths".to_string(), v)),
+            ((self.decompressed_lengths).inspect_value(path, offset, limit))
+                .map(|v| ("decompressedLengths".to_string(), v)),
+            ((self.compressed_blob).inspect_value(path, offset, limit))
+                .map(|v| ("compressedBlob".to_string(), v)),
+            ((self.stage_counts).inspect_value(path, offset, limit))
+                .map(|v| ("stageCounts".to_string(), v)),
+            ((self.m_non_modifiable_textures).inspect_value(path, offset, limit))
+                .map(|v| ("m_NonModifiableTextures".to_string(), v)),
+            ((self.m_asset_guid).inspect_value(path, offset, limit))
+                .map(|v| ("m_AssetGUID".to_string(), v)),
+            ((self.m_asset_local_identifier_in_file).inspect_value(path, offset, limit))
+                .map(|v| ("m_AssetLocalIdentifierInFile".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

@@ -77,3 +77,83 @@ impl crate::Parse for LookAtConstraint {
         })
     }
 }
+
+impl crate::ToValue for LookAtConstraint {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_Enabled".to_string(), self.m_enabled.to_value())),
+            Some(("m_Weight".to_string(), self.m_weight.to_value())),
+            Some((
+                "m_RotationAtRest".to_string(),
+                self.m_rotation_at_rest.to_value(),
+            )),
+            Some((
+                "m_RotationOffset".to_string(),
+                self.m_rotation_offset.to_value(),
+            )),
+            Some(("m_Roll".to_string(), self.m_roll.to_value())),
+            Some((
+                "m_WorldUpObject".to_string(),
+                self.m_world_up_object.to_value(),
+            )),
+            Some(("m_UseUpObject".to_string(), self.m_use_up_object.to_value())),
+            crate::opt_field("m_IsContraintActive", &self.m_is_contraint_active),
+            crate::opt_field("m_Active", &self.m_active),
+            Some(("m_Sources".to_string(), self.m_sources.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "m_Weight" => (self.m_weight).inspect_value(path, offset, limit),
+                "m_RotationAtRest" => (self.m_rotation_at_rest).inspect_value(path, offset, limit),
+                "m_RotationOffset" => (self.m_rotation_offset).inspect_value(path, offset, limit),
+                "m_Roll" => (self.m_roll).inspect_value(path, offset, limit),
+                "m_WorldUpObject" => (self.m_world_up_object).inspect_value(path, offset, limit),
+                "m_UseUpObject" => (self.m_use_up_object).inspect_value(path, offset, limit),
+                "m_IsContraintActive" => {
+                    (self.m_is_contraint_active).inspect_value(path, offset, limit)
+                }
+                "m_Active" => (self.m_active).inspect_value(path, offset, limit),
+                "m_Sources" => (self.m_sources).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.m_weight).inspect_value(path, offset, limit))
+                .map(|v| ("m_Weight".to_string(), v)),
+            ((self.m_rotation_at_rest).inspect_value(path, offset, limit))
+                .map(|v| ("m_RotationAtRest".to_string(), v)),
+            ((self.m_rotation_offset).inspect_value(path, offset, limit))
+                .map(|v| ("m_RotationOffset".to_string(), v)),
+            ((self.m_roll).inspect_value(path, offset, limit)).map(|v| ("m_Roll".to_string(), v)),
+            ((self.m_world_up_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_WorldUpObject".to_string(), v)),
+            ((self.m_use_up_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseUpObject".to_string(), v)),
+            ((self.m_is_contraint_active).inspect_value(path, offset, limit))
+                .map(|v| ("m_IsContraintActive".to_string(), v)),
+            ((self.m_active).inspect_value(path, offset, limit))
+                .map(|v| ("m_Active".to_string(), v)),
+            ((self.m_sources).inspect_value(path, offset, limit))
+                .map(|v| ("m_Sources".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

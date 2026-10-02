@@ -42,6 +42,21 @@ impl crate::Parse for LightingDataAssetMLightmapsVariant {
     }
 }
 
+impl crate::ToValue for LightingDataAssetMLightmapsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：LightingDataAssetMLightmappedRendererDataVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum LightingDataAssetMLightmappedRendererDataVariant {
@@ -71,6 +86,21 @@ impl crate::Parse for LightingDataAssetMLightmappedRendererDataVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for LightingDataAssetMLightmappedRendererDataVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -108,6 +138,21 @@ impl crate::Parse for LightingDataAssetMLightmappedRendererDataIDsVariant {
     }
 }
 
+impl crate::ToValue for LightingDataAssetMLightmappedRendererDataIDsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：LightingDataAssetMEnlightenSceneMappingRendererIDsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum LightingDataAssetMEnlightenSceneMappingRendererIDsVariant {
@@ -137,6 +182,21 @@ impl crate::Parse for LightingDataAssetMEnlightenSceneMappingRendererIDsVariant 
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for LightingDataAssetMEnlightenSceneMappingRendererIDsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -174,6 +234,21 @@ impl crate::Parse for LightingDataAssetMLightsVariant {
     }
 }
 
+impl crate::ToValue for LightingDataAssetMLightsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：LightingDataAssetMBakedReflectionProbeCubemapsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum LightingDataAssetMBakedReflectionProbeCubemapsVariant {
@@ -203,6 +278,21 @@ impl crate::Parse for LightingDataAssetMBakedReflectionProbeCubemapsVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for LightingDataAssetMBakedReflectionProbeCubemapsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -240,6 +330,21 @@ impl crate::Parse for LightingDataAssetMBakedReflectionProbesVariant {
     }
 }
 
+impl crate::ToValue for LightingDataAssetMBakedReflectionProbesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：LightingDataAssetMLightBakingOutputsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum LightingDataAssetMLightBakingOutputsVariant {
@@ -269,6 +374,21 @@ impl crate::Parse for LightingDataAssetMLightBakingOutputsVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for LightingDataAssetMLightBakingOutputsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -507,5 +627,201 @@ impl crate::Parse for LightingDataAsset {
             m_enlighten_data_version,
             m_baked_reflection_probe_cubemap_cache_files,
         })
+    }
+}
+
+impl crate::ToValue for LightingDataAsset {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some(("m_Lightmaps".to_string(), self.m_lightmaps.to_value())),
+            crate::opt_field("m_SceneGUID", &self.m_scene_guid),
+            crate::opt_field("m_Scene", &self.m_scene),
+            Some(("m_LightProbes".to_string(), self.m_light_probes.to_value())),
+            crate::opt_field(
+                "m_BakedAmbientProbesInLinear",
+                &self.m_baked_ambient_probes_in_linear,
+            ),
+            crate::opt_field(
+                "m_BakedAmbientProbeInLinear",
+                &self.m_baked_ambient_probe_in_linear,
+            ),
+            crate::opt_field("m_LightmapsMode", &self.m_lightmaps_mode),
+            crate::opt_field("m_LightmapsCacheFiles", &self.m_lightmaps_cache_files),
+            crate::opt_field("m_AOTextures", &self.m_ao_textures),
+            crate::opt_field(
+                "m_BakedAmbientProbesInGamma",
+                &self.m_baked_ambient_probes_in_gamma,
+            ),
+            Some((
+                "m_LightmappedRendererData".to_string(),
+                self.m_lightmapped_renderer_data.to_value(),
+            )),
+            Some((
+                "m_LightmappedRendererDataIDs".to_string(),
+                self.m_lightmapped_renderer_data_i_ds.to_value(),
+            )),
+            crate::opt_field(
+                "m_BakedAmbientProbeInGamma",
+                &self.m_baked_ambient_probe_in_gamma,
+            ),
+            Some((
+                "m_EnlightenSceneMapping".to_string(),
+                self.m_enlighten_scene_mapping.to_value(),
+            )),
+            Some((
+                "m_EnlightenSceneMappingRendererIDs".to_string(),
+                self.m_enlighten_scene_mapping_renderer_i_ds.to_value(),
+            )),
+            Some(("m_Lights".to_string(), self.m_lights.to_value())),
+            Some((
+                "m_BakedReflectionProbeCubemaps".to_string(),
+                self.m_baked_reflection_probe_cubemaps.to_value(),
+            )),
+            Some((
+                "m_BakedReflectionProbes".to_string(),
+                self.m_baked_reflection_probes.to_value(),
+            )),
+            crate::opt_field("m_BakedLightIndices", &self.m_baked_light_indices),
+            crate::opt_field("m_LightBakingOutputs", &self.m_light_baking_outputs),
+            crate::opt_field(
+                "m_BakedSkyboxProbeCubemaps",
+                &self.m_baked_skybox_probe_cubemaps,
+            ),
+            Some((
+                "m_EnlightenData".to_string(),
+                self.m_enlighten_data.to_value(),
+            )),
+            crate::opt_field("m_EnlightenDataVersion", &self.m_enlighten_data_version),
+            crate::opt_field(
+                "m_BakedReflectionProbeCubemapCacheFiles",
+                &self.m_baked_reflection_probe_cubemap_cache_files,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_Lightmaps" => (self.m_lightmaps).inspect_value(path, offset, limit),
+                "m_SceneGUID" => (self.m_scene_guid).inspect_value(path, offset, limit),
+                "m_Scene" => (self.m_scene).inspect_value(path, offset, limit),
+                "m_LightProbes" => (self.m_light_probes).inspect_value(path, offset, limit),
+                "m_BakedAmbientProbesInLinear" => {
+                    (self.m_baked_ambient_probes_in_linear).inspect_value(path, offset, limit)
+                }
+                "m_BakedAmbientProbeInLinear" => {
+                    (self.m_baked_ambient_probe_in_linear).inspect_value(path, offset, limit)
+                }
+                "m_LightmapsMode" => (self.m_lightmaps_mode).inspect_value(path, offset, limit),
+                "m_LightmapsCacheFiles" => {
+                    (self.m_lightmaps_cache_files).inspect_value(path, offset, limit)
+                }
+                "m_AOTextures" => (self.m_ao_textures).inspect_value(path, offset, limit),
+                "m_BakedAmbientProbesInGamma" => {
+                    (self.m_baked_ambient_probes_in_gamma).inspect_value(path, offset, limit)
+                }
+                "m_LightmappedRendererData" => {
+                    (self.m_lightmapped_renderer_data).inspect_value(path, offset, limit)
+                }
+                "m_LightmappedRendererDataIDs" => {
+                    (self.m_lightmapped_renderer_data_i_ds).inspect_value(path, offset, limit)
+                }
+                "m_BakedAmbientProbeInGamma" => {
+                    (self.m_baked_ambient_probe_in_gamma).inspect_value(path, offset, limit)
+                }
+                "m_EnlightenSceneMapping" => {
+                    (self.m_enlighten_scene_mapping).inspect_value(path, offset, limit)
+                }
+                "m_EnlightenSceneMappingRendererIDs" => (self
+                    .m_enlighten_scene_mapping_renderer_i_ds)
+                    .inspect_value(path, offset, limit),
+                "m_Lights" => (self.m_lights).inspect_value(path, offset, limit),
+                "m_BakedReflectionProbeCubemaps" => {
+                    (self.m_baked_reflection_probe_cubemaps).inspect_value(path, offset, limit)
+                }
+                "m_BakedReflectionProbes" => {
+                    (self.m_baked_reflection_probes).inspect_value(path, offset, limit)
+                }
+                "m_BakedLightIndices" => {
+                    (self.m_baked_light_indices).inspect_value(path, offset, limit)
+                }
+                "m_LightBakingOutputs" => {
+                    (self.m_light_baking_outputs).inspect_value(path, offset, limit)
+                }
+                "m_BakedSkyboxProbeCubemaps" => {
+                    (self.m_baked_skybox_probe_cubemaps).inspect_value(path, offset, limit)
+                }
+                "m_EnlightenData" => (self.m_enlighten_data).inspect_value(path, offset, limit),
+                "m_EnlightenDataVersion" => {
+                    (self.m_enlighten_data_version).inspect_value(path, offset, limit)
+                }
+                "m_BakedReflectionProbeCubemapCacheFiles" => (self
+                    .m_baked_reflection_probe_cubemap_cache_files)
+                    .inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_lightmaps).inspect_value(path, offset, limit))
+                .map(|v| ("m_Lightmaps".to_string(), v)),
+            ((self.m_scene_guid).inspect_value(path, offset, limit))
+                .map(|v| ("m_SceneGUID".to_string(), v)),
+            ((self.m_scene).inspect_value(path, offset, limit)).map(|v| ("m_Scene".to_string(), v)),
+            ((self.m_light_probes).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightProbes".to_string(), v)),
+            ((self.m_baked_ambient_probes_in_linear).inspect_value(path, offset, limit))
+                .map(|v| ("m_BakedAmbientProbesInLinear".to_string(), v)),
+            ((self.m_baked_ambient_probe_in_linear).inspect_value(path, offset, limit))
+                .map(|v| ("m_BakedAmbientProbeInLinear".to_string(), v)),
+            ((self.m_lightmaps_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightmapsMode".to_string(), v)),
+            ((self.m_lightmaps_cache_files).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightmapsCacheFiles".to_string(), v)),
+            ((self.m_ao_textures).inspect_value(path, offset, limit))
+                .map(|v| ("m_AOTextures".to_string(), v)),
+            ((self.m_baked_ambient_probes_in_gamma).inspect_value(path, offset, limit))
+                .map(|v| ("m_BakedAmbientProbesInGamma".to_string(), v)),
+            ((self.m_lightmapped_renderer_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightmappedRendererData".to_string(), v)),
+            ((self.m_lightmapped_renderer_data_i_ds).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightmappedRendererDataIDs".to_string(), v)),
+            ((self.m_baked_ambient_probe_in_gamma).inspect_value(path, offset, limit))
+                .map(|v| ("m_BakedAmbientProbeInGamma".to_string(), v)),
+            ((self.m_enlighten_scene_mapping).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnlightenSceneMapping".to_string(), v)),
+            ((self.m_enlighten_scene_mapping_renderer_i_ds).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnlightenSceneMappingRendererIDs".to_string(), v)),
+            ((self.m_lights).inspect_value(path, offset, limit))
+                .map(|v| ("m_Lights".to_string(), v)),
+            ((self.m_baked_reflection_probe_cubemaps).inspect_value(path, offset, limit))
+                .map(|v| ("m_BakedReflectionProbeCubemaps".to_string(), v)),
+            ((self.m_baked_reflection_probes).inspect_value(path, offset, limit))
+                .map(|v| ("m_BakedReflectionProbes".to_string(), v)),
+            ((self.m_baked_light_indices).inspect_value(path, offset, limit))
+                .map(|v| ("m_BakedLightIndices".to_string(), v)),
+            ((self.m_light_baking_outputs).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightBakingOutputs".to_string(), v)),
+            ((self.m_baked_skybox_probe_cubemaps).inspect_value(path, offset, limit))
+                .map(|v| ("m_BakedSkyboxProbeCubemaps".to_string(), v)),
+            ((self.m_enlighten_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnlightenData".to_string(), v)),
+            ((self.m_enlighten_data_version).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnlightenDataVersion".to_string(), v)),
+            ((self.m_baked_reflection_probe_cubemap_cache_files)
+                .inspect_value(path, offset, limit))
+            .map(|v| ("m_BakedReflectionProbeCubemapCacheFiles".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

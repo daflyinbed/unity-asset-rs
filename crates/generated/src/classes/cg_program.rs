@@ -29,3 +29,40 @@ impl crate::Parse for CgProgram {
         })
     }
 }
+
+impl crate::ToValue for CgProgram {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some(("m_Script".to_string(), self.m_script.to_value())),
+            crate::opt_field("m_PathName", &self.m_path_name),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_Script" => (self.m_script).inspect_value(path, offset, limit),
+                "m_PathName" => (self.m_path_name).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_script).inspect_value(path, offset, limit))
+                .map(|v| ("m_Script".to_string(), v)),
+            ((self.m_path_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_PathName".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

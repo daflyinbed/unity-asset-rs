@@ -25,6 +25,21 @@ impl crate::Parse for AudioSourceMResourceVariant {
     }
 }
 
+impl crate::ToValue for AudioSourceMResourceVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V6000_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_3(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：AudioSourceMuteVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AudioSourceMuteVariant {
@@ -44,6 +59,21 @@ impl crate::Parse for AudioSourceMuteVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for AudioSourceMuteVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_2(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -71,6 +101,21 @@ impl crate::Parse for AudioSourceSpatializeVariant {
     }
 }
 
+impl crate::ToValue for AudioSourceSpatializeVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_5(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：AudioSourceBypassEffectsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AudioSourceBypassEffectsVariant {
@@ -90,6 +135,21 @@ impl crate::Parse for AudioSourceBypassEffectsVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for AudioSourceBypassEffectsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V4_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V4_2(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -226,5 +286,155 @@ impl crate::Parse for AudioSource {
             spread_custom_curve: spread_custom_curve.unwrap(),
             reverb_zone_mix_custom_curve,
         })
+    }
+}
+
+impl crate::ToValue for AudioSource {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_Enabled".to_string(), self.m_enabled.to_value())),
+            Some(("m_audioClip".to_string(), self.m_audio_clip.to_value())),
+            crate::opt_field("OutputAudioMixerGroup", &self.output_audio_mixer_group),
+            Some(("m_PlayOnAwake".to_string(), self.m_play_on_awake.to_value())),
+            Some(("m_Volume".to_string(), self.m_volume.to_value())),
+            crate::opt_field("m_Resource", &self.m_resource),
+            Some(("m_Pitch".to_string(), self.m_pitch.to_value())),
+            Some(("Loop".to_string(), self.r#loop.to_value())),
+            Some(("Mute".to_string(), self.mute.to_value())),
+            Some(("Priority".to_string(), self.priority.to_value())),
+            Some(("DopplerLevel".to_string(), self.doppler_level.to_value())),
+            crate::opt_field("Spatialize", &self.spatialize),
+            Some(("MinDistance".to_string(), self.min_distance.to_value())),
+            crate::opt_field("SpatializePostEffects", &self.spatialize_post_effects),
+            Some(("MaxDistance".to_string(), self.max_distance.to_value())),
+            Some(("Pan2D".to_string(), self.pan2_d.to_value())),
+            Some(("rolloffMode".to_string(), self.rolloff_mode.to_value())),
+            Some(("BypassEffects".to_string(), self.bypass_effects.to_value())),
+            Some((
+                "rolloffCustomCurve".to_string(),
+                self.rolloff_custom_curve.to_value(),
+            )),
+            crate::opt_field("BypassListenerEffects", &self.bypass_listener_effects),
+            Some((
+                "panLevelCustomCurve".to_string(),
+                self.pan_level_custom_curve.to_value(),
+            )),
+            crate::opt_field("BypassReverbZones", &self.bypass_reverb_zones),
+            Some((
+                "spreadCustomCurve".to_string(),
+                self.spread_custom_curve.to_value(),
+            )),
+            crate::opt_field(
+                "reverbZoneMixCustomCurve",
+                &self.reverb_zone_mix_custom_curve,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "m_audioClip" => (self.m_audio_clip).inspect_value(path, offset, limit),
+                "OutputAudioMixerGroup" => {
+                    (self.output_audio_mixer_group).inspect_value(path, offset, limit)
+                }
+                "m_PlayOnAwake" => (self.m_play_on_awake).inspect_value(path, offset, limit),
+                "m_Volume" => (self.m_volume).inspect_value(path, offset, limit),
+                "m_Resource" => (self.m_resource).inspect_value(path, offset, limit),
+                "m_Pitch" => (self.m_pitch).inspect_value(path, offset, limit),
+                "Loop" => (self.r#loop).inspect_value(path, offset, limit),
+                "Mute" => (self.mute).inspect_value(path, offset, limit),
+                "Priority" => (self.priority).inspect_value(path, offset, limit),
+                "DopplerLevel" => (self.doppler_level).inspect_value(path, offset, limit),
+                "Spatialize" => (self.spatialize).inspect_value(path, offset, limit),
+                "MinDistance" => (self.min_distance).inspect_value(path, offset, limit),
+                "SpatializePostEffects" => {
+                    (self.spatialize_post_effects).inspect_value(path, offset, limit)
+                }
+                "MaxDistance" => (self.max_distance).inspect_value(path, offset, limit),
+                "Pan2D" => (self.pan2_d).inspect_value(path, offset, limit),
+                "rolloffMode" => (self.rolloff_mode).inspect_value(path, offset, limit),
+                "BypassEffects" => (self.bypass_effects).inspect_value(path, offset, limit),
+                "rolloffCustomCurve" => {
+                    (self.rolloff_custom_curve).inspect_value(path, offset, limit)
+                }
+                "BypassListenerEffects" => {
+                    (self.bypass_listener_effects).inspect_value(path, offset, limit)
+                }
+                "panLevelCustomCurve" => {
+                    (self.pan_level_custom_curve).inspect_value(path, offset, limit)
+                }
+                "BypassReverbZones" => {
+                    (self.bypass_reverb_zones).inspect_value(path, offset, limit)
+                }
+                "spreadCustomCurve" => {
+                    (self.spread_custom_curve).inspect_value(path, offset, limit)
+                }
+                "reverbZoneMixCustomCurve" => {
+                    (self.reverb_zone_mix_custom_curve).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.m_audio_clip).inspect_value(path, offset, limit))
+                .map(|v| ("m_audioClip".to_string(), v)),
+            ((self.output_audio_mixer_group).inspect_value(path, offset, limit))
+                .map(|v| ("OutputAudioMixerGroup".to_string(), v)),
+            ((self.m_play_on_awake).inspect_value(path, offset, limit))
+                .map(|v| ("m_PlayOnAwake".to_string(), v)),
+            ((self.m_volume).inspect_value(path, offset, limit))
+                .map(|v| ("m_Volume".to_string(), v)),
+            ((self.m_resource).inspect_value(path, offset, limit))
+                .map(|v| ("m_Resource".to_string(), v)),
+            ((self.m_pitch).inspect_value(path, offset, limit)).map(|v| ("m_Pitch".to_string(), v)),
+            ((self.r#loop).inspect_value(path, offset, limit)).map(|v| ("Loop".to_string(), v)),
+            ((self.mute).inspect_value(path, offset, limit)).map(|v| ("Mute".to_string(), v)),
+            ((self.priority).inspect_value(path, offset, limit))
+                .map(|v| ("Priority".to_string(), v)),
+            ((self.doppler_level).inspect_value(path, offset, limit))
+                .map(|v| ("DopplerLevel".to_string(), v)),
+            ((self.spatialize).inspect_value(path, offset, limit))
+                .map(|v| ("Spatialize".to_string(), v)),
+            ((self.min_distance).inspect_value(path, offset, limit))
+                .map(|v| ("MinDistance".to_string(), v)),
+            ((self.spatialize_post_effects).inspect_value(path, offset, limit))
+                .map(|v| ("SpatializePostEffects".to_string(), v)),
+            ((self.max_distance).inspect_value(path, offset, limit))
+                .map(|v| ("MaxDistance".to_string(), v)),
+            ((self.pan2_d).inspect_value(path, offset, limit)).map(|v| ("Pan2D".to_string(), v)),
+            ((self.rolloff_mode).inspect_value(path, offset, limit))
+                .map(|v| ("rolloffMode".to_string(), v)),
+            ((self.bypass_effects).inspect_value(path, offset, limit))
+                .map(|v| ("BypassEffects".to_string(), v)),
+            ((self.rolloff_custom_curve).inspect_value(path, offset, limit))
+                .map(|v| ("rolloffCustomCurve".to_string(), v)),
+            ((self.bypass_listener_effects).inspect_value(path, offset, limit))
+                .map(|v| ("BypassListenerEffects".to_string(), v)),
+            ((self.pan_level_custom_curve).inspect_value(path, offset, limit))
+                .map(|v| ("panLevelCustomCurve".to_string(), v)),
+            ((self.bypass_reverb_zones).inspect_value(path, offset, limit))
+                .map(|v| ("BypassReverbZones".to_string(), v)),
+            ((self.spread_custom_curve).inspect_value(path, offset, limit))
+                .map(|v| ("spreadCustomCurve".to_string(), v)),
+            ((self.reverb_zone_mix_custom_curve).inspect_value(path, offset, limit))
+                .map(|v| ("reverbZoneMixCustomCurve".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

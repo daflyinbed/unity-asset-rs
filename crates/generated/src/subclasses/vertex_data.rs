@@ -25,6 +25,21 @@ impl crate::Parse for VertexDataMCurrentChannelsVariant {
     }
 }
 
+impl crate::ToValue for VertexDataMCurrentChannelsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_6(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_6(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：VertexDataMChannelsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum VertexDataMChannelsVariant {
@@ -54,6 +69,21 @@ impl crate::Parse for VertexDataMChannelsVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for VertexDataMChannelsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -126,5 +156,70 @@ impl crate::Parse for VertexData {
             m_streams_2,
             m_streams_3,
         })
+    }
+}
+
+impl crate::ToValue for VertexData {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            crate::opt_field("m_CurrentChannels", &self.m_current_channels),
+            Some(("m_VertexCount".to_string(), self.m_vertex_count.to_value())),
+            crate::opt_field("m_Channels", &self.m_channels),
+            crate::opt_field("m_Streams[0]", &self.m_streams_0),
+            Some((
+                "m_Data".to_string(),
+                crate::Value::Bytes(self.m_data.clone()),
+            )),
+            crate::opt_field("m_Streams[1]", &self.m_streams_1),
+            crate::opt_field("m_Streams", &self.m_streams),
+            crate::opt_field("m_Streams[2]", &self.m_streams_2),
+            crate::opt_field("m_Streams[3]", &self.m_streams_3),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_CurrentChannels" => (self.m_current_channels).inspect_value(path, offset, limit),
+                "m_VertexCount" => (self.m_vertex_count).inspect_value(path, offset, limit),
+                "m_Channels" => (self.m_channels).inspect_value(path, offset, limit),
+                "m_Streams[0]" => (self.m_streams_0).inspect_value(path, offset, limit),
+                "m_Data" => crate::inspect_bytes(&(self.m_data), path, offset, limit),
+                "m_Streams[1]" => (self.m_streams_1).inspect_value(path, offset, limit),
+                "m_Streams" => (self.m_streams).inspect_value(path, offset, limit),
+                "m_Streams[2]" => (self.m_streams_2).inspect_value(path, offset, limit),
+                "m_Streams[3]" => (self.m_streams_3).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_current_channels).inspect_value(path, offset, limit))
+                .map(|v| ("m_CurrentChannels".to_string(), v)),
+            ((self.m_vertex_count).inspect_value(path, offset, limit))
+                .map(|v| ("m_VertexCount".to_string(), v)),
+            ((self.m_channels).inspect_value(path, offset, limit))
+                .map(|v| ("m_Channels".to_string(), v)),
+            ((self.m_streams_0).inspect_value(path, offset, limit))
+                .map(|v| ("m_Streams[0]".to_string(), v)),
+            (crate::inspect_bytes(&(self.m_data), path, offset, limit))
+                .map(|v| ("m_Data".to_string(), v)),
+            ((self.m_streams_1).inspect_value(path, offset, limit))
+                .map(|v| ("m_Streams[1]".to_string(), v)),
+            ((self.m_streams).inspect_value(path, offset, limit))
+                .map(|v| ("m_Streams".to_string(), v)),
+            ((self.m_streams_2).inspect_value(path, offset, limit))
+                .map(|v| ("m_Streams[2]".to_string(), v)),
+            ((self.m_streams_3).inspect_value(path, offset, limit))
+                .map(|v| ("m_Streams[3]".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

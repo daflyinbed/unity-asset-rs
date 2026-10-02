@@ -28,6 +28,21 @@ impl crate::Parse for TerrainMDrawTreesAndFoliageVariant {
     }
 }
 
+impl crate::ToValue for TerrainMDrawTreesAndFoliageVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2021_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2021_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：TerrainMBakeLightProbesForTreesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TerrainMBakeLightProbesForTreesVariant {
@@ -51,6 +66,21 @@ impl crate::Parse for TerrainMBakeLightProbesForTreesVariant {
     }
 }
 
+impl crate::ToValue for TerrainMBakeLightProbesForTreesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2018_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2018_2(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：TerrainMChunkDynamicUvstVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TerrainMChunkDynamicUvstVariant {
@@ -70,6 +100,21 @@ impl crate::Parse for TerrainMChunkDynamicUvstVariant {
         } else {
             let v = ({ Ok(Box::new(Vector4f::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for TerrainMChunkDynamicUvstVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2018_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2018_3(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -129,6 +174,37 @@ impl crate::Parse for TerrainMEnableTreesAndDetailsRayTracingVariant {
         } else {
             let v = rdr.read_bool()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for TerrainMEnableTreesAndDetailsRayTracingVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2022_3_3(v) => v.to_value(),
+            Self::V2023_1(v) => v.to_value(),
+            Self::V2023_1_2(v) => v.to_value(),
+            Self::V6000_0_76(v) => v.to_value(),
+            Self::V6000_1(v) => v.to_value(),
+            Self::V6000_3_17(v) => v.to_value(),
+            Self::V6000_4(v) => v.to_value(),
+            Self::V6000_4_9(v) => v.to_value(),
+            Self::V6000_6(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2022_3_3(v) => (v).inspect_value(path, offset, limit),
+            Self::V2023_1(v) => (v).inspect_value(path, offset, limit),
+            Self::V2023_1_2(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_0_76(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_1(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_3_17(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_4(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_4_9(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_6(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -447,5 +523,338 @@ impl crate::Parse for Terrain {
             m_tree_motion_vector_mode_override,
             m_enable_heightmap_lod_frustum_culling,
         })
+    }
+}
+
+impl crate::ToValue for Terrain {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_Enabled".to_string(), self.m_enabled.to_value())),
+            Some(("m_TerrainData".to_string(), self.m_terrain_data.to_value())),
+            Some((
+                "m_TreeDistance".to_string(),
+                self.m_tree_distance.to_value(),
+            )),
+            Some((
+                "m_TreeBillboardDistance".to_string(),
+                self.m_tree_billboard_distance.to_value(),
+            )),
+            Some((
+                "m_TreeCrossFadeLength".to_string(),
+                self.m_tree_cross_fade_length.to_value(),
+            )),
+            Some((
+                "m_TreeMaximumFullLODCount".to_string(),
+                self.m_tree_maximum_full_lod_count.to_value(),
+            )),
+            Some((
+                "m_DetailObjectDistance".to_string(),
+                self.m_detail_object_distance.to_value(),
+            )),
+            Some((
+                "m_DetailObjectDensity".to_string(),
+                self.m_detail_object_density.to_value(),
+            )),
+            Some((
+                "m_HeightmapPixelError".to_string(),
+                self.m_heightmap_pixel_error.to_value(),
+            )),
+            Some((
+                "m_SplatMapDistance".to_string(),
+                self.m_splat_map_distance.to_value(),
+            )),
+            Some((
+                "m_HeightmapMaximumLOD".to_string(),
+                self.m_heightmap_maximum_lod.to_value(),
+            )),
+            crate::opt_field(
+                "m_HeightmapMinimumLODSimplification",
+                &self.m_heightmap_minimum_lod_simplification,
+            ),
+            crate::opt_field("m_CastShadows", &self.m_cast_shadows),
+            crate::opt_field("m_ShadowCastingMode", &self.m_shadow_casting_mode),
+            Some((
+                "m_DrawHeightmap".to_string(),
+                self.m_draw_heightmap.to_value(),
+            )),
+            Some((
+                "m_DrawTreesAndFoliage".to_string(),
+                self.m_draw_trees_and_foliage.to_value(),
+            )),
+            crate::opt_field("m_DrawInstanced", &self.m_draw_instanced),
+            Some((
+                "m_ReflectionProbeUsage".to_string(),
+                self.m_reflection_probe_usage.to_value(),
+            )),
+            crate::opt_field("m_MaterialType", &self.m_material_type),
+            crate::opt_field("m_StaticShadowCaster", &self.m_static_shadow_caster),
+            crate::opt_field("m_LegacySpecular", &self.m_legacy_specular),
+            Some((
+                "m_MaterialTemplate".to_string(),
+                self.m_material_template.to_value(),
+            )),
+            crate::opt_field("m_IgnoreQualitySettings", &self.m_ignore_quality_settings),
+            crate::opt_field("m_LegacyShininess", &self.m_legacy_shininess),
+            Some((
+                "m_LightmapIndex".to_string(),
+                self.m_lightmap_index.to_value(),
+            )),
+            crate::opt_field("m_UseDefaultSmoothness", &self.m_use_default_smoothness),
+            Some((
+                "m_LightmapIndexDynamic".to_string(),
+                self.m_lightmap_index_dynamic.to_value(),
+            )),
+            crate::opt_field("m_DefaultSmoothness", &self.m_default_smoothness),
+            Some((
+                "m_LightmapTilingOffset".to_string(),
+                self.m_lightmap_tiling_offset.to_value(),
+            )),
+            Some((
+                "m_LightmapTilingOffsetDynamic".to_string(),
+                self.m_lightmap_tiling_offset_dynamic.to_value(),
+            )),
+            crate::opt_field("m_ExplicitProbeSetHash", &self.m_explicit_probe_set_hash),
+            Some((
+                "m_BakeLightProbesForTrees".to_string(),
+                self.m_bake_light_probes_for_trees.to_value(),
+            )),
+            crate::opt_field(
+                "m_PreserveTreePrototypeLayers",
+                &self.m_preserve_tree_prototype_layers,
+            ),
+            Some(("m_DynamicUVST".to_string(), self.m_dynamic_uvst.to_value())),
+            Some((
+                "m_ChunkDynamicUVST".to_string(),
+                self.m_chunk_dynamic_uvst.to_value(),
+            )),
+            crate::opt_field("m_GroupingID", &self.m_grouping_id),
+            crate::opt_field("m_AllowAutoConnect", &self.m_allow_auto_connect),
+            crate::opt_field("m_RenderingLayerMask", &self.m_rendering_layer_mask),
+            crate::opt_field(
+                "m_EnableHeightmapRayTracing",
+                &self.m_enable_heightmap_ray_tracing,
+            ),
+            crate::opt_field(
+                "m_EnableTreesAndDetailsRayTracing",
+                &self.m_enable_trees_and_details_ray_tracing,
+            ),
+            crate::opt_field(
+                "m_TreeMotionVectorModeOverride",
+                &self.m_tree_motion_vector_mode_override,
+            ),
+            crate::opt_field(
+                "m_EnableHeightmapLODFrustumCulling",
+                &self.m_enable_heightmap_lod_frustum_culling,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "m_TerrainData" => (self.m_terrain_data).inspect_value(path, offset, limit),
+                "m_TreeDistance" => (self.m_tree_distance).inspect_value(path, offset, limit),
+                "m_TreeBillboardDistance" => {
+                    (self.m_tree_billboard_distance).inspect_value(path, offset, limit)
+                }
+                "m_TreeCrossFadeLength" => {
+                    (self.m_tree_cross_fade_length).inspect_value(path, offset, limit)
+                }
+                "m_TreeMaximumFullLODCount" => {
+                    (self.m_tree_maximum_full_lod_count).inspect_value(path, offset, limit)
+                }
+                "m_DetailObjectDistance" => {
+                    (self.m_detail_object_distance).inspect_value(path, offset, limit)
+                }
+                "m_DetailObjectDensity" => {
+                    (self.m_detail_object_density).inspect_value(path, offset, limit)
+                }
+                "m_HeightmapPixelError" => {
+                    (self.m_heightmap_pixel_error).inspect_value(path, offset, limit)
+                }
+                "m_SplatMapDistance" => {
+                    (self.m_splat_map_distance).inspect_value(path, offset, limit)
+                }
+                "m_HeightmapMaximumLOD" => {
+                    (self.m_heightmap_maximum_lod).inspect_value(path, offset, limit)
+                }
+                "m_HeightmapMinimumLODSimplification" => {
+                    (self.m_heightmap_minimum_lod_simplification).inspect_value(path, offset, limit)
+                }
+                "m_CastShadows" => (self.m_cast_shadows).inspect_value(path, offset, limit),
+                "m_ShadowCastingMode" => {
+                    (self.m_shadow_casting_mode).inspect_value(path, offset, limit)
+                }
+                "m_DrawHeightmap" => (self.m_draw_heightmap).inspect_value(path, offset, limit),
+                "m_DrawTreesAndFoliage" => {
+                    (self.m_draw_trees_and_foliage).inspect_value(path, offset, limit)
+                }
+                "m_DrawInstanced" => (self.m_draw_instanced).inspect_value(path, offset, limit),
+                "m_ReflectionProbeUsage" => {
+                    (self.m_reflection_probe_usage).inspect_value(path, offset, limit)
+                }
+                "m_MaterialType" => (self.m_material_type).inspect_value(path, offset, limit),
+                "m_StaticShadowCaster" => {
+                    (self.m_static_shadow_caster).inspect_value(path, offset, limit)
+                }
+                "m_LegacySpecular" => (self.m_legacy_specular).inspect_value(path, offset, limit),
+                "m_MaterialTemplate" => {
+                    (self.m_material_template).inspect_value(path, offset, limit)
+                }
+                "m_IgnoreQualitySettings" => {
+                    (self.m_ignore_quality_settings).inspect_value(path, offset, limit)
+                }
+                "m_LegacyShininess" => (self.m_legacy_shininess).inspect_value(path, offset, limit),
+                "m_LightmapIndex" => (self.m_lightmap_index).inspect_value(path, offset, limit),
+                "m_UseDefaultSmoothness" => {
+                    (self.m_use_default_smoothness).inspect_value(path, offset, limit)
+                }
+                "m_LightmapIndexDynamic" => {
+                    (self.m_lightmap_index_dynamic).inspect_value(path, offset, limit)
+                }
+                "m_DefaultSmoothness" => {
+                    (self.m_default_smoothness).inspect_value(path, offset, limit)
+                }
+                "m_LightmapTilingOffset" => {
+                    (self.m_lightmap_tiling_offset).inspect_value(path, offset, limit)
+                }
+                "m_LightmapTilingOffsetDynamic" => {
+                    (self.m_lightmap_tiling_offset_dynamic).inspect_value(path, offset, limit)
+                }
+                "m_ExplicitProbeSetHash" => {
+                    (self.m_explicit_probe_set_hash).inspect_value(path, offset, limit)
+                }
+                "m_BakeLightProbesForTrees" => {
+                    (self.m_bake_light_probes_for_trees).inspect_value(path, offset, limit)
+                }
+                "m_PreserveTreePrototypeLayers" => {
+                    (self.m_preserve_tree_prototype_layers).inspect_value(path, offset, limit)
+                }
+                "m_DynamicUVST" => (self.m_dynamic_uvst).inspect_value(path, offset, limit),
+                "m_ChunkDynamicUVST" => {
+                    (self.m_chunk_dynamic_uvst).inspect_value(path, offset, limit)
+                }
+                "m_GroupingID" => (self.m_grouping_id).inspect_value(path, offset, limit),
+                "m_AllowAutoConnect" => {
+                    (self.m_allow_auto_connect).inspect_value(path, offset, limit)
+                }
+                "m_RenderingLayerMask" => {
+                    (self.m_rendering_layer_mask).inspect_value(path, offset, limit)
+                }
+                "m_EnableHeightmapRayTracing" => {
+                    (self.m_enable_heightmap_ray_tracing).inspect_value(path, offset, limit)
+                }
+                "m_EnableTreesAndDetailsRayTracing" => {
+                    (self.m_enable_trees_and_details_ray_tracing).inspect_value(path, offset, limit)
+                }
+                "m_TreeMotionVectorModeOverride" => {
+                    (self.m_tree_motion_vector_mode_override).inspect_value(path, offset, limit)
+                }
+                "m_EnableHeightmapLODFrustumCulling" => {
+                    (self.m_enable_heightmap_lod_frustum_culling).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.m_terrain_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_TerrainData".to_string(), v)),
+            ((self.m_tree_distance).inspect_value(path, offset, limit))
+                .map(|v| ("m_TreeDistance".to_string(), v)),
+            ((self.m_tree_billboard_distance).inspect_value(path, offset, limit))
+                .map(|v| ("m_TreeBillboardDistance".to_string(), v)),
+            ((self.m_tree_cross_fade_length).inspect_value(path, offset, limit))
+                .map(|v| ("m_TreeCrossFadeLength".to_string(), v)),
+            ((self.m_tree_maximum_full_lod_count).inspect_value(path, offset, limit))
+                .map(|v| ("m_TreeMaximumFullLODCount".to_string(), v)),
+            ((self.m_detail_object_distance).inspect_value(path, offset, limit))
+                .map(|v| ("m_DetailObjectDistance".to_string(), v)),
+            ((self.m_detail_object_density).inspect_value(path, offset, limit))
+                .map(|v| ("m_DetailObjectDensity".to_string(), v)),
+            ((self.m_heightmap_pixel_error).inspect_value(path, offset, limit))
+                .map(|v| ("m_HeightmapPixelError".to_string(), v)),
+            ((self.m_splat_map_distance).inspect_value(path, offset, limit))
+                .map(|v| ("m_SplatMapDistance".to_string(), v)),
+            ((self.m_heightmap_maximum_lod).inspect_value(path, offset, limit))
+                .map(|v| ("m_HeightmapMaximumLOD".to_string(), v)),
+            ((self.m_heightmap_minimum_lod_simplification).inspect_value(path, offset, limit))
+                .map(|v| ("m_HeightmapMinimumLODSimplification".to_string(), v)),
+            ((self.m_cast_shadows).inspect_value(path, offset, limit))
+                .map(|v| ("m_CastShadows".to_string(), v)),
+            ((self.m_shadow_casting_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_ShadowCastingMode".to_string(), v)),
+            ((self.m_draw_heightmap).inspect_value(path, offset, limit))
+                .map(|v| ("m_DrawHeightmap".to_string(), v)),
+            ((self.m_draw_trees_and_foliage).inspect_value(path, offset, limit))
+                .map(|v| ("m_DrawTreesAndFoliage".to_string(), v)),
+            ((self.m_draw_instanced).inspect_value(path, offset, limit))
+                .map(|v| ("m_DrawInstanced".to_string(), v)),
+            ((self.m_reflection_probe_usage).inspect_value(path, offset, limit))
+                .map(|v| ("m_ReflectionProbeUsage".to_string(), v)),
+            ((self.m_material_type).inspect_value(path, offset, limit))
+                .map(|v| ("m_MaterialType".to_string(), v)),
+            ((self.m_static_shadow_caster).inspect_value(path, offset, limit))
+                .map(|v| ("m_StaticShadowCaster".to_string(), v)),
+            ((self.m_legacy_specular).inspect_value(path, offset, limit))
+                .map(|v| ("m_LegacySpecular".to_string(), v)),
+            ((self.m_material_template).inspect_value(path, offset, limit))
+                .map(|v| ("m_MaterialTemplate".to_string(), v)),
+            ((self.m_ignore_quality_settings).inspect_value(path, offset, limit))
+                .map(|v| ("m_IgnoreQualitySettings".to_string(), v)),
+            ((self.m_legacy_shininess).inspect_value(path, offset, limit))
+                .map(|v| ("m_LegacyShininess".to_string(), v)),
+            ((self.m_lightmap_index).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightmapIndex".to_string(), v)),
+            ((self.m_use_default_smoothness).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseDefaultSmoothness".to_string(), v)),
+            ((self.m_lightmap_index_dynamic).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightmapIndexDynamic".to_string(), v)),
+            ((self.m_default_smoothness).inspect_value(path, offset, limit))
+                .map(|v| ("m_DefaultSmoothness".to_string(), v)),
+            ((self.m_lightmap_tiling_offset).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightmapTilingOffset".to_string(), v)),
+            ((self.m_lightmap_tiling_offset_dynamic).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightmapTilingOffsetDynamic".to_string(), v)),
+            ((self.m_explicit_probe_set_hash).inspect_value(path, offset, limit))
+                .map(|v| ("m_ExplicitProbeSetHash".to_string(), v)),
+            ((self.m_bake_light_probes_for_trees).inspect_value(path, offset, limit))
+                .map(|v| ("m_BakeLightProbesForTrees".to_string(), v)),
+            ((self.m_preserve_tree_prototype_layers).inspect_value(path, offset, limit))
+                .map(|v| ("m_PreserveTreePrototypeLayers".to_string(), v)),
+            ((self.m_dynamic_uvst).inspect_value(path, offset, limit))
+                .map(|v| ("m_DynamicUVST".to_string(), v)),
+            ((self.m_chunk_dynamic_uvst).inspect_value(path, offset, limit))
+                .map(|v| ("m_ChunkDynamicUVST".to_string(), v)),
+            ((self.m_grouping_id).inspect_value(path, offset, limit))
+                .map(|v| ("m_GroupingID".to_string(), v)),
+            ((self.m_allow_auto_connect).inspect_value(path, offset, limit))
+                .map(|v| ("m_AllowAutoConnect".to_string(), v)),
+            ((self.m_rendering_layer_mask).inspect_value(path, offset, limit))
+                .map(|v| ("m_RenderingLayerMask".to_string(), v)),
+            ((self.m_enable_heightmap_ray_tracing).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableHeightmapRayTracing".to_string(), v)),
+            ((self.m_enable_trees_and_details_ray_tracing).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableTreesAndDetailsRayTracing".to_string(), v)),
+            ((self.m_tree_motion_vector_mode_override).inspect_value(path, offset, limit))
+                .map(|v| ("m_TreeMotionVectorModeOverride".to_string(), v)),
+            ((self.m_enable_heightmap_lod_frustum_culling).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableHeightmapLODFrustumCulling".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

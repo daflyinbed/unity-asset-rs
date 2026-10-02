@@ -27,6 +27,21 @@ impl crate::Parse for CharacterJointMEnablePreprocessingVariant {
         }
     }
 }
+
+impl crate::ToValue for CharacterJointMEnablePreprocessingVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct CharacterJoint {
     pub m_game_object: PPtr,
@@ -158,5 +173,153 @@ impl crate::Parse for CharacterJoint {
             m_mass_scale,
             m_connected_mass_scale,
         })
+    }
+}
+
+impl crate::ToValue for CharacterJoint {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some((
+                "m_ConnectedBody".to_string(),
+                self.m_connected_body.to_value(),
+            )),
+            Some(("m_Anchor".to_string(), self.m_anchor.to_value())),
+            crate::opt_field(
+                "m_ConnectedArticulationBody",
+                &self.m_connected_articulation_body,
+            ),
+            Some(("m_Axis".to_string(), self.m_axis.to_value())),
+            Some(("m_SwingAxis".to_string(), self.m_swing_axis.to_value())),
+            crate::opt_field(
+                "m_AutoConfigureConnectedAnchor",
+                &self.m_auto_configure_connected_anchor,
+            ),
+            Some((
+                "m_LowTwistLimit".to_string(),
+                self.m_low_twist_limit.to_value(),
+            )),
+            crate::opt_field("m_ConnectedAnchor", &self.m_connected_anchor),
+            Some((
+                "m_HighTwistLimit".to_string(),
+                self.m_high_twist_limit.to_value(),
+            )),
+            Some(("m_Swing1Limit".to_string(), self.m_swing1_limit.to_value())),
+            crate::opt_field("m_TwistLimitSpring", &self.m_twist_limit_spring),
+            Some(("m_Swing2Limit".to_string(), self.m_swing2_limit.to_value())),
+            Some(("m_BreakForce".to_string(), self.m_break_force.to_value())),
+            Some(("m_BreakTorque".to_string(), self.m_break_torque.to_value())),
+            crate::opt_field("m_SwingLimitSpring", &self.m_swing_limit_spring),
+            crate::opt_field("m_EnableCollision", &self.m_enable_collision),
+            crate::opt_field("m_EnableProjection", &self.m_enable_projection),
+            crate::opt_field("m_ProjectionDistance", &self.m_projection_distance),
+            crate::opt_field("m_ProjectionAngle", &self.m_projection_angle),
+            crate::opt_field("m_EnablePreprocessing", &self.m_enable_preprocessing),
+            crate::opt_field("m_MassScale", &self.m_mass_scale),
+            crate::opt_field("m_ConnectedMassScale", &self.m_connected_mass_scale),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_ConnectedBody" => (self.m_connected_body).inspect_value(path, offset, limit),
+                "m_Anchor" => (self.m_anchor).inspect_value(path, offset, limit),
+                "m_ConnectedArticulationBody" => {
+                    (self.m_connected_articulation_body).inspect_value(path, offset, limit)
+                }
+                "m_Axis" => (self.m_axis).inspect_value(path, offset, limit),
+                "m_SwingAxis" => (self.m_swing_axis).inspect_value(path, offset, limit),
+                "m_AutoConfigureConnectedAnchor" => {
+                    (self.m_auto_configure_connected_anchor).inspect_value(path, offset, limit)
+                }
+                "m_LowTwistLimit" => (self.m_low_twist_limit).inspect_value(path, offset, limit),
+                "m_ConnectedAnchor" => (self.m_connected_anchor).inspect_value(path, offset, limit),
+                "m_HighTwistLimit" => (self.m_high_twist_limit).inspect_value(path, offset, limit),
+                "m_Swing1Limit" => (self.m_swing1_limit).inspect_value(path, offset, limit),
+                "m_TwistLimitSpring" => {
+                    (self.m_twist_limit_spring).inspect_value(path, offset, limit)
+                }
+                "m_Swing2Limit" => (self.m_swing2_limit).inspect_value(path, offset, limit),
+                "m_BreakForce" => (self.m_break_force).inspect_value(path, offset, limit),
+                "m_BreakTorque" => (self.m_break_torque).inspect_value(path, offset, limit),
+                "m_SwingLimitSpring" => {
+                    (self.m_swing_limit_spring).inspect_value(path, offset, limit)
+                }
+                "m_EnableCollision" => (self.m_enable_collision).inspect_value(path, offset, limit),
+                "m_EnableProjection" => {
+                    (self.m_enable_projection).inspect_value(path, offset, limit)
+                }
+                "m_ProjectionDistance" => {
+                    (self.m_projection_distance).inspect_value(path, offset, limit)
+                }
+                "m_ProjectionAngle" => (self.m_projection_angle).inspect_value(path, offset, limit),
+                "m_EnablePreprocessing" => {
+                    (self.m_enable_preprocessing).inspect_value(path, offset, limit)
+                }
+                "m_MassScale" => (self.m_mass_scale).inspect_value(path, offset, limit),
+                "m_ConnectedMassScale" => {
+                    (self.m_connected_mass_scale).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_connected_body).inspect_value(path, offset, limit))
+                .map(|v| ("m_ConnectedBody".to_string(), v)),
+            ((self.m_anchor).inspect_value(path, offset, limit))
+                .map(|v| ("m_Anchor".to_string(), v)),
+            ((self.m_connected_articulation_body).inspect_value(path, offset, limit))
+                .map(|v| ("m_ConnectedArticulationBody".to_string(), v)),
+            ((self.m_axis).inspect_value(path, offset, limit)).map(|v| ("m_Axis".to_string(), v)),
+            ((self.m_swing_axis).inspect_value(path, offset, limit))
+                .map(|v| ("m_SwingAxis".to_string(), v)),
+            ((self.m_auto_configure_connected_anchor).inspect_value(path, offset, limit))
+                .map(|v| ("m_AutoConfigureConnectedAnchor".to_string(), v)),
+            ((self.m_low_twist_limit).inspect_value(path, offset, limit))
+                .map(|v| ("m_LowTwistLimit".to_string(), v)),
+            ((self.m_connected_anchor).inspect_value(path, offset, limit))
+                .map(|v| ("m_ConnectedAnchor".to_string(), v)),
+            ((self.m_high_twist_limit).inspect_value(path, offset, limit))
+                .map(|v| ("m_HighTwistLimit".to_string(), v)),
+            ((self.m_swing1_limit).inspect_value(path, offset, limit))
+                .map(|v| ("m_Swing1Limit".to_string(), v)),
+            ((self.m_twist_limit_spring).inspect_value(path, offset, limit))
+                .map(|v| ("m_TwistLimitSpring".to_string(), v)),
+            ((self.m_swing2_limit).inspect_value(path, offset, limit))
+                .map(|v| ("m_Swing2Limit".to_string(), v)),
+            ((self.m_break_force).inspect_value(path, offset, limit))
+                .map(|v| ("m_BreakForce".to_string(), v)),
+            ((self.m_break_torque).inspect_value(path, offset, limit))
+                .map(|v| ("m_BreakTorque".to_string(), v)),
+            ((self.m_swing_limit_spring).inspect_value(path, offset, limit))
+                .map(|v| ("m_SwingLimitSpring".to_string(), v)),
+            ((self.m_enable_collision).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableCollision".to_string(), v)),
+            ((self.m_enable_projection).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableProjection".to_string(), v)),
+            ((self.m_projection_distance).inspect_value(path, offset, limit))
+                .map(|v| ("m_ProjectionDistance".to_string(), v)),
+            ((self.m_projection_angle).inspect_value(path, offset, limit))
+                .map(|v| ("m_ProjectionAngle".to_string(), v)),
+            ((self.m_enable_preprocessing).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnablePreprocessing".to_string(), v)),
+            ((self.m_mass_scale).inspect_value(path, offset, limit))
+                .map(|v| ("m_MassScale".to_string(), v)),
+            ((self.m_connected_mass_scale).inspect_value(path, offset, limit))
+                .map(|v| ("m_ConnectedMassScale".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

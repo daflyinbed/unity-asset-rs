@@ -164,4 +164,15 @@ type Result<T> =
 
 ### 后端展示能力补全
 
-当前 API 尚未直接提供对象字节大小、图片尺寸和统一结构化 typed dump。首版不从 Debug 字符串猜这些字段；后续直接扩展 server DTO，再由 OpenAPI 生成链同步到前端。
+typed、dynamic 和 MonoBehaviour 已统一提供结构化 Dump。对象详情返回有界检查视图；
+数组通过 `/environment/collections/{cid}/objects/{pid}/inspect` 按字段路径分页，
+每页最多 256 项，字节与长字符串也支持翻页。typed 检查直接访问生成字段，
+不会先复制整个对象再截断。切换对象或模式后丢弃旧分页响应。
+
+菜单 Export Current Object / Ctrl+E 经 `files:save` IPC 打开原生保存对话框。
+Texture2D/Sprite 保存 PNG，音频保存当前 sample，其余专用资源沿用原格式；
+无专用导出器的对象保存完整 JSON。JSON 预览使用有界详情，完整导出仅在保存时请求。
+状态栏列出 `/environment/failures`，对象级失败可经 `/raw` 保存原始序列化字节。
+导出 worker 在持有环境读锁时校验 revision，过期请求返回 409。
+
+对象字节大小、图片尺寸等展示字段仍需继续补全 DTO，不从 Debug 字符串猜测。

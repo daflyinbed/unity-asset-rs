@@ -53,6 +53,21 @@ impl crate::Parse for AudioImporterMExternalObjectsVariant {
     }
 }
 
+impl crate::ToValue for AudioImporterMExternalObjectsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2019_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2019_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：AudioImporterMPlatformSettingOverridesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AudioImporterMPlatformSettingOverridesVariant {
@@ -97,6 +112,21 @@ impl crate::Parse for AudioImporterMPlatformSettingOverridesVariant {
     }
 }
 
+impl crate::ToValue for AudioImporterMPlatformSettingOverridesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2023_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2023_3(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：AudioImporterM3dVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AudioImporterM3dVariant {
@@ -116,6 +146,21 @@ impl crate::Parse for AudioImporterM3dVariant {
         } else {
             let v = rdr.read_bool()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for AudioImporterM3dVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_0(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_0(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -140,6 +185,21 @@ impl crate::Parse for AudioImporterMOutputVariant {
             let v = ({ Ok(Box::new(Output::parse(rdr, ver)?)) })?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for AudioImporterMOutputVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_0(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_0(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -358,5 +418,163 @@ impl crate::Parse for AudioImporter {
             m_asset_bundle_name,
             m_asset_bundle_variant,
         })
+    }
+}
+
+impl crate::ToValue for AudioImporter {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            crate::opt_field("m_FileIDToRecycleName", &self.m_file_id_to_recycle_name),
+            crate::opt_field("m_Format", &self.m_format),
+            crate::opt_field("m_DefaultSettings", &self.m_default_settings),
+            crate::opt_field("m_ExternalObjects", &self.m_external_objects),
+            crate::opt_field("m_OldHashIdentity", &self.m_old_hash_identity),
+            crate::opt_field("m_Quality", &self.m_quality),
+            crate::opt_field(
+                "m_PlatformSettingOverrides",
+                &self.m_platform_setting_overrides,
+            ),
+            crate::opt_field("m_UsedFileIDs", &self.m_used_file_i_ds),
+            crate::opt_field("m_NewHashIdentity", &self.m_new_hash_identity),
+            crate::opt_field("m_Stream", &self.m_stream),
+            Some(("m_ForceToMono".to_string(), self.m_force_to_mono.to_value())),
+            crate::opt_field("m_PreviewDataLength", &self.m_preview_data_length),
+            Some(("m_3D".to_string(), self.m_3d.to_value())),
+            crate::opt_field("m_PreloadAudioData", &self.m_preload_audio_data),
+            crate::opt_field("m_Normalize", &self.m_normalize),
+            self.audio_preview_data.as_ref().map(|v| {
+                (
+                    "audio preview data".to_string(),
+                    crate::Value::Bytes(v.clone()),
+                )
+            }),
+            crate::opt_field("m_LoadInBackground", &self.m_load_in_background),
+            crate::opt_field("m_UseHardware", &self.m_use_hardware),
+            crate::opt_field("m_Loopable", &self.m_loopable),
+            crate::opt_field("m_PreviewData", &self.m_preview_data),
+            crate::opt_field("m_Ambisonic", &self.m_ambisonic),
+            crate::opt_field("m_Output", &self.m_output),
+            crate::opt_field("m_UserData", &self.m_user_data),
+            crate::opt_field("m_AssetBundleName", &self.m_asset_bundle_name),
+            crate::opt_field("m_AssetBundleVariant", &self.m_asset_bundle_variant),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_FileIDToRecycleName" => {
+                    (self.m_file_id_to_recycle_name).inspect_value(path, offset, limit)
+                }
+                "m_Format" => (self.m_format).inspect_value(path, offset, limit),
+                "m_DefaultSettings" => (self.m_default_settings).inspect_value(path, offset, limit),
+                "m_ExternalObjects" => (self.m_external_objects).inspect_value(path, offset, limit),
+                "m_OldHashIdentity" => {
+                    (self.m_old_hash_identity).inspect_value(path, offset, limit)
+                }
+                "m_Quality" => (self.m_quality).inspect_value(path, offset, limit),
+                "m_PlatformSettingOverrides" => {
+                    (self.m_platform_setting_overrides).inspect_value(path, offset, limit)
+                }
+                "m_UsedFileIDs" => (self.m_used_file_i_ds).inspect_value(path, offset, limit),
+                "m_NewHashIdentity" => {
+                    (self.m_new_hash_identity).inspect_value(path, offset, limit)
+                }
+                "m_Stream" => (self.m_stream).inspect_value(path, offset, limit),
+                "m_ForceToMono" => (self.m_force_to_mono).inspect_value(path, offset, limit),
+                "m_PreviewDataLength" => {
+                    (self.m_preview_data_length).inspect_value(path, offset, limit)
+                }
+                "m_3D" => (self.m_3d).inspect_value(path, offset, limit),
+                "m_PreloadAudioData" => {
+                    (self.m_preload_audio_data).inspect_value(path, offset, limit)
+                }
+                "m_Normalize" => (self.m_normalize).inspect_value(path, offset, limit),
+                "audio preview data" => (self.audio_preview_data)
+                    .as_ref()
+                    .and_then(|v| crate::inspect_bytes(&(v), path, offset, limit)),
+                "m_LoadInBackground" => {
+                    (self.m_load_in_background).inspect_value(path, offset, limit)
+                }
+                "m_UseHardware" => (self.m_use_hardware).inspect_value(path, offset, limit),
+                "m_Loopable" => (self.m_loopable).inspect_value(path, offset, limit),
+                "m_PreviewData" => (self.m_preview_data).inspect_value(path, offset, limit),
+                "m_Ambisonic" => (self.m_ambisonic).inspect_value(path, offset, limit),
+                "m_Output" => (self.m_output).inspect_value(path, offset, limit),
+                "m_UserData" => (self.m_user_data).inspect_value(path, offset, limit),
+                "m_AssetBundleName" => {
+                    (self.m_asset_bundle_name).inspect_value(path, offset, limit)
+                }
+                "m_AssetBundleVariant" => {
+                    (self.m_asset_bundle_variant).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_file_id_to_recycle_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_FileIDToRecycleName".to_string(), v)),
+            ((self.m_format).inspect_value(path, offset, limit))
+                .map(|v| ("m_Format".to_string(), v)),
+            ((self.m_default_settings).inspect_value(path, offset, limit))
+                .map(|v| ("m_DefaultSettings".to_string(), v)),
+            ((self.m_external_objects).inspect_value(path, offset, limit))
+                .map(|v| ("m_ExternalObjects".to_string(), v)),
+            ((self.m_old_hash_identity).inspect_value(path, offset, limit))
+                .map(|v| ("m_OldHashIdentity".to_string(), v)),
+            ((self.m_quality).inspect_value(path, offset, limit))
+                .map(|v| ("m_Quality".to_string(), v)),
+            ((self.m_platform_setting_overrides).inspect_value(path, offset, limit))
+                .map(|v| ("m_PlatformSettingOverrides".to_string(), v)),
+            ((self.m_used_file_i_ds).inspect_value(path, offset, limit))
+                .map(|v| ("m_UsedFileIDs".to_string(), v)),
+            ((self.m_new_hash_identity).inspect_value(path, offset, limit))
+                .map(|v| ("m_NewHashIdentity".to_string(), v)),
+            ((self.m_stream).inspect_value(path, offset, limit))
+                .map(|v| ("m_Stream".to_string(), v)),
+            ((self.m_force_to_mono).inspect_value(path, offset, limit))
+                .map(|v| ("m_ForceToMono".to_string(), v)),
+            ((self.m_preview_data_length).inspect_value(path, offset, limit))
+                .map(|v| ("m_PreviewDataLength".to_string(), v)),
+            ((self.m_3d).inspect_value(path, offset, limit)).map(|v| ("m_3D".to_string(), v)),
+            ((self.m_preload_audio_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_PreloadAudioData".to_string(), v)),
+            ((self.m_normalize).inspect_value(path, offset, limit))
+                .map(|v| ("m_Normalize".to_string(), v)),
+            ((self.audio_preview_data)
+                .as_ref()
+                .and_then(|v| crate::inspect_bytes(&(v), path, offset, limit)))
+            .map(|v| ("audio preview data".to_string(), v)),
+            ((self.m_load_in_background).inspect_value(path, offset, limit))
+                .map(|v| ("m_LoadInBackground".to_string(), v)),
+            ((self.m_use_hardware).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseHardware".to_string(), v)),
+            ((self.m_loopable).inspect_value(path, offset, limit))
+                .map(|v| ("m_Loopable".to_string(), v)),
+            ((self.m_preview_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_PreviewData".to_string(), v)),
+            ((self.m_ambisonic).inspect_value(path, offset, limit))
+                .map(|v| ("m_Ambisonic".to_string(), v)),
+            ((self.m_output).inspect_value(path, offset, limit))
+                .map(|v| ("m_Output".to_string(), v)),
+            ((self.m_user_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_UserData".to_string(), v)),
+            ((self.m_asset_bundle_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_AssetBundleName".to_string(), v)),
+            ((self.m_asset_bundle_variant).inspect_value(path, offset, limit))
+                .map(|v| ("m_AssetBundleVariant".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

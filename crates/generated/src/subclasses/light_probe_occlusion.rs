@@ -72,3 +72,60 @@ impl crate::Parse for LightProbeOcclusion {
         })
     }
 }
+
+impl crate::ToValue for LightProbeOcclusion {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            crate::opt_field("m_BakedLightIndex", &self.m_baked_light_index),
+            crate::opt_field(
+                "m_ProbeOcclusionLightIndex",
+                &self.m_probe_occlusion_light_index,
+            ),
+            Some(("m_Occlusion".to_string(), self.m_occlusion.to_value())),
+            crate::opt_field("m_ShadowMaskChannel", &self.m_shadow_mask_channel),
+            crate::opt_field("m_OcclusionMaskChannel", &self.m_occlusion_mask_channel),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_BakedLightIndex" => {
+                    (self.m_baked_light_index).inspect_value(path, offset, limit)
+                }
+                "m_ProbeOcclusionLightIndex" => {
+                    (self.m_probe_occlusion_light_index).inspect_value(path, offset, limit)
+                }
+                "m_Occlusion" => (self.m_occlusion).inspect_value(path, offset, limit),
+                "m_ShadowMaskChannel" => {
+                    (self.m_shadow_mask_channel).inspect_value(path, offset, limit)
+                }
+                "m_OcclusionMaskChannel" => {
+                    (self.m_occlusion_mask_channel).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_baked_light_index).inspect_value(path, offset, limit))
+                .map(|v| ("m_BakedLightIndex".to_string(), v)),
+            ((self.m_probe_occlusion_light_index).inspect_value(path, offset, limit))
+                .map(|v| ("m_ProbeOcclusionLightIndex".to_string(), v)),
+            ((self.m_occlusion).inspect_value(path, offset, limit))
+                .map(|v| ("m_Occlusion".to_string(), v)),
+            ((self.m_shadow_mask_channel).inspect_value(path, offset, limit))
+                .map(|v| ("m_ShadowMaskChannel".to_string(), v)),
+            ((self.m_occlusion_mask_channel).inspect_value(path, offset, limit))
+                .map(|v| ("m_OcclusionMaskChannel".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

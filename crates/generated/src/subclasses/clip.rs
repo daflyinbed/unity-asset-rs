@@ -41,3 +41,48 @@ impl crate::Parse for Clip {
         })
     }
 }
+
+impl crate::ToValue for Clip {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some((
+                "m_StreamedClip".to_string(),
+                self.m_streamed_clip.to_value(),
+            )),
+            Some(("m_DenseClip".to_string(), self.m_dense_clip.to_value())),
+            crate::opt_field("m_Binding", &self.m_binding),
+            crate::opt_field("m_ConstantClip", &self.m_constant_clip),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_StreamedClip" => (self.m_streamed_clip).inspect_value(path, offset, limit),
+                "m_DenseClip" => (self.m_dense_clip).inspect_value(path, offset, limit),
+                "m_Binding" => (self.m_binding).inspect_value(path, offset, limit),
+                "m_ConstantClip" => (self.m_constant_clip).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_streamed_clip).inspect_value(path, offset, limit))
+                .map(|v| ("m_StreamedClip".to_string(), v)),
+            ((self.m_dense_clip).inspect_value(path, offset, limit))
+                .map(|v| ("m_DenseClip".to_string(), v)),
+            ((self.m_binding).inspect_value(path, offset, limit))
+                .map(|v| ("m_Binding".to_string(), v)),
+            ((self.m_constant_clip).inspect_value(path, offset, limit))
+                .map(|v| ("m_ConstantClip".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

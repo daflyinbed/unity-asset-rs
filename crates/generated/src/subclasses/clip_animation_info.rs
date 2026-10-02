@@ -28,6 +28,21 @@ impl crate::Parse for ClipAnimationInfoFirstFrameVariant {
     }
 }
 
+impl crate::ToValue for ClipAnimationInfoFirstFrameVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V4_0(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V4_0(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：ClipAnimationInfoLastFrameVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ClipAnimationInfoLastFrameVariant {
@@ -46,6 +61,21 @@ impl crate::Parse for ClipAnimationInfoLastFrameVariant {
         } else {
             let v = rdr.read_i32()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for ClipAnimationInfoLastFrameVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V4_0(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V4_0(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -73,6 +103,21 @@ impl crate::Parse for ClipAnimationInfoRLoopVariant {
     }
 }
 
+impl crate::ToValue for ClipAnimationInfoRLoopVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V4_0(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V4_0(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：ClipAnimationInfoMirrorVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ClipAnimationInfoMirrorVariant {
@@ -92,6 +137,21 @@ impl crate::Parse for ClipAnimationInfoMirrorVariant {
         } else {
             let v = rdr.read_bool()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for ClipAnimationInfoMirrorVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V4_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V4_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -129,6 +189,21 @@ impl crate::Parse for ClipAnimationInfoBodyMaskVariant {
     }
 }
 
+impl crate::ToValue for ClipAnimationInfoBodyMaskVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：ClipAnimationInfoCurvesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ClipAnimationInfoCurvesVariant {
@@ -158,6 +233,21 @@ impl crate::Parse for ClipAnimationInfoCurvesVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for ClipAnimationInfoCurvesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -195,6 +285,21 @@ impl crate::Parse for ClipAnimationInfoTransformMaskVariant {
     }
 }
 
+impl crate::ToValue for ClipAnimationInfoTransformMaskVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：ClipAnimationInfoEventsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ClipAnimationInfoEventsVariant {
@@ -224,6 +329,21 @@ impl crate::Parse for ClipAnimationInfoEventsVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for ClipAnimationInfoEventsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -420,5 +540,176 @@ impl crate::Parse for ClipAnimationInfo {
             mask_source,
             additive_reference_pose_frame,
         })
+    }
+}
+
+impl crate::ToValue for ClipAnimationInfo {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("name".to_string(), self.name.to_value())),
+            Some(("firstFrame".to_string(), self.first_frame.to_value())),
+            crate::opt_field("takeName", &self.take_name),
+            Some(("lastFrame".to_string(), self.last_frame.to_value())),
+            crate::opt_field("internalID", &self.internal_id),
+            Some(("wrapMode".to_string(), self.wrap_mode.to_value())),
+            Some(("loop".to_string(), self.r#loop.to_value())),
+            crate::opt_field("orientationOffsetY", &self.orientation_offset_y),
+            crate::opt_field("level", &self.level),
+            crate::opt_field("cycleOffset", &self.cycle_offset),
+            crate::opt_field("loopBlend", &self.loop_blend),
+            crate::opt_field("loopTime", &self.loop_time),
+            crate::opt_field(
+                "hasAdditiveReferencePose",
+                &self.has_additive_reference_pose,
+            ),
+            crate::opt_field("loopBlendOrientation", &self.loop_blend_orientation),
+            crate::opt_field("loopBlendPositionY", &self.loop_blend_position_y),
+            crate::opt_field("loopBlendPositionXZ", &self.loop_blend_position_xz),
+            crate::opt_field("keepOriginalOrientation", &self.keep_original_orientation),
+            crate::opt_field("keepOriginalPositionY", &self.keep_original_position_y),
+            crate::opt_field("keepOriginalPositionXZ", &self.keep_original_position_xz),
+            crate::opt_field("heightFromFeet", &self.height_from_feet),
+            crate::opt_field("mirror", &self.mirror),
+            crate::opt_field(
+                "keepAdditionalBonesAnimation",
+                &self.keep_additional_bones_animation,
+            ),
+            crate::opt_field("bodyMask", &self.body_mask),
+            crate::opt_field("curves", &self.curves),
+            crate::opt_field("transformMask", &self.transform_mask),
+            crate::opt_field("skeletonMaskElements", &self.skeleton_mask_elements),
+            crate::opt_field("events", &self.events),
+            crate::opt_field("maskType", &self.mask_type),
+            crate::opt_field("maskSource", &self.mask_source),
+            crate::opt_field(
+                "additiveReferencePoseFrame",
+                &self.additive_reference_pose_frame,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "name" => (self.name).inspect_value(path, offset, limit),
+                "firstFrame" => (self.first_frame).inspect_value(path, offset, limit),
+                "takeName" => (self.take_name).inspect_value(path, offset, limit),
+                "lastFrame" => (self.last_frame).inspect_value(path, offset, limit),
+                "internalID" => (self.internal_id).inspect_value(path, offset, limit),
+                "wrapMode" => (self.wrap_mode).inspect_value(path, offset, limit),
+                "loop" => (self.r#loop).inspect_value(path, offset, limit),
+                "orientationOffsetY" => {
+                    (self.orientation_offset_y).inspect_value(path, offset, limit)
+                }
+                "level" => (self.level).inspect_value(path, offset, limit),
+                "cycleOffset" => (self.cycle_offset).inspect_value(path, offset, limit),
+                "loopBlend" => (self.loop_blend).inspect_value(path, offset, limit),
+                "loopTime" => (self.loop_time).inspect_value(path, offset, limit),
+                "hasAdditiveReferencePose" => {
+                    (self.has_additive_reference_pose).inspect_value(path, offset, limit)
+                }
+                "loopBlendOrientation" => {
+                    (self.loop_blend_orientation).inspect_value(path, offset, limit)
+                }
+                "loopBlendPositionY" => {
+                    (self.loop_blend_position_y).inspect_value(path, offset, limit)
+                }
+                "loopBlendPositionXZ" => {
+                    (self.loop_blend_position_xz).inspect_value(path, offset, limit)
+                }
+                "keepOriginalOrientation" => {
+                    (self.keep_original_orientation).inspect_value(path, offset, limit)
+                }
+                "keepOriginalPositionY" => {
+                    (self.keep_original_position_y).inspect_value(path, offset, limit)
+                }
+                "keepOriginalPositionXZ" => {
+                    (self.keep_original_position_xz).inspect_value(path, offset, limit)
+                }
+                "heightFromFeet" => (self.height_from_feet).inspect_value(path, offset, limit),
+                "mirror" => (self.mirror).inspect_value(path, offset, limit),
+                "keepAdditionalBonesAnimation" => {
+                    (self.keep_additional_bones_animation).inspect_value(path, offset, limit)
+                }
+                "bodyMask" => (self.body_mask).inspect_value(path, offset, limit),
+                "curves" => (self.curves).inspect_value(path, offset, limit),
+                "transformMask" => (self.transform_mask).inspect_value(path, offset, limit),
+                "skeletonMaskElements" => {
+                    (self.skeleton_mask_elements).inspect_value(path, offset, limit)
+                }
+                "events" => (self.events).inspect_value(path, offset, limit),
+                "maskType" => (self.mask_type).inspect_value(path, offset, limit),
+                "maskSource" => (self.mask_source).inspect_value(path, offset, limit),
+                "additiveReferencePoseFrame" => {
+                    (self.additive_reference_pose_frame).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.name).inspect_value(path, offset, limit)).map(|v| ("name".to_string(), v)),
+            ((self.first_frame).inspect_value(path, offset, limit))
+                .map(|v| ("firstFrame".to_string(), v)),
+            ((self.take_name).inspect_value(path, offset, limit))
+                .map(|v| ("takeName".to_string(), v)),
+            ((self.last_frame).inspect_value(path, offset, limit))
+                .map(|v| ("lastFrame".to_string(), v)),
+            ((self.internal_id).inspect_value(path, offset, limit))
+                .map(|v| ("internalID".to_string(), v)),
+            ((self.wrap_mode).inspect_value(path, offset, limit))
+                .map(|v| ("wrapMode".to_string(), v)),
+            ((self.r#loop).inspect_value(path, offset, limit)).map(|v| ("loop".to_string(), v)),
+            ((self.orientation_offset_y).inspect_value(path, offset, limit))
+                .map(|v| ("orientationOffsetY".to_string(), v)),
+            ((self.level).inspect_value(path, offset, limit)).map(|v| ("level".to_string(), v)),
+            ((self.cycle_offset).inspect_value(path, offset, limit))
+                .map(|v| ("cycleOffset".to_string(), v)),
+            ((self.loop_blend).inspect_value(path, offset, limit))
+                .map(|v| ("loopBlend".to_string(), v)),
+            ((self.loop_time).inspect_value(path, offset, limit))
+                .map(|v| ("loopTime".to_string(), v)),
+            ((self.has_additive_reference_pose).inspect_value(path, offset, limit))
+                .map(|v| ("hasAdditiveReferencePose".to_string(), v)),
+            ((self.loop_blend_orientation).inspect_value(path, offset, limit))
+                .map(|v| ("loopBlendOrientation".to_string(), v)),
+            ((self.loop_blend_position_y).inspect_value(path, offset, limit))
+                .map(|v| ("loopBlendPositionY".to_string(), v)),
+            ((self.loop_blend_position_xz).inspect_value(path, offset, limit))
+                .map(|v| ("loopBlendPositionXZ".to_string(), v)),
+            ((self.keep_original_orientation).inspect_value(path, offset, limit))
+                .map(|v| ("keepOriginalOrientation".to_string(), v)),
+            ((self.keep_original_position_y).inspect_value(path, offset, limit))
+                .map(|v| ("keepOriginalPositionY".to_string(), v)),
+            ((self.keep_original_position_xz).inspect_value(path, offset, limit))
+                .map(|v| ("keepOriginalPositionXZ".to_string(), v)),
+            ((self.height_from_feet).inspect_value(path, offset, limit))
+                .map(|v| ("heightFromFeet".to_string(), v)),
+            ((self.mirror).inspect_value(path, offset, limit)).map(|v| ("mirror".to_string(), v)),
+            ((self.keep_additional_bones_animation).inspect_value(path, offset, limit))
+                .map(|v| ("keepAdditionalBonesAnimation".to_string(), v)),
+            ((self.body_mask).inspect_value(path, offset, limit))
+                .map(|v| ("bodyMask".to_string(), v)),
+            ((self.curves).inspect_value(path, offset, limit)).map(|v| ("curves".to_string(), v)),
+            ((self.transform_mask).inspect_value(path, offset, limit))
+                .map(|v| ("transformMask".to_string(), v)),
+            ((self.skeleton_mask_elements).inspect_value(path, offset, limit))
+                .map(|v| ("skeletonMaskElements".to_string(), v)),
+            ((self.events).inspect_value(path, offset, limit)).map(|v| ("events".to_string(), v)),
+            ((self.mask_type).inspect_value(path, offset, limit))
+                .map(|v| ("maskType".to_string(), v)),
+            ((self.mask_source).inspect_value(path, offset, limit))
+                .map(|v| ("maskSource".to_string(), v)),
+            ((self.additive_reference_pose_frame).inspect_value(path, offset, limit))
+                .map(|v| ("additiveReferencePoseFrame".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

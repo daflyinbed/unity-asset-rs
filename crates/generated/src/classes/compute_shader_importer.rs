@@ -26,6 +26,21 @@ impl crate::Parse for ComputeShaderImporterMNameVariant {
     }
 }
 
+impl crate::ToValue for ComputeShaderImporterMNameVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_0(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_0(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：ComputeShaderImporterMCurrentApiMaskVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ComputeShaderImporterMCurrentApiMaskVariant {
@@ -45,6 +60,21 @@ impl crate::Parse for ComputeShaderImporterMCurrentApiMaskVariant {
             let v = rdr.read_u32()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for ComputeShaderImporterMCurrentApiMaskVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2020_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2020_2(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -90,6 +120,21 @@ impl crate::Parse for ComputeShaderImporterMExternalObjectsVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for ComputeShaderImporterMExternalObjectsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2019_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2019_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -217,5 +262,74 @@ impl crate::Parse for ComputeShaderImporter {
             m_preprocessor_override,
             m_asset_bundle_variant,
         })
+    }
+}
+
+impl crate::ToValue for ComputeShaderImporter {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some(("m_UserData".to_string(), self.m_user_data.to_value())),
+            crate::opt_field("m_CurrentBuildTarget", &self.m_current_build_target),
+            crate::opt_field("m_CurrentAPIMask", &self.m_current_api_mask),
+            crate::opt_field("m_ExternalObjects", &self.m_external_objects),
+            crate::opt_field("m_UsedFileIDs", &self.m_used_file_i_ds),
+            crate::opt_field("m_AssetBundleName", &self.m_asset_bundle_name),
+            crate::opt_field("m_PreprocessorOverride", &self.m_preprocessor_override),
+            crate::opt_field("m_AssetBundleVariant", &self.m_asset_bundle_variant),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_UserData" => (self.m_user_data).inspect_value(path, offset, limit),
+                "m_CurrentBuildTarget" => {
+                    (self.m_current_build_target).inspect_value(path, offset, limit)
+                }
+                "m_CurrentAPIMask" => (self.m_current_api_mask).inspect_value(path, offset, limit),
+                "m_ExternalObjects" => (self.m_external_objects).inspect_value(path, offset, limit),
+                "m_UsedFileIDs" => (self.m_used_file_i_ds).inspect_value(path, offset, limit),
+                "m_AssetBundleName" => {
+                    (self.m_asset_bundle_name).inspect_value(path, offset, limit)
+                }
+                "m_PreprocessorOverride" => {
+                    (self.m_preprocessor_override).inspect_value(path, offset, limit)
+                }
+                "m_AssetBundleVariant" => {
+                    (self.m_asset_bundle_variant).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_user_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_UserData".to_string(), v)),
+            ((self.m_current_build_target).inspect_value(path, offset, limit))
+                .map(|v| ("m_CurrentBuildTarget".to_string(), v)),
+            ((self.m_current_api_mask).inspect_value(path, offset, limit))
+                .map(|v| ("m_CurrentAPIMask".to_string(), v)),
+            ((self.m_external_objects).inspect_value(path, offset, limit))
+                .map(|v| ("m_ExternalObjects".to_string(), v)),
+            ((self.m_used_file_i_ds).inspect_value(path, offset, limit))
+                .map(|v| ("m_UsedFileIDs".to_string(), v)),
+            ((self.m_asset_bundle_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_AssetBundleName".to_string(), v)),
+            ((self.m_preprocessor_override).inspect_value(path, offset, limit))
+                .map(|v| ("m_PreprocessorOverride".to_string(), v)),
+            ((self.m_asset_bundle_variant).inspect_value(path, offset, limit))
+                .map(|v| ("m_AssetBundleVariant".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

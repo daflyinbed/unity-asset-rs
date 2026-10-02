@@ -82,3 +82,75 @@ impl crate::Parse for VariantInfo {
         })
     }
 }
+
+impl crate::ToValue for VariantInfo {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            crate::opt_field("keywords", &self.keywords),
+            crate::opt_field("shader", &self.shader),
+            crate::opt_field("passType", &self.pass_type),
+            crate::opt_field("shaderName", &self.shader_name),
+            crate::opt_field("shaderAssetGUID", &self.shader_asset_guid),
+            crate::opt_field("keywordNames", &self.keyword_names),
+            crate::opt_field(
+                "shaderAssetLocalIdentifierInFile",
+                &self.shader_asset_local_identifier_in_file,
+            ),
+            crate::opt_field("subShaderIndex", &self.sub_shader_index),
+            crate::opt_field("passIndex", &self.pass_index),
+            crate::opt_field("graphicsStateInfoSet", &self.graphics_state_info_set),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "keywords" => (self.keywords).inspect_value(path, offset, limit),
+                "shader" => (self.shader).inspect_value(path, offset, limit),
+                "passType" => (self.pass_type).inspect_value(path, offset, limit),
+                "shaderName" => (self.shader_name).inspect_value(path, offset, limit),
+                "shaderAssetGUID" => (self.shader_asset_guid).inspect_value(path, offset, limit),
+                "keywordNames" => (self.keyword_names).inspect_value(path, offset, limit),
+                "shaderAssetLocalIdentifierInFile" => {
+                    (self.shader_asset_local_identifier_in_file).inspect_value(path, offset, limit)
+                }
+                "subShaderIndex" => (self.sub_shader_index).inspect_value(path, offset, limit),
+                "passIndex" => (self.pass_index).inspect_value(path, offset, limit),
+                "graphicsStateInfoSet" => {
+                    (self.graphics_state_info_set).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.keywords).inspect_value(path, offset, limit))
+                .map(|v| ("keywords".to_string(), v)),
+            ((self.shader).inspect_value(path, offset, limit)).map(|v| ("shader".to_string(), v)),
+            ((self.pass_type).inspect_value(path, offset, limit))
+                .map(|v| ("passType".to_string(), v)),
+            ((self.shader_name).inspect_value(path, offset, limit))
+                .map(|v| ("shaderName".to_string(), v)),
+            ((self.shader_asset_guid).inspect_value(path, offset, limit))
+                .map(|v| ("shaderAssetGUID".to_string(), v)),
+            ((self.keyword_names).inspect_value(path, offset, limit))
+                .map(|v| ("keywordNames".to_string(), v)),
+            ((self.shader_asset_local_identifier_in_file).inspect_value(path, offset, limit))
+                .map(|v| ("shaderAssetLocalIdentifierInFile".to_string(), v)),
+            ((self.sub_shader_index).inspect_value(path, offset, limit))
+                .map(|v| ("subShaderIndex".to_string(), v)),
+            ((self.pass_index).inspect_value(path, offset, limit))
+                .map(|v| ("passIndex".to_string(), v)),
+            ((self.graphics_state_info_set).inspect_value(path, offset, limit))
+                .map(|v| ("graphicsStateInfoSet".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

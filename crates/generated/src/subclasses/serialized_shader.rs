@@ -38,6 +38,21 @@ impl crate::Parse for SerializedShaderMSubShadersVariant {
     }
 }
 
+impl crate::ToValue for SerializedShaderMSubShadersVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：SerializedShaderMDependenciesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum SerializedShaderMDependenciesVariant {
@@ -67,6 +82,21 @@ impl crate::Parse for SerializedShaderMDependenciesVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for SerializedShaderMDependenciesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -151,5 +181,88 @@ impl crate::Parse for SerializedShader {
             m_disable_no_subshaders_message: m_disable_no_subshaders_message.unwrap(),
             m_custom_editor_for_render_pipelines,
         })
+    }
+}
+
+impl crate::ToValue for SerializedShader {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_PropInfo".to_string(), self.m_prop_info.to_value())),
+            Some(("m_SubShaders".to_string(), self.m_sub_shaders.to_value())),
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            crate::opt_field("m_KeywordNames", &self.m_keyword_names),
+            Some((
+                "m_CustomEditorName".to_string(),
+                self.m_custom_editor_name.to_value(),
+            )),
+            crate::opt_field("m_KeywordFlags", &self.m_keyword_flags),
+            Some((
+                "m_FallbackName".to_string(),
+                self.m_fallback_name.to_value(),
+            )),
+            Some(("m_Dependencies".to_string(), self.m_dependencies.to_value())),
+            Some((
+                "m_DisableNoSubshadersMessage".to_string(),
+                self.m_disable_no_subshaders_message.to_value(),
+            )),
+            crate::opt_field(
+                "m_CustomEditorForRenderPipelines",
+                &self.m_custom_editor_for_render_pipelines,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_PropInfo" => (self.m_prop_info).inspect_value(path, offset, limit),
+                "m_SubShaders" => (self.m_sub_shaders).inspect_value(path, offset, limit),
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_KeywordNames" => (self.m_keyword_names).inspect_value(path, offset, limit),
+                "m_CustomEditorName" => {
+                    (self.m_custom_editor_name).inspect_value(path, offset, limit)
+                }
+                "m_KeywordFlags" => (self.m_keyword_flags).inspect_value(path, offset, limit),
+                "m_FallbackName" => (self.m_fallback_name).inspect_value(path, offset, limit),
+                "m_Dependencies" => (self.m_dependencies).inspect_value(path, offset, limit),
+                "m_DisableNoSubshadersMessage" => {
+                    (self.m_disable_no_subshaders_message).inspect_value(path, offset, limit)
+                }
+                "m_CustomEditorForRenderPipelines" => {
+                    (self.m_custom_editor_for_render_pipelines).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_prop_info).inspect_value(path, offset, limit))
+                .map(|v| ("m_PropInfo".to_string(), v)),
+            ((self.m_sub_shaders).inspect_value(path, offset, limit))
+                .map(|v| ("m_SubShaders".to_string(), v)),
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_keyword_names).inspect_value(path, offset, limit))
+                .map(|v| ("m_KeywordNames".to_string(), v)),
+            ((self.m_custom_editor_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_CustomEditorName".to_string(), v)),
+            ((self.m_keyword_flags).inspect_value(path, offset, limit))
+                .map(|v| ("m_KeywordFlags".to_string(), v)),
+            ((self.m_fallback_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_FallbackName".to_string(), v)),
+            ((self.m_dependencies).inspect_value(path, offset, limit))
+                .map(|v| ("m_Dependencies".to_string(), v)),
+            ((self.m_disable_no_subshaders_message).inspect_value(path, offset, limit))
+                .map(|v| ("m_DisableNoSubshadersMessage".to_string(), v)),
+            ((self.m_custom_editor_for_render_pipelines).inspect_value(path, offset, limit))
+                .map(|v| ("m_CustomEditorForRenderPipelines".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

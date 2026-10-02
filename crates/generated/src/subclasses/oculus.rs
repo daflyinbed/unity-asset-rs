@@ -32,6 +32,25 @@ impl crate::Parse for OculusDashSupportVariant {
     }
 }
 
+impl crate::ToValue for OculusDashSupportVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2018_4_9(v) => v.to_value(),
+            Self::V2019_1(v) => v.to_value(),
+            Self::V2019_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2018_4_9(v) => (v).inspect_value(path, offset, limit),
+            Self::V2019_1(v) => (v).inspect_value(path, offset, limit),
+            Self::V2019_2(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：OculusLowOverheadModeVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum OculusLowOverheadModeVariant {
@@ -55,6 +74,23 @@ impl crate::Parse for OculusLowOverheadModeVariant {
         } else {
             let v = rdr.read_bool()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for OculusLowOverheadModeVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2019_2(v) => v.to_value(),
+            Self::V2019_2_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2019_2(v) => (v).inspect_value(path, offset, limit),
+            Self::V2019_2_3(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -102,5 +138,56 @@ impl crate::Parse for Oculus {
             protected_context,
             v2_signing,
         })
+    }
+}
+
+impl crate::ToValue for Oculus {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some((
+                "sharedDepthBuffer".to_string(),
+                self.shared_depth_buffer.to_value(),
+            )),
+            Some(("dashSupport".to_string(), self.dash_support.to_value())),
+            crate::opt_field("lowOverheadMode", &self.low_overhead_mode),
+            crate::opt_field("protectedContext", &self.protected_context),
+            crate::opt_field("v2Signing", &self.v2_signing),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "sharedDepthBuffer" => {
+                    (self.shared_depth_buffer).inspect_value(path, offset, limit)
+                }
+                "dashSupport" => (self.dash_support).inspect_value(path, offset, limit),
+                "lowOverheadMode" => (self.low_overhead_mode).inspect_value(path, offset, limit),
+                "protectedContext" => (self.protected_context).inspect_value(path, offset, limit),
+                "v2Signing" => (self.v2_signing).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.shared_depth_buffer).inspect_value(path, offset, limit))
+                .map(|v| ("sharedDepthBuffer".to_string(), v)),
+            ((self.dash_support).inspect_value(path, offset, limit))
+                .map(|v| ("dashSupport".to_string(), v)),
+            ((self.low_overhead_mode).inspect_value(path, offset, limit))
+                .map(|v| ("lowOverheadMode".to_string(), v)),
+            ((self.protected_context).inspect_value(path, offset, limit))
+                .map(|v| ("protectedContext".to_string(), v)),
+            ((self.v2_signing).inspect_value(path, offset, limit))
+                .map(|v| ("v2Signing".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

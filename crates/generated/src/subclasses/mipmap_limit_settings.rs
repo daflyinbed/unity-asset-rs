@@ -20,3 +20,37 @@ impl crate::Parse for MipmapLimitSettings {
         })
     }
 }
+
+impl crate::ToValue for MipmapLimitSettings {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("limitBiasMode".to_string(), self.limit_bias_mode.to_value())),
+            Some(("limitBias".to_string(), self.limit_bias.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "limitBiasMode" => (self.limit_bias_mode).inspect_value(path, offset, limit),
+                "limitBias" => (self.limit_bias).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.limit_bias_mode).inspect_value(path, offset, limit))
+                .map(|v| ("limitBiasMode".to_string(), v)),
+            ((self.limit_bias).inspect_value(path, offset, limit))
+                .map(|v| ("limitBias".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

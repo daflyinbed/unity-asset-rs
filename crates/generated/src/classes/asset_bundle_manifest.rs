@@ -55,3 +55,55 @@ impl crate::Parse for AssetBundleManifest {
         })
     }
 }
+
+impl crate::ToValue for AssetBundleManifest {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some((
+                "AssetBundleNames".to_string(),
+                self.asset_bundle_names.to_value(),
+            )),
+            Some((
+                "AssetBundlesWithVariant".to_string(),
+                self.asset_bundles_with_variant.to_value(),
+            )),
+            Some((
+                "AssetBundleInfos".to_string(),
+                self.asset_bundle_infos.to_value(),
+            )),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "AssetBundleNames" => (self.asset_bundle_names).inspect_value(path, offset, limit),
+                "AssetBundlesWithVariant" => {
+                    (self.asset_bundles_with_variant).inspect_value(path, offset, limit)
+                }
+                "AssetBundleInfos" => (self.asset_bundle_infos).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.asset_bundle_names).inspect_value(path, offset, limit))
+                .map(|v| ("AssetBundleNames".to_string(), v)),
+            ((self.asset_bundles_with_variant).inspect_value(path, offset, limit))
+                .map(|v| ("AssetBundlesWithVariant".to_string(), v)),
+            ((self.asset_bundle_infos).inspect_value(path, offset, limit))
+                .map(|v| ("AssetBundleInfos".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

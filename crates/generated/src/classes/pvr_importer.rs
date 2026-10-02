@@ -24,6 +24,21 @@ impl crate::Parse for PvrImporterMNameVariant {
         }
     }
 }
+
+impl crate::ToValue for PvrImporterMNameVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V4_0(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V4_0(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct PvrImporter {
     pub m_name: PvrImporterMNameVariant,
@@ -83,5 +98,68 @@ impl crate::Parse for PvrImporter {
             m_new_hash_identity,
             m_asset_bundle_variant,
         })
+    }
+}
+
+impl crate::ToValue for PvrImporter {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            crate::opt_field("m_FileIDToRecycleName", &self.m_file_id_to_recycle_name),
+            crate::opt_field("m_UserData", &self.m_user_data),
+            crate::opt_field("m_OldHashIdentity", &self.m_old_hash_identity),
+            crate::opt_field("m_AssetBundleName", &self.m_asset_bundle_name),
+            crate::opt_field("m_NewHashIdentity", &self.m_new_hash_identity),
+            crate::opt_field("m_AssetBundleVariant", &self.m_asset_bundle_variant),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_FileIDToRecycleName" => {
+                    (self.m_file_id_to_recycle_name).inspect_value(path, offset, limit)
+                }
+                "m_UserData" => (self.m_user_data).inspect_value(path, offset, limit),
+                "m_OldHashIdentity" => {
+                    (self.m_old_hash_identity).inspect_value(path, offset, limit)
+                }
+                "m_AssetBundleName" => {
+                    (self.m_asset_bundle_name).inspect_value(path, offset, limit)
+                }
+                "m_NewHashIdentity" => {
+                    (self.m_new_hash_identity).inspect_value(path, offset, limit)
+                }
+                "m_AssetBundleVariant" => {
+                    (self.m_asset_bundle_variant).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_file_id_to_recycle_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_FileIDToRecycleName".to_string(), v)),
+            ((self.m_user_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_UserData".to_string(), v)),
+            ((self.m_old_hash_identity).inspect_value(path, offset, limit))
+                .map(|v| ("m_OldHashIdentity".to_string(), v)),
+            ((self.m_asset_bundle_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_AssetBundleName".to_string(), v)),
+            ((self.m_new_hash_identity).inspect_value(path, offset, limit))
+                .map(|v| ("m_NewHashIdentity".to_string(), v)),
+            ((self.m_asset_bundle_variant).inspect_value(path, offset, limit))
+                .map(|v| ("m_AssetBundleVariant".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

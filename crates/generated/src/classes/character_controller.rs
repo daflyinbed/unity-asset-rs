@@ -27,6 +27,21 @@ impl crate::Parse for CharacterControllerMGameObjectVariant {
     }
 }
 
+impl crate::ToValue for CharacterControllerMGameObjectVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V3_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V3_5(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：CharacterControllerMMaterialVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum CharacterControllerMMaterialVariant {
@@ -45,6 +60,21 @@ impl crate::Parse for CharacterControllerMMaterialVariant {
         } else {
             let v = crate::PPtr::parse(rdr, ver)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for CharacterControllerMMaterialVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2023_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2023_3(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -139,5 +169,100 @@ impl crate::Parse for CharacterController {
             m_min_move_distance: m_min_move_distance.unwrap(),
             m_center: m_center.unwrap(),
         })
+    }
+}
+
+impl crate::ToValue for CharacterController {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_Height".to_string(), self.m_height.to_value())),
+            crate::opt_field("m_Material", &self.m_material),
+            Some(("m_Radius".to_string(), self.m_radius.to_value())),
+            crate::opt_field("m_IsTrigger", &self.m_is_trigger),
+            crate::opt_field("m_IncludeLayers", &self.m_include_layers),
+            Some(("m_SlopeLimit".to_string(), self.m_slope_limit.to_value())),
+            crate::opt_field("m_Enabled", &self.m_enabled),
+            crate::opt_field("m_ExcludeLayers", &self.m_exclude_layers),
+            Some(("m_StepOffset".to_string(), self.m_step_offset.to_value())),
+            crate::opt_field("m_LayerOverridePriority", &self.m_layer_override_priority),
+            Some(("m_SkinWidth".to_string(), self.m_skin_width.to_value())),
+            crate::opt_field("m_ProvidesContacts", &self.m_provides_contacts),
+            Some((
+                "m_MinMoveDistance".to_string(),
+                self.m_min_move_distance.to_value(),
+            )),
+            Some(("m_Center".to_string(), self.m_center.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Height" => (self.m_height).inspect_value(path, offset, limit),
+                "m_Material" => (self.m_material).inspect_value(path, offset, limit),
+                "m_Radius" => (self.m_radius).inspect_value(path, offset, limit),
+                "m_IsTrigger" => (self.m_is_trigger).inspect_value(path, offset, limit),
+                "m_IncludeLayers" => (self.m_include_layers).inspect_value(path, offset, limit),
+                "m_SlopeLimit" => (self.m_slope_limit).inspect_value(path, offset, limit),
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "m_ExcludeLayers" => (self.m_exclude_layers).inspect_value(path, offset, limit),
+                "m_StepOffset" => (self.m_step_offset).inspect_value(path, offset, limit),
+                "m_LayerOverridePriority" => {
+                    (self.m_layer_override_priority).inspect_value(path, offset, limit)
+                }
+                "m_SkinWidth" => (self.m_skin_width).inspect_value(path, offset, limit),
+                "m_ProvidesContacts" => {
+                    (self.m_provides_contacts).inspect_value(path, offset, limit)
+                }
+                "m_MinMoveDistance" => {
+                    (self.m_min_move_distance).inspect_value(path, offset, limit)
+                }
+                "m_Center" => (self.m_center).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_height).inspect_value(path, offset, limit))
+                .map(|v| ("m_Height".to_string(), v)),
+            ((self.m_material).inspect_value(path, offset, limit))
+                .map(|v| ("m_Material".to_string(), v)),
+            ((self.m_radius).inspect_value(path, offset, limit))
+                .map(|v| ("m_Radius".to_string(), v)),
+            ((self.m_is_trigger).inspect_value(path, offset, limit))
+                .map(|v| ("m_IsTrigger".to_string(), v)),
+            ((self.m_include_layers).inspect_value(path, offset, limit))
+                .map(|v| ("m_IncludeLayers".to_string(), v)),
+            ((self.m_slope_limit).inspect_value(path, offset, limit))
+                .map(|v| ("m_SlopeLimit".to_string(), v)),
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.m_exclude_layers).inspect_value(path, offset, limit))
+                .map(|v| ("m_ExcludeLayers".to_string(), v)),
+            ((self.m_step_offset).inspect_value(path, offset, limit))
+                .map(|v| ("m_StepOffset".to_string(), v)),
+            ((self.m_layer_override_priority).inspect_value(path, offset, limit))
+                .map(|v| ("m_LayerOverridePriority".to_string(), v)),
+            ((self.m_skin_width).inspect_value(path, offset, limit))
+                .map(|v| ("m_SkinWidth".to_string(), v)),
+            ((self.m_provides_contacts).inspect_value(path, offset, limit))
+                .map(|v| ("m_ProvidesContacts".to_string(), v)),
+            ((self.m_min_move_distance).inspect_value(path, offset, limit))
+                .map(|v| ("m_MinMoveDistance".to_string(), v)),
+            ((self.m_center).inspect_value(path, offset, limit))
+                .map(|v| ("m_Center".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

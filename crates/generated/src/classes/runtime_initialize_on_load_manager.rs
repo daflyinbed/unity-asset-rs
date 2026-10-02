@@ -36,6 +36,21 @@ impl crate::Parse for RuntimeInitializeOnLoadManagerMAssemblyNamesVariant {
     }
 }
 
+impl crate::ToValue for RuntimeInitializeOnLoadManagerMAssemblyNamesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：RuntimeInitializeOnLoadManagerMBeforeUnityMethodExecutionOrdersVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum RuntimeInitializeOnLoadManagerMBeforeUnityMethodExecutionOrdersVariant {
@@ -65,6 +80,21 @@ impl crate::Parse for RuntimeInitializeOnLoadManagerMBeforeUnityMethodExecutionO
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for RuntimeInitializeOnLoadManagerMBeforeUnityMethodExecutionOrdersVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -102,6 +132,21 @@ impl crate::Parse for RuntimeInitializeOnLoadManagerMAfterUnityMethodExecutionOr
     }
 }
 
+impl crate::ToValue for RuntimeInitializeOnLoadManagerMAfterUnityMethodExecutionOrdersVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：RuntimeInitializeOnLoadManagerMBeforeMethodExecutionOrdersVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum RuntimeInitializeOnLoadManagerMBeforeMethodExecutionOrdersVariant {
@@ -131,6 +176,21 @@ impl crate::Parse for RuntimeInitializeOnLoadManagerMBeforeMethodExecutionOrders
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for RuntimeInitializeOnLoadManagerMBeforeMethodExecutionOrdersVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -496,5 +556,185 @@ impl crate::Parse for RuntimeInitializeOnLoadManager {
             m_subsystem_registration_unity_method_execution_orders,
             m_subsystem_registration_method_execution_orders,
         })
+    }
+}
+
+impl crate::ToValue for RuntimeInitializeOnLoadManager {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            crate::opt_field("m_AssemblyNames", &self.m_assembly_names),
+            crate::opt_field("m_NamespaceNames", &self.m_namespace_names),
+            crate::opt_field("m_ClassInfos", &self.m_class_infos),
+            crate::opt_field("m_ClassMethodInfos", &self.m_class_method_infos),
+            crate::opt_field(
+                "m_UnityMethodExecutionOrders",
+                &self.m_unity_method_execution_orders,
+            ),
+            crate::opt_field(
+                "m_BeforeUnityMethodExecutionOrders",
+                &self.m_before_unity_method_execution_orders,
+            ),
+            crate::opt_field("m_MethodExecutionOrders", &self.m_method_execution_orders),
+            crate::opt_field(
+                "m_AfterUnityMethodExecutionOrders",
+                &self.m_after_unity_method_execution_orders,
+            ),
+            crate::opt_field(
+                "m_BeforeMethodExecutionOrders",
+                &self.m_before_method_execution_orders,
+            ),
+            crate::opt_field(
+                "m_AfterMethodExecutionOrders",
+                &self.m_after_method_execution_orders,
+            ),
+            crate::opt_field(
+                "m_AfterAssembliesLoadedUnityMethodExecutionOrders",
+                &self.m_after_assemblies_loaded_unity_method_execution_orders,
+            ),
+            crate::opt_field(
+                "m_AfterAssembliesLoadedMethodExecutionOrders",
+                &self.m_after_assemblies_loaded_method_execution_orders,
+            ),
+            crate::opt_field(
+                "m_BeforeSplashScreenUnityMethodExecutionOrders",
+                &self.m_before_splash_screen_unity_method_execution_orders,
+            ),
+            crate::opt_field(
+                "m_BeforeSplashScreenMethodExecutionOrders",
+                &self.m_before_splash_screen_method_execution_orders,
+            ),
+            crate::opt_field(
+                "m_SubsystemRegistrationUnityMethodExecutionOrders",
+                &self.m_subsystem_registration_unity_method_execution_orders,
+            ),
+            crate::opt_field(
+                "m_SubsystemRegistrationMethodExecutionOrders",
+                &self.m_subsystem_registration_method_execution_orders,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_AssemblyNames" => (self.m_assembly_names).inspect_value(path, offset, limit),
+                "m_NamespaceNames" => (self.m_namespace_names).inspect_value(path, offset, limit),
+                "m_ClassInfos" => (self.m_class_infos).inspect_value(path, offset, limit),
+                "m_ClassMethodInfos" => {
+                    (self.m_class_method_infos).inspect_value(path, offset, limit)
+                }
+                "m_UnityMethodExecutionOrders" => {
+                    (self.m_unity_method_execution_orders).inspect_value(path, offset, limit)
+                }
+                "m_BeforeUnityMethodExecutionOrders" => {
+                    (self.m_before_unity_method_execution_orders).inspect_value(path, offset, limit)
+                }
+                "m_MethodExecutionOrders" => {
+                    (self.m_method_execution_orders).inspect_value(path, offset, limit)
+                }
+                "m_AfterUnityMethodExecutionOrders" => {
+                    (self.m_after_unity_method_execution_orders).inspect_value(path, offset, limit)
+                }
+                "m_BeforeMethodExecutionOrders" => {
+                    (self.m_before_method_execution_orders).inspect_value(path, offset, limit)
+                }
+                "m_AfterMethodExecutionOrders" => {
+                    (self.m_after_method_execution_orders).inspect_value(path, offset, limit)
+                }
+                "m_AfterAssembliesLoadedUnityMethodExecutionOrders" => (self
+                    .m_after_assemblies_loaded_unity_method_execution_orders)
+                    .inspect_value(path, offset, limit),
+                "m_AfterAssembliesLoadedMethodExecutionOrders" => (self
+                    .m_after_assemblies_loaded_method_execution_orders)
+                    .inspect_value(path, offset, limit),
+                "m_BeforeSplashScreenUnityMethodExecutionOrders" => (self
+                    .m_before_splash_screen_unity_method_execution_orders)
+                    .inspect_value(path, offset, limit),
+                "m_BeforeSplashScreenMethodExecutionOrders" => (self
+                    .m_before_splash_screen_method_execution_orders)
+                    .inspect_value(path, offset, limit),
+                "m_SubsystemRegistrationUnityMethodExecutionOrders" => (self
+                    .m_subsystem_registration_unity_method_execution_orders)
+                    .inspect_value(path, offset, limit),
+                "m_SubsystemRegistrationMethodExecutionOrders" => (self
+                    .m_subsystem_registration_method_execution_orders)
+                    .inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_assembly_names).inspect_value(path, offset, limit))
+                .map(|v| ("m_AssemblyNames".to_string(), v)),
+            ((self.m_namespace_names).inspect_value(path, offset, limit))
+                .map(|v| ("m_NamespaceNames".to_string(), v)),
+            ((self.m_class_infos).inspect_value(path, offset, limit))
+                .map(|v| ("m_ClassInfos".to_string(), v)),
+            ((self.m_class_method_infos).inspect_value(path, offset, limit))
+                .map(|v| ("m_ClassMethodInfos".to_string(), v)),
+            ((self.m_unity_method_execution_orders).inspect_value(path, offset, limit))
+                .map(|v| ("m_UnityMethodExecutionOrders".to_string(), v)),
+            ((self.m_before_unity_method_execution_orders).inspect_value(path, offset, limit))
+                .map(|v| ("m_BeforeUnityMethodExecutionOrders".to_string(), v)),
+            ((self.m_method_execution_orders).inspect_value(path, offset, limit))
+                .map(|v| ("m_MethodExecutionOrders".to_string(), v)),
+            ((self.m_after_unity_method_execution_orders).inspect_value(path, offset, limit))
+                .map(|v| ("m_AfterUnityMethodExecutionOrders".to_string(), v)),
+            ((self.m_before_method_execution_orders).inspect_value(path, offset, limit))
+                .map(|v| ("m_BeforeMethodExecutionOrders".to_string(), v)),
+            ((self.m_after_method_execution_orders).inspect_value(path, offset, limit))
+                .map(|v| ("m_AfterMethodExecutionOrders".to_string(), v)),
+            ((self.m_after_assemblies_loaded_unity_method_execution_orders)
+                .inspect_value(path, offset, limit))
+            .map(|v| {
+                (
+                    "m_AfterAssembliesLoadedUnityMethodExecutionOrders".to_string(),
+                    v,
+                )
+            }),
+            ((self.m_after_assemblies_loaded_method_execution_orders)
+                .inspect_value(path, offset, limit))
+            .map(|v| {
+                (
+                    "m_AfterAssembliesLoadedMethodExecutionOrders".to_string(),
+                    v,
+                )
+            }),
+            ((self.m_before_splash_screen_unity_method_execution_orders)
+                .inspect_value(path, offset, limit))
+            .map(|v| {
+                (
+                    "m_BeforeSplashScreenUnityMethodExecutionOrders".to_string(),
+                    v,
+                )
+            }),
+            ((self.m_before_splash_screen_method_execution_orders)
+                .inspect_value(path, offset, limit))
+            .map(|v| ("m_BeforeSplashScreenMethodExecutionOrders".to_string(), v)),
+            ((self.m_subsystem_registration_unity_method_execution_orders)
+                .inspect_value(path, offset, limit))
+            .map(|v| {
+                (
+                    "m_SubsystemRegistrationUnityMethodExecutionOrders".to_string(),
+                    v,
+                )
+            }),
+            ((self.m_subsystem_registration_method_execution_orders)
+                .inspect_value(path, offset, limit))
+            .map(|v| {
+                (
+                    "m_SubsystemRegistrationMethodExecutionOrders".to_string(),
+                    v,
+                )
+            }),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

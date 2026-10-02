@@ -28,6 +28,21 @@ impl crate::Parse for MinMaxGradientMinMaxStateVariant {
     }
 }
 
+impl crate::ToValue for MinMaxGradientMinMaxStateVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_6_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_6_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：MinMaxGradientMinColorVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum MinMaxGradientMinColorVariant {
@@ -50,6 +65,21 @@ impl crate::Parse for MinMaxGradientMinColorVariant {
     }
 }
 
+impl crate::ToValue for MinMaxGradientMinColorVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_4(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_4(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：MinMaxGradientMaxColorVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum MinMaxGradientMaxColorVariant {
@@ -68,6 +98,21 @@ impl crate::Parse for MinMaxGradientMaxColorVariant {
         } else {
             let v = ({ Ok(Box::new(ColorRgba32::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for MinMaxGradientMaxColorVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_4(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_4(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -117,5 +162,51 @@ impl crate::Parse for MinMaxGradient {
             min_color: min_color.unwrap(),
             max_color: max_color.unwrap(),
         })
+    }
+}
+
+impl crate::ToValue for MinMaxGradient {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("maxGradient".to_string(), self.max_gradient.to_value())),
+            Some(("minMaxState".to_string(), self.min_max_state.to_value())),
+            Some(("minGradient".to_string(), self.min_gradient.to_value())),
+            Some(("minColor".to_string(), self.min_color.to_value())),
+            Some(("maxColor".to_string(), self.max_color.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "maxGradient" => (self.max_gradient).inspect_value(path, offset, limit),
+                "minMaxState" => (self.min_max_state).inspect_value(path, offset, limit),
+                "minGradient" => (self.min_gradient).inspect_value(path, offset, limit),
+                "minColor" => (self.min_color).inspect_value(path, offset, limit),
+                "maxColor" => (self.max_color).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.max_gradient).inspect_value(path, offset, limit))
+                .map(|v| ("maxGradient".to_string(), v)),
+            ((self.min_max_state).inspect_value(path, offset, limit))
+                .map(|v| ("minMaxState".to_string(), v)),
+            ((self.min_gradient).inspect_value(path, offset, limit))
+                .map(|v| ("minGradient".to_string(), v)),
+            ((self.min_color).inspect_value(path, offset, limit))
+                .map(|v| ("minColor".to_string(), v)),
+            ((self.max_color).inspect_value(path, offset, limit))
+                .map(|v| ("maxColor".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

@@ -50,9 +50,9 @@
         :src="url"
       />
 
-      <!-- 文本:内容面板 -->
+      <!-- 文本:TextAsset 文本 / 任意类型的 JSON 兜底 dump -->
       <pre
-        v-else-if="asset.type === 'TextAsset' && text !== null"
+        v-else-if="text !== null"
         class="max-h-full max-w-3xl w-full flex-1 overflow-auto whitespace-pre-wrap border border-neutral-5 rounded bg-panel p-4 text-[12.5px] text-neutral-10/90 leading-5 font-mono"
         >{{ text }}</pre>
 
@@ -82,15 +82,14 @@
 
       <div class="flex items-center gap-3 text-[12px] text-neutral-10/50">
         <span class="font-mono">{{ fileName }}</span>
-        <a
-          v-if="url"
-          :download="fileName"
-          :href="url"
+        <button
+          v-if="url || text !== null"
           class="inline-flex items-center gap-1 rounded px-2 py-1 text-neutral-10/70 active:bg-neutral-2 hover:bg-neutral-1"
+          @click="emit('export')"
         >
           <i-lucide-download class="h-4 w-4" />
           Download
-        </a>
+        </button>
       </div>
     </template>
   </div>
@@ -123,7 +122,7 @@ const props = withDefaults(
   },
 );
 
-const emit = defineEmits<{ selectSample: [index: number] }>();
+const emit = defineEmits<{ selectSample: [index: number]; export: [] }>();
 
 const fileName = computed(
   () =>

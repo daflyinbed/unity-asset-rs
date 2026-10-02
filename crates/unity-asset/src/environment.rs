@@ -34,12 +34,17 @@ pub struct CollectionId(u32);
 impl CollectionId {
     /// 内部构造(仅 crate 内)。
     pub(crate) fn new(idx: usize) -> Self {
-        Self(idx.try_into().expect("collection 索引超过 u32::MAX"))
+        Self::from_index(idx)
     }
     /// 暴露底层 Vec 下标。**仅为与 Vec-backed 访问器互操作的 escape hatch**,
     /// 不要用来跨 `Environment` 实例传递(不同实例的下标不通用)。
     pub fn to_index(self) -> usize {
         self.0 as usize
+    }
+    /// 由 Vec 下标构造,与 [`CollectionId::to_index`] 对称的 escape hatch
+    /// (如上层构造合成句柄做测试)。同样只在同一 `Environment` 生命周期内有效。
+    pub fn from_index(idx: usize) -> Self {
+        Self(idx.try_into().expect("collection 索引超过 u32::MAX"))
     }
 }
 
@@ -246,11 +251,15 @@ pub enum ParseFailure {
     /// SerializedFile 整体解析失败（file-level）。
     File { name: String, error: Error },
     /// 单个对象解析失败（object-level）。
+    ///
+    /// `data` 保留该对象的原始序列化字节（兜底导出用；`process_leaves` 捕获时
+    /// `SerializedFile` 仍存活，失败对象罕见，内存代价可忽略）。
     Object {
         collection: CollectionId,
         path_id: i64,
         class_id: ClassId,
         error: Error,
+        data: Vec<u8>,
     },
     /// io 层子容器/子条目递归 parse 失败（container-level）。
     ///
@@ -1105,11 +1114,14 @@ fn process_leaves(
                     assets.insert(obj.path_id, obj_idx);
                 }
                 Err(e) => {
+                    // 捕获原始字节供兜底导出（sf 仍存活；越界时退化为空）。
+                    let data = obj.data(&sf).map(<[u8]>::to_vec).unwrap_or_default();
                     failures.push(ParseFailure::Object {
                         collection: col_id,
                         path_id: obj.path_id,
                         class_id,
                         error: e,
+                        data,
                     });
                 }
             }

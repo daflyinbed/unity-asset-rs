@@ -31,3 +31,39 @@ impl crate::Parse for ComponentPair {
         })
     }
 }
+
+impl crate::ToValue for ComponentPair {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            crate::opt_field("first", &self.first),
+            crate::opt_field("component", &self.component),
+            crate::opt_field("second", &self.second),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "first" => (self.first).inspect_value(path, offset, limit),
+                "component" => (self.component).inspect_value(path, offset, limit),
+                "second" => (self.second).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.first).inspect_value(path, offset, limit)).map(|v| ("first".to_string(), v)),
+            ((self.component).inspect_value(path, offset, limit))
+                .map(|v| ("component".to_string(), v)),
+            ((self.second).inspect_value(path, offset, limit)).map(|v| ("second".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

@@ -76,3 +76,81 @@ impl crate::Parse for TextMesh {
         })
     }
 }
+
+impl crate::ToValue for TextMesh {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_Text".to_string(), self.m_text.to_value())),
+            Some(("m_OffsetZ".to_string(), self.m_offset_z.to_value())),
+            Some((
+                "m_CharacterSize".to_string(),
+                self.m_character_size.to_value(),
+            )),
+            Some(("m_LineSpacing".to_string(), self.m_line_spacing.to_value())),
+            Some(("m_Anchor".to_string(), self.m_anchor.to_value())),
+            Some(("m_Alignment".to_string(), self.m_alignment.to_value())),
+            Some(("m_TabSize".to_string(), self.m_tab_size.to_value())),
+            Some(("m_FontSize".to_string(), self.m_font_size.to_value())),
+            Some(("m_FontStyle".to_string(), self.m_font_style.to_value())),
+            Some(("m_Font".to_string(), self.m_font.to_value())),
+            crate::opt_field("m_RichText", &self.m_rich_text),
+            crate::opt_field("m_Color", &self.m_color),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Text" => (self.m_text).inspect_value(path, offset, limit),
+                "m_OffsetZ" => (self.m_offset_z).inspect_value(path, offset, limit),
+                "m_CharacterSize" => (self.m_character_size).inspect_value(path, offset, limit),
+                "m_LineSpacing" => (self.m_line_spacing).inspect_value(path, offset, limit),
+                "m_Anchor" => (self.m_anchor).inspect_value(path, offset, limit),
+                "m_Alignment" => (self.m_alignment).inspect_value(path, offset, limit),
+                "m_TabSize" => (self.m_tab_size).inspect_value(path, offset, limit),
+                "m_FontSize" => (self.m_font_size).inspect_value(path, offset, limit),
+                "m_FontStyle" => (self.m_font_style).inspect_value(path, offset, limit),
+                "m_Font" => (self.m_font).inspect_value(path, offset, limit),
+                "m_RichText" => (self.m_rich_text).inspect_value(path, offset, limit),
+                "m_Color" => (self.m_color).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_text).inspect_value(path, offset, limit)).map(|v| ("m_Text".to_string(), v)),
+            ((self.m_offset_z).inspect_value(path, offset, limit))
+                .map(|v| ("m_OffsetZ".to_string(), v)),
+            ((self.m_character_size).inspect_value(path, offset, limit))
+                .map(|v| ("m_CharacterSize".to_string(), v)),
+            ((self.m_line_spacing).inspect_value(path, offset, limit))
+                .map(|v| ("m_LineSpacing".to_string(), v)),
+            ((self.m_anchor).inspect_value(path, offset, limit))
+                .map(|v| ("m_Anchor".to_string(), v)),
+            ((self.m_alignment).inspect_value(path, offset, limit))
+                .map(|v| ("m_Alignment".to_string(), v)),
+            ((self.m_tab_size).inspect_value(path, offset, limit))
+                .map(|v| ("m_TabSize".to_string(), v)),
+            ((self.m_font_size).inspect_value(path, offset, limit))
+                .map(|v| ("m_FontSize".to_string(), v)),
+            ((self.m_font_style).inspect_value(path, offset, limit))
+                .map(|v| ("m_FontStyle".to_string(), v)),
+            ((self.m_font).inspect_value(path, offset, limit)).map(|v| ("m_Font".to_string(), v)),
+            ((self.m_rich_text).inspect_value(path, offset, limit))
+                .map(|v| ("m_RichText".to_string(), v)),
+            ((self.m_color).inspect_value(path, offset, limit)).map(|v| ("m_Color".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

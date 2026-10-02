@@ -27,6 +27,23 @@ impl crate::Parse for AudioManagerMDisableAudioVariant {
     }
 }
 
+impl crate::ToValue for AudioManagerMDisableAudioVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_0(v) => v.to_value(),
+            Self::V5_3_6(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_0(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_3_6(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：AudioManagerMRealVoiceCountVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AudioManagerMRealVoiceCountVariant {
@@ -55,6 +72,25 @@ impl crate::Parse for AudioManagerMRealVoiceCountVariant {
         } else {
             let v = rdr.read_i32()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for AudioManagerMRealVoiceCountVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2019_4_24(v) => v.to_value(),
+            Self::V2020_1(v) => v.to_value(),
+            Self::V2020_2_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2019_4_24(v) => (v).inspect_value(path, offset, limit),
+            Self::V2020_1(v) => (v).inspect_value(path, offset, limit),
+            Self::V2020_2_2(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -205,5 +241,124 @@ impl crate::Parse for AudioManager {
             m_output_channel_layout,
             m_output_sampling_rate,
         })
+    }
+}
+
+impl crate::ToValue for AudioManager {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Volume".to_string(), self.m_volume.to_value())),
+            crate::opt_field("m_SpeedOfSound", &self.m_speed_of_sound),
+            Some(("Rolloff Scale".to_string(), self.rolloff_scale.to_value())),
+            Some(("Doppler Factor".to_string(), self.doppler_factor.to_value())),
+            Some((
+                "Default Speaker Mode".to_string(),
+                self.default_speaker_mode.to_value(),
+            )),
+            crate::opt_field("m_SampleRate", &self.m_sample_rate),
+            Some((
+                "m_DSPBufferSize".to_string(),
+                self.m_dsp_buffer_size.to_value(),
+            )),
+            crate::opt_field("m_DisableAudio", &self.m_disable_audio),
+            crate::opt_field("m_VirtualVoiceCount", &self.m_virtual_voice_count),
+            crate::opt_field("m_RealVoiceCount", &self.m_real_voice_count),
+            crate::opt_field("m_SpatializerPlugin", &self.m_spatializer_plugin),
+            crate::opt_field("m_AmbisonicDecoderPlugin", &self.m_ambisonic_decoder_plugin),
+            crate::opt_field("m_VirtualizeEffects", &self.m_virtualize_effects),
+            crate::opt_field(
+                "m_RequestedDSPBufferSize",
+                &self.m_requested_dsp_buffer_size,
+            ),
+            crate::opt_field("m_AudioFoundation", &self.m_audio_foundation),
+            crate::opt_field("m_OutputChannelLayout", &self.m_output_channel_layout),
+            crate::opt_field("m_OutputSamplingRate", &self.m_output_sampling_rate),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Volume" => (self.m_volume).inspect_value(path, offset, limit),
+                "m_SpeedOfSound" => (self.m_speed_of_sound).inspect_value(path, offset, limit),
+                "Rolloff Scale" => (self.rolloff_scale).inspect_value(path, offset, limit),
+                "Doppler Factor" => (self.doppler_factor).inspect_value(path, offset, limit),
+                "Default Speaker Mode" => {
+                    (self.default_speaker_mode).inspect_value(path, offset, limit)
+                }
+                "m_SampleRate" => (self.m_sample_rate).inspect_value(path, offset, limit),
+                "m_DSPBufferSize" => (self.m_dsp_buffer_size).inspect_value(path, offset, limit),
+                "m_DisableAudio" => (self.m_disable_audio).inspect_value(path, offset, limit),
+                "m_VirtualVoiceCount" => {
+                    (self.m_virtual_voice_count).inspect_value(path, offset, limit)
+                }
+                "m_RealVoiceCount" => (self.m_real_voice_count).inspect_value(path, offset, limit),
+                "m_SpatializerPlugin" => {
+                    (self.m_spatializer_plugin).inspect_value(path, offset, limit)
+                }
+                "m_AmbisonicDecoderPlugin" => {
+                    (self.m_ambisonic_decoder_plugin).inspect_value(path, offset, limit)
+                }
+                "m_VirtualizeEffects" => {
+                    (self.m_virtualize_effects).inspect_value(path, offset, limit)
+                }
+                "m_RequestedDSPBufferSize" => {
+                    (self.m_requested_dsp_buffer_size).inspect_value(path, offset, limit)
+                }
+                "m_AudioFoundation" => (self.m_audio_foundation).inspect_value(path, offset, limit),
+                "m_OutputChannelLayout" => {
+                    (self.m_output_channel_layout).inspect_value(path, offset, limit)
+                }
+                "m_OutputSamplingRate" => {
+                    (self.m_output_sampling_rate).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_volume).inspect_value(path, offset, limit))
+                .map(|v| ("m_Volume".to_string(), v)),
+            ((self.m_speed_of_sound).inspect_value(path, offset, limit))
+                .map(|v| ("m_SpeedOfSound".to_string(), v)),
+            ((self.rolloff_scale).inspect_value(path, offset, limit))
+                .map(|v| ("Rolloff Scale".to_string(), v)),
+            ((self.doppler_factor).inspect_value(path, offset, limit))
+                .map(|v| ("Doppler Factor".to_string(), v)),
+            ((self.default_speaker_mode).inspect_value(path, offset, limit))
+                .map(|v| ("Default Speaker Mode".to_string(), v)),
+            ((self.m_sample_rate).inspect_value(path, offset, limit))
+                .map(|v| ("m_SampleRate".to_string(), v)),
+            ((self.m_dsp_buffer_size).inspect_value(path, offset, limit))
+                .map(|v| ("m_DSPBufferSize".to_string(), v)),
+            ((self.m_disable_audio).inspect_value(path, offset, limit))
+                .map(|v| ("m_DisableAudio".to_string(), v)),
+            ((self.m_virtual_voice_count).inspect_value(path, offset, limit))
+                .map(|v| ("m_VirtualVoiceCount".to_string(), v)),
+            ((self.m_real_voice_count).inspect_value(path, offset, limit))
+                .map(|v| ("m_RealVoiceCount".to_string(), v)),
+            ((self.m_spatializer_plugin).inspect_value(path, offset, limit))
+                .map(|v| ("m_SpatializerPlugin".to_string(), v)),
+            ((self.m_ambisonic_decoder_plugin).inspect_value(path, offset, limit))
+                .map(|v| ("m_AmbisonicDecoderPlugin".to_string(), v)),
+            ((self.m_virtualize_effects).inspect_value(path, offset, limit))
+                .map(|v| ("m_VirtualizeEffects".to_string(), v)),
+            ((self.m_requested_dsp_buffer_size).inspect_value(path, offset, limit))
+                .map(|v| ("m_RequestedDSPBufferSize".to_string(), v)),
+            ((self.m_audio_foundation).inspect_value(path, offset, limit))
+                .map(|v| ("m_AudioFoundation".to_string(), v)),
+            ((self.m_output_channel_layout).inspect_value(path, offset, limit))
+                .map(|v| ("m_OutputChannelLayout".to_string(), v)),
+            ((self.m_output_sampling_rate).inspect_value(path, offset, limit))
+                .map(|v| ("m_OutputSamplingRate".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

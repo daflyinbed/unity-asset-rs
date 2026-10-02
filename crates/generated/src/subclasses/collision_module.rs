@@ -26,6 +26,21 @@ impl crate::Parse for CollisionModuleQualityVariant {
         }
     }
 }
+
+impl crate::ToValue for CollisionModuleQualityVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_3(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct CollisionModule {
     pub enabled: bool,
@@ -228,5 +243,169 @@ impl crate::Parse for CollisionModule {
             collides_with_dynamic,
             interior_collisions,
         })
+    }
+}
+
+impl crate::ToValue for CollisionModule {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("enabled".to_string(), self.enabled.to_value())),
+            Some(("type".to_string(), self.r#type.to_value())),
+            crate::opt_field("plane0", &self.plane0),
+            crate::opt_field("collisionMode", &self.collision_mode),
+            crate::opt_field("plane1", &self.plane1),
+            crate::opt_field("colliderForce", &self.collider_force),
+            crate::opt_field("plane2", &self.plane2),
+            crate::opt_field(
+                "multiplyColliderForceByParticleSize",
+                &self.multiply_collider_force_by_particle_size,
+            ),
+            crate::opt_field("plane3", &self.plane3),
+            crate::opt_field(
+                "multiplyColliderForceByParticleSpeed",
+                &self.multiply_collider_force_by_particle_speed,
+            ),
+            crate::opt_field("plane4", &self.plane4),
+            crate::opt_field(
+                "multiplyColliderForceByCollisionAngle",
+                &self.multiply_collider_force_by_collision_angle,
+            ),
+            crate::opt_field("plane5", &self.plane5),
+            crate::opt_field("m_Planes", &self.m_planes),
+            crate::opt_field("dampen", &self.dampen),
+            crate::opt_field("m_Dampen", &self.m_dampen),
+            crate::opt_field("bounce", &self.bounce),
+            crate::opt_field("m_Bounce", &self.m_bounce),
+            crate::opt_field("energyLossOnCollision", &self.energy_loss_on_collision),
+            crate::opt_field("m_EnergyLossOnCollision", &self.m_energy_loss_on_collision),
+            Some(("minKillSpeed".to_string(), self.min_kill_speed.to_value())),
+            crate::opt_field("particleRadius", &self.particle_radius),
+            crate::opt_field("maxKillSpeed", &self.max_kill_speed),
+            crate::opt_field("collidesWith", &self.collides_with),
+            crate::opt_field("radiusScale", &self.radius_scale),
+            crate::opt_field("quality", &self.quality),
+            crate::opt_field("voxelSize", &self.voxel_size),
+            crate::opt_field("maxCollisionShapes", &self.max_collision_shapes),
+            crate::opt_field("collisionMessages", &self.collision_messages),
+            crate::opt_field("collidesWithDynamic", &self.collides_with_dynamic),
+            crate::opt_field("interiorCollisions", &self.interior_collisions),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "enabled" => (self.enabled).inspect_value(path, offset, limit),
+                "type" => (self.r#type).inspect_value(path, offset, limit),
+                "plane0" => (self.plane0).inspect_value(path, offset, limit),
+                "collisionMode" => (self.collision_mode).inspect_value(path, offset, limit),
+                "plane1" => (self.plane1).inspect_value(path, offset, limit),
+                "colliderForce" => (self.collider_force).inspect_value(path, offset, limit),
+                "plane2" => (self.plane2).inspect_value(path, offset, limit),
+                "multiplyColliderForceByParticleSize" => (self
+                    .multiply_collider_force_by_particle_size)
+                    .inspect_value(path, offset, limit),
+                "plane3" => (self.plane3).inspect_value(path, offset, limit),
+                "multiplyColliderForceByParticleSpeed" => (self
+                    .multiply_collider_force_by_particle_speed)
+                    .inspect_value(path, offset, limit),
+                "plane4" => (self.plane4).inspect_value(path, offset, limit),
+                "multiplyColliderForceByCollisionAngle" => (self
+                    .multiply_collider_force_by_collision_angle)
+                    .inspect_value(path, offset, limit),
+                "plane5" => (self.plane5).inspect_value(path, offset, limit),
+                "m_Planes" => (self.m_planes).inspect_value(path, offset, limit),
+                "dampen" => (self.dampen).inspect_value(path, offset, limit),
+                "m_Dampen" => (self.m_dampen).inspect_value(path, offset, limit),
+                "bounce" => (self.bounce).inspect_value(path, offset, limit),
+                "m_Bounce" => (self.m_bounce).inspect_value(path, offset, limit),
+                "energyLossOnCollision" => {
+                    (self.energy_loss_on_collision).inspect_value(path, offset, limit)
+                }
+                "m_EnergyLossOnCollision" => {
+                    (self.m_energy_loss_on_collision).inspect_value(path, offset, limit)
+                }
+                "minKillSpeed" => (self.min_kill_speed).inspect_value(path, offset, limit),
+                "particleRadius" => (self.particle_radius).inspect_value(path, offset, limit),
+                "maxKillSpeed" => (self.max_kill_speed).inspect_value(path, offset, limit),
+                "collidesWith" => (self.collides_with).inspect_value(path, offset, limit),
+                "radiusScale" => (self.radius_scale).inspect_value(path, offset, limit),
+                "quality" => (self.quality).inspect_value(path, offset, limit),
+                "voxelSize" => (self.voxel_size).inspect_value(path, offset, limit),
+                "maxCollisionShapes" => {
+                    (self.max_collision_shapes).inspect_value(path, offset, limit)
+                }
+                "collisionMessages" => (self.collision_messages).inspect_value(path, offset, limit),
+                "collidesWithDynamic" => {
+                    (self.collides_with_dynamic).inspect_value(path, offset, limit)
+                }
+                "interiorCollisions" => {
+                    (self.interior_collisions).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.enabled).inspect_value(path, offset, limit)).map(|v| ("enabled".to_string(), v)),
+            ((self.r#type).inspect_value(path, offset, limit)).map(|v| ("type".to_string(), v)),
+            ((self.plane0).inspect_value(path, offset, limit)).map(|v| ("plane0".to_string(), v)),
+            ((self.collision_mode).inspect_value(path, offset, limit))
+                .map(|v| ("collisionMode".to_string(), v)),
+            ((self.plane1).inspect_value(path, offset, limit)).map(|v| ("plane1".to_string(), v)),
+            ((self.collider_force).inspect_value(path, offset, limit))
+                .map(|v| ("colliderForce".to_string(), v)),
+            ((self.plane2).inspect_value(path, offset, limit)).map(|v| ("plane2".to_string(), v)),
+            ((self.multiply_collider_force_by_particle_size).inspect_value(path, offset, limit))
+                .map(|v| ("multiplyColliderForceByParticleSize".to_string(), v)),
+            ((self.plane3).inspect_value(path, offset, limit)).map(|v| ("plane3".to_string(), v)),
+            ((self.multiply_collider_force_by_particle_speed).inspect_value(path, offset, limit))
+                .map(|v| ("multiplyColliderForceByParticleSpeed".to_string(), v)),
+            ((self.plane4).inspect_value(path, offset, limit)).map(|v| ("plane4".to_string(), v)),
+            ((self.multiply_collider_force_by_collision_angle).inspect_value(path, offset, limit))
+                .map(|v| ("multiplyColliderForceByCollisionAngle".to_string(), v)),
+            ((self.plane5).inspect_value(path, offset, limit)).map(|v| ("plane5".to_string(), v)),
+            ((self.m_planes).inspect_value(path, offset, limit))
+                .map(|v| ("m_Planes".to_string(), v)),
+            ((self.dampen).inspect_value(path, offset, limit)).map(|v| ("dampen".to_string(), v)),
+            ((self.m_dampen).inspect_value(path, offset, limit))
+                .map(|v| ("m_Dampen".to_string(), v)),
+            ((self.bounce).inspect_value(path, offset, limit)).map(|v| ("bounce".to_string(), v)),
+            ((self.m_bounce).inspect_value(path, offset, limit))
+                .map(|v| ("m_Bounce".to_string(), v)),
+            ((self.energy_loss_on_collision).inspect_value(path, offset, limit))
+                .map(|v| ("energyLossOnCollision".to_string(), v)),
+            ((self.m_energy_loss_on_collision).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnergyLossOnCollision".to_string(), v)),
+            ((self.min_kill_speed).inspect_value(path, offset, limit))
+                .map(|v| ("minKillSpeed".to_string(), v)),
+            ((self.particle_radius).inspect_value(path, offset, limit))
+                .map(|v| ("particleRadius".to_string(), v)),
+            ((self.max_kill_speed).inspect_value(path, offset, limit))
+                .map(|v| ("maxKillSpeed".to_string(), v)),
+            ((self.collides_with).inspect_value(path, offset, limit))
+                .map(|v| ("collidesWith".to_string(), v)),
+            ((self.radius_scale).inspect_value(path, offset, limit))
+                .map(|v| ("radiusScale".to_string(), v)),
+            ((self.quality).inspect_value(path, offset, limit)).map(|v| ("quality".to_string(), v)),
+            ((self.voxel_size).inspect_value(path, offset, limit))
+                .map(|v| ("voxelSize".to_string(), v)),
+            ((self.max_collision_shapes).inspect_value(path, offset, limit))
+                .map(|v| ("maxCollisionShapes".to_string(), v)),
+            ((self.collision_messages).inspect_value(path, offset, limit))
+                .map(|v| ("collisionMessages".to_string(), v)),
+            ((self.collides_with_dynamic).inspect_value(path, offset, limit))
+                .map(|v| ("collidesWithDynamic".to_string(), v)),
+            ((self.interior_collisions).inspect_value(path, offset, limit))
+                .map(|v| ("interiorCollisions".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

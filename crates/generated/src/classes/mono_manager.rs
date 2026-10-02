@@ -35,6 +35,21 @@ impl crate::Parse for MonoManagerMAssemblyNamesVariant {
         }
     }
 }
+
+impl crate::ToValue for MonoManagerMAssemblyNamesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct MonoManager {
     pub m_scripts: Vec<PPtr>,
@@ -116,5 +131,53 @@ impl crate::Parse for MonoManager {
             m_runtime_class_hashes,
             m_assembly_types,
         })
+    }
+}
+
+impl crate::ToValue for MonoManager {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Scripts".to_string(), self.m_scripts.to_value())),
+            crate::opt_field("m_ScriptHashes", &self.m_script_hashes),
+            crate::opt_field("m_AssemblyNames", &self.m_assembly_names),
+            crate::opt_field("m_RuntimeClassHashes", &self.m_runtime_class_hashes),
+            crate::opt_field("m_AssemblyTypes", &self.m_assembly_types),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Scripts" => (self.m_scripts).inspect_value(path, offset, limit),
+                "m_ScriptHashes" => (self.m_script_hashes).inspect_value(path, offset, limit),
+                "m_AssemblyNames" => (self.m_assembly_names).inspect_value(path, offset, limit),
+                "m_RuntimeClassHashes" => {
+                    (self.m_runtime_class_hashes).inspect_value(path, offset, limit)
+                }
+                "m_AssemblyTypes" => (self.m_assembly_types).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_scripts).inspect_value(path, offset, limit))
+                .map(|v| ("m_Scripts".to_string(), v)),
+            ((self.m_script_hashes).inspect_value(path, offset, limit))
+                .map(|v| ("m_ScriptHashes".to_string(), v)),
+            ((self.m_assembly_names).inspect_value(path, offset, limit))
+                .map(|v| ("m_AssemblyNames".to_string(), v)),
+            ((self.m_runtime_class_hashes).inspect_value(path, offset, limit))
+                .map(|v| ("m_RuntimeClassHashes".to_string(), v)),
+            ((self.m_assembly_types).inspect_value(path, offset, limit))
+                .map(|v| ("m_AssemblyTypes".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

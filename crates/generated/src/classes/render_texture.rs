@@ -25,6 +25,21 @@ impl crate::Parse for RenderTextureMDownscaleFallbackVariant {
     }
 }
 
+impl crate::ToValue for RenderTextureMDownscaleFallbackVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2020_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2020_2(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：RenderTextureMMipMapVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum RenderTextureMMipMapVariant {
@@ -44,6 +59,21 @@ impl crate::Parse for RenderTextureMMipMapVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for RenderTextureMMipMapVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V3_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V3_5(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -71,6 +101,21 @@ impl crate::Parse for RenderTextureMSrgbVariant {
     }
 }
 
+impl crate::ToValue for RenderTextureMSrgbVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_3(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：RenderTextureMBindMsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum RenderTextureMBindMsVariant {
@@ -90,6 +135,21 @@ impl crate::Parse for RenderTextureMBindMsVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for RenderTextureMBindMsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2019_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2019_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -131,6 +191,29 @@ impl crate::Parse for RenderTextureMEnableCompatibleFormatVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for RenderTextureMEnableCompatibleFormatVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2021_3_29(v) => v.to_value(),
+            Self::V2022_1(v) => v.to_value(),
+            Self::V2022_3_6(v) => v.to_value(),
+            Self::V2023_1(v) => v.to_value(),
+            Self::V2023_1_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2021_3_29(v) => (v).inspect_value(path, offset, limit),
+            Self::V2022_1(v) => (v).inspect_value(path, offset, limit),
+            Self::V2022_3_6(v) => (v).inspect_value(path, offset, limit),
+            Self::V2023_1(v) => (v).inspect_value(path, offset, limit),
+            Self::V2023_1_5(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -347,5 +430,155 @@ impl crate::Parse for RenderTexture {
             m_enable_random_write,
             m_shadow_sampling_mode,
         })
+    }
+}
+
+impl crate::ToValue for RenderTexture {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some(("m_Width".to_string(), self.m_width.to_value())),
+            crate::opt_field("m_ForcedFallbackFormat", &self.m_forced_fallback_format),
+            crate::opt_field(
+                "m_IsAlphaChannelOptional",
+                &self.m_is_alpha_channel_optional,
+            ),
+            Some(("m_Height".to_string(), self.m_height.to_value())),
+            crate::opt_field("m_DownscaleFallback", &self.m_downscale_fallback),
+            crate::opt_field("m_DepthFormat", &self.m_depth_format),
+            crate::opt_field("m_AntiAliasing", &self.m_anti_aliasing),
+            Some(("m_ColorFormat".to_string(), self.m_color_format.to_value())),
+            crate::opt_field("m_IsPowerOfTwo", &self.m_is_power_of_two),
+            crate::opt_field("m_IsCubemap", &self.m_is_cubemap),
+            Some(("m_MipMap".to_string(), self.m_mip_map.to_value())),
+            crate::opt_field("m_MipCount", &self.m_mip_count),
+            crate::opt_field("m_SRGB", &self.m_srgb),
+            crate::opt_field("m_DepthStencilFormat", &self.m_depth_stencil_format),
+            Some((
+                "m_TextureSettings".to_string(),
+                self.m_texture_settings.to_value(),
+            )),
+            crate::opt_field("m_GenerateMips", &self.m_generate_mips),
+            crate::opt_field("m_Dimension", &self.m_dimension),
+            crate::opt_field("m_VolumeDepth", &self.m_volume_depth),
+            crate::opt_field("m_UseDynamicScale", &self.m_use_dynamic_scale),
+            crate::opt_field("m_BindMS", &self.m_bind_ms),
+            crate::opt_field(
+                "m_UseDynamicScaleExplicit",
+                &self.m_use_dynamic_scale_explicit,
+            ),
+            crate::opt_field("m_EnableCompatibleFormat", &self.m_enable_compatible_format),
+            crate::opt_field("m_EnableRandomWrite", &self.m_enable_random_write),
+            crate::opt_field("m_ShadowSamplingMode", &self.m_shadow_sampling_mode),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_Width" => (self.m_width).inspect_value(path, offset, limit),
+                "m_ForcedFallbackFormat" => {
+                    (self.m_forced_fallback_format).inspect_value(path, offset, limit)
+                }
+                "m_IsAlphaChannelOptional" => {
+                    (self.m_is_alpha_channel_optional).inspect_value(path, offset, limit)
+                }
+                "m_Height" => (self.m_height).inspect_value(path, offset, limit),
+                "m_DownscaleFallback" => {
+                    (self.m_downscale_fallback).inspect_value(path, offset, limit)
+                }
+                "m_DepthFormat" => (self.m_depth_format).inspect_value(path, offset, limit),
+                "m_AntiAliasing" => (self.m_anti_aliasing).inspect_value(path, offset, limit),
+                "m_ColorFormat" => (self.m_color_format).inspect_value(path, offset, limit),
+                "m_IsPowerOfTwo" => (self.m_is_power_of_two).inspect_value(path, offset, limit),
+                "m_IsCubemap" => (self.m_is_cubemap).inspect_value(path, offset, limit),
+                "m_MipMap" => (self.m_mip_map).inspect_value(path, offset, limit),
+                "m_MipCount" => (self.m_mip_count).inspect_value(path, offset, limit),
+                "m_SRGB" => (self.m_srgb).inspect_value(path, offset, limit),
+                "m_DepthStencilFormat" => {
+                    (self.m_depth_stencil_format).inspect_value(path, offset, limit)
+                }
+                "m_TextureSettings" => (self.m_texture_settings).inspect_value(path, offset, limit),
+                "m_GenerateMips" => (self.m_generate_mips).inspect_value(path, offset, limit),
+                "m_Dimension" => (self.m_dimension).inspect_value(path, offset, limit),
+                "m_VolumeDepth" => (self.m_volume_depth).inspect_value(path, offset, limit),
+                "m_UseDynamicScale" => {
+                    (self.m_use_dynamic_scale).inspect_value(path, offset, limit)
+                }
+                "m_BindMS" => (self.m_bind_ms).inspect_value(path, offset, limit),
+                "m_UseDynamicScaleExplicit" => {
+                    (self.m_use_dynamic_scale_explicit).inspect_value(path, offset, limit)
+                }
+                "m_EnableCompatibleFormat" => {
+                    (self.m_enable_compatible_format).inspect_value(path, offset, limit)
+                }
+                "m_EnableRandomWrite" => {
+                    (self.m_enable_random_write).inspect_value(path, offset, limit)
+                }
+                "m_ShadowSamplingMode" => {
+                    (self.m_shadow_sampling_mode).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_width).inspect_value(path, offset, limit)).map(|v| ("m_Width".to_string(), v)),
+            ((self.m_forced_fallback_format).inspect_value(path, offset, limit))
+                .map(|v| ("m_ForcedFallbackFormat".to_string(), v)),
+            ((self.m_is_alpha_channel_optional).inspect_value(path, offset, limit))
+                .map(|v| ("m_IsAlphaChannelOptional".to_string(), v)),
+            ((self.m_height).inspect_value(path, offset, limit))
+                .map(|v| ("m_Height".to_string(), v)),
+            ((self.m_downscale_fallback).inspect_value(path, offset, limit))
+                .map(|v| ("m_DownscaleFallback".to_string(), v)),
+            ((self.m_depth_format).inspect_value(path, offset, limit))
+                .map(|v| ("m_DepthFormat".to_string(), v)),
+            ((self.m_anti_aliasing).inspect_value(path, offset, limit))
+                .map(|v| ("m_AntiAliasing".to_string(), v)),
+            ((self.m_color_format).inspect_value(path, offset, limit))
+                .map(|v| ("m_ColorFormat".to_string(), v)),
+            ((self.m_is_power_of_two).inspect_value(path, offset, limit))
+                .map(|v| ("m_IsPowerOfTwo".to_string(), v)),
+            ((self.m_is_cubemap).inspect_value(path, offset, limit))
+                .map(|v| ("m_IsCubemap".to_string(), v)),
+            ((self.m_mip_map).inspect_value(path, offset, limit))
+                .map(|v| ("m_MipMap".to_string(), v)),
+            ((self.m_mip_count).inspect_value(path, offset, limit))
+                .map(|v| ("m_MipCount".to_string(), v)),
+            ((self.m_srgb).inspect_value(path, offset, limit)).map(|v| ("m_SRGB".to_string(), v)),
+            ((self.m_depth_stencil_format).inspect_value(path, offset, limit))
+                .map(|v| ("m_DepthStencilFormat".to_string(), v)),
+            ((self.m_texture_settings).inspect_value(path, offset, limit))
+                .map(|v| ("m_TextureSettings".to_string(), v)),
+            ((self.m_generate_mips).inspect_value(path, offset, limit))
+                .map(|v| ("m_GenerateMips".to_string(), v)),
+            ((self.m_dimension).inspect_value(path, offset, limit))
+                .map(|v| ("m_Dimension".to_string(), v)),
+            ((self.m_volume_depth).inspect_value(path, offset, limit))
+                .map(|v| ("m_VolumeDepth".to_string(), v)),
+            ((self.m_use_dynamic_scale).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseDynamicScale".to_string(), v)),
+            ((self.m_bind_ms).inspect_value(path, offset, limit))
+                .map(|v| ("m_BindMS".to_string(), v)),
+            ((self.m_use_dynamic_scale_explicit).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseDynamicScaleExplicit".to_string(), v)),
+            ((self.m_enable_compatible_format).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableCompatibleFormat".to_string(), v)),
+            ((self.m_enable_random_write).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableRandomWrite".to_string(), v)),
+            ((self.m_shadow_sampling_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_ShadowSamplingMode".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

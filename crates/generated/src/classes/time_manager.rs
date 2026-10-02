@@ -23,6 +23,21 @@ impl crate::Parse for TimeManagerFixedTimestepVariant {
         }
     }
 }
+
+impl crate::ToValue for TimeManagerFixedTimestepVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2023_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2023_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct TimeManager {
     pub fixed_timestep: TimeManagerFixedTimestepVariant,
@@ -51,5 +66,54 @@ impl crate::Parse for TimeManager {
             m_time_scale,
             maximum_particle_timestep,
         })
+    }
+}
+
+impl crate::ToValue for TimeManager {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("Fixed Timestep".to_string(), self.fixed_timestep.to_value())),
+            Some((
+                "Maximum Allowed Timestep".to_string(),
+                self.maximum_allowed_timestep.to_value(),
+            )),
+            Some(("m_TimeScale".to_string(), self.m_time_scale.to_value())),
+            crate::opt_field("Maximum Particle Timestep", &self.maximum_particle_timestep),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "Fixed Timestep" => (self.fixed_timestep).inspect_value(path, offset, limit),
+                "Maximum Allowed Timestep" => {
+                    (self.maximum_allowed_timestep).inspect_value(path, offset, limit)
+                }
+                "m_TimeScale" => (self.m_time_scale).inspect_value(path, offset, limit),
+                "Maximum Particle Timestep" => {
+                    (self.maximum_particle_timestep).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.fixed_timestep).inspect_value(path, offset, limit))
+                .map(|v| ("Fixed Timestep".to_string(), v)),
+            ((self.maximum_allowed_timestep).inspect_value(path, offset, limit))
+                .map(|v| ("Maximum Allowed Timestep".to_string(), v)),
+            ((self.m_time_scale).inspect_value(path, offset, limit))
+                .map(|v| ("m_TimeScale".to_string(), v)),
+            ((self.maximum_particle_timestep).inspect_value(path, offset, limit))
+                .map(|v| ("Maximum Particle Timestep".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

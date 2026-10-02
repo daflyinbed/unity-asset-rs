@@ -32,3 +32,51 @@ impl crate::Parse for RayTracingShaderVariant {
         })
     }
 }
+
+impl crate::ToValue for RayTracingShaderVariant {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some((
+                "targetRenderer".to_string(),
+                self.target_renderer.to_value(),
+            )),
+            Some((
+                "resourceReflectionData".to_string(),
+                self.resource_reflection_data.to_value(),
+            )),
+            crate::opt_field("editorOnlyVariant", &self.editor_only_variant),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "targetRenderer" => (self.target_renderer).inspect_value(path, offset, limit),
+                "resourceReflectionData" => {
+                    (self.resource_reflection_data).inspect_value(path, offset, limit)
+                }
+                "editorOnlyVariant" => {
+                    (self.editor_only_variant).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.target_renderer).inspect_value(path, offset, limit))
+                .map(|v| ("targetRenderer".to_string(), v)),
+            ((self.resource_reflection_data).inspect_value(path, offset, limit))
+                .map(|v| ("resourceReflectionData".to_string(), v)),
+            ((self.editor_only_variant).inspect_value(path, offset, limit))
+                .map(|v| ("editorOnlyVariant".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

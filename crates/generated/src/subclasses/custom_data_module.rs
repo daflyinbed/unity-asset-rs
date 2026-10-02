@@ -63,3 +63,94 @@ impl crate::Parse for CustomDataModule {
         })
     }
 }
+
+impl crate::ToValue for CustomDataModule {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("enabled".to_string(), self.enabled.to_value())),
+            Some(("mode0".to_string(), self.mode0.to_value())),
+            Some((
+                "vectorComponentCount0".to_string(),
+                self.vector_component_count0.to_value(),
+            )),
+            Some(("color0".to_string(), self.color0.to_value())),
+            Some(("vector0_0".to_string(), self.vector0_0.to_value())),
+            Some(("vector0_1".to_string(), self.vector0_1.to_value())),
+            Some(("vector0_2".to_string(), self.vector0_2.to_value())),
+            Some(("vector0_3".to_string(), self.vector0_3.to_value())),
+            Some(("mode1".to_string(), self.mode1.to_value())),
+            Some((
+                "vectorComponentCount1".to_string(),
+                self.vector_component_count1.to_value(),
+            )),
+            Some(("color1".to_string(), self.color1.to_value())),
+            Some(("vector1_0".to_string(), self.vector1_0.to_value())),
+            Some(("vector1_1".to_string(), self.vector1_1.to_value())),
+            Some(("vector1_2".to_string(), self.vector1_2.to_value())),
+            Some(("vector1_3".to_string(), self.vector1_3.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "enabled" => (self.enabled).inspect_value(path, offset, limit),
+                "mode0" => (self.mode0).inspect_value(path, offset, limit),
+                "vectorComponentCount0" => {
+                    (self.vector_component_count0).inspect_value(path, offset, limit)
+                }
+                "color0" => (self.color0).inspect_value(path, offset, limit),
+                "vector0_0" => (self.vector0_0).inspect_value(path, offset, limit),
+                "vector0_1" => (self.vector0_1).inspect_value(path, offset, limit),
+                "vector0_2" => (self.vector0_2).inspect_value(path, offset, limit),
+                "vector0_3" => (self.vector0_3).inspect_value(path, offset, limit),
+                "mode1" => (self.mode1).inspect_value(path, offset, limit),
+                "vectorComponentCount1" => {
+                    (self.vector_component_count1).inspect_value(path, offset, limit)
+                }
+                "color1" => (self.color1).inspect_value(path, offset, limit),
+                "vector1_0" => (self.vector1_0).inspect_value(path, offset, limit),
+                "vector1_1" => (self.vector1_1).inspect_value(path, offset, limit),
+                "vector1_2" => (self.vector1_2).inspect_value(path, offset, limit),
+                "vector1_3" => (self.vector1_3).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.enabled).inspect_value(path, offset, limit)).map(|v| ("enabled".to_string(), v)),
+            ((self.mode0).inspect_value(path, offset, limit)).map(|v| ("mode0".to_string(), v)),
+            ((self.vector_component_count0).inspect_value(path, offset, limit))
+                .map(|v| ("vectorComponentCount0".to_string(), v)),
+            ((self.color0).inspect_value(path, offset, limit)).map(|v| ("color0".to_string(), v)),
+            ((self.vector0_0).inspect_value(path, offset, limit))
+                .map(|v| ("vector0_0".to_string(), v)),
+            ((self.vector0_1).inspect_value(path, offset, limit))
+                .map(|v| ("vector0_1".to_string(), v)),
+            ((self.vector0_2).inspect_value(path, offset, limit))
+                .map(|v| ("vector0_2".to_string(), v)),
+            ((self.vector0_3).inspect_value(path, offset, limit))
+                .map(|v| ("vector0_3".to_string(), v)),
+            ((self.mode1).inspect_value(path, offset, limit)).map(|v| ("mode1".to_string(), v)),
+            ((self.vector_component_count1).inspect_value(path, offset, limit))
+                .map(|v| ("vectorComponentCount1".to_string(), v)),
+            ((self.color1).inspect_value(path, offset, limit)).map(|v| ("color1".to_string(), v)),
+            ((self.vector1_0).inspect_value(path, offset, limit))
+                .map(|v| ("vector1_0".to_string(), v)),
+            ((self.vector1_1).inspect_value(path, offset, limit))
+                .map(|v| ("vector1_1".to_string(), v)),
+            ((self.vector1_2).inspect_value(path, offset, limit))
+                .map(|v| ("vector1_2".to_string(), v)),
+            ((self.vector1_3).inspect_value(path, offset, limit))
+                .map(|v| ("vector1_3".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

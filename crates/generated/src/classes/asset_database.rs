@@ -155,3 +155,70 @@ impl crate::Parse for AssetDatabase {
         })
     }
 }
+
+impl crate::ToValue for AssetDatabase {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Assets".to_string(), self.m_assets.to_value())),
+            crate::opt_field("m_AssetTimeStamps", &self.m_asset_time_stamps),
+            crate::opt_field("m_UnityShadersVersion", &self.m_unity_shaders_version),
+            crate::opt_field(
+                "m_lastValidVersionHashes",
+                &self.m_last_valid_version_hashes,
+            ),
+            crate::opt_field("m_lastValidVersions", &self.m_last_valid_versions),
+            crate::opt_field("m_AssetBundleNames", &self.m_asset_bundle_names),
+            crate::opt_field("m_Metrics", &self.m_metrics),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Assets" => (self.m_assets).inspect_value(path, offset, limit),
+                "m_AssetTimeStamps" => {
+                    (self.m_asset_time_stamps).inspect_value(path, offset, limit)
+                }
+                "m_UnityShadersVersion" => {
+                    (self.m_unity_shaders_version).inspect_value(path, offset, limit)
+                }
+                "m_lastValidVersionHashes" => {
+                    (self.m_last_valid_version_hashes).inspect_value(path, offset, limit)
+                }
+                "m_lastValidVersions" => {
+                    (self.m_last_valid_versions).inspect_value(path, offset, limit)
+                }
+                "m_AssetBundleNames" => {
+                    (self.m_asset_bundle_names).inspect_value(path, offset, limit)
+                }
+                "m_Metrics" => (self.m_metrics).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_assets).inspect_value(path, offset, limit))
+                .map(|v| ("m_Assets".to_string(), v)),
+            ((self.m_asset_time_stamps).inspect_value(path, offset, limit))
+                .map(|v| ("m_AssetTimeStamps".to_string(), v)),
+            ((self.m_unity_shaders_version).inspect_value(path, offset, limit))
+                .map(|v| ("m_UnityShadersVersion".to_string(), v)),
+            ((self.m_last_valid_version_hashes).inspect_value(path, offset, limit))
+                .map(|v| ("m_lastValidVersionHashes".to_string(), v)),
+            ((self.m_last_valid_versions).inspect_value(path, offset, limit))
+                .map(|v| ("m_lastValidVersions".to_string(), v)),
+            ((self.m_asset_bundle_names).inspect_value(path, offset, limit))
+                .map(|v| ("m_AssetBundleNames".to_string(), v)),
+            ((self.m_metrics).inspect_value(path, offset, limit))
+                .map(|v| ("m_Metrics".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

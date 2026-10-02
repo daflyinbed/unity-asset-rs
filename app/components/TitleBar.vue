@@ -135,7 +135,11 @@
                   </DropdownMenuPortal>
                 </DropdownMenuSub>
                 <DropdownMenuSeparator class="titlebar-menu-separator" />
-                <DropdownMenuItem class="titlebar-menu-item" disabled>
+                <DropdownMenuItem
+                  class="titlebar-menu-item"
+                  :disabled="!canExport"
+                  @select="emit('exportObject')"
+                >
                   <span>Export Current Object…</span>
                   <span class="titlebar-menu-shortcut">Ctrl+E</span>
                 </DropdownMenuItem>
@@ -456,6 +460,8 @@ interface LoadedSource {
 
 const props = defineProps<{
   bundleName: string;
+  /** 是否有可导出的活动对象（无则 Export Current Object 禁用）。 */
+  canExport: boolean;
   loading: boolean;
   loadedSources: LoadedSource[];
   projectName: string;
@@ -473,6 +479,7 @@ const emit = defineEmits<{
   openProject: [projectId: number];
   refreshSource: [sourceId: number];
   removeSource: [sourceId: number];
+  exportObject: [];
 }>();
 
 const aboutOpen = ref(false);

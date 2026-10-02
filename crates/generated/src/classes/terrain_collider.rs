@@ -24,6 +24,21 @@ impl crate::Parse for TerrainColliderMMaterialVariant {
         }
     }
 }
+
+impl crate::ToValue for TerrainColliderMMaterialVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2023_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2023_3(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct TerrainCollider {
     pub m_game_object: PPtr,
@@ -93,5 +108,83 @@ impl crate::Parse for TerrainCollider {
             m_layer_override_priority,
             m_provides_contacts,
         })
+    }
+}
+
+impl crate::ToValue for TerrainCollider {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            crate::opt_field("m_Material", &self.m_material),
+            crate::opt_field("m_IsTrigger", &self.m_is_trigger),
+            Some(("m_Enabled".to_string(), self.m_enabled.to_value())),
+            crate::opt_field("m_IncludeLayers", &self.m_include_layers),
+            Some(("m_TerrainData".to_string(), self.m_terrain_data.to_value())),
+            crate::opt_field("m_ExcludeLayers", &self.m_exclude_layers),
+            crate::opt_field("m_CreateTreeColliders", &self.m_create_tree_colliders),
+            crate::opt_field("m_EnableTreeColliders", &self.m_enable_tree_colliders),
+            crate::opt_field("m_LayerOverridePriority", &self.m_layer_override_priority),
+            crate::opt_field("m_ProvidesContacts", &self.m_provides_contacts),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Material" => (self.m_material).inspect_value(path, offset, limit),
+                "m_IsTrigger" => (self.m_is_trigger).inspect_value(path, offset, limit),
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "m_IncludeLayers" => (self.m_include_layers).inspect_value(path, offset, limit),
+                "m_TerrainData" => (self.m_terrain_data).inspect_value(path, offset, limit),
+                "m_ExcludeLayers" => (self.m_exclude_layers).inspect_value(path, offset, limit),
+                "m_CreateTreeColliders" => {
+                    (self.m_create_tree_colliders).inspect_value(path, offset, limit)
+                }
+                "m_EnableTreeColliders" => {
+                    (self.m_enable_tree_colliders).inspect_value(path, offset, limit)
+                }
+                "m_LayerOverridePriority" => {
+                    (self.m_layer_override_priority).inspect_value(path, offset, limit)
+                }
+                "m_ProvidesContacts" => {
+                    (self.m_provides_contacts).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_material).inspect_value(path, offset, limit))
+                .map(|v| ("m_Material".to_string(), v)),
+            ((self.m_is_trigger).inspect_value(path, offset, limit))
+                .map(|v| ("m_IsTrigger".to_string(), v)),
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.m_include_layers).inspect_value(path, offset, limit))
+                .map(|v| ("m_IncludeLayers".to_string(), v)),
+            ((self.m_terrain_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_TerrainData".to_string(), v)),
+            ((self.m_exclude_layers).inspect_value(path, offset, limit))
+                .map(|v| ("m_ExcludeLayers".to_string(), v)),
+            ((self.m_create_tree_colliders).inspect_value(path, offset, limit))
+                .map(|v| ("m_CreateTreeColliders".to_string(), v)),
+            ((self.m_enable_tree_colliders).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableTreeColliders".to_string(), v)),
+            ((self.m_layer_override_priority).inspect_value(path, offset, limit))
+                .map(|v| ("m_LayerOverridePriority".to_string(), v)),
+            ((self.m_provides_contacts).inspect_value(path, offset, limit))
+                .map(|v| ("m_ProvidesContacts".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

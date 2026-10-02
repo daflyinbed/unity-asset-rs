@@ -37,6 +37,21 @@ impl crate::Parse for HeightMeshDataMVerticesVariant {
     }
 }
 
+impl crate::ToValue for HeightMeshDataMVerticesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：HeightMeshDataMIndicesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum HeightMeshDataMIndicesVariant {
@@ -66,6 +81,21 @@ impl crate::Parse for HeightMeshDataMIndicesVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for HeightMeshDataMIndicesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -102,6 +132,21 @@ impl crate::Parse for HeightMeshDataMNodesVariant {
         }
     }
 }
+
+impl crate::ToValue for HeightMeshDataMNodesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct HeightMeshData {
     pub m_vertices: HeightMeshDataMVerticesVariant,
@@ -126,5 +171,46 @@ impl crate::Parse for HeightMeshData {
             m_bounds,
             m_nodes,
         })
+    }
+}
+
+impl crate::ToValue for HeightMeshData {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Vertices".to_string(), self.m_vertices.to_value())),
+            Some(("m_Indices".to_string(), self.m_indices.to_value())),
+            Some(("m_Bounds".to_string(), self.m_bounds.to_value())),
+            Some(("m_Nodes".to_string(), self.m_nodes.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Vertices" => (self.m_vertices).inspect_value(path, offset, limit),
+                "m_Indices" => (self.m_indices).inspect_value(path, offset, limit),
+                "m_Bounds" => (self.m_bounds).inspect_value(path, offset, limit),
+                "m_Nodes" => (self.m_nodes).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_vertices).inspect_value(path, offset, limit))
+                .map(|v| ("m_Vertices".to_string(), v)),
+            ((self.m_indices).inspect_value(path, offset, limit))
+                .map(|v| ("m_Indices".to_string(), v)),
+            ((self.m_bounds).inspect_value(path, offset, limit))
+                .map(|v| ("m_Bounds".to_string(), v)),
+            ((self.m_nodes).inspect_value(path, offset, limit)).map(|v| ("m_Nodes".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

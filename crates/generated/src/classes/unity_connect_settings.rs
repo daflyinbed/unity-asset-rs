@@ -29,6 +29,21 @@ impl crate::Parse for UnityConnectSettingsMTestConfigUrlVariant {
         }
     }
 }
+
+impl crate::ToValue for UnityConnectSettingsMTestConfigUrlVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_6(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_6(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct UnityConnectSettings {
     pub unity_purchasing_settings: UnityPurchasingSettings,
@@ -192,5 +207,108 @@ impl crate::Parse for UnityConnectSettings {
             insights_settings,
             performance_reporting_settings,
         })
+    }
+}
+
+impl crate::ToValue for UnityConnectSettings {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some((
+                "UnityPurchasingSettings".to_string(),
+                self.unity_purchasing_settings.to_value(),
+            )),
+            crate::opt_field("m_Enabled", &self.m_enabled),
+            Some((
+                "UnityAnalyticsSettings".to_string(),
+                self.unity_analytics_settings.to_value(),
+            )),
+            crate::opt_field("m_TestMode", &self.m_test_mode),
+            crate::opt_field("m_TestEventUrl", &self.m_test_event_url),
+            crate::opt_field("m_EventOldUrl", &self.m_event_old_url),
+            crate::opt_field("m_TestConfigUrl", &self.m_test_config_url),
+            crate::opt_field("m_EventUrl", &self.m_event_url),
+            crate::opt_field("CrashReportingSettings", &self.crash_reporting_settings),
+            crate::opt_field("m_TestInitMode", &self.m_test_init_mode),
+            crate::opt_field("m_ConfigUrl", &self.m_config_url),
+            crate::opt_field("m_DashboardUrl", &self.m_dashboard_url),
+            crate::opt_field("UnityAdsSettings", &self.unity_ads_settings),
+            crate::opt_field("InsightsSettings", &self.insights_settings),
+            crate::opt_field(
+                "PerformanceReportingSettings",
+                &self.performance_reporting_settings,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "UnityPurchasingSettings" => {
+                    (self.unity_purchasing_settings).inspect_value(path, offset, limit)
+                }
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "UnityAnalyticsSettings" => {
+                    (self.unity_analytics_settings).inspect_value(path, offset, limit)
+                }
+                "m_TestMode" => (self.m_test_mode).inspect_value(path, offset, limit),
+                "m_TestEventUrl" => (self.m_test_event_url).inspect_value(path, offset, limit),
+                "m_EventOldUrl" => (self.m_event_old_url).inspect_value(path, offset, limit),
+                "m_TestConfigUrl" => (self.m_test_config_url).inspect_value(path, offset, limit),
+                "m_EventUrl" => (self.m_event_url).inspect_value(path, offset, limit),
+                "CrashReportingSettings" => {
+                    (self.crash_reporting_settings).inspect_value(path, offset, limit)
+                }
+                "m_TestInitMode" => (self.m_test_init_mode).inspect_value(path, offset, limit),
+                "m_ConfigUrl" => (self.m_config_url).inspect_value(path, offset, limit),
+                "m_DashboardUrl" => (self.m_dashboard_url).inspect_value(path, offset, limit),
+                "UnityAdsSettings" => (self.unity_ads_settings).inspect_value(path, offset, limit),
+                "InsightsSettings" => (self.insights_settings).inspect_value(path, offset, limit),
+                "PerformanceReportingSettings" => {
+                    (self.performance_reporting_settings).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.unity_purchasing_settings).inspect_value(path, offset, limit))
+                .map(|v| ("UnityPurchasingSettings".to_string(), v)),
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.unity_analytics_settings).inspect_value(path, offset, limit))
+                .map(|v| ("UnityAnalyticsSettings".to_string(), v)),
+            ((self.m_test_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_TestMode".to_string(), v)),
+            ((self.m_test_event_url).inspect_value(path, offset, limit))
+                .map(|v| ("m_TestEventUrl".to_string(), v)),
+            ((self.m_event_old_url).inspect_value(path, offset, limit))
+                .map(|v| ("m_EventOldUrl".to_string(), v)),
+            ((self.m_test_config_url).inspect_value(path, offset, limit))
+                .map(|v| ("m_TestConfigUrl".to_string(), v)),
+            ((self.m_event_url).inspect_value(path, offset, limit))
+                .map(|v| ("m_EventUrl".to_string(), v)),
+            ((self.crash_reporting_settings).inspect_value(path, offset, limit))
+                .map(|v| ("CrashReportingSettings".to_string(), v)),
+            ((self.m_test_init_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_TestInitMode".to_string(), v)),
+            ((self.m_config_url).inspect_value(path, offset, limit))
+                .map(|v| ("m_ConfigUrl".to_string(), v)),
+            ((self.m_dashboard_url).inspect_value(path, offset, limit))
+                .map(|v| ("m_DashboardUrl".to_string(), v)),
+            ((self.unity_ads_settings).inspect_value(path, offset, limit))
+                .map(|v| ("UnityAdsSettings".to_string(), v)),
+            ((self.insights_settings).inspect_value(path, offset, limit))
+                .map(|v| ("InsightsSettings".to_string(), v)),
+            ((self.performance_reporting_settings).inspect_value(path, offset, limit))
+                .map(|v| ("PerformanceReportingSettings".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

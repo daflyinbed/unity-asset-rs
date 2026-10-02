@@ -26,6 +26,21 @@ impl crate::Parse for LibraryRepresentationObjectVariant {
     }
 }
 
+impl crate::ToValue for LibraryRepresentationObjectVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V3_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V3_5(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：LibraryRepresentationThumbnailClassIdVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum LibraryRepresentationThumbnailClassIdVariant {
@@ -52,6 +67,23 @@ impl crate::Parse for LibraryRepresentationThumbnailClassIdVariant {
     }
 }
 
+impl crate::ToValue for LibraryRepresentationThumbnailClassIdVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V4_0(v) => v.to_value(),
+            Self::V5_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V4_0(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_5(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：LibraryRepresentationFlagsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum LibraryRepresentationFlagsVariant {
@@ -71,6 +103,21 @@ impl crate::Parse for LibraryRepresentationFlagsVariant {
         } else {
             let v = rdr.read_u16()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for LibraryRepresentationFlagsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_5(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -130,5 +177,68 @@ impl crate::Parse for LibraryRepresentation {
             flags,
             local_identifier,
         })
+    }
+}
+
+impl crate::ToValue for LibraryRepresentation {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("name".to_string(), self.name.to_value())),
+            Some(("thumbnail".to_string(), self.thumbnail.to_value())),
+            crate::opt_field("object", &self.object),
+            crate::opt_field("guid", &self.guid),
+            Some((
+                "thumbnailClassID".to_string(),
+                self.thumbnail_class_id.to_value(),
+            )),
+            crate::opt_field("path", &self.path),
+            Some((
+                "scriptClassName".to_string(),
+                self.script_class_name.to_value(),
+            )),
+            crate::opt_field("flags", &self.flags),
+            crate::opt_field("localIdentifier", &self.local_identifier),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "name" => (self.name).inspect_value(path, offset, limit),
+                "thumbnail" => (self.thumbnail).inspect_value(path, offset, limit),
+                "object" => (self.object).inspect_value(path, offset, limit),
+                "guid" => (self.guid).inspect_value(path, offset, limit),
+                "thumbnailClassID" => (self.thumbnail_class_id).inspect_value(path, offset, limit),
+                "path" => (self.path).inspect_value(path, offset, limit),
+                "scriptClassName" => (self.script_class_name).inspect_value(path, offset, limit),
+                "flags" => (self.flags).inspect_value(path, offset, limit),
+                "localIdentifier" => (self.local_identifier).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.name).inspect_value(path, offset, limit)).map(|v| ("name".to_string(), v)),
+            ((self.thumbnail).inspect_value(path, offset, limit))
+                .map(|v| ("thumbnail".to_string(), v)),
+            ((self.object).inspect_value(path, offset, limit)).map(|v| ("object".to_string(), v)),
+            ((self.guid).inspect_value(path, offset, limit)).map(|v| ("guid".to_string(), v)),
+            ((self.thumbnail_class_id).inspect_value(path, offset, limit))
+                .map(|v| ("thumbnailClassID".to_string(), v)),
+            ((self.path).inspect_value(path, offset, limit)).map(|v| ("path".to_string(), v)),
+            ((self.script_class_name).inspect_value(path, offset, limit))
+                .map(|v| ("scriptClassName".to_string(), v)),
+            ((self.flags).inspect_value(path, offset, limit)).map(|v| ("flags".to_string(), v)),
+            ((self.local_identifier).inspect_value(path, offset, limit))
+                .map(|v| ("localIdentifier".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

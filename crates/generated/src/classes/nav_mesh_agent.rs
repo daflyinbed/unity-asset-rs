@@ -91,3 +91,113 @@ impl crate::Parse for NavMeshAgent {
         })
     }
 }
+
+impl crate::ToValue for NavMeshAgent {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_Enabled".to_string(), self.m_enabled.to_value())),
+            Some(("m_Radius".to_string(), self.m_radius.to_value())),
+            crate::opt_field("m_AgentTypeID", &self.m_agent_type_id),
+            Some(("m_Speed".to_string(), self.m_speed.to_value())),
+            Some(("m_Acceleration".to_string(), self.m_acceleration.to_value())),
+            Some((
+                "m_AngularSpeed".to_string(),
+                self.m_angular_speed.to_value(),
+            )),
+            crate::opt_field("avoidancePriority", &self.avoidance_priority),
+            Some((
+                "m_StoppingDistance".to_string(),
+                self.m_stopping_distance.to_value(),
+            )),
+            Some((
+                "m_AutoTraverseOffMeshLink".to_string(),
+                self.m_auto_traverse_off_mesh_link.to_value(),
+            )),
+            Some(("m_AutoRepath".to_string(), self.m_auto_repath.to_value())),
+            Some(("m_Height".to_string(), self.m_height.to_value())),
+            crate::opt_field("m_AutoBraking", &self.m_auto_braking),
+            Some(("m_BaseOffset".to_string(), self.m_base_offset.to_value())),
+            Some((
+                "m_WalkableMask".to_string(),
+                self.m_walkable_mask.to_value(),
+            )),
+            Some((
+                "m_ObstacleAvoidanceType".to_string(),
+                self.m_obstacle_avoidance_type.to_value(),
+            )),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "m_Radius" => (self.m_radius).inspect_value(path, offset, limit),
+                "m_AgentTypeID" => (self.m_agent_type_id).inspect_value(path, offset, limit),
+                "m_Speed" => (self.m_speed).inspect_value(path, offset, limit),
+                "m_Acceleration" => (self.m_acceleration).inspect_value(path, offset, limit),
+                "m_AngularSpeed" => (self.m_angular_speed).inspect_value(path, offset, limit),
+                "avoidancePriority" => (self.avoidance_priority).inspect_value(path, offset, limit),
+                "m_StoppingDistance" => {
+                    (self.m_stopping_distance).inspect_value(path, offset, limit)
+                }
+                "m_AutoTraverseOffMeshLink" => {
+                    (self.m_auto_traverse_off_mesh_link).inspect_value(path, offset, limit)
+                }
+                "m_AutoRepath" => (self.m_auto_repath).inspect_value(path, offset, limit),
+                "m_Height" => (self.m_height).inspect_value(path, offset, limit),
+                "m_AutoBraking" => (self.m_auto_braking).inspect_value(path, offset, limit),
+                "m_BaseOffset" => (self.m_base_offset).inspect_value(path, offset, limit),
+                "m_WalkableMask" => (self.m_walkable_mask).inspect_value(path, offset, limit),
+                "m_ObstacleAvoidanceType" => {
+                    (self.m_obstacle_avoidance_type).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.m_radius).inspect_value(path, offset, limit))
+                .map(|v| ("m_Radius".to_string(), v)),
+            ((self.m_agent_type_id).inspect_value(path, offset, limit))
+                .map(|v| ("m_AgentTypeID".to_string(), v)),
+            ((self.m_speed).inspect_value(path, offset, limit)).map(|v| ("m_Speed".to_string(), v)),
+            ((self.m_acceleration).inspect_value(path, offset, limit))
+                .map(|v| ("m_Acceleration".to_string(), v)),
+            ((self.m_angular_speed).inspect_value(path, offset, limit))
+                .map(|v| ("m_AngularSpeed".to_string(), v)),
+            ((self.avoidance_priority).inspect_value(path, offset, limit))
+                .map(|v| ("avoidancePriority".to_string(), v)),
+            ((self.m_stopping_distance).inspect_value(path, offset, limit))
+                .map(|v| ("m_StoppingDistance".to_string(), v)),
+            ((self.m_auto_traverse_off_mesh_link).inspect_value(path, offset, limit))
+                .map(|v| ("m_AutoTraverseOffMeshLink".to_string(), v)),
+            ((self.m_auto_repath).inspect_value(path, offset, limit))
+                .map(|v| ("m_AutoRepath".to_string(), v)),
+            ((self.m_height).inspect_value(path, offset, limit))
+                .map(|v| ("m_Height".to_string(), v)),
+            ((self.m_auto_braking).inspect_value(path, offset, limit))
+                .map(|v| ("m_AutoBraking".to_string(), v)),
+            ((self.m_base_offset).inspect_value(path, offset, limit))
+                .map(|v| ("m_BaseOffset".to_string(), v)),
+            ((self.m_walkable_mask).inspect_value(path, offset, limit))
+                .map(|v| ("m_WalkableMask".to_string(), v)),
+            ((self.m_obstacle_avoidance_type).inspect_value(path, offset, limit))
+                .map(|v| ("m_ObstacleAvoidanceType".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

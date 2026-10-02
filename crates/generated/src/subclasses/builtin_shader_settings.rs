@@ -19,3 +19,36 @@ impl crate::Parse for BuiltinShaderSettings {
         Ok(BuiltinShaderSettings { m_mode, m_shader })
     }
 }
+
+impl crate::ToValue for BuiltinShaderSettings {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Mode".to_string(), self.m_mode.to_value())),
+            Some(("m_Shader".to_string(), self.m_shader.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Mode" => (self.m_mode).inspect_value(path, offset, limit),
+                "m_Shader" => (self.m_shader).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_mode).inspect_value(path, offset, limit)).map(|v| ("m_Mode".to_string(), v)),
+            ((self.m_shader).inspect_value(path, offset, limit))
+                .map(|v| ("m_Shader".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

@@ -53,6 +53,21 @@ impl crate::Parse for SpriteMetaDataMOutlineVariant {
         }
     }
 }
+
+impl crate::ToValue for SpriteMetaDataMOutlineVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct SpriteMetaData {
     pub m_name: String,
@@ -349,5 +364,92 @@ impl crate::Parse for SpriteMetaData {
             m_edges,
             m_weights,
         })
+    }
+}
+
+impl crate::ToValue for SpriteMetaData {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some(("m_Rect".to_string(), self.m_rect.to_value())),
+            Some(("m_Alignment".to_string(), self.m_alignment.to_value())),
+            Some(("m_Pivot".to_string(), self.m_pivot.to_value())),
+            crate::opt_field("m_Border", &self.m_border),
+            crate::opt_field("m_Outline", &self.m_outline),
+            crate::opt_field("m_CustomData", &self.m_custom_data),
+            crate::opt_field("m_TessellationDetail", &self.m_tessellation_detail),
+            crate::opt_field("m_PhysicsShape", &self.m_physics_shape),
+            crate::opt_field("m_Bones", &self.m_bones),
+            crate::opt_field("m_SpriteID", &self.m_sprite_id),
+            crate::opt_field("m_Vertices", &self.m_vertices),
+            crate::opt_field("m_InternalID", &self.m_internal_id),
+            crate::opt_field("m_Indices", &self.m_indices),
+            crate::opt_field("m_Edges", &self.m_edges),
+            crate::opt_field("m_Weights", &self.m_weights),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_Rect" => (self.m_rect).inspect_value(path, offset, limit),
+                "m_Alignment" => (self.m_alignment).inspect_value(path, offset, limit),
+                "m_Pivot" => (self.m_pivot).inspect_value(path, offset, limit),
+                "m_Border" => (self.m_border).inspect_value(path, offset, limit),
+                "m_Outline" => (self.m_outline).inspect_value(path, offset, limit),
+                "m_CustomData" => (self.m_custom_data).inspect_value(path, offset, limit),
+                "m_TessellationDetail" => {
+                    (self.m_tessellation_detail).inspect_value(path, offset, limit)
+                }
+                "m_PhysicsShape" => (self.m_physics_shape).inspect_value(path, offset, limit),
+                "m_Bones" => (self.m_bones).inspect_value(path, offset, limit),
+                "m_SpriteID" => (self.m_sprite_id).inspect_value(path, offset, limit),
+                "m_Vertices" => (self.m_vertices).inspect_value(path, offset, limit),
+                "m_InternalID" => (self.m_internal_id).inspect_value(path, offset, limit),
+                "m_Indices" => (self.m_indices).inspect_value(path, offset, limit),
+                "m_Edges" => (self.m_edges).inspect_value(path, offset, limit),
+                "m_Weights" => (self.m_weights).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_rect).inspect_value(path, offset, limit)).map(|v| ("m_Rect".to_string(), v)),
+            ((self.m_alignment).inspect_value(path, offset, limit))
+                .map(|v| ("m_Alignment".to_string(), v)),
+            ((self.m_pivot).inspect_value(path, offset, limit)).map(|v| ("m_Pivot".to_string(), v)),
+            ((self.m_border).inspect_value(path, offset, limit))
+                .map(|v| ("m_Border".to_string(), v)),
+            ((self.m_outline).inspect_value(path, offset, limit))
+                .map(|v| ("m_Outline".to_string(), v)),
+            ((self.m_custom_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_CustomData".to_string(), v)),
+            ((self.m_tessellation_detail).inspect_value(path, offset, limit))
+                .map(|v| ("m_TessellationDetail".to_string(), v)),
+            ((self.m_physics_shape).inspect_value(path, offset, limit))
+                .map(|v| ("m_PhysicsShape".to_string(), v)),
+            ((self.m_bones).inspect_value(path, offset, limit)).map(|v| ("m_Bones".to_string(), v)),
+            ((self.m_sprite_id).inspect_value(path, offset, limit))
+                .map(|v| ("m_SpriteID".to_string(), v)),
+            ((self.m_vertices).inspect_value(path, offset, limit))
+                .map(|v| ("m_Vertices".to_string(), v)),
+            ((self.m_internal_id).inspect_value(path, offset, limit))
+                .map(|v| ("m_InternalID".to_string(), v)),
+            ((self.m_indices).inspect_value(path, offset, limit))
+                .map(|v| ("m_Indices".to_string(), v)),
+            ((self.m_edges).inspect_value(path, offset, limit)).map(|v| ("m_Edges".to_string(), v)),
+            ((self.m_weights).inspect_value(path, offset, limit))
+                .map(|v| ("m_Weights".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

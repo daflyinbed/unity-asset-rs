@@ -90,3 +90,82 @@ impl crate::Parse for TriggerModule {
         })
     }
 }
+
+impl crate::ToValue for TriggerModule {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("enabled".to_string(), self.enabled.to_value())),
+            crate::opt_field("collisionShape0", &self.collision_shape0),
+            Some(("inside".to_string(), self.inside.to_value())),
+            crate::opt_field("collisionShape1", &self.collision_shape1),
+            Some(("outside".to_string(), self.outside.to_value())),
+            crate::opt_field("collisionShape2", &self.collision_shape2),
+            Some(("enter".to_string(), self.enter.to_value())),
+            crate::opt_field("collisionShape3", &self.collision_shape3),
+            Some(("exit".to_string(), self.exit.to_value())),
+            crate::opt_field("collisionShape4", &self.collision_shape4),
+            crate::opt_field("colliderQueryMode", &self.collider_query_mode),
+            crate::opt_field("collisionShape5", &self.collision_shape5),
+            Some(("radiusScale".to_string(), self.radius_scale.to_value())),
+            crate::opt_field("primitives", &self.primitives),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "enabled" => (self.enabled).inspect_value(path, offset, limit),
+                "collisionShape0" => (self.collision_shape0).inspect_value(path, offset, limit),
+                "inside" => (self.inside).inspect_value(path, offset, limit),
+                "collisionShape1" => (self.collision_shape1).inspect_value(path, offset, limit),
+                "outside" => (self.outside).inspect_value(path, offset, limit),
+                "collisionShape2" => (self.collision_shape2).inspect_value(path, offset, limit),
+                "enter" => (self.enter).inspect_value(path, offset, limit),
+                "collisionShape3" => (self.collision_shape3).inspect_value(path, offset, limit),
+                "exit" => (self.exit).inspect_value(path, offset, limit),
+                "collisionShape4" => (self.collision_shape4).inspect_value(path, offset, limit),
+                "colliderQueryMode" => {
+                    (self.collider_query_mode).inspect_value(path, offset, limit)
+                }
+                "collisionShape5" => (self.collision_shape5).inspect_value(path, offset, limit),
+                "radiusScale" => (self.radius_scale).inspect_value(path, offset, limit),
+                "primitives" => (self.primitives).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.enabled).inspect_value(path, offset, limit)).map(|v| ("enabled".to_string(), v)),
+            ((self.collision_shape0).inspect_value(path, offset, limit))
+                .map(|v| ("collisionShape0".to_string(), v)),
+            ((self.inside).inspect_value(path, offset, limit)).map(|v| ("inside".to_string(), v)),
+            ((self.collision_shape1).inspect_value(path, offset, limit))
+                .map(|v| ("collisionShape1".to_string(), v)),
+            ((self.outside).inspect_value(path, offset, limit)).map(|v| ("outside".to_string(), v)),
+            ((self.collision_shape2).inspect_value(path, offset, limit))
+                .map(|v| ("collisionShape2".to_string(), v)),
+            ((self.enter).inspect_value(path, offset, limit)).map(|v| ("enter".to_string(), v)),
+            ((self.collision_shape3).inspect_value(path, offset, limit))
+                .map(|v| ("collisionShape3".to_string(), v)),
+            ((self.exit).inspect_value(path, offset, limit)).map(|v| ("exit".to_string(), v)),
+            ((self.collision_shape4).inspect_value(path, offset, limit))
+                .map(|v| ("collisionShape4".to_string(), v)),
+            ((self.collider_query_mode).inspect_value(path, offset, limit))
+                .map(|v| ("colliderQueryMode".to_string(), v)),
+            ((self.collision_shape5).inspect_value(path, offset, limit))
+                .map(|v| ("collisionShape5".to_string(), v)),
+            ((self.radius_scale).inspect_value(path, offset, limit))
+                .map(|v| ("radiusScale".to_string(), v)),
+            ((self.primitives).inspect_value(path, offset, limit))
+                .map(|v| ("primitives".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

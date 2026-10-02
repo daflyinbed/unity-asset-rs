@@ -40,6 +40,21 @@ impl crate::Parse for LightProbesMBakedCoefficientsVariant {
     }
 }
 
+impl crate::ToValue for LightProbesMBakedCoefficientsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：LightProbesMBakedLightOcclusionVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum LightProbesMBakedLightOcclusionVariant {
@@ -69,6 +84,21 @@ impl crate::Parse for LightProbesMBakedLightOcclusionVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for LightProbesMBakedLightOcclusionVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -160,5 +190,69 @@ impl crate::Parse for LightProbes {
             hull_rays,
             m_has_been_edited,
         })
+    }
+}
+
+impl crate::ToValue for LightProbes {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            crate::opt_field("bakedPositions", &self.baked_positions),
+            crate::opt_field("m_Data", &self.m_data),
+            crate::opt_field("bakedCoefficients", &self.baked_coefficients),
+            crate::opt_field("m_BakedCoefficients", &self.m_baked_coefficients),
+            crate::opt_field("tetrahedra", &self.tetrahedra),
+            crate::opt_field("m_BakedLightOcclusion", &self.m_baked_light_occlusion),
+            crate::opt_field("hullRays", &self.hull_rays),
+            crate::opt_field("m_HasBeenEdited", &self.m_has_been_edited),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "bakedPositions" => (self.baked_positions).inspect_value(path, offset, limit),
+                "m_Data" => (self.m_data).inspect_value(path, offset, limit),
+                "bakedCoefficients" => (self.baked_coefficients).inspect_value(path, offset, limit),
+                "m_BakedCoefficients" => {
+                    (self.m_baked_coefficients).inspect_value(path, offset, limit)
+                }
+                "tetrahedra" => (self.tetrahedra).inspect_value(path, offset, limit),
+                "m_BakedLightOcclusion" => {
+                    (self.m_baked_light_occlusion).inspect_value(path, offset, limit)
+                }
+                "hullRays" => (self.hull_rays).inspect_value(path, offset, limit),
+                "m_HasBeenEdited" => (self.m_has_been_edited).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.baked_positions).inspect_value(path, offset, limit))
+                .map(|v| ("bakedPositions".to_string(), v)),
+            ((self.m_data).inspect_value(path, offset, limit)).map(|v| ("m_Data".to_string(), v)),
+            ((self.baked_coefficients).inspect_value(path, offset, limit))
+                .map(|v| ("bakedCoefficients".to_string(), v)),
+            ((self.m_baked_coefficients).inspect_value(path, offset, limit))
+                .map(|v| ("m_BakedCoefficients".to_string(), v)),
+            ((self.tetrahedra).inspect_value(path, offset, limit))
+                .map(|v| ("tetrahedra".to_string(), v)),
+            ((self.m_baked_light_occlusion).inspect_value(path, offset, limit))
+                .map(|v| ("m_BakedLightOcclusion".to_string(), v)),
+            ((self.hull_rays).inspect_value(path, offset, limit))
+                .map(|v| ("hullRays".to_string(), v)),
+            ((self.m_has_been_edited).inspect_value(path, offset, limit))
+                .map(|v| ("m_HasBeenEdited".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

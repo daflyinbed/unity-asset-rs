@@ -48,3 +48,53 @@ impl crate::Parse for SkeletonBone {
         })
     }
 }
+
+impl crate::ToValue for SkeletonBone {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some(("m_Position".to_string(), self.m_position.to_value())),
+            crate::opt_field("m_ParentName", &self.m_parent_name),
+            Some(("m_Rotation".to_string(), self.m_rotation.to_value())),
+            Some(("m_Scale".to_string(), self.m_scale.to_value())),
+            crate::opt_field("m_TransformModified", &self.m_transform_modified),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_Position" => (self.m_position).inspect_value(path, offset, limit),
+                "m_ParentName" => (self.m_parent_name).inspect_value(path, offset, limit),
+                "m_Rotation" => (self.m_rotation).inspect_value(path, offset, limit),
+                "m_Scale" => (self.m_scale).inspect_value(path, offset, limit),
+                "m_TransformModified" => {
+                    (self.m_transform_modified).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_position).inspect_value(path, offset, limit))
+                .map(|v| ("m_Position".to_string(), v)),
+            ((self.m_parent_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_ParentName".to_string(), v)),
+            ((self.m_rotation).inspect_value(path, offset, limit))
+                .map(|v| ("m_Rotation".to_string(), v)),
+            ((self.m_scale).inspect_value(path, offset, limit)).map(|v| ("m_Scale".to_string(), v)),
+            ((self.m_transform_modified).inspect_value(path, offset, limit))
+                .map(|v| ("m_TransformModified".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

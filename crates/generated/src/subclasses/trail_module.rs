@@ -27,6 +27,21 @@ impl crate::Parse for TrailModuleInheritParticleColorVariant {
     }
 }
 
+impl crate::ToValue for TrailModuleInheritParticleColorVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：TrailModuleGenerateLightingDataVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TrailModuleGenerateLightingDataVariant {
@@ -50,6 +65,21 @@ impl crate::Parse for TrailModuleGenerateLightingDataVariant {
     }
 }
 
+impl crate::ToValue for TrailModuleGenerateLightingDataVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_3(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：TrailModuleSplitSubEmitterRibbonsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TrailModuleSplitSubEmitterRibbonsVariant {
@@ -69,6 +99,21 @@ impl crate::Parse for TrailModuleSplitSubEmitterRibbonsVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for TrailModuleSplitSubEmitterRibbonsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2018_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2018_3(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -187,5 +232,149 @@ impl crate::Parse for TrailModule {
             split_sub_emitter_ribbons,
             attach_ribbons_to_transform,
         })
+    }
+}
+
+impl crate::ToValue for TrailModule {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("enabled".to_string(), self.enabled.to_value())),
+            Some(("ratio".to_string(), self.ratio.to_value())),
+            crate::opt_field("mode", &self.mode),
+            Some(("lifetime".to_string(), self.lifetime.to_value())),
+            Some((
+                "minVertexDistance".to_string(),
+                self.min_vertex_distance.to_value(),
+            )),
+            Some(("textureMode".to_string(), self.texture_mode.to_value())),
+            Some(("worldSpace".to_string(), self.world_space.to_value())),
+            Some((
+                "dieWithParticles".to_string(),
+                self.die_with_particles.to_value(),
+            )),
+            crate::opt_field("ribbonCount", &self.ribbon_count),
+            crate::opt_field("textureScale", &self.texture_scale),
+            Some((
+                "sizeAffectsWidth".to_string(),
+                self.size_affects_width.to_value(),
+            )),
+            crate::opt_field("shadowBias", &self.shadow_bias),
+            Some((
+                "sizeAffectsLifetime".to_string(),
+                self.size_affects_lifetime.to_value(),
+            )),
+            Some((
+                "inheritParticleColor".to_string(),
+                self.inherit_particle_color.to_value(),
+            )),
+            Some((
+                "colorOverLifetime".to_string(),
+                self.color_over_lifetime.to_value(),
+            )),
+            crate::opt_field("generateLightingData", &self.generate_lighting_data),
+            Some((
+                "widthOverTrail".to_string(),
+                self.width_over_trail.to_value(),
+            )),
+            Some((
+                "colorOverTrail".to_string(),
+                self.color_over_trail.to_value(),
+            )),
+            crate::opt_field("splitSubEmitterRibbons", &self.split_sub_emitter_ribbons),
+            crate::opt_field(
+                "attachRibbonsToTransform",
+                &self.attach_ribbons_to_transform,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "enabled" => (self.enabled).inspect_value(path, offset, limit),
+                "ratio" => (self.ratio).inspect_value(path, offset, limit),
+                "mode" => (self.mode).inspect_value(path, offset, limit),
+                "lifetime" => (self.lifetime).inspect_value(path, offset, limit),
+                "minVertexDistance" => {
+                    (self.min_vertex_distance).inspect_value(path, offset, limit)
+                }
+                "textureMode" => (self.texture_mode).inspect_value(path, offset, limit),
+                "worldSpace" => (self.world_space).inspect_value(path, offset, limit),
+                "dieWithParticles" => (self.die_with_particles).inspect_value(path, offset, limit),
+                "ribbonCount" => (self.ribbon_count).inspect_value(path, offset, limit),
+                "textureScale" => (self.texture_scale).inspect_value(path, offset, limit),
+                "sizeAffectsWidth" => (self.size_affects_width).inspect_value(path, offset, limit),
+                "shadowBias" => (self.shadow_bias).inspect_value(path, offset, limit),
+                "sizeAffectsLifetime" => {
+                    (self.size_affects_lifetime).inspect_value(path, offset, limit)
+                }
+                "inheritParticleColor" => {
+                    (self.inherit_particle_color).inspect_value(path, offset, limit)
+                }
+                "colorOverLifetime" => {
+                    (self.color_over_lifetime).inspect_value(path, offset, limit)
+                }
+                "generateLightingData" => {
+                    (self.generate_lighting_data).inspect_value(path, offset, limit)
+                }
+                "widthOverTrail" => (self.width_over_trail).inspect_value(path, offset, limit),
+                "colorOverTrail" => (self.color_over_trail).inspect_value(path, offset, limit),
+                "splitSubEmitterRibbons" => {
+                    (self.split_sub_emitter_ribbons).inspect_value(path, offset, limit)
+                }
+                "attachRibbonsToTransform" => {
+                    (self.attach_ribbons_to_transform).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.enabled).inspect_value(path, offset, limit)).map(|v| ("enabled".to_string(), v)),
+            ((self.ratio).inspect_value(path, offset, limit)).map(|v| ("ratio".to_string(), v)),
+            ((self.mode).inspect_value(path, offset, limit)).map(|v| ("mode".to_string(), v)),
+            ((self.lifetime).inspect_value(path, offset, limit))
+                .map(|v| ("lifetime".to_string(), v)),
+            ((self.min_vertex_distance).inspect_value(path, offset, limit))
+                .map(|v| ("minVertexDistance".to_string(), v)),
+            ((self.texture_mode).inspect_value(path, offset, limit))
+                .map(|v| ("textureMode".to_string(), v)),
+            ((self.world_space).inspect_value(path, offset, limit))
+                .map(|v| ("worldSpace".to_string(), v)),
+            ((self.die_with_particles).inspect_value(path, offset, limit))
+                .map(|v| ("dieWithParticles".to_string(), v)),
+            ((self.ribbon_count).inspect_value(path, offset, limit))
+                .map(|v| ("ribbonCount".to_string(), v)),
+            ((self.texture_scale).inspect_value(path, offset, limit))
+                .map(|v| ("textureScale".to_string(), v)),
+            ((self.size_affects_width).inspect_value(path, offset, limit))
+                .map(|v| ("sizeAffectsWidth".to_string(), v)),
+            ((self.shadow_bias).inspect_value(path, offset, limit))
+                .map(|v| ("shadowBias".to_string(), v)),
+            ((self.size_affects_lifetime).inspect_value(path, offset, limit))
+                .map(|v| ("sizeAffectsLifetime".to_string(), v)),
+            ((self.inherit_particle_color).inspect_value(path, offset, limit))
+                .map(|v| ("inheritParticleColor".to_string(), v)),
+            ((self.color_over_lifetime).inspect_value(path, offset, limit))
+                .map(|v| ("colorOverLifetime".to_string(), v)),
+            ((self.generate_lighting_data).inspect_value(path, offset, limit))
+                .map(|v| ("generateLightingData".to_string(), v)),
+            ((self.width_over_trail).inspect_value(path, offset, limit))
+                .map(|v| ("widthOverTrail".to_string(), v)),
+            ((self.color_over_trail).inspect_value(path, offset, limit))
+                .map(|v| ("colorOverTrail".to_string(), v)),
+            ((self.split_sub_emitter_ribbons).inspect_value(path, offset, limit))
+                .map(|v| ("splitSubEmitterRibbons".to_string(), v)),
+            ((self.attach_ribbons_to_transform).inspect_value(path, offset, limit))
+                .map(|v| ("attachRibbonsToTransform".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

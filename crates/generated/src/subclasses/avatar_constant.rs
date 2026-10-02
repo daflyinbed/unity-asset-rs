@@ -111,3 +111,120 @@ impl crate::Parse for AvatarConstant {
         })
     }
 }
+
+impl crate::ToValue for AvatarConstant {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            crate::opt_field("m_Skeleton", &self.m_skeleton),
+            crate::opt_field("m_AvatarSkeleton", &self.m_avatar_skeleton),
+            crate::opt_field("m_SkeletonPose", &self.m_skeleton_pose),
+            crate::opt_field("m_AvatarSkeletonPose", &self.m_avatar_skeleton_pose),
+            Some(("m_Human".to_string(), self.m_human.to_value())),
+            crate::opt_field("m_DefaultPose", &self.m_default_pose),
+            Some((
+                "m_HumanSkeletonIndexArray".to_string(),
+                self.m_human_skeleton_index_array.to_value(),
+            )),
+            crate::opt_field("m_SkeletonNameIDArray", &self.m_skeleton_name_id_array),
+            Some((
+                "m_RootMotionBoneIndex".to_string(),
+                self.m_root_motion_bone_index.to_value(),
+            )),
+            Some((
+                "m_RootMotionBoneX".to_string(),
+                self.m_root_motion_bone_x.to_value(),
+            )),
+            crate::opt_field(
+                "m_HumanSkeletonReverseIndexArray",
+                &self.m_human_skeleton_reverse_index_array,
+            ),
+            crate::opt_field("m_RootMotionSkeleton", &self.m_root_motion_skeleton),
+            crate::opt_field(
+                "m_RootMotionSkeletonPose",
+                &self.m_root_motion_skeleton_pose,
+            ),
+            crate::opt_field(
+                "m_RootMotionSkeletonIndexArray",
+                &self.m_root_motion_skeleton_index_array,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Skeleton" => (self.m_skeleton).inspect_value(path, offset, limit),
+                "m_AvatarSkeleton" => (self.m_avatar_skeleton).inspect_value(path, offset, limit),
+                "m_SkeletonPose" => (self.m_skeleton_pose).inspect_value(path, offset, limit),
+                "m_AvatarSkeletonPose" => {
+                    (self.m_avatar_skeleton_pose).inspect_value(path, offset, limit)
+                }
+                "m_Human" => (self.m_human).inspect_value(path, offset, limit),
+                "m_DefaultPose" => (self.m_default_pose).inspect_value(path, offset, limit),
+                "m_HumanSkeletonIndexArray" => {
+                    (self.m_human_skeleton_index_array).inspect_value(path, offset, limit)
+                }
+                "m_SkeletonNameIDArray" => {
+                    (self.m_skeleton_name_id_array).inspect_value(path, offset, limit)
+                }
+                "m_RootMotionBoneIndex" => {
+                    (self.m_root_motion_bone_index).inspect_value(path, offset, limit)
+                }
+                "m_RootMotionBoneX" => {
+                    (self.m_root_motion_bone_x).inspect_value(path, offset, limit)
+                }
+                "m_HumanSkeletonReverseIndexArray" => {
+                    (self.m_human_skeleton_reverse_index_array).inspect_value(path, offset, limit)
+                }
+                "m_RootMotionSkeleton" => {
+                    (self.m_root_motion_skeleton).inspect_value(path, offset, limit)
+                }
+                "m_RootMotionSkeletonPose" => {
+                    (self.m_root_motion_skeleton_pose).inspect_value(path, offset, limit)
+                }
+                "m_RootMotionSkeletonIndexArray" => {
+                    (self.m_root_motion_skeleton_index_array).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_skeleton).inspect_value(path, offset, limit))
+                .map(|v| ("m_Skeleton".to_string(), v)),
+            ((self.m_avatar_skeleton).inspect_value(path, offset, limit))
+                .map(|v| ("m_AvatarSkeleton".to_string(), v)),
+            ((self.m_skeleton_pose).inspect_value(path, offset, limit))
+                .map(|v| ("m_SkeletonPose".to_string(), v)),
+            ((self.m_avatar_skeleton_pose).inspect_value(path, offset, limit))
+                .map(|v| ("m_AvatarSkeletonPose".to_string(), v)),
+            ((self.m_human).inspect_value(path, offset, limit)).map(|v| ("m_Human".to_string(), v)),
+            ((self.m_default_pose).inspect_value(path, offset, limit))
+                .map(|v| ("m_DefaultPose".to_string(), v)),
+            ((self.m_human_skeleton_index_array).inspect_value(path, offset, limit))
+                .map(|v| ("m_HumanSkeletonIndexArray".to_string(), v)),
+            ((self.m_skeleton_name_id_array).inspect_value(path, offset, limit))
+                .map(|v| ("m_SkeletonNameIDArray".to_string(), v)),
+            ((self.m_root_motion_bone_index).inspect_value(path, offset, limit))
+                .map(|v| ("m_RootMotionBoneIndex".to_string(), v)),
+            ((self.m_root_motion_bone_x).inspect_value(path, offset, limit))
+                .map(|v| ("m_RootMotionBoneX".to_string(), v)),
+            ((self.m_human_skeleton_reverse_index_array).inspect_value(path, offset, limit))
+                .map(|v| ("m_HumanSkeletonReverseIndexArray".to_string(), v)),
+            ((self.m_root_motion_skeleton).inspect_value(path, offset, limit))
+                .map(|v| ("m_RootMotionSkeleton".to_string(), v)),
+            ((self.m_root_motion_skeleton_pose).inspect_value(path, offset, limit))
+                .map(|v| ("m_RootMotionSkeletonPose".to_string(), v)),
+            ((self.m_root_motion_skeleton_index_array).inspect_value(path, offset, limit))
+                .map(|v| ("m_RootMotionSkeletonIndexArray".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

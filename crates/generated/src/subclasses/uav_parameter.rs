@@ -39,3 +39,48 @@ impl crate::Parse for UavParameter {
         })
     }
 }
+
+impl crate::ToValue for UavParameter {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_NameIndex".to_string(), self.m_name_index.to_value())),
+            crate::opt_field("m_Index", &self.m_index),
+            crate::opt_field("m_Binding", &self.m_binding),
+            crate::opt_field("m_OriginalIndex", &self.m_original_index),
+            crate::opt_field("m_OriginalBinding", &self.m_original_binding),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_NameIndex" => (self.m_name_index).inspect_value(path, offset, limit),
+                "m_Index" => (self.m_index).inspect_value(path, offset, limit),
+                "m_Binding" => (self.m_binding).inspect_value(path, offset, limit),
+                "m_OriginalIndex" => (self.m_original_index).inspect_value(path, offset, limit),
+                "m_OriginalBinding" => (self.m_original_binding).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name_index).inspect_value(path, offset, limit))
+                .map(|v| ("m_NameIndex".to_string(), v)),
+            ((self.m_index).inspect_value(path, offset, limit)).map(|v| ("m_Index".to_string(), v)),
+            ((self.m_binding).inspect_value(path, offset, limit))
+                .map(|v| ("m_Binding".to_string(), v)),
+            ((self.m_original_index).inspect_value(path, offset, limit))
+                .map(|v| ("m_OriginalIndex".to_string(), v)),
+            ((self.m_original_binding).inspect_value(path, offset, limit))
+                .map(|v| ("m_OriginalBinding".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

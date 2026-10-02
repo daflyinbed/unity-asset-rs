@@ -71,3 +71,55 @@ impl crate::Parse for VfxgpuBufferDesc {
         })
     }
 }
+
+impl crate::ToValue for VfxgpuBufferDesc {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            crate::opt_field("type", &self.r#type),
+            crate::opt_field("target", &self.target),
+            Some(("size".to_string(), self.size.to_value())),
+            Some(("layout".to_string(), self.layout.to_value())),
+            Some(("capacity".to_string(), self.capacity.to_value())),
+            Some(("stride".to_string(), self.stride.to_value())),
+            crate::opt_field("mode", &self.mode),
+            crate::opt_field("debugName", &self.debug_name),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "type" => (self.r#type).inspect_value(path, offset, limit),
+                "target" => (self.target).inspect_value(path, offset, limit),
+                "size" => (self.size).inspect_value(path, offset, limit),
+                "layout" => (self.layout).inspect_value(path, offset, limit),
+                "capacity" => (self.capacity).inspect_value(path, offset, limit),
+                "stride" => (self.stride).inspect_value(path, offset, limit),
+                "mode" => (self.mode).inspect_value(path, offset, limit),
+                "debugName" => (self.debug_name).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.r#type).inspect_value(path, offset, limit)).map(|v| ("type".to_string(), v)),
+            ((self.target).inspect_value(path, offset, limit)).map(|v| ("target".to_string(), v)),
+            ((self.size).inspect_value(path, offset, limit)).map(|v| ("size".to_string(), v)),
+            ((self.layout).inspect_value(path, offset, limit)).map(|v| ("layout".to_string(), v)),
+            ((self.capacity).inspect_value(path, offset, limit))
+                .map(|v| ("capacity".to_string(), v)),
+            ((self.stride).inspect_value(path, offset, limit)).map(|v| ("stride".to_string(), v)),
+            ((self.mode).inspect_value(path, offset, limit)).map(|v| ("mode".to_string(), v)),
+            ((self.debug_name).inspect_value(path, offset, limit))
+                .map(|v| ("debugName".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

@@ -29,3 +29,39 @@ impl crate::Parse for DefaultPresetList {
         })
     }
 }
+
+impl crate::ToValue for DefaultPresetList {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("type".to_string(), self.r#type.to_value())),
+            Some((
+                "defaultPresets".to_string(),
+                self.default_presets.to_value(),
+            )),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "type" => (self.r#type).inspect_value(path, offset, limit),
+                "defaultPresets" => (self.default_presets).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.r#type).inspect_value(path, offset, limit)).map(|v| ("type".to_string(), v)),
+            ((self.default_presets).inspect_value(path, offset, limit))
+                .map(|v| ("defaultPresets".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

@@ -33,6 +33,23 @@ impl crate::Parse for TrailRendererMEnabledVariant {
     }
 }
 
+impl crate::ToValue for TrailRendererMEnabledVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_0(v) => v.to_value(),
+            Self::V5_4(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_0(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_4(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：TrailRendererMCastShadowsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TrailRendererMCastShadowsVariant {
@@ -51,6 +68,21 @@ impl crate::Parse for TrailRendererMCastShadowsVariant {
         } else {
             let v = rdr.read_bool()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for TrailRendererMCastShadowsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_0(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_0(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -82,6 +114,23 @@ impl crate::Parse for TrailRendererMReceiveShadowsVariant {
     }
 }
 
+impl crate::ToValue for TrailRendererMReceiveShadowsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_0(v) => v.to_value(),
+            Self::V5_4(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_0(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_4(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：TrailRendererMLightmapIndexVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TrailRendererMLightmapIndexVariant {
@@ -100,6 +149,21 @@ impl crate::Parse for TrailRendererMLightmapIndexVariant {
         } else {
             let v = rdr.read_u8()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for TrailRendererMLightmapIndexVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_0(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_0(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -137,6 +201,21 @@ impl crate::Parse for TrailRendererMMaterialsVariant {
     }
 }
 
+impl crate::ToValue for TrailRendererMMaterialsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：TrailRendererMReflectionProbeUsageVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TrailRendererMReflectionProbeUsageVariant {
@@ -164,6 +243,23 @@ impl crate::Parse for TrailRendererMReflectionProbeUsageVariant {
     }
 }
 
+impl crate::ToValue for TrailRendererMReflectionProbeUsageVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_4(v) => v.to_value(),
+            Self::V2019_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_4(v) => (v).inspect_value(path, offset, limit),
+            Self::V2019_3(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：TrailRendererMRayTracingModeVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TrailRendererMRayTracingModeVariant {
@@ -183,6 +279,21 @@ impl crate::Parse for TrailRendererMRayTracingModeVariant {
             let v = rdr.read_u8()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for TrailRendererMRayTracingModeVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2020_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2020_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -210,6 +321,21 @@ impl crate::Parse for TrailRendererMRayTraceProceduralVariant {
     }
 }
 
+impl crate::ToValue for TrailRendererMRayTraceProceduralVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2023_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2023_2(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：TrailRendererMLightProbeAnchorVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TrailRendererMLightProbeAnchorVariant {
@@ -233,6 +359,21 @@ impl crate::Parse for TrailRendererMLightProbeAnchorVariant {
     }
 }
 
+impl crate::ToValue for TrailRendererMLightProbeAnchorVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V4_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V4_3(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：TrailRendererMSortingLayerIdVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TrailRendererMSortingLayerIdVariant {
@@ -251,6 +392,21 @@ impl crate::Parse for TrailRendererMSortingLayerIdVariant {
         } else {
             let v = rdr.read_u32()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for TrailRendererMSortingLayerIdVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_0(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_0(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -278,6 +434,21 @@ impl crate::Parse for TrailRendererMSortingOrderVariant {
     }
 }
 
+impl crate::ToValue for TrailRendererMSortingOrderVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V4_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V4_5(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：TrailRendererMRayTracingAccelStructBuildFlagsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TrailRendererMRayTracingAccelStructBuildFlagsVariant {
@@ -297,6 +468,21 @@ impl crate::Parse for TrailRendererMRayTracingAccelStructBuildFlagsVariant {
             let v = rdr.read_u8()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for TrailRendererMRayTracingAccelStructBuildFlagsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2023_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2023_3(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -324,6 +510,21 @@ impl crate::Parse for TrailRendererMProbeAnchorVariant {
     }
 }
 
+impl crate::ToValue for TrailRendererMProbeAnchorVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_4(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_4(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：TrailRendererMMaskInteractionVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TrailRendererMMaskInteractionVariant {
@@ -343,6 +544,21 @@ impl crate::Parse for TrailRendererMMaskInteractionVariant {
         } else {
             let v = rdr.read_i32()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for TrailRendererMMaskInteractionVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V6000_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_3(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -700,5 +916,268 @@ impl crate::Parse for TrailRenderer {
             m_mask_interaction,
             m_apply_active_color_space,
         })
+    }
+}
+
+impl crate::ToValue for TrailRenderer {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_Enabled".to_string(), self.m_enabled.to_value())),
+            Some(("m_CastShadows".to_string(), self.m_cast_shadows.to_value())),
+            Some((
+                "m_ReceiveShadows".to_string(),
+                self.m_receive_shadows.to_value(),
+            )),
+            Some((
+                "m_LightmapIndex".to_string(),
+                self.m_lightmap_index.to_value(),
+            )),
+            crate::opt_field("m_MotionVectors", &self.m_motion_vectors),
+            crate::opt_field("m_DynamicOccludee", &self.m_dynamic_occludee),
+            Some((
+                "m_LightmapTilingOffset".to_string(),
+                self.m_lightmap_tiling_offset.to_value(),
+            )),
+            crate::opt_field("m_LightmapIndexDynamic", &self.m_lightmap_index_dynamic),
+            crate::opt_field("m_LightProbeUsage", &self.m_light_probe_usage),
+            crate::opt_field("m_StaticShadowCaster", &self.m_static_shadow_caster),
+            Some(("m_Materials".to_string(), self.m_materials.to_value())),
+            crate::opt_field("m_ReflectionProbeUsage", &self.m_reflection_probe_usage),
+            crate::opt_field("m_SubsetIndices", &self.m_subset_indices),
+            crate::opt_field(
+                "m_LightmapTilingOffsetDynamic",
+                &self.m_lightmap_tiling_offset_dynamic,
+            ),
+            Some((
+                "m_StaticBatchRoot".to_string(),
+                self.m_static_batch_root.to_value(),
+            )),
+            crate::opt_field("m_RenderingLayerMask", &self.m_rendering_layer_mask),
+            crate::opt_field("m_RayTracingMode", &self.m_ray_tracing_mode),
+            Some(("m_Time".to_string(), self.m_time.to_value())),
+            crate::opt_field("m_UseLightProbes", &self.m_use_light_probes),
+            crate::opt_field("m_RendererPriority", &self.m_renderer_priority),
+            crate::opt_field("m_RayTraceProcedural", &self.m_ray_trace_procedural),
+            crate::opt_field("m_StartWidth", &self.m_start_width),
+            crate::opt_field("m_LightProbeAnchor", &self.m_light_probe_anchor),
+            crate::opt_field("m_EndWidth", &self.m_end_width),
+            crate::opt_field("m_SortingLayer", &self.m_sorting_layer),
+            crate::opt_field("m_SortingLayerID", &self.m_sorting_layer_id),
+            crate::opt_field(
+                "m_RayTracingAccelStructBuildFlagsOverride",
+                &self.m_ray_tracing_accel_struct_build_flags_override,
+            ),
+            crate::opt_field("m_Colors", &self.m_colors),
+            crate::opt_field("m_SortingOrder", &self.m_sorting_order),
+            crate::opt_field("m_StaticBatchInfo", &self.m_static_batch_info),
+            crate::opt_field(
+                "m_RayTracingAccelStructBuildFlags",
+                &self.m_ray_tracing_accel_struct_build_flags,
+            ),
+            Some((
+                "m_MinVertexDistance".to_string(),
+                self.m_min_vertex_distance.to_value(),
+            )),
+            crate::opt_field("m_ProbeAnchor", &self.m_probe_anchor),
+            crate::opt_field("m_SmallMeshCulling", &self.m_small_mesh_culling),
+            Some(("m_Autodestruct".to_string(), self.m_autodestruct.to_value())),
+            crate::opt_field("m_ForceMeshLod", &self.m_force_mesh_lod),
+            crate::opt_field(
+                "m_LightProbeVolumeOverride",
+                &self.m_light_probe_volume_override,
+            ),
+            crate::opt_field("m_MeshLodSelectionBias", &self.m_mesh_lod_selection_bias),
+            crate::opt_field("m_Parameters", &self.m_parameters),
+            crate::opt_field("m_Emitting", &self.m_emitting),
+            crate::opt_field("m_MaskInteraction", &self.m_mask_interaction),
+            crate::opt_field("m_ApplyActiveColorSpace", &self.m_apply_active_color_space),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "m_CastShadows" => (self.m_cast_shadows).inspect_value(path, offset, limit),
+                "m_ReceiveShadows" => (self.m_receive_shadows).inspect_value(path, offset, limit),
+                "m_LightmapIndex" => (self.m_lightmap_index).inspect_value(path, offset, limit),
+                "m_MotionVectors" => (self.m_motion_vectors).inspect_value(path, offset, limit),
+                "m_DynamicOccludee" => (self.m_dynamic_occludee).inspect_value(path, offset, limit),
+                "m_LightmapTilingOffset" => {
+                    (self.m_lightmap_tiling_offset).inspect_value(path, offset, limit)
+                }
+                "m_LightmapIndexDynamic" => {
+                    (self.m_lightmap_index_dynamic).inspect_value(path, offset, limit)
+                }
+                "m_LightProbeUsage" => {
+                    (self.m_light_probe_usage).inspect_value(path, offset, limit)
+                }
+                "m_StaticShadowCaster" => {
+                    (self.m_static_shadow_caster).inspect_value(path, offset, limit)
+                }
+                "m_Materials" => (self.m_materials).inspect_value(path, offset, limit),
+                "m_ReflectionProbeUsage" => {
+                    (self.m_reflection_probe_usage).inspect_value(path, offset, limit)
+                }
+                "m_SubsetIndices" => (self.m_subset_indices).inspect_value(path, offset, limit),
+                "m_LightmapTilingOffsetDynamic" => {
+                    (self.m_lightmap_tiling_offset_dynamic).inspect_value(path, offset, limit)
+                }
+                "m_StaticBatchRoot" => {
+                    (self.m_static_batch_root).inspect_value(path, offset, limit)
+                }
+                "m_RenderingLayerMask" => {
+                    (self.m_rendering_layer_mask).inspect_value(path, offset, limit)
+                }
+                "m_RayTracingMode" => (self.m_ray_tracing_mode).inspect_value(path, offset, limit),
+                "m_Time" => (self.m_time).inspect_value(path, offset, limit),
+                "m_UseLightProbes" => (self.m_use_light_probes).inspect_value(path, offset, limit),
+                "m_RendererPriority" => {
+                    (self.m_renderer_priority).inspect_value(path, offset, limit)
+                }
+                "m_RayTraceProcedural" => {
+                    (self.m_ray_trace_procedural).inspect_value(path, offset, limit)
+                }
+                "m_StartWidth" => (self.m_start_width).inspect_value(path, offset, limit),
+                "m_LightProbeAnchor" => {
+                    (self.m_light_probe_anchor).inspect_value(path, offset, limit)
+                }
+                "m_EndWidth" => (self.m_end_width).inspect_value(path, offset, limit),
+                "m_SortingLayer" => (self.m_sorting_layer).inspect_value(path, offset, limit),
+                "m_SortingLayerID" => (self.m_sorting_layer_id).inspect_value(path, offset, limit),
+                "m_RayTracingAccelStructBuildFlagsOverride" => (self
+                    .m_ray_tracing_accel_struct_build_flags_override)
+                    .inspect_value(path, offset, limit),
+                "m_Colors" => (self.m_colors).inspect_value(path, offset, limit),
+                "m_SortingOrder" => (self.m_sorting_order).inspect_value(path, offset, limit),
+                "m_StaticBatchInfo" => {
+                    (self.m_static_batch_info).inspect_value(path, offset, limit)
+                }
+                "m_RayTracingAccelStructBuildFlags" => {
+                    (self.m_ray_tracing_accel_struct_build_flags).inspect_value(path, offset, limit)
+                }
+                "m_MinVertexDistance" => {
+                    (self.m_min_vertex_distance).inspect_value(path, offset, limit)
+                }
+                "m_ProbeAnchor" => (self.m_probe_anchor).inspect_value(path, offset, limit),
+                "m_SmallMeshCulling" => {
+                    (self.m_small_mesh_culling).inspect_value(path, offset, limit)
+                }
+                "m_Autodestruct" => (self.m_autodestruct).inspect_value(path, offset, limit),
+                "m_ForceMeshLod" => (self.m_force_mesh_lod).inspect_value(path, offset, limit),
+                "m_LightProbeVolumeOverride" => {
+                    (self.m_light_probe_volume_override).inspect_value(path, offset, limit)
+                }
+                "m_MeshLodSelectionBias" => {
+                    (self.m_mesh_lod_selection_bias).inspect_value(path, offset, limit)
+                }
+                "m_Parameters" => (self.m_parameters).inspect_value(path, offset, limit),
+                "m_Emitting" => (self.m_emitting).inspect_value(path, offset, limit),
+                "m_MaskInteraction" => (self.m_mask_interaction).inspect_value(path, offset, limit),
+                "m_ApplyActiveColorSpace" => {
+                    (self.m_apply_active_color_space).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.m_cast_shadows).inspect_value(path, offset, limit))
+                .map(|v| ("m_CastShadows".to_string(), v)),
+            ((self.m_receive_shadows).inspect_value(path, offset, limit))
+                .map(|v| ("m_ReceiveShadows".to_string(), v)),
+            ((self.m_lightmap_index).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightmapIndex".to_string(), v)),
+            ((self.m_motion_vectors).inspect_value(path, offset, limit))
+                .map(|v| ("m_MotionVectors".to_string(), v)),
+            ((self.m_dynamic_occludee).inspect_value(path, offset, limit))
+                .map(|v| ("m_DynamicOccludee".to_string(), v)),
+            ((self.m_lightmap_tiling_offset).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightmapTilingOffset".to_string(), v)),
+            ((self.m_lightmap_index_dynamic).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightmapIndexDynamic".to_string(), v)),
+            ((self.m_light_probe_usage).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightProbeUsage".to_string(), v)),
+            ((self.m_static_shadow_caster).inspect_value(path, offset, limit))
+                .map(|v| ("m_StaticShadowCaster".to_string(), v)),
+            ((self.m_materials).inspect_value(path, offset, limit))
+                .map(|v| ("m_Materials".to_string(), v)),
+            ((self.m_reflection_probe_usage).inspect_value(path, offset, limit))
+                .map(|v| ("m_ReflectionProbeUsage".to_string(), v)),
+            ((self.m_subset_indices).inspect_value(path, offset, limit))
+                .map(|v| ("m_SubsetIndices".to_string(), v)),
+            ((self.m_lightmap_tiling_offset_dynamic).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightmapTilingOffsetDynamic".to_string(), v)),
+            ((self.m_static_batch_root).inspect_value(path, offset, limit))
+                .map(|v| ("m_StaticBatchRoot".to_string(), v)),
+            ((self.m_rendering_layer_mask).inspect_value(path, offset, limit))
+                .map(|v| ("m_RenderingLayerMask".to_string(), v)),
+            ((self.m_ray_tracing_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_RayTracingMode".to_string(), v)),
+            ((self.m_time).inspect_value(path, offset, limit)).map(|v| ("m_Time".to_string(), v)),
+            ((self.m_use_light_probes).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseLightProbes".to_string(), v)),
+            ((self.m_renderer_priority).inspect_value(path, offset, limit))
+                .map(|v| ("m_RendererPriority".to_string(), v)),
+            ((self.m_ray_trace_procedural).inspect_value(path, offset, limit))
+                .map(|v| ("m_RayTraceProcedural".to_string(), v)),
+            ((self.m_start_width).inspect_value(path, offset, limit))
+                .map(|v| ("m_StartWidth".to_string(), v)),
+            ((self.m_light_probe_anchor).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightProbeAnchor".to_string(), v)),
+            ((self.m_end_width).inspect_value(path, offset, limit))
+                .map(|v| ("m_EndWidth".to_string(), v)),
+            ((self.m_sorting_layer).inspect_value(path, offset, limit))
+                .map(|v| ("m_SortingLayer".to_string(), v)),
+            ((self.m_sorting_layer_id).inspect_value(path, offset, limit))
+                .map(|v| ("m_SortingLayerID".to_string(), v)),
+            ((self.m_ray_tracing_accel_struct_build_flags_override)
+                .inspect_value(path, offset, limit))
+            .map(|v| ("m_RayTracingAccelStructBuildFlagsOverride".to_string(), v)),
+            ((self.m_colors).inspect_value(path, offset, limit))
+                .map(|v| ("m_Colors".to_string(), v)),
+            ((self.m_sorting_order).inspect_value(path, offset, limit))
+                .map(|v| ("m_SortingOrder".to_string(), v)),
+            ((self.m_static_batch_info).inspect_value(path, offset, limit))
+                .map(|v| ("m_StaticBatchInfo".to_string(), v)),
+            ((self.m_ray_tracing_accel_struct_build_flags).inspect_value(path, offset, limit))
+                .map(|v| ("m_RayTracingAccelStructBuildFlags".to_string(), v)),
+            ((self.m_min_vertex_distance).inspect_value(path, offset, limit))
+                .map(|v| ("m_MinVertexDistance".to_string(), v)),
+            ((self.m_probe_anchor).inspect_value(path, offset, limit))
+                .map(|v| ("m_ProbeAnchor".to_string(), v)),
+            ((self.m_small_mesh_culling).inspect_value(path, offset, limit))
+                .map(|v| ("m_SmallMeshCulling".to_string(), v)),
+            ((self.m_autodestruct).inspect_value(path, offset, limit))
+                .map(|v| ("m_Autodestruct".to_string(), v)),
+            ((self.m_force_mesh_lod).inspect_value(path, offset, limit))
+                .map(|v| ("m_ForceMeshLod".to_string(), v)),
+            ((self.m_light_probe_volume_override).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightProbeVolumeOverride".to_string(), v)),
+            ((self.m_mesh_lod_selection_bias).inspect_value(path, offset, limit))
+                .map(|v| ("m_MeshLodSelectionBias".to_string(), v)),
+            ((self.m_parameters).inspect_value(path, offset, limit))
+                .map(|v| ("m_Parameters".to_string(), v)),
+            ((self.m_emitting).inspect_value(path, offset, limit))
+                .map(|v| ("m_Emitting".to_string(), v)),
+            ((self.m_mask_interaction).inspect_value(path, offset, limit))
+                .map(|v| ("m_MaskInteraction".to_string(), v)),
+            ((self.m_apply_active_color_space).inspect_value(path, offset, limit))
+                .map(|v| ("m_ApplyActiveColorSpace".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

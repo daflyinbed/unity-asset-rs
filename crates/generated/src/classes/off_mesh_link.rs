@@ -84,3 +84,83 @@ impl crate::Parse for OffMeshLink {
         })
     }
 }
+
+impl crate::ToValue for OffMeshLink {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_Start".to_string(), self.m_start.to_value())),
+            crate::opt_field("m_NavMeshLayer", &self.m_nav_mesh_layer),
+            crate::opt_field("m_Enabled", &self.m_enabled),
+            Some(("m_End".to_string(), self.m_end.to_value())),
+            crate::opt_field("m_AreaIndex", &self.m_area_index),
+            crate::opt_field("m_DtPolyRef", &self.m_dt_poly_ref),
+            crate::opt_field("m_AgentTypeID", &self.m_agent_type_id),
+            Some((
+                "m_CostOverride".to_string(),
+                self.m_cost_override.to_value(),
+            )),
+            Some((
+                "m_BiDirectional".to_string(),
+                self.m_bi_directional.to_value(),
+            )),
+            Some(("m_Activated".to_string(), self.m_activated.to_value())),
+            crate::opt_field("m_AutoUpdatePositions", &self.m_auto_update_positions),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Start" => (self.m_start).inspect_value(path, offset, limit),
+                "m_NavMeshLayer" => (self.m_nav_mesh_layer).inspect_value(path, offset, limit),
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "m_End" => (self.m_end).inspect_value(path, offset, limit),
+                "m_AreaIndex" => (self.m_area_index).inspect_value(path, offset, limit),
+                "m_DtPolyRef" => (self.m_dt_poly_ref).inspect_value(path, offset, limit),
+                "m_AgentTypeID" => (self.m_agent_type_id).inspect_value(path, offset, limit),
+                "m_CostOverride" => (self.m_cost_override).inspect_value(path, offset, limit),
+                "m_BiDirectional" => (self.m_bi_directional).inspect_value(path, offset, limit),
+                "m_Activated" => (self.m_activated).inspect_value(path, offset, limit),
+                "m_AutoUpdatePositions" => {
+                    (self.m_auto_update_positions).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_start).inspect_value(path, offset, limit)).map(|v| ("m_Start".to_string(), v)),
+            ((self.m_nav_mesh_layer).inspect_value(path, offset, limit))
+                .map(|v| ("m_NavMeshLayer".to_string(), v)),
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.m_end).inspect_value(path, offset, limit)).map(|v| ("m_End".to_string(), v)),
+            ((self.m_area_index).inspect_value(path, offset, limit))
+                .map(|v| ("m_AreaIndex".to_string(), v)),
+            ((self.m_dt_poly_ref).inspect_value(path, offset, limit))
+                .map(|v| ("m_DtPolyRef".to_string(), v)),
+            ((self.m_agent_type_id).inspect_value(path, offset, limit))
+                .map(|v| ("m_AgentTypeID".to_string(), v)),
+            ((self.m_cost_override).inspect_value(path, offset, limit))
+                .map(|v| ("m_CostOverride".to_string(), v)),
+            ((self.m_bi_directional).inspect_value(path, offset, limit))
+                .map(|v| ("m_BiDirectional".to_string(), v)),
+            ((self.m_activated).inspect_value(path, offset, limit))
+                .map(|v| ("m_Activated".to_string(), v)),
+            ((self.m_auto_update_positions).inspect_value(path, offset, limit))
+                .map(|v| ("m_AutoUpdatePositions".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

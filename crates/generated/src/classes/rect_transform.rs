@@ -28,6 +28,21 @@ impl crate::Parse for RectTransformMLocalScaleVariant {
     }
 }
 
+impl crate::ToValue for RectTransformMLocalScaleVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2021_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2021_2(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：RectTransformMChildrenVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum RectTransformMChildrenVariant {
@@ -57,6 +72,21 @@ impl crate::Parse for RectTransformMChildrenVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for RectTransformMChildrenVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -126,5 +156,80 @@ impl crate::Parse for RectTransform {
             m_father,
             m_anchored_position,
         })
+    }
+}
+
+impl crate::ToValue for RectTransform {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_AnchorMin".to_string(), self.m_anchor_min.to_value())),
+            crate::opt_field("m_LocalRotation", &self.m_local_rotation),
+            Some(("m_AnchorMax".to_string(), self.m_anchor_max.to_value())),
+            crate::opt_field("m_LocalPosition", &self.m_local_position),
+            crate::opt_field("m_Position", &self.m_position),
+            crate::opt_field("m_LocalScale", &self.m_local_scale),
+            Some(("m_SizeDelta".to_string(), self.m_size_delta.to_value())),
+            crate::opt_field("m_Children", &self.m_children),
+            Some(("m_Pivot".to_string(), self.m_pivot.to_value())),
+            crate::opt_field("m_Father", &self.m_father),
+            crate::opt_field("m_AnchoredPosition", &self.m_anchored_position),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_AnchorMin" => (self.m_anchor_min).inspect_value(path, offset, limit),
+                "m_LocalRotation" => (self.m_local_rotation).inspect_value(path, offset, limit),
+                "m_AnchorMax" => (self.m_anchor_max).inspect_value(path, offset, limit),
+                "m_LocalPosition" => (self.m_local_position).inspect_value(path, offset, limit),
+                "m_Position" => (self.m_position).inspect_value(path, offset, limit),
+                "m_LocalScale" => (self.m_local_scale).inspect_value(path, offset, limit),
+                "m_SizeDelta" => (self.m_size_delta).inspect_value(path, offset, limit),
+                "m_Children" => (self.m_children).inspect_value(path, offset, limit),
+                "m_Pivot" => (self.m_pivot).inspect_value(path, offset, limit),
+                "m_Father" => (self.m_father).inspect_value(path, offset, limit),
+                "m_AnchoredPosition" => {
+                    (self.m_anchored_position).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_anchor_min).inspect_value(path, offset, limit))
+                .map(|v| ("m_AnchorMin".to_string(), v)),
+            ((self.m_local_rotation).inspect_value(path, offset, limit))
+                .map(|v| ("m_LocalRotation".to_string(), v)),
+            ((self.m_anchor_max).inspect_value(path, offset, limit))
+                .map(|v| ("m_AnchorMax".to_string(), v)),
+            ((self.m_local_position).inspect_value(path, offset, limit))
+                .map(|v| ("m_LocalPosition".to_string(), v)),
+            ((self.m_position).inspect_value(path, offset, limit))
+                .map(|v| ("m_Position".to_string(), v)),
+            ((self.m_local_scale).inspect_value(path, offset, limit))
+                .map(|v| ("m_LocalScale".to_string(), v)),
+            ((self.m_size_delta).inspect_value(path, offset, limit))
+                .map(|v| ("m_SizeDelta".to_string(), v)),
+            ((self.m_children).inspect_value(path, offset, limit))
+                .map(|v| ("m_Children".to_string(), v)),
+            ((self.m_pivot).inspect_value(path, offset, limit)).map(|v| ("m_Pivot".to_string(), v)),
+            ((self.m_father).inspect_value(path, offset, limit))
+                .map(|v| ("m_Father".to_string(), v)),
+            ((self.m_anchored_position).inspect_value(path, offset, limit))
+                .map(|v| ("m_AnchoredPosition".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

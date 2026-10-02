@@ -51,3 +51,58 @@ impl crate::Parse for ProceduralMaterialInformation {
         })
     }
 }
+
+impl crate::ToValue for ProceduralMaterialInformation {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Offset".to_string(), self.m_offset.to_value())),
+            Some(("m_Scale".to_string(), self.m_scale.to_value())),
+            crate::opt_field("m_GeneratedAtLoading", &self.m_generated_at_loading),
+            crate::opt_field("m_GenerateAllOutputs", &self.m_generate_all_outputs),
+            crate::opt_field("m_GenerateMipmaps", &self.m_generate_mipmaps),
+            crate::opt_field("m_AnimationUpdateRate", &self.m_animation_update_rate),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Offset" => (self.m_offset).inspect_value(path, offset, limit),
+                "m_Scale" => (self.m_scale).inspect_value(path, offset, limit),
+                "m_GeneratedAtLoading" => {
+                    (self.m_generated_at_loading).inspect_value(path, offset, limit)
+                }
+                "m_GenerateAllOutputs" => {
+                    (self.m_generate_all_outputs).inspect_value(path, offset, limit)
+                }
+                "m_GenerateMipmaps" => (self.m_generate_mipmaps).inspect_value(path, offset, limit),
+                "m_AnimationUpdateRate" => {
+                    (self.m_animation_update_rate).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_offset).inspect_value(path, offset, limit))
+                .map(|v| ("m_Offset".to_string(), v)),
+            ((self.m_scale).inspect_value(path, offset, limit)).map(|v| ("m_Scale".to_string(), v)),
+            ((self.m_generated_at_loading).inspect_value(path, offset, limit))
+                .map(|v| ("m_GeneratedAtLoading".to_string(), v)),
+            ((self.m_generate_all_outputs).inspect_value(path, offset, limit))
+                .map(|v| ("m_GenerateAllOutputs".to_string(), v)),
+            ((self.m_generate_mipmaps).inspect_value(path, offset, limit))
+                .map(|v| ("m_GenerateMipmaps".to_string(), v)),
+            ((self.m_animation_update_rate).inspect_value(path, offset, limit))
+                .map(|v| ("m_AnimationUpdateRate".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

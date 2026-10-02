@@ -35,6 +35,21 @@ impl crate::Parse for ResourceManagerMDependentAssetsVariant {
         }
     }
 }
+
+impl crate::ToValue for ResourceManagerMDependentAssetsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct ResourceManager {
     pub m_container: Vec<(String, PPtr)>,
@@ -68,5 +83,39 @@ impl crate::Parse for ResourceManager {
             m_container,
             m_dependent_assets,
         })
+    }
+}
+
+impl crate::ToValue for ResourceManager {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Container".to_string(), self.m_container.to_value())),
+            crate::opt_field("m_DependentAssets", &self.m_dependent_assets),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Container" => (self.m_container).inspect_value(path, offset, limit),
+                "m_DependentAssets" => (self.m_dependent_assets).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_container).inspect_value(path, offset, limit))
+                .map(|v| ("m_Container".to_string(), v)),
+            ((self.m_dependent_assets).inspect_value(path, offset, limit))
+                .map(|v| ("m_DependentAssets".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

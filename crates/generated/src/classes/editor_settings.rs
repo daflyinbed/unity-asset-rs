@@ -25,6 +25,21 @@ impl crate::Parse for EditorSettingsMExternalVersionControlSupportVariant {
     }
 }
 
+impl crate::ToValue for EditorSettingsMExternalVersionControlSupportVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V4_0(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V4_0(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：EditorSettingsMSerializationModeVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum EditorSettingsMSerializationModeVariant {
@@ -44,6 +59,21 @@ impl crate::Parse for EditorSettingsMSerializationModeVariant {
         } else {
             let v = rdr.read_i32()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for EditorSettingsMSerializationModeVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_5(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -71,6 +101,21 @@ impl crate::Parse for EditorSettingsMEnableTextureStreamingInPlayModeVariant {
     }
 }
 
+impl crate::ToValue for EditorSettingsMEnableTextureStreamingInPlayModeVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2019_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2019_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：EditorSettingsMAsyncShaderCompilationVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum EditorSettingsMAsyncShaderCompilationVariant {
@@ -90,6 +135,21 @@ impl crate::Parse for EditorSettingsMAsyncShaderCompilationVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for EditorSettingsMAsyncShaderCompilationVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2020_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2020_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -117,6 +177,21 @@ impl crate::Parse for EditorSettingsMCacheServerEnableUploadVariant {
     }
 }
 
+impl crate::ToValue for EditorSettingsMCacheServerEnableUploadVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2020_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2020_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：EditorSettingsMCacheServerEnableTlsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum EditorSettingsMCacheServerEnableTlsVariant {
@@ -136,6 +211,21 @@ impl crate::Parse for EditorSettingsMCacheServerEnableTlsVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for EditorSettingsMCacheServerEnableTlsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V6000_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_5(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -1545,5 +1635,468 @@ impl crate::Parse for EditorSettings {
             m_force_asset_unload_and_gc_on_scene_load,
             m_hide_build_profile_classic_platforms,
         })
+    }
+}
+
+impl crate::ToValue for EditorSettings {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            crate::opt_field(
+                "m_ExternalVersionControlSupport",
+                &self.m_external_version_control_support,
+            ),
+            crate::opt_field("m_SerializationMode", &self.m_serialization_mode),
+            crate::opt_field(
+                "m_WebSecurityEmulationEnabled",
+                &self.m_web_security_emulation_enabled,
+            ),
+            crate::opt_field(
+                "m_LineEndingsForNewScripts",
+                &self.m_line_endings_for_new_scripts,
+            ),
+            crate::opt_field(
+                "m_WebSecurityEmulationHostUrl",
+                &self.m_web_security_emulation_host_url,
+            ),
+            crate::opt_field("m_DefaultBehaviorMode", &self.m_default_behavior_mode),
+            crate::opt_field("m_SpritePackerMode", &self.m_sprite_packer_mode),
+            crate::opt_field(
+                "m_PrefabRegularEnvironment",
+                &self.m_prefab_regular_environment,
+            ),
+            crate::opt_field(
+                "m_SpritePackerPaddingPower",
+                &self.m_sprite_packer_padding_power,
+            ),
+            crate::opt_field("m_PrefabUIEnvironment", &self.m_prefab_ui_environment),
+            crate::opt_field(
+                "m_ProjectGenerationIncludedExtensions",
+                &self.m_project_generation_included_extensions,
+            ),
+            crate::opt_field(
+                "m_EtcTextureCompressorBehavior",
+                &self.m_etc_texture_compressor_behavior,
+            ),
+            crate::opt_field(
+                "m_ProjectGenerationRootNamespace",
+                &self.m_project_generation_root_namespace,
+            ),
+            crate::opt_field(
+                "m_EtcTextureFastCompressor",
+                &self.m_etc_texture_fast_compressor,
+            ),
+            crate::opt_field("m_SpritePackerCacheSize", &self.m_sprite_packer_cache_size),
+            crate::opt_field(
+                "m_UserGeneratedProjectSuffix",
+                &self.m_user_generated_project_suffix,
+            ),
+            crate::opt_field(
+                "m_EtcTextureNormalCompressor",
+                &self.m_etc_texture_normal_compressor,
+            ),
+            crate::opt_field("m_Bc7TextureCompressor", &self.m_bc7_texture_compressor),
+            crate::opt_field("m_CollabEditorSettings", &self.m_collab_editor_settings),
+            crate::opt_field(
+                "m_EtcTextureBestCompressor",
+                &self.m_etc_texture_best_compressor,
+            ),
+            crate::opt_field(
+                "m_EnableTextureStreamingInEditMode",
+                &self.m_enable_texture_streaming_in_edit_mode,
+            ),
+            crate::opt_field(
+                "m_EnableTextureStreamingInPlayMode",
+                &self.m_enable_texture_streaming_in_play_mode,
+            ),
+            crate::opt_field("m_AsyncShaderCompilation", &self.m_async_shader_compilation),
+            crate::opt_field(
+                "m_CachingShaderPreprocessor",
+                &self.m_caching_shader_preprocessor,
+            ),
+            crate::opt_field(
+                "m_EnterPlayModeOptionsEnabled",
+                &self.m_enter_play_mode_options_enabled,
+            ),
+            crate::opt_field(
+                "m_PrefabModeAllowAutoSave",
+                &self.m_prefab_mode_allow_auto_save,
+            ),
+            crate::opt_field(
+                "m_EnableEditorAsyncCPUTextureLoading",
+                &self.m_enable_editor_async_cpu_texture_loading,
+            ),
+            crate::opt_field(
+                "m_ShowLightmapResolutionOverlay",
+                &self.m_show_lightmap_resolution_overlay,
+            ),
+            crate::opt_field("m_EnterPlayModeOptions", &self.m_enter_play_mode_options),
+            crate::opt_field(
+                "m_GameObjectNamingDigits",
+                &self.m_game_object_naming_digits,
+            ),
+            crate::opt_field("m_BlockShaders", &self.m_block_shaders),
+            crate::opt_field(
+                "m_GameObjectNamingScheme",
+                &self.m_game_object_naming_scheme,
+            ),
+            crate::opt_field("m_UnlockBlockShaders", &self.m_unlock_block_shaders),
+            crate::opt_field(
+                "m_UseLegacyProbeSampleCount",
+                &self.m_use_legacy_probe_sample_count,
+            ),
+            crate::opt_field("m_AssetNamingUsesSpace", &self.m_asset_naming_uses_space),
+            crate::opt_field("m_AssetPipelineMode", &self.m_asset_pipeline_mode),
+            crate::opt_field("m_CacheServerMode", &self.m_cache_server_mode),
+            crate::opt_field(
+                "m_SerializeInlineMappingsOnOneLine",
+                &self.m_serialize_inline_mappings_on_one_line,
+            ),
+            crate::opt_field("m_CacheServerEndpoint", &self.m_cache_server_endpoint),
+            crate::opt_field(
+                "m_DisableCookiesInLightmapper",
+                &self.m_disable_cookies_in_lightmapper,
+            ),
+            crate::opt_field(
+                "m_CacheServerNamespacePrefix",
+                &self.m_cache_server_namespace_prefix,
+            ),
+            crate::opt_field(
+                "m_InspectorUseIMGUIDefaultInspector",
+                &self.m_inspector_use_imgui_default_inspector,
+            ),
+            crate::opt_field(
+                "m_CacheServerEnableDownload",
+                &self.m_cache_server_enable_download,
+            ),
+            crate::opt_field(
+                "m_CacheServerEnableUpload",
+                &self.m_cache_server_enable_upload,
+            ),
+            crate::opt_field(
+                "m_CacheServerValidationMode",
+                &self.m_cache_server_validation_mode,
+            ),
+            crate::opt_field("m_RefreshImportMode", &self.m_refresh_import_mode),
+            crate::opt_field("m_ShadowmaskStitching", &self.m_shadowmask_stitching),
+            crate::opt_field("m_CacheServerEnableAuth", &self.m_cache_server_enable_auth),
+            crate::opt_field("m_CacheServerEnableTls", &self.m_cache_server_enable_tls),
+            crate::opt_field(
+                "m_CacheServerDownloadBatchSize",
+                &self.m_cache_server_download_batch_size,
+            ),
+            crate::opt_field(
+                "m_CacheServerImportResultCachingEnabled",
+                &self.m_cache_server_import_result_caching_enabled,
+            ),
+            crate::opt_field(
+                "m_EnableEnlightenBakedGI",
+                &self.m_enable_enlighten_baked_gi,
+            ),
+            crate::opt_field(
+                "m_ReferencedClipsExactNaming",
+                &self.m_referenced_clips_exact_naming,
+            ),
+            crate::opt_field(
+                "m_ForceAssetUnloadAndGCOnSceneLoad",
+                &self.m_force_asset_unload_and_gc_on_scene_load,
+            ),
+            crate::opt_field(
+                "m_HideBuildProfileClassicPlatforms",
+                &self.m_hide_build_profile_classic_platforms,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_ExternalVersionControlSupport" => {
+                    (self.m_external_version_control_support).inspect_value(path, offset, limit)
+                }
+                "m_SerializationMode" => {
+                    (self.m_serialization_mode).inspect_value(path, offset, limit)
+                }
+                "m_WebSecurityEmulationEnabled" => {
+                    (self.m_web_security_emulation_enabled).inspect_value(path, offset, limit)
+                }
+                "m_LineEndingsForNewScripts" => {
+                    (self.m_line_endings_for_new_scripts).inspect_value(path, offset, limit)
+                }
+                "m_WebSecurityEmulationHostUrl" => {
+                    (self.m_web_security_emulation_host_url).inspect_value(path, offset, limit)
+                }
+                "m_DefaultBehaviorMode" => {
+                    (self.m_default_behavior_mode).inspect_value(path, offset, limit)
+                }
+                "m_SpritePackerMode" => {
+                    (self.m_sprite_packer_mode).inspect_value(path, offset, limit)
+                }
+                "m_PrefabRegularEnvironment" => {
+                    (self.m_prefab_regular_environment).inspect_value(path, offset, limit)
+                }
+                "m_SpritePackerPaddingPower" => {
+                    (self.m_sprite_packer_padding_power).inspect_value(path, offset, limit)
+                }
+                "m_PrefabUIEnvironment" => {
+                    (self.m_prefab_ui_environment).inspect_value(path, offset, limit)
+                }
+                "m_ProjectGenerationIncludedExtensions" => (self
+                    .m_project_generation_included_extensions)
+                    .inspect_value(path, offset, limit),
+                "m_EtcTextureCompressorBehavior" => {
+                    (self.m_etc_texture_compressor_behavior).inspect_value(path, offset, limit)
+                }
+                "m_ProjectGenerationRootNamespace" => {
+                    (self.m_project_generation_root_namespace).inspect_value(path, offset, limit)
+                }
+                "m_EtcTextureFastCompressor" => {
+                    (self.m_etc_texture_fast_compressor).inspect_value(path, offset, limit)
+                }
+                "m_SpritePackerCacheSize" => {
+                    (self.m_sprite_packer_cache_size).inspect_value(path, offset, limit)
+                }
+                "m_UserGeneratedProjectSuffix" => {
+                    (self.m_user_generated_project_suffix).inspect_value(path, offset, limit)
+                }
+                "m_EtcTextureNormalCompressor" => {
+                    (self.m_etc_texture_normal_compressor).inspect_value(path, offset, limit)
+                }
+                "m_Bc7TextureCompressor" => {
+                    (self.m_bc7_texture_compressor).inspect_value(path, offset, limit)
+                }
+                "m_CollabEditorSettings" => {
+                    (self.m_collab_editor_settings).inspect_value(path, offset, limit)
+                }
+                "m_EtcTextureBestCompressor" => {
+                    (self.m_etc_texture_best_compressor).inspect_value(path, offset, limit)
+                }
+                "m_EnableTextureStreamingInEditMode" => (self
+                    .m_enable_texture_streaming_in_edit_mode)
+                    .inspect_value(path, offset, limit),
+                "m_EnableTextureStreamingInPlayMode" => (self
+                    .m_enable_texture_streaming_in_play_mode)
+                    .inspect_value(path, offset, limit),
+                "m_AsyncShaderCompilation" => {
+                    (self.m_async_shader_compilation).inspect_value(path, offset, limit)
+                }
+                "m_CachingShaderPreprocessor" => {
+                    (self.m_caching_shader_preprocessor).inspect_value(path, offset, limit)
+                }
+                "m_EnterPlayModeOptionsEnabled" => {
+                    (self.m_enter_play_mode_options_enabled).inspect_value(path, offset, limit)
+                }
+                "m_PrefabModeAllowAutoSave" => {
+                    (self.m_prefab_mode_allow_auto_save).inspect_value(path, offset, limit)
+                }
+                "m_EnableEditorAsyncCPUTextureLoading" => (self
+                    .m_enable_editor_async_cpu_texture_loading)
+                    .inspect_value(path, offset, limit),
+                "m_ShowLightmapResolutionOverlay" => {
+                    (self.m_show_lightmap_resolution_overlay).inspect_value(path, offset, limit)
+                }
+                "m_EnterPlayModeOptions" => {
+                    (self.m_enter_play_mode_options).inspect_value(path, offset, limit)
+                }
+                "m_GameObjectNamingDigits" => {
+                    (self.m_game_object_naming_digits).inspect_value(path, offset, limit)
+                }
+                "m_BlockShaders" => (self.m_block_shaders).inspect_value(path, offset, limit),
+                "m_GameObjectNamingScheme" => {
+                    (self.m_game_object_naming_scheme).inspect_value(path, offset, limit)
+                }
+                "m_UnlockBlockShaders" => {
+                    (self.m_unlock_block_shaders).inspect_value(path, offset, limit)
+                }
+                "m_UseLegacyProbeSampleCount" => {
+                    (self.m_use_legacy_probe_sample_count).inspect_value(path, offset, limit)
+                }
+                "m_AssetNamingUsesSpace" => {
+                    (self.m_asset_naming_uses_space).inspect_value(path, offset, limit)
+                }
+                "m_AssetPipelineMode" => {
+                    (self.m_asset_pipeline_mode).inspect_value(path, offset, limit)
+                }
+                "m_CacheServerMode" => {
+                    (self.m_cache_server_mode).inspect_value(path, offset, limit)
+                }
+                "m_SerializeInlineMappingsOnOneLine" => (self
+                    .m_serialize_inline_mappings_on_one_line)
+                    .inspect_value(path, offset, limit),
+                "m_CacheServerEndpoint" => {
+                    (self.m_cache_server_endpoint).inspect_value(path, offset, limit)
+                }
+                "m_DisableCookiesInLightmapper" => {
+                    (self.m_disable_cookies_in_lightmapper).inspect_value(path, offset, limit)
+                }
+                "m_CacheServerNamespacePrefix" => {
+                    (self.m_cache_server_namespace_prefix).inspect_value(path, offset, limit)
+                }
+                "m_InspectorUseIMGUIDefaultInspector" => (self
+                    .m_inspector_use_imgui_default_inspector)
+                    .inspect_value(path, offset, limit),
+                "m_CacheServerEnableDownload" => {
+                    (self.m_cache_server_enable_download).inspect_value(path, offset, limit)
+                }
+                "m_CacheServerEnableUpload" => {
+                    (self.m_cache_server_enable_upload).inspect_value(path, offset, limit)
+                }
+                "m_CacheServerValidationMode" => {
+                    (self.m_cache_server_validation_mode).inspect_value(path, offset, limit)
+                }
+                "m_RefreshImportMode" => {
+                    (self.m_refresh_import_mode).inspect_value(path, offset, limit)
+                }
+                "m_ShadowmaskStitching" => {
+                    (self.m_shadowmask_stitching).inspect_value(path, offset, limit)
+                }
+                "m_CacheServerEnableAuth" => {
+                    (self.m_cache_server_enable_auth).inspect_value(path, offset, limit)
+                }
+                "m_CacheServerEnableTls" => {
+                    (self.m_cache_server_enable_tls).inspect_value(path, offset, limit)
+                }
+                "m_CacheServerDownloadBatchSize" => {
+                    (self.m_cache_server_download_batch_size).inspect_value(path, offset, limit)
+                }
+                "m_CacheServerImportResultCachingEnabled" => (self
+                    .m_cache_server_import_result_caching_enabled)
+                    .inspect_value(path, offset, limit),
+                "m_EnableEnlightenBakedGI" => {
+                    (self.m_enable_enlighten_baked_gi).inspect_value(path, offset, limit)
+                }
+                "m_ReferencedClipsExactNaming" => {
+                    (self.m_referenced_clips_exact_naming).inspect_value(path, offset, limit)
+                }
+                "m_ForceAssetUnloadAndGCOnSceneLoad" => (self
+                    .m_force_asset_unload_and_gc_on_scene_load)
+                    .inspect_value(path, offset, limit),
+                "m_HideBuildProfileClassicPlatforms" => {
+                    (self.m_hide_build_profile_classic_platforms).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_external_version_control_support).inspect_value(path, offset, limit))
+                .map(|v| ("m_ExternalVersionControlSupport".to_string(), v)),
+            ((self.m_serialization_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_SerializationMode".to_string(), v)),
+            ((self.m_web_security_emulation_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_WebSecurityEmulationEnabled".to_string(), v)),
+            ((self.m_line_endings_for_new_scripts).inspect_value(path, offset, limit))
+                .map(|v| ("m_LineEndingsForNewScripts".to_string(), v)),
+            ((self.m_web_security_emulation_host_url).inspect_value(path, offset, limit))
+                .map(|v| ("m_WebSecurityEmulationHostUrl".to_string(), v)),
+            ((self.m_default_behavior_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_DefaultBehaviorMode".to_string(), v)),
+            ((self.m_sprite_packer_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_SpritePackerMode".to_string(), v)),
+            ((self.m_prefab_regular_environment).inspect_value(path, offset, limit))
+                .map(|v| ("m_PrefabRegularEnvironment".to_string(), v)),
+            ((self.m_sprite_packer_padding_power).inspect_value(path, offset, limit))
+                .map(|v| ("m_SpritePackerPaddingPower".to_string(), v)),
+            ((self.m_prefab_ui_environment).inspect_value(path, offset, limit))
+                .map(|v| ("m_PrefabUIEnvironment".to_string(), v)),
+            ((self.m_project_generation_included_extensions).inspect_value(path, offset, limit))
+                .map(|v| ("m_ProjectGenerationIncludedExtensions".to_string(), v)),
+            ((self.m_etc_texture_compressor_behavior).inspect_value(path, offset, limit))
+                .map(|v| ("m_EtcTextureCompressorBehavior".to_string(), v)),
+            ((self.m_project_generation_root_namespace).inspect_value(path, offset, limit))
+                .map(|v| ("m_ProjectGenerationRootNamespace".to_string(), v)),
+            ((self.m_etc_texture_fast_compressor).inspect_value(path, offset, limit))
+                .map(|v| ("m_EtcTextureFastCompressor".to_string(), v)),
+            ((self.m_sprite_packer_cache_size).inspect_value(path, offset, limit))
+                .map(|v| ("m_SpritePackerCacheSize".to_string(), v)),
+            ((self.m_user_generated_project_suffix).inspect_value(path, offset, limit))
+                .map(|v| ("m_UserGeneratedProjectSuffix".to_string(), v)),
+            ((self.m_etc_texture_normal_compressor).inspect_value(path, offset, limit))
+                .map(|v| ("m_EtcTextureNormalCompressor".to_string(), v)),
+            ((self.m_bc7_texture_compressor).inspect_value(path, offset, limit))
+                .map(|v| ("m_Bc7TextureCompressor".to_string(), v)),
+            ((self.m_collab_editor_settings).inspect_value(path, offset, limit))
+                .map(|v| ("m_CollabEditorSettings".to_string(), v)),
+            ((self.m_etc_texture_best_compressor).inspect_value(path, offset, limit))
+                .map(|v| ("m_EtcTextureBestCompressor".to_string(), v)),
+            ((self.m_enable_texture_streaming_in_edit_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableTextureStreamingInEditMode".to_string(), v)),
+            ((self.m_enable_texture_streaming_in_play_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableTextureStreamingInPlayMode".to_string(), v)),
+            ((self.m_async_shader_compilation).inspect_value(path, offset, limit))
+                .map(|v| ("m_AsyncShaderCompilation".to_string(), v)),
+            ((self.m_caching_shader_preprocessor).inspect_value(path, offset, limit))
+                .map(|v| ("m_CachingShaderPreprocessor".to_string(), v)),
+            ((self.m_enter_play_mode_options_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnterPlayModeOptionsEnabled".to_string(), v)),
+            ((self.m_prefab_mode_allow_auto_save).inspect_value(path, offset, limit))
+                .map(|v| ("m_PrefabModeAllowAutoSave".to_string(), v)),
+            ((self.m_enable_editor_async_cpu_texture_loading).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableEditorAsyncCPUTextureLoading".to_string(), v)),
+            ((self.m_show_lightmap_resolution_overlay).inspect_value(path, offset, limit))
+                .map(|v| ("m_ShowLightmapResolutionOverlay".to_string(), v)),
+            ((self.m_enter_play_mode_options).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnterPlayModeOptions".to_string(), v)),
+            ((self.m_game_object_naming_digits).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObjectNamingDigits".to_string(), v)),
+            ((self.m_block_shaders).inspect_value(path, offset, limit))
+                .map(|v| ("m_BlockShaders".to_string(), v)),
+            ((self.m_game_object_naming_scheme).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObjectNamingScheme".to_string(), v)),
+            ((self.m_unlock_block_shaders).inspect_value(path, offset, limit))
+                .map(|v| ("m_UnlockBlockShaders".to_string(), v)),
+            ((self.m_use_legacy_probe_sample_count).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseLegacyProbeSampleCount".to_string(), v)),
+            ((self.m_asset_naming_uses_space).inspect_value(path, offset, limit))
+                .map(|v| ("m_AssetNamingUsesSpace".to_string(), v)),
+            ((self.m_asset_pipeline_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_AssetPipelineMode".to_string(), v)),
+            ((self.m_cache_server_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_CacheServerMode".to_string(), v)),
+            ((self.m_serialize_inline_mappings_on_one_line).inspect_value(path, offset, limit))
+                .map(|v| ("m_SerializeInlineMappingsOnOneLine".to_string(), v)),
+            ((self.m_cache_server_endpoint).inspect_value(path, offset, limit))
+                .map(|v| ("m_CacheServerEndpoint".to_string(), v)),
+            ((self.m_disable_cookies_in_lightmapper).inspect_value(path, offset, limit))
+                .map(|v| ("m_DisableCookiesInLightmapper".to_string(), v)),
+            ((self.m_cache_server_namespace_prefix).inspect_value(path, offset, limit))
+                .map(|v| ("m_CacheServerNamespacePrefix".to_string(), v)),
+            ((self.m_inspector_use_imgui_default_inspector).inspect_value(path, offset, limit))
+                .map(|v| ("m_InspectorUseIMGUIDefaultInspector".to_string(), v)),
+            ((self.m_cache_server_enable_download).inspect_value(path, offset, limit))
+                .map(|v| ("m_CacheServerEnableDownload".to_string(), v)),
+            ((self.m_cache_server_enable_upload).inspect_value(path, offset, limit))
+                .map(|v| ("m_CacheServerEnableUpload".to_string(), v)),
+            ((self.m_cache_server_validation_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_CacheServerValidationMode".to_string(), v)),
+            ((self.m_refresh_import_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_RefreshImportMode".to_string(), v)),
+            ((self.m_shadowmask_stitching).inspect_value(path, offset, limit))
+                .map(|v| ("m_ShadowmaskStitching".to_string(), v)),
+            ((self.m_cache_server_enable_auth).inspect_value(path, offset, limit))
+                .map(|v| ("m_CacheServerEnableAuth".to_string(), v)),
+            ((self.m_cache_server_enable_tls).inspect_value(path, offset, limit))
+                .map(|v| ("m_CacheServerEnableTls".to_string(), v)),
+            ((self.m_cache_server_download_batch_size).inspect_value(path, offset, limit))
+                .map(|v| ("m_CacheServerDownloadBatchSize".to_string(), v)),
+            ((self.m_cache_server_import_result_caching_enabled)
+                .inspect_value(path, offset, limit))
+            .map(|v| ("m_CacheServerImportResultCachingEnabled".to_string(), v)),
+            ((self.m_enable_enlighten_baked_gi).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableEnlightenBakedGI".to_string(), v)),
+            ((self.m_referenced_clips_exact_naming).inspect_value(path, offset, limit))
+                .map(|v| ("m_ReferencedClipsExactNaming".to_string(), v)),
+            ((self.m_force_asset_unload_and_gc_on_scene_load).inspect_value(path, offset, limit))
+                .map(|v| ("m_ForceAssetUnloadAndGCOnSceneLoad".to_string(), v)),
+            ((self.m_hide_build_profile_classic_platforms).inspect_value(path, offset, limit))
+                .map(|v| ("m_HideBuildProfileClassicPlatforms".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

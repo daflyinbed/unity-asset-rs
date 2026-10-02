@@ -38,3 +38,53 @@ impl crate::Parse for ControllerConstant {
         })
     }
 }
+
+impl crate::ToValue for ControllerConstant {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_LayerArray".to_string(), self.m_layer_array.to_value())),
+            Some((
+                "m_StateMachineArray".to_string(),
+                self.m_state_machine_array.to_value(),
+            )),
+            Some(("m_Values".to_string(), self.m_values.to_value())),
+            Some((
+                "m_DefaultValues".to_string(),
+                self.m_default_values.to_value(),
+            )),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_LayerArray" => (self.m_layer_array).inspect_value(path, offset, limit),
+                "m_StateMachineArray" => {
+                    (self.m_state_machine_array).inspect_value(path, offset, limit)
+                }
+                "m_Values" => (self.m_values).inspect_value(path, offset, limit),
+                "m_DefaultValues" => (self.m_default_values).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_layer_array).inspect_value(path, offset, limit))
+                .map(|v| ("m_LayerArray".to_string(), v)),
+            ((self.m_state_machine_array).inspect_value(path, offset, limit))
+                .map(|v| ("m_StateMachineArray".to_string(), v)),
+            ((self.m_values).inspect_value(path, offset, limit))
+                .map(|v| ("m_Values".to_string(), v)),
+            ((self.m_default_values).inspect_value(path, offset, limit))
+                .map(|v| ("m_DefaultValues".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

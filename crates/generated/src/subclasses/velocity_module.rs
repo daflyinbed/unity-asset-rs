@@ -75,3 +75,76 @@ impl crate::Parse for VelocityModule {
         })
     }
 }
+
+impl crate::ToValue for VelocityModule {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("enabled".to_string(), self.enabled.to_value())),
+            Some(("x".to_string(), self.x.to_value())),
+            Some(("y".to_string(), self.y.to_value())),
+            Some(("z".to_string(), self.z.to_value())),
+            Some(("inWorldSpace".to_string(), self.in_world_space.to_value())),
+            crate::opt_field("speedModifier", &self.speed_modifier),
+            crate::opt_field("orbitalX", &self.orbital_x),
+            crate::opt_field("orbitalY", &self.orbital_y),
+            crate::opt_field("orbitalZ", &self.orbital_z),
+            crate::opt_field("orbitalOffsetX", &self.orbital_offset_x),
+            crate::opt_field("orbitalOffsetY", &self.orbital_offset_y),
+            crate::opt_field("orbitalOffsetZ", &self.orbital_offset_z),
+            crate::opt_field("radial", &self.radial),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "enabled" => (self.enabled).inspect_value(path, offset, limit),
+                "x" => (self.x).inspect_value(path, offset, limit),
+                "y" => (self.y).inspect_value(path, offset, limit),
+                "z" => (self.z).inspect_value(path, offset, limit),
+                "inWorldSpace" => (self.in_world_space).inspect_value(path, offset, limit),
+                "speedModifier" => (self.speed_modifier).inspect_value(path, offset, limit),
+                "orbitalX" => (self.orbital_x).inspect_value(path, offset, limit),
+                "orbitalY" => (self.orbital_y).inspect_value(path, offset, limit),
+                "orbitalZ" => (self.orbital_z).inspect_value(path, offset, limit),
+                "orbitalOffsetX" => (self.orbital_offset_x).inspect_value(path, offset, limit),
+                "orbitalOffsetY" => (self.orbital_offset_y).inspect_value(path, offset, limit),
+                "orbitalOffsetZ" => (self.orbital_offset_z).inspect_value(path, offset, limit),
+                "radial" => (self.radial).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.enabled).inspect_value(path, offset, limit)).map(|v| ("enabled".to_string(), v)),
+            ((self.x).inspect_value(path, offset, limit)).map(|v| ("x".to_string(), v)),
+            ((self.y).inspect_value(path, offset, limit)).map(|v| ("y".to_string(), v)),
+            ((self.z).inspect_value(path, offset, limit)).map(|v| ("z".to_string(), v)),
+            ((self.in_world_space).inspect_value(path, offset, limit))
+                .map(|v| ("inWorldSpace".to_string(), v)),
+            ((self.speed_modifier).inspect_value(path, offset, limit))
+                .map(|v| ("speedModifier".to_string(), v)),
+            ((self.orbital_x).inspect_value(path, offset, limit))
+                .map(|v| ("orbitalX".to_string(), v)),
+            ((self.orbital_y).inspect_value(path, offset, limit))
+                .map(|v| ("orbitalY".to_string(), v)),
+            ((self.orbital_z).inspect_value(path, offset, limit))
+                .map(|v| ("orbitalZ".to_string(), v)),
+            ((self.orbital_offset_x).inspect_value(path, offset, limit))
+                .map(|v| ("orbitalOffsetX".to_string(), v)),
+            ((self.orbital_offset_y).inspect_value(path, offset, limit))
+                .map(|v| ("orbitalOffsetY".to_string(), v)),
+            ((self.orbital_offset_z).inspect_value(path, offset, limit))
+                .map(|v| ("orbitalOffsetZ".to_string(), v)),
+            ((self.radial).inspect_value(path, offset, limit)).map(|v| ("radial".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

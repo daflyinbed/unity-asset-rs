@@ -40,3 +40,60 @@ impl crate::Parse for FlareElement {
         })
     }
 }
+
+impl crate::ToValue for FlareElement {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_ImageIndex".to_string(), self.m_image_index.to_value())),
+            Some(("m_Position".to_string(), self.m_position.to_value())),
+            Some(("m_Size".to_string(), self.m_size.to_value())),
+            Some(("m_Color".to_string(), self.m_color.to_value())),
+            Some((
+                "m_UseLightColor".to_string(),
+                self.m_use_light_color.to_value(),
+            )),
+            Some(("m_Rotate".to_string(), self.m_rotate.to_value())),
+            Some(("m_Zoom".to_string(), self.m_zoom.to_value())),
+            Some(("m_Fade".to_string(), self.m_fade.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_ImageIndex" => (self.m_image_index).inspect_value(path, offset, limit),
+                "m_Position" => (self.m_position).inspect_value(path, offset, limit),
+                "m_Size" => (self.m_size).inspect_value(path, offset, limit),
+                "m_Color" => (self.m_color).inspect_value(path, offset, limit),
+                "m_UseLightColor" => (self.m_use_light_color).inspect_value(path, offset, limit),
+                "m_Rotate" => (self.m_rotate).inspect_value(path, offset, limit),
+                "m_Zoom" => (self.m_zoom).inspect_value(path, offset, limit),
+                "m_Fade" => (self.m_fade).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_image_index).inspect_value(path, offset, limit))
+                .map(|v| ("m_ImageIndex".to_string(), v)),
+            ((self.m_position).inspect_value(path, offset, limit))
+                .map(|v| ("m_Position".to_string(), v)),
+            ((self.m_size).inspect_value(path, offset, limit)).map(|v| ("m_Size".to_string(), v)),
+            ((self.m_color).inspect_value(path, offset, limit)).map(|v| ("m_Color".to_string(), v)),
+            ((self.m_use_light_color).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseLightColor".to_string(), v)),
+            ((self.m_rotate).inspect_value(path, offset, limit))
+                .map(|v| ("m_Rotate".to_string(), v)),
+            ((self.m_zoom).inspect_value(path, offset, limit)).map(|v| ("m_Zoom".to_string(), v)),
+            ((self.m_fade).inspect_value(path, offset, limit)).map(|v| ("m_Fade".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

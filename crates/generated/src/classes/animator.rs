@@ -24,6 +24,21 @@ impl crate::Parse for AnimatorMControllerVariant {
     }
 }
 
+impl crate::ToValue for AnimatorMControllerVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V4_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V4_3(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：AnimatorMApplyRootMotionVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AnimatorMApplyRootMotionVariant {
@@ -51,6 +66,23 @@ impl crate::Parse for AnimatorMApplyRootMotionVariant {
     }
 }
 
+impl crate::ToValue for AnimatorMApplyRootMotionVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V4_5(v) => v.to_value(),
+            Self::V5_0(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V4_5(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_0(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：AnimatorMAnimatePhysicsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AnimatorMAnimatePhysicsVariant {
@@ -70,6 +102,21 @@ impl crate::Parse for AnimatorMAnimatePhysicsVariant {
         } else {
             let v = rdr.read_bool()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for AnimatorMAnimatePhysicsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2023_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2023_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -106,6 +153,25 @@ impl crate::Parse for AnimatorMLinearVelocityBlendingVariant {
     }
 }
 
+impl crate::ToValue for AnimatorMLinearVelocityBlendingVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2020_3_43(v) => v.to_value(),
+            Self::V2021_1(v) => v.to_value(),
+            Self::V2021_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2020_3_43(v) => (v).inspect_value(path, offset, limit),
+            Self::V2021_1(v) => (v).inspect_value(path, offset, limit),
+            Self::V2021_2(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：AnimatorMAllowConstantClipSamplingOptimizationVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AnimatorMAllowConstantClipSamplingOptimizationVariant {
@@ -133,6 +199,23 @@ impl crate::Parse for AnimatorMAllowConstantClipSamplingOptimizationVariant {
     }
 }
 
+impl crate::ToValue for AnimatorMAllowConstantClipSamplingOptimizationVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_0(v) => v.to_value(),
+            Self::V2018_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_0(v) => (v).inspect_value(path, offset, limit),
+            Self::V2018_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：AnimatorMStabilizeFeetVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AnimatorMStabilizeFeetVariant {
@@ -152,6 +235,21 @@ impl crate::Parse for AnimatorMStabilizeFeetVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for AnimatorMStabilizeFeetVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2023_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2023_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -193,6 +291,29 @@ impl crate::Parse for AnimatorMKeepAnimatorStateOnDisableVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for AnimatorMKeepAnimatorStateOnDisableVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2020_3_46(v) => v.to_value(),
+            Self::V2021_3_16(v) => v.to_value(),
+            Self::V2021_3_20(v) => v.to_value(),
+            Self::V2022_1_24(v) => v.to_value(),
+            Self::V2022_2_9(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2020_3_46(v) => (v).inspect_value(path, offset, limit),
+            Self::V2021_3_16(v) => (v).inspect_value(path, offset, limit),
+            Self::V2021_3_20(v) => (v).inspect_value(path, offset, limit),
+            Self::V2022_1_24(v) => (v).inspect_value(path, offset, limit),
+            Self::V2022_2_9(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -389,5 +510,120 @@ impl crate::Parse for Animator {
             m_keep_animator_state_on_disable,
             m_write_default_values_on_disable,
         })
+    }
+}
+
+impl crate::ToValue for Animator {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_Enabled".to_string(), self.m_enabled.to_value())),
+            Some(("m_Avatar".to_string(), self.m_avatar.to_value())),
+            Some(("m_Controller".to_string(), self.m_controller.to_value())),
+            Some(("m_CullingMode".to_string(), self.m_culling_mode.to_value())),
+            Some((
+                "m_ApplyRootMotion".to_string(),
+                self.m_apply_root_motion.to_value(),
+            )),
+            crate::opt_field("m_UpdateMode", &self.m_update_mode),
+            crate::opt_field("m_AnimatePhysics", &self.m_animate_physics),
+            crate::opt_field("m_HasTransformHierarchy", &self.m_has_transform_hierarchy),
+            crate::opt_field("m_LinearVelocityBlending", &self.m_linear_velocity_blending),
+            crate::opt_field(
+                "m_AllowConstantClipSamplingOptimization",
+                &self.m_allow_constant_clip_sampling_optimization,
+            ),
+            crate::opt_field("m_StabilizeFeet", &self.m_stabilize_feet),
+            crate::opt_field(
+                "m_KeepAnimatorControllerStateOnDisable",
+                &self.m_keep_animator_controller_state_on_disable,
+            ),
+            crate::opt_field(
+                "m_KeepAnimatorStateOnDisable",
+                &self.m_keep_animator_state_on_disable,
+            ),
+            crate::opt_field(
+                "m_WriteDefaultValuesOnDisable",
+                &self.m_write_default_values_on_disable,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "m_Avatar" => (self.m_avatar).inspect_value(path, offset, limit),
+                "m_Controller" => (self.m_controller).inspect_value(path, offset, limit),
+                "m_CullingMode" => (self.m_culling_mode).inspect_value(path, offset, limit),
+                "m_ApplyRootMotion" => {
+                    (self.m_apply_root_motion).inspect_value(path, offset, limit)
+                }
+                "m_UpdateMode" => (self.m_update_mode).inspect_value(path, offset, limit),
+                "m_AnimatePhysics" => (self.m_animate_physics).inspect_value(path, offset, limit),
+                "m_HasTransformHierarchy" => {
+                    (self.m_has_transform_hierarchy).inspect_value(path, offset, limit)
+                }
+                "m_LinearVelocityBlending" => {
+                    (self.m_linear_velocity_blending).inspect_value(path, offset, limit)
+                }
+                "m_AllowConstantClipSamplingOptimization" => (self
+                    .m_allow_constant_clip_sampling_optimization)
+                    .inspect_value(path, offset, limit),
+                "m_StabilizeFeet" => (self.m_stabilize_feet).inspect_value(path, offset, limit),
+                "m_KeepAnimatorControllerStateOnDisable" => (self
+                    .m_keep_animator_controller_state_on_disable)
+                    .inspect_value(path, offset, limit),
+                "m_KeepAnimatorStateOnDisable" => {
+                    (self.m_keep_animator_state_on_disable).inspect_value(path, offset, limit)
+                }
+                "m_WriteDefaultValuesOnDisable" => {
+                    (self.m_write_default_values_on_disable).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.m_avatar).inspect_value(path, offset, limit))
+                .map(|v| ("m_Avatar".to_string(), v)),
+            ((self.m_controller).inspect_value(path, offset, limit))
+                .map(|v| ("m_Controller".to_string(), v)),
+            ((self.m_culling_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_CullingMode".to_string(), v)),
+            ((self.m_apply_root_motion).inspect_value(path, offset, limit))
+                .map(|v| ("m_ApplyRootMotion".to_string(), v)),
+            ((self.m_update_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_UpdateMode".to_string(), v)),
+            ((self.m_animate_physics).inspect_value(path, offset, limit))
+                .map(|v| ("m_AnimatePhysics".to_string(), v)),
+            ((self.m_has_transform_hierarchy).inspect_value(path, offset, limit))
+                .map(|v| ("m_HasTransformHierarchy".to_string(), v)),
+            ((self.m_linear_velocity_blending).inspect_value(path, offset, limit))
+                .map(|v| ("m_LinearVelocityBlending".to_string(), v)),
+            ((self.m_allow_constant_clip_sampling_optimization).inspect_value(path, offset, limit))
+                .map(|v| ("m_AllowConstantClipSamplingOptimization".to_string(), v)),
+            ((self.m_stabilize_feet).inspect_value(path, offset, limit))
+                .map(|v| ("m_StabilizeFeet".to_string(), v)),
+            ((self.m_keep_animator_controller_state_on_disable).inspect_value(path, offset, limit))
+                .map(|v| ("m_KeepAnimatorControllerStateOnDisable".to_string(), v)),
+            ((self.m_keep_animator_state_on_disable).inspect_value(path, offset, limit))
+                .map(|v| ("m_KeepAnimatorStateOnDisable".to_string(), v)),
+            ((self.m_write_default_values_on_disable).inspect_value(path, offset, limit))
+                .map(|v| ("m_WriteDefaultValuesOnDisable".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

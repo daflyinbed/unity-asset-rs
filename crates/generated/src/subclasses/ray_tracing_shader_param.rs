@@ -22,6 +22,21 @@ impl crate::Parse for RayTracingShaderParamOffsetVariant {
     }
 }
 
+impl crate::ToValue for RayTracingShaderParamOffsetVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2020_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2020_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：RayTracingShaderParamArraySizeVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum RayTracingShaderParamArraySizeVariant {
@@ -40,6 +55,21 @@ impl crate::Parse for RayTracingShaderParamArraySizeVariant {
         } else {
             let v = rdr.read_i32()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for RayTracingShaderParamArraySizeVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2020_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2020_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -67,6 +97,21 @@ impl crate::Parse for RayTracingShaderParamRowCountVariant {
     }
 }
 
+impl crate::ToValue for RayTracingShaderParamRowCountVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2020_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2020_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：RayTracingShaderParamColCountVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum RayTracingShaderParamColCountVariant {
@@ -86,6 +131,21 @@ impl crate::Parse for RayTracingShaderParamColCountVariant {
         } else {
             let v = rdr.read_i32()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for RayTracingShaderParamColCountVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2020_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2020_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -143,5 +203,66 @@ impl crate::Parse for RayTracingShaderParam {
             property_sheet_type,
             col_count: col_count.unwrap(),
         })
+    }
+}
+
+impl crate::ToValue for RayTracingShaderParam {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("name".to_string(), self.name.to_value())),
+            crate::opt_field("type", &self.r#type),
+            crate::opt_field("dataType", &self.data_type),
+            Some(("offset".to_string(), self.offset.to_value())),
+            crate::opt_field("dataSize", &self.data_size),
+            Some(("arraySize".to_string(), self.array_size.to_value())),
+            Some(("rowCount".to_string(), self.row_count.to_value())),
+            crate::opt_field("propertySheetType", &self.property_sheet_type),
+            Some(("colCount".to_string(), self.col_count.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "name" => (self.name).inspect_value(path, offset, limit),
+                "type" => (self.r#type).inspect_value(path, offset, limit),
+                "dataType" => (self.data_type).inspect_value(path, offset, limit),
+                "offset" => (self.offset).inspect_value(path, offset, limit),
+                "dataSize" => (self.data_size).inspect_value(path, offset, limit),
+                "arraySize" => (self.array_size).inspect_value(path, offset, limit),
+                "rowCount" => (self.row_count).inspect_value(path, offset, limit),
+                "propertySheetType" => {
+                    (self.property_sheet_type).inspect_value(path, offset, limit)
+                }
+                "colCount" => (self.col_count).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.name).inspect_value(path, offset, limit)).map(|v| ("name".to_string(), v)),
+            ((self.r#type).inspect_value(path, offset, limit)).map(|v| ("type".to_string(), v)),
+            ((self.data_type).inspect_value(path, offset, limit))
+                .map(|v| ("dataType".to_string(), v)),
+            ((self.offset).inspect_value(path, offset, limit)).map(|v| ("offset".to_string(), v)),
+            ((self.data_size).inspect_value(path, offset, limit))
+                .map(|v| ("dataSize".to_string(), v)),
+            ((self.array_size).inspect_value(path, offset, limit))
+                .map(|v| ("arraySize".to_string(), v)),
+            ((self.row_count).inspect_value(path, offset, limit))
+                .map(|v| ("rowCount".to_string(), v)),
+            ((self.property_sheet_type).inspect_value(path, offset, limit))
+                .map(|v| ("propertySheetType".to_string(), v)),
+            ((self.col_count).inspect_value(path, offset, limit))
+                .map(|v| ("colCount".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

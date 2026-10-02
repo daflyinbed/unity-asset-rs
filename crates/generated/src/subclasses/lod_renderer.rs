@@ -17,3 +17,32 @@ impl crate::Parse for LodRenderer {
         Ok(LodRenderer { renderer })
     }
 }
+
+impl crate::ToValue for LodRenderer {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> =
+            [Some(("renderer".to_string(), self.renderer.to_value()))]
+                .into_iter()
+                .flatten()
+                .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "renderer" => (self.renderer).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.renderer).inspect_value(path, offset, limit))
+                .map(|v| ("renderer".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

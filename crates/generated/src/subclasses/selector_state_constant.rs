@@ -31,3 +31,46 @@ impl crate::Parse for SelectorStateConstant {
         })
     }
 }
+
+impl crate::ToValue for SelectorStateConstant {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some((
+                "m_TransitionConstantArray".to_string(),
+                self.m_transition_constant_array.to_value(),
+            )),
+            Some(("m_FullPathID".to_string(), self.m_full_path_id.to_value())),
+            Some(("m_IsEntry".to_string(), self.m_is_entry.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_TransitionConstantArray" => {
+                    (self.m_transition_constant_array).inspect_value(path, offset, limit)
+                }
+                "m_FullPathID" => (self.m_full_path_id).inspect_value(path, offset, limit),
+                "m_IsEntry" => (self.m_is_entry).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_transition_constant_array).inspect_value(path, offset, limit))
+                .map(|v| ("m_TransitionConstantArray".to_string(), v)),
+            ((self.m_full_path_id).inspect_value(path, offset, limit))
+                .map(|v| ("m_FullPathID".to_string(), v)),
+            ((self.m_is_entry).inspect_value(path, offset, limit))
+                .map(|v| ("m_IsEntry".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

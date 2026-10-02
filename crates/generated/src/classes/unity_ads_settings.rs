@@ -42,3 +42,57 @@ impl crate::Parse for UnityAdsSettings {
         })
     }
 }
+
+impl crate::ToValue for UnityAdsSettings {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            crate::opt_field("m_Enabled", &self.m_enabled),
+            crate::opt_field("m_InitializeOnStartup", &self.m_initialize_on_startup),
+            crate::opt_field("m_TestMode", &self.m_test_mode),
+            crate::opt_field("m_EnabledPlatforms", &self.m_enabled_platforms),
+            crate::opt_field("m_IosGameId", &self.m_ios_game_id),
+            crate::opt_field("m_AndroidGameId", &self.m_android_game_id),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "m_InitializeOnStartup" => {
+                    (self.m_initialize_on_startup).inspect_value(path, offset, limit)
+                }
+                "m_TestMode" => (self.m_test_mode).inspect_value(path, offset, limit),
+                "m_EnabledPlatforms" => {
+                    (self.m_enabled_platforms).inspect_value(path, offset, limit)
+                }
+                "m_IosGameId" => (self.m_ios_game_id).inspect_value(path, offset, limit),
+                "m_AndroidGameId" => (self.m_android_game_id).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.m_initialize_on_startup).inspect_value(path, offset, limit))
+                .map(|v| ("m_InitializeOnStartup".to_string(), v)),
+            ((self.m_test_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_TestMode".to_string(), v)),
+            ((self.m_enabled_platforms).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnabledPlatforms".to_string(), v)),
+            ((self.m_ios_game_id).inspect_value(path, offset, limit))
+                .map(|v| ("m_IosGameId".to_string(), v)),
+            ((self.m_android_game_id).inspect_value(path, offset, limit))
+                .map(|v| ("m_AndroidGameId".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

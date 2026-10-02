@@ -55,6 +55,21 @@ impl crate::Parse for TextureImporterMFileIdToRecycleNameVariant {
     }
 }
 
+impl crate::ToValue for TextureImporterMFileIdToRecycleNameVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_0(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_0(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：TextureImporterMExternalObjectsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TextureImporterMExternalObjectsVariant {
@@ -100,6 +115,21 @@ impl crate::Parse for TextureImporterMExternalObjectsVariant {
     }
 }
 
+impl crate::ToValue for TextureImporterMExternalObjectsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2019_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2019_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：TextureImporterMIsReadableVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TextureImporterMIsReadableVariant {
@@ -119,6 +149,21 @@ impl crate::Parse for TextureImporterMIsReadableVariant {
             let v = rdr.read_i32()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for TextureImporterMIsReadableVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V3_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V3_5(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -146,6 +191,21 @@ impl crate::Parse for TextureImporterMGrayScaleToAlphaVariant {
     }
 }
 
+impl crate::ToValue for TextureImporterMGrayScaleToAlphaVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V4_0(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V4_0(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：TextureImporterMFormatVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TextureImporterMFormatVariant {
@@ -165,6 +225,21 @@ impl crate::Parse for TextureImporterMFormatVariant {
             let v = rdr.read_i32()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for TextureImporterMFormatVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V4_0(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V4_0(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -192,6 +267,23 @@ impl crate::Parse for TextureImporterMTextureTypeVariant {
         } else {
             let v = rdr.read_i32()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for TextureImporterMTextureTypeVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V4_0(v) => v.to_value(),
+            Self::V5_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V4_0(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_5(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -229,6 +321,21 @@ impl crate::Parse for TextureImporterMPlatformSettingsVariant {
     }
 }
 
+impl crate::ToValue for TextureImporterMPlatformSettingsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：TextureImporterMOutputVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TextureImporterMOutputVariant {
@@ -252,6 +359,21 @@ impl crate::Parse for TextureImporterMOutputVariant {
     }
 }
 
+impl crate::ToValue for TextureImporterMOutputVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2018_2_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2018_2_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：TextureImporterMTextureFormatSetVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TextureImporterMTextureFormatSetVariant {
@@ -271,6 +393,21 @@ impl crate::Parse for TextureImporterMTextureFormatSetVariant {
             let v = rdr.read_i32()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for TextureImporterMTextureFormatSetVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2019_3_6(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2019_3_6(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -307,6 +444,25 @@ impl crate::Parse for TextureImporterMApplyGammaDecodingVariant {
     }
 }
 
+impl crate::ToValue for TextureImporterMApplyGammaDecodingVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2020_3_38(v) => v.to_value(),
+            Self::V2021_1(v) => v.to_value(),
+            Self::V2021_3_9(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2020_3_38(v) => (v).inspect_value(path, offset, limit),
+            Self::V2021_1(v) => (v).inspect_value(path, offset, limit),
+            Self::V2021_3_9(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：TextureImporterMPsdRemoveMatteVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TextureImporterMPsdRemoveMatteVariant {
@@ -330,6 +486,21 @@ impl crate::Parse for TextureImporterMPsdRemoveMatteVariant {
     }
 }
 
+impl crate::ToValue for TextureImporterMPsdRemoveMatteVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2022_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2022_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：TextureImporterMSwizzleVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TextureImporterMSwizzleVariant {
@@ -349,6 +520,21 @@ impl crate::Parse for TextureImporterMSwizzleVariant {
             let v = rdr.read_u32()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for TextureImporterMSwizzleVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2022_1_13(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2022_1_13(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -991,5 +1177,494 @@ impl crate::Parse for TextureImporter {
             m_swizzle,
             m_mipmap_limit_group_name,
         })
+    }
+}
+
+impl crate::ToValue for TextureImporter {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            crate::opt_field("m_FileIDToRecycleName", &self.m_file_id_to_recycle_name),
+            Some(("m_MipMapMode".to_string(), self.m_mip_map_mode.to_value())),
+            crate::opt_field("m_InternalIDToNameTable", &self.m_internal_id_to_name_table),
+            crate::opt_field("m_OldHashIdentity", &self.m_old_hash_identity),
+            Some((
+                "m_EnableMipMap".to_string(),
+                self.m_enable_mip_map.to_value(),
+            )),
+            crate::opt_field("m_ExternalObjects", &self.m_external_objects),
+            crate::opt_field("m_NewHashIdentity", &self.m_new_hash_identity),
+            crate::opt_field("m_LinearTexture", &self.m_linear_texture),
+            crate::opt_field("m_UsedFileIDs", &self.m_used_file_i_ds),
+            crate::opt_field("correctGamma", &self.correct_gamma),
+            crate::opt_field("m_sRGBTexture", &self.m_s_rgb_texture),
+            Some(("m_FadeOut".to_string(), self.m_fade_out.to_value())),
+            crate::opt_field("m_CorrectGamma", &self.m_correct_gamma),
+            Some((
+                "m_BorderMipMap".to_string(),
+                self.m_border_mip_map.to_value(),
+            )),
+            Some((
+                "m_MipMapFadeDistanceStart".to_string(),
+                self.m_mip_map_fade_distance_start.to_value(),
+            )),
+            Some((
+                "m_MipMapFadeDistanceEnd".to_string(),
+                self.m_mip_map_fade_distance_end.to_value(),
+            )),
+            crate::opt_field(
+                "m_MipMapsPreserveCoverage",
+                &self.m_mip_maps_preserve_coverage,
+            ),
+            Some((
+                "m_ConvertToNormalMap".to_string(),
+                self.m_convert_to_normal_map.to_value(),
+            )),
+            crate::opt_field(
+                "m_AlphaTestReferenceValue",
+                &self.m_alpha_test_reference_value,
+            ),
+            Some((
+                "m_ExternalNormalMap".to_string(),
+                self.m_external_normal_map.to_value(),
+            )),
+            Some(("m_HeightScale".to_string(), self.m_height_scale.to_value())),
+            Some((
+                "m_NormalMapFilter".to_string(),
+                self.m_normal_map_filter.to_value(),
+            )),
+            Some(("m_IsReadable".to_string(), self.m_is_readable.to_value())),
+            Some((
+                "m_GrayScaleToAlpha".to_string(),
+                self.m_gray_scale_to_alpha.to_value(),
+            )),
+            Some((
+                "m_GenerateCubemap".to_string(),
+                self.m_generate_cubemap.to_value(),
+            )),
+            Some(("m_Format".to_string(), self.m_format.to_value())),
+            crate::opt_field("m_SeamlessCubemap", &self.m_seamless_cubemap),
+            Some((
+                "m_MaxTextureSize".to_string(),
+                self.m_max_texture_size.to_value(),
+            )),
+            crate::opt_field("m_CubemapConvolution", &self.m_cubemap_convolution),
+            Some((
+                "m_TextureSettings".to_string(),
+                self.m_texture_settings.to_value(),
+            )),
+            crate::opt_field(
+                "m_CubemapConvolutionSteps",
+                &self.m_cubemap_convolution_steps,
+            ),
+            crate::opt_field("m_StreamingMipmaps", &self.m_streaming_mipmaps),
+            crate::opt_field("m_FlipGreenChannel", &self.m_flip_green_channel),
+            Some(("m_NPOTScale".to_string(), self.m_npot_scale.to_value())),
+            crate::opt_field(
+                "m_CubemapConvolutionExponent",
+                &self.m_cubemap_convolution_exponent,
+            ),
+            crate::opt_field(
+                "m_StreamingMipmapsPriority",
+                &self.m_streaming_mipmaps_priority,
+            ),
+            Some(("m_Lightmap".to_string(), self.m_lightmap.to_value())),
+            crate::opt_field("m_CompressionQuality", &self.m_compression_quality),
+            crate::opt_field("m_VTOnly", &self.m_vt_only),
+            Some(("m_TextureType".to_string(), self.m_texture_type.to_value())),
+            crate::opt_field(
+                "m_IgnoreMasterTextureLimit",
+                &self.m_ignore_master_texture_limit,
+            ),
+            crate::opt_field(
+                "m_RecommendedTextureFormat",
+                &self.m_recommended_texture_format,
+            ),
+            crate::opt_field("m_AlphaIsTransparency", &self.m_alpha_is_transparency),
+            crate::opt_field("m_SpriteMode", &self.m_sprite_mode),
+            crate::opt_field("m_IgnoreMipmapLimit", &self.m_ignore_mipmap_limit),
+            crate::opt_field(
+                "m_SourceTextureInformation",
+                &self.m_source_texture_information,
+            ),
+            Some((
+                "m_PlatformSettings".to_string(),
+                self.m_platform_settings.to_value(),
+            )),
+            crate::opt_field("m_SpriteExtrude", &self.m_sprite_extrude),
+            crate::opt_field("m_Output", &self.m_output),
+            crate::opt_field("m_SpriteMeshType", &self.m_sprite_mesh_type),
+            crate::opt_field("m_UserData", &self.m_user_data),
+            crate::opt_field("m_Alignment", &self.m_alignment),
+            crate::opt_field("m_RGBM", &self.m_rgbm),
+            crate::opt_field("m_SpritePivot", &self.m_sprite_pivot),
+            crate::opt_field("m_SpritePixelsToUnits", &self.m_sprite_pixels_to_units),
+            crate::opt_field("m_SpriteBorder", &self.m_sprite_border),
+            crate::opt_field("m_AllowsAlphaSplitting", &self.m_allows_alpha_splitting),
+            crate::opt_field("m_SpriteSheet", &self.m_sprite_sheet),
+            crate::opt_field("m_AlphaUsage", &self.m_alpha_usage),
+            crate::opt_field("m_SpritePackingTag", &self.m_sprite_packing_tag),
+            crate::opt_field(
+                "m_SpriteTessellationDetail",
+                &self.m_sprite_tessellation_detail,
+            ),
+            crate::opt_field(
+                "m_SpriteGenerateFallbackPhysicsShape",
+                &self.m_sprite_generate_fallback_physics_shape,
+            ),
+            crate::opt_field("m_TextureShape", &self.m_texture_shape),
+            crate::opt_field("m_MaxTextureSizeSet", &self.m_max_texture_size_set),
+            crate::opt_field("m_CompressionQualitySet", &self.m_compression_quality_set),
+            crate::opt_field("m_TextureFormatSet", &self.m_texture_format_set),
+            crate::opt_field("m_SingleChannelComponent", &self.m_single_channel_component),
+            crate::opt_field("m_AssetBundleName", &self.m_asset_bundle_name),
+            crate::opt_field("m_AssetBundleVariant", &self.m_asset_bundle_variant),
+            crate::opt_field("m_FlipbookRows", &self.m_flipbook_rows),
+            crate::opt_field("m_FlipbookColumns", &self.m_flipbook_columns),
+            crate::opt_field("m_ApplyGammaDecoding", &self.m_apply_gamma_decoding),
+            crate::opt_field("m_IgnorePngGamma", &self.m_ignore_png_gamma),
+            crate::opt_field("m_PSDRemoveMatte", &self.m_psd_remove_matte),
+            crate::opt_field(
+                "m_PSDShowRemoveMatteOption",
+                &self.m_psd_show_remove_matte_option,
+            ),
+            crate::opt_field("m_CookieLightType", &self.m_cookie_light_type),
+            crate::opt_field("m_Swizzle", &self.m_swizzle),
+            crate::opt_field("m_MipmapLimitGroupName", &self.m_mipmap_limit_group_name),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_FileIDToRecycleName" => {
+                    (self.m_file_id_to_recycle_name).inspect_value(path, offset, limit)
+                }
+                "m_MipMapMode" => (self.m_mip_map_mode).inspect_value(path, offset, limit),
+                "m_InternalIDToNameTable" => {
+                    (self.m_internal_id_to_name_table).inspect_value(path, offset, limit)
+                }
+                "m_OldHashIdentity" => {
+                    (self.m_old_hash_identity).inspect_value(path, offset, limit)
+                }
+                "m_EnableMipMap" => (self.m_enable_mip_map).inspect_value(path, offset, limit),
+                "m_ExternalObjects" => (self.m_external_objects).inspect_value(path, offset, limit),
+                "m_NewHashIdentity" => {
+                    (self.m_new_hash_identity).inspect_value(path, offset, limit)
+                }
+                "m_LinearTexture" => (self.m_linear_texture).inspect_value(path, offset, limit),
+                "m_UsedFileIDs" => (self.m_used_file_i_ds).inspect_value(path, offset, limit),
+                "correctGamma" => (self.correct_gamma).inspect_value(path, offset, limit),
+                "m_sRGBTexture" => (self.m_s_rgb_texture).inspect_value(path, offset, limit),
+                "m_FadeOut" => (self.m_fade_out).inspect_value(path, offset, limit),
+                "m_CorrectGamma" => (self.m_correct_gamma).inspect_value(path, offset, limit),
+                "m_BorderMipMap" => (self.m_border_mip_map).inspect_value(path, offset, limit),
+                "m_MipMapFadeDistanceStart" => {
+                    (self.m_mip_map_fade_distance_start).inspect_value(path, offset, limit)
+                }
+                "m_MipMapFadeDistanceEnd" => {
+                    (self.m_mip_map_fade_distance_end).inspect_value(path, offset, limit)
+                }
+                "m_MipMapsPreserveCoverage" => {
+                    (self.m_mip_maps_preserve_coverage).inspect_value(path, offset, limit)
+                }
+                "m_ConvertToNormalMap" => {
+                    (self.m_convert_to_normal_map).inspect_value(path, offset, limit)
+                }
+                "m_AlphaTestReferenceValue" => {
+                    (self.m_alpha_test_reference_value).inspect_value(path, offset, limit)
+                }
+                "m_ExternalNormalMap" => {
+                    (self.m_external_normal_map).inspect_value(path, offset, limit)
+                }
+                "m_HeightScale" => (self.m_height_scale).inspect_value(path, offset, limit),
+                "m_NormalMapFilter" => {
+                    (self.m_normal_map_filter).inspect_value(path, offset, limit)
+                }
+                "m_IsReadable" => (self.m_is_readable).inspect_value(path, offset, limit),
+                "m_GrayScaleToAlpha" => {
+                    (self.m_gray_scale_to_alpha).inspect_value(path, offset, limit)
+                }
+                "m_GenerateCubemap" => (self.m_generate_cubemap).inspect_value(path, offset, limit),
+                "m_Format" => (self.m_format).inspect_value(path, offset, limit),
+                "m_SeamlessCubemap" => (self.m_seamless_cubemap).inspect_value(path, offset, limit),
+                "m_MaxTextureSize" => (self.m_max_texture_size).inspect_value(path, offset, limit),
+                "m_CubemapConvolution" => {
+                    (self.m_cubemap_convolution).inspect_value(path, offset, limit)
+                }
+                "m_TextureSettings" => (self.m_texture_settings).inspect_value(path, offset, limit),
+                "m_CubemapConvolutionSteps" => {
+                    (self.m_cubemap_convolution_steps).inspect_value(path, offset, limit)
+                }
+                "m_StreamingMipmaps" => {
+                    (self.m_streaming_mipmaps).inspect_value(path, offset, limit)
+                }
+                "m_FlipGreenChannel" => {
+                    (self.m_flip_green_channel).inspect_value(path, offset, limit)
+                }
+                "m_NPOTScale" => (self.m_npot_scale).inspect_value(path, offset, limit),
+                "m_CubemapConvolutionExponent" => {
+                    (self.m_cubemap_convolution_exponent).inspect_value(path, offset, limit)
+                }
+                "m_StreamingMipmapsPriority" => {
+                    (self.m_streaming_mipmaps_priority).inspect_value(path, offset, limit)
+                }
+                "m_Lightmap" => (self.m_lightmap).inspect_value(path, offset, limit),
+                "m_CompressionQuality" => {
+                    (self.m_compression_quality).inspect_value(path, offset, limit)
+                }
+                "m_VTOnly" => (self.m_vt_only).inspect_value(path, offset, limit),
+                "m_TextureType" => (self.m_texture_type).inspect_value(path, offset, limit),
+                "m_IgnoreMasterTextureLimit" => {
+                    (self.m_ignore_master_texture_limit).inspect_value(path, offset, limit)
+                }
+                "m_RecommendedTextureFormat" => {
+                    (self.m_recommended_texture_format).inspect_value(path, offset, limit)
+                }
+                "m_AlphaIsTransparency" => {
+                    (self.m_alpha_is_transparency).inspect_value(path, offset, limit)
+                }
+                "m_SpriteMode" => (self.m_sprite_mode).inspect_value(path, offset, limit),
+                "m_IgnoreMipmapLimit" => {
+                    (self.m_ignore_mipmap_limit).inspect_value(path, offset, limit)
+                }
+                "m_SourceTextureInformation" => {
+                    (self.m_source_texture_information).inspect_value(path, offset, limit)
+                }
+                "m_PlatformSettings" => {
+                    (self.m_platform_settings).inspect_value(path, offset, limit)
+                }
+                "m_SpriteExtrude" => (self.m_sprite_extrude).inspect_value(path, offset, limit),
+                "m_Output" => (self.m_output).inspect_value(path, offset, limit),
+                "m_SpriteMeshType" => (self.m_sprite_mesh_type).inspect_value(path, offset, limit),
+                "m_UserData" => (self.m_user_data).inspect_value(path, offset, limit),
+                "m_Alignment" => (self.m_alignment).inspect_value(path, offset, limit),
+                "m_RGBM" => (self.m_rgbm).inspect_value(path, offset, limit),
+                "m_SpritePivot" => (self.m_sprite_pivot).inspect_value(path, offset, limit),
+                "m_SpritePixelsToUnits" => {
+                    (self.m_sprite_pixels_to_units).inspect_value(path, offset, limit)
+                }
+                "m_SpriteBorder" => (self.m_sprite_border).inspect_value(path, offset, limit),
+                "m_AllowsAlphaSplitting" => {
+                    (self.m_allows_alpha_splitting).inspect_value(path, offset, limit)
+                }
+                "m_SpriteSheet" => (self.m_sprite_sheet).inspect_value(path, offset, limit),
+                "m_AlphaUsage" => (self.m_alpha_usage).inspect_value(path, offset, limit),
+                "m_SpritePackingTag" => {
+                    (self.m_sprite_packing_tag).inspect_value(path, offset, limit)
+                }
+                "m_SpriteTessellationDetail" => {
+                    (self.m_sprite_tessellation_detail).inspect_value(path, offset, limit)
+                }
+                "m_SpriteGenerateFallbackPhysicsShape" => (self
+                    .m_sprite_generate_fallback_physics_shape)
+                    .inspect_value(path, offset, limit),
+                "m_TextureShape" => (self.m_texture_shape).inspect_value(path, offset, limit),
+                "m_MaxTextureSizeSet" => {
+                    (self.m_max_texture_size_set).inspect_value(path, offset, limit)
+                }
+                "m_CompressionQualitySet" => {
+                    (self.m_compression_quality_set).inspect_value(path, offset, limit)
+                }
+                "m_TextureFormatSet" => {
+                    (self.m_texture_format_set).inspect_value(path, offset, limit)
+                }
+                "m_SingleChannelComponent" => {
+                    (self.m_single_channel_component).inspect_value(path, offset, limit)
+                }
+                "m_AssetBundleName" => {
+                    (self.m_asset_bundle_name).inspect_value(path, offset, limit)
+                }
+                "m_AssetBundleVariant" => {
+                    (self.m_asset_bundle_variant).inspect_value(path, offset, limit)
+                }
+                "m_FlipbookRows" => (self.m_flipbook_rows).inspect_value(path, offset, limit),
+                "m_FlipbookColumns" => (self.m_flipbook_columns).inspect_value(path, offset, limit),
+                "m_ApplyGammaDecoding" => {
+                    (self.m_apply_gamma_decoding).inspect_value(path, offset, limit)
+                }
+                "m_IgnorePngGamma" => (self.m_ignore_png_gamma).inspect_value(path, offset, limit),
+                "m_PSDRemoveMatte" => (self.m_psd_remove_matte).inspect_value(path, offset, limit),
+                "m_PSDShowRemoveMatteOption" => {
+                    (self.m_psd_show_remove_matte_option).inspect_value(path, offset, limit)
+                }
+                "m_CookieLightType" => {
+                    (self.m_cookie_light_type).inspect_value(path, offset, limit)
+                }
+                "m_Swizzle" => (self.m_swizzle).inspect_value(path, offset, limit),
+                "m_MipmapLimitGroupName" => {
+                    (self.m_mipmap_limit_group_name).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_file_id_to_recycle_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_FileIDToRecycleName".to_string(), v)),
+            ((self.m_mip_map_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_MipMapMode".to_string(), v)),
+            ((self.m_internal_id_to_name_table).inspect_value(path, offset, limit))
+                .map(|v| ("m_InternalIDToNameTable".to_string(), v)),
+            ((self.m_old_hash_identity).inspect_value(path, offset, limit))
+                .map(|v| ("m_OldHashIdentity".to_string(), v)),
+            ((self.m_enable_mip_map).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableMipMap".to_string(), v)),
+            ((self.m_external_objects).inspect_value(path, offset, limit))
+                .map(|v| ("m_ExternalObjects".to_string(), v)),
+            ((self.m_new_hash_identity).inspect_value(path, offset, limit))
+                .map(|v| ("m_NewHashIdentity".to_string(), v)),
+            ((self.m_linear_texture).inspect_value(path, offset, limit))
+                .map(|v| ("m_LinearTexture".to_string(), v)),
+            ((self.m_used_file_i_ds).inspect_value(path, offset, limit))
+                .map(|v| ("m_UsedFileIDs".to_string(), v)),
+            ((self.correct_gamma).inspect_value(path, offset, limit))
+                .map(|v| ("correctGamma".to_string(), v)),
+            ((self.m_s_rgb_texture).inspect_value(path, offset, limit))
+                .map(|v| ("m_sRGBTexture".to_string(), v)),
+            ((self.m_fade_out).inspect_value(path, offset, limit))
+                .map(|v| ("m_FadeOut".to_string(), v)),
+            ((self.m_correct_gamma).inspect_value(path, offset, limit))
+                .map(|v| ("m_CorrectGamma".to_string(), v)),
+            ((self.m_border_mip_map).inspect_value(path, offset, limit))
+                .map(|v| ("m_BorderMipMap".to_string(), v)),
+            ((self.m_mip_map_fade_distance_start).inspect_value(path, offset, limit))
+                .map(|v| ("m_MipMapFadeDistanceStart".to_string(), v)),
+            ((self.m_mip_map_fade_distance_end).inspect_value(path, offset, limit))
+                .map(|v| ("m_MipMapFadeDistanceEnd".to_string(), v)),
+            ((self.m_mip_maps_preserve_coverage).inspect_value(path, offset, limit))
+                .map(|v| ("m_MipMapsPreserveCoverage".to_string(), v)),
+            ((self.m_convert_to_normal_map).inspect_value(path, offset, limit))
+                .map(|v| ("m_ConvertToNormalMap".to_string(), v)),
+            ((self.m_alpha_test_reference_value).inspect_value(path, offset, limit))
+                .map(|v| ("m_AlphaTestReferenceValue".to_string(), v)),
+            ((self.m_external_normal_map).inspect_value(path, offset, limit))
+                .map(|v| ("m_ExternalNormalMap".to_string(), v)),
+            ((self.m_height_scale).inspect_value(path, offset, limit))
+                .map(|v| ("m_HeightScale".to_string(), v)),
+            ((self.m_normal_map_filter).inspect_value(path, offset, limit))
+                .map(|v| ("m_NormalMapFilter".to_string(), v)),
+            ((self.m_is_readable).inspect_value(path, offset, limit))
+                .map(|v| ("m_IsReadable".to_string(), v)),
+            ((self.m_gray_scale_to_alpha).inspect_value(path, offset, limit))
+                .map(|v| ("m_GrayScaleToAlpha".to_string(), v)),
+            ((self.m_generate_cubemap).inspect_value(path, offset, limit))
+                .map(|v| ("m_GenerateCubemap".to_string(), v)),
+            ((self.m_format).inspect_value(path, offset, limit))
+                .map(|v| ("m_Format".to_string(), v)),
+            ((self.m_seamless_cubemap).inspect_value(path, offset, limit))
+                .map(|v| ("m_SeamlessCubemap".to_string(), v)),
+            ((self.m_max_texture_size).inspect_value(path, offset, limit))
+                .map(|v| ("m_MaxTextureSize".to_string(), v)),
+            ((self.m_cubemap_convolution).inspect_value(path, offset, limit))
+                .map(|v| ("m_CubemapConvolution".to_string(), v)),
+            ((self.m_texture_settings).inspect_value(path, offset, limit))
+                .map(|v| ("m_TextureSettings".to_string(), v)),
+            ((self.m_cubemap_convolution_steps).inspect_value(path, offset, limit))
+                .map(|v| ("m_CubemapConvolutionSteps".to_string(), v)),
+            ((self.m_streaming_mipmaps).inspect_value(path, offset, limit))
+                .map(|v| ("m_StreamingMipmaps".to_string(), v)),
+            ((self.m_flip_green_channel).inspect_value(path, offset, limit))
+                .map(|v| ("m_FlipGreenChannel".to_string(), v)),
+            ((self.m_npot_scale).inspect_value(path, offset, limit))
+                .map(|v| ("m_NPOTScale".to_string(), v)),
+            ((self.m_cubemap_convolution_exponent).inspect_value(path, offset, limit))
+                .map(|v| ("m_CubemapConvolutionExponent".to_string(), v)),
+            ((self.m_streaming_mipmaps_priority).inspect_value(path, offset, limit))
+                .map(|v| ("m_StreamingMipmapsPriority".to_string(), v)),
+            ((self.m_lightmap).inspect_value(path, offset, limit))
+                .map(|v| ("m_Lightmap".to_string(), v)),
+            ((self.m_compression_quality).inspect_value(path, offset, limit))
+                .map(|v| ("m_CompressionQuality".to_string(), v)),
+            ((self.m_vt_only).inspect_value(path, offset, limit))
+                .map(|v| ("m_VTOnly".to_string(), v)),
+            ((self.m_texture_type).inspect_value(path, offset, limit))
+                .map(|v| ("m_TextureType".to_string(), v)),
+            ((self.m_ignore_master_texture_limit).inspect_value(path, offset, limit))
+                .map(|v| ("m_IgnoreMasterTextureLimit".to_string(), v)),
+            ((self.m_recommended_texture_format).inspect_value(path, offset, limit))
+                .map(|v| ("m_RecommendedTextureFormat".to_string(), v)),
+            ((self.m_alpha_is_transparency).inspect_value(path, offset, limit))
+                .map(|v| ("m_AlphaIsTransparency".to_string(), v)),
+            ((self.m_sprite_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_SpriteMode".to_string(), v)),
+            ((self.m_ignore_mipmap_limit).inspect_value(path, offset, limit))
+                .map(|v| ("m_IgnoreMipmapLimit".to_string(), v)),
+            ((self.m_source_texture_information).inspect_value(path, offset, limit))
+                .map(|v| ("m_SourceTextureInformation".to_string(), v)),
+            ((self.m_platform_settings).inspect_value(path, offset, limit))
+                .map(|v| ("m_PlatformSettings".to_string(), v)),
+            ((self.m_sprite_extrude).inspect_value(path, offset, limit))
+                .map(|v| ("m_SpriteExtrude".to_string(), v)),
+            ((self.m_output).inspect_value(path, offset, limit))
+                .map(|v| ("m_Output".to_string(), v)),
+            ((self.m_sprite_mesh_type).inspect_value(path, offset, limit))
+                .map(|v| ("m_SpriteMeshType".to_string(), v)),
+            ((self.m_user_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_UserData".to_string(), v)),
+            ((self.m_alignment).inspect_value(path, offset, limit))
+                .map(|v| ("m_Alignment".to_string(), v)),
+            ((self.m_rgbm).inspect_value(path, offset, limit)).map(|v| ("m_RGBM".to_string(), v)),
+            ((self.m_sprite_pivot).inspect_value(path, offset, limit))
+                .map(|v| ("m_SpritePivot".to_string(), v)),
+            ((self.m_sprite_pixels_to_units).inspect_value(path, offset, limit))
+                .map(|v| ("m_SpritePixelsToUnits".to_string(), v)),
+            ((self.m_sprite_border).inspect_value(path, offset, limit))
+                .map(|v| ("m_SpriteBorder".to_string(), v)),
+            ((self.m_allows_alpha_splitting).inspect_value(path, offset, limit))
+                .map(|v| ("m_AllowsAlphaSplitting".to_string(), v)),
+            ((self.m_sprite_sheet).inspect_value(path, offset, limit))
+                .map(|v| ("m_SpriteSheet".to_string(), v)),
+            ((self.m_alpha_usage).inspect_value(path, offset, limit))
+                .map(|v| ("m_AlphaUsage".to_string(), v)),
+            ((self.m_sprite_packing_tag).inspect_value(path, offset, limit))
+                .map(|v| ("m_SpritePackingTag".to_string(), v)),
+            ((self.m_sprite_tessellation_detail).inspect_value(path, offset, limit))
+                .map(|v| ("m_SpriteTessellationDetail".to_string(), v)),
+            ((self.m_sprite_generate_fallback_physics_shape).inspect_value(path, offset, limit))
+                .map(|v| ("m_SpriteGenerateFallbackPhysicsShape".to_string(), v)),
+            ((self.m_texture_shape).inspect_value(path, offset, limit))
+                .map(|v| ("m_TextureShape".to_string(), v)),
+            ((self.m_max_texture_size_set).inspect_value(path, offset, limit))
+                .map(|v| ("m_MaxTextureSizeSet".to_string(), v)),
+            ((self.m_compression_quality_set).inspect_value(path, offset, limit))
+                .map(|v| ("m_CompressionQualitySet".to_string(), v)),
+            ((self.m_texture_format_set).inspect_value(path, offset, limit))
+                .map(|v| ("m_TextureFormatSet".to_string(), v)),
+            ((self.m_single_channel_component).inspect_value(path, offset, limit))
+                .map(|v| ("m_SingleChannelComponent".to_string(), v)),
+            ((self.m_asset_bundle_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_AssetBundleName".to_string(), v)),
+            ((self.m_asset_bundle_variant).inspect_value(path, offset, limit))
+                .map(|v| ("m_AssetBundleVariant".to_string(), v)),
+            ((self.m_flipbook_rows).inspect_value(path, offset, limit))
+                .map(|v| ("m_FlipbookRows".to_string(), v)),
+            ((self.m_flipbook_columns).inspect_value(path, offset, limit))
+                .map(|v| ("m_FlipbookColumns".to_string(), v)),
+            ((self.m_apply_gamma_decoding).inspect_value(path, offset, limit))
+                .map(|v| ("m_ApplyGammaDecoding".to_string(), v)),
+            ((self.m_ignore_png_gamma).inspect_value(path, offset, limit))
+                .map(|v| ("m_IgnorePngGamma".to_string(), v)),
+            ((self.m_psd_remove_matte).inspect_value(path, offset, limit))
+                .map(|v| ("m_PSDRemoveMatte".to_string(), v)),
+            ((self.m_psd_show_remove_matte_option).inspect_value(path, offset, limit))
+                .map(|v| ("m_PSDShowRemoveMatteOption".to_string(), v)),
+            ((self.m_cookie_light_type).inspect_value(path, offset, limit))
+                .map(|v| ("m_CookieLightType".to_string(), v)),
+            ((self.m_swizzle).inspect_value(path, offset, limit))
+                .map(|v| ("m_Swizzle".to_string(), v)),
+            ((self.m_mipmap_limit_group_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_MipmapLimitGroupName".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

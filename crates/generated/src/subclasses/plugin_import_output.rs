@@ -31,3 +31,43 @@ impl crate::Parse for PluginImportOutput {
         })
     }
 }
+
+impl crate::ToValue for PluginImportOutput {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            crate::opt_field("pluginType", &self.plugin_type),
+            crate::opt_field("dllType", &self.dll_type),
+            crate::opt_field("scriptingRuntimeVersion", &self.scripting_runtime_version),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "pluginType" => (self.plugin_type).inspect_value(path, offset, limit),
+                "dllType" => (self.dll_type).inspect_value(path, offset, limit),
+                "scriptingRuntimeVersion" => {
+                    (self.scripting_runtime_version).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.plugin_type).inspect_value(path, offset, limit))
+                .map(|v| ("pluginType".to_string(), v)),
+            ((self.dll_type).inspect_value(path, offset, limit))
+                .map(|v| ("dllType".to_string(), v)),
+            ((self.scripting_runtime_version).inspect_value(path, offset, limit))
+                .map(|v| ("scriptingRuntimeVersion".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

@@ -92,3 +92,126 @@ impl crate::Parse for ContentSummary {
         })
     }
 }
+
+impl crate::ToValue for ContentSummary {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some((
+                "m_serializedFileSize".to_string(),
+                self.m_serialized_file_size.to_value(),
+            )),
+            crate::opt_field("m_generatedFileSize", &self.m_generated_file_size),
+            crate::opt_field(
+                "m_reusedSerializedFileSize",
+                &self.m_reused_serialized_file_size,
+            ),
+            Some((
+                "m_sizeReusedContentInOutputDirectory".to_string(),
+                self.m_size_reused_content_in_output_directory.to_value(),
+            )),
+            Some((
+                "m_resourceDataSize".to_string(),
+                self.m_resource_data_size.to_value(),
+            )),
+            Some(("m_headerSize".to_string(), self.m_header_size.to_value())),
+            Some((
+                "m_serializedFileCount".to_string(),
+                self.m_serialized_file_count.to_value(),
+            )),
+            crate::opt_field("m_generatedFileCount", &self.m_generated_file_count),
+            crate::opt_field(
+                "m_reusedSerializedFileCount",
+                &self.m_reused_serialized_file_count,
+            ),
+            Some((
+                "m_resourceFileCount".to_string(),
+                self.m_resource_file_count.to_value(),
+            )),
+            Some(("m_objectCount".to_string(), self.m_object_count.to_value())),
+            Some((
+                "m_typeStatsList".to_string(),
+                self.m_type_stats_list.to_value(),
+            )),
+            Some((
+                "m_assetStatsList".to_string(),
+                self.m_asset_stats_list.to_value(),
+            )),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_serializedFileSize" => {
+                    (self.m_serialized_file_size).inspect_value(path, offset, limit)
+                }
+                "m_generatedFileSize" => {
+                    (self.m_generated_file_size).inspect_value(path, offset, limit)
+                }
+                "m_reusedSerializedFileSize" => {
+                    (self.m_reused_serialized_file_size).inspect_value(path, offset, limit)
+                }
+                "m_sizeReusedContentInOutputDirectory" => (self
+                    .m_size_reused_content_in_output_directory)
+                    .inspect_value(path, offset, limit),
+                "m_resourceDataSize" => {
+                    (self.m_resource_data_size).inspect_value(path, offset, limit)
+                }
+                "m_headerSize" => (self.m_header_size).inspect_value(path, offset, limit),
+                "m_serializedFileCount" => {
+                    (self.m_serialized_file_count).inspect_value(path, offset, limit)
+                }
+                "m_generatedFileCount" => {
+                    (self.m_generated_file_count).inspect_value(path, offset, limit)
+                }
+                "m_reusedSerializedFileCount" => {
+                    (self.m_reused_serialized_file_count).inspect_value(path, offset, limit)
+                }
+                "m_resourceFileCount" => {
+                    (self.m_resource_file_count).inspect_value(path, offset, limit)
+                }
+                "m_objectCount" => (self.m_object_count).inspect_value(path, offset, limit),
+                "m_typeStatsList" => (self.m_type_stats_list).inspect_value(path, offset, limit),
+                "m_assetStatsList" => (self.m_asset_stats_list).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_serialized_file_size).inspect_value(path, offset, limit))
+                .map(|v| ("m_serializedFileSize".to_string(), v)),
+            ((self.m_generated_file_size).inspect_value(path, offset, limit))
+                .map(|v| ("m_generatedFileSize".to_string(), v)),
+            ((self.m_reused_serialized_file_size).inspect_value(path, offset, limit))
+                .map(|v| ("m_reusedSerializedFileSize".to_string(), v)),
+            ((self.m_size_reused_content_in_output_directory).inspect_value(path, offset, limit))
+                .map(|v| ("m_sizeReusedContentInOutputDirectory".to_string(), v)),
+            ((self.m_resource_data_size).inspect_value(path, offset, limit))
+                .map(|v| ("m_resourceDataSize".to_string(), v)),
+            ((self.m_header_size).inspect_value(path, offset, limit))
+                .map(|v| ("m_headerSize".to_string(), v)),
+            ((self.m_serialized_file_count).inspect_value(path, offset, limit))
+                .map(|v| ("m_serializedFileCount".to_string(), v)),
+            ((self.m_generated_file_count).inspect_value(path, offset, limit))
+                .map(|v| ("m_generatedFileCount".to_string(), v)),
+            ((self.m_reused_serialized_file_count).inspect_value(path, offset, limit))
+                .map(|v| ("m_reusedSerializedFileCount".to_string(), v)),
+            ((self.m_resource_file_count).inspect_value(path, offset, limit))
+                .map(|v| ("m_resourceFileCount".to_string(), v)),
+            ((self.m_object_count).inspect_value(path, offset, limit))
+                .map(|v| ("m_objectCount".to_string(), v)),
+            ((self.m_type_stats_list).inspect_value(path, offset, limit))
+                .map(|v| ("m_typeStatsList".to_string(), v)),
+            ((self.m_asset_stats_list).inspect_value(path, offset, limit))
+                .map(|v| ("m_assetStatsList".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

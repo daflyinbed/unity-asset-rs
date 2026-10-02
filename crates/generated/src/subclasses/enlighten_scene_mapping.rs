@@ -39,6 +39,21 @@ impl crate::Parse for EnlightenSceneMappingMRenderersVariant {
     }
 }
 
+impl crate::ToValue for EnlightenSceneMappingMRenderersVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：EnlightenSceneMappingMSystemsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum EnlightenSceneMappingMSystemsVariant {
@@ -68,6 +83,21 @@ impl crate::Parse for EnlightenSceneMappingMSystemsVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for EnlightenSceneMappingMSystemsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -105,6 +135,21 @@ impl crate::Parse for EnlightenSceneMappingMSystemAtlasesVariant {
     }
 }
 
+impl crate::ToValue for EnlightenSceneMappingMSystemAtlasesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：EnlightenSceneMappingMProbesetsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum EnlightenSceneMappingMProbesetsVariant {
@@ -138,6 +183,21 @@ impl crate::Parse for EnlightenSceneMappingMProbesetsVariant {
     }
 }
 
+impl crate::ToValue for EnlightenSceneMappingMProbesetsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：EnlightenSceneMappingMTerrainChunksVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum EnlightenSceneMappingMTerrainChunksVariant {
@@ -167,6 +227,21 @@ impl crate::Parse for EnlightenSceneMappingMTerrainChunksVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for EnlightenSceneMappingMTerrainChunksVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -205,5 +280,57 @@ impl crate::Parse for EnlightenSceneMapping {
             m_probesets,
             m_terrain_chunks: m_terrain_chunks.unwrap(),
         })
+    }
+}
+
+impl crate::ToValue for EnlightenSceneMapping {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Renderers".to_string(), self.m_renderers.to_value())),
+            Some(("m_Systems".to_string(), self.m_systems.to_value())),
+            Some((
+                "m_SystemAtlases".to_string(),
+                self.m_system_atlases.to_value(),
+            )),
+            crate::opt_field("m_Probesets", &self.m_probesets),
+            Some((
+                "m_TerrainChunks".to_string(),
+                self.m_terrain_chunks.to_value(),
+            )),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Renderers" => (self.m_renderers).inspect_value(path, offset, limit),
+                "m_Systems" => (self.m_systems).inspect_value(path, offset, limit),
+                "m_SystemAtlases" => (self.m_system_atlases).inspect_value(path, offset, limit),
+                "m_Probesets" => (self.m_probesets).inspect_value(path, offset, limit),
+                "m_TerrainChunks" => (self.m_terrain_chunks).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_renderers).inspect_value(path, offset, limit))
+                .map(|v| ("m_Renderers".to_string(), v)),
+            ((self.m_systems).inspect_value(path, offset, limit))
+                .map(|v| ("m_Systems".to_string(), v)),
+            ((self.m_system_atlases).inspect_value(path, offset, limit))
+                .map(|v| ("m_SystemAtlases".to_string(), v)),
+            ((self.m_probesets).inspect_value(path, offset, limit))
+                .map(|v| ("m_Probesets".to_string(), v)),
+            ((self.m_terrain_chunks).inspect_value(path, offset, limit))
+                .map(|v| ("m_TerrainChunks".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

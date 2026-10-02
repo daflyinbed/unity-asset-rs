@@ -43,6 +43,21 @@ impl crate::Parse for VisualEffectInfoMExposedExpressionsVariant {
         }
     }
 }
+
+impl crate::ToValue for VisualEffectInfoMExposedExpressionsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2023_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2023_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct VisualEffectInfo {
     pub m_expressions: VfxExpressionContainer,
@@ -216,5 +231,136 @@ impl crate::Parse for VisualEffectInfo {
             m_compilation_version,
             m_instancing_disabled_reason,
         })
+    }
+}
+
+impl crate::ToValue for VisualEffectInfo {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Expressions".to_string(), self.m_expressions.to_value())),
+            Some((
+                "m_RendererSettings".to_string(),
+                self.m_renderer_settings.to_value(),
+            )),
+            Some((
+                "m_PropertySheet".to_string(),
+                self.m_property_sheet.to_value(),
+            )),
+            Some((
+                "m_CullingFlags".to_string(),
+                self.m_culling_flags.to_value(),
+            )),
+            Some((
+                "m_ExposedExpressions".to_string(),
+                self.m_exposed_expressions.to_value(),
+            )),
+            Some(("m_UpdateMode".to_string(), self.m_update_mode.to_value())),
+            Some(("m_Buffers".to_string(), self.m_buffers.to_value())),
+            crate::opt_field("m_PreWarmDeltaTime", &self.m_pre_warm_delta_time),
+            Some(("m_CPUBuffers".to_string(), self.m_cpu_buffers.to_value())),
+            crate::opt_field("m_PreWarmStepCount", &self.m_pre_warm_step_count),
+            crate::opt_field("m_TemporaryBuffers", &self.m_temporary_buffers),
+            Some(("m_Events".to_string(), self.m_events.to_value())),
+            crate::opt_field("m_InitialEventName", &self.m_initial_event_name),
+            crate::opt_field("m_RuntimeVersion", &self.m_runtime_version),
+            crate::opt_field("m_InstancingMode", &self.m_instancing_mode),
+            crate::opt_field("m_InstancingCapacity", &self.m_instancing_capacity),
+            crate::opt_field("m_CompilationVersion", &self.m_compilation_version),
+            crate::opt_field(
+                "m_InstancingDisabledReason",
+                &self.m_instancing_disabled_reason,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Expressions" => (self.m_expressions).inspect_value(path, offset, limit),
+                "m_RendererSettings" => {
+                    (self.m_renderer_settings).inspect_value(path, offset, limit)
+                }
+                "m_PropertySheet" => (self.m_property_sheet).inspect_value(path, offset, limit),
+                "m_CullingFlags" => (self.m_culling_flags).inspect_value(path, offset, limit),
+                "m_ExposedExpressions" => {
+                    (self.m_exposed_expressions).inspect_value(path, offset, limit)
+                }
+                "m_UpdateMode" => (self.m_update_mode).inspect_value(path, offset, limit),
+                "m_Buffers" => (self.m_buffers).inspect_value(path, offset, limit),
+                "m_PreWarmDeltaTime" => {
+                    (self.m_pre_warm_delta_time).inspect_value(path, offset, limit)
+                }
+                "m_CPUBuffers" => (self.m_cpu_buffers).inspect_value(path, offset, limit),
+                "m_PreWarmStepCount" => {
+                    (self.m_pre_warm_step_count).inspect_value(path, offset, limit)
+                }
+                "m_TemporaryBuffers" => {
+                    (self.m_temporary_buffers).inspect_value(path, offset, limit)
+                }
+                "m_Events" => (self.m_events).inspect_value(path, offset, limit),
+                "m_InitialEventName" => {
+                    (self.m_initial_event_name).inspect_value(path, offset, limit)
+                }
+                "m_RuntimeVersion" => (self.m_runtime_version).inspect_value(path, offset, limit),
+                "m_InstancingMode" => (self.m_instancing_mode).inspect_value(path, offset, limit),
+                "m_InstancingCapacity" => {
+                    (self.m_instancing_capacity).inspect_value(path, offset, limit)
+                }
+                "m_CompilationVersion" => {
+                    (self.m_compilation_version).inspect_value(path, offset, limit)
+                }
+                "m_InstancingDisabledReason" => {
+                    (self.m_instancing_disabled_reason).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_expressions).inspect_value(path, offset, limit))
+                .map(|v| ("m_Expressions".to_string(), v)),
+            ((self.m_renderer_settings).inspect_value(path, offset, limit))
+                .map(|v| ("m_RendererSettings".to_string(), v)),
+            ((self.m_property_sheet).inspect_value(path, offset, limit))
+                .map(|v| ("m_PropertySheet".to_string(), v)),
+            ((self.m_culling_flags).inspect_value(path, offset, limit))
+                .map(|v| ("m_CullingFlags".to_string(), v)),
+            ((self.m_exposed_expressions).inspect_value(path, offset, limit))
+                .map(|v| ("m_ExposedExpressions".to_string(), v)),
+            ((self.m_update_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_UpdateMode".to_string(), v)),
+            ((self.m_buffers).inspect_value(path, offset, limit))
+                .map(|v| ("m_Buffers".to_string(), v)),
+            ((self.m_pre_warm_delta_time).inspect_value(path, offset, limit))
+                .map(|v| ("m_PreWarmDeltaTime".to_string(), v)),
+            ((self.m_cpu_buffers).inspect_value(path, offset, limit))
+                .map(|v| ("m_CPUBuffers".to_string(), v)),
+            ((self.m_pre_warm_step_count).inspect_value(path, offset, limit))
+                .map(|v| ("m_PreWarmStepCount".to_string(), v)),
+            ((self.m_temporary_buffers).inspect_value(path, offset, limit))
+                .map(|v| ("m_TemporaryBuffers".to_string(), v)),
+            ((self.m_events).inspect_value(path, offset, limit))
+                .map(|v| ("m_Events".to_string(), v)),
+            ((self.m_initial_event_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_InitialEventName".to_string(), v)),
+            ((self.m_runtime_version).inspect_value(path, offset, limit))
+                .map(|v| ("m_RuntimeVersion".to_string(), v)),
+            ((self.m_instancing_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_InstancingMode".to_string(), v)),
+            ((self.m_instancing_capacity).inspect_value(path, offset, limit))
+                .map(|v| ("m_InstancingCapacity".to_string(), v)),
+            ((self.m_compilation_version).inspect_value(path, offset, limit))
+                .map(|v| ("m_CompilationVersion".to_string(), v)),
+            ((self.m_instancing_disabled_reason).inspect_value(path, offset, limit))
+                .map(|v| ("m_InstancingDisabledReason".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

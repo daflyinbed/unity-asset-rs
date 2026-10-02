@@ -95,3 +95,110 @@ impl crate::Parse for SphericalHarmonicsL2 {
         })
     }
 }
+
+impl crate::ToValue for SphericalHarmonicsL2 {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("sh[ 0]".to_string(), self.sh_0.to_value())),
+            Some(("sh[ 1]".to_string(), self.sh_1.to_value())),
+            Some(("sh[ 2]".to_string(), self.sh_2.to_value())),
+            Some(("sh[ 3]".to_string(), self.sh_3.to_value())),
+            Some(("sh[ 4]".to_string(), self.sh_4.to_value())),
+            Some(("sh[ 5]".to_string(), self.sh_5.to_value())),
+            Some(("sh[ 6]".to_string(), self.sh_6.to_value())),
+            Some(("sh[ 7]".to_string(), self.sh_7.to_value())),
+            Some(("sh[ 8]".to_string(), self.sh_8.to_value())),
+            Some(("sh[ 9]".to_string(), self.sh_9.to_value())),
+            Some(("sh[10]".to_string(), self.sh_10.to_value())),
+            Some(("sh[11]".to_string(), self.sh_11.to_value())),
+            Some(("sh[12]".to_string(), self.sh_12.to_value())),
+            Some(("sh[13]".to_string(), self.sh_13.to_value())),
+            Some(("sh[14]".to_string(), self.sh_14.to_value())),
+            Some(("sh[15]".to_string(), self.sh_15.to_value())),
+            Some(("sh[16]".to_string(), self.sh_16.to_value())),
+            Some(("sh[17]".to_string(), self.sh_17.to_value())),
+            Some(("sh[18]".to_string(), self.sh_18.to_value())),
+            Some(("sh[19]".to_string(), self.sh_19.to_value())),
+            Some(("sh[20]".to_string(), self.sh_20.to_value())),
+            Some(("sh[21]".to_string(), self.sh_21.to_value())),
+            Some(("sh[22]".to_string(), self.sh_22.to_value())),
+            Some(("sh[23]".to_string(), self.sh_23.to_value())),
+            Some(("sh[24]".to_string(), self.sh_24.to_value())),
+            Some(("sh[25]".to_string(), self.sh_25.to_value())),
+            Some(("sh[26]".to_string(), self.sh_26.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "sh[ 0]" => (self.sh_0).inspect_value(path, offset, limit),
+                "sh[ 1]" => (self.sh_1).inspect_value(path, offset, limit),
+                "sh[ 2]" => (self.sh_2).inspect_value(path, offset, limit),
+                "sh[ 3]" => (self.sh_3).inspect_value(path, offset, limit),
+                "sh[ 4]" => (self.sh_4).inspect_value(path, offset, limit),
+                "sh[ 5]" => (self.sh_5).inspect_value(path, offset, limit),
+                "sh[ 6]" => (self.sh_6).inspect_value(path, offset, limit),
+                "sh[ 7]" => (self.sh_7).inspect_value(path, offset, limit),
+                "sh[ 8]" => (self.sh_8).inspect_value(path, offset, limit),
+                "sh[ 9]" => (self.sh_9).inspect_value(path, offset, limit),
+                "sh[10]" => (self.sh_10).inspect_value(path, offset, limit),
+                "sh[11]" => (self.sh_11).inspect_value(path, offset, limit),
+                "sh[12]" => (self.sh_12).inspect_value(path, offset, limit),
+                "sh[13]" => (self.sh_13).inspect_value(path, offset, limit),
+                "sh[14]" => (self.sh_14).inspect_value(path, offset, limit),
+                "sh[15]" => (self.sh_15).inspect_value(path, offset, limit),
+                "sh[16]" => (self.sh_16).inspect_value(path, offset, limit),
+                "sh[17]" => (self.sh_17).inspect_value(path, offset, limit),
+                "sh[18]" => (self.sh_18).inspect_value(path, offset, limit),
+                "sh[19]" => (self.sh_19).inspect_value(path, offset, limit),
+                "sh[20]" => (self.sh_20).inspect_value(path, offset, limit),
+                "sh[21]" => (self.sh_21).inspect_value(path, offset, limit),
+                "sh[22]" => (self.sh_22).inspect_value(path, offset, limit),
+                "sh[23]" => (self.sh_23).inspect_value(path, offset, limit),
+                "sh[24]" => (self.sh_24).inspect_value(path, offset, limit),
+                "sh[25]" => (self.sh_25).inspect_value(path, offset, limit),
+                "sh[26]" => (self.sh_26).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.sh_0).inspect_value(path, offset, limit)).map(|v| ("sh[ 0]".to_string(), v)),
+            ((self.sh_1).inspect_value(path, offset, limit)).map(|v| ("sh[ 1]".to_string(), v)),
+            ((self.sh_2).inspect_value(path, offset, limit)).map(|v| ("sh[ 2]".to_string(), v)),
+            ((self.sh_3).inspect_value(path, offset, limit)).map(|v| ("sh[ 3]".to_string(), v)),
+            ((self.sh_4).inspect_value(path, offset, limit)).map(|v| ("sh[ 4]".to_string(), v)),
+            ((self.sh_5).inspect_value(path, offset, limit)).map(|v| ("sh[ 5]".to_string(), v)),
+            ((self.sh_6).inspect_value(path, offset, limit)).map(|v| ("sh[ 6]".to_string(), v)),
+            ((self.sh_7).inspect_value(path, offset, limit)).map(|v| ("sh[ 7]".to_string(), v)),
+            ((self.sh_8).inspect_value(path, offset, limit)).map(|v| ("sh[ 8]".to_string(), v)),
+            ((self.sh_9).inspect_value(path, offset, limit)).map(|v| ("sh[ 9]".to_string(), v)),
+            ((self.sh_10).inspect_value(path, offset, limit)).map(|v| ("sh[10]".to_string(), v)),
+            ((self.sh_11).inspect_value(path, offset, limit)).map(|v| ("sh[11]".to_string(), v)),
+            ((self.sh_12).inspect_value(path, offset, limit)).map(|v| ("sh[12]".to_string(), v)),
+            ((self.sh_13).inspect_value(path, offset, limit)).map(|v| ("sh[13]".to_string(), v)),
+            ((self.sh_14).inspect_value(path, offset, limit)).map(|v| ("sh[14]".to_string(), v)),
+            ((self.sh_15).inspect_value(path, offset, limit)).map(|v| ("sh[15]".to_string(), v)),
+            ((self.sh_16).inspect_value(path, offset, limit)).map(|v| ("sh[16]".to_string(), v)),
+            ((self.sh_17).inspect_value(path, offset, limit)).map(|v| ("sh[17]".to_string(), v)),
+            ((self.sh_18).inspect_value(path, offset, limit)).map(|v| ("sh[18]".to_string(), v)),
+            ((self.sh_19).inspect_value(path, offset, limit)).map(|v| ("sh[19]".to_string(), v)),
+            ((self.sh_20).inspect_value(path, offset, limit)).map(|v| ("sh[20]".to_string(), v)),
+            ((self.sh_21).inspect_value(path, offset, limit)).map(|v| ("sh[21]".to_string(), v)),
+            ((self.sh_22).inspect_value(path, offset, limit)).map(|v| ("sh[22]".to_string(), v)),
+            ((self.sh_23).inspect_value(path, offset, limit)).map(|v| ("sh[23]".to_string(), v)),
+            ((self.sh_24).inspect_value(path, offset, limit)).map(|v| ("sh[24]".to_string(), v)),
+            ((self.sh_25).inspect_value(path, offset, limit)).map(|v| ("sh[25]".to_string(), v)),
+            ((self.sh_26).inspect_value(path, offset, limit)).map(|v| ("sh[26]".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

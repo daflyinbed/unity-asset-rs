@@ -66,3 +66,78 @@ impl crate::Parse for SurfaceEffector2D {
         })
     }
 }
+
+impl crate::ToValue for SurfaceEffector2D {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_Enabled".to_string(), self.m_enabled.to_value())),
+            Some((
+                "m_ColliderMask".to_string(),
+                self.m_collider_mask.to_value(),
+            )),
+            crate::opt_field("m_UseColliderMask", &self.m_use_collider_mask),
+            Some(("m_Speed".to_string(), self.m_speed.to_value())),
+            Some((
+                "m_SpeedVariation".to_string(),
+                self.m_speed_variation.to_value(),
+            )),
+            crate::opt_field("m_ForceScale", &self.m_force_scale),
+            crate::opt_field("m_UseContactForce", &self.m_use_contact_force),
+            crate::opt_field("m_UseFriction", &self.m_use_friction),
+            crate::opt_field("m_UseBounce", &self.m_use_bounce),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "m_ColliderMask" => (self.m_collider_mask).inspect_value(path, offset, limit),
+                "m_UseColliderMask" => {
+                    (self.m_use_collider_mask).inspect_value(path, offset, limit)
+                }
+                "m_Speed" => (self.m_speed).inspect_value(path, offset, limit),
+                "m_SpeedVariation" => (self.m_speed_variation).inspect_value(path, offset, limit),
+                "m_ForceScale" => (self.m_force_scale).inspect_value(path, offset, limit),
+                "m_UseContactForce" => {
+                    (self.m_use_contact_force).inspect_value(path, offset, limit)
+                }
+                "m_UseFriction" => (self.m_use_friction).inspect_value(path, offset, limit),
+                "m_UseBounce" => (self.m_use_bounce).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.m_collider_mask).inspect_value(path, offset, limit))
+                .map(|v| ("m_ColliderMask".to_string(), v)),
+            ((self.m_use_collider_mask).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseColliderMask".to_string(), v)),
+            ((self.m_speed).inspect_value(path, offset, limit)).map(|v| ("m_Speed".to_string(), v)),
+            ((self.m_speed_variation).inspect_value(path, offset, limit))
+                .map(|v| ("m_SpeedVariation".to_string(), v)),
+            ((self.m_force_scale).inspect_value(path, offset, limit))
+                .map(|v| ("m_ForceScale".to_string(), v)),
+            ((self.m_use_contact_force).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseContactForce".to_string(), v)),
+            ((self.m_use_friction).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseFriction".to_string(), v)),
+            ((self.m_use_bounce).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseBounce".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

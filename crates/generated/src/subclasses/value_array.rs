@@ -35,6 +35,21 @@ impl crate::Parse for ValueArrayMPositionValuesVariant {
     }
 }
 
+impl crate::ToValue for ValueArrayMPositionValuesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_4(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_4(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：ValueArrayMScaleValuesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ValueArrayMScaleValuesVariant {
@@ -63,6 +78,21 @@ impl crate::Parse for ValueArrayMScaleValuesVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for ValueArrayMScaleValuesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_4(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_4(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -205,5 +235,65 @@ impl crate::Parse for ValueArray {
             m_vector_values,
             m_entity_id_values,
         })
+    }
+}
+
+impl crate::ToValue for ValueArray {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_BoolValues".to_string(), self.m_bool_values.to_value())),
+            crate::opt_field("m_PositionValues", &self.m_position_values),
+            Some(("m_IntValues".to_string(), self.m_int_values.to_value())),
+            crate::opt_field("m_QuaternionValues", &self.m_quaternion_values),
+            Some(("m_FloatValues".to_string(), self.m_float_values.to_value())),
+            crate::opt_field("m_ScaleValues", &self.m_scale_values),
+            crate::opt_field("m_VectorValues", &self.m_vector_values),
+            crate::opt_field("m_EntityIdValues", &self.m_entity_id_values),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_BoolValues" => (self.m_bool_values).inspect_value(path, offset, limit),
+                "m_PositionValues" => (self.m_position_values).inspect_value(path, offset, limit),
+                "m_IntValues" => (self.m_int_values).inspect_value(path, offset, limit),
+                "m_QuaternionValues" => {
+                    (self.m_quaternion_values).inspect_value(path, offset, limit)
+                }
+                "m_FloatValues" => (self.m_float_values).inspect_value(path, offset, limit),
+                "m_ScaleValues" => (self.m_scale_values).inspect_value(path, offset, limit),
+                "m_VectorValues" => (self.m_vector_values).inspect_value(path, offset, limit),
+                "m_EntityIdValues" => (self.m_entity_id_values).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_bool_values).inspect_value(path, offset, limit))
+                .map(|v| ("m_BoolValues".to_string(), v)),
+            ((self.m_position_values).inspect_value(path, offset, limit))
+                .map(|v| ("m_PositionValues".to_string(), v)),
+            ((self.m_int_values).inspect_value(path, offset, limit))
+                .map(|v| ("m_IntValues".to_string(), v)),
+            ((self.m_quaternion_values).inspect_value(path, offset, limit))
+                .map(|v| ("m_QuaternionValues".to_string(), v)),
+            ((self.m_float_values).inspect_value(path, offset, limit))
+                .map(|v| ("m_FloatValues".to_string(), v)),
+            ((self.m_scale_values).inspect_value(path, offset, limit))
+                .map(|v| ("m_ScaleValues".to_string(), v)),
+            ((self.m_vector_values).inspect_value(path, offset, limit))
+                .map(|v| ("m_VectorValues".to_string(), v)),
+            ((self.m_entity_id_values).inspect_value(path, offset, limit))
+                .map(|v| ("m_EntityIdValues".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

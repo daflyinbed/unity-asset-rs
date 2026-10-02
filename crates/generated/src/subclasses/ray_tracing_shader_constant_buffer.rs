@@ -43,3 +43,42 @@ impl crate::Parse for RayTracingShaderConstantBuffer {
         })
     }
 }
+
+impl crate::ToValue for RayTracingShaderConstantBuffer {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("name".to_string(), self.name.to_value())),
+            Some(("byteSize".to_string(), self.byte_size.to_value())),
+            Some(("params".to_string(), self.params.to_value())),
+            crate::opt_field("hash", &self.hash),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "name" => (self.name).inspect_value(path, offset, limit),
+                "byteSize" => (self.byte_size).inspect_value(path, offset, limit),
+                "params" => (self.params).inspect_value(path, offset, limit),
+                "hash" => (self.hash).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.name).inspect_value(path, offset, limit)).map(|v| ("name".to_string(), v)),
+            ((self.byte_size).inspect_value(path, offset, limit))
+                .map(|v| ("byteSize".to_string(), v)),
+            ((self.params).inspect_value(path, offset, limit)).map(|v| ("params".to_string(), v)),
+            ((self.hash).inspect_value(path, offset, limit)).map(|v| ("hash".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

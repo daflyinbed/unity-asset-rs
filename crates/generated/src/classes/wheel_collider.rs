@@ -28,6 +28,21 @@ impl crate::Parse for WheelColliderMEnabledVariant {
         }
     }
 }
+
+impl crate::ToValue for WheelColliderMEnabledVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2022_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2022_2(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct WheelCollider {
     pub m_game_object: PPtr,
@@ -116,5 +131,116 @@ impl crate::Parse for WheelCollider {
             m_layer_override_priority,
             m_provides_contacts,
         })
+    }
+}
+
+impl crate::ToValue for WheelCollider {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_Center".to_string(), self.m_center.to_value())),
+            Some(("m_Radius".to_string(), self.m_radius.to_value())),
+            Some((
+                "m_SuspensionDistance".to_string(),
+                self.m_suspension_distance.to_value(),
+            )),
+            Some((
+                "m_SuspensionSpring".to_string(),
+                self.m_suspension_spring.to_value(),
+            )),
+            Some(("m_Mass".to_string(), self.m_mass.to_value())),
+            crate::opt_field("m_ForceAppPointDistance", &self.m_force_app_point_distance),
+            Some((
+                "m_ForwardFriction".to_string(),
+                self.m_forward_friction.to_value(),
+            )),
+            Some((
+                "m_SidewaysFriction".to_string(),
+                self.m_sideways_friction.to_value(),
+            )),
+            crate::opt_field("m_WheelDampingRate", &self.m_wheel_damping_rate),
+            crate::opt_field("m_Enabled", &self.m_enabled),
+            crate::opt_field("m_IncludeLayers", &self.m_include_layers),
+            crate::opt_field("m_ExcludeLayers", &self.m_exclude_layers),
+            crate::opt_field("m_LayerOverridePriority", &self.m_layer_override_priority),
+            crate::opt_field("m_ProvidesContacts", &self.m_provides_contacts),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Center" => (self.m_center).inspect_value(path, offset, limit),
+                "m_Radius" => (self.m_radius).inspect_value(path, offset, limit),
+                "m_SuspensionDistance" => {
+                    (self.m_suspension_distance).inspect_value(path, offset, limit)
+                }
+                "m_SuspensionSpring" => {
+                    (self.m_suspension_spring).inspect_value(path, offset, limit)
+                }
+                "m_Mass" => (self.m_mass).inspect_value(path, offset, limit),
+                "m_ForceAppPointDistance" => {
+                    (self.m_force_app_point_distance).inspect_value(path, offset, limit)
+                }
+                "m_ForwardFriction" => (self.m_forward_friction).inspect_value(path, offset, limit),
+                "m_SidewaysFriction" => {
+                    (self.m_sideways_friction).inspect_value(path, offset, limit)
+                }
+                "m_WheelDampingRate" => {
+                    (self.m_wheel_damping_rate).inspect_value(path, offset, limit)
+                }
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "m_IncludeLayers" => (self.m_include_layers).inspect_value(path, offset, limit),
+                "m_ExcludeLayers" => (self.m_exclude_layers).inspect_value(path, offset, limit),
+                "m_LayerOverridePriority" => {
+                    (self.m_layer_override_priority).inspect_value(path, offset, limit)
+                }
+                "m_ProvidesContacts" => {
+                    (self.m_provides_contacts).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_center).inspect_value(path, offset, limit))
+                .map(|v| ("m_Center".to_string(), v)),
+            ((self.m_radius).inspect_value(path, offset, limit))
+                .map(|v| ("m_Radius".to_string(), v)),
+            ((self.m_suspension_distance).inspect_value(path, offset, limit))
+                .map(|v| ("m_SuspensionDistance".to_string(), v)),
+            ((self.m_suspension_spring).inspect_value(path, offset, limit))
+                .map(|v| ("m_SuspensionSpring".to_string(), v)),
+            ((self.m_mass).inspect_value(path, offset, limit)).map(|v| ("m_Mass".to_string(), v)),
+            ((self.m_force_app_point_distance).inspect_value(path, offset, limit))
+                .map(|v| ("m_ForceAppPointDistance".to_string(), v)),
+            ((self.m_forward_friction).inspect_value(path, offset, limit))
+                .map(|v| ("m_ForwardFriction".to_string(), v)),
+            ((self.m_sideways_friction).inspect_value(path, offset, limit))
+                .map(|v| ("m_SidewaysFriction".to_string(), v)),
+            ((self.m_wheel_damping_rate).inspect_value(path, offset, limit))
+                .map(|v| ("m_WheelDampingRate".to_string(), v)),
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.m_include_layers).inspect_value(path, offset, limit))
+                .map(|v| ("m_IncludeLayers".to_string(), v)),
+            ((self.m_exclude_layers).inspect_value(path, offset, limit))
+                .map(|v| ("m_ExcludeLayers".to_string(), v)),
+            ((self.m_layer_override_priority).inspect_value(path, offset, limit))
+                .map(|v| ("m_LayerOverridePriority".to_string(), v)),
+            ((self.m_provides_contacts).inspect_value(path, offset, limit))
+                .map(|v| ("m_ProvidesContacts".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

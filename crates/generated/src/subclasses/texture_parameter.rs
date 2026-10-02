@@ -52,3 +52,55 @@ impl crate::Parse for TextureParameter {
         })
     }
 }
+
+impl crate::ToValue for TextureParameter {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_NameIndex".to_string(), self.m_name_index.to_value())),
+            crate::opt_field("m_Index", &self.m_index),
+            crate::opt_field("m_Binding", &self.m_binding),
+            crate::opt_field("m_SamplerIndex", &self.m_sampler_index),
+            crate::opt_field("m_SamplerBinding", &self.m_sampler_binding),
+            Some(("m_Dim".to_string(), self.m_dim.to_value())),
+            crate::opt_field("m_MultiSampled", &self.m_multi_sampled),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_NameIndex" => (self.m_name_index).inspect_value(path, offset, limit),
+                "m_Index" => (self.m_index).inspect_value(path, offset, limit),
+                "m_Binding" => (self.m_binding).inspect_value(path, offset, limit),
+                "m_SamplerIndex" => (self.m_sampler_index).inspect_value(path, offset, limit),
+                "m_SamplerBinding" => (self.m_sampler_binding).inspect_value(path, offset, limit),
+                "m_Dim" => (self.m_dim).inspect_value(path, offset, limit),
+                "m_MultiSampled" => (self.m_multi_sampled).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name_index).inspect_value(path, offset, limit))
+                .map(|v| ("m_NameIndex".to_string(), v)),
+            ((self.m_index).inspect_value(path, offset, limit)).map(|v| ("m_Index".to_string(), v)),
+            ((self.m_binding).inspect_value(path, offset, limit))
+                .map(|v| ("m_Binding".to_string(), v)),
+            ((self.m_sampler_index).inspect_value(path, offset, limit))
+                .map(|v| ("m_SamplerIndex".to_string(), v)),
+            ((self.m_sampler_binding).inspect_value(path, offset, limit))
+                .map(|v| ("m_SamplerBinding".to_string(), v)),
+            ((self.m_dim).inspect_value(path, offset, limit)).map(|v| ("m_Dim".to_string(), v)),
+            ((self.m_multi_sampled).inspect_value(path, offset, limit))
+                .map(|v| ("m_MultiSampled".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

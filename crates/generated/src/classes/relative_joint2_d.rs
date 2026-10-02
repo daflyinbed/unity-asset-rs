@@ -75,3 +75,103 @@ impl crate::Parse for RelativeJoint2D {
         })
     }
 }
+
+impl crate::ToValue for RelativeJoint2D {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_Enabled".to_string(), self.m_enabled.to_value())),
+            Some((
+                "m_EnableCollision".to_string(),
+                self.m_enable_collision.to_value(),
+            )),
+            Some((
+                "m_ConnectedRigidBody".to_string(),
+                self.m_connected_rigid_body.to_value(),
+            )),
+            Some(("m_BreakForce".to_string(), self.m_break_force.to_value())),
+            Some(("m_BreakTorque".to_string(), self.m_break_torque.to_value())),
+            Some(("m_MaxForce".to_string(), self.m_max_force.to_value())),
+            crate::opt_field("m_BreakAction", &self.m_break_action),
+            Some(("m_MaxTorque".to_string(), self.m_max_torque.to_value())),
+            Some((
+                "m_CorrectionScale".to_string(),
+                self.m_correction_scale.to_value(),
+            )),
+            Some((
+                "m_AutoConfigureOffset".to_string(),
+                self.m_auto_configure_offset.to_value(),
+            )),
+            Some((
+                "m_LinearOffset".to_string(),
+                self.m_linear_offset.to_value(),
+            )),
+            Some((
+                "m_AngularOffset".to_string(),
+                self.m_angular_offset.to_value(),
+            )),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "m_EnableCollision" => (self.m_enable_collision).inspect_value(path, offset, limit),
+                "m_ConnectedRigidBody" => {
+                    (self.m_connected_rigid_body).inspect_value(path, offset, limit)
+                }
+                "m_BreakForce" => (self.m_break_force).inspect_value(path, offset, limit),
+                "m_BreakTorque" => (self.m_break_torque).inspect_value(path, offset, limit),
+                "m_MaxForce" => (self.m_max_force).inspect_value(path, offset, limit),
+                "m_BreakAction" => (self.m_break_action).inspect_value(path, offset, limit),
+                "m_MaxTorque" => (self.m_max_torque).inspect_value(path, offset, limit),
+                "m_CorrectionScale" => (self.m_correction_scale).inspect_value(path, offset, limit),
+                "m_AutoConfigureOffset" => {
+                    (self.m_auto_configure_offset).inspect_value(path, offset, limit)
+                }
+                "m_LinearOffset" => (self.m_linear_offset).inspect_value(path, offset, limit),
+                "m_AngularOffset" => (self.m_angular_offset).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.m_enable_collision).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableCollision".to_string(), v)),
+            ((self.m_connected_rigid_body).inspect_value(path, offset, limit))
+                .map(|v| ("m_ConnectedRigidBody".to_string(), v)),
+            ((self.m_break_force).inspect_value(path, offset, limit))
+                .map(|v| ("m_BreakForce".to_string(), v)),
+            ((self.m_break_torque).inspect_value(path, offset, limit))
+                .map(|v| ("m_BreakTorque".to_string(), v)),
+            ((self.m_max_force).inspect_value(path, offset, limit))
+                .map(|v| ("m_MaxForce".to_string(), v)),
+            ((self.m_break_action).inspect_value(path, offset, limit))
+                .map(|v| ("m_BreakAction".to_string(), v)),
+            ((self.m_max_torque).inspect_value(path, offset, limit))
+                .map(|v| ("m_MaxTorque".to_string(), v)),
+            ((self.m_correction_scale).inspect_value(path, offset, limit))
+                .map(|v| ("m_CorrectionScale".to_string(), v)),
+            ((self.m_auto_configure_offset).inspect_value(path, offset, limit))
+                .map(|v| ("m_AutoConfigureOffset".to_string(), v)),
+            ((self.m_linear_offset).inspect_value(path, offset, limit))
+                .map(|v| ("m_LinearOffset".to_string(), v)),
+            ((self.m_angular_offset).inspect_value(path, offset, limit))
+                .map(|v| ("m_AngularOffset".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

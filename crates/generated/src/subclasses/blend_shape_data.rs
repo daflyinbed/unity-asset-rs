@@ -37,6 +37,21 @@ impl crate::Parse for BlendShapeDataVerticesVariant {
     }
 }
 
+impl crate::ToValue for BlendShapeDataVerticesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：BlendShapeDataShapesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum BlendShapeDataShapesVariant {
@@ -66,6 +81,21 @@ impl crate::Parse for BlendShapeDataShapesVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for BlendShapeDataShapesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -103,6 +133,21 @@ impl crate::Parse for BlendShapeDataChannelsVariant {
     }
 }
 
+impl crate::ToValue for BlendShapeDataChannelsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：BlendShapeDataFullWeightsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum BlendShapeDataFullWeightsVariant {
@@ -135,6 +180,21 @@ impl crate::Parse for BlendShapeDataFullWeightsVariant {
         }
     }
 }
+
+impl crate::ToValue for BlendShapeDataFullWeightsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct BlendShapeData {
     pub vertices: BlendShapeDataVerticesVariant,
@@ -159,5 +219,46 @@ impl crate::Parse for BlendShapeData {
             channels,
             full_weights,
         })
+    }
+}
+
+impl crate::ToValue for BlendShapeData {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("vertices".to_string(), self.vertices.to_value())),
+            Some(("shapes".to_string(), self.shapes.to_value())),
+            Some(("channels".to_string(), self.channels.to_value())),
+            Some(("fullWeights".to_string(), self.full_weights.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "vertices" => (self.vertices).inspect_value(path, offset, limit),
+                "shapes" => (self.shapes).inspect_value(path, offset, limit),
+                "channels" => (self.channels).inspect_value(path, offset, limit),
+                "fullWeights" => (self.full_weights).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.vertices).inspect_value(path, offset, limit))
+                .map(|v| ("vertices".to_string(), v)),
+            ((self.shapes).inspect_value(path, offset, limit)).map(|v| ("shapes".to_string(), v)),
+            ((self.channels).inspect_value(path, offset, limit))
+                .map(|v| ("channels".to_string(), v)),
+            ((self.full_weights).inspect_value(path, offset, limit))
+                .map(|v| ("fullWeights".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

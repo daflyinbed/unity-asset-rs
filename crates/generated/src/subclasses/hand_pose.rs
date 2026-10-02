@@ -39,3 +39,52 @@ impl crate::Parse for HandPose {
         })
     }
 }
+
+impl crate::ToValue for HandPose {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GrabX".to_string(), self.m_grab_x.to_value())),
+            Some(("m_DoFArray".to_string(), self.m_do_f_array.to_value())),
+            Some(("m_Override".to_string(), self.m_override.to_value())),
+            Some(("m_CloseOpen".to_string(), self.m_close_open.to_value())),
+            Some(("m_InOut".to_string(), self.m_in_out.to_value())),
+            Some(("m_Grab".to_string(), self.m_grab.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GrabX" => (self.m_grab_x).inspect_value(path, offset, limit),
+                "m_DoFArray" => (self.m_do_f_array).inspect_value(path, offset, limit),
+                "m_Override" => (self.m_override).inspect_value(path, offset, limit),
+                "m_CloseOpen" => (self.m_close_open).inspect_value(path, offset, limit),
+                "m_InOut" => (self.m_in_out).inspect_value(path, offset, limit),
+                "m_Grab" => (self.m_grab).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_grab_x).inspect_value(path, offset, limit))
+                .map(|v| ("m_GrabX".to_string(), v)),
+            ((self.m_do_f_array).inspect_value(path, offset, limit))
+                .map(|v| ("m_DoFArray".to_string(), v)),
+            ((self.m_override).inspect_value(path, offset, limit))
+                .map(|v| ("m_Override".to_string(), v)),
+            ((self.m_close_open).inspect_value(path, offset, limit))
+                .map(|v| ("m_CloseOpen".to_string(), v)),
+            ((self.m_in_out).inspect_value(path, offset, limit))
+                .map(|v| ("m_InOut".to_string(), v)),
+            ((self.m_grab).inspect_value(path, offset, limit)).map(|v| ("m_Grab".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

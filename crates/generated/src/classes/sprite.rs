@@ -30,6 +30,21 @@ impl crate::Parse for SpriteMExtrudeVariant {
         }
     }
 }
+
+impl crate::ToValue for SpriteMExtrudeVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V6000_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_5(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct Sprite {
     pub m_name: String,
@@ -227,5 +242,91 @@ impl crate::Parse for Sprite {
             m_bones,
             m_scriptable_objects,
         })
+    }
+}
+
+impl crate::ToValue for Sprite {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some(("m_Rect".to_string(), self.m_rect.to_value())),
+            Some(("m_Offset".to_string(), self.m_offset.to_value())),
+            Some((
+                "m_PixelsToUnits".to_string(),
+                self.m_pixels_to_units.to_value(),
+            )),
+            crate::opt_field("m_Border", &self.m_border),
+            Some(("m_Extrude".to_string(), self.m_extrude.to_value())),
+            Some(("m_RD".to_string(), self.m_rd.to_value())),
+            crate::opt_field("m_Pivot", &self.m_pivot),
+            crate::opt_field("m_IsPolygon", &self.m_is_polygon),
+            crate::opt_field("m_RenderDataKey", &self.m_render_data_key),
+            crate::opt_field("m_AtlasTags", &self.m_atlas_tags),
+            crate::opt_field("m_SpriteAtlas", &self.m_sprite_atlas),
+            crate::opt_field("m_PhysicsShape", &self.m_physics_shape),
+            crate::opt_field("m_Bones", &self.m_bones),
+            crate::opt_field("m_ScriptableObjects", &self.m_scriptable_objects),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_Rect" => (self.m_rect).inspect_value(path, offset, limit),
+                "m_Offset" => (self.m_offset).inspect_value(path, offset, limit),
+                "m_PixelsToUnits" => (self.m_pixels_to_units).inspect_value(path, offset, limit),
+                "m_Border" => (self.m_border).inspect_value(path, offset, limit),
+                "m_Extrude" => (self.m_extrude).inspect_value(path, offset, limit),
+                "m_RD" => (self.m_rd).inspect_value(path, offset, limit),
+                "m_Pivot" => (self.m_pivot).inspect_value(path, offset, limit),
+                "m_IsPolygon" => (self.m_is_polygon).inspect_value(path, offset, limit),
+                "m_RenderDataKey" => (self.m_render_data_key).inspect_value(path, offset, limit),
+                "m_AtlasTags" => (self.m_atlas_tags).inspect_value(path, offset, limit),
+                "m_SpriteAtlas" => (self.m_sprite_atlas).inspect_value(path, offset, limit),
+                "m_PhysicsShape" => (self.m_physics_shape).inspect_value(path, offset, limit),
+                "m_Bones" => (self.m_bones).inspect_value(path, offset, limit),
+                "m_ScriptableObjects" => {
+                    (self.m_scriptable_objects).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_rect).inspect_value(path, offset, limit)).map(|v| ("m_Rect".to_string(), v)),
+            ((self.m_offset).inspect_value(path, offset, limit))
+                .map(|v| ("m_Offset".to_string(), v)),
+            ((self.m_pixels_to_units).inspect_value(path, offset, limit))
+                .map(|v| ("m_PixelsToUnits".to_string(), v)),
+            ((self.m_border).inspect_value(path, offset, limit))
+                .map(|v| ("m_Border".to_string(), v)),
+            ((self.m_extrude).inspect_value(path, offset, limit))
+                .map(|v| ("m_Extrude".to_string(), v)),
+            ((self.m_rd).inspect_value(path, offset, limit)).map(|v| ("m_RD".to_string(), v)),
+            ((self.m_pivot).inspect_value(path, offset, limit)).map(|v| ("m_Pivot".to_string(), v)),
+            ((self.m_is_polygon).inspect_value(path, offset, limit))
+                .map(|v| ("m_IsPolygon".to_string(), v)),
+            ((self.m_render_data_key).inspect_value(path, offset, limit))
+                .map(|v| ("m_RenderDataKey".to_string(), v)),
+            ((self.m_atlas_tags).inspect_value(path, offset, limit))
+                .map(|v| ("m_AtlasTags".to_string(), v)),
+            ((self.m_sprite_atlas).inspect_value(path, offset, limit))
+                .map(|v| ("m_SpriteAtlas".to_string(), v)),
+            ((self.m_physics_shape).inspect_value(path, offset, limit))
+                .map(|v| ("m_PhysicsShape".to_string(), v)),
+            ((self.m_bones).inspect_value(path, offset, limit)).map(|v| ("m_Bones".to_string(), v)),
+            ((self.m_scriptable_objects).inspect_value(path, offset, limit))
+                .map(|v| ("m_ScriptableObjects".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

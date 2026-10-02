@@ -22,6 +22,21 @@ impl crate::Parse for PackingSettingsEnableTightPackingVariant {
         }
     }
 }
+
+impl crate::ToValue for PackingSettingsEnableTightPackingVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2021_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2021_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct PackingSettings {
     pub padding: i32,
@@ -58,5 +73,69 @@ impl crate::Parse for PackingSettings {
             enable_tight_packing,
             enable_alpha_dilation,
         })
+    }
+}
+
+impl crate::ToValue for PackingSettings {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("padding".to_string(), self.padding.to_value())),
+            Some(("blockOffset".to_string(), self.block_offset.to_value())),
+            Some((
+                "allowAlphaSplitting".to_string(),
+                self.allow_alpha_splitting.to_value(),
+            )),
+            Some((
+                "enableRotation".to_string(),
+                self.enable_rotation.to_value(),
+            )),
+            Some((
+                "enableTightPacking".to_string(),
+                self.enable_tight_packing.to_value(),
+            )),
+            crate::opt_field("enableAlphaDilation", &self.enable_alpha_dilation),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "padding" => (self.padding).inspect_value(path, offset, limit),
+                "blockOffset" => (self.block_offset).inspect_value(path, offset, limit),
+                "allowAlphaSplitting" => {
+                    (self.allow_alpha_splitting).inspect_value(path, offset, limit)
+                }
+                "enableRotation" => (self.enable_rotation).inspect_value(path, offset, limit),
+                "enableTightPacking" => {
+                    (self.enable_tight_packing).inspect_value(path, offset, limit)
+                }
+                "enableAlphaDilation" => {
+                    (self.enable_alpha_dilation).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.padding).inspect_value(path, offset, limit)).map(|v| ("padding".to_string(), v)),
+            ((self.block_offset).inspect_value(path, offset, limit))
+                .map(|v| ("blockOffset".to_string(), v)),
+            ((self.allow_alpha_splitting).inspect_value(path, offset, limit))
+                .map(|v| ("allowAlphaSplitting".to_string(), v)),
+            ((self.enable_rotation).inspect_value(path, offset, limit))
+                .map(|v| ("enableRotation".to_string(), v)),
+            ((self.enable_tight_packing).inspect_value(path, offset, limit))
+                .map(|v| ("enableTightPacking".to_string(), v)),
+            ((self.enable_alpha_dilation).inspect_value(path, offset, limit))
+                .map(|v| ("enableAlphaDilation".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

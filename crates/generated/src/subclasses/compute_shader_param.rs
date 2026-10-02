@@ -24,6 +24,21 @@ impl crate::Parse for ComputeShaderParamNameVariant {
     }
 }
 
+impl crate::ToValue for ComputeShaderParamNameVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_6(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_6(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：ComputeShaderParamOffsetVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ComputeShaderParamOffsetVariant {
@@ -42,6 +57,21 @@ impl crate::Parse for ComputeShaderParamOffsetVariant {
         } else {
             let v = rdr.read_i32()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for ComputeShaderParamOffsetVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2020_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2020_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -68,6 +98,21 @@ impl crate::Parse for ComputeShaderParamArraySizeVariant {
     }
 }
 
+impl crate::ToValue for ComputeShaderParamArraySizeVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2020_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2020_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：ComputeShaderParamRowCountVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ComputeShaderParamRowCountVariant {
@@ -90,6 +135,21 @@ impl crate::Parse for ComputeShaderParamRowCountVariant {
     }
 }
 
+impl crate::ToValue for ComputeShaderParamRowCountVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2020_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2020_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：ComputeShaderParamColCountVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ComputeShaderParamColCountVariant {
@@ -108,6 +168,21 @@ impl crate::Parse for ComputeShaderParamColCountVariant {
         } else {
             let v = rdr.read_i32()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for ComputeShaderParamColCountVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2020_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2020_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -141,5 +216,52 @@ impl crate::Parse for ComputeShaderParam {
             row_count,
             col_count,
         })
+    }
+}
+
+impl crate::ToValue for ComputeShaderParam {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("name".to_string(), self.name.to_value())),
+            Some(("type".to_string(), self.r#type.to_value())),
+            Some(("offset".to_string(), self.offset.to_value())),
+            Some(("arraySize".to_string(), self.array_size.to_value())),
+            Some(("rowCount".to_string(), self.row_count.to_value())),
+            Some(("colCount".to_string(), self.col_count.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "name" => (self.name).inspect_value(path, offset, limit),
+                "type" => (self.r#type).inspect_value(path, offset, limit),
+                "offset" => (self.offset).inspect_value(path, offset, limit),
+                "arraySize" => (self.array_size).inspect_value(path, offset, limit),
+                "rowCount" => (self.row_count).inspect_value(path, offset, limit),
+                "colCount" => (self.col_count).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.name).inspect_value(path, offset, limit)).map(|v| ("name".to_string(), v)),
+            ((self.r#type).inspect_value(path, offset, limit)).map(|v| ("type".to_string(), v)),
+            ((self.offset).inspect_value(path, offset, limit)).map(|v| ("offset".to_string(), v)),
+            ((self.array_size).inspect_value(path, offset, limit))
+                .map(|v| ("arraySize".to_string(), v)),
+            ((self.row_count).inspect_value(path, offset, limit))
+                .map(|v| ("rowCount".to_string(), v)),
+            ((self.col_count).inspect_value(path, offset, limit))
+                .map(|v| ("colCount".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

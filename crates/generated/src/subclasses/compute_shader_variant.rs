@@ -47,6 +47,23 @@ impl crate::Parse for ComputeShaderVariantKernelsVariant {
     }
 }
 
+impl crate::ToValue for ComputeShaderVariantKernelsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+            Self::V2020_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+            Self::V2020_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：ComputeShaderVariantConstantBuffersVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ComputeShaderVariantConstantBuffersVariant {
@@ -89,6 +106,23 @@ impl crate::Parse for ComputeShaderVariantConstantBuffersVariant {
         }
     }
 }
+
+impl crate::ToValue for ComputeShaderVariantConstantBuffersVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_1(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_1(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct ComputeShaderVariant {
     pub target_renderer: i32,
@@ -122,5 +156,56 @@ impl crate::Parse for ComputeShaderVariant {
             constant_buffers,
             resources_resolved,
         })
+    }
+}
+
+impl crate::ToValue for ComputeShaderVariant {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some((
+                "targetRenderer".to_string(),
+                self.target_renderer.to_value(),
+            )),
+            Some(("targetLevel".to_string(), self.target_level.to_value())),
+            Some(("kernels".to_string(), self.kernels.to_value())),
+            Some((
+                "constantBuffers".to_string(),
+                self.constant_buffers.to_value(),
+            )),
+            crate::opt_field("resourcesResolved", &self.resources_resolved),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "targetRenderer" => (self.target_renderer).inspect_value(path, offset, limit),
+                "targetLevel" => (self.target_level).inspect_value(path, offset, limit),
+                "kernels" => (self.kernels).inspect_value(path, offset, limit),
+                "constantBuffers" => (self.constant_buffers).inspect_value(path, offset, limit),
+                "resourcesResolved" => (self.resources_resolved).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.target_renderer).inspect_value(path, offset, limit))
+                .map(|v| ("targetRenderer".to_string(), v)),
+            ((self.target_level).inspect_value(path, offset, limit))
+                .map(|v| ("targetLevel".to_string(), v)),
+            ((self.kernels).inspect_value(path, offset, limit)).map(|v| ("kernels".to_string(), v)),
+            ((self.constant_buffers).inspect_value(path, offset, limit))
+                .map(|v| ("constantBuffers".to_string(), v)),
+            ((self.resources_resolved).inspect_value(path, offset, limit))
+                .map(|v| ("resourcesResolved".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

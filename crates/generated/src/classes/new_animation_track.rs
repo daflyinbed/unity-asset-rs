@@ -34,6 +34,21 @@ impl crate::Parse for NewAnimationTrackMCurvesVariant {
         }
     }
 }
+
+impl crate::ToValue for NewAnimationTrackMCurvesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct NewAnimationTrack {
     pub m_name: String,
@@ -55,5 +70,42 @@ impl crate::Parse for NewAnimationTrack {
             m_curves,
             m_class_id,
         })
+    }
+}
+
+impl crate::ToValue for NewAnimationTrack {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some(("m_Curves".to_string(), self.m_curves.to_value())),
+            Some(("m_ClassID".to_string(), self.m_class_id.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_Curves" => (self.m_curves).inspect_value(path, offset, limit),
+                "m_ClassID" => (self.m_class_id).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_curves).inspect_value(path, offset, limit))
+                .map(|v| ("m_Curves".to_string(), v)),
+            ((self.m_class_id).inspect_value(path, offset, limit))
+                .map(|v| ("m_ClassID".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

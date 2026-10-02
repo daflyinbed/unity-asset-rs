@@ -26,6 +26,21 @@ impl crate::Parse for ComputeShaderKernelNameVariant {
     }
 }
 
+impl crate::ToValue for ComputeShaderKernelNameVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_6(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_6(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：ComputeShaderKernelCbsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ComputeShaderKernelCbsVariant {
@@ -55,6 +70,21 @@ impl crate::Parse for ComputeShaderKernelCbsVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for ComputeShaderKernelCbsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -92,6 +122,21 @@ impl crate::Parse for ComputeShaderKernelTexturesVariant {
     }
 }
 
+impl crate::ToValue for ComputeShaderKernelTexturesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：ComputeShaderKernelBuiltinSamplersVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ComputeShaderKernelBuiltinSamplersVariant {
@@ -121,6 +166,21 @@ impl crate::Parse for ComputeShaderKernelBuiltinSamplersVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for ComputeShaderKernelBuiltinSamplersVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -158,6 +218,21 @@ impl crate::Parse for ComputeShaderKernelInBuffersVariant {
     }
 }
 
+impl crate::ToValue for ComputeShaderKernelInBuffersVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：ComputeShaderKernelOutBuffersVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ComputeShaderKernelOutBuffersVariant {
@@ -187,6 +262,21 @@ impl crate::Parse for ComputeShaderKernelOutBuffersVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for ComputeShaderKernelOutBuffersVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -278,5 +368,71 @@ impl crate::Parse for ComputeShaderKernel {
             thread_group_size,
             requirements,
         })
+    }
+}
+
+impl crate::ToValue for ComputeShaderKernel {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            crate::opt_field("name", &self.name),
+            crate::opt_field("cbVariantIndices", &self.cb_variant_indices),
+            Some(("cbs".to_string(), self.cbs.to_value())),
+            Some(("textures".to_string(), self.textures.to_value())),
+            Some((
+                "builtinSamplers".to_string(),
+                self.builtin_samplers.to_value(),
+            )),
+            Some(("inBuffers".to_string(), self.in_buffers.to_value())),
+            Some(("outBuffers".to_string(), self.out_buffers.to_value())),
+            Some(("code".to_string(), self.code.to_value())),
+            crate::opt_field("threadGroupSize", &self.thread_group_size),
+            crate::opt_field("requirements", &self.requirements),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "name" => (self.name).inspect_value(path, offset, limit),
+                "cbVariantIndices" => (self.cb_variant_indices).inspect_value(path, offset, limit),
+                "cbs" => (self.cbs).inspect_value(path, offset, limit),
+                "textures" => (self.textures).inspect_value(path, offset, limit),
+                "builtinSamplers" => (self.builtin_samplers).inspect_value(path, offset, limit),
+                "inBuffers" => (self.in_buffers).inspect_value(path, offset, limit),
+                "outBuffers" => (self.out_buffers).inspect_value(path, offset, limit),
+                "code" => (self.code).inspect_value(path, offset, limit),
+                "threadGroupSize" => (self.thread_group_size).inspect_value(path, offset, limit),
+                "requirements" => (self.requirements).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.name).inspect_value(path, offset, limit)).map(|v| ("name".to_string(), v)),
+            ((self.cb_variant_indices).inspect_value(path, offset, limit))
+                .map(|v| ("cbVariantIndices".to_string(), v)),
+            ((self.cbs).inspect_value(path, offset, limit)).map(|v| ("cbs".to_string(), v)),
+            ((self.textures).inspect_value(path, offset, limit))
+                .map(|v| ("textures".to_string(), v)),
+            ((self.builtin_samplers).inspect_value(path, offset, limit))
+                .map(|v| ("builtinSamplers".to_string(), v)),
+            ((self.in_buffers).inspect_value(path, offset, limit))
+                .map(|v| ("inBuffers".to_string(), v)),
+            ((self.out_buffers).inspect_value(path, offset, limit))
+                .map(|v| ("outBuffers".to_string(), v)),
+            ((self.code).inspect_value(path, offset, limit)).map(|v| ("code".to_string(), v)),
+            ((self.thread_group_size).inspect_value(path, offset, limit))
+                .map(|v| ("threadGroupSize".to_string(), v)),
+            ((self.requirements).inspect_value(path, offset, limit))
+                .map(|v| ("requirements".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

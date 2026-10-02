@@ -92,3 +92,91 @@ impl crate::Parse for AssetServerCache {
         })
     }
 }
+
+impl crate::ToValue for AssetServerCache {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Items".to_string(), self.m_items.to_value())),
+            Some((
+                "m_DeletedItems".to_string(),
+                self.m_deleted_items.to_value(),
+            )),
+            Some((
+                "m_LastCommitMessage".to_string(),
+                self.m_last_commit_message.to_value(),
+            )),
+            Some((
+                "m_CommitItemSelection".to_string(),
+                self.m_commit_item_selection.to_value(),
+            )),
+            Some((
+                "m_WorkingItemMetaData".to_string(),
+                self.m_working_item_meta_data.to_value(),
+            )),
+            Some((
+                "m_LatestServerChangeset".to_string(),
+                self.m_latest_server_changeset.to_value(),
+            )),
+            Some((
+                "m_CachesInitialized".to_string(),
+                self.m_caches_initialized.to_value(),
+            )),
+            Some((
+                "m_ModifiedItems".to_string(),
+                self.m_modified_items.to_value(),
+            )),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Items" => (self.m_items).inspect_value(path, offset, limit),
+                "m_DeletedItems" => (self.m_deleted_items).inspect_value(path, offset, limit),
+                "m_LastCommitMessage" => {
+                    (self.m_last_commit_message).inspect_value(path, offset, limit)
+                }
+                "m_CommitItemSelection" => {
+                    (self.m_commit_item_selection).inspect_value(path, offset, limit)
+                }
+                "m_WorkingItemMetaData" => {
+                    (self.m_working_item_meta_data).inspect_value(path, offset, limit)
+                }
+                "m_LatestServerChangeset" => {
+                    (self.m_latest_server_changeset).inspect_value(path, offset, limit)
+                }
+                "m_CachesInitialized" => {
+                    (self.m_caches_initialized).inspect_value(path, offset, limit)
+                }
+                "m_ModifiedItems" => (self.m_modified_items).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_items).inspect_value(path, offset, limit)).map(|v| ("m_Items".to_string(), v)),
+            ((self.m_deleted_items).inspect_value(path, offset, limit))
+                .map(|v| ("m_DeletedItems".to_string(), v)),
+            ((self.m_last_commit_message).inspect_value(path, offset, limit))
+                .map(|v| ("m_LastCommitMessage".to_string(), v)),
+            ((self.m_commit_item_selection).inspect_value(path, offset, limit))
+                .map(|v| ("m_CommitItemSelection".to_string(), v)),
+            ((self.m_working_item_meta_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_WorkingItemMetaData".to_string(), v)),
+            ((self.m_latest_server_changeset).inspect_value(path, offset, limit))
+                .map(|v| ("m_LatestServerChangeset".to_string(), v)),
+            ((self.m_caches_initialized).inspect_value(path, offset, limit))
+                .map(|v| ("m_CachesInitialized".to_string(), v)),
+            ((self.m_modified_items).inspect_value(path, offset, limit))
+                .map(|v| ("m_ModifiedItems".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

@@ -151,3 +151,60 @@ impl crate::Parse for ComputeShaderKernelParent {
         })
     }
 }
+
+impl crate::ToValue for ComputeShaderKernelParent {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("name".to_string(), self.name.to_value())),
+            crate::opt_field("variantMap", &self.variant_map),
+            crate::opt_field("uniqueVariants", &self.unique_variants),
+            crate::opt_field("validKeywords", &self.valid_keywords),
+            crate::opt_field("globalKeywords", &self.global_keywords),
+            crate::opt_field("variantIndices", &self.variant_indices),
+            crate::opt_field("localKeywords", &self.local_keywords),
+            crate::opt_field("dynamicKeywords", &self.dynamic_keywords),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "name" => (self.name).inspect_value(path, offset, limit),
+                "variantMap" => (self.variant_map).inspect_value(path, offset, limit),
+                "uniqueVariants" => (self.unique_variants).inspect_value(path, offset, limit),
+                "validKeywords" => (self.valid_keywords).inspect_value(path, offset, limit),
+                "globalKeywords" => (self.global_keywords).inspect_value(path, offset, limit),
+                "variantIndices" => (self.variant_indices).inspect_value(path, offset, limit),
+                "localKeywords" => (self.local_keywords).inspect_value(path, offset, limit),
+                "dynamicKeywords" => (self.dynamic_keywords).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.name).inspect_value(path, offset, limit)).map(|v| ("name".to_string(), v)),
+            ((self.variant_map).inspect_value(path, offset, limit))
+                .map(|v| ("variantMap".to_string(), v)),
+            ((self.unique_variants).inspect_value(path, offset, limit))
+                .map(|v| ("uniqueVariants".to_string(), v)),
+            ((self.valid_keywords).inspect_value(path, offset, limit))
+                .map(|v| ("validKeywords".to_string(), v)),
+            ((self.global_keywords).inspect_value(path, offset, limit))
+                .map(|v| ("globalKeywords".to_string(), v)),
+            ((self.variant_indices).inspect_value(path, offset, limit))
+                .map(|v| ("variantIndices".to_string(), v)),
+            ((self.local_keywords).inspect_value(path, offset, limit))
+                .map(|v| ("localKeywords".to_string(), v)),
+            ((self.dynamic_keywords).inspect_value(path, offset, limit))
+                .map(|v| ("dynamicKeywords".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

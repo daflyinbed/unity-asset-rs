@@ -26,6 +26,21 @@ impl crate::Parse for ShapeModuleRadiusVariant {
     }
 }
 
+impl crate::ToValue for ShapeModuleRadiusVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_6(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_6(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：ShapeModuleArcVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ShapeModuleArcVariant {
@@ -44,6 +59,21 @@ impl crate::Parse for ShapeModuleArcVariant {
         } else {
             let v = rdr.read_f32()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for ShapeModuleArcVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_6(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_6(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -319,5 +349,211 @@ impl crate::Parse for ShapeModule {
             m_texture_alpha_affects_particles,
             m_texture_bilinear_filtering,
         })
+    }
+}
+
+impl crate::ToValue for ShapeModule {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("enabled".to_string(), self.enabled.to_value())),
+            Some(("type".to_string(), self.r#type.to_value())),
+            Some(("radius".to_string(), self.radius.to_value())),
+            Some(("angle".to_string(), self.angle.to_value())),
+            crate::opt_field("length", &self.length),
+            crate::opt_field("boxX", &self.box_x),
+            crate::opt_field("boxThickness", &self.box_thickness),
+            crate::opt_field("boxY", &self.box_y),
+            crate::opt_field("radiusThickness", &self.radius_thickness),
+            crate::opt_field("boxZ", &self.box_z),
+            crate::opt_field("donutRadius", &self.donut_radius),
+            Some(("placementMode".to_string(), self.placement_mode.to_value())),
+            crate::opt_field("m_Position", &self.m_position),
+            Some(("m_Mesh".to_string(), self.m_mesh.to_value())),
+            crate::opt_field("arc", &self.arc),
+            crate::opt_field("m_Rotation", &self.m_rotation),
+            crate::opt_field("randomDirection", &self.random_direction),
+            crate::opt_field("m_Scale", &self.m_scale),
+            crate::opt_field("m_MeshRenderer", &self.m_mesh_renderer),
+            crate::opt_field("m_MeshMaterialIndex", &self.m_mesh_material_index),
+            crate::opt_field("m_SkinnedMeshRenderer", &self.m_skinned_mesh_renderer),
+            crate::opt_field("m_MeshNormalOffset", &self.m_mesh_normal_offset),
+            crate::opt_field("m_MeshSpawn", &self.m_mesh_spawn),
+            crate::opt_field("m_UseMeshMaterialIndex", &self.m_use_mesh_material_index),
+            crate::opt_field("m_MeshScale", &self.m_mesh_scale),
+            crate::opt_field("m_UseMeshColors", &self.m_use_mesh_colors),
+            crate::opt_field("m_Sprite", &self.m_sprite),
+            crate::opt_field("m_SpriteRenderer", &self.m_sprite_renderer),
+            crate::opt_field("alignToDirection", &self.align_to_direction),
+            crate::opt_field("randomDirectionAmount", &self.random_direction_amount),
+            crate::opt_field("m_Texture", &self.m_texture),
+            crate::opt_field("sphericalDirectionAmount", &self.spherical_direction_amount),
+            crate::opt_field("m_TextureClipChannel", &self.m_texture_clip_channel),
+            crate::opt_field("randomPositionAmount", &self.random_position_amount),
+            crate::opt_field("m_TextureClipThreshold", &self.m_texture_clip_threshold),
+            crate::opt_field("m_TextureUVChannel", &self.m_texture_uv_channel),
+            crate::opt_field(
+                "m_TextureColorAffectsParticles",
+                &self.m_texture_color_affects_particles,
+            ),
+            crate::opt_field(
+                "m_TextureAlphaAffectsParticles",
+                &self.m_texture_alpha_affects_particles,
+            ),
+            crate::opt_field(
+                "m_TextureBilinearFiltering",
+                &self.m_texture_bilinear_filtering,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "enabled" => (self.enabled).inspect_value(path, offset, limit),
+                "type" => (self.r#type).inspect_value(path, offset, limit),
+                "radius" => (self.radius).inspect_value(path, offset, limit),
+                "angle" => (self.angle).inspect_value(path, offset, limit),
+                "length" => (self.length).inspect_value(path, offset, limit),
+                "boxX" => (self.box_x).inspect_value(path, offset, limit),
+                "boxThickness" => (self.box_thickness).inspect_value(path, offset, limit),
+                "boxY" => (self.box_y).inspect_value(path, offset, limit),
+                "radiusThickness" => (self.radius_thickness).inspect_value(path, offset, limit),
+                "boxZ" => (self.box_z).inspect_value(path, offset, limit),
+                "donutRadius" => (self.donut_radius).inspect_value(path, offset, limit),
+                "placementMode" => (self.placement_mode).inspect_value(path, offset, limit),
+                "m_Position" => (self.m_position).inspect_value(path, offset, limit),
+                "m_Mesh" => (self.m_mesh).inspect_value(path, offset, limit),
+                "arc" => (self.arc).inspect_value(path, offset, limit),
+                "m_Rotation" => (self.m_rotation).inspect_value(path, offset, limit),
+                "randomDirection" => (self.random_direction).inspect_value(path, offset, limit),
+                "m_Scale" => (self.m_scale).inspect_value(path, offset, limit),
+                "m_MeshRenderer" => (self.m_mesh_renderer).inspect_value(path, offset, limit),
+                "m_MeshMaterialIndex" => {
+                    (self.m_mesh_material_index).inspect_value(path, offset, limit)
+                }
+                "m_SkinnedMeshRenderer" => {
+                    (self.m_skinned_mesh_renderer).inspect_value(path, offset, limit)
+                }
+                "m_MeshNormalOffset" => {
+                    (self.m_mesh_normal_offset).inspect_value(path, offset, limit)
+                }
+                "m_MeshSpawn" => (self.m_mesh_spawn).inspect_value(path, offset, limit),
+                "m_UseMeshMaterialIndex" => {
+                    (self.m_use_mesh_material_index).inspect_value(path, offset, limit)
+                }
+                "m_MeshScale" => (self.m_mesh_scale).inspect_value(path, offset, limit),
+                "m_UseMeshColors" => (self.m_use_mesh_colors).inspect_value(path, offset, limit),
+                "m_Sprite" => (self.m_sprite).inspect_value(path, offset, limit),
+                "m_SpriteRenderer" => (self.m_sprite_renderer).inspect_value(path, offset, limit),
+                "alignToDirection" => (self.align_to_direction).inspect_value(path, offset, limit),
+                "randomDirectionAmount" => {
+                    (self.random_direction_amount).inspect_value(path, offset, limit)
+                }
+                "m_Texture" => (self.m_texture).inspect_value(path, offset, limit),
+                "sphericalDirectionAmount" => {
+                    (self.spherical_direction_amount).inspect_value(path, offset, limit)
+                }
+                "m_TextureClipChannel" => {
+                    (self.m_texture_clip_channel).inspect_value(path, offset, limit)
+                }
+                "randomPositionAmount" => {
+                    (self.random_position_amount).inspect_value(path, offset, limit)
+                }
+                "m_TextureClipThreshold" => {
+                    (self.m_texture_clip_threshold).inspect_value(path, offset, limit)
+                }
+                "m_TextureUVChannel" => {
+                    (self.m_texture_uv_channel).inspect_value(path, offset, limit)
+                }
+                "m_TextureColorAffectsParticles" => {
+                    (self.m_texture_color_affects_particles).inspect_value(path, offset, limit)
+                }
+                "m_TextureAlphaAffectsParticles" => {
+                    (self.m_texture_alpha_affects_particles).inspect_value(path, offset, limit)
+                }
+                "m_TextureBilinearFiltering" => {
+                    (self.m_texture_bilinear_filtering).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.enabled).inspect_value(path, offset, limit)).map(|v| ("enabled".to_string(), v)),
+            ((self.r#type).inspect_value(path, offset, limit)).map(|v| ("type".to_string(), v)),
+            ((self.radius).inspect_value(path, offset, limit)).map(|v| ("radius".to_string(), v)),
+            ((self.angle).inspect_value(path, offset, limit)).map(|v| ("angle".to_string(), v)),
+            ((self.length).inspect_value(path, offset, limit)).map(|v| ("length".to_string(), v)),
+            ((self.box_x).inspect_value(path, offset, limit)).map(|v| ("boxX".to_string(), v)),
+            ((self.box_thickness).inspect_value(path, offset, limit))
+                .map(|v| ("boxThickness".to_string(), v)),
+            ((self.box_y).inspect_value(path, offset, limit)).map(|v| ("boxY".to_string(), v)),
+            ((self.radius_thickness).inspect_value(path, offset, limit))
+                .map(|v| ("radiusThickness".to_string(), v)),
+            ((self.box_z).inspect_value(path, offset, limit)).map(|v| ("boxZ".to_string(), v)),
+            ((self.donut_radius).inspect_value(path, offset, limit))
+                .map(|v| ("donutRadius".to_string(), v)),
+            ((self.placement_mode).inspect_value(path, offset, limit))
+                .map(|v| ("placementMode".to_string(), v)),
+            ((self.m_position).inspect_value(path, offset, limit))
+                .map(|v| ("m_Position".to_string(), v)),
+            ((self.m_mesh).inspect_value(path, offset, limit)).map(|v| ("m_Mesh".to_string(), v)),
+            ((self.arc).inspect_value(path, offset, limit)).map(|v| ("arc".to_string(), v)),
+            ((self.m_rotation).inspect_value(path, offset, limit))
+                .map(|v| ("m_Rotation".to_string(), v)),
+            ((self.random_direction).inspect_value(path, offset, limit))
+                .map(|v| ("randomDirection".to_string(), v)),
+            ((self.m_scale).inspect_value(path, offset, limit)).map(|v| ("m_Scale".to_string(), v)),
+            ((self.m_mesh_renderer).inspect_value(path, offset, limit))
+                .map(|v| ("m_MeshRenderer".to_string(), v)),
+            ((self.m_mesh_material_index).inspect_value(path, offset, limit))
+                .map(|v| ("m_MeshMaterialIndex".to_string(), v)),
+            ((self.m_skinned_mesh_renderer).inspect_value(path, offset, limit))
+                .map(|v| ("m_SkinnedMeshRenderer".to_string(), v)),
+            ((self.m_mesh_normal_offset).inspect_value(path, offset, limit))
+                .map(|v| ("m_MeshNormalOffset".to_string(), v)),
+            ((self.m_mesh_spawn).inspect_value(path, offset, limit))
+                .map(|v| ("m_MeshSpawn".to_string(), v)),
+            ((self.m_use_mesh_material_index).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseMeshMaterialIndex".to_string(), v)),
+            ((self.m_mesh_scale).inspect_value(path, offset, limit))
+                .map(|v| ("m_MeshScale".to_string(), v)),
+            ((self.m_use_mesh_colors).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseMeshColors".to_string(), v)),
+            ((self.m_sprite).inspect_value(path, offset, limit))
+                .map(|v| ("m_Sprite".to_string(), v)),
+            ((self.m_sprite_renderer).inspect_value(path, offset, limit))
+                .map(|v| ("m_SpriteRenderer".to_string(), v)),
+            ((self.align_to_direction).inspect_value(path, offset, limit))
+                .map(|v| ("alignToDirection".to_string(), v)),
+            ((self.random_direction_amount).inspect_value(path, offset, limit))
+                .map(|v| ("randomDirectionAmount".to_string(), v)),
+            ((self.m_texture).inspect_value(path, offset, limit))
+                .map(|v| ("m_Texture".to_string(), v)),
+            ((self.spherical_direction_amount).inspect_value(path, offset, limit))
+                .map(|v| ("sphericalDirectionAmount".to_string(), v)),
+            ((self.m_texture_clip_channel).inspect_value(path, offset, limit))
+                .map(|v| ("m_TextureClipChannel".to_string(), v)),
+            ((self.random_position_amount).inspect_value(path, offset, limit))
+                .map(|v| ("randomPositionAmount".to_string(), v)),
+            ((self.m_texture_clip_threshold).inspect_value(path, offset, limit))
+                .map(|v| ("m_TextureClipThreshold".to_string(), v)),
+            ((self.m_texture_uv_channel).inspect_value(path, offset, limit))
+                .map(|v| ("m_TextureUVChannel".to_string(), v)),
+            ((self.m_texture_color_affects_particles).inspect_value(path, offset, limit))
+                .map(|v| ("m_TextureColorAffectsParticles".to_string(), v)),
+            ((self.m_texture_alpha_affects_particles).inspect_value(path, offset, limit))
+                .map(|v| ("m_TextureAlphaAffectsParticles".to_string(), v)),
+            ((self.m_texture_bilinear_filtering).inspect_value(path, offset, limit))
+                .map(|v| ("m_TextureBilinearFiltering".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

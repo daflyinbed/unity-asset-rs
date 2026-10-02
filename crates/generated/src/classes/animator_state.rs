@@ -36,6 +36,21 @@ impl crate::Parse for AnimatorStateMTransitionsVariant {
     }
 }
 
+impl crate::ToValue for AnimatorStateMTransitionsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：AnimatorStateMStateMachineBehavioursVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AnimatorStateMStateMachineBehavioursVariant {
@@ -69,6 +84,21 @@ impl crate::Parse for AnimatorStateMStateMachineBehavioursVariant {
     }
 }
 
+impl crate::ToValue for AnimatorStateMStateMachineBehavioursVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：AnimatorStateMIkOnFeetVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AnimatorStateMIkOnFeetVariant {
@@ -88,6 +118,21 @@ impl crate::Parse for AnimatorStateMIkOnFeetVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for AnimatorStateMIkOnFeetVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V4_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V4_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -115,6 +160,21 @@ impl crate::Parse for AnimatorStateMMirrorVariant {
     }
 }
 
+impl crate::ToValue for AnimatorStateMMirrorVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：AnimatorStateMCycleOffsetParameterActiveVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AnimatorStateMCycleOffsetParameterActiveVariant {
@@ -134,6 +194,21 @@ impl crate::Parse for AnimatorStateMCycleOffsetParameterActiveVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for AnimatorStateMCycleOffsetParameterActiveVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_2(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -284,5 +359,131 @@ impl crate::Parse for AnimatorState {
             m_cycle_offset_parameter,
             m_time_parameter,
         })
+    }
+}
+
+impl crate::ToValue for AnimatorState {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some(("m_Speed".to_string(), self.m_speed.to_value())),
+            crate::opt_field("m_Motions", &self.m_motions),
+            crate::opt_field("m_CycleOffset", &self.m_cycle_offset),
+            crate::opt_field("m_ParentStateMachine", &self.m_parent_state_machine),
+            crate::opt_field("m_Transitions", &self.m_transitions),
+            Some(("m_Position".to_string(), self.m_position.to_value())),
+            crate::opt_field("m_StateMachineBehaviours", &self.m_state_machine_behaviours),
+            Some(("m_IKOnFeet".to_string(), self.m_ik_on_feet.to_value())),
+            Some(("m_Tag".to_string(), self.m_tag.to_value())),
+            crate::opt_field("m_Mirror", &self.m_mirror),
+            crate::opt_field("m_WriteDefaultValues", &self.m_write_default_values),
+            crate::opt_field("m_Motion", &self.m_motion),
+            crate::opt_field("m_SpeedParameterActive", &self.m_speed_parameter_active),
+            crate::opt_field("m_MirrorParameterActive", &self.m_mirror_parameter_active),
+            crate::opt_field(
+                "m_CycleOffsetParameterActive",
+                &self.m_cycle_offset_parameter_active,
+            ),
+            crate::opt_field("m_TimeParameterActive", &self.m_time_parameter_active),
+            crate::opt_field("m_SpeedParameter", &self.m_speed_parameter),
+            crate::opt_field("m_MirrorParameter", &self.m_mirror_parameter),
+            crate::opt_field("m_CycleOffsetParameter", &self.m_cycle_offset_parameter),
+            crate::opt_field("m_TimeParameter", &self.m_time_parameter),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_Speed" => (self.m_speed).inspect_value(path, offset, limit),
+                "m_Motions" => (self.m_motions).inspect_value(path, offset, limit),
+                "m_CycleOffset" => (self.m_cycle_offset).inspect_value(path, offset, limit),
+                "m_ParentStateMachine" => {
+                    (self.m_parent_state_machine).inspect_value(path, offset, limit)
+                }
+                "m_Transitions" => (self.m_transitions).inspect_value(path, offset, limit),
+                "m_Position" => (self.m_position).inspect_value(path, offset, limit),
+                "m_StateMachineBehaviours" => {
+                    (self.m_state_machine_behaviours).inspect_value(path, offset, limit)
+                }
+                "m_IKOnFeet" => (self.m_ik_on_feet).inspect_value(path, offset, limit),
+                "m_Tag" => (self.m_tag).inspect_value(path, offset, limit),
+                "m_Mirror" => (self.m_mirror).inspect_value(path, offset, limit),
+                "m_WriteDefaultValues" => {
+                    (self.m_write_default_values).inspect_value(path, offset, limit)
+                }
+                "m_Motion" => (self.m_motion).inspect_value(path, offset, limit),
+                "m_SpeedParameterActive" => {
+                    (self.m_speed_parameter_active).inspect_value(path, offset, limit)
+                }
+                "m_MirrorParameterActive" => {
+                    (self.m_mirror_parameter_active).inspect_value(path, offset, limit)
+                }
+                "m_CycleOffsetParameterActive" => {
+                    (self.m_cycle_offset_parameter_active).inspect_value(path, offset, limit)
+                }
+                "m_TimeParameterActive" => {
+                    (self.m_time_parameter_active).inspect_value(path, offset, limit)
+                }
+                "m_SpeedParameter" => (self.m_speed_parameter).inspect_value(path, offset, limit),
+                "m_MirrorParameter" => (self.m_mirror_parameter).inspect_value(path, offset, limit),
+                "m_CycleOffsetParameter" => {
+                    (self.m_cycle_offset_parameter).inspect_value(path, offset, limit)
+                }
+                "m_TimeParameter" => (self.m_time_parameter).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_speed).inspect_value(path, offset, limit)).map(|v| ("m_Speed".to_string(), v)),
+            ((self.m_motions).inspect_value(path, offset, limit))
+                .map(|v| ("m_Motions".to_string(), v)),
+            ((self.m_cycle_offset).inspect_value(path, offset, limit))
+                .map(|v| ("m_CycleOffset".to_string(), v)),
+            ((self.m_parent_state_machine).inspect_value(path, offset, limit))
+                .map(|v| ("m_ParentStateMachine".to_string(), v)),
+            ((self.m_transitions).inspect_value(path, offset, limit))
+                .map(|v| ("m_Transitions".to_string(), v)),
+            ((self.m_position).inspect_value(path, offset, limit))
+                .map(|v| ("m_Position".to_string(), v)),
+            ((self.m_state_machine_behaviours).inspect_value(path, offset, limit))
+                .map(|v| ("m_StateMachineBehaviours".to_string(), v)),
+            ((self.m_ik_on_feet).inspect_value(path, offset, limit))
+                .map(|v| ("m_IKOnFeet".to_string(), v)),
+            ((self.m_tag).inspect_value(path, offset, limit)).map(|v| ("m_Tag".to_string(), v)),
+            ((self.m_mirror).inspect_value(path, offset, limit))
+                .map(|v| ("m_Mirror".to_string(), v)),
+            ((self.m_write_default_values).inspect_value(path, offset, limit))
+                .map(|v| ("m_WriteDefaultValues".to_string(), v)),
+            ((self.m_motion).inspect_value(path, offset, limit))
+                .map(|v| ("m_Motion".to_string(), v)),
+            ((self.m_speed_parameter_active).inspect_value(path, offset, limit))
+                .map(|v| ("m_SpeedParameterActive".to_string(), v)),
+            ((self.m_mirror_parameter_active).inspect_value(path, offset, limit))
+                .map(|v| ("m_MirrorParameterActive".to_string(), v)),
+            ((self.m_cycle_offset_parameter_active).inspect_value(path, offset, limit))
+                .map(|v| ("m_CycleOffsetParameterActive".to_string(), v)),
+            ((self.m_time_parameter_active).inspect_value(path, offset, limit))
+                .map(|v| ("m_TimeParameterActive".to_string(), v)),
+            ((self.m_speed_parameter).inspect_value(path, offset, limit))
+                .map(|v| ("m_SpeedParameter".to_string(), v)),
+            ((self.m_mirror_parameter).inspect_value(path, offset, limit))
+                .map(|v| ("m_MirrorParameter".to_string(), v)),
+            ((self.m_cycle_offset_parameter).inspect_value(path, offset, limit))
+                .map(|v| ("m_CycleOffsetParameter".to_string(), v)),
+            ((self.m_time_parameter).inspect_value(path, offset, limit))
+                .map(|v| ("m_TimeParameter".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

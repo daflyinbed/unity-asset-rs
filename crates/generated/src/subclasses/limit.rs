@@ -25,6 +25,21 @@ impl crate::Parse for LimitMMinVariant {
     }
 }
 
+impl crate::ToValue for LimitMMinVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_4(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_4(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：LimitMMaxVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum LimitMMaxVariant {
@@ -46,6 +61,21 @@ impl crate::Parse for LimitMMaxVariant {
         }
     }
 }
+
+impl crate::ToValue for LimitMMaxVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_4(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_4(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct Limit {
     pub m_min: LimitMMinVariant,
@@ -61,5 +91,37 @@ impl crate::Parse for Limit {
         let m_max = LimitMMaxVariant::parse(rdr, ver)?;
 
         Ok(Limit { m_min, m_max })
+    }
+}
+
+impl crate::ToValue for Limit {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Min".to_string(), self.m_min.to_value())),
+            Some(("m_Max".to_string(), self.m_max.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Min" => (self.m_min).inspect_value(path, offset, limit),
+                "m_Max" => (self.m_max).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_min).inspect_value(path, offset, limit)).map(|v| ("m_Min".to_string(), v)),
+            ((self.m_max).inspect_value(path, offset, limit)).map(|v| ("m_Max".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

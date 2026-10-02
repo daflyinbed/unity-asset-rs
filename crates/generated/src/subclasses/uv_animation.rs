@@ -23,3 +23,38 @@ impl crate::Parse for UvAnimation {
         })
     }
 }
+
+impl crate::ToValue for UvAnimation {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("x Tile".to_string(), self.x_tile.to_value())),
+            Some(("y Tile".to_string(), self.y_tile.to_value())),
+            Some(("cycles".to_string(), self.cycles.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "x Tile" => (self.x_tile).inspect_value(path, offset, limit),
+                "y Tile" => (self.y_tile).inspect_value(path, offset, limit),
+                "cycles" => (self.cycles).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.x_tile).inspect_value(path, offset, limit)).map(|v| ("x Tile".to_string(), v)),
+            ((self.y_tile).inspect_value(path, offset, limit)).map(|v| ("y Tile".to_string(), v)),
+            ((self.cycles).inspect_value(path, offset, limit)).map(|v| ("cycles".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

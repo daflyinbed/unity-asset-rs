@@ -76,3 +76,100 @@ impl crate::Parse for PositionConstraint {
         })
     }
 }
+
+impl crate::ToValue for PositionConstraint {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_Enabled".to_string(), self.m_enabled.to_value())),
+            Some(("m_Weight".to_string(), self.m_weight.to_value())),
+            Some((
+                "m_TranslationAtRest".to_string(),
+                self.m_translation_at_rest.to_value(),
+            )),
+            Some((
+                "m_TranslationOffset".to_string(),
+                self.m_translation_offset.to_value(),
+            )),
+            Some((
+                "m_AffectTranslationX".to_string(),
+                self.m_affect_translation_x.to_value(),
+            )),
+            Some((
+                "m_AffectTranslationY".to_string(),
+                self.m_affect_translation_y.to_value(),
+            )),
+            Some((
+                "m_AffectTranslationZ".to_string(),
+                self.m_affect_translation_z.to_value(),
+            )),
+            crate::opt_field("m_IsContraintActive", &self.m_is_contraint_active),
+            crate::opt_field("m_Active", &self.m_active),
+            Some(("m_Sources".to_string(), self.m_sources.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "m_Weight" => (self.m_weight).inspect_value(path, offset, limit),
+                "m_TranslationAtRest" => {
+                    (self.m_translation_at_rest).inspect_value(path, offset, limit)
+                }
+                "m_TranslationOffset" => {
+                    (self.m_translation_offset).inspect_value(path, offset, limit)
+                }
+                "m_AffectTranslationX" => {
+                    (self.m_affect_translation_x).inspect_value(path, offset, limit)
+                }
+                "m_AffectTranslationY" => {
+                    (self.m_affect_translation_y).inspect_value(path, offset, limit)
+                }
+                "m_AffectTranslationZ" => {
+                    (self.m_affect_translation_z).inspect_value(path, offset, limit)
+                }
+                "m_IsContraintActive" => {
+                    (self.m_is_contraint_active).inspect_value(path, offset, limit)
+                }
+                "m_Active" => (self.m_active).inspect_value(path, offset, limit),
+                "m_Sources" => (self.m_sources).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.m_weight).inspect_value(path, offset, limit))
+                .map(|v| ("m_Weight".to_string(), v)),
+            ((self.m_translation_at_rest).inspect_value(path, offset, limit))
+                .map(|v| ("m_TranslationAtRest".to_string(), v)),
+            ((self.m_translation_offset).inspect_value(path, offset, limit))
+                .map(|v| ("m_TranslationOffset".to_string(), v)),
+            ((self.m_affect_translation_x).inspect_value(path, offset, limit))
+                .map(|v| ("m_AffectTranslationX".to_string(), v)),
+            ((self.m_affect_translation_y).inspect_value(path, offset, limit))
+                .map(|v| ("m_AffectTranslationY".to_string(), v)),
+            ((self.m_affect_translation_z).inspect_value(path, offset, limit))
+                .map(|v| ("m_AffectTranslationZ".to_string(), v)),
+            ((self.m_is_contraint_active).inspect_value(path, offset, limit))
+                .map(|v| ("m_IsContraintActive".to_string(), v)),
+            ((self.m_active).inspect_value(path, offset, limit))
+                .map(|v| ("m_Active".to_string(), v)),
+            ((self.m_sources).inspect_value(path, offset, limit))
+                .map(|v| ("m_Sources".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

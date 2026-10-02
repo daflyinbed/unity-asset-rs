@@ -51,6 +51,21 @@ impl crate::Parse for TrueTypeFontImporterMExternalObjectsVariant {
     }
 }
 
+impl crate::ToValue for TrueTypeFontImporterMExternalObjectsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2019_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2019_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：TrueTypeFontImporterMIncludeFontDataVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TrueTypeFontImporterMIncludeFontDataVariant {
@@ -70,6 +85,21 @@ impl crate::Parse for TrueTypeFontImporterMIncludeFontDataVariant {
         } else {
             let v = rdr.read_bool()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for TrueTypeFontImporterMIncludeFontDataVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_3_4(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_3_4(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -107,6 +137,21 @@ impl crate::Parse for TrueTypeFontImporterMFontNamesVariant {
     }
 }
 
+impl crate::ToValue for TrueTypeFontImporterMFontNamesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：TrueTypeFontImporterMFallbackFontReferencesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TrueTypeFontImporterMFallbackFontReferencesVariant {
@@ -136,6 +181,21 @@ impl crate::Parse for TrueTypeFontImporterMFallbackFontReferencesVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for TrueTypeFontImporterMFallbackFontReferencesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -172,6 +232,25 @@ impl crate::Parse for TrueTypeFontImporterMAscentCalculationModeVariant {
     }
 }
 
+impl crate::ToValue for TrueTypeFontImporterMAscentCalculationModeVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_6_5(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+            Self::V2017_1_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_6_5(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1_2(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：TrueTypeFontImporterMUseLegacyBoundsCalculationVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TrueTypeFontImporterMUseLegacyBoundsCalculationVariant {
@@ -191,6 +270,21 @@ impl crate::Parse for TrueTypeFontImporterMUseLegacyBoundsCalculationVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for TrueTypeFontImporterMUseLegacyBoundsCalculationVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2018_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2018_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -457,5 +551,179 @@ impl crate::Parse for TrueTypeFontImporter {
             m_use_legacy_bounds_calculation,
             m_should_round_advance_value,
         })
+    }
+}
+
+impl crate::ToValue for TrueTypeFontImporter {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            crate::opt_field("m_FileIDToRecycleName", &self.m_file_id_to_recycle_name),
+            Some(("m_FontSize".to_string(), self.m_font_size.to_value())),
+            crate::opt_field("m_ExternalObjects", &self.m_external_objects),
+            crate::opt_field("m_OldHashIdentity", &self.m_old_hash_identity),
+            Some((
+                "m_ForceTextureCase".to_string(),
+                self.m_force_texture_case.to_value(),
+            )),
+            crate::opt_field("m_FontColor", &self.m_font_color),
+            crate::opt_field("m_UsedFileIDs", &self.m_used_file_i_ds),
+            crate::opt_field("m_NewHashIdentity", &self.m_new_hash_identity),
+            crate::opt_field("m_CharacterSpacing", &self.m_character_spacing),
+            crate::opt_field("m_RenderMode", &self.m_render_mode),
+            crate::opt_field("m_CharacterPadding", &self.m_character_padding),
+            crate::opt_field("m_Style", &self.m_style),
+            Some((
+                "m_IncludeFontData".to_string(),
+                self.m_include_font_data.to_value(),
+            )),
+            crate::opt_field("m_Use2xBehaviour", &self.m_use2x_behaviour),
+            Some(("m_FontNames".to_string(), self.m_font_names.to_value())),
+            crate::opt_field("m_FontName", &self.m_font_name),
+            crate::opt_field("m_FallbackFontReferences", &self.m_fallback_font_references),
+            crate::opt_field("m_CustomCharacters", &self.m_custom_characters),
+            crate::opt_field("m_FontRenderingMode", &self.m_font_rendering_mode),
+            crate::opt_field("m_Output", &self.m_output),
+            crate::opt_field("m_UserData", &self.m_user_data),
+            crate::opt_field("m_AscentCalculationMode", &self.m_ascent_calculation_mode),
+            crate::opt_field("m_AssetBundleName", &self.m_asset_bundle_name),
+            crate::opt_field("m_AssetBundleVariant", &self.m_asset_bundle_variant),
+            crate::opt_field(
+                "m_UseLegacyBoundsCalculation",
+                &self.m_use_legacy_bounds_calculation,
+            ),
+            crate::opt_field(
+                "m_ShouldRoundAdvanceValue",
+                &self.m_should_round_advance_value,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_FileIDToRecycleName" => {
+                    (self.m_file_id_to_recycle_name).inspect_value(path, offset, limit)
+                }
+                "m_FontSize" => (self.m_font_size).inspect_value(path, offset, limit),
+                "m_ExternalObjects" => (self.m_external_objects).inspect_value(path, offset, limit),
+                "m_OldHashIdentity" => {
+                    (self.m_old_hash_identity).inspect_value(path, offset, limit)
+                }
+                "m_ForceTextureCase" => {
+                    (self.m_force_texture_case).inspect_value(path, offset, limit)
+                }
+                "m_FontColor" => (self.m_font_color).inspect_value(path, offset, limit),
+                "m_UsedFileIDs" => (self.m_used_file_i_ds).inspect_value(path, offset, limit),
+                "m_NewHashIdentity" => {
+                    (self.m_new_hash_identity).inspect_value(path, offset, limit)
+                }
+                "m_CharacterSpacing" => {
+                    (self.m_character_spacing).inspect_value(path, offset, limit)
+                }
+                "m_RenderMode" => (self.m_render_mode).inspect_value(path, offset, limit),
+                "m_CharacterPadding" => {
+                    (self.m_character_padding).inspect_value(path, offset, limit)
+                }
+                "m_Style" => (self.m_style).inspect_value(path, offset, limit),
+                "m_IncludeFontData" => {
+                    (self.m_include_font_data).inspect_value(path, offset, limit)
+                }
+                "m_Use2xBehaviour" => (self.m_use2x_behaviour).inspect_value(path, offset, limit),
+                "m_FontNames" => (self.m_font_names).inspect_value(path, offset, limit),
+                "m_FontName" => (self.m_font_name).inspect_value(path, offset, limit),
+                "m_FallbackFontReferences" => {
+                    (self.m_fallback_font_references).inspect_value(path, offset, limit)
+                }
+                "m_CustomCharacters" => {
+                    (self.m_custom_characters).inspect_value(path, offset, limit)
+                }
+                "m_FontRenderingMode" => {
+                    (self.m_font_rendering_mode).inspect_value(path, offset, limit)
+                }
+                "m_Output" => (self.m_output).inspect_value(path, offset, limit),
+                "m_UserData" => (self.m_user_data).inspect_value(path, offset, limit),
+                "m_AscentCalculationMode" => {
+                    (self.m_ascent_calculation_mode).inspect_value(path, offset, limit)
+                }
+                "m_AssetBundleName" => {
+                    (self.m_asset_bundle_name).inspect_value(path, offset, limit)
+                }
+                "m_AssetBundleVariant" => {
+                    (self.m_asset_bundle_variant).inspect_value(path, offset, limit)
+                }
+                "m_UseLegacyBoundsCalculation" => {
+                    (self.m_use_legacy_bounds_calculation).inspect_value(path, offset, limit)
+                }
+                "m_ShouldRoundAdvanceValue" => {
+                    (self.m_should_round_advance_value).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_file_id_to_recycle_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_FileIDToRecycleName".to_string(), v)),
+            ((self.m_font_size).inspect_value(path, offset, limit))
+                .map(|v| ("m_FontSize".to_string(), v)),
+            ((self.m_external_objects).inspect_value(path, offset, limit))
+                .map(|v| ("m_ExternalObjects".to_string(), v)),
+            ((self.m_old_hash_identity).inspect_value(path, offset, limit))
+                .map(|v| ("m_OldHashIdentity".to_string(), v)),
+            ((self.m_force_texture_case).inspect_value(path, offset, limit))
+                .map(|v| ("m_ForceTextureCase".to_string(), v)),
+            ((self.m_font_color).inspect_value(path, offset, limit))
+                .map(|v| ("m_FontColor".to_string(), v)),
+            ((self.m_used_file_i_ds).inspect_value(path, offset, limit))
+                .map(|v| ("m_UsedFileIDs".to_string(), v)),
+            ((self.m_new_hash_identity).inspect_value(path, offset, limit))
+                .map(|v| ("m_NewHashIdentity".to_string(), v)),
+            ((self.m_character_spacing).inspect_value(path, offset, limit))
+                .map(|v| ("m_CharacterSpacing".to_string(), v)),
+            ((self.m_render_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_RenderMode".to_string(), v)),
+            ((self.m_character_padding).inspect_value(path, offset, limit))
+                .map(|v| ("m_CharacterPadding".to_string(), v)),
+            ((self.m_style).inspect_value(path, offset, limit)).map(|v| ("m_Style".to_string(), v)),
+            ((self.m_include_font_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_IncludeFontData".to_string(), v)),
+            ((self.m_use2x_behaviour).inspect_value(path, offset, limit))
+                .map(|v| ("m_Use2xBehaviour".to_string(), v)),
+            ((self.m_font_names).inspect_value(path, offset, limit))
+                .map(|v| ("m_FontNames".to_string(), v)),
+            ((self.m_font_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_FontName".to_string(), v)),
+            ((self.m_fallback_font_references).inspect_value(path, offset, limit))
+                .map(|v| ("m_FallbackFontReferences".to_string(), v)),
+            ((self.m_custom_characters).inspect_value(path, offset, limit))
+                .map(|v| ("m_CustomCharacters".to_string(), v)),
+            ((self.m_font_rendering_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_FontRenderingMode".to_string(), v)),
+            ((self.m_output).inspect_value(path, offset, limit))
+                .map(|v| ("m_Output".to_string(), v)),
+            ((self.m_user_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_UserData".to_string(), v)),
+            ((self.m_ascent_calculation_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_AscentCalculationMode".to_string(), v)),
+            ((self.m_asset_bundle_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_AssetBundleName".to_string(), v)),
+            ((self.m_asset_bundle_variant).inspect_value(path, offset, limit))
+                .map(|v| ("m_AssetBundleVariant".to_string(), v)),
+            ((self.m_use_legacy_bounds_calculation).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseLegacyBoundsCalculation".to_string(), v)),
+            ((self.m_should_round_advance_value).inspect_value(path, offset, limit))
+                .map(|v| ("m_ShouldRoundAdvanceValue".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

@@ -41,3 +41,50 @@ impl crate::Parse for SnapshotConstant {
         })
     }
 }
+
+impl crate::ToValue for SnapshotConstant {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("nameHash".to_string(), self.name_hash.to_value())),
+            Some(("values".to_string(), self.values.to_value())),
+            Some((
+                "transitionTypes".to_string(),
+                self.transition_types.to_value(),
+            )),
+            Some((
+                "transitionIndices".to_string(),
+                self.transition_indices.to_value(),
+            )),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "nameHash" => (self.name_hash).inspect_value(path, offset, limit),
+                "values" => (self.values).inspect_value(path, offset, limit),
+                "transitionTypes" => (self.transition_types).inspect_value(path, offset, limit),
+                "transitionIndices" => (self.transition_indices).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.name_hash).inspect_value(path, offset, limit))
+                .map(|v| ("nameHash".to_string(), v)),
+            ((self.values).inspect_value(path, offset, limit)).map(|v| ("values".to_string(), v)),
+            ((self.transition_types).inspect_value(path, offset, limit))
+                .map(|v| ("transitionTypes".to_string(), v)),
+            ((self.transition_indices).inspect_value(path, offset, limit))
+                .map(|v| ("transitionIndices".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

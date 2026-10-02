@@ -43,6 +43,21 @@ impl crate::Parse for NavMeshDataMNavMeshTilesVariant {
     }
 }
 
+impl crate::ToValue for NavMeshDataMNavMeshTilesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：NavMeshDataMHeightmapsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum NavMeshDataMHeightmapsVariant {
@@ -72,6 +87,21 @@ impl crate::Parse for NavMeshDataMHeightmapsVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for NavMeshDataMHeightmapsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -109,6 +139,21 @@ impl crate::Parse for NavMeshDataMHeightMeshesVariant {
     }
 }
 
+impl crate::ToValue for NavMeshDataMHeightMeshesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：NavMeshDataMOffMeshLinksVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum NavMeshDataMOffMeshLinksVariant {
@@ -138,6 +183,21 @@ impl crate::Parse for NavMeshDataMOffMeshLinksVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for NavMeshDataMOffMeshLinksVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -218,5 +278,80 @@ impl crate::Parse for NavMeshData {
             m_position,
             m_agent_type_id,
         })
+    }
+}
+
+impl crate::ToValue for NavMeshData {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            crate::opt_field("m_MeshData", &self.m_mesh_data),
+            crate::opt_field("m_NavMeshTiles", &self.m_nav_mesh_tiles),
+            Some(("m_Heightmaps".to_string(), self.m_heightmaps.to_value())),
+            crate::opt_field("m_NavMeshParams", &self.m_nav_mesh_params),
+            crate::opt_field("m_NavMeshBuildSettings", &self.m_nav_mesh_build_settings),
+            crate::opt_field("m_HeightMeshes", &self.m_height_meshes),
+            crate::opt_field("m_OffMeshLinks", &self.m_off_mesh_links),
+            crate::opt_field("m_SourceBounds", &self.m_source_bounds),
+            crate::opt_field("m_Rotation", &self.m_rotation),
+            crate::opt_field("m_Position", &self.m_position),
+            crate::opt_field("m_AgentTypeID", &self.m_agent_type_id),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_MeshData" => (self.m_mesh_data).inspect_value(path, offset, limit),
+                "m_NavMeshTiles" => (self.m_nav_mesh_tiles).inspect_value(path, offset, limit),
+                "m_Heightmaps" => (self.m_heightmaps).inspect_value(path, offset, limit),
+                "m_NavMeshParams" => (self.m_nav_mesh_params).inspect_value(path, offset, limit),
+                "m_NavMeshBuildSettings" => {
+                    (self.m_nav_mesh_build_settings).inspect_value(path, offset, limit)
+                }
+                "m_HeightMeshes" => (self.m_height_meshes).inspect_value(path, offset, limit),
+                "m_OffMeshLinks" => (self.m_off_mesh_links).inspect_value(path, offset, limit),
+                "m_SourceBounds" => (self.m_source_bounds).inspect_value(path, offset, limit),
+                "m_Rotation" => (self.m_rotation).inspect_value(path, offset, limit),
+                "m_Position" => (self.m_position).inspect_value(path, offset, limit),
+                "m_AgentTypeID" => (self.m_agent_type_id).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_mesh_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_MeshData".to_string(), v)),
+            ((self.m_nav_mesh_tiles).inspect_value(path, offset, limit))
+                .map(|v| ("m_NavMeshTiles".to_string(), v)),
+            ((self.m_heightmaps).inspect_value(path, offset, limit))
+                .map(|v| ("m_Heightmaps".to_string(), v)),
+            ((self.m_nav_mesh_params).inspect_value(path, offset, limit))
+                .map(|v| ("m_NavMeshParams".to_string(), v)),
+            ((self.m_nav_mesh_build_settings).inspect_value(path, offset, limit))
+                .map(|v| ("m_NavMeshBuildSettings".to_string(), v)),
+            ((self.m_height_meshes).inspect_value(path, offset, limit))
+                .map(|v| ("m_HeightMeshes".to_string(), v)),
+            ((self.m_off_mesh_links).inspect_value(path, offset, limit))
+                .map(|v| ("m_OffMeshLinks".to_string(), v)),
+            ((self.m_source_bounds).inspect_value(path, offset, limit))
+                .map(|v| ("m_SourceBounds".to_string(), v)),
+            ((self.m_rotation).inspect_value(path, offset, limit))
+                .map(|v| ("m_Rotation".to_string(), v)),
+            ((self.m_position).inspect_value(path, offset, limit))
+                .map(|v| ("m_Position".to_string(), v)),
+            ((self.m_agent_type_id).inspect_value(path, offset, limit))
+                .map(|v| ("m_AgentTypeID".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

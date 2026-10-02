@@ -73,3 +73,65 @@ impl crate::Parse for SpriteAtlas {
         })
     }
 }
+
+impl crate::ToValue for SpriteAtlas {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some((
+                "m_PackedSprites".to_string(),
+                self.m_packed_sprites.to_value(),
+            )),
+            Some((
+                "m_PackedSpriteNamesToIndex".to_string(),
+                self.m_packed_sprite_names_to_index.to_value(),
+            )),
+            Some((
+                "m_RenderDataMap".to_string(),
+                self.m_render_data_map.to_value(),
+            )),
+            Some(("m_Tag".to_string(), self.m_tag.to_value())),
+            Some(("m_IsVariant".to_string(), self.m_is_variant.to_value())),
+            crate::opt_field("m_Guid", &self.m_guid),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_PackedSprites" => (self.m_packed_sprites).inspect_value(path, offset, limit),
+                "m_PackedSpriteNamesToIndex" => {
+                    (self.m_packed_sprite_names_to_index).inspect_value(path, offset, limit)
+                }
+                "m_RenderDataMap" => (self.m_render_data_map).inspect_value(path, offset, limit),
+                "m_Tag" => (self.m_tag).inspect_value(path, offset, limit),
+                "m_IsVariant" => (self.m_is_variant).inspect_value(path, offset, limit),
+                "m_Guid" => (self.m_guid).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_packed_sprites).inspect_value(path, offset, limit))
+                .map(|v| ("m_PackedSprites".to_string(), v)),
+            ((self.m_packed_sprite_names_to_index).inspect_value(path, offset, limit))
+                .map(|v| ("m_PackedSpriteNamesToIndex".to_string(), v)),
+            ((self.m_render_data_map).inspect_value(path, offset, limit))
+                .map(|v| ("m_RenderDataMap".to_string(), v)),
+            ((self.m_tag).inspect_value(path, offset, limit)).map(|v| ("m_Tag".to_string(), v)),
+            ((self.m_is_variant).inspect_value(path, offset, limit))
+                .map(|v| ("m_IsVariant".to_string(), v)),
+            ((self.m_guid).inspect_value(path, offset, limit)).map(|v| ("m_Guid".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

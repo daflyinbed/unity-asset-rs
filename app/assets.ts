@@ -4,7 +4,7 @@ export interface Asset {
   container: string;
   type: string;
   pathId: string;
-  size: number;
+  size?: number;
   dims?: string;
 }
 

@@ -45,6 +45,21 @@ impl crate::Parse for SpriteRenderDataMSubMeshesVariant {
     }
 }
 
+impl crate::ToValue for SpriteRenderDataMSubMeshesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：SpriteRenderDataMVertexDataVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum SpriteRenderDataMVertexDataVariant {
@@ -64,6 +79,21 @@ impl crate::Parse for SpriteRenderDataMVertexDataVariant {
             let v = ({ Ok(Box::new(VertexData::parse(rdr, ver)?)) })?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for SpriteRenderDataMVertexDataVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2018_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2018_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -306,5 +336,104 @@ impl crate::Parse for SpriteRenderData {
             m_blend_shapes,
             downscale_multiplier,
         })
+    }
+}
+
+impl crate::ToValue for SpriteRenderData {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("texture".to_string(), self.texture.to_value())),
+            crate::opt_field("vertices", &self.vertices),
+            crate::opt_field("alphaTexture", &self.alpha_texture),
+            crate::opt_field("indices", &self.indices),
+            crate::opt_field("m_SubMeshes", &self.m_sub_meshes),
+            crate::opt_field("secondaryTextures", &self.secondary_textures),
+            Some(("textureRect".to_string(), self.texture_rect.to_value())),
+            crate::opt_field("m_IndexBuffer", &self.m_index_buffer),
+            Some((
+                "textureRectOffset".to_string(),
+                self.texture_rect_offset.to_value(),
+            )),
+            crate::opt_field("m_VertexData", &self.m_vertex_data),
+            Some(("settingsRaw".to_string(), self.settings_raw.to_value())),
+            crate::opt_field("m_Bindpose", &self.m_bindpose),
+            crate::opt_field("uvTransform", &self.uv_transform),
+            crate::opt_field("atlasRectOffset", &self.atlas_rect_offset),
+            crate::opt_field("m_SourceSkin", &self.m_source_skin),
+            crate::opt_field("m_BlendShapes", &self.m_blend_shapes),
+            crate::opt_field("downscaleMultiplier", &self.downscale_multiplier),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "texture" => (self.texture).inspect_value(path, offset, limit),
+                "vertices" => (self.vertices).inspect_value(path, offset, limit),
+                "alphaTexture" => (self.alpha_texture).inspect_value(path, offset, limit),
+                "indices" => (self.indices).inspect_value(path, offset, limit),
+                "m_SubMeshes" => (self.m_sub_meshes).inspect_value(path, offset, limit),
+                "secondaryTextures" => (self.secondary_textures).inspect_value(path, offset, limit),
+                "textureRect" => (self.texture_rect).inspect_value(path, offset, limit),
+                "m_IndexBuffer" => (self.m_index_buffer).inspect_value(path, offset, limit),
+                "textureRectOffset" => {
+                    (self.texture_rect_offset).inspect_value(path, offset, limit)
+                }
+                "m_VertexData" => (self.m_vertex_data).inspect_value(path, offset, limit),
+                "settingsRaw" => (self.settings_raw).inspect_value(path, offset, limit),
+                "m_Bindpose" => (self.m_bindpose).inspect_value(path, offset, limit),
+                "uvTransform" => (self.uv_transform).inspect_value(path, offset, limit),
+                "atlasRectOffset" => (self.atlas_rect_offset).inspect_value(path, offset, limit),
+                "m_SourceSkin" => (self.m_source_skin).inspect_value(path, offset, limit),
+                "m_BlendShapes" => (self.m_blend_shapes).inspect_value(path, offset, limit),
+                "downscaleMultiplier" => {
+                    (self.downscale_multiplier).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.texture).inspect_value(path, offset, limit)).map(|v| ("texture".to_string(), v)),
+            ((self.vertices).inspect_value(path, offset, limit))
+                .map(|v| ("vertices".to_string(), v)),
+            ((self.alpha_texture).inspect_value(path, offset, limit))
+                .map(|v| ("alphaTexture".to_string(), v)),
+            ((self.indices).inspect_value(path, offset, limit)).map(|v| ("indices".to_string(), v)),
+            ((self.m_sub_meshes).inspect_value(path, offset, limit))
+                .map(|v| ("m_SubMeshes".to_string(), v)),
+            ((self.secondary_textures).inspect_value(path, offset, limit))
+                .map(|v| ("secondaryTextures".to_string(), v)),
+            ((self.texture_rect).inspect_value(path, offset, limit))
+                .map(|v| ("textureRect".to_string(), v)),
+            ((self.m_index_buffer).inspect_value(path, offset, limit))
+                .map(|v| ("m_IndexBuffer".to_string(), v)),
+            ((self.texture_rect_offset).inspect_value(path, offset, limit))
+                .map(|v| ("textureRectOffset".to_string(), v)),
+            ((self.m_vertex_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_VertexData".to_string(), v)),
+            ((self.settings_raw).inspect_value(path, offset, limit))
+                .map(|v| ("settingsRaw".to_string(), v)),
+            ((self.m_bindpose).inspect_value(path, offset, limit))
+                .map(|v| ("m_Bindpose".to_string(), v)),
+            ((self.uv_transform).inspect_value(path, offset, limit))
+                .map(|v| ("uvTransform".to_string(), v)),
+            ((self.atlas_rect_offset).inspect_value(path, offset, limit))
+                .map(|v| ("atlasRectOffset".to_string(), v)),
+            ((self.m_source_skin).inspect_value(path, offset, limit))
+                .map(|v| ("m_SourceSkin".to_string(), v)),
+            ((self.m_blend_shapes).inspect_value(path, offset, limit))
+                .map(|v| ("m_BlendShapes".to_string(), v)),
+            ((self.downscale_multiplier).inspect_value(path, offset, limit))
+                .map(|v| ("downscaleMultiplier".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

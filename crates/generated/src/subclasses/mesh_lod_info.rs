@@ -33,3 +33,46 @@ impl crate::Parse for MeshLodInfo {
         })
     }
 }
+
+impl crate::ToValue for MeshLodInfo {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some((
+                "m_LodSelectionCurve".to_string(),
+                self.m_lod_selection_curve.to_value(),
+            )),
+            Some(("m_NumLevels".to_string(), self.m_num_levels.to_value())),
+            Some(("m_SubMeshes".to_string(), self.m_sub_meshes.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_LodSelectionCurve" => {
+                    (self.m_lod_selection_curve).inspect_value(path, offset, limit)
+                }
+                "m_NumLevels" => (self.m_num_levels).inspect_value(path, offset, limit),
+                "m_SubMeshes" => (self.m_sub_meshes).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_lod_selection_curve).inspect_value(path, offset, limit))
+                .map(|v| ("m_LodSelectionCurve".to_string(), v)),
+            ((self.m_num_levels).inspect_value(path, offset, limit))
+                .map(|v| ("m_NumLevels".to_string(), v)),
+            ((self.m_sub_meshes).inspect_value(path, offset, limit))
+                .map(|v| ("m_SubMeshes".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

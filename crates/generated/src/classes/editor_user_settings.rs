@@ -25,6 +25,21 @@ impl crate::Parse for EditorUserSettingsMVcDebugOutVariant {
     }
 }
 
+impl crate::ToValue for EditorUserSettingsMVcDebugOutVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_0(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_0(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：EditorUserSettingsMSemanticMergeModeVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum EditorUserSettingsMSemanticMergeModeVariant {
@@ -44,6 +59,21 @@ impl crate::Parse for EditorUserSettingsMSemanticMergeModeVariant {
             let v = rdr.read_i32()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for EditorUserSettingsMSemanticMergeModeVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -89,6 +119,29 @@ impl crate::Parse for EditorUserSettingsMVcShowFailedCheckoutVariant {
     }
 }
 
+impl crate::ToValue for EditorUserSettingsMVcShowFailedCheckoutVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_6_6(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+            Self::V2017_1_3(v) => v.to_value(),
+            Self::V2017_2(v) => v.to_value(),
+            Self::V2017_2_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_6_6(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1_3(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_2(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_2_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：EditorUserSettingsMVcAllowAsyncUpdateVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum EditorUserSettingsMVcAllowAsyncUpdateVariant {
@@ -112,6 +165,21 @@ impl crate::Parse for EditorUserSettingsMVcAllowAsyncUpdateVariant {
     }
 }
 
+impl crate::ToValue for EditorUserSettingsMVcAllowAsyncUpdateVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2021_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2021_2(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：EditorUserSettingsMArtifactGarbageCollectionVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum EditorUserSettingsMArtifactGarbageCollectionVariant {
@@ -131,6 +199,21 @@ impl crate::Parse for EditorUserSettingsMArtifactGarbageCollectionVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for EditorUserSettingsMArtifactGarbageCollectionVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2023_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2023_2(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -551,5 +634,196 @@ impl crate::Parse for EditorUserSettings {
             m_vc_scan_local_packages_on_connect,
             m_compress_assets_on_import,
         })
+    }
+}
+
+impl crate::ToValue for EditorUserSettings {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            crate::opt_field("m_VCUserName", &self.m_vc_user_name),
+            crate::opt_field("m_ConfigValues", &self.m_config_values),
+            crate::opt_field("m_ConfigSettings", &self.m_config_settings),
+            crate::opt_field("m_VCPassword", &self.m_vc_password),
+            Some((
+                "m_VCAutomaticAdd".to_string(),
+                self.m_vc_automatic_add.to_value(),
+            )),
+            crate::opt_field("m_VCServer", &self.m_vc_server),
+            Some(("m_VCDebugCom".to_string(), self.m_vc_debug_com.to_value())),
+            crate::opt_field("m_VCWorkspace", &self.m_vc_workspace),
+            Some(("m_VCDebugCmd".to_string(), self.m_vc_debug_cmd.to_value())),
+            Some(("m_VCDebugOut".to_string(), self.m_vc_debug_out.to_value())),
+            crate::opt_field("m_SemanticMergeMode", &self.m_semantic_merge_mode),
+            crate::opt_field("m_VCShowFailedCheckout", &self.m_vc_show_failed_checkout),
+            crate::opt_field(
+                "m_DesiredImportWorkerCount",
+                &self.m_desired_import_worker_count,
+            ),
+            crate::opt_field("m_VCAllowAsyncUpdate", &self.m_vc_allow_async_update),
+            crate::opt_field(
+                "m_VCOverwriteFailedCheckoutAssets",
+                &self.m_vc_overwrite_failed_checkout_assets,
+            ),
+            crate::opt_field(
+                "m_StandbyImportWorkerCount",
+                &self.m_standby_import_worker_count,
+            ),
+            crate::opt_field("m_VCOverlayIcons", &self.m_vc_overlay_icons),
+            crate::opt_field("m_VCProjectOverlayIcons", &self.m_vc_project_overlay_icons),
+            crate::opt_field(
+                "m_IdleImportWorkerShutdownDelay",
+                &self.m_idle_import_worker_shutdown_delay,
+            ),
+            crate::opt_field("m_AssetPipelineMode", &self.m_asset_pipeline_mode),
+            crate::opt_field(
+                "m_VCHierarchyOverlayIcons",
+                &self.m_vc_hierarchy_overlay_icons,
+            ),
+            crate::opt_field("m_CacheServerMode", &self.m_cache_server_mode),
+            crate::opt_field("m_VCOtherOverlayIcons", &self.m_vc_other_overlay_icons),
+            crate::opt_field("m_CacheServers", &self.m_cache_servers),
+            crate::opt_field(
+                "m_ArtifactGarbageCollection",
+                &self.m_artifact_garbage_collection,
+            ),
+            crate::opt_field(
+                "m_VCScanLocalPackagesOnConnect",
+                &self.m_vc_scan_local_packages_on_connect,
+            ),
+            crate::opt_field(
+                "m_CompressAssetsOnImport",
+                &self.m_compress_assets_on_import,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_VCUserName" => (self.m_vc_user_name).inspect_value(path, offset, limit),
+                "m_ConfigValues" => (self.m_config_values).inspect_value(path, offset, limit),
+                "m_ConfigSettings" => (self.m_config_settings).inspect_value(path, offset, limit),
+                "m_VCPassword" => (self.m_vc_password).inspect_value(path, offset, limit),
+                "m_VCAutomaticAdd" => (self.m_vc_automatic_add).inspect_value(path, offset, limit),
+                "m_VCServer" => (self.m_vc_server).inspect_value(path, offset, limit),
+                "m_VCDebugCom" => (self.m_vc_debug_com).inspect_value(path, offset, limit),
+                "m_VCWorkspace" => (self.m_vc_workspace).inspect_value(path, offset, limit),
+                "m_VCDebugCmd" => (self.m_vc_debug_cmd).inspect_value(path, offset, limit),
+                "m_VCDebugOut" => (self.m_vc_debug_out).inspect_value(path, offset, limit),
+                "m_SemanticMergeMode" => {
+                    (self.m_semantic_merge_mode).inspect_value(path, offset, limit)
+                }
+                "m_VCShowFailedCheckout" => {
+                    (self.m_vc_show_failed_checkout).inspect_value(path, offset, limit)
+                }
+                "m_DesiredImportWorkerCount" => {
+                    (self.m_desired_import_worker_count).inspect_value(path, offset, limit)
+                }
+                "m_VCAllowAsyncUpdate" => {
+                    (self.m_vc_allow_async_update).inspect_value(path, offset, limit)
+                }
+                "m_VCOverwriteFailedCheckoutAssets" => {
+                    (self.m_vc_overwrite_failed_checkout_assets).inspect_value(path, offset, limit)
+                }
+                "m_StandbyImportWorkerCount" => {
+                    (self.m_standby_import_worker_count).inspect_value(path, offset, limit)
+                }
+                "m_VCOverlayIcons" => (self.m_vc_overlay_icons).inspect_value(path, offset, limit),
+                "m_VCProjectOverlayIcons" => {
+                    (self.m_vc_project_overlay_icons).inspect_value(path, offset, limit)
+                }
+                "m_IdleImportWorkerShutdownDelay" => {
+                    (self.m_idle_import_worker_shutdown_delay).inspect_value(path, offset, limit)
+                }
+                "m_AssetPipelineMode" => {
+                    (self.m_asset_pipeline_mode).inspect_value(path, offset, limit)
+                }
+                "m_VCHierarchyOverlayIcons" => {
+                    (self.m_vc_hierarchy_overlay_icons).inspect_value(path, offset, limit)
+                }
+                "m_CacheServerMode" => {
+                    (self.m_cache_server_mode).inspect_value(path, offset, limit)
+                }
+                "m_VCOtherOverlayIcons" => {
+                    (self.m_vc_other_overlay_icons).inspect_value(path, offset, limit)
+                }
+                "m_CacheServers" => (self.m_cache_servers).inspect_value(path, offset, limit),
+                "m_ArtifactGarbageCollection" => {
+                    (self.m_artifact_garbage_collection).inspect_value(path, offset, limit)
+                }
+                "m_VCScanLocalPackagesOnConnect" => {
+                    (self.m_vc_scan_local_packages_on_connect).inspect_value(path, offset, limit)
+                }
+                "m_CompressAssetsOnImport" => {
+                    (self.m_compress_assets_on_import).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_vc_user_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_VCUserName".to_string(), v)),
+            ((self.m_config_values).inspect_value(path, offset, limit))
+                .map(|v| ("m_ConfigValues".to_string(), v)),
+            ((self.m_config_settings).inspect_value(path, offset, limit))
+                .map(|v| ("m_ConfigSettings".to_string(), v)),
+            ((self.m_vc_password).inspect_value(path, offset, limit))
+                .map(|v| ("m_VCPassword".to_string(), v)),
+            ((self.m_vc_automatic_add).inspect_value(path, offset, limit))
+                .map(|v| ("m_VCAutomaticAdd".to_string(), v)),
+            ((self.m_vc_server).inspect_value(path, offset, limit))
+                .map(|v| ("m_VCServer".to_string(), v)),
+            ((self.m_vc_debug_com).inspect_value(path, offset, limit))
+                .map(|v| ("m_VCDebugCom".to_string(), v)),
+            ((self.m_vc_workspace).inspect_value(path, offset, limit))
+                .map(|v| ("m_VCWorkspace".to_string(), v)),
+            ((self.m_vc_debug_cmd).inspect_value(path, offset, limit))
+                .map(|v| ("m_VCDebugCmd".to_string(), v)),
+            ((self.m_vc_debug_out).inspect_value(path, offset, limit))
+                .map(|v| ("m_VCDebugOut".to_string(), v)),
+            ((self.m_semantic_merge_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_SemanticMergeMode".to_string(), v)),
+            ((self.m_vc_show_failed_checkout).inspect_value(path, offset, limit))
+                .map(|v| ("m_VCShowFailedCheckout".to_string(), v)),
+            ((self.m_desired_import_worker_count).inspect_value(path, offset, limit))
+                .map(|v| ("m_DesiredImportWorkerCount".to_string(), v)),
+            ((self.m_vc_allow_async_update).inspect_value(path, offset, limit))
+                .map(|v| ("m_VCAllowAsyncUpdate".to_string(), v)),
+            ((self.m_vc_overwrite_failed_checkout_assets).inspect_value(path, offset, limit))
+                .map(|v| ("m_VCOverwriteFailedCheckoutAssets".to_string(), v)),
+            ((self.m_standby_import_worker_count).inspect_value(path, offset, limit))
+                .map(|v| ("m_StandbyImportWorkerCount".to_string(), v)),
+            ((self.m_vc_overlay_icons).inspect_value(path, offset, limit))
+                .map(|v| ("m_VCOverlayIcons".to_string(), v)),
+            ((self.m_vc_project_overlay_icons).inspect_value(path, offset, limit))
+                .map(|v| ("m_VCProjectOverlayIcons".to_string(), v)),
+            ((self.m_idle_import_worker_shutdown_delay).inspect_value(path, offset, limit))
+                .map(|v| ("m_IdleImportWorkerShutdownDelay".to_string(), v)),
+            ((self.m_asset_pipeline_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_AssetPipelineMode".to_string(), v)),
+            ((self.m_vc_hierarchy_overlay_icons).inspect_value(path, offset, limit))
+                .map(|v| ("m_VCHierarchyOverlayIcons".to_string(), v)),
+            ((self.m_cache_server_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_CacheServerMode".to_string(), v)),
+            ((self.m_vc_other_overlay_icons).inspect_value(path, offset, limit))
+                .map(|v| ("m_VCOtherOverlayIcons".to_string(), v)),
+            ((self.m_cache_servers).inspect_value(path, offset, limit))
+                .map(|v| ("m_CacheServers".to_string(), v)),
+            ((self.m_artifact_garbage_collection).inspect_value(path, offset, limit))
+                .map(|v| ("m_ArtifactGarbageCollection".to_string(), v)),
+            ((self.m_vc_scan_local_packages_on_connect).inspect_value(path, offset, limit))
+                .map(|v| ("m_VCScanLocalPackagesOnConnect".to_string(), v)),
+            ((self.m_compress_assets_on_import).inspect_value(path, offset, limit))
+                .map(|v| ("m_CompressAssetsOnImport".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

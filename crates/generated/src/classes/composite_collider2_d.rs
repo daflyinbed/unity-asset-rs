@@ -29,6 +29,21 @@ impl crate::Parse for CompositeCollider2DMUsedByEffectorVariant {
     }
 }
 
+impl crate::ToValue for CompositeCollider2DMUsedByEffectorVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2023_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2023_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：CompositeCollider2DMColliderPathsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum CompositeCollider2DMColliderPathsVariant {
@@ -58,6 +73,21 @@ impl crate::Parse for CompositeCollider2DMColliderPathsVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for CompositeCollider2DMColliderPathsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -195,5 +225,169 @@ impl crate::Parse for CompositeCollider2D {
             m_use_delaunay_mesh,
             m_composite_game_object,
         })
+    }
+}
+
+impl crate::ToValue for CompositeCollider2D {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_Enabled".to_string(), self.m_enabled.to_value())),
+            Some(("m_Density".to_string(), self.m_density.to_value())),
+            Some(("m_Material".to_string(), self.m_material.to_value())),
+            Some(("m_IsTrigger".to_string(), self.m_is_trigger.to_value())),
+            crate::opt_field("m_IncludeLayers", &self.m_include_layers),
+            Some((
+                "m_UsedByEffector".to_string(),
+                self.m_used_by_effector.to_value(),
+            )),
+            crate::opt_field("m_ExcludeLayers", &self.m_exclude_layers),
+            crate::opt_field("m_UsedByComposite", &self.m_used_by_composite),
+            crate::opt_field("m_LayerOverridePriority", &self.m_layer_override_priority),
+            Some(("m_Offset".to_string(), self.m_offset.to_value())),
+            crate::opt_field("m_ForceSendLayers", &self.m_force_send_layers),
+            Some((
+                "m_GeometryType".to_string(),
+                self.m_geometry_type.to_value(),
+            )),
+            crate::opt_field("m_ForceReceiveLayers", &self.m_force_receive_layers),
+            Some((
+                "m_GenerationType".to_string(),
+                self.m_generation_type.to_value(),
+            )),
+            crate::opt_field("m_ContactCaptureLayers", &self.m_contact_capture_layers),
+            Some(("m_EdgeRadius".to_string(), self.m_edge_radius.to_value())),
+            crate::opt_field("m_CallbackLayers", &self.m_callback_layers),
+            Some((
+                "m_ColliderPaths".to_string(),
+                self.m_collider_paths.to_value(),
+            )),
+            Some((
+                "m_CompositePaths".to_string(),
+                self.m_composite_paths.to_value(),
+            )),
+            Some((
+                "m_VertexDistance".to_string(),
+                self.m_vertex_distance.to_value(),
+            )),
+            crate::opt_field("m_CompositeOperation", &self.m_composite_operation),
+            crate::opt_field("m_OffsetDistance", &self.m_offset_distance),
+            crate::opt_field("m_CompositeOrder", &self.m_composite_order),
+            crate::opt_field("m_UseDelaunayMesh", &self.m_use_delaunay_mesh),
+            crate::opt_field("m_CompositeGameObject", &self.m_composite_game_object),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "m_Density" => (self.m_density).inspect_value(path, offset, limit),
+                "m_Material" => (self.m_material).inspect_value(path, offset, limit),
+                "m_IsTrigger" => (self.m_is_trigger).inspect_value(path, offset, limit),
+                "m_IncludeLayers" => (self.m_include_layers).inspect_value(path, offset, limit),
+                "m_UsedByEffector" => (self.m_used_by_effector).inspect_value(path, offset, limit),
+                "m_ExcludeLayers" => (self.m_exclude_layers).inspect_value(path, offset, limit),
+                "m_UsedByComposite" => {
+                    (self.m_used_by_composite).inspect_value(path, offset, limit)
+                }
+                "m_LayerOverridePriority" => {
+                    (self.m_layer_override_priority).inspect_value(path, offset, limit)
+                }
+                "m_Offset" => (self.m_offset).inspect_value(path, offset, limit),
+                "m_ForceSendLayers" => {
+                    (self.m_force_send_layers).inspect_value(path, offset, limit)
+                }
+                "m_GeometryType" => (self.m_geometry_type).inspect_value(path, offset, limit),
+                "m_ForceReceiveLayers" => {
+                    (self.m_force_receive_layers).inspect_value(path, offset, limit)
+                }
+                "m_GenerationType" => (self.m_generation_type).inspect_value(path, offset, limit),
+                "m_ContactCaptureLayers" => {
+                    (self.m_contact_capture_layers).inspect_value(path, offset, limit)
+                }
+                "m_EdgeRadius" => (self.m_edge_radius).inspect_value(path, offset, limit),
+                "m_CallbackLayers" => (self.m_callback_layers).inspect_value(path, offset, limit),
+                "m_ColliderPaths" => (self.m_collider_paths).inspect_value(path, offset, limit),
+                "m_CompositePaths" => (self.m_composite_paths).inspect_value(path, offset, limit),
+                "m_VertexDistance" => (self.m_vertex_distance).inspect_value(path, offset, limit),
+                "m_CompositeOperation" => {
+                    (self.m_composite_operation).inspect_value(path, offset, limit)
+                }
+                "m_OffsetDistance" => (self.m_offset_distance).inspect_value(path, offset, limit),
+                "m_CompositeOrder" => (self.m_composite_order).inspect_value(path, offset, limit),
+                "m_UseDelaunayMesh" => {
+                    (self.m_use_delaunay_mesh).inspect_value(path, offset, limit)
+                }
+                "m_CompositeGameObject" => {
+                    (self.m_composite_game_object).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.m_density).inspect_value(path, offset, limit))
+                .map(|v| ("m_Density".to_string(), v)),
+            ((self.m_material).inspect_value(path, offset, limit))
+                .map(|v| ("m_Material".to_string(), v)),
+            ((self.m_is_trigger).inspect_value(path, offset, limit))
+                .map(|v| ("m_IsTrigger".to_string(), v)),
+            ((self.m_include_layers).inspect_value(path, offset, limit))
+                .map(|v| ("m_IncludeLayers".to_string(), v)),
+            ((self.m_used_by_effector).inspect_value(path, offset, limit))
+                .map(|v| ("m_UsedByEffector".to_string(), v)),
+            ((self.m_exclude_layers).inspect_value(path, offset, limit))
+                .map(|v| ("m_ExcludeLayers".to_string(), v)),
+            ((self.m_used_by_composite).inspect_value(path, offset, limit))
+                .map(|v| ("m_UsedByComposite".to_string(), v)),
+            ((self.m_layer_override_priority).inspect_value(path, offset, limit))
+                .map(|v| ("m_LayerOverridePriority".to_string(), v)),
+            ((self.m_offset).inspect_value(path, offset, limit))
+                .map(|v| ("m_Offset".to_string(), v)),
+            ((self.m_force_send_layers).inspect_value(path, offset, limit))
+                .map(|v| ("m_ForceSendLayers".to_string(), v)),
+            ((self.m_geometry_type).inspect_value(path, offset, limit))
+                .map(|v| ("m_GeometryType".to_string(), v)),
+            ((self.m_force_receive_layers).inspect_value(path, offset, limit))
+                .map(|v| ("m_ForceReceiveLayers".to_string(), v)),
+            ((self.m_generation_type).inspect_value(path, offset, limit))
+                .map(|v| ("m_GenerationType".to_string(), v)),
+            ((self.m_contact_capture_layers).inspect_value(path, offset, limit))
+                .map(|v| ("m_ContactCaptureLayers".to_string(), v)),
+            ((self.m_edge_radius).inspect_value(path, offset, limit))
+                .map(|v| ("m_EdgeRadius".to_string(), v)),
+            ((self.m_callback_layers).inspect_value(path, offset, limit))
+                .map(|v| ("m_CallbackLayers".to_string(), v)),
+            ((self.m_collider_paths).inspect_value(path, offset, limit))
+                .map(|v| ("m_ColliderPaths".to_string(), v)),
+            ((self.m_composite_paths).inspect_value(path, offset, limit))
+                .map(|v| ("m_CompositePaths".to_string(), v)),
+            ((self.m_vertex_distance).inspect_value(path, offset, limit))
+                .map(|v| ("m_VertexDistance".to_string(), v)),
+            ((self.m_composite_operation).inspect_value(path, offset, limit))
+                .map(|v| ("m_CompositeOperation".to_string(), v)),
+            ((self.m_offset_distance).inspect_value(path, offset, limit))
+                .map(|v| ("m_OffsetDistance".to_string(), v)),
+            ((self.m_composite_order).inspect_value(path, offset, limit))
+                .map(|v| ("m_CompositeOrder".to_string(), v)),
+            ((self.m_use_delaunay_mesh).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseDelaunayMesh".to_string(), v)),
+            ((self.m_composite_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_CompositeGameObject".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

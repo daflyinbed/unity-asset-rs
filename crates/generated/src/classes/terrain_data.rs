@@ -61,3 +61,54 @@ impl crate::Parse for TerrainData {
         })
     }
 }
+
+impl crate::ToValue for TerrainData {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some((
+                "m_SplatDatabase".to_string(),
+                self.m_splat_database.to_value(),
+            )),
+            Some((
+                "m_DetailDatabase".to_string(),
+                self.m_detail_database.to_value(),
+            )),
+            Some(("m_Heightmap".to_string(), self.m_heightmap.to_value())),
+            crate::opt_field("m_PreloadShaders", &self.m_preload_shaders),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_SplatDatabase" => (self.m_splat_database).inspect_value(path, offset, limit),
+                "m_DetailDatabase" => (self.m_detail_database).inspect_value(path, offset, limit),
+                "m_Heightmap" => (self.m_heightmap).inspect_value(path, offset, limit),
+                "m_PreloadShaders" => (self.m_preload_shaders).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_splat_database).inspect_value(path, offset, limit))
+                .map(|v| ("m_SplatDatabase".to_string(), v)),
+            ((self.m_detail_database).inspect_value(path, offset, limit))
+                .map(|v| ("m_DetailDatabase".to_string(), v)),
+            ((self.m_heightmap).inspect_value(path, offset, limit))
+                .map(|v| ("m_Heightmap".to_string(), v)),
+            ((self.m_preload_shaders).inspect_value(path, offset, limit))
+                .map(|v| ("m_PreloadShaders".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

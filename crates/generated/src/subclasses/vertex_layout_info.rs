@@ -35,3 +35,51 @@ impl crate::Parse for VertexLayoutInfo {
         })
     }
 }
+
+impl crate::ToValue for VertexLayoutInfo {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some((
+                "vertexChannelsInfo".to_string(),
+                self.vertex_channels_info.to_value(),
+            )),
+            Some(("vertexStrides".to_string(), self.vertex_strides.to_value())),
+            Some((
+                "vertexStreamCount".to_string(),
+                self.vertex_stream_count.to_value(),
+            )),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "vertexChannelsInfo" => {
+                    (self.vertex_channels_info).inspect_value(path, offset, limit)
+                }
+                "vertexStrides" => (self.vertex_strides).inspect_value(path, offset, limit),
+                "vertexStreamCount" => {
+                    (self.vertex_stream_count).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.vertex_channels_info).inspect_value(path, offset, limit))
+                .map(|v| ("vertexChannelsInfo".to_string(), v)),
+            ((self.vertex_strides).inspect_value(path, offset, limit))
+                .map(|v| ("vertexStrides".to_string(), v)),
+            ((self.vertex_stream_count).inspect_value(path, offset, limit))
+                .map(|v| ("vertexStreamCount".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

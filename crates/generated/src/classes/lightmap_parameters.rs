@@ -101,3 +101,142 @@ impl crate::Parse for LightmapParameters {
         })
     }
 }
+
+impl crate::ToValue for LightmapParameters {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some(("resolution".to_string(), self.resolution.to_value())),
+            Some((
+                "clusterResolution".to_string(),
+                self.cluster_resolution.to_value(),
+            )),
+            Some((
+                "irradianceBudget".to_string(),
+                self.irradiance_budget.to_value(),
+            )),
+            Some((
+                "irradianceQuality".to_string(),
+                self.irradiance_quality.to_value(),
+            )),
+            Some((
+                "backFaceTolerance".to_string(),
+                self.back_face_tolerance.to_value(),
+            )),
+            Some(("isTransparent".to_string(), self.is_transparent.to_value())),
+            Some((
+                "modellingTolerance".to_string(),
+                self.modelling_tolerance.to_value(),
+            )),
+            Some(("systemTag".to_string(), self.system_tag.to_value())),
+            Some(("edgeStitching".to_string(), self.edge_stitching.to_value())),
+            Some(("blurRadius".to_string(), self.blur_radius.to_value())),
+            Some((
+                "directLightQuality".to_string(),
+                self.direct_light_quality.to_value(),
+            )),
+            Some((
+                "antiAliasingSamples".to_string(),
+                self.anti_aliasing_samples.to_value(),
+            )),
+            Some(("AOQuality".to_string(), self.ao_quality.to_value())),
+            Some((
+                "bakedLightmapTag".to_string(),
+                self.baked_lightmap_tag.to_value(),
+            )),
+            crate::opt_field("pushoff", &self.pushoff),
+            Some((
+                "AOAntiAliasingSamples".to_string(),
+                self.ao_anti_aliasing_samples.to_value(),
+            )),
+            crate::opt_field("limitLightmapCount", &self.limit_lightmap_count),
+            crate::opt_field("maxLightmapCount", &self.max_lightmap_count),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "resolution" => (self.resolution).inspect_value(path, offset, limit),
+                "clusterResolution" => (self.cluster_resolution).inspect_value(path, offset, limit),
+                "irradianceBudget" => (self.irradiance_budget).inspect_value(path, offset, limit),
+                "irradianceQuality" => (self.irradiance_quality).inspect_value(path, offset, limit),
+                "backFaceTolerance" => {
+                    (self.back_face_tolerance).inspect_value(path, offset, limit)
+                }
+                "isTransparent" => (self.is_transparent).inspect_value(path, offset, limit),
+                "modellingTolerance" => {
+                    (self.modelling_tolerance).inspect_value(path, offset, limit)
+                }
+                "systemTag" => (self.system_tag).inspect_value(path, offset, limit),
+                "edgeStitching" => (self.edge_stitching).inspect_value(path, offset, limit),
+                "blurRadius" => (self.blur_radius).inspect_value(path, offset, limit),
+                "directLightQuality" => {
+                    (self.direct_light_quality).inspect_value(path, offset, limit)
+                }
+                "antiAliasingSamples" => {
+                    (self.anti_aliasing_samples).inspect_value(path, offset, limit)
+                }
+                "AOQuality" => (self.ao_quality).inspect_value(path, offset, limit),
+                "bakedLightmapTag" => (self.baked_lightmap_tag).inspect_value(path, offset, limit),
+                "pushoff" => (self.pushoff).inspect_value(path, offset, limit),
+                "AOAntiAliasingSamples" => {
+                    (self.ao_anti_aliasing_samples).inspect_value(path, offset, limit)
+                }
+                "limitLightmapCount" => {
+                    (self.limit_lightmap_count).inspect_value(path, offset, limit)
+                }
+                "maxLightmapCount" => (self.max_lightmap_count).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.resolution).inspect_value(path, offset, limit))
+                .map(|v| ("resolution".to_string(), v)),
+            ((self.cluster_resolution).inspect_value(path, offset, limit))
+                .map(|v| ("clusterResolution".to_string(), v)),
+            ((self.irradiance_budget).inspect_value(path, offset, limit))
+                .map(|v| ("irradianceBudget".to_string(), v)),
+            ((self.irradiance_quality).inspect_value(path, offset, limit))
+                .map(|v| ("irradianceQuality".to_string(), v)),
+            ((self.back_face_tolerance).inspect_value(path, offset, limit))
+                .map(|v| ("backFaceTolerance".to_string(), v)),
+            ((self.is_transparent).inspect_value(path, offset, limit))
+                .map(|v| ("isTransparent".to_string(), v)),
+            ((self.modelling_tolerance).inspect_value(path, offset, limit))
+                .map(|v| ("modellingTolerance".to_string(), v)),
+            ((self.system_tag).inspect_value(path, offset, limit))
+                .map(|v| ("systemTag".to_string(), v)),
+            ((self.edge_stitching).inspect_value(path, offset, limit))
+                .map(|v| ("edgeStitching".to_string(), v)),
+            ((self.blur_radius).inspect_value(path, offset, limit))
+                .map(|v| ("blurRadius".to_string(), v)),
+            ((self.direct_light_quality).inspect_value(path, offset, limit))
+                .map(|v| ("directLightQuality".to_string(), v)),
+            ((self.anti_aliasing_samples).inspect_value(path, offset, limit))
+                .map(|v| ("antiAliasingSamples".to_string(), v)),
+            ((self.ao_quality).inspect_value(path, offset, limit))
+                .map(|v| ("AOQuality".to_string(), v)),
+            ((self.baked_lightmap_tag).inspect_value(path, offset, limit))
+                .map(|v| ("bakedLightmapTag".to_string(), v)),
+            ((self.pushoff).inspect_value(path, offset, limit)).map(|v| ("pushoff".to_string(), v)),
+            ((self.ao_anti_aliasing_samples).inspect_value(path, offset, limit))
+                .map(|v| ("AOAntiAliasingSamples".to_string(), v)),
+            ((self.limit_lightmap_count).inspect_value(path, offset, limit))
+                .map(|v| ("limitLightmapCount".to_string(), v)),
+            ((self.max_lightmap_count).inspect_value(path, offset, limit))
+                .map(|v| ("maxLightmapCount".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

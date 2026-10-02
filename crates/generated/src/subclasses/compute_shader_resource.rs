@@ -25,6 +25,21 @@ impl crate::Parse for ComputeShaderResourceNameVariant {
     }
 }
 
+impl crate::ToValue for ComputeShaderResourceNameVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_6(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_6(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：ComputeShaderResourceGeneratedNameVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ComputeShaderResourceGeneratedNameVariant {
@@ -43,6 +58,21 @@ impl crate::Parse for ComputeShaderResourceGeneratedNameVariant {
         } else {
             let v = ({ Ok(Box::new(FastPropertyName::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for ComputeShaderResourceGeneratedNameVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_6(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_6(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -102,5 +132,63 @@ impl crate::Parse for ComputeShaderResource {
             tex_dimension,
             res_type,
         })
+    }
+}
+
+impl crate::ToValue for ComputeShaderResource {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("name".to_string(), self.name.to_value())),
+            Some(("bindPoint".to_string(), self.bind_point.to_value())),
+            crate::opt_field("generatedName", &self.generated_name),
+            crate::opt_field("secondaryBindPoint", &self.secondary_bind_point),
+            crate::opt_field("counter", &self.counter),
+            crate::opt_field("samplerBindPoint", &self.sampler_bind_point),
+            crate::opt_field("texDimension", &self.tex_dimension),
+            crate::opt_field("resType", &self.res_type),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "name" => (self.name).inspect_value(path, offset, limit),
+                "bindPoint" => (self.bind_point).inspect_value(path, offset, limit),
+                "generatedName" => (self.generated_name).inspect_value(path, offset, limit),
+                "secondaryBindPoint" => {
+                    (self.secondary_bind_point).inspect_value(path, offset, limit)
+                }
+                "counter" => (self.counter).inspect_value(path, offset, limit),
+                "samplerBindPoint" => (self.sampler_bind_point).inspect_value(path, offset, limit),
+                "texDimension" => (self.tex_dimension).inspect_value(path, offset, limit),
+                "resType" => (self.res_type).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.name).inspect_value(path, offset, limit)).map(|v| ("name".to_string(), v)),
+            ((self.bind_point).inspect_value(path, offset, limit))
+                .map(|v| ("bindPoint".to_string(), v)),
+            ((self.generated_name).inspect_value(path, offset, limit))
+                .map(|v| ("generatedName".to_string(), v)),
+            ((self.secondary_bind_point).inspect_value(path, offset, limit))
+                .map(|v| ("secondaryBindPoint".to_string(), v)),
+            ((self.counter).inspect_value(path, offset, limit)).map(|v| ("counter".to_string(), v)),
+            ((self.sampler_bind_point).inspect_value(path, offset, limit))
+                .map(|v| ("samplerBindPoint".to_string(), v)),
+            ((self.tex_dimension).inspect_value(path, offset, limit))
+                .map(|v| ("texDimension".to_string(), v)),
+            ((self.res_type).inspect_value(path, offset, limit))
+                .map(|v| ("resType".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

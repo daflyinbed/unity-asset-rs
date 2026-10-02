@@ -37,6 +37,21 @@ impl crate::Parse for NavMeshLayersAreasVariant {
     }
 }
 
+impl crate::ToValue for NavMeshLayersAreasVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：NavMeshLayersMSettingsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum NavMeshLayersMSettingsVariant {
@@ -70,6 +85,21 @@ impl crate::Parse for NavMeshLayersMSettingsVariant {
     }
 }
 
+impl crate::ToValue for NavMeshLayersMSettingsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：NavMeshLayersMSettingNamesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum NavMeshLayersMSettingNamesVariant {
@@ -99,6 +129,21 @@ impl crate::Parse for NavMeshLayersMSettingNamesVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for NavMeshLayersMSettingNamesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -263,5 +308,176 @@ impl crate::Parse for NavMeshLayers {
             user_layer_27,
             user_layer_28,
         })
+    }
+}
+
+impl crate::ToValue for NavMeshLayers {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            crate::opt_field("Built-in Layer 0", &self.built_in_layer_0),
+            crate::opt_field("areas", &self.areas),
+            crate::opt_field("Built-in Layer 1", &self.built_in_layer_1),
+            crate::opt_field("m_LastAgentTypeID", &self.m_last_agent_type_id),
+            crate::opt_field("Built-in Layer 2", &self.built_in_layer_2),
+            crate::opt_field("m_Settings", &self.m_settings),
+            crate::opt_field("User Layer 0", &self.user_layer_0),
+            crate::opt_field("m_SettingNames", &self.m_setting_names),
+            crate::opt_field("User Layer 1", &self.user_layer_1),
+            crate::opt_field("User Layer 2", &self.user_layer_2),
+            crate::opt_field("User Layer 3", &self.user_layer_3),
+            crate::opt_field("User Layer 4", &self.user_layer_4),
+            crate::opt_field("User Layer 5", &self.user_layer_5),
+            crate::opt_field("User Layer 6", &self.user_layer_6),
+            crate::opt_field("User Layer 7", &self.user_layer_7),
+            crate::opt_field("User Layer 8", &self.user_layer_8),
+            crate::opt_field("User Layer 9", &self.user_layer_9),
+            crate::opt_field("User Layer 10", &self.user_layer_10),
+            crate::opt_field("User Layer 11", &self.user_layer_11),
+            crate::opt_field("User Layer 12", &self.user_layer_12),
+            crate::opt_field("User Layer 13", &self.user_layer_13),
+            crate::opt_field("User Layer 14", &self.user_layer_14),
+            crate::opt_field("User Layer 15", &self.user_layer_15),
+            crate::opt_field("User Layer 16", &self.user_layer_16),
+            crate::opt_field("User Layer 17", &self.user_layer_17),
+            crate::opt_field("User Layer 18", &self.user_layer_18),
+            crate::opt_field("User Layer 19", &self.user_layer_19),
+            crate::opt_field("User Layer 20", &self.user_layer_20),
+            crate::opt_field("User Layer 21", &self.user_layer_21),
+            crate::opt_field("User Layer 22", &self.user_layer_22),
+            crate::opt_field("User Layer 23", &self.user_layer_23),
+            crate::opt_field("User Layer 24", &self.user_layer_24),
+            crate::opt_field("User Layer 25", &self.user_layer_25),
+            crate::opt_field("User Layer 26", &self.user_layer_26),
+            crate::opt_field("User Layer 27", &self.user_layer_27),
+            crate::opt_field("User Layer 28", &self.user_layer_28),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "Built-in Layer 0" => (self.built_in_layer_0).inspect_value(path, offset, limit),
+                "areas" => (self.areas).inspect_value(path, offset, limit),
+                "Built-in Layer 1" => (self.built_in_layer_1).inspect_value(path, offset, limit),
+                "m_LastAgentTypeID" => {
+                    (self.m_last_agent_type_id).inspect_value(path, offset, limit)
+                }
+                "Built-in Layer 2" => (self.built_in_layer_2).inspect_value(path, offset, limit),
+                "m_Settings" => (self.m_settings).inspect_value(path, offset, limit),
+                "User Layer 0" => (self.user_layer_0).inspect_value(path, offset, limit),
+                "m_SettingNames" => (self.m_setting_names).inspect_value(path, offset, limit),
+                "User Layer 1" => (self.user_layer_1).inspect_value(path, offset, limit),
+                "User Layer 2" => (self.user_layer_2).inspect_value(path, offset, limit),
+                "User Layer 3" => (self.user_layer_3).inspect_value(path, offset, limit),
+                "User Layer 4" => (self.user_layer_4).inspect_value(path, offset, limit),
+                "User Layer 5" => (self.user_layer_5).inspect_value(path, offset, limit),
+                "User Layer 6" => (self.user_layer_6).inspect_value(path, offset, limit),
+                "User Layer 7" => (self.user_layer_7).inspect_value(path, offset, limit),
+                "User Layer 8" => (self.user_layer_8).inspect_value(path, offset, limit),
+                "User Layer 9" => (self.user_layer_9).inspect_value(path, offset, limit),
+                "User Layer 10" => (self.user_layer_10).inspect_value(path, offset, limit),
+                "User Layer 11" => (self.user_layer_11).inspect_value(path, offset, limit),
+                "User Layer 12" => (self.user_layer_12).inspect_value(path, offset, limit),
+                "User Layer 13" => (self.user_layer_13).inspect_value(path, offset, limit),
+                "User Layer 14" => (self.user_layer_14).inspect_value(path, offset, limit),
+                "User Layer 15" => (self.user_layer_15).inspect_value(path, offset, limit),
+                "User Layer 16" => (self.user_layer_16).inspect_value(path, offset, limit),
+                "User Layer 17" => (self.user_layer_17).inspect_value(path, offset, limit),
+                "User Layer 18" => (self.user_layer_18).inspect_value(path, offset, limit),
+                "User Layer 19" => (self.user_layer_19).inspect_value(path, offset, limit),
+                "User Layer 20" => (self.user_layer_20).inspect_value(path, offset, limit),
+                "User Layer 21" => (self.user_layer_21).inspect_value(path, offset, limit),
+                "User Layer 22" => (self.user_layer_22).inspect_value(path, offset, limit),
+                "User Layer 23" => (self.user_layer_23).inspect_value(path, offset, limit),
+                "User Layer 24" => (self.user_layer_24).inspect_value(path, offset, limit),
+                "User Layer 25" => (self.user_layer_25).inspect_value(path, offset, limit),
+                "User Layer 26" => (self.user_layer_26).inspect_value(path, offset, limit),
+                "User Layer 27" => (self.user_layer_27).inspect_value(path, offset, limit),
+                "User Layer 28" => (self.user_layer_28).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.built_in_layer_0).inspect_value(path, offset, limit))
+                .map(|v| ("Built-in Layer 0".to_string(), v)),
+            ((self.areas).inspect_value(path, offset, limit)).map(|v| ("areas".to_string(), v)),
+            ((self.built_in_layer_1).inspect_value(path, offset, limit))
+                .map(|v| ("Built-in Layer 1".to_string(), v)),
+            ((self.m_last_agent_type_id).inspect_value(path, offset, limit))
+                .map(|v| ("m_LastAgentTypeID".to_string(), v)),
+            ((self.built_in_layer_2).inspect_value(path, offset, limit))
+                .map(|v| ("Built-in Layer 2".to_string(), v)),
+            ((self.m_settings).inspect_value(path, offset, limit))
+                .map(|v| ("m_Settings".to_string(), v)),
+            ((self.user_layer_0).inspect_value(path, offset, limit))
+                .map(|v| ("User Layer 0".to_string(), v)),
+            ((self.m_setting_names).inspect_value(path, offset, limit))
+                .map(|v| ("m_SettingNames".to_string(), v)),
+            ((self.user_layer_1).inspect_value(path, offset, limit))
+                .map(|v| ("User Layer 1".to_string(), v)),
+            ((self.user_layer_2).inspect_value(path, offset, limit))
+                .map(|v| ("User Layer 2".to_string(), v)),
+            ((self.user_layer_3).inspect_value(path, offset, limit))
+                .map(|v| ("User Layer 3".to_string(), v)),
+            ((self.user_layer_4).inspect_value(path, offset, limit))
+                .map(|v| ("User Layer 4".to_string(), v)),
+            ((self.user_layer_5).inspect_value(path, offset, limit))
+                .map(|v| ("User Layer 5".to_string(), v)),
+            ((self.user_layer_6).inspect_value(path, offset, limit))
+                .map(|v| ("User Layer 6".to_string(), v)),
+            ((self.user_layer_7).inspect_value(path, offset, limit))
+                .map(|v| ("User Layer 7".to_string(), v)),
+            ((self.user_layer_8).inspect_value(path, offset, limit))
+                .map(|v| ("User Layer 8".to_string(), v)),
+            ((self.user_layer_9).inspect_value(path, offset, limit))
+                .map(|v| ("User Layer 9".to_string(), v)),
+            ((self.user_layer_10).inspect_value(path, offset, limit))
+                .map(|v| ("User Layer 10".to_string(), v)),
+            ((self.user_layer_11).inspect_value(path, offset, limit))
+                .map(|v| ("User Layer 11".to_string(), v)),
+            ((self.user_layer_12).inspect_value(path, offset, limit))
+                .map(|v| ("User Layer 12".to_string(), v)),
+            ((self.user_layer_13).inspect_value(path, offset, limit))
+                .map(|v| ("User Layer 13".to_string(), v)),
+            ((self.user_layer_14).inspect_value(path, offset, limit))
+                .map(|v| ("User Layer 14".to_string(), v)),
+            ((self.user_layer_15).inspect_value(path, offset, limit))
+                .map(|v| ("User Layer 15".to_string(), v)),
+            ((self.user_layer_16).inspect_value(path, offset, limit))
+                .map(|v| ("User Layer 16".to_string(), v)),
+            ((self.user_layer_17).inspect_value(path, offset, limit))
+                .map(|v| ("User Layer 17".to_string(), v)),
+            ((self.user_layer_18).inspect_value(path, offset, limit))
+                .map(|v| ("User Layer 18".to_string(), v)),
+            ((self.user_layer_19).inspect_value(path, offset, limit))
+                .map(|v| ("User Layer 19".to_string(), v)),
+            ((self.user_layer_20).inspect_value(path, offset, limit))
+                .map(|v| ("User Layer 20".to_string(), v)),
+            ((self.user_layer_21).inspect_value(path, offset, limit))
+                .map(|v| ("User Layer 21".to_string(), v)),
+            ((self.user_layer_22).inspect_value(path, offset, limit))
+                .map(|v| ("User Layer 22".to_string(), v)),
+            ((self.user_layer_23).inspect_value(path, offset, limit))
+                .map(|v| ("User Layer 23".to_string(), v)),
+            ((self.user_layer_24).inspect_value(path, offset, limit))
+                .map(|v| ("User Layer 24".to_string(), v)),
+            ((self.user_layer_25).inspect_value(path, offset, limit))
+                .map(|v| ("User Layer 25".to_string(), v)),
+            ((self.user_layer_26).inspect_value(path, offset, limit))
+                .map(|v| ("User Layer 26".to_string(), v)),
+            ((self.user_layer_27).inspect_value(path, offset, limit))
+                .map(|v| ("User Layer 27".to_string(), v)),
+            ((self.user_layer_28).inspect_value(path, offset, limit))
+                .map(|v| ("User Layer 28".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

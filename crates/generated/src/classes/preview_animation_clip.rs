@@ -43,6 +43,21 @@ impl crate::Parse for PreviewAnimationClipMRotationCurvesVariant {
     }
 }
 
+impl crate::ToValue for PreviewAnimationClipMRotationCurvesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：PreviewAnimationClipMCompressedRotationCurvesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum PreviewAnimationClipMCompressedRotationCurvesVariant {
@@ -72,6 +87,21 @@ impl crate::Parse for PreviewAnimationClipMCompressedRotationCurvesVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for PreviewAnimationClipMCompressedRotationCurvesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -109,6 +139,21 @@ impl crate::Parse for PreviewAnimationClipMEulerCurvesVariant {
     }
 }
 
+impl crate::ToValue for PreviewAnimationClipMEulerCurvesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：PreviewAnimationClipMPositionCurvesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum PreviewAnimationClipMPositionCurvesVariant {
@@ -138,6 +183,21 @@ impl crate::Parse for PreviewAnimationClipMPositionCurvesVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for PreviewAnimationClipMPositionCurvesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -175,6 +235,21 @@ impl crate::Parse for PreviewAnimationClipMScaleCurvesVariant {
     }
 }
 
+impl crate::ToValue for PreviewAnimationClipMScaleCurvesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：PreviewAnimationClipMFloatCurvesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum PreviewAnimationClipMFloatCurvesVariant {
@@ -204,6 +279,21 @@ impl crate::Parse for PreviewAnimationClipMFloatCurvesVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for PreviewAnimationClipMFloatCurvesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -241,6 +331,21 @@ impl crate::Parse for PreviewAnimationClipMPPtrCurvesVariant {
     }
 }
 
+impl crate::ToValue for PreviewAnimationClipMPPtrCurvesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：PreviewAnimationClipMEventsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum PreviewAnimationClipMEventsVariant {
@@ -270,6 +375,21 @@ impl crate::Parse for PreviewAnimationClipMEventsVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for PreviewAnimationClipMEventsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -372,5 +492,141 @@ impl crate::Parse for PreviewAnimationClip {
             m_has_generic_root_transform,
             m_has_motion_float_curves,
         })
+    }
+}
+
+impl crate::ToValue for PreviewAnimationClip {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some(("m_Legacy".to_string(), self.m_legacy.to_value())),
+            Some(("m_Compressed".to_string(), self.m_compressed.to_value())),
+            Some((
+                "m_UseHighQualityCurve".to_string(),
+                self.m_use_high_quality_curve.to_value(),
+            )),
+            Some((
+                "m_RotationCurves".to_string(),
+                self.m_rotation_curves.to_value(),
+            )),
+            Some((
+                "m_CompressedRotationCurves".to_string(),
+                self.m_compressed_rotation_curves.to_value(),
+            )),
+            Some(("m_EulerCurves".to_string(), self.m_euler_curves.to_value())),
+            Some((
+                "m_PositionCurves".to_string(),
+                self.m_position_curves.to_value(),
+            )),
+            Some(("m_ScaleCurves".to_string(), self.m_scale_curves.to_value())),
+            Some(("m_FloatCurves".to_string(), self.m_float_curves.to_value())),
+            Some(("m_PPtrCurves".to_string(), self.m_p_ptr_curves.to_value())),
+            Some(("m_SampleRate".to_string(), self.m_sample_rate.to_value())),
+            Some(("m_WrapMode".to_string(), self.m_wrap_mode.to_value())),
+            Some(("m_Bounds".to_string(), self.m_bounds.to_value())),
+            Some((
+                "m_MuscleClipSize".to_string(),
+                self.m_muscle_clip_size.to_value(),
+            )),
+            Some(("m_MuscleClip".to_string(), self.m_muscle_clip.to_value())),
+            Some((
+                "m_ClipBindingConstant".to_string(),
+                self.m_clip_binding_constant.to_value(),
+            )),
+            Some(("m_Events".to_string(), self.m_events.to_value())),
+            crate::opt_field(
+                "m_HasGenericRootTransform",
+                &self.m_has_generic_root_transform,
+            ),
+            crate::opt_field("m_HasMotionFloatCurves", &self.m_has_motion_float_curves),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_Legacy" => (self.m_legacy).inspect_value(path, offset, limit),
+                "m_Compressed" => (self.m_compressed).inspect_value(path, offset, limit),
+                "m_UseHighQualityCurve" => {
+                    (self.m_use_high_quality_curve).inspect_value(path, offset, limit)
+                }
+                "m_RotationCurves" => (self.m_rotation_curves).inspect_value(path, offset, limit),
+                "m_CompressedRotationCurves" => {
+                    (self.m_compressed_rotation_curves).inspect_value(path, offset, limit)
+                }
+                "m_EulerCurves" => (self.m_euler_curves).inspect_value(path, offset, limit),
+                "m_PositionCurves" => (self.m_position_curves).inspect_value(path, offset, limit),
+                "m_ScaleCurves" => (self.m_scale_curves).inspect_value(path, offset, limit),
+                "m_FloatCurves" => (self.m_float_curves).inspect_value(path, offset, limit),
+                "m_PPtrCurves" => (self.m_p_ptr_curves).inspect_value(path, offset, limit),
+                "m_SampleRate" => (self.m_sample_rate).inspect_value(path, offset, limit),
+                "m_WrapMode" => (self.m_wrap_mode).inspect_value(path, offset, limit),
+                "m_Bounds" => (self.m_bounds).inspect_value(path, offset, limit),
+                "m_MuscleClipSize" => (self.m_muscle_clip_size).inspect_value(path, offset, limit),
+                "m_MuscleClip" => (self.m_muscle_clip).inspect_value(path, offset, limit),
+                "m_ClipBindingConstant" => {
+                    (self.m_clip_binding_constant).inspect_value(path, offset, limit)
+                }
+                "m_Events" => (self.m_events).inspect_value(path, offset, limit),
+                "m_HasGenericRootTransform" => {
+                    (self.m_has_generic_root_transform).inspect_value(path, offset, limit)
+                }
+                "m_HasMotionFloatCurves" => {
+                    (self.m_has_motion_float_curves).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_legacy).inspect_value(path, offset, limit))
+                .map(|v| ("m_Legacy".to_string(), v)),
+            ((self.m_compressed).inspect_value(path, offset, limit))
+                .map(|v| ("m_Compressed".to_string(), v)),
+            ((self.m_use_high_quality_curve).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseHighQualityCurve".to_string(), v)),
+            ((self.m_rotation_curves).inspect_value(path, offset, limit))
+                .map(|v| ("m_RotationCurves".to_string(), v)),
+            ((self.m_compressed_rotation_curves).inspect_value(path, offset, limit))
+                .map(|v| ("m_CompressedRotationCurves".to_string(), v)),
+            ((self.m_euler_curves).inspect_value(path, offset, limit))
+                .map(|v| ("m_EulerCurves".to_string(), v)),
+            ((self.m_position_curves).inspect_value(path, offset, limit))
+                .map(|v| ("m_PositionCurves".to_string(), v)),
+            ((self.m_scale_curves).inspect_value(path, offset, limit))
+                .map(|v| ("m_ScaleCurves".to_string(), v)),
+            ((self.m_float_curves).inspect_value(path, offset, limit))
+                .map(|v| ("m_FloatCurves".to_string(), v)),
+            ((self.m_p_ptr_curves).inspect_value(path, offset, limit))
+                .map(|v| ("m_PPtrCurves".to_string(), v)),
+            ((self.m_sample_rate).inspect_value(path, offset, limit))
+                .map(|v| ("m_SampleRate".to_string(), v)),
+            ((self.m_wrap_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_WrapMode".to_string(), v)),
+            ((self.m_bounds).inspect_value(path, offset, limit))
+                .map(|v| ("m_Bounds".to_string(), v)),
+            ((self.m_muscle_clip_size).inspect_value(path, offset, limit))
+                .map(|v| ("m_MuscleClipSize".to_string(), v)),
+            ((self.m_muscle_clip).inspect_value(path, offset, limit))
+                .map(|v| ("m_MuscleClip".to_string(), v)),
+            ((self.m_clip_binding_constant).inspect_value(path, offset, limit))
+                .map(|v| ("m_ClipBindingConstant".to_string(), v)),
+            ((self.m_events).inspect_value(path, offset, limit))
+                .map(|v| ("m_Events".to_string(), v)),
+            ((self.m_has_generic_root_transform).inspect_value(path, offset, limit))
+                .map(|v| ("m_HasGenericRootTransform".to_string(), v)),
+            ((self.m_has_motion_float_curves).inspect_value(path, offset, limit))
+                .map(|v| ("m_HasMotionFloatCurves".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

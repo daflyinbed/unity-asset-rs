@@ -62,3 +62,46 @@ impl crate::Parse for CachedSpriteAtlasRuntimeData {
         })
     }
 }
+
+impl crate::ToValue for CachedSpriteAtlasRuntimeData {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("textures".to_string(), self.textures.to_value())),
+            Some(("alphaTextures".to_string(), self.alpha_textures.to_value())),
+            Some(("frames".to_string(), self.frames.to_value())),
+            crate::opt_field("currentPackingHash", &self.current_packing_hash),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "textures" => (self.textures).inspect_value(path, offset, limit),
+                "alphaTextures" => (self.alpha_textures).inspect_value(path, offset, limit),
+                "frames" => (self.frames).inspect_value(path, offset, limit),
+                "currentPackingHash" => {
+                    (self.current_packing_hash).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.textures).inspect_value(path, offset, limit))
+                .map(|v| ("textures".to_string(), v)),
+            ((self.alpha_textures).inspect_value(path, offset, limit))
+                .map(|v| ("alphaTextures".to_string(), v)),
+            ((self.frames).inspect_value(path, offset, limit)).map(|v| ("frames".to_string(), v)),
+            ((self.current_packing_hash).inspect_value(path, offset, limit))
+                .map(|v| ("currentPackingHash".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

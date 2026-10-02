@@ -48,3 +48,86 @@ impl crate::Parse for VisualEffectSettings {
         })
     }
 }
+
+impl crate::ToValue for VisualEffectSettings {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some((
+                "m_RendererSettings".to_string(),
+                self.m_renderer_settings.to_value(),
+            )),
+            Some((
+                "m_CullingFlags".to_string(),
+                self.m_culling_flags.to_value(),
+            )),
+            Some(("m_UpdateMode".to_string(), self.m_update_mode.to_value())),
+            Some((
+                "m_PreWarmDeltaTime".to_string(),
+                self.m_pre_warm_delta_time.to_value(),
+            )),
+            Some((
+                "m_PreWarmStepCount".to_string(),
+                self.m_pre_warm_step_count.to_value(),
+            )),
+            Some((
+                "m_InitialEventName".to_string(),
+                self.m_initial_event_name.to_value(),
+            )),
+            crate::opt_field("m_InstancingMode", &self.m_instancing_mode),
+            crate::opt_field("m_InstancingCapacity", &self.m_instancing_capacity),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_RendererSettings" => {
+                    (self.m_renderer_settings).inspect_value(path, offset, limit)
+                }
+                "m_CullingFlags" => (self.m_culling_flags).inspect_value(path, offset, limit),
+                "m_UpdateMode" => (self.m_update_mode).inspect_value(path, offset, limit),
+                "m_PreWarmDeltaTime" => {
+                    (self.m_pre_warm_delta_time).inspect_value(path, offset, limit)
+                }
+                "m_PreWarmStepCount" => {
+                    (self.m_pre_warm_step_count).inspect_value(path, offset, limit)
+                }
+                "m_InitialEventName" => {
+                    (self.m_initial_event_name).inspect_value(path, offset, limit)
+                }
+                "m_InstancingMode" => (self.m_instancing_mode).inspect_value(path, offset, limit),
+                "m_InstancingCapacity" => {
+                    (self.m_instancing_capacity).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_renderer_settings).inspect_value(path, offset, limit))
+                .map(|v| ("m_RendererSettings".to_string(), v)),
+            ((self.m_culling_flags).inspect_value(path, offset, limit))
+                .map(|v| ("m_CullingFlags".to_string(), v)),
+            ((self.m_update_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_UpdateMode".to_string(), v)),
+            ((self.m_pre_warm_delta_time).inspect_value(path, offset, limit))
+                .map(|v| ("m_PreWarmDeltaTime".to_string(), v)),
+            ((self.m_pre_warm_step_count).inspect_value(path, offset, limit))
+                .map(|v| ("m_PreWarmStepCount".to_string(), v)),
+            ((self.m_initial_event_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_InitialEventName".to_string(), v)),
+            ((self.m_instancing_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_InstancingMode".to_string(), v)),
+            ((self.m_instancing_capacity).inspect_value(path, offset, limit))
+                .map(|v| ("m_InstancingCapacity".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

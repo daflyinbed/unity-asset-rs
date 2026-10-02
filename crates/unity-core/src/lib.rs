@@ -5,8 +5,10 @@
 
 mod pptr;
 mod reader;
+mod value;
 mod version;
 
 pub use pptr::PPtr;
 pub use reader::{Endian, EndianReader, Parse};
+pub use value::{PPtrValue, ToValue, Value, inspect_array, inspect_bytes, opt_field};
 pub use version::UnityVersion;

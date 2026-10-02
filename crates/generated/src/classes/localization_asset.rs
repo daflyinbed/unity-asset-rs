@@ -38,3 +38,47 @@ impl crate::Parse for LocalizationAsset {
         })
     }
 }
+
+impl crate::ToValue for LocalizationAsset {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some((
+                "Locale ISO Code".to_string(),
+                self.locale_iso_code.to_value(),
+            )),
+            Some(("Editor Asset".to_string(), self.editor_asset.to_value())),
+            Some(("String Table".to_string(), self.string_table.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "Locale ISO Code" => (self.locale_iso_code).inspect_value(path, offset, limit),
+                "Editor Asset" => (self.editor_asset).inspect_value(path, offset, limit),
+                "String Table" => (self.string_table).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.locale_iso_code).inspect_value(path, offset, limit))
+                .map(|v| ("Locale ISO Code".to_string(), v)),
+            ((self.editor_asset).inspect_value(path, offset, limit))
+                .map(|v| ("Editor Asset".to_string(), v)),
+            ((self.string_table).inspect_value(path, offset, limit))
+                .map(|v| ("String Table".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

@@ -36,3 +36,51 @@ impl crate::Parse for ShaderCompilationInfo {
         })
     }
 }
+
+impl crate::ToValue for ShaderCompilationInfo {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Snippets".to_string(), self.m_snippets.to_value())),
+            Some((
+                "m_MeshComponentsFromSnippets".to_string(),
+                self.m_mesh_components_from_snippets.to_value(),
+            )),
+            Some((
+                "m_HasSurfaceShaders".to_string(),
+                self.m_has_surface_shaders.to_value(),
+            )),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Snippets" => (self.m_snippets).inspect_value(path, offset, limit),
+                "m_MeshComponentsFromSnippets" => {
+                    (self.m_mesh_components_from_snippets).inspect_value(path, offset, limit)
+                }
+                "m_HasSurfaceShaders" => {
+                    (self.m_has_surface_shaders).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_snippets).inspect_value(path, offset, limit))
+                .map(|v| ("m_Snippets".to_string(), v)),
+            ((self.m_mesh_components_from_snippets).inspect_value(path, offset, limit))
+                .map(|v| ("m_MeshComponentsFromSnippets".to_string(), v)),
+            ((self.m_has_surface_shaders).inspect_value(path, offset, limit))
+                .map(|v| ("m_HasSurfaceShaders".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

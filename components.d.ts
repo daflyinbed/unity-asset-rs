@@ -40,6 +40,7 @@ declare module 'vue' {
     ILucideSearch: typeof import('~icons/lucide/search')['default']
     ILucideSquare: typeof import('~icons/lucide/square')['default']
     ILucideTable: typeof import('~icons/lucide/table')['default']
+    ILucideTriangleAlert: typeof import('~icons/lucide/triangle-alert')['default']
     ILucideX: typeof import('~icons/lucide/x')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

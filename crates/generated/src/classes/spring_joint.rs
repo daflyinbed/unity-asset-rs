@@ -25,6 +25,21 @@ impl crate::Parse for SpringJointMEnablePreprocessingVariant {
         }
     }
 }
+
+impl crate::ToValue for SpringJointMEnablePreprocessingVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct SpringJoint {
     pub m_game_object: PPtr,
@@ -135,5 +150,119 @@ impl crate::Parse for SpringJoint {
             m_mass_scale,
             m_connected_mass_scale,
         })
+    }
+}
+
+impl crate::ToValue for SpringJoint {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some((
+                "m_ConnectedBody".to_string(),
+                self.m_connected_body.to_value(),
+            )),
+            Some(("m_Anchor".to_string(), self.m_anchor.to_value())),
+            crate::opt_field(
+                "m_ConnectedArticulationBody",
+                &self.m_connected_articulation_body,
+            ),
+            Some(("m_Spring".to_string(), self.m_spring.to_value())),
+            crate::opt_field(
+                "m_AutoConfigureConnectedAnchor",
+                &self.m_auto_configure_connected_anchor,
+            ),
+            Some(("m_Damper".to_string(), self.m_damper.to_value())),
+            crate::opt_field("m_ConnectedAnchor", &self.m_connected_anchor),
+            crate::opt_field("m_Axis", &self.m_axis),
+            Some(("m_MinDistance".to_string(), self.m_min_distance.to_value())),
+            Some(("m_MaxDistance".to_string(), self.m_max_distance.to_value())),
+            Some(("m_BreakForce".to_string(), self.m_break_force.to_value())),
+            Some(("m_BreakTorque".to_string(), self.m_break_torque.to_value())),
+            crate::opt_field("m_Tolerance", &self.m_tolerance),
+            crate::opt_field("m_EnableCollision", &self.m_enable_collision),
+            crate::opt_field("m_EnablePreprocessing", &self.m_enable_preprocessing),
+            crate::opt_field("m_MassScale", &self.m_mass_scale),
+            crate::opt_field("m_ConnectedMassScale", &self.m_connected_mass_scale),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_ConnectedBody" => (self.m_connected_body).inspect_value(path, offset, limit),
+                "m_Anchor" => (self.m_anchor).inspect_value(path, offset, limit),
+                "m_ConnectedArticulationBody" => {
+                    (self.m_connected_articulation_body).inspect_value(path, offset, limit)
+                }
+                "m_Spring" => (self.m_spring).inspect_value(path, offset, limit),
+                "m_AutoConfigureConnectedAnchor" => {
+                    (self.m_auto_configure_connected_anchor).inspect_value(path, offset, limit)
+                }
+                "m_Damper" => (self.m_damper).inspect_value(path, offset, limit),
+                "m_ConnectedAnchor" => (self.m_connected_anchor).inspect_value(path, offset, limit),
+                "m_Axis" => (self.m_axis).inspect_value(path, offset, limit),
+                "m_MinDistance" => (self.m_min_distance).inspect_value(path, offset, limit),
+                "m_MaxDistance" => (self.m_max_distance).inspect_value(path, offset, limit),
+                "m_BreakForce" => (self.m_break_force).inspect_value(path, offset, limit),
+                "m_BreakTorque" => (self.m_break_torque).inspect_value(path, offset, limit),
+                "m_Tolerance" => (self.m_tolerance).inspect_value(path, offset, limit),
+                "m_EnableCollision" => (self.m_enable_collision).inspect_value(path, offset, limit),
+                "m_EnablePreprocessing" => {
+                    (self.m_enable_preprocessing).inspect_value(path, offset, limit)
+                }
+                "m_MassScale" => (self.m_mass_scale).inspect_value(path, offset, limit),
+                "m_ConnectedMassScale" => {
+                    (self.m_connected_mass_scale).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_connected_body).inspect_value(path, offset, limit))
+                .map(|v| ("m_ConnectedBody".to_string(), v)),
+            ((self.m_anchor).inspect_value(path, offset, limit))
+                .map(|v| ("m_Anchor".to_string(), v)),
+            ((self.m_connected_articulation_body).inspect_value(path, offset, limit))
+                .map(|v| ("m_ConnectedArticulationBody".to_string(), v)),
+            ((self.m_spring).inspect_value(path, offset, limit))
+                .map(|v| ("m_Spring".to_string(), v)),
+            ((self.m_auto_configure_connected_anchor).inspect_value(path, offset, limit))
+                .map(|v| ("m_AutoConfigureConnectedAnchor".to_string(), v)),
+            ((self.m_damper).inspect_value(path, offset, limit))
+                .map(|v| ("m_Damper".to_string(), v)),
+            ((self.m_connected_anchor).inspect_value(path, offset, limit))
+                .map(|v| ("m_ConnectedAnchor".to_string(), v)),
+            ((self.m_axis).inspect_value(path, offset, limit)).map(|v| ("m_Axis".to_string(), v)),
+            ((self.m_min_distance).inspect_value(path, offset, limit))
+                .map(|v| ("m_MinDistance".to_string(), v)),
+            ((self.m_max_distance).inspect_value(path, offset, limit))
+                .map(|v| ("m_MaxDistance".to_string(), v)),
+            ((self.m_break_force).inspect_value(path, offset, limit))
+                .map(|v| ("m_BreakForce".to_string(), v)),
+            ((self.m_break_torque).inspect_value(path, offset, limit))
+                .map(|v| ("m_BreakTorque".to_string(), v)),
+            ((self.m_tolerance).inspect_value(path, offset, limit))
+                .map(|v| ("m_Tolerance".to_string(), v)),
+            ((self.m_enable_collision).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableCollision".to_string(), v)),
+            ((self.m_enable_preprocessing).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnablePreprocessing".to_string(), v)),
+            ((self.m_mass_scale).inspect_value(path, offset, limit))
+                .map(|v| ("m_MassScale".to_string(), v)),
+            ((self.m_connected_mass_scale).inspect_value(path, offset, limit))
+                .map(|v| ("m_ConnectedMassScale".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

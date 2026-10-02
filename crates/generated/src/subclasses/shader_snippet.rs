@@ -131,3 +131,120 @@ impl crate::Parse for ShaderSnippet {
         })
     }
 }
+
+impl crate::ToValue for ShaderSnippet {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Code".to_string(), self.m_code.to_value())),
+            Some(("m_AssetPath".to_string(), self.m_asset_path.to_value())),
+            Some((
+                "m_PlatformMask".to_string(),
+                self.m_platform_mask.to_value(),
+            )),
+            Some(("m_TypesMask".to_string(), self.m_types_mask.to_value())),
+            Some((
+                "m_IncludesHash".to_string(),
+                self.m_includes_hash.to_value(),
+            )),
+            Some(("m_Target".to_string(), self.m_target.to_value())),
+            Some(("m_IsGLSL".to_string(), self.m_is_glsl.to_value())),
+            Some(("m_FromOther".to_string(), self.m_from_other.to_value())),
+            Some((
+                "m_KeywordCombinations[0]".to_string(),
+                self.m_keyword_combinations_0.to_value(),
+            )),
+            Some((
+                "m_KeywordCombinations[1]".to_string(),
+                self.m_keyword_combinations_1.to_value(),
+            )),
+            Some((
+                "m_KeywordCombinations[2]".to_string(),
+                self.m_keyword_combinations_2.to_value(),
+            )),
+            Some((
+                "m_KeywordCombinations[3]".to_string(),
+                self.m_keyword_combinations_3.to_value(),
+            )),
+            Some((
+                "m_KeywordCombinations[4]".to_string(),
+                self.m_keyword_combinations_4.to_value(),
+            )),
+            Some((
+                "m_KeywordCombinations[5]".to_string(),
+                self.m_keyword_combinations_5.to_value(),
+            )),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Code" => (self.m_code).inspect_value(path, offset, limit),
+                "m_AssetPath" => (self.m_asset_path).inspect_value(path, offset, limit),
+                "m_PlatformMask" => (self.m_platform_mask).inspect_value(path, offset, limit),
+                "m_TypesMask" => (self.m_types_mask).inspect_value(path, offset, limit),
+                "m_IncludesHash" => (self.m_includes_hash).inspect_value(path, offset, limit),
+                "m_Target" => (self.m_target).inspect_value(path, offset, limit),
+                "m_IsGLSL" => (self.m_is_glsl).inspect_value(path, offset, limit),
+                "m_FromOther" => (self.m_from_other).inspect_value(path, offset, limit),
+                "m_KeywordCombinations[0]" => {
+                    (self.m_keyword_combinations_0).inspect_value(path, offset, limit)
+                }
+                "m_KeywordCombinations[1]" => {
+                    (self.m_keyword_combinations_1).inspect_value(path, offset, limit)
+                }
+                "m_KeywordCombinations[2]" => {
+                    (self.m_keyword_combinations_2).inspect_value(path, offset, limit)
+                }
+                "m_KeywordCombinations[3]" => {
+                    (self.m_keyword_combinations_3).inspect_value(path, offset, limit)
+                }
+                "m_KeywordCombinations[4]" => {
+                    (self.m_keyword_combinations_4).inspect_value(path, offset, limit)
+                }
+                "m_KeywordCombinations[5]" => {
+                    (self.m_keyword_combinations_5).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_code).inspect_value(path, offset, limit)).map(|v| ("m_Code".to_string(), v)),
+            ((self.m_asset_path).inspect_value(path, offset, limit))
+                .map(|v| ("m_AssetPath".to_string(), v)),
+            ((self.m_platform_mask).inspect_value(path, offset, limit))
+                .map(|v| ("m_PlatformMask".to_string(), v)),
+            ((self.m_types_mask).inspect_value(path, offset, limit))
+                .map(|v| ("m_TypesMask".to_string(), v)),
+            ((self.m_includes_hash).inspect_value(path, offset, limit))
+                .map(|v| ("m_IncludesHash".to_string(), v)),
+            ((self.m_target).inspect_value(path, offset, limit))
+                .map(|v| ("m_Target".to_string(), v)),
+            ((self.m_is_glsl).inspect_value(path, offset, limit))
+                .map(|v| ("m_IsGLSL".to_string(), v)),
+            ((self.m_from_other).inspect_value(path, offset, limit))
+                .map(|v| ("m_FromOther".to_string(), v)),
+            ((self.m_keyword_combinations_0).inspect_value(path, offset, limit))
+                .map(|v| ("m_KeywordCombinations[0]".to_string(), v)),
+            ((self.m_keyword_combinations_1).inspect_value(path, offset, limit))
+                .map(|v| ("m_KeywordCombinations[1]".to_string(), v)),
+            ((self.m_keyword_combinations_2).inspect_value(path, offset, limit))
+                .map(|v| ("m_KeywordCombinations[2]".to_string(), v)),
+            ((self.m_keyword_combinations_3).inspect_value(path, offset, limit))
+                .map(|v| ("m_KeywordCombinations[3]".to_string(), v)),
+            ((self.m_keyword_combinations_4).inspect_value(path, offset, limit))
+                .map(|v| ("m_KeywordCombinations[4]".to_string(), v)),
+            ((self.m_keyword_combinations_5).inspect_value(path, offset, limit))
+                .map(|v| ("m_KeywordCombinations[5]".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

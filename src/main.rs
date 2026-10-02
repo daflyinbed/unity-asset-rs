@@ -74,6 +74,11 @@ enum Cmd {
         /// 只导出 AudioClip（跳过 Texture2D / Sprite）。
         #[arg(long, conflicts_with = "no_audio")]
         only_audio: bool,
+        /// 兜底导出：无专用导出器的对象（GameObject/Mesh/MonoBehaviour/...）dump 成
+        /// JSON，解析失败对象输出原始字节 `.bin`。对齐 AssetRipper「JSON 为默认
+        /// handler」语义，专用导出器覆盖的 7 类不重复 dump。
+        #[arg(long)]
+        json: bool,
     },
     /// 列出 container 索引(AssetBundle.m_Container + ResourceManager.m_Container 聚合)。
     ///
@@ -157,14 +162,18 @@ async fn run(cli: &Cli) -> Result<(), String> {
                     only_sprites,
                     no_audio,
                     only_audio,
+                    json,
                 } => cmd_export(
                     &env,
                     out,
                     only,
-                    *no_sprites,
-                    *only_sprites,
-                    *no_audio,
-                    *only_audio,
+                    &ExportFlags {
+                        no_sprites: *no_sprites,
+                        only_sprites: *only_sprites,
+                        no_audio: *no_audio,
+                        only_audio: *only_audio,
+                        json: *json,
+                    },
                 ),
                 Cmd::Containers { reverse, kind } => {
                     cmd_containers(&env, *reverse, kind.as_deref())
@@ -312,6 +321,7 @@ fn cmd_list(header: Option<&BundleHeader>, env: &Environment) -> Result<(), Stri
                     path_id,
                     class_id,
                     error,
+                    ..
                 } => {
                     println!(
                         "  [object] col={collection} pid={path_id} cid={class_id} ({}): {error}",
@@ -500,16 +510,31 @@ fn format_ref(env: &Environment, id: ObjectId) -> String {
 /// （受 `--no-sprites` / `--only-sprites` 开关控制），从其 atlas 上裁出 textureRect +
 /// 可选 packing rotation / downscale，写 PNG。最后拆分 AudioClip 内的全部 FSB sample
 /// 并重建成 WAV/Ogg。末尾汇总，有失败时返回 Err（退出码 1）。
+/// `export` 子命令的类别开关（收进结构体避免 cmd_export 参数过长）。
+#[derive(Clone, Copy)]
+struct ExportFlags {
+    no_sprites: bool,
+    only_sprites: bool,
+    no_audio: bool,
+    only_audio: bool,
+    /// 兜底导出：无专用导出器的对象 dump JSON，解析失败对象输出 .bin。
+    json: bool,
+}
+
 #[cfg(feature = "export")]
 fn cmd_export(
     env: &Environment,
     out: &Path,
     only: &[i64],
-    no_sprites: bool,
-    only_sprites: bool,
-    no_audio: bool,
-    only_audio: bool,
+    flags: &ExportFlags,
 ) -> Result<(), String> {
+    let ExportFlags {
+        no_sprites,
+        only_sprites,
+        no_audio,
+        only_audio,
+        json,
+    } = *flags;
     use generated::classes::sprite::Sprite;
     use generated::classes::texture2_d::Texture2D;
     use unity_asset::sprite_export::export_sprite;
@@ -728,12 +753,121 @@ fn cmd_export(
 
     println!("杂项汇总: 导出 {misc_exported}, 失败 {misc_failed}");
 
-    let total_failed = tex_failed + spr_failed + audio_failed + misc_failed;
+    let mut json_exported = 0usize;
+    let mut json_failed = 0usize;
+    let mut json_paths = std::collections::HashSet::new();
+
+    if json && !only_sprites && !only_audio {
+        // 兜底 dump：无专用导出器的对象 → JSON（对齐 AssetRipper「JSON 是默认
+        // handler，专用 handler 覆盖之」；无论 no_* 开关如何都不重复 dump）。
+        for obj in env.objects() {
+            if !only.is_empty() && !only.contains(&obj.path_id) {
+                continue;
+            }
+            if has_dedicated_exporter(obj.class_id) {
+                continue;
+            }
+            let display = obj_display_name(&obj.object);
+            let name = if display.is_empty() {
+                format!("{}_{}", class_name(obj.class_id), obj.path_id)
+            } else {
+                display
+            };
+            let value = unity_asset::json_export::dump_object(obj);
+            let jv = crate::server::dto::value_to_json_full(&value);
+            match serde_json::to_string_pretty(&jv) {
+                Ok(text) => {
+                    let file = unique_output_path(
+                        out,
+                        &sanitize_filename(&name),
+                        "json",
+                        obj.path_id,
+                        &mut json_paths,
+                    );
+                    match std::fs::write(&file, text) {
+                        Ok(()) => {
+                            println!(
+                                "✓ ok    {name}  {} -> {}",
+                                class_name(obj.class_id),
+                                file.display()
+                            );
+                            json_exported += 1;
+                        }
+                        Err(e) => {
+                            println!("✗ fail  {name}  写 {} 失败: {e}", file.display());
+                            json_failed += 1;
+                        }
+                    }
+                }
+                Err(e) => {
+                    println!("✗ fail  {name}  JSON 序列化失败: {e}");
+                    json_failed += 1;
+                }
+            }
+        }
+        // 解析失败对象 → 原始字节（连 typetree 回退都没有的对象，对齐 AssetRipper
+        // UnreadableAssets 语义；扩展名取通用 `.bin`）。
+        for failure in env.failures() {
+            let ParseFailure::Object {
+                path_id,
+                class_id,
+                data,
+                ..
+            } = failure
+            else {
+                continue;
+            };
+            if !only.is_empty() && !only.contains(path_id) {
+                continue;
+            }
+            if data.is_empty() {
+                println!("⊘ skip  pid={path_id}  无原始字节可 dump");
+                continue;
+            }
+            let stem = format!("{}_{}", class_name(*class_id), path_id);
+            let file = unique_output_path(out, &stem, "bin", *path_id, &mut json_paths);
+            match std::fs::write(&file, data) {
+                Ok(()) => {
+                    println!(
+                        "✓ ok    pid={path_id}  raw {} bytes -> {}",
+                        data.len(),
+                        file.display()
+                    );
+                    json_exported += 1;
+                }
+                Err(e) => {
+                    println!("✗ fail  pid={path_id}  写 {} 失败: {e}", file.display());
+                    json_failed += 1;
+                }
+            }
+        }
+    }
+
+    println!("JSON 兜底汇总: 导出 {json_exported}, 失败 {json_failed}");
+
+    let total_failed = tex_failed + spr_failed + audio_failed + misc_failed + json_failed;
     if total_failed > 0 {
         Err(format!("有 {total_failed} 个导出失败"))
     } else {
         Ok(())
     }
+}
+
+/// 该 class 是否有专用导出器（PNG/WAV/原始文件）——`--json` 兜底跳过它们。
+#[cfg(feature = "export")]
+fn has_dedicated_exporter(class_id: ClassId) -> bool {
+    matches!(
+        class_id.known(),
+        Some(
+            ClassIDType::Texture2D
+                | ClassIDType::Sprite
+                | ClassIDType::AudioClip
+                | ClassIDType::TextAsset
+                | ClassIDType::Font
+                | ClassIDType::VideoClip
+                | ClassIDType::MovieTexture
+        )
+    )
 }
 
 /// 杂项四类（TextAsset/Font/VideoClip/MovieTexture）取导出文件名。
@@ -782,10 +916,7 @@ fn cmd_export(
     _env: &Environment,
     _out: &Path,
     _only: &[i64],
-    _no_sprites: bool,
-    _only_sprites: bool,
-    _no_audio: bool,
-    _only_audio: bool,
+    _flags: &ExportFlags,
 ) -> Result<(), String> {
     Err("export 子命令需要 `export` feature（默认开启；当前构建关闭了它）".to_string())
 }

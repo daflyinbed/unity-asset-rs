@@ -74,3 +74,77 @@ impl crate::Parse for RayTracingShaderPlatformVariant {
         })
     }
 }
+
+impl crate::ToValue for RayTracingShaderPlatformVariant {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some((
+                "targetRenderer".to_string(),
+                self.target_renderer.to_value(),
+            )),
+            Some((
+                "uniqueVariants".to_string(),
+                self.unique_variants.to_value(),
+            )),
+            Some((
+                "variantIndices".to_string(),
+                self.variant_indices.to_value(),
+            )),
+            Some((
+                "globalKeywords".to_string(),
+                self.global_keywords.to_value(),
+            )),
+            Some(("localKeywords".to_string(), self.local_keywords.to_value())),
+            Some((
+                "dynamicKeywords".to_string(),
+                self.dynamic_keywords.to_value(),
+            )),
+            Some((
+                "editorOnlyVariant".to_string(),
+                self.editor_only_variant.to_value(),
+            )),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "targetRenderer" => (self.target_renderer).inspect_value(path, offset, limit),
+                "uniqueVariants" => (self.unique_variants).inspect_value(path, offset, limit),
+                "variantIndices" => (self.variant_indices).inspect_value(path, offset, limit),
+                "globalKeywords" => (self.global_keywords).inspect_value(path, offset, limit),
+                "localKeywords" => (self.local_keywords).inspect_value(path, offset, limit),
+                "dynamicKeywords" => (self.dynamic_keywords).inspect_value(path, offset, limit),
+                "editorOnlyVariant" => {
+                    (self.editor_only_variant).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.target_renderer).inspect_value(path, offset, limit))
+                .map(|v| ("targetRenderer".to_string(), v)),
+            ((self.unique_variants).inspect_value(path, offset, limit))
+                .map(|v| ("uniqueVariants".to_string(), v)),
+            ((self.variant_indices).inspect_value(path, offset, limit))
+                .map(|v| ("variantIndices".to_string(), v)),
+            ((self.global_keywords).inspect_value(path, offset, limit))
+                .map(|v| ("globalKeywords".to_string(), v)),
+            ((self.local_keywords).inspect_value(path, offset, limit))
+                .map(|v| ("localKeywords".to_string(), v)),
+            ((self.dynamic_keywords).inspect_value(path, offset, limit))
+                .map(|v| ("dynamicKeywords".to_string(), v)),
+            ((self.editor_only_variant).inspect_value(path, offset, limit))
+                .map(|v| ("editorOnlyVariant".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

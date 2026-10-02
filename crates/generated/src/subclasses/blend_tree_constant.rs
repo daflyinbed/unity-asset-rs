@@ -34,3 +34,42 @@ impl crate::Parse for BlendTreeConstant {
         })
     }
 }
+
+impl crate::ToValue for BlendTreeConstant {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_NodeArray".to_string(), self.m_node_array.to_value())),
+            crate::opt_field(
+                "m_BlendEventArrayConstant",
+                &self.m_blend_event_array_constant,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_NodeArray" => (self.m_node_array).inspect_value(path, offset, limit),
+                "m_BlendEventArrayConstant" => {
+                    (self.m_blend_event_array_constant).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_node_array).inspect_value(path, offset, limit))
+                .map(|v| ("m_NodeArray".to_string(), v)),
+            ((self.m_blend_event_array_constant).inspect_value(path, offset, limit))
+                .map(|v| ("m_BlendEventArrayConstant".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

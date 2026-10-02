@@ -212,10 +212,27 @@ export interface paths {
         };
         /**
          * 导出对象的原始数据:AudioClip(WAV/Ogg/tracker,支持多 sample 索引)与
-         *     TextAsset / Font / VideoClip / MovieTexture。响应头带
+         *     TextAsset / Font / VideoClip / MovieTexture;**其余任意对象兜底 dump 成
+         *     JSON**(typed 经 codegen ToValue,dynamic/mono 经 TypeTree Value)。响应头带
          *     `X-Export-Extension` / `X-Sample-Count` / `Content-Disposition`。
          */
         get: operations["export_environment_object_file"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/environment/collections/{cid}/objects/{pid}/inspect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["inspect_environment_object"];
         put?: never;
         post?: never;
         delete?: never;
@@ -240,6 +257,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/environment/collections/{cid}/objects/{pid}/raw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 下载解析失败对象捕获的原始序列化字节（`ParseFailure::Object.data`，
+         *     CLI `export --json` 的 `.bin` 兜底同源）。非失败对象 → 404。
+         */
+        get: operations["export_environment_object_raw"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/environment/containers": {
         parameters: {
             query?: never;
@@ -248,6 +285,26 @@ export interface paths {
             cookie?: never;
         };
         get: operations["list_environment_containers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/environment/failures": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 解析失败列表（object/file/container 三类，`FailureDto` 扁平投影）。
+         *     object 类条目可经 `/environment/collections/{cid}/objects/{pid}/raw` 下载原始字节。
+         */
+        get: operations["list_environment_failures"];
         put?: never;
         post?: never;
         delete?: never;
@@ -400,6 +457,40 @@ export interface components {
             revision: number;
             sources: components["schemas"]["SourceItem"][];
         };
+        /** @description 解析失败条目（`ParseFailure` 的扁平投影，不适用的字段省略）。 */
+        FailureDto: {
+            /**
+             * Format: int32
+             * @description 仅 object 失败：class_id。
+             */
+            class_id?: number | null;
+            /** @description 仅 object 失败：class 名（CLI `class_name` 同款）。 */
+            class_name?: string | null;
+            /** @description 仅 object 失败：collection 下标。 */
+            collection?: number | null;
+            /**
+             * Format: int64
+             * @description 仅 object 失败：捕获的原始序列化字节数（0 = 越界未捕获）。
+             */
+            data_len?: number | null;
+            error: string;
+            /** @description "object" / "file" / "container"。 */
+            kind: string;
+            /** @description 仅 file/container 失败：原始 node 名。 */
+            name?: string | null;
+            /** @description 仅 object 失败：path_id 十进制字符串（防 JS i64 精度丢失）。 */
+            path_id?: string | null;
+        };
+        FailuresResponse: {
+            items: components["schemas"]["FailureDto"][];
+            /** Format: int64 */
+            revision: number;
+        };
+        InspectResponse: {
+            /** Format: int64 */
+            revision: number;
+            value: unknown;
+        };
         /** @description POST /bundles 的 body。 */
         LoadBody: {
             /** @description 明日方舟 LZ4 变体(劫持 flag 4/5)。 */
@@ -425,14 +516,13 @@ export interface components {
             m_name: string;
             m_script: components["schemas"]["PPtrJson"];
         };
-        /** @description `?detail=full` 的原始 dump。typed/dynamic/mono 三路不同表示。 */
+        /** @description 有界对象检查视图。数组按页读取；Bytes/长 String 最多预览 256 字节/字符。 */
         ObjectDetail: {
-            /** @description typed 路径:`{:#?}` Debug 字符串(codegen 大枚举,手写 DTO 成本过高,统一 Debug)。 */
-            debug?: string | null;
             /** @description "typed" / "dynamic" / "mono"。 */
             kind: string;
             mono_shell?: null | components["schemas"]["MonoShell"];
-            value?: null | components["schemas"]["Value"];
+            /** @description 递归 JSON；分页节点带 _kind/len/offset/next_offset 与 items、text 或 _bytes_hex。 */
+            value: components["schemas"]["Value"];
         };
         /** @description 完整对象响应:元数据 + 可选 detail。 */
         ObjectDto: components["schemas"]["ObjectMeta"] & {
@@ -1119,6 +1209,60 @@ export interface operations {
             };
         };
     };
+    inspect_environment_object: {
+        parameters: {
+            query: {
+                revision?: number | null;
+                /** @description 例如 ["m_FontData"] 或 ["m_Components","0","component"]。 */
+                path: string;
+                /** @description 数组/字节下标；字符串使用 Unicode 字符下标。 */
+                offset?: number;
+                /** @description 每页 1..256 个元素/字节/字符，默认 256。 */
+                limit?: number | null;
+            };
+            header?: never;
+            path: {
+                cid: number;
+                pid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InspectResponse"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
     export_environment_object_png: {
         parameters: {
             query?: {
@@ -1159,7 +1303,66 @@ export interface operations {
                     "application/json": components["schemas"]["ApiErrorBody"];
                 };
             };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    export_environment_object_raw: {
+        parameters: {
+            query?: {
+                /** @description 若提供且与当前 revision 不同，返回 409，避免把旧句柄用于新 Environment。 */
+                revision?: number | null;
+            };
+            header?: never;
+            path: {
+                cid: number;
+                /** @description path_id 十进制字符串 */
+                pid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 原始序列化字节;头 X-Export-Extension 恒为 bin */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/octet-stream": unknown;
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1199,6 +1402,36 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    list_environment_failures: {
+        parameters: {
+            query?: {
+                /** @description 若提供且与当前 revision 不同，返回 409，避免把旧句柄用于新 Environment。 */
+                revision?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FailuresResponse"];
                 };
             };
             409: {

@@ -41,6 +41,21 @@ impl crate::Parse for DetailDatabaseMPatchesVariant {
     }
 }
 
+impl crate::ToValue for DetailDatabaseMPatchesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：DetailDatabaseMDetailPrototypesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum DetailDatabaseMDetailPrototypesVariant {
@@ -70,6 +85,21 @@ impl crate::Parse for DetailDatabaseMDetailPrototypesVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for DetailDatabaseMDetailPrototypesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -107,6 +137,21 @@ impl crate::Parse for DetailDatabaseMRandomRotationsVariant {
     }
 }
 
+impl crate::ToValue for DetailDatabaseMRandomRotationsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：DetailDatabaseMTreeInstancesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum DetailDatabaseMTreeInstancesVariant {
@@ -136,6 +181,21 @@ impl crate::Parse for DetailDatabaseMTreeInstancesVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for DetailDatabaseMTreeInstancesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -173,6 +233,21 @@ impl crate::Parse for DetailDatabaseMTreePrototypesVariant {
     }
 }
 
+impl crate::ToValue for DetailDatabaseMTreePrototypesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：DetailDatabaseMPreloadTextureAtlasDataVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum DetailDatabaseMPreloadTextureAtlasDataVariant {
@@ -202,6 +277,21 @@ impl crate::Parse for DetailDatabaseMPreloadTextureAtlasDataVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for DetailDatabaseMPreloadTextureAtlasDataVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -306,5 +396,158 @@ impl crate::Parse for DetailDatabase {
             m_default_shaders_1,
             m_default_shaders_2,
         })
+    }
+}
+
+impl crate::ToValue for DetailDatabase {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Patches".to_string(), self.m_patches.to_value())),
+            Some((
+                "m_DetailPrototypes".to_string(),
+                self.m_detail_prototypes.to_value(),
+            )),
+            Some(("m_PatchCount".to_string(), self.m_patch_count.to_value())),
+            Some((
+                "m_PatchSamples".to_string(),
+                self.m_patch_samples.to_value(),
+            )),
+            crate::opt_field("m_RandomRotations", &self.m_random_rotations),
+            Some((
+                "WavingGrassTint".to_string(),
+                self.waving_grass_tint.to_value(),
+            )),
+            Some((
+                "m_WavingGrassStrength".to_string(),
+                self.m_waving_grass_strength.to_value(),
+            )),
+            Some((
+                "m_WavingGrassAmount".to_string(),
+                self.m_waving_grass_amount.to_value(),
+            )),
+            Some((
+                "m_WavingGrassSpeed".to_string(),
+                self.m_waving_grass_speed.to_value(),
+            )),
+            Some((
+                "m_TreeInstances".to_string(),
+                self.m_tree_instances.to_value(),
+            )),
+            crate::opt_field("m_DetailBillboardShader", &self.m_detail_billboard_shader),
+            crate::opt_field("m_DetailScatterMode", &self.m_detail_scatter_mode),
+            Some((
+                "m_TreePrototypes".to_string(),
+                self.m_tree_prototypes.to_value(),
+            )),
+            crate::opt_field("m_DetailMeshLitShader", &self.m_detail_mesh_lit_shader),
+            Some((
+                "m_PreloadTextureAtlasData".to_string(),
+                self.m_preload_texture_atlas_data.to_value(),
+            )),
+            crate::opt_field("m_DetailMeshGrassShader", &self.m_detail_mesh_grass_shader),
+            crate::opt_field("m_DefaultShaders[0]", &self.m_default_shaders_0),
+            crate::opt_field("m_DefaultShaders[1]", &self.m_default_shaders_1),
+            crate::opt_field("m_DefaultShaders[2]", &self.m_default_shaders_2),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Patches" => (self.m_patches).inspect_value(path, offset, limit),
+                "m_DetailPrototypes" => {
+                    (self.m_detail_prototypes).inspect_value(path, offset, limit)
+                }
+                "m_PatchCount" => (self.m_patch_count).inspect_value(path, offset, limit),
+                "m_PatchSamples" => (self.m_patch_samples).inspect_value(path, offset, limit),
+                "m_RandomRotations" => (self.m_random_rotations).inspect_value(path, offset, limit),
+                "WavingGrassTint" => (self.waving_grass_tint).inspect_value(path, offset, limit),
+                "m_WavingGrassStrength" => {
+                    (self.m_waving_grass_strength).inspect_value(path, offset, limit)
+                }
+                "m_WavingGrassAmount" => {
+                    (self.m_waving_grass_amount).inspect_value(path, offset, limit)
+                }
+                "m_WavingGrassSpeed" => {
+                    (self.m_waving_grass_speed).inspect_value(path, offset, limit)
+                }
+                "m_TreeInstances" => (self.m_tree_instances).inspect_value(path, offset, limit),
+                "m_DetailBillboardShader" => {
+                    (self.m_detail_billboard_shader).inspect_value(path, offset, limit)
+                }
+                "m_DetailScatterMode" => {
+                    (self.m_detail_scatter_mode).inspect_value(path, offset, limit)
+                }
+                "m_TreePrototypes" => (self.m_tree_prototypes).inspect_value(path, offset, limit),
+                "m_DetailMeshLitShader" => {
+                    (self.m_detail_mesh_lit_shader).inspect_value(path, offset, limit)
+                }
+                "m_PreloadTextureAtlasData" => {
+                    (self.m_preload_texture_atlas_data).inspect_value(path, offset, limit)
+                }
+                "m_DetailMeshGrassShader" => {
+                    (self.m_detail_mesh_grass_shader).inspect_value(path, offset, limit)
+                }
+                "m_DefaultShaders[0]" => {
+                    (self.m_default_shaders_0).inspect_value(path, offset, limit)
+                }
+                "m_DefaultShaders[1]" => {
+                    (self.m_default_shaders_1).inspect_value(path, offset, limit)
+                }
+                "m_DefaultShaders[2]" => {
+                    (self.m_default_shaders_2).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_patches).inspect_value(path, offset, limit))
+                .map(|v| ("m_Patches".to_string(), v)),
+            ((self.m_detail_prototypes).inspect_value(path, offset, limit))
+                .map(|v| ("m_DetailPrototypes".to_string(), v)),
+            ((self.m_patch_count).inspect_value(path, offset, limit))
+                .map(|v| ("m_PatchCount".to_string(), v)),
+            ((self.m_patch_samples).inspect_value(path, offset, limit))
+                .map(|v| ("m_PatchSamples".to_string(), v)),
+            ((self.m_random_rotations).inspect_value(path, offset, limit))
+                .map(|v| ("m_RandomRotations".to_string(), v)),
+            ((self.waving_grass_tint).inspect_value(path, offset, limit))
+                .map(|v| ("WavingGrassTint".to_string(), v)),
+            ((self.m_waving_grass_strength).inspect_value(path, offset, limit))
+                .map(|v| ("m_WavingGrassStrength".to_string(), v)),
+            ((self.m_waving_grass_amount).inspect_value(path, offset, limit))
+                .map(|v| ("m_WavingGrassAmount".to_string(), v)),
+            ((self.m_waving_grass_speed).inspect_value(path, offset, limit))
+                .map(|v| ("m_WavingGrassSpeed".to_string(), v)),
+            ((self.m_tree_instances).inspect_value(path, offset, limit))
+                .map(|v| ("m_TreeInstances".to_string(), v)),
+            ((self.m_detail_billboard_shader).inspect_value(path, offset, limit))
+                .map(|v| ("m_DetailBillboardShader".to_string(), v)),
+            ((self.m_detail_scatter_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_DetailScatterMode".to_string(), v)),
+            ((self.m_tree_prototypes).inspect_value(path, offset, limit))
+                .map(|v| ("m_TreePrototypes".to_string(), v)),
+            ((self.m_detail_mesh_lit_shader).inspect_value(path, offset, limit))
+                .map(|v| ("m_DetailMeshLitShader".to_string(), v)),
+            ((self.m_preload_texture_atlas_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_PreloadTextureAtlasData".to_string(), v)),
+            ((self.m_detail_mesh_grass_shader).inspect_value(path, offset, limit))
+                .map(|v| ("m_DetailMeshGrassShader".to_string(), v)),
+            ((self.m_default_shaders_0).inspect_value(path, offset, limit))
+                .map(|v| ("m_DefaultShaders[0]".to_string(), v)),
+            ((self.m_default_shaders_1).inspect_value(path, offset, limit))
+                .map(|v| ("m_DefaultShaders[1]".to_string(), v)),
+            ((self.m_default_shaders_2).inspect_value(path, offset, limit))
+                .map(|v| ("m_DefaultShaders[2]".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

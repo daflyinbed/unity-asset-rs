@@ -35,6 +35,21 @@ impl crate::Parse for AnimatorOverrideControllerMClipsVariant {
         }
     }
 }
+
+impl crate::ToValue for AnimatorOverrideControllerMClipsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct AnimatorOverrideController {
     pub m_name: String,
@@ -56,5 +71,41 @@ impl crate::Parse for AnimatorOverrideController {
             m_controller,
             m_clips,
         })
+    }
+}
+
+impl crate::ToValue for AnimatorOverrideController {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some(("m_Controller".to_string(), self.m_controller.to_value())),
+            Some(("m_Clips".to_string(), self.m_clips.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_Controller" => (self.m_controller).inspect_value(path, offset, limit),
+                "m_Clips" => (self.m_clips).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_controller).inspect_value(path, offset, limit))
+                .map(|v| ("m_Controller".to_string(), v)),
+            ((self.m_clips).inspect_value(path, offset, limit)).map(|v| ("m_Clips".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

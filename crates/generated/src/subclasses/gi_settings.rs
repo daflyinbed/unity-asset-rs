@@ -46,3 +46,82 @@ impl crate::Parse for GiSettings {
         })
     }
 }
+
+impl crate::ToValue for GiSettings {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_BounceScale".to_string(), self.m_bounce_scale.to_value())),
+            Some((
+                "m_IndirectOutputScale".to_string(),
+                self.m_indirect_output_scale.to_value(),
+            )),
+            Some(("m_AlbedoBoost".to_string(), self.m_albedo_boost.to_value())),
+            crate::opt_field(
+                "m_TemporalCoherenceThreshold",
+                &self.m_temporal_coherence_threshold,
+            ),
+            Some((
+                "m_EnvironmentLightingMode".to_string(),
+                self.m_environment_lighting_mode.to_value(),
+            )),
+            Some((
+                "m_EnableBakedLightmaps".to_string(),
+                self.m_enable_baked_lightmaps.to_value(),
+            )),
+            Some((
+                "m_EnableRealtimeLightmaps".to_string(),
+                self.m_enable_realtime_lightmaps.to_value(),
+            )),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_BounceScale" => (self.m_bounce_scale).inspect_value(path, offset, limit),
+                "m_IndirectOutputScale" => {
+                    (self.m_indirect_output_scale).inspect_value(path, offset, limit)
+                }
+                "m_AlbedoBoost" => (self.m_albedo_boost).inspect_value(path, offset, limit),
+                "m_TemporalCoherenceThreshold" => {
+                    (self.m_temporal_coherence_threshold).inspect_value(path, offset, limit)
+                }
+                "m_EnvironmentLightingMode" => {
+                    (self.m_environment_lighting_mode).inspect_value(path, offset, limit)
+                }
+                "m_EnableBakedLightmaps" => {
+                    (self.m_enable_baked_lightmaps).inspect_value(path, offset, limit)
+                }
+                "m_EnableRealtimeLightmaps" => {
+                    (self.m_enable_realtime_lightmaps).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_bounce_scale).inspect_value(path, offset, limit))
+                .map(|v| ("m_BounceScale".to_string(), v)),
+            ((self.m_indirect_output_scale).inspect_value(path, offset, limit))
+                .map(|v| ("m_IndirectOutputScale".to_string(), v)),
+            ((self.m_albedo_boost).inspect_value(path, offset, limit))
+                .map(|v| ("m_AlbedoBoost".to_string(), v)),
+            ((self.m_temporal_coherence_threshold).inspect_value(path, offset, limit))
+                .map(|v| ("m_TemporalCoherenceThreshold".to_string(), v)),
+            ((self.m_environment_lighting_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnvironmentLightingMode".to_string(), v)),
+            ((self.m_enable_baked_lightmaps).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableBakedLightmaps".to_string(), v)),
+            ((self.m_enable_realtime_lightmaps).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableRealtimeLightmaps".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

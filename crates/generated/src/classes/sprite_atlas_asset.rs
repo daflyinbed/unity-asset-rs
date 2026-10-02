@@ -25,6 +25,21 @@ impl crate::Parse for SpriteAtlasAssetMImporterDataVariant {
         }
     }
 }
+
+impl crate::ToValue for SpriteAtlasAssetMImporterDataVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2022_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2022_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct SpriteAtlasAsset {
     pub m_name: String,
@@ -59,5 +74,55 @@ impl crate::Parse for SpriteAtlasAsset {
             m_is_variant,
             m_scriptable_packer,
         })
+    }
+}
+
+impl crate::ToValue for SpriteAtlasAsset {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some(("m_MasterAtlas".to_string(), self.m_master_atlas.to_value())),
+            Some((
+                "m_ImporterData".to_string(),
+                self.m_importer_data.to_value(),
+            )),
+            Some(("m_IsVariant".to_string(), self.m_is_variant.to_value())),
+            crate::opt_field("m_ScriptablePacker", &self.m_scriptable_packer),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_MasterAtlas" => (self.m_master_atlas).inspect_value(path, offset, limit),
+                "m_ImporterData" => (self.m_importer_data).inspect_value(path, offset, limit),
+                "m_IsVariant" => (self.m_is_variant).inspect_value(path, offset, limit),
+                "m_ScriptablePacker" => {
+                    (self.m_scriptable_packer).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_master_atlas).inspect_value(path, offset, limit))
+                .map(|v| ("m_MasterAtlas".to_string(), v)),
+            ((self.m_importer_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_ImporterData".to_string(), v)),
+            ((self.m_is_variant).inspect_value(path, offset, limit))
+                .map(|v| ("m_IsVariant".to_string(), v)),
+            ((self.m_scriptable_packer).inspect_value(path, offset, limit))
+                .map(|v| ("m_ScriptablePacker".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

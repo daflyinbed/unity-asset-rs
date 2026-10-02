@@ -25,3 +25,46 @@ impl crate::Parse for AddedComponent {
         })
     }
 }
+
+impl crate::ToValue for AddedComponent {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some((
+                "targetCorrespondingSourceObject".to_string(),
+                self.target_corresponding_source_object.to_value(),
+            )),
+            Some(("insertIndex".to_string(), self.insert_index.to_value())),
+            Some(("addedObject".to_string(), self.added_object.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "targetCorrespondingSourceObject" => {
+                    (self.target_corresponding_source_object).inspect_value(path, offset, limit)
+                }
+                "insertIndex" => (self.insert_index).inspect_value(path, offset, limit),
+                "addedObject" => (self.added_object).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.target_corresponding_source_object).inspect_value(path, offset, limit))
+                .map(|v| ("targetCorrespondingSourceObject".to_string(), v)),
+            ((self.insert_index).inspect_value(path, offset, limit))
+                .map(|v| ("insertIndex".to_string(), v)),
+            ((self.added_object).inspect_value(path, offset, limit))
+                .map(|v| ("addedObject".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

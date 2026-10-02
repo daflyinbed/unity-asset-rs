@@ -40,3 +40,45 @@ impl crate::Parse for HeightmapData {
         })
     }
 }
+
+impl crate::ToValue for HeightmapData {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            crate::opt_field("position", &self.position),
+            crate::opt_field("surfaceToTerrain", &self.surface_to_terrain),
+            Some(("terrainData".to_string(), self.terrain_data.to_value())),
+            crate::opt_field("isRotated", &self.is_rotated),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "position" => (self.position).inspect_value(path, offset, limit),
+                "surfaceToTerrain" => (self.surface_to_terrain).inspect_value(path, offset, limit),
+                "terrainData" => (self.terrain_data).inspect_value(path, offset, limit),
+                "isRotated" => (self.is_rotated).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.position).inspect_value(path, offset, limit))
+                .map(|v| ("position".to_string(), v)),
+            ((self.surface_to_terrain).inspect_value(path, offset, limit))
+                .map(|v| ("surfaceToTerrain".to_string(), v)),
+            ((self.terrain_data).inspect_value(path, offset, limit))
+                .map(|v| ("terrainData".to_string(), v)),
+            ((self.is_rotated).inspect_value(path, offset, limit))
+                .map(|v| ("isRotated".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

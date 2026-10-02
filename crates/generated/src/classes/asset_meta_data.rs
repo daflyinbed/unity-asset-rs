@@ -37,6 +37,21 @@ impl crate::Parse for AssetMetaDataLabelsVariant {
     }
 }
 
+impl crate::ToValue for AssetMetaDataLabelsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：AssetMetaDataOriginalDigestVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AssetMetaDataOriginalDigestVariant {
@@ -55,6 +70,21 @@ impl crate::Parse for AssetMetaDataOriginalDigestVariant {
         } else {
             let v = ({ Ok(Box::new(MdFour::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for AssetMetaDataOriginalDigestVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_0(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_0(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -130,5 +160,69 @@ impl crate::Parse for AssetMetaData {
             original_digest,
             license_type,
         })
+    }
+}
+
+impl crate::ToValue for AssetMetaData {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("guid".to_string(), self.guid.to_value())),
+            Some(("pathName".to_string(), self.path_name.to_value())),
+            crate::opt_field("originalChangeset", &self.original_changeset),
+            Some(("originalName".to_string(), self.original_name.to_value())),
+            crate::opt_field("timeCreated", &self.time_created),
+            Some(("labels".to_string(), self.labels.to_value())),
+            crate::opt_field("originalParent", &self.original_parent),
+            Some(("assetStoreRef".to_string(), self.asset_store_ref.to_value())),
+            crate::opt_field("originalDigest", &self.original_digest),
+            crate::opt_field("licenseType", &self.license_type),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "guid" => (self.guid).inspect_value(path, offset, limit),
+                "pathName" => (self.path_name).inspect_value(path, offset, limit),
+                "originalChangeset" => (self.original_changeset).inspect_value(path, offset, limit),
+                "originalName" => (self.original_name).inspect_value(path, offset, limit),
+                "timeCreated" => (self.time_created).inspect_value(path, offset, limit),
+                "labels" => (self.labels).inspect_value(path, offset, limit),
+                "originalParent" => (self.original_parent).inspect_value(path, offset, limit),
+                "assetStoreRef" => (self.asset_store_ref).inspect_value(path, offset, limit),
+                "originalDigest" => (self.original_digest).inspect_value(path, offset, limit),
+                "licenseType" => (self.license_type).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.guid).inspect_value(path, offset, limit)).map(|v| ("guid".to_string(), v)),
+            ((self.path_name).inspect_value(path, offset, limit))
+                .map(|v| ("pathName".to_string(), v)),
+            ((self.original_changeset).inspect_value(path, offset, limit))
+                .map(|v| ("originalChangeset".to_string(), v)),
+            ((self.original_name).inspect_value(path, offset, limit))
+                .map(|v| ("originalName".to_string(), v)),
+            ((self.time_created).inspect_value(path, offset, limit))
+                .map(|v| ("timeCreated".to_string(), v)),
+            ((self.labels).inspect_value(path, offset, limit)).map(|v| ("labels".to_string(), v)),
+            ((self.original_parent).inspect_value(path, offset, limit))
+                .map(|v| ("originalParent".to_string(), v)),
+            ((self.asset_store_ref).inspect_value(path, offset, limit))
+                .map(|v| ("assetStoreRef".to_string(), v)),
+            ((self.original_digest).inspect_value(path, offset, limit))
+                .map(|v| ("originalDigest".to_string(), v)),
+            ((self.license_type).inspect_value(path, offset, limit))
+                .map(|v| ("licenseType".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

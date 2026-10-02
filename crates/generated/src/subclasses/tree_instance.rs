@@ -48,3 +48,55 @@ impl crate::Parse for TreeInstance {
         })
     }
 }
+
+impl crate::ToValue for TreeInstance {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("position".to_string(), self.position.to_value())),
+            Some(("widthScale".to_string(), self.width_scale.to_value())),
+            Some(("heightScale".to_string(), self.height_scale.to_value())),
+            Some(("color".to_string(), self.color.to_value())),
+            crate::opt_field("rotation", &self.rotation),
+            Some(("lightmapColor".to_string(), self.lightmap_color.to_value())),
+            Some(("index".to_string(), self.index.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "position" => (self.position).inspect_value(path, offset, limit),
+                "widthScale" => (self.width_scale).inspect_value(path, offset, limit),
+                "heightScale" => (self.height_scale).inspect_value(path, offset, limit),
+                "color" => (self.color).inspect_value(path, offset, limit),
+                "rotation" => (self.rotation).inspect_value(path, offset, limit),
+                "lightmapColor" => (self.lightmap_color).inspect_value(path, offset, limit),
+                "index" => (self.index).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.position).inspect_value(path, offset, limit))
+                .map(|v| ("position".to_string(), v)),
+            ((self.width_scale).inspect_value(path, offset, limit))
+                .map(|v| ("widthScale".to_string(), v)),
+            ((self.height_scale).inspect_value(path, offset, limit))
+                .map(|v| ("heightScale".to_string(), v)),
+            ((self.color).inspect_value(path, offset, limit)).map(|v| ("color".to_string(), v)),
+            ((self.rotation).inspect_value(path, offset, limit))
+                .map(|v| ("rotation".to_string(), v)),
+            ((self.lightmap_color).inspect_value(path, offset, limit))
+                .map(|v| ("lightmapColor".to_string(), v)),
+            ((self.index).inspect_value(path, offset, limit)).map(|v| ("index".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

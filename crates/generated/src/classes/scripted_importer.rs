@@ -25,6 +25,21 @@ impl crate::Parse for ScriptedImporterMNameVariant {
         }
     }
 }
+
+impl crate::ToValue for ScriptedImporterMNameVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_3(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct ScriptedImporter {
     pub m_name: ScriptedImporterMNameVariant,
@@ -145,5 +160,80 @@ impl crate::Parse for ScriptedImporter {
             m_used_file_i_ds,
             m_script: m_script.unwrap(),
         })
+    }
+}
+
+impl crate::ToValue for ScriptedImporter {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some(("m_UserData".to_string(), self.m_user_data.to_value())),
+            crate::opt_field("m_FileIDToRecycleName", &self.m_file_id_to_recycle_name),
+            crate::opt_field("m_InternalIDToNameTable", &self.m_internal_id_to_name_table),
+            Some((
+                "m_AssetBundleName".to_string(),
+                self.m_asset_bundle_name.to_value(),
+            )),
+            crate::opt_field("m_ExternalObjects", &self.m_external_objects),
+            Some((
+                "m_AssetBundleVariant".to_string(),
+                self.m_asset_bundle_variant.to_value(),
+            )),
+            crate::opt_field("m_UsedFileIDs", &self.m_used_file_i_ds),
+            Some(("m_Script".to_string(), self.m_script.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_UserData" => (self.m_user_data).inspect_value(path, offset, limit),
+                "m_FileIDToRecycleName" => {
+                    (self.m_file_id_to_recycle_name).inspect_value(path, offset, limit)
+                }
+                "m_InternalIDToNameTable" => {
+                    (self.m_internal_id_to_name_table).inspect_value(path, offset, limit)
+                }
+                "m_AssetBundleName" => {
+                    (self.m_asset_bundle_name).inspect_value(path, offset, limit)
+                }
+                "m_ExternalObjects" => (self.m_external_objects).inspect_value(path, offset, limit),
+                "m_AssetBundleVariant" => {
+                    (self.m_asset_bundle_variant).inspect_value(path, offset, limit)
+                }
+                "m_UsedFileIDs" => (self.m_used_file_i_ds).inspect_value(path, offset, limit),
+                "m_Script" => (self.m_script).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_user_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_UserData".to_string(), v)),
+            ((self.m_file_id_to_recycle_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_FileIDToRecycleName".to_string(), v)),
+            ((self.m_internal_id_to_name_table).inspect_value(path, offset, limit))
+                .map(|v| ("m_InternalIDToNameTable".to_string(), v)),
+            ((self.m_asset_bundle_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_AssetBundleName".to_string(), v)),
+            ((self.m_external_objects).inspect_value(path, offset, limit))
+                .map(|v| ("m_ExternalObjects".to_string(), v)),
+            ((self.m_asset_bundle_variant).inspect_value(path, offset, limit))
+                .map(|v| ("m_AssetBundleVariant".to_string(), v)),
+            ((self.m_used_file_i_ds).inspect_value(path, offset, limit))
+                .map(|v| ("m_UsedFileIDs".to_string(), v)),
+            ((self.m_script).inspect_value(path, offset, limit))
+                .map(|v| ("m_Script".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

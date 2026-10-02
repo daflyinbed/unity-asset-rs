@@ -21,6 +21,21 @@ impl crate::Parse for ImageMFormatVariant {
         }
     }
 }
+
+impl crate::ToValue for ImageMFormatVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_0(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_0(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct Image {
     pub m_format: ImageMFormatVariant,
@@ -52,5 +67,53 @@ impl crate::Parse for Image {
             m_row_bytes,
             image_data,
         })
+    }
+}
+
+impl crate::ToValue for Image {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Format".to_string(), self.m_format.to_value())),
+            Some(("m_Width".to_string(), self.m_width.to_value())),
+            Some(("m_Height".to_string(), self.m_height.to_value())),
+            Some(("m_RowBytes".to_string(), self.m_row_bytes.to_value())),
+            Some((
+                "image data".to_string(),
+                crate::Value::Bytes(self.image_data.clone()),
+            )),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Format" => (self.m_format).inspect_value(path, offset, limit),
+                "m_Width" => (self.m_width).inspect_value(path, offset, limit),
+                "m_Height" => (self.m_height).inspect_value(path, offset, limit),
+                "m_RowBytes" => (self.m_row_bytes).inspect_value(path, offset, limit),
+                "image data" => crate::inspect_bytes(&(self.image_data), path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_format).inspect_value(path, offset, limit))
+                .map(|v| ("m_Format".to_string(), v)),
+            ((self.m_width).inspect_value(path, offset, limit)).map(|v| ("m_Width".to_string(), v)),
+            ((self.m_height).inspect_value(path, offset, limit))
+                .map(|v| ("m_Height".to_string(), v)),
+            ((self.m_row_bytes).inspect_value(path, offset, limit))
+                .map(|v| ("m_RowBytes".to_string(), v)),
+            (crate::inspect_bytes(&(self.image_data), path, offset, limit))
+                .map(|v| ("image data".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

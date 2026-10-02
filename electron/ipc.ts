@@ -1,4 +1,5 @@
-import { realpath, stat } from "node:fs/promises";
+import { Buffer } from "node:buffer";
+import { realpath, stat, writeFile } from "node:fs/promises";
 import { basename, dirname, relative } from "node:path";
 import process from "node:process";
 import { BrowserWindow, dialog, ipcMain } from "electron";
@@ -105,6 +106,22 @@ export function registerIpc(database: WorkspaceDatabase, rust: RustService) {
     return inspectPaths(result.filePaths, grantedPaths);
   });
   handleIpc("files:inspect", ({ paths }) => inspectPaths(paths, grantedPaths));
+  // 导出落盘:原生保存对话框 + writeFile。defaultName 只取 basename,防止
+  // renderer 注入路径分量。用户取消返回 null(不是错误)。
+  handleIpc("files:save", async ({ defaultName, data }, event) => {
+    const window = BrowserWindow.fromWebContents(event.sender);
+    const options = {
+      title: "Export Object",
+      buttonLabel: "Export",
+      defaultPath: basename(defaultName),
+    };
+    const result = window
+      ? await dialog.showSaveDialog(window, options)
+      : await dialog.showSaveDialog(options);
+    if (result.canceled || !result.filePath) return null;
+    await writeFile(result.filePath, Buffer.from(data));
+    return { path: result.filePath };
+  });
   handleIpc("projects:list", () => database.listProjects());
   handleIpc("projects:create", async ({ name, sources }) => {
     if (sources.length === 0)

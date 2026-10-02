@@ -41,3 +41,74 @@ impl crate::Parse for EffectConstant {
         })
     }
 }
+
+impl crate::ToValue for EffectConstant {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("type".to_string(), self.r#type.to_value())),
+            Some((
+                "groupConstantIndex".to_string(),
+                self.group_constant_index.to_value(),
+            )),
+            Some((
+                "sendTargetEffectIndex".to_string(),
+                self.send_target_effect_index.to_value(),
+            )),
+            Some((
+                "wetMixLevelIndex".to_string(),
+                self.wet_mix_level_index.to_value(),
+            )),
+            Some((
+                "prevEffectIndex".to_string(),
+                self.prev_effect_index.to_value(),
+            )),
+            Some(("bypass".to_string(), self.bypass.to_value())),
+            Some((
+                "parameterIndices".to_string(),
+                self.parameter_indices.to_value(),
+            )),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "type" => (self.r#type).inspect_value(path, offset, limit),
+                "groupConstantIndex" => {
+                    (self.group_constant_index).inspect_value(path, offset, limit)
+                }
+                "sendTargetEffectIndex" => {
+                    (self.send_target_effect_index).inspect_value(path, offset, limit)
+                }
+                "wetMixLevelIndex" => (self.wet_mix_level_index).inspect_value(path, offset, limit),
+                "prevEffectIndex" => (self.prev_effect_index).inspect_value(path, offset, limit),
+                "bypass" => (self.bypass).inspect_value(path, offset, limit),
+                "parameterIndices" => (self.parameter_indices).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.r#type).inspect_value(path, offset, limit)).map(|v| ("type".to_string(), v)),
+            ((self.group_constant_index).inspect_value(path, offset, limit))
+                .map(|v| ("groupConstantIndex".to_string(), v)),
+            ((self.send_target_effect_index).inspect_value(path, offset, limit))
+                .map(|v| ("sendTargetEffectIndex".to_string(), v)),
+            ((self.wet_mix_level_index).inspect_value(path, offset, limit))
+                .map(|v| ("wetMixLevelIndex".to_string(), v)),
+            ((self.prev_effect_index).inspect_value(path, offset, limit))
+                .map(|v| ("prevEffectIndex".to_string(), v)),
+            ((self.bypass).inspect_value(path, offset, limit)).map(|v| ("bypass".to_string(), v)),
+            ((self.parameter_indices).inspect_value(path, offset, limit))
+                .map(|v| ("parameterIndices".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

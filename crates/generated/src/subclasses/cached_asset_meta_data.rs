@@ -25,6 +25,21 @@ impl crate::Parse for CachedAssetMetaDataOriginalDigestVariant {
         }
     }
 }
+
+impl crate::ToValue for CachedAssetMetaDataOriginalDigestVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_0(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_0(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct CachedAssetMetaData {
     pub guid: Guid,
@@ -55,5 +70,63 @@ impl crate::Parse for CachedAssetMetaData {
             original_parent,
             original_digest,
         })
+    }
+}
+
+impl crate::ToValue for CachedAssetMetaData {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("guid".to_string(), self.guid.to_value())),
+            Some(("pathName".to_string(), self.path_name.to_value())),
+            Some((
+                "originalChangeset".to_string(),
+                self.original_changeset.to_value(),
+            )),
+            Some(("originalName".to_string(), self.original_name.to_value())),
+            Some((
+                "originalParent".to_string(),
+                self.original_parent.to_value(),
+            )),
+            Some((
+                "originalDigest".to_string(),
+                self.original_digest.to_value(),
+            )),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "guid" => (self.guid).inspect_value(path, offset, limit),
+                "pathName" => (self.path_name).inspect_value(path, offset, limit),
+                "originalChangeset" => (self.original_changeset).inspect_value(path, offset, limit),
+                "originalName" => (self.original_name).inspect_value(path, offset, limit),
+                "originalParent" => (self.original_parent).inspect_value(path, offset, limit),
+                "originalDigest" => (self.original_digest).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.guid).inspect_value(path, offset, limit)).map(|v| ("guid".to_string(), v)),
+            ((self.path_name).inspect_value(path, offset, limit))
+                .map(|v| ("pathName".to_string(), v)),
+            ((self.original_changeset).inspect_value(path, offset, limit))
+                .map(|v| ("originalChangeset".to_string(), v)),
+            ((self.original_name).inspect_value(path, offset, limit))
+                .map(|v| ("originalName".to_string(), v)),
+            ((self.original_parent).inspect_value(path, offset, limit))
+                .map(|v| ("originalParent".to_string(), v)),
+            ((self.original_digest).inspect_value(path, offset, limit))
+                .map(|v| ("originalDigest".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

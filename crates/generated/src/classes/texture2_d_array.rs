@@ -26,6 +26,21 @@ impl crate::Parse for Texture2DArrayMDownscaleFallbackVariant {
     }
 }
 
+impl crate::ToValue for Texture2DArrayMDownscaleFallbackVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2020_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2020_2(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：Texture2DArrayMIsReadableVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum Texture2DArrayMIsReadableVariant {
@@ -45,6 +60,21 @@ impl crate::Parse for Texture2DArrayMIsReadableVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for Texture2DArrayMIsReadableVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2023_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2023_2(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -178,5 +208,128 @@ impl crate::Parse for Texture2DArray {
             m_ignore_mipmap_limit,
             m_mipmap_limit_group_name,
         })
+    }
+}
+
+impl crate::ToValue for Texture2DArray {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some(("m_Width".to_string(), self.m_width.to_value())),
+            crate::opt_field("m_ForcedFallbackFormat", &self.m_forced_fallback_format),
+            crate::opt_field(
+                "m_IsAlphaChannelOptional",
+                &self.m_is_alpha_channel_optional,
+            ),
+            Some(("m_Height".to_string(), self.m_height.to_value())),
+            Some(("m_ColorSpace".to_string(), self.m_color_space.to_value())),
+            crate::opt_field("m_DownscaleFallback", &self.m_downscale_fallback),
+            Some(("m_Depth".to_string(), self.m_depth.to_value())),
+            Some(("m_Format".to_string(), self.m_format.to_value())),
+            Some(("m_MipCount".to_string(), self.m_mip_count.to_value())),
+            Some((
+                "m_CompleteImageSize".to_string(),
+                self.m_complete_image_size.to_value(),
+            )),
+            Some((
+                "m_TextureSettings".to_string(),
+                self.m_texture_settings.to_value(),
+            )),
+            crate::opt_field("m_MipsStripped", &self.m_mips_stripped),
+            Some(("m_IsReadable".to_string(), self.m_is_readable.to_value())),
+            Some((
+                "image data".to_string(),
+                crate::Value::Bytes(self.image_data.clone()),
+            )),
+            crate::opt_field("m_StreamData", &self.m_stream_data),
+            crate::opt_field("m_UsageMode", &self.m_usage_mode),
+            crate::opt_field("m_IgnoreMipmapLimit", &self.m_ignore_mipmap_limit),
+            crate::opt_field("m_MipmapLimitGroupName", &self.m_mipmap_limit_group_name),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_Width" => (self.m_width).inspect_value(path, offset, limit),
+                "m_ForcedFallbackFormat" => {
+                    (self.m_forced_fallback_format).inspect_value(path, offset, limit)
+                }
+                "m_IsAlphaChannelOptional" => {
+                    (self.m_is_alpha_channel_optional).inspect_value(path, offset, limit)
+                }
+                "m_Height" => (self.m_height).inspect_value(path, offset, limit),
+                "m_ColorSpace" => (self.m_color_space).inspect_value(path, offset, limit),
+                "m_DownscaleFallback" => {
+                    (self.m_downscale_fallback).inspect_value(path, offset, limit)
+                }
+                "m_Depth" => (self.m_depth).inspect_value(path, offset, limit),
+                "m_Format" => (self.m_format).inspect_value(path, offset, limit),
+                "m_MipCount" => (self.m_mip_count).inspect_value(path, offset, limit),
+                "m_CompleteImageSize" => {
+                    (self.m_complete_image_size).inspect_value(path, offset, limit)
+                }
+                "m_TextureSettings" => (self.m_texture_settings).inspect_value(path, offset, limit),
+                "m_MipsStripped" => (self.m_mips_stripped).inspect_value(path, offset, limit),
+                "m_IsReadable" => (self.m_is_readable).inspect_value(path, offset, limit),
+                "image data" => crate::inspect_bytes(&(self.image_data), path, offset, limit),
+                "m_StreamData" => (self.m_stream_data).inspect_value(path, offset, limit),
+                "m_UsageMode" => (self.m_usage_mode).inspect_value(path, offset, limit),
+                "m_IgnoreMipmapLimit" => {
+                    (self.m_ignore_mipmap_limit).inspect_value(path, offset, limit)
+                }
+                "m_MipmapLimitGroupName" => {
+                    (self.m_mipmap_limit_group_name).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_width).inspect_value(path, offset, limit)).map(|v| ("m_Width".to_string(), v)),
+            ((self.m_forced_fallback_format).inspect_value(path, offset, limit))
+                .map(|v| ("m_ForcedFallbackFormat".to_string(), v)),
+            ((self.m_is_alpha_channel_optional).inspect_value(path, offset, limit))
+                .map(|v| ("m_IsAlphaChannelOptional".to_string(), v)),
+            ((self.m_height).inspect_value(path, offset, limit))
+                .map(|v| ("m_Height".to_string(), v)),
+            ((self.m_color_space).inspect_value(path, offset, limit))
+                .map(|v| ("m_ColorSpace".to_string(), v)),
+            ((self.m_downscale_fallback).inspect_value(path, offset, limit))
+                .map(|v| ("m_DownscaleFallback".to_string(), v)),
+            ((self.m_depth).inspect_value(path, offset, limit)).map(|v| ("m_Depth".to_string(), v)),
+            ((self.m_format).inspect_value(path, offset, limit))
+                .map(|v| ("m_Format".to_string(), v)),
+            ((self.m_mip_count).inspect_value(path, offset, limit))
+                .map(|v| ("m_MipCount".to_string(), v)),
+            ((self.m_complete_image_size).inspect_value(path, offset, limit))
+                .map(|v| ("m_CompleteImageSize".to_string(), v)),
+            ((self.m_texture_settings).inspect_value(path, offset, limit))
+                .map(|v| ("m_TextureSettings".to_string(), v)),
+            ((self.m_mips_stripped).inspect_value(path, offset, limit))
+                .map(|v| ("m_MipsStripped".to_string(), v)),
+            ((self.m_is_readable).inspect_value(path, offset, limit))
+                .map(|v| ("m_IsReadable".to_string(), v)),
+            (crate::inspect_bytes(&(self.image_data), path, offset, limit))
+                .map(|v| ("image data".to_string(), v)),
+            ((self.m_stream_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_StreamData".to_string(), v)),
+            ((self.m_usage_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_UsageMode".to_string(), v)),
+            ((self.m_ignore_mipmap_limit).inspect_value(path, offset, limit))
+                .map(|v| ("m_IgnoreMipmapLimit".to_string(), v)),
+            ((self.m_mipmap_limit_group_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_MipmapLimitGroupName".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

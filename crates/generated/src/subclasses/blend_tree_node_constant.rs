@@ -102,3 +102,91 @@ impl crate::Parse for BlendTreeNodeConstant {
         })
     }
 }
+
+impl crate::ToValue for BlendTreeNodeConstant {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some((
+                "m_BlendEventID".to_string(),
+                self.m_blend_event_id.to_value(),
+            )),
+            crate::opt_field("m_BlendType", &self.m_blend_type),
+            Some((
+                "m_ChildIndices".to_string(),
+                self.m_child_indices.to_value(),
+            )),
+            crate::opt_field("m_ChildThresholdArray", &self.m_child_threshold_array),
+            crate::opt_field("m_BlendEventYID", &self.m_blend_event_yid),
+            Some(("m_ClipID".to_string(), self.m_clip_id.to_value())),
+            Some(("m_Duration".to_string(), self.m_duration.to_value())),
+            crate::opt_field("m_Blend1dData", &self.m_blend1d_data),
+            crate::opt_field("m_Blend2dData", &self.m_blend2d_data),
+            crate::opt_field("m_BlendDirectData", &self.m_blend_direct_data),
+            crate::opt_field("m_ClipIndex", &self.m_clip_index),
+            crate::opt_field("m_CycleOffset", &self.m_cycle_offset),
+            crate::opt_field("m_Mirror", &self.m_mirror),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_BlendEventID" => (self.m_blend_event_id).inspect_value(path, offset, limit),
+                "m_BlendType" => (self.m_blend_type).inspect_value(path, offset, limit),
+                "m_ChildIndices" => (self.m_child_indices).inspect_value(path, offset, limit),
+                "m_ChildThresholdArray" => {
+                    (self.m_child_threshold_array).inspect_value(path, offset, limit)
+                }
+                "m_BlendEventYID" => (self.m_blend_event_yid).inspect_value(path, offset, limit),
+                "m_ClipID" => (self.m_clip_id).inspect_value(path, offset, limit),
+                "m_Duration" => (self.m_duration).inspect_value(path, offset, limit),
+                "m_Blend1dData" => (self.m_blend1d_data).inspect_value(path, offset, limit),
+                "m_Blend2dData" => (self.m_blend2d_data).inspect_value(path, offset, limit),
+                "m_BlendDirectData" => {
+                    (self.m_blend_direct_data).inspect_value(path, offset, limit)
+                }
+                "m_ClipIndex" => (self.m_clip_index).inspect_value(path, offset, limit),
+                "m_CycleOffset" => (self.m_cycle_offset).inspect_value(path, offset, limit),
+                "m_Mirror" => (self.m_mirror).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_blend_event_id).inspect_value(path, offset, limit))
+                .map(|v| ("m_BlendEventID".to_string(), v)),
+            ((self.m_blend_type).inspect_value(path, offset, limit))
+                .map(|v| ("m_BlendType".to_string(), v)),
+            ((self.m_child_indices).inspect_value(path, offset, limit))
+                .map(|v| ("m_ChildIndices".to_string(), v)),
+            ((self.m_child_threshold_array).inspect_value(path, offset, limit))
+                .map(|v| ("m_ChildThresholdArray".to_string(), v)),
+            ((self.m_blend_event_yid).inspect_value(path, offset, limit))
+                .map(|v| ("m_BlendEventYID".to_string(), v)),
+            ((self.m_clip_id).inspect_value(path, offset, limit))
+                .map(|v| ("m_ClipID".to_string(), v)),
+            ((self.m_duration).inspect_value(path, offset, limit))
+                .map(|v| ("m_Duration".to_string(), v)),
+            ((self.m_blend1d_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_Blend1dData".to_string(), v)),
+            ((self.m_blend2d_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_Blend2dData".to_string(), v)),
+            ((self.m_blend_direct_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_BlendDirectData".to_string(), v)),
+            ((self.m_clip_index).inspect_value(path, offset, limit))
+                .map(|v| ("m_ClipIndex".to_string(), v)),
+            ((self.m_cycle_offset).inspect_value(path, offset, limit))
+                .map(|v| ("m_CycleOffset".to_string(), v)),
+            ((self.m_mirror).inspect_value(path, offset, limit))
+                .map(|v| ("m_Mirror".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

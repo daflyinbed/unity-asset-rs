@@ -34,7 +34,10 @@
 //! | GET    | `/environment/containers`                       | 列 container(?revision=&path=&kind=) |
 //! | GET    | `/environment/collections/{cid}/objects/{pid}`  | 对象详情(?revision=&detail=full) |
 //! | GET    | `/environment/collections/{cid}/objects/{pid}/png` | 导出 PNG(export feature) |
-//! | GET    | `/environment/collections/{cid}/objects/{pid}/export` | 导出原始文件(AudioClip/TextAsset/Font/VideoClip/MovieTexture,`?sample=` 选 FSB sample) |
+//! | GET    | `/environment/collections/{cid}/objects/{pid}/export` | 导出原始文件(AudioClip/TextAsset/Font/VideoClip/MovieTexture,其余对象兜底 JSON dump,`?sample=` 选 FSB sample) |
+//! | GET    | `/environment/collections/{cid}/objects/{pid}/inspect` | 按字段路径分页检查（path/offset/limit/revision） |
+//! | GET    | `/environment/failures`                         | 解析失败列表(?revision=)  |
+//! | GET    | `/environment/collections/{cid}/objects/{pid}/raw` | 失败对象原始字节 `.bin`(非失败对象 404) |
 //!
 //! environment API 带 `revision` 防陈旧:`?revision=` 与当前值不符返回 409 Conflict
 //! (`stale environment revision`)。详见 `docs/electron-app.md`。
@@ -161,9 +164,12 @@ fn api_router() -> OpenApiRouter<AppState> {
         .routes(routes!(environment_routes::list_collections))
         .routes(routes!(environment_routes::list_objects))
         .routes(routes!(environment_routes::get_object))
+        .routes(routes!(environment_routes::inspect_object))
         .routes(routes!(environment_routes::list_containers))
         .routes(routes!(environment_routes::export_object_png))
         .routes(routes!(environment_routes::export_object_file))
+        .routes(routes!(environment_routes::list_failures))
+        .routes(routes!(environment_routes::export_object_raw))
         .routes(routes!(routes::list_bundles))
         .routes(routes!(routes::load_bundle))
         .routes(routes!(routes::clear_bundles))
@@ -198,6 +204,53 @@ mod tests {
     async fn body_json(resp: axum::response::Response) -> Value {
         let bytes = to_bytes(resp.into_body(), 1024 * 1024 * 16).await.unwrap();
         serde_json::from_slice(&bytes).unwrap()
+    }
+
+    /// 导出任务排队期间切换环境，必须在 worker 读取对象前返回 409。
+    #[cfg(feature = "export")]
+    #[test]
+    fn queued_exports_reject_changed_revision() {
+        let runtime = tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .max_blocking_threads(1)
+            .build()
+            .unwrap();
+        runtime.block_on(async {
+            for endpoint in ["export", "png"] {
+                let state = make_state(PathBuf::from(EXAMPLE_DIR));
+                let active = state.active.clone();
+                let app = build_app(state);
+                let (release, wait) = std::sync::mpsc::channel();
+                let (started, ready) = tokio::sync::oneshot::channel();
+                let blocker = tokio::task::spawn_blocking(move || {
+                    started.send(()).unwrap();
+                    wait.recv().unwrap();
+                });
+                ready.await.unwrap();
+                let response = app.oneshot(
+                    Request::builder()
+                        .uri(format!(
+                            "/environment/collections/0/objects/1/{endpoint}?revision=0"
+                        ))
+                        .body(Body::empty())
+                        .unwrap(),
+                );
+                let mut response = std::pin::pin!(response);
+                std::future::poll_fn(|cx| {
+                    use std::future::Future;
+                    assert!(
+                        response.as_mut().poll(cx).is_pending(),
+                        "导出应排队等待 worker"
+                    );
+                    std::task::Poll::Ready(())
+                })
+                .await;
+                active.write().revision = 1;
+                release.send(()).unwrap();
+                assert_eq!(response.await.unwrap().status(), StatusCode::CONFLICT);
+                blocker.await.unwrap();
+            }
+        });
     }
 
     #[tokio::test]
@@ -512,6 +565,93 @@ mod tests {
         assert!(obj["detail"].is_object());
         let kind = obj["detail"]["kind"].as_str().unwrap();
         assert!(matches!(kind, "typed" | "dynamic" | "mono"));
+        // 三条路径统一为递归 JSON value（typed 经 codegen ToValue）。
+        assert!(
+            obj["detail"]["value"].is_object(),
+            "detail.value 应为 JSON object"
+        );
+        assert!(
+            obj["detail"].get("debug").is_none(),
+            "debug 字段已随 typed 路径统一移除"
+        );
+    }
+
+    /// 解析失败列表 + 失败对象 raw 下载端点。fixtures 全部解析成功，故经 HTTP
+    /// 只能验证空列表形状与 raw 的 404；非空映射逻辑由
+    /// `environment_routes::failure_dto_tests` 单测覆盖。
+    #[tokio::test]
+    async fn failures_endpoint_empty_list_and_raw_404s_on_normal_object() {
+        let app = app();
+        // Prefabs.unity3d 干净加载。
+        let replace = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("PUT")
+                    .uri("/environment")
+                    .header("content-type", "application/json")
+                    .body(Body::from(
+                        serde_json::to_vec(&json!({
+                            "sources": [{
+                                "id": "prefabs",
+                                "path": "Prefabs.unity3d",
+                                "kind": "file"
+                            }]
+                        }))
+                        .unwrap(),
+                    ))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(replace.status(), StatusCode::OK);
+
+        // 列表：空但形状正确（revision 回显 + items 数组）。
+        let resp = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .uri("/environment/failures")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(resp.status(), StatusCode::OK);
+        let failures = body_json(resp).await;
+        assert_eq!(failures["revision"], json!(1));
+        assert!(failures["items"].is_array());
+
+        // raw：正常（非失败）对象 → 404。取 Font 的 pid。
+        let resp = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .uri("/environment/collections/0/objects")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        let objs = body_json(resp).await;
+        let font_pid = objs["items"]
+            .as_array()
+            .expect("objects 响应应含 items")
+            .iter()
+            .find(|o| o["class_name"].as_str() == Some("Font"))
+            .map(|o| o["path_id"].as_str().unwrap())
+            .expect("Prefabs 应有 Font");
+        let resp = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .uri(format!("/environment/collections/0/objects/{font_pid}/raw"))
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(resp.status(), StatusCode::NOT_FOUND);
     }
 
     #[cfg(feature = "export")]
@@ -631,7 +771,9 @@ mod tests {
             .clone()
             .oneshot(
                 Request::builder()
-                    .uri(format!("/environment/collections/0/objects/{font_pid}/export"))
+                    .uri(format!(
+                        "/environment/collections/0/objects/{font_pid}/export"
+                    ))
                     .body(Body::empty())
                     .unwrap(),
             )
@@ -647,7 +789,69 @@ mod tests {
         let bytes = to_bytes(resp.into_body(), 1024 * 1024 * 16).await.unwrap();
         assert!(bytes.starts_with(b"OTTO"), "字体数据应以 OTTO 开头");
 
-        // 非 audio/misc 类型 → 422。
+        // 大字体详情只返回数组长度，不能先展开数百万个字节。
+        let detail = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .uri(format!(
+                        "/environment/collections/0/objects/{font_pid}?detail=full&revision=1"
+                    ))
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(detail.status(), StatusCode::OK);
+        let detail_bytes = to_bytes(detail.into_body(), 64 * 1024).await.unwrap();
+        let detail: Value = serde_json::from_slice(&detail_bytes).unwrap();
+        let font_data = &detail["object"]["detail"]["value"]["m_FontData"];
+        assert_eq!(font_data["len"], json!(bytes.len()));
+        assert_eq!(font_data["items"], json!([]));
+        assert_eq!(font_data["next_offset"], json!(0));
+
+        for offset in [0, 256, bytes.len() - 3, bytes.len()] {
+            let resp = app.clone().oneshot(Request::builder()
+                .uri(format!("/environment/collections/0/objects/{font_pid}/inspect?revision=1&path=%5B%22m_FontData%22%5D&offset={offset}&limit=256"))
+                .body(Body::empty()).unwrap()).await.unwrap();
+            assert_eq!(resp.status(), StatusCode::OK);
+            let page = body_json(resp).await;
+            let end = (offset + 256).min(bytes.len());
+            assert_eq!(page["value"]["items"], json!(&bytes[offset..end]));
+            assert_eq!(page["value"]["offset"], json!(offset));
+            if end == bytes.len() {
+                assert!(page["value"].get("next_offset").is_none());
+            }
+        }
+        for (query, expected) in [
+            (
+                "revision=0&path=%5B%22m_FontData%22%5D",
+                StatusCode::CONFLICT,
+            ),
+            ("revision=1&path=invalid", StatusCode::BAD_REQUEST),
+            ("revision=1&path=%5B%22missing%22%5D", StatusCode::NOT_FOUND),
+            (
+                "revision=1&path=%5B%22m_FontData%22%5D&limit=257",
+                StatusCode::BAD_REQUEST,
+            ),
+        ] {
+            let resp = app
+                .clone()
+                .oneshot(
+                    Request::builder()
+                        .uri(format!(
+                            "/environment/collections/0/objects/{font_pid}/inspect?{query}"
+                        ))
+                        .body(Body::empty())
+                        .unwrap(),
+                )
+                .await
+                .unwrap();
+            assert_eq!(resp.status(), expected);
+        }
+
+        // 无专用 handler 的类型 → JSON 兜底 dump（对齐 AssetRipper「JSON 是默认
+        // handler」；Texture2D 的图片导出走 /png 端点）。
         let tex_pid = items
             .iter()
             .find(|o| o["class_name"].as_str() == Some("Texture2D"))
@@ -657,13 +861,26 @@ mod tests {
                 .clone()
                 .oneshot(
                     Request::builder()
-                        .uri(format!("/environment/collections/0/objects/{tex_pid}/export"))
+                        .uri(format!(
+                            "/environment/collections/0/objects/{tex_pid}/export"
+                        ))
                         .body(Body::empty())
                         .unwrap(),
                 )
                 .await
                 .unwrap();
-            assert_eq!(resp.status(), StatusCode::UNPROCESSABLE_ENTITY);
+            assert_eq!(resp.status(), StatusCode::OK);
+            assert_eq!(resp.headers().get("x-export-extension").unwrap(), "json");
+            assert_eq!(
+                resp.headers().get("content-type").unwrap(),
+                "application/json"
+            );
+            let bytes = to_bytes(resp.into_body(), 1024 * 1024 * 16).await.unwrap();
+            let v: Value = serde_json::from_slice(&bytes).expect("body 应为合法 JSON");
+            // typed dump 的键是原始 PascalCase 字段名（codegen ToValue）。
+            assert!(v.get("m_Width").is_some(), "Texture2D dump 应含 m_Width");
+            assert!(v.get("m_Height").is_some(), "Texture2D dump 应含 m_Height");
+            assert!(v.get("m_Name").is_some(), "Texture2D dump 应含 m_Name");
         }
     }
 

@@ -53,3 +53,52 @@ impl crate::Parse for BlockShaderContainer {
         })
     }
 }
+
+impl crate::ToValue for BlockShaderContainer {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some(("guid".to_string(), self.guid.to_value())),
+            Some(("dependencies".to_string(), self.dependencies.to_value())),
+            Some((
+                "generatedPaths".to_string(),
+                self.generated_paths.to_value(),
+            )),
+            Some(("blob".to_string(), self.blob.to_value())),
+            Some(("state".to_string(), self.state.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "guid" => (self.guid).inspect_value(path, offset, limit),
+                "dependencies" => (self.dependencies).inspect_value(path, offset, limit),
+                "generatedPaths" => (self.generated_paths).inspect_value(path, offset, limit),
+                "blob" => (self.blob).inspect_value(path, offset, limit),
+                "state" => (self.state).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.guid).inspect_value(path, offset, limit)).map(|v| ("guid".to_string(), v)),
+            ((self.dependencies).inspect_value(path, offset, limit))
+                .map(|v| ("dependencies".to_string(), v)),
+            ((self.generated_paths).inspect_value(path, offset, limit))
+                .map(|v| ("generatedPaths".to_string(), v)),
+            ((self.blob).inspect_value(path, offset, limit)).map(|v| ("blob".to_string(), v)),
+            ((self.state).inspect_value(path, offset, limit)).map(|v| ("state".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

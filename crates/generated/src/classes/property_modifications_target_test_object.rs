@@ -76,3 +76,63 @@ impl crate::Parse for PropertyModificationsTargetTestObject {
         })
     }
 }
+
+impl crate::ToValue for PropertyModificationsTargetTestObject {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Data".to_string(), self.m_data.to_value())),
+            Some(("m_Array".to_string(), self.m_array.to_value())),
+            Some((
+                "m_FloatTestValue".to_string(),
+                self.m_float_test_value.to_value(),
+            )),
+            crate::opt_field("m_Bytes", &self.m_bytes),
+            crate::opt_field("m_Floats", &self.m_floats),
+            crate::opt_field("m_BytesSize", &self.m_bytes_size),
+            self.byte_data
+                .as_ref()
+                .map(|v| ("byte data".to_string(), crate::Value::Bytes(v.clone()))),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Data" => (self.m_data).inspect_value(path, offset, limit),
+                "m_Array" => (self.m_array).inspect_value(path, offset, limit),
+                "m_FloatTestValue" => (self.m_float_test_value).inspect_value(path, offset, limit),
+                "m_Bytes" => (self.m_bytes).inspect_value(path, offset, limit),
+                "m_Floats" => (self.m_floats).inspect_value(path, offset, limit),
+                "m_BytesSize" => (self.m_bytes_size).inspect_value(path, offset, limit),
+                "byte data" => (self.byte_data)
+                    .as_ref()
+                    .and_then(|v| crate::inspect_bytes(&(v), path, offset, limit)),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_data).inspect_value(path, offset, limit)).map(|v| ("m_Data".to_string(), v)),
+            ((self.m_array).inspect_value(path, offset, limit)).map(|v| ("m_Array".to_string(), v)),
+            ((self.m_float_test_value).inspect_value(path, offset, limit))
+                .map(|v| ("m_FloatTestValue".to_string(), v)),
+            ((self.m_bytes).inspect_value(path, offset, limit)).map(|v| ("m_Bytes".to_string(), v)),
+            ((self.m_floats).inspect_value(path, offset, limit))
+                .map(|v| ("m_Floats".to_string(), v)),
+            ((self.m_bytes_size).inspect_value(path, offset, limit))
+                .map(|v| ("m_BytesSize".to_string(), v)),
+            ((self.byte_data)
+                .as_ref()
+                .and_then(|v| crate::inspect_bytes(&(v), path, offset, limit)))
+            .map(|v| ("byte data".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

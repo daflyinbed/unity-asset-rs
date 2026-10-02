@@ -28,3 +28,44 @@ impl crate::Parse for AudioContainerElement {
         })
     }
 }
+
+impl crate::ToValue for AudioContainerElement {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some(("m_AudioClip".to_string(), self.m_audio_clip.to_value())),
+            Some(("m_Volume".to_string(), self.m_volume.to_value())),
+            Some(("m_Enabled".to_string(), self.m_enabled.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_AudioClip" => (self.m_audio_clip).inspect_value(path, offset, limit),
+                "m_Volume" => (self.m_volume).inspect_value(path, offset, limit),
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_audio_clip).inspect_value(path, offset, limit))
+                .map(|v| ("m_AudioClip".to_string(), v)),
+            ((self.m_volume).inspect_value(path, offset, limit))
+                .map(|v| ("m_Volume".to_string(), v)),
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

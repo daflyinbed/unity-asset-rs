@@ -125,3 +125,198 @@ impl crate::Parse for SpeedTreeWindConfig9 {
         })
     }
 }
+
+impl crate::ToValue for SpeedTreeWindConfig9 {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some((
+                "m_fStrengthResponse".to_string(),
+                self.m_f_strength_response.to_value(),
+            )),
+            Some((
+                "m_fDirectionResponse".to_string(),
+                self.m_f_direction_response.to_value(),
+            )),
+            Some((
+                "m_fGustFrequency".to_string(),
+                self.m_f_gust_frequency.to_value(),
+            )),
+            Some((
+                "m_fGustStrengthMin".to_string(),
+                self.m_f_gust_strength_min.to_value(),
+            )),
+            Some((
+                "m_fGustStrengthMax".to_string(),
+                self.m_f_gust_strength_max.to_value(),
+            )),
+            Some((
+                "m_fGustDurationMin".to_string(),
+                self.m_f_gust_duration_min.to_value(),
+            )),
+            Some((
+                "m_fGustDurationMax".to_string(),
+                self.m_f_gust_duration_max.to_value(),
+            )),
+            Some((
+                "m_fGustRiseScalar".to_string(),
+                self.m_f_gust_rise_scalar.to_value(),
+            )),
+            Some((
+                "m_fGustFallScalar".to_string(),
+                self.m_f_gust_fall_scalar.to_value(),
+            )),
+            Some((
+                "m_fBranch1StretchLimit".to_string(),
+                self.m_f_branch1_stretch_limit.to_value(),
+            )),
+            Some((
+                "m_fBranch2StretchLimit".to_string(),
+                self.m_f_branch2_stretch_limit.to_value(),
+            )),
+            Some((
+                "m_fSharedHeightStart".to_string(),
+                self.m_f_shared_height_start.to_value(),
+            )),
+            Some(("m_sShared".to_string(), self.m_s_shared.to_value())),
+            Some(("m_sBranch1".to_string(), self.m_s_branch1.to_value())),
+            Some(("m_sBranch2".to_string(), self.m_s_branch2.to_value())),
+            Some(("m_sRipple".to_string(), self.m_s_ripple.to_value())),
+            Some((
+                "m_vTreeExtents".to_string(),
+                self.m_v_tree_extents.to_value(),
+            )),
+            Some((
+                "m_fWindIndependence".to_string(),
+                self.m_f_wind_independence.to_value(),
+            )),
+            Some(("m_bDoShared".to_string(), self.m_b_do_shared.to_value())),
+            Some(("m_bDoBranch1".to_string(), self.m_b_do_branch1.to_value())),
+            Some(("m_bDoBranch2".to_string(), self.m_b_do_branch2.to_value())),
+            Some(("m_bDoRipple".to_string(), self.m_b_do_ripple.to_value())),
+            Some(("m_bDoShimmer".to_string(), self.m_b_do_shimmer.to_value())),
+            Some(("m_bLodFade".to_string(), self.m_b_lod_fade.to_value())),
+            crate::opt_field("pad", &self.pad),
+            crate::opt_field("m_fImportScaling", &self.m_f_import_scaling),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_fStrengthResponse" => {
+                    (self.m_f_strength_response).inspect_value(path, offset, limit)
+                }
+                "m_fDirectionResponse" => {
+                    (self.m_f_direction_response).inspect_value(path, offset, limit)
+                }
+                "m_fGustFrequency" => (self.m_f_gust_frequency).inspect_value(path, offset, limit),
+                "m_fGustStrengthMin" => {
+                    (self.m_f_gust_strength_min).inspect_value(path, offset, limit)
+                }
+                "m_fGustStrengthMax" => {
+                    (self.m_f_gust_strength_max).inspect_value(path, offset, limit)
+                }
+                "m_fGustDurationMin" => {
+                    (self.m_f_gust_duration_min).inspect_value(path, offset, limit)
+                }
+                "m_fGustDurationMax" => {
+                    (self.m_f_gust_duration_max).inspect_value(path, offset, limit)
+                }
+                "m_fGustRiseScalar" => {
+                    (self.m_f_gust_rise_scalar).inspect_value(path, offset, limit)
+                }
+                "m_fGustFallScalar" => {
+                    (self.m_f_gust_fall_scalar).inspect_value(path, offset, limit)
+                }
+                "m_fBranch1StretchLimit" => {
+                    (self.m_f_branch1_stretch_limit).inspect_value(path, offset, limit)
+                }
+                "m_fBranch2StretchLimit" => {
+                    (self.m_f_branch2_stretch_limit).inspect_value(path, offset, limit)
+                }
+                "m_fSharedHeightStart" => {
+                    (self.m_f_shared_height_start).inspect_value(path, offset, limit)
+                }
+                "m_sShared" => (self.m_s_shared).inspect_value(path, offset, limit),
+                "m_sBranch1" => (self.m_s_branch1).inspect_value(path, offset, limit),
+                "m_sBranch2" => (self.m_s_branch2).inspect_value(path, offset, limit),
+                "m_sRipple" => (self.m_s_ripple).inspect_value(path, offset, limit),
+                "m_vTreeExtents" => (self.m_v_tree_extents).inspect_value(path, offset, limit),
+                "m_fWindIndependence" => {
+                    (self.m_f_wind_independence).inspect_value(path, offset, limit)
+                }
+                "m_bDoShared" => (self.m_b_do_shared).inspect_value(path, offset, limit),
+                "m_bDoBranch1" => (self.m_b_do_branch1).inspect_value(path, offset, limit),
+                "m_bDoBranch2" => (self.m_b_do_branch2).inspect_value(path, offset, limit),
+                "m_bDoRipple" => (self.m_b_do_ripple).inspect_value(path, offset, limit),
+                "m_bDoShimmer" => (self.m_b_do_shimmer).inspect_value(path, offset, limit),
+                "m_bLodFade" => (self.m_b_lod_fade).inspect_value(path, offset, limit),
+                "pad" => (self.pad).inspect_value(path, offset, limit),
+                "m_fImportScaling" => (self.m_f_import_scaling).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_f_strength_response).inspect_value(path, offset, limit))
+                .map(|v| ("m_fStrengthResponse".to_string(), v)),
+            ((self.m_f_direction_response).inspect_value(path, offset, limit))
+                .map(|v| ("m_fDirectionResponse".to_string(), v)),
+            ((self.m_f_gust_frequency).inspect_value(path, offset, limit))
+                .map(|v| ("m_fGustFrequency".to_string(), v)),
+            ((self.m_f_gust_strength_min).inspect_value(path, offset, limit))
+                .map(|v| ("m_fGustStrengthMin".to_string(), v)),
+            ((self.m_f_gust_strength_max).inspect_value(path, offset, limit))
+                .map(|v| ("m_fGustStrengthMax".to_string(), v)),
+            ((self.m_f_gust_duration_min).inspect_value(path, offset, limit))
+                .map(|v| ("m_fGustDurationMin".to_string(), v)),
+            ((self.m_f_gust_duration_max).inspect_value(path, offset, limit))
+                .map(|v| ("m_fGustDurationMax".to_string(), v)),
+            ((self.m_f_gust_rise_scalar).inspect_value(path, offset, limit))
+                .map(|v| ("m_fGustRiseScalar".to_string(), v)),
+            ((self.m_f_gust_fall_scalar).inspect_value(path, offset, limit))
+                .map(|v| ("m_fGustFallScalar".to_string(), v)),
+            ((self.m_f_branch1_stretch_limit).inspect_value(path, offset, limit))
+                .map(|v| ("m_fBranch1StretchLimit".to_string(), v)),
+            ((self.m_f_branch2_stretch_limit).inspect_value(path, offset, limit))
+                .map(|v| ("m_fBranch2StretchLimit".to_string(), v)),
+            ((self.m_f_shared_height_start).inspect_value(path, offset, limit))
+                .map(|v| ("m_fSharedHeightStart".to_string(), v)),
+            ((self.m_s_shared).inspect_value(path, offset, limit))
+                .map(|v| ("m_sShared".to_string(), v)),
+            ((self.m_s_branch1).inspect_value(path, offset, limit))
+                .map(|v| ("m_sBranch1".to_string(), v)),
+            ((self.m_s_branch2).inspect_value(path, offset, limit))
+                .map(|v| ("m_sBranch2".to_string(), v)),
+            ((self.m_s_ripple).inspect_value(path, offset, limit))
+                .map(|v| ("m_sRipple".to_string(), v)),
+            ((self.m_v_tree_extents).inspect_value(path, offset, limit))
+                .map(|v| ("m_vTreeExtents".to_string(), v)),
+            ((self.m_f_wind_independence).inspect_value(path, offset, limit))
+                .map(|v| ("m_fWindIndependence".to_string(), v)),
+            ((self.m_b_do_shared).inspect_value(path, offset, limit))
+                .map(|v| ("m_bDoShared".to_string(), v)),
+            ((self.m_b_do_branch1).inspect_value(path, offset, limit))
+                .map(|v| ("m_bDoBranch1".to_string(), v)),
+            ((self.m_b_do_branch2).inspect_value(path, offset, limit))
+                .map(|v| ("m_bDoBranch2".to_string(), v)),
+            ((self.m_b_do_ripple).inspect_value(path, offset, limit))
+                .map(|v| ("m_bDoRipple".to_string(), v)),
+            ((self.m_b_do_shimmer).inspect_value(path, offset, limit))
+                .map(|v| ("m_bDoShimmer".to_string(), v)),
+            ((self.m_b_lod_fade).inspect_value(path, offset, limit))
+                .map(|v| ("m_bLodFade".to_string(), v)),
+            ((self.pad).inspect_value(path, offset, limit)).map(|v| ("pad".to_string(), v)),
+            ((self.m_f_import_scaling).inspect_value(path, offset, limit))
+                .map(|v| ("m_fImportScaling".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

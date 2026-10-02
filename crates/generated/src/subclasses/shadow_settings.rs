@@ -72,3 +72,80 @@ impl crate::Parse for ShadowSettings {
         })
     }
 }
+
+impl crate::ToValue for ShadowSettings {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Type".to_string(), self.m_type.to_value())),
+            Some(("m_Resolution".to_string(), self.m_resolution.to_value())),
+            Some(("m_Strength".to_string(), self.m_strength.to_value())),
+            crate::opt_field("m_CustomResolution", &self.m_custom_resolution),
+            Some(("m_Bias".to_string(), self.m_bias.to_value())),
+            crate::opt_field("m_Softness", &self.m_softness),
+            crate::opt_field("m_NormalBias", &self.m_normal_bias),
+            crate::opt_field("m_SoftnessFade", &self.m_softness_fade),
+            crate::opt_field("m_NearPlane", &self.m_near_plane),
+            crate::opt_field("m_CullingMatrixOverride", &self.m_culling_matrix_override),
+            crate::opt_field(
+                "m_UseCullingMatrixOverride",
+                &self.m_use_culling_matrix_override,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Type" => (self.m_type).inspect_value(path, offset, limit),
+                "m_Resolution" => (self.m_resolution).inspect_value(path, offset, limit),
+                "m_Strength" => (self.m_strength).inspect_value(path, offset, limit),
+                "m_CustomResolution" => {
+                    (self.m_custom_resolution).inspect_value(path, offset, limit)
+                }
+                "m_Bias" => (self.m_bias).inspect_value(path, offset, limit),
+                "m_Softness" => (self.m_softness).inspect_value(path, offset, limit),
+                "m_NormalBias" => (self.m_normal_bias).inspect_value(path, offset, limit),
+                "m_SoftnessFade" => (self.m_softness_fade).inspect_value(path, offset, limit),
+                "m_NearPlane" => (self.m_near_plane).inspect_value(path, offset, limit),
+                "m_CullingMatrixOverride" => {
+                    (self.m_culling_matrix_override).inspect_value(path, offset, limit)
+                }
+                "m_UseCullingMatrixOverride" => {
+                    (self.m_use_culling_matrix_override).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_type).inspect_value(path, offset, limit)).map(|v| ("m_Type".to_string(), v)),
+            ((self.m_resolution).inspect_value(path, offset, limit))
+                .map(|v| ("m_Resolution".to_string(), v)),
+            ((self.m_strength).inspect_value(path, offset, limit))
+                .map(|v| ("m_Strength".to_string(), v)),
+            ((self.m_custom_resolution).inspect_value(path, offset, limit))
+                .map(|v| ("m_CustomResolution".to_string(), v)),
+            ((self.m_bias).inspect_value(path, offset, limit)).map(|v| ("m_Bias".to_string(), v)),
+            ((self.m_softness).inspect_value(path, offset, limit))
+                .map(|v| ("m_Softness".to_string(), v)),
+            ((self.m_normal_bias).inspect_value(path, offset, limit))
+                .map(|v| ("m_NormalBias".to_string(), v)),
+            ((self.m_softness_fade).inspect_value(path, offset, limit))
+                .map(|v| ("m_SoftnessFade".to_string(), v)),
+            ((self.m_near_plane).inspect_value(path, offset, limit))
+                .map(|v| ("m_NearPlane".to_string(), v)),
+            ((self.m_culling_matrix_override).inspect_value(path, offset, limit))
+                .map(|v| ("m_CullingMatrixOverride".to_string(), v)),
+            ((self.m_use_culling_matrix_override).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseCullingMatrixOverride".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

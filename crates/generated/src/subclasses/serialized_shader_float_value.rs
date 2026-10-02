@@ -23,6 +23,21 @@ impl crate::Parse for SerializedShaderFloatValueNameVariant {
         }
     }
 }
+
+impl crate::ToValue for SerializedShaderFloatValueNameVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_6(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_6(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct SerializedShaderFloatValue {
     pub val: f32,
@@ -38,5 +53,37 @@ impl crate::Parse for SerializedShaderFloatValue {
         let name = SerializedShaderFloatValueNameVariant::parse(rdr, ver)?;
 
         Ok(SerializedShaderFloatValue { val, name })
+    }
+}
+
+impl crate::ToValue for SerializedShaderFloatValue {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("val".to_string(), self.val.to_value())),
+            Some(("name".to_string(), self.name.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "val" => (self.val).inspect_value(path, offset, limit),
+                "name" => (self.name).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.val).inspect_value(path, offset, limit)).map(|v| ("val".to_string(), v)),
+            ((self.name).inspect_value(path, offset, limit)).map(|v| ("name".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

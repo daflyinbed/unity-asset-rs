@@ -35,6 +35,21 @@ impl crate::Parse for FlareMElementsVariant {
         }
     }
 }
+
+impl crate::ToValue for FlareMElementsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct Flare {
     pub m_name: String,
@@ -62,5 +77,56 @@ impl crate::Parse for Flare {
             m_elements,
             m_use_fog,
         })
+    }
+}
+
+impl crate::ToValue for Flare {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some((
+                "m_FlareTexture".to_string(),
+                self.m_flare_texture.to_value(),
+            )),
+            Some((
+                "m_TextureLayout".to_string(),
+                self.m_texture_layout.to_value(),
+            )),
+            Some(("m_Elements".to_string(), self.m_elements.to_value())),
+            Some(("m_UseFog".to_string(), self.m_use_fog.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_FlareTexture" => (self.m_flare_texture).inspect_value(path, offset, limit),
+                "m_TextureLayout" => (self.m_texture_layout).inspect_value(path, offset, limit),
+                "m_Elements" => (self.m_elements).inspect_value(path, offset, limit),
+                "m_UseFog" => (self.m_use_fog).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_flare_texture).inspect_value(path, offset, limit))
+                .map(|v| ("m_FlareTexture".to_string(), v)),
+            ((self.m_texture_layout).inspect_value(path, offset, limit))
+                .map(|v| ("m_TextureLayout".to_string(), v)),
+            ((self.m_elements).inspect_value(path, offset, limit))
+                .map(|v| ("m_Elements".to_string(), v)),
+            ((self.m_use_fog).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseFog".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

@@ -30,3 +30,53 @@ impl crate::Parse for TextureImportOutput {
         })
     }
 }
+
+impl crate::ToValue for TextureImportOutput {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some((
+                "textureImportInstructions".to_string(),
+                self.texture_import_instructions.to_value(),
+            )),
+            Some((
+                "sourceTextureInformation".to_string(),
+                self.source_texture_information.to_value(),
+            )),
+            crate::opt_field("importInspectorWarnings", &self.import_inspector_warnings),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "textureImportInstructions" => {
+                    (self.texture_import_instructions).inspect_value(path, offset, limit)
+                }
+                "sourceTextureInformation" => {
+                    (self.source_texture_information).inspect_value(path, offset, limit)
+                }
+                "importInspectorWarnings" => {
+                    (self.import_inspector_warnings).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.texture_import_instructions).inspect_value(path, offset, limit))
+                .map(|v| ("textureImportInstructions".to_string(), v)),
+            ((self.source_texture_information).inspect_value(path, offset, limit))
+                .map(|v| ("sourceTextureInformation".to_string(), v)),
+            ((self.import_inspector_warnings).inspect_value(path, offset, limit))
+                .map(|v| ("importInspectorWarnings".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

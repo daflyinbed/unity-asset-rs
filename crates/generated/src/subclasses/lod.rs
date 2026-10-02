@@ -34,6 +34,21 @@ impl crate::Parse for LodRenderersVariant {
         }
     }
 }
+
+impl crate::ToValue for LodRenderersVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct Lod {
     pub screen_relative_height: f32,
@@ -67,5 +82,54 @@ impl crate::Parse for Lod {
             fade_mode,
             fade_transition_width,
         })
+    }
+}
+
+impl crate::ToValue for Lod {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some((
+                "screenRelativeHeight".to_string(),
+                self.screen_relative_height.to_value(),
+            )),
+            Some(("renderers".to_string(), self.renderers.to_value())),
+            crate::opt_field("fadeMode", &self.fade_mode),
+            crate::opt_field("fadeTransitionWidth", &self.fade_transition_width),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "screenRelativeHeight" => {
+                    (self.screen_relative_height).inspect_value(path, offset, limit)
+                }
+                "renderers" => (self.renderers).inspect_value(path, offset, limit),
+                "fadeMode" => (self.fade_mode).inspect_value(path, offset, limit),
+                "fadeTransitionWidth" => {
+                    (self.fade_transition_width).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.screen_relative_height).inspect_value(path, offset, limit))
+                .map(|v| ("screenRelativeHeight".to_string(), v)),
+            ((self.renderers).inspect_value(path, offset, limit))
+                .map(|v| ("renderers".to_string(), v)),
+            ((self.fade_mode).inspect_value(path, offset, limit))
+                .map(|v| ("fadeMode".to_string(), v)),
+            ((self.fade_transition_width).inspect_value(path, offset, limit))
+                .map(|v| ("fadeTransitionWidth".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

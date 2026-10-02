@@ -32,6 +32,21 @@ impl crate::Parse for PreviewDataMPreviewDataVariant {
         }
     }
 }
+
+impl crate::ToValue for PreviewDataMPreviewDataVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct PreviewData {
     pub m_preview_data: PreviewDataMPreviewDataVariant,
@@ -53,5 +68,43 @@ impl crate::Parse for PreviewData {
             m_orig_size,
             m_comp_size,
         })
+    }
+}
+
+impl crate::ToValue for PreviewData {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_PreviewData".to_string(), self.m_preview_data.to_value())),
+            Some(("m_OrigSize".to_string(), self.m_orig_size.to_value())),
+            Some(("m_CompSize".to_string(), self.m_comp_size.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_PreviewData" => (self.m_preview_data).inspect_value(path, offset, limit),
+                "m_OrigSize" => (self.m_orig_size).inspect_value(path, offset, limit),
+                "m_CompSize" => (self.m_comp_size).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_preview_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_PreviewData".to_string(), v)),
+            ((self.m_orig_size).inspect_value(path, offset, limit))
+                .map(|v| ("m_OrigSize".to_string(), v)),
+            ((self.m_comp_size).inspect_value(path, offset, limit))
+                .map(|v| ("m_CompSize".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

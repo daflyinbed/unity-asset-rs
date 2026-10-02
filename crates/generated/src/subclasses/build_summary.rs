@@ -27,6 +27,21 @@ impl crate::Parse for BuildSummaryBuildResultVariant {
     }
 }
 
+impl crate::ToValue for BuildSummaryBuildResultVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2023_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2023_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：BuildSummaryMultiProcessEnabledVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum BuildSummaryMultiProcessEnabledVariant {
@@ -46,6 +61,21 @@ impl crate::Parse for BuildSummaryMultiProcessEnabledVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for BuildSummaryMultiProcessEnabledVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V6000_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_5(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -196,5 +226,136 @@ impl crate::Parse for BuildSummary {
             multi_process_enabled,
             build_manifest_hash,
         })
+    }
+}
+
+impl crate::ToValue for BuildSummary {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            crate::opt_field("name", &self.name),
+            crate::opt_field("buildStartTime", &self.build_start_time),
+            Some(("platformName".to_string(), self.platform_name.to_value())),
+            crate::opt_field("buildGUID", &self.build_guid),
+            Some(("options".to_string(), self.options.to_value())),
+            crate::opt_field("buildSessionGUID", &self.build_session_guid),
+            Some((
+                "assetBundleOptions".to_string(),
+                self.asset_bundle_options.to_value(),
+            )),
+            crate::opt_field("platformGroupName", &self.platform_group_name),
+            Some(("outputPath".to_string(), self.output_path.to_value())),
+            crate::opt_field("subtarget", &self.subtarget),
+            Some(("crc".to_string(), self.crc.to_value())),
+            Some(("totalSize".to_string(), self.total_size.to_value())),
+            crate::opt_field("totalTimeMS", &self.total_time_ms),
+            crate::opt_field("buildContentOptions", &self.build_content_options),
+            Some(("totalErrors".to_string(), self.total_errors.to_value())),
+            crate::opt_field("dataPath", &self.data_path),
+            Some(("totalWarnings".to_string(), self.total_warnings.to_value())),
+            crate::opt_field("totalTimeTicks", &self.total_time_ticks),
+            crate::opt_field("buildType", &self.build_type),
+            crate::opt_field("success", &self.success),
+            crate::opt_field("buildName", &self.build_name),
+            crate::opt_field("buildResult", &self.build_result),
+            crate::opt_field("multiProcessEnabled", &self.multi_process_enabled),
+            crate::opt_field("buildManifestHash", &self.build_manifest_hash),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "name" => (self.name).inspect_value(path, offset, limit),
+                "buildStartTime" => (self.build_start_time).inspect_value(path, offset, limit),
+                "platformName" => (self.platform_name).inspect_value(path, offset, limit),
+                "buildGUID" => (self.build_guid).inspect_value(path, offset, limit),
+                "options" => (self.options).inspect_value(path, offset, limit),
+                "buildSessionGUID" => (self.build_session_guid).inspect_value(path, offset, limit),
+                "assetBundleOptions" => {
+                    (self.asset_bundle_options).inspect_value(path, offset, limit)
+                }
+                "platformGroupName" => {
+                    (self.platform_group_name).inspect_value(path, offset, limit)
+                }
+                "outputPath" => (self.output_path).inspect_value(path, offset, limit),
+                "subtarget" => (self.subtarget).inspect_value(path, offset, limit),
+                "crc" => (self.crc).inspect_value(path, offset, limit),
+                "totalSize" => (self.total_size).inspect_value(path, offset, limit),
+                "totalTimeMS" => (self.total_time_ms).inspect_value(path, offset, limit),
+                "buildContentOptions" => {
+                    (self.build_content_options).inspect_value(path, offset, limit)
+                }
+                "totalErrors" => (self.total_errors).inspect_value(path, offset, limit),
+                "dataPath" => (self.data_path).inspect_value(path, offset, limit),
+                "totalWarnings" => (self.total_warnings).inspect_value(path, offset, limit),
+                "totalTimeTicks" => (self.total_time_ticks).inspect_value(path, offset, limit),
+                "buildType" => (self.build_type).inspect_value(path, offset, limit),
+                "success" => (self.success).inspect_value(path, offset, limit),
+                "buildName" => (self.build_name).inspect_value(path, offset, limit),
+                "buildResult" => (self.build_result).inspect_value(path, offset, limit),
+                "multiProcessEnabled" => {
+                    (self.multi_process_enabled).inspect_value(path, offset, limit)
+                }
+                "buildManifestHash" => {
+                    (self.build_manifest_hash).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.name).inspect_value(path, offset, limit)).map(|v| ("name".to_string(), v)),
+            ((self.build_start_time).inspect_value(path, offset, limit))
+                .map(|v| ("buildStartTime".to_string(), v)),
+            ((self.platform_name).inspect_value(path, offset, limit))
+                .map(|v| ("platformName".to_string(), v)),
+            ((self.build_guid).inspect_value(path, offset, limit))
+                .map(|v| ("buildGUID".to_string(), v)),
+            ((self.options).inspect_value(path, offset, limit)).map(|v| ("options".to_string(), v)),
+            ((self.build_session_guid).inspect_value(path, offset, limit))
+                .map(|v| ("buildSessionGUID".to_string(), v)),
+            ((self.asset_bundle_options).inspect_value(path, offset, limit))
+                .map(|v| ("assetBundleOptions".to_string(), v)),
+            ((self.platform_group_name).inspect_value(path, offset, limit))
+                .map(|v| ("platformGroupName".to_string(), v)),
+            ((self.output_path).inspect_value(path, offset, limit))
+                .map(|v| ("outputPath".to_string(), v)),
+            ((self.subtarget).inspect_value(path, offset, limit))
+                .map(|v| ("subtarget".to_string(), v)),
+            ((self.crc).inspect_value(path, offset, limit)).map(|v| ("crc".to_string(), v)),
+            ((self.total_size).inspect_value(path, offset, limit))
+                .map(|v| ("totalSize".to_string(), v)),
+            ((self.total_time_ms).inspect_value(path, offset, limit))
+                .map(|v| ("totalTimeMS".to_string(), v)),
+            ((self.build_content_options).inspect_value(path, offset, limit))
+                .map(|v| ("buildContentOptions".to_string(), v)),
+            ((self.total_errors).inspect_value(path, offset, limit))
+                .map(|v| ("totalErrors".to_string(), v)),
+            ((self.data_path).inspect_value(path, offset, limit))
+                .map(|v| ("dataPath".to_string(), v)),
+            ((self.total_warnings).inspect_value(path, offset, limit))
+                .map(|v| ("totalWarnings".to_string(), v)),
+            ((self.total_time_ticks).inspect_value(path, offset, limit))
+                .map(|v| ("totalTimeTicks".to_string(), v)),
+            ((self.build_type).inspect_value(path, offset, limit))
+                .map(|v| ("buildType".to_string(), v)),
+            ((self.success).inspect_value(path, offset, limit)).map(|v| ("success".to_string(), v)),
+            ((self.build_name).inspect_value(path, offset, limit))
+                .map(|v| ("buildName".to_string(), v)),
+            ((self.build_result).inspect_value(path, offset, limit))
+                .map(|v| ("buildResult".to_string(), v)),
+            ((self.multi_process_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("multiProcessEnabled".to_string(), v)),
+            ((self.build_manifest_hash).inspect_value(path, offset, limit))
+                .map(|v| ("buildManifestHash".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

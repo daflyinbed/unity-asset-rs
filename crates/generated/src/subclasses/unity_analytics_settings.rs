@@ -45,6 +45,31 @@ impl crate::Parse for UnityAnalyticsSettingsMInitializeOnStartupVariant {
     }
 }
 
+impl crate::ToValue for UnityAnalyticsSettingsMInitializeOnStartupVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2018_3(v) => v.to_value(),
+            Self::V2020_3_41(v) => v.to_value(),
+            Self::V2021_1(v) => v.to_value(),
+            Self::V2021_3_12(v) => v.to_value(),
+            Self::V2022_1(v) => v.to_value(),
+            Self::V2022_1_21(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2018_3(v) => (v).inspect_value(path, offset, limit),
+            Self::V2020_3_41(v) => (v).inspect_value(path, offset, limit),
+            Self::V2021_1(v) => (v).inspect_value(path, offset, limit),
+            Self::V2021_3_12(v) => (v).inspect_value(path, offset, limit),
+            Self::V2022_1(v) => (v).inspect_value(path, offset, limit),
+            Self::V2022_1_21(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：UnityAnalyticsSettingsMTestModeVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum UnityAnalyticsSettingsMTestModeVariant {
@@ -64,6 +89,21 @@ impl crate::Parse for UnityAnalyticsSettingsMTestModeVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for UnityAnalyticsSettingsMTestModeVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2018_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2018_3(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -140,5 +180,65 @@ impl crate::Parse for UnityAnalyticsSettings {
             m_package_requiring_core_stats_present,
             m_test_config_url,
         })
+    }
+}
+
+impl crate::ToValue for UnityAnalyticsSettings {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Enabled".to_string(), self.m_enabled.to_value())),
+            Some((
+                "m_InitializeOnStartup".to_string(),
+                self.m_initialize_on_startup.to_value(),
+            )),
+            Some(("m_TestMode".to_string(), self.m_test_mode.to_value())),
+            crate::opt_field("m_TestEventUrl", &self.m_test_event_url),
+            crate::opt_field(
+                "m_PackageRequiringCoreStatsPresent",
+                &self.m_package_requiring_core_stats_present,
+            ),
+            crate::opt_field("m_TestConfigUrl", &self.m_test_config_url),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "m_InitializeOnStartup" => {
+                    (self.m_initialize_on_startup).inspect_value(path, offset, limit)
+                }
+                "m_TestMode" => (self.m_test_mode).inspect_value(path, offset, limit),
+                "m_TestEventUrl" => (self.m_test_event_url).inspect_value(path, offset, limit),
+                "m_PackageRequiringCoreStatsPresent" => {
+                    (self.m_package_requiring_core_stats_present).inspect_value(path, offset, limit)
+                }
+                "m_TestConfigUrl" => (self.m_test_config_url).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.m_initialize_on_startup).inspect_value(path, offset, limit))
+                .map(|v| ("m_InitializeOnStartup".to_string(), v)),
+            ((self.m_test_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_TestMode".to_string(), v)),
+            ((self.m_test_event_url).inspect_value(path, offset, limit))
+                .map(|v| ("m_TestEventUrl".to_string(), v)),
+            ((self.m_package_requiring_core_stats_present).inspect_value(path, offset, limit))
+                .map(|v| ("m_PackageRequiringCoreStatsPresent".to_string(), v)),
+            ((self.m_test_config_url).inspect_value(path, offset, limit))
+                .map(|v| ("m_TestConfigUrl".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

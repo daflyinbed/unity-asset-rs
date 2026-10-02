@@ -37,3 +37,66 @@ impl crate::Parse for AnimationEvent {
         })
     }
 }
+
+impl crate::ToValue for AnimationEvent {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("time".to_string(), self.time.to_value())),
+            Some(("functionName".to_string(), self.function_name.to_value())),
+            Some(("data".to_string(), self.data.to_value())),
+            Some((
+                "objectReferenceParameter".to_string(),
+                self.object_reference_parameter.to_value(),
+            )),
+            Some((
+                "floatParameter".to_string(),
+                self.float_parameter.to_value(),
+            )),
+            Some(("intParameter".to_string(), self.int_parameter.to_value())),
+            Some((
+                "messageOptions".to_string(),
+                self.message_options.to_value(),
+            )),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "time" => (self.time).inspect_value(path, offset, limit),
+                "functionName" => (self.function_name).inspect_value(path, offset, limit),
+                "data" => (self.data).inspect_value(path, offset, limit),
+                "objectReferenceParameter" => {
+                    (self.object_reference_parameter).inspect_value(path, offset, limit)
+                }
+                "floatParameter" => (self.float_parameter).inspect_value(path, offset, limit),
+                "intParameter" => (self.int_parameter).inspect_value(path, offset, limit),
+                "messageOptions" => (self.message_options).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.time).inspect_value(path, offset, limit)).map(|v| ("time".to_string(), v)),
+            ((self.function_name).inspect_value(path, offset, limit))
+                .map(|v| ("functionName".to_string(), v)),
+            ((self.data).inspect_value(path, offset, limit)).map(|v| ("data".to_string(), v)),
+            ((self.object_reference_parameter).inspect_value(path, offset, limit))
+                .map(|v| ("objectReferenceParameter".to_string(), v)),
+            ((self.float_parameter).inspect_value(path, offset, limit))
+                .map(|v| ("floatParameter".to_string(), v)),
+            ((self.int_parameter).inspect_value(path, offset, limit))
+                .map(|v| ("intParameter".to_string(), v)),
+            ((self.message_options).inspect_value(path, offset, limit))
+                .map(|v| ("messageOptions".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

@@ -39,6 +39,21 @@ impl crate::Parse for AssetRepresentationsVariant {
     }
 }
 
+impl crate::ToValue for AssetRepresentationsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：AssetChildrenVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AssetChildrenVariant {
@@ -72,6 +87,21 @@ impl crate::Parse for AssetChildrenVariant {
     }
 }
 
+impl crate::ToValue for AssetChildrenVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：AssetHashVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AssetHashVariant {
@@ -90,6 +120,21 @@ impl crate::Parse for AssetHashVariant {
         } else {
             let v = ({ Ok(Box::new(MdFour::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for AssetHashVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_0(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_0(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -134,6 +179,21 @@ impl crate::Parse for AssetGuidOfPathLocationDependenciesVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for AssetGuidOfPathLocationDependenciesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2018_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2018_3(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -280,5 +340,137 @@ impl crate::Parse for Asset {
             hash_of_source_asset_dependencies,
             guid_of_path_location_dependencies,
         })
+    }
+}
+
+impl crate::ToValue for Asset {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            crate::opt_field("modificationDate[0]", &self.modification_date_0),
+            Some((
+                "mainRepresentation".to_string(),
+                self.main_representation.to_value(),
+            )),
+            crate::opt_field("modificationDate[1]", &self.modification_date_1),
+            Some((
+                "representations".to_string(),
+                self.representations.to_value(),
+            )),
+            crate::opt_field("metaModificationDate[0]", &self.meta_modification_date_0),
+            Some(("children".to_string(), self.children.to_value())),
+            crate::opt_field("metaModificationDate[1]", &self.meta_modification_date_1),
+            Some(("parent".to_string(), self.parent.to_value())),
+            Some(("type".to_string(), self.r#type.to_value())),
+            Some(("labels".to_string(), self.labels.to_value())),
+            crate::opt_field("importerClassId", &self.importer_class_id),
+            crate::opt_field("importerVersionHash", &self.importer_version_hash),
+            crate::opt_field("scriptedImporterClassID", &self.scripted_importer_class_id),
+            crate::opt_field("digest", &self.digest),
+            crate::opt_field("hash", &self.hash),
+            crate::opt_field("assetBundleIndex", &self.asset_bundle_index),
+            crate::opt_field(
+                "hashOfImportedAssetDependencies",
+                &self.hash_of_imported_asset_dependencies,
+            ),
+            crate::opt_field(
+                "hashOfSourceAssetDependencies",
+                &self.hash_of_source_asset_dependencies,
+            ),
+            crate::opt_field(
+                "guidOfPathLocationDependencies",
+                &self.guid_of_path_location_dependencies,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "modificationDate[0]" => {
+                    (self.modification_date_0).inspect_value(path, offset, limit)
+                }
+                "mainRepresentation" => {
+                    (self.main_representation).inspect_value(path, offset, limit)
+                }
+                "modificationDate[1]" => {
+                    (self.modification_date_1).inspect_value(path, offset, limit)
+                }
+                "representations" => (self.representations).inspect_value(path, offset, limit),
+                "metaModificationDate[0]" => {
+                    (self.meta_modification_date_0).inspect_value(path, offset, limit)
+                }
+                "children" => (self.children).inspect_value(path, offset, limit),
+                "metaModificationDate[1]" => {
+                    (self.meta_modification_date_1).inspect_value(path, offset, limit)
+                }
+                "parent" => (self.parent).inspect_value(path, offset, limit),
+                "type" => (self.r#type).inspect_value(path, offset, limit),
+                "labels" => (self.labels).inspect_value(path, offset, limit),
+                "importerClassId" => (self.importer_class_id).inspect_value(path, offset, limit),
+                "importerVersionHash" => {
+                    (self.importer_version_hash).inspect_value(path, offset, limit)
+                }
+                "scriptedImporterClassID" => {
+                    (self.scripted_importer_class_id).inspect_value(path, offset, limit)
+                }
+                "digest" => (self.digest).inspect_value(path, offset, limit),
+                "hash" => (self.hash).inspect_value(path, offset, limit),
+                "assetBundleIndex" => (self.asset_bundle_index).inspect_value(path, offset, limit),
+                "hashOfImportedAssetDependencies" => {
+                    (self.hash_of_imported_asset_dependencies).inspect_value(path, offset, limit)
+                }
+                "hashOfSourceAssetDependencies" => {
+                    (self.hash_of_source_asset_dependencies).inspect_value(path, offset, limit)
+                }
+                "guidOfPathLocationDependencies" => {
+                    (self.guid_of_path_location_dependencies).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.modification_date_0).inspect_value(path, offset, limit))
+                .map(|v| ("modificationDate[0]".to_string(), v)),
+            ((self.main_representation).inspect_value(path, offset, limit))
+                .map(|v| ("mainRepresentation".to_string(), v)),
+            ((self.modification_date_1).inspect_value(path, offset, limit))
+                .map(|v| ("modificationDate[1]".to_string(), v)),
+            ((self.representations).inspect_value(path, offset, limit))
+                .map(|v| ("representations".to_string(), v)),
+            ((self.meta_modification_date_0).inspect_value(path, offset, limit))
+                .map(|v| ("metaModificationDate[0]".to_string(), v)),
+            ((self.children).inspect_value(path, offset, limit))
+                .map(|v| ("children".to_string(), v)),
+            ((self.meta_modification_date_1).inspect_value(path, offset, limit))
+                .map(|v| ("metaModificationDate[1]".to_string(), v)),
+            ((self.parent).inspect_value(path, offset, limit)).map(|v| ("parent".to_string(), v)),
+            ((self.r#type).inspect_value(path, offset, limit)).map(|v| ("type".to_string(), v)),
+            ((self.labels).inspect_value(path, offset, limit)).map(|v| ("labels".to_string(), v)),
+            ((self.importer_class_id).inspect_value(path, offset, limit))
+                .map(|v| ("importerClassId".to_string(), v)),
+            ((self.importer_version_hash).inspect_value(path, offset, limit))
+                .map(|v| ("importerVersionHash".to_string(), v)),
+            ((self.scripted_importer_class_id).inspect_value(path, offset, limit))
+                .map(|v| ("scriptedImporterClassID".to_string(), v)),
+            ((self.digest).inspect_value(path, offset, limit)).map(|v| ("digest".to_string(), v)),
+            ((self.hash).inspect_value(path, offset, limit)).map(|v| ("hash".to_string(), v)),
+            ((self.asset_bundle_index).inspect_value(path, offset, limit))
+                .map(|v| ("assetBundleIndex".to_string(), v)),
+            ((self.hash_of_imported_asset_dependencies).inspect_value(path, offset, limit))
+                .map(|v| ("hashOfImportedAssetDependencies".to_string(), v)),
+            ((self.hash_of_source_asset_dependencies).inspect_value(path, offset, limit))
+                .map(|v| ("hashOfSourceAssetDependencies".to_string(), v)),
+            ((self.guid_of_path_location_dependencies).inspect_value(path, offset, limit))
+                .map(|v| ("guidOfPathLocationDependencies".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

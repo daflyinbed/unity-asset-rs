@@ -54,6 +54,23 @@ impl crate::Parse for ParticleSystemStartDelayVariant {
     }
 }
 
+impl crate::ToValue for ParticleSystemStartDelayVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_3(v) => v.to_value(),
+            Self::V5_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_3(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_5(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：ParticleSystemRandomSeedVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ParticleSystemRandomSeedVariant {
@@ -72,6 +89,21 @@ impl crate::Parse for ParticleSystemRandomSeedVariant {
         } else {
             let v = rdr.read_u32()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for ParticleSystemRandomSeedVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_4_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_4_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -104,6 +136,23 @@ impl crate::Parse for ParticleSystemAutoRandomSeedVariant {
     }
 }
 
+impl crate::ToValue for ParticleSystemAutoRandomSeedVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+            Self::V2021_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+            Self::V2021_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：ParticleSystemMoveWithTransformVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ParticleSystemMoveWithTransformVariant {
@@ -123,6 +172,21 @@ impl crate::Parse for ParticleSystemMoveWithTransformVariant {
         } else {
             let v = rdr.read_bool()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for ParticleSystemMoveWithTransformVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_5(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -371,5 +435,254 @@ impl crate::Parse for ParticleSystem {
             trail_module,
             custom_data_module,
         })
+    }
+}
+
+impl crate::ToValue for ParticleSystem {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("lengthInSec".to_string(), self.length_in_sec.to_value())),
+            Some(("startDelay".to_string(), self.start_delay.to_value())),
+            crate::opt_field("speed", &self.speed),
+            crate::opt_field("simulationSpeed", &self.simulation_speed),
+            Some(("looping".to_string(), self.looping.to_value())),
+            crate::opt_field("stopAction", &self.stop_action),
+            Some(("randomSeed".to_string(), self.random_seed.to_value())),
+            Some(("prewarm".to_string(), self.prewarm.to_value())),
+            crate::opt_field("cullingMode", &self.culling_mode),
+            Some(("playOnAwake".to_string(), self.play_on_awake.to_value())),
+            crate::opt_field("ringBufferMode", &self.ring_buffer_mode),
+            crate::opt_field("autoRandomSeed", &self.auto_random_seed),
+            crate::opt_field("useUnscaledTime", &self.use_unscaled_time),
+            crate::opt_field("ringBufferLoopRange", &self.ring_buffer_loop_range),
+            Some((
+                "moveWithTransform".to_string(),
+                self.move_with_transform.to_value(),
+            )),
+            crate::opt_field("emitterVelocityMode", &self.emitter_velocity_mode),
+            crate::opt_field("useRigidbodyForVelocity", &self.use_rigidbody_for_velocity),
+            Some(("InitialModule".to_string(), self.initial_module.to_value())),
+            crate::opt_field("scalingMode", &self.scaling_mode),
+            crate::opt_field("moveWithCustomTransform", &self.move_with_custom_transform),
+            Some(("ShapeModule".to_string(), self.shape_module.to_value())),
+            Some((
+                "EmissionModule".to_string(),
+                self.emission_module.to_value(),
+            )),
+            Some(("SizeModule".to_string(), self.size_module.to_value())),
+            Some((
+                "RotationModule".to_string(),
+                self.rotation_module.to_value(),
+            )),
+            Some(("ColorModule".to_string(), self.color_module.to_value())),
+            Some(("UVModule".to_string(), self.uv_module.to_value())),
+            Some((
+                "VelocityModule".to_string(),
+                self.velocity_module.to_value(),
+            )),
+            Some(("ForceModule".to_string(), self.force_module.to_value())),
+            Some((
+                "ClampVelocityModule".to_string(),
+                self.clamp_velocity_module.to_value(),
+            )),
+            crate::opt_field("ExternalForcesModule", &self.external_forces_module),
+            crate::opt_field("InheritVelocityModule", &self.inherit_velocity_module),
+            Some((
+                "SizeBySpeedModule".to_string(),
+                self.size_by_speed_module.to_value(),
+            )),
+            Some((
+                "RotationBySpeedModule".to_string(),
+                self.rotation_by_speed_module.to_value(),
+            )),
+            Some((
+                "ColorBySpeedModule".to_string(),
+                self.color_by_speed_module.to_value(),
+            )),
+            Some((
+                "CollisionModule".to_string(),
+                self.collision_module.to_value(),
+            )),
+            Some(("SubModule".to_string(), self.sub_module.to_value())),
+            crate::opt_field("NoiseModule", &self.noise_module),
+            crate::opt_field("TriggerModule", &self.trigger_module),
+            crate::opt_field(
+                "LifetimeByEmitterSpeedModule",
+                &self.lifetime_by_emitter_speed_module,
+            ),
+            crate::opt_field("LightsModule", &self.lights_module),
+            crate::opt_field("TrailModule", &self.trail_module),
+            crate::opt_field("CustomDataModule", &self.custom_data_module),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "lengthInSec" => (self.length_in_sec).inspect_value(path, offset, limit),
+                "startDelay" => (self.start_delay).inspect_value(path, offset, limit),
+                "speed" => (self.speed).inspect_value(path, offset, limit),
+                "simulationSpeed" => (self.simulation_speed).inspect_value(path, offset, limit),
+                "looping" => (self.looping).inspect_value(path, offset, limit),
+                "stopAction" => (self.stop_action).inspect_value(path, offset, limit),
+                "randomSeed" => (self.random_seed).inspect_value(path, offset, limit),
+                "prewarm" => (self.prewarm).inspect_value(path, offset, limit),
+                "cullingMode" => (self.culling_mode).inspect_value(path, offset, limit),
+                "playOnAwake" => (self.play_on_awake).inspect_value(path, offset, limit),
+                "ringBufferMode" => (self.ring_buffer_mode).inspect_value(path, offset, limit),
+                "autoRandomSeed" => (self.auto_random_seed).inspect_value(path, offset, limit),
+                "useUnscaledTime" => (self.use_unscaled_time).inspect_value(path, offset, limit),
+                "ringBufferLoopRange" => {
+                    (self.ring_buffer_loop_range).inspect_value(path, offset, limit)
+                }
+                "moveWithTransform" => {
+                    (self.move_with_transform).inspect_value(path, offset, limit)
+                }
+                "emitterVelocityMode" => {
+                    (self.emitter_velocity_mode).inspect_value(path, offset, limit)
+                }
+                "useRigidbodyForVelocity" => {
+                    (self.use_rigidbody_for_velocity).inspect_value(path, offset, limit)
+                }
+                "InitialModule" => (self.initial_module).inspect_value(path, offset, limit),
+                "scalingMode" => (self.scaling_mode).inspect_value(path, offset, limit),
+                "moveWithCustomTransform" => {
+                    (self.move_with_custom_transform).inspect_value(path, offset, limit)
+                }
+                "ShapeModule" => (self.shape_module).inspect_value(path, offset, limit),
+                "EmissionModule" => (self.emission_module).inspect_value(path, offset, limit),
+                "SizeModule" => (self.size_module).inspect_value(path, offset, limit),
+                "RotationModule" => (self.rotation_module).inspect_value(path, offset, limit),
+                "ColorModule" => (self.color_module).inspect_value(path, offset, limit),
+                "UVModule" => (self.uv_module).inspect_value(path, offset, limit),
+                "VelocityModule" => (self.velocity_module).inspect_value(path, offset, limit),
+                "ForceModule" => (self.force_module).inspect_value(path, offset, limit),
+                "ClampVelocityModule" => {
+                    (self.clamp_velocity_module).inspect_value(path, offset, limit)
+                }
+                "ExternalForcesModule" => {
+                    (self.external_forces_module).inspect_value(path, offset, limit)
+                }
+                "InheritVelocityModule" => {
+                    (self.inherit_velocity_module).inspect_value(path, offset, limit)
+                }
+                "SizeBySpeedModule" => {
+                    (self.size_by_speed_module).inspect_value(path, offset, limit)
+                }
+                "RotationBySpeedModule" => {
+                    (self.rotation_by_speed_module).inspect_value(path, offset, limit)
+                }
+                "ColorBySpeedModule" => {
+                    (self.color_by_speed_module).inspect_value(path, offset, limit)
+                }
+                "CollisionModule" => (self.collision_module).inspect_value(path, offset, limit),
+                "SubModule" => (self.sub_module).inspect_value(path, offset, limit),
+                "NoiseModule" => (self.noise_module).inspect_value(path, offset, limit),
+                "TriggerModule" => (self.trigger_module).inspect_value(path, offset, limit),
+                "LifetimeByEmitterSpeedModule" => {
+                    (self.lifetime_by_emitter_speed_module).inspect_value(path, offset, limit)
+                }
+                "LightsModule" => (self.lights_module).inspect_value(path, offset, limit),
+                "TrailModule" => (self.trail_module).inspect_value(path, offset, limit),
+                "CustomDataModule" => (self.custom_data_module).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.length_in_sec).inspect_value(path, offset, limit))
+                .map(|v| ("lengthInSec".to_string(), v)),
+            ((self.start_delay).inspect_value(path, offset, limit))
+                .map(|v| ("startDelay".to_string(), v)),
+            ((self.speed).inspect_value(path, offset, limit)).map(|v| ("speed".to_string(), v)),
+            ((self.simulation_speed).inspect_value(path, offset, limit))
+                .map(|v| ("simulationSpeed".to_string(), v)),
+            ((self.looping).inspect_value(path, offset, limit)).map(|v| ("looping".to_string(), v)),
+            ((self.stop_action).inspect_value(path, offset, limit))
+                .map(|v| ("stopAction".to_string(), v)),
+            ((self.random_seed).inspect_value(path, offset, limit))
+                .map(|v| ("randomSeed".to_string(), v)),
+            ((self.prewarm).inspect_value(path, offset, limit)).map(|v| ("prewarm".to_string(), v)),
+            ((self.culling_mode).inspect_value(path, offset, limit))
+                .map(|v| ("cullingMode".to_string(), v)),
+            ((self.play_on_awake).inspect_value(path, offset, limit))
+                .map(|v| ("playOnAwake".to_string(), v)),
+            ((self.ring_buffer_mode).inspect_value(path, offset, limit))
+                .map(|v| ("ringBufferMode".to_string(), v)),
+            ((self.auto_random_seed).inspect_value(path, offset, limit))
+                .map(|v| ("autoRandomSeed".to_string(), v)),
+            ((self.use_unscaled_time).inspect_value(path, offset, limit))
+                .map(|v| ("useUnscaledTime".to_string(), v)),
+            ((self.ring_buffer_loop_range).inspect_value(path, offset, limit))
+                .map(|v| ("ringBufferLoopRange".to_string(), v)),
+            ((self.move_with_transform).inspect_value(path, offset, limit))
+                .map(|v| ("moveWithTransform".to_string(), v)),
+            ((self.emitter_velocity_mode).inspect_value(path, offset, limit))
+                .map(|v| ("emitterVelocityMode".to_string(), v)),
+            ((self.use_rigidbody_for_velocity).inspect_value(path, offset, limit))
+                .map(|v| ("useRigidbodyForVelocity".to_string(), v)),
+            ((self.initial_module).inspect_value(path, offset, limit))
+                .map(|v| ("InitialModule".to_string(), v)),
+            ((self.scaling_mode).inspect_value(path, offset, limit))
+                .map(|v| ("scalingMode".to_string(), v)),
+            ((self.move_with_custom_transform).inspect_value(path, offset, limit))
+                .map(|v| ("moveWithCustomTransform".to_string(), v)),
+            ((self.shape_module).inspect_value(path, offset, limit))
+                .map(|v| ("ShapeModule".to_string(), v)),
+            ((self.emission_module).inspect_value(path, offset, limit))
+                .map(|v| ("EmissionModule".to_string(), v)),
+            ((self.size_module).inspect_value(path, offset, limit))
+                .map(|v| ("SizeModule".to_string(), v)),
+            ((self.rotation_module).inspect_value(path, offset, limit))
+                .map(|v| ("RotationModule".to_string(), v)),
+            ((self.color_module).inspect_value(path, offset, limit))
+                .map(|v| ("ColorModule".to_string(), v)),
+            ((self.uv_module).inspect_value(path, offset, limit))
+                .map(|v| ("UVModule".to_string(), v)),
+            ((self.velocity_module).inspect_value(path, offset, limit))
+                .map(|v| ("VelocityModule".to_string(), v)),
+            ((self.force_module).inspect_value(path, offset, limit))
+                .map(|v| ("ForceModule".to_string(), v)),
+            ((self.clamp_velocity_module).inspect_value(path, offset, limit))
+                .map(|v| ("ClampVelocityModule".to_string(), v)),
+            ((self.external_forces_module).inspect_value(path, offset, limit))
+                .map(|v| ("ExternalForcesModule".to_string(), v)),
+            ((self.inherit_velocity_module).inspect_value(path, offset, limit))
+                .map(|v| ("InheritVelocityModule".to_string(), v)),
+            ((self.size_by_speed_module).inspect_value(path, offset, limit))
+                .map(|v| ("SizeBySpeedModule".to_string(), v)),
+            ((self.rotation_by_speed_module).inspect_value(path, offset, limit))
+                .map(|v| ("RotationBySpeedModule".to_string(), v)),
+            ((self.color_by_speed_module).inspect_value(path, offset, limit))
+                .map(|v| ("ColorBySpeedModule".to_string(), v)),
+            ((self.collision_module).inspect_value(path, offset, limit))
+                .map(|v| ("CollisionModule".to_string(), v)),
+            ((self.sub_module).inspect_value(path, offset, limit))
+                .map(|v| ("SubModule".to_string(), v)),
+            ((self.noise_module).inspect_value(path, offset, limit))
+                .map(|v| ("NoiseModule".to_string(), v)),
+            ((self.trigger_module).inspect_value(path, offset, limit))
+                .map(|v| ("TriggerModule".to_string(), v)),
+            ((self.lifetime_by_emitter_speed_module).inspect_value(path, offset, limit))
+                .map(|v| ("LifetimeByEmitterSpeedModule".to_string(), v)),
+            ((self.lights_module).inspect_value(path, offset, limit))
+                .map(|v| ("LightsModule".to_string(), v)),
+            ((self.trail_module).inspect_value(path, offset, limit))
+                .map(|v| ("TrailModule".to_string(), v)),
+            ((self.custom_data_module).inspect_value(path, offset, limit))
+                .map(|v| ("CustomDataModule".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

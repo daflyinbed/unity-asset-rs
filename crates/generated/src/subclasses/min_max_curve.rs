@@ -25,6 +25,21 @@ impl crate::Parse for MinMaxCurveMinMaxStateVariant {
         }
     }
 }
+
+impl crate::ToValue for MinMaxCurveMinMaxStateVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_6_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_6_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct MinMaxCurve {
     pub scalar: f32,
@@ -67,5 +82,50 @@ impl crate::Parse for MinMaxCurve {
             min_curve: min_curve.unwrap(),
             min_scalar,
         })
+    }
+}
+
+impl crate::ToValue for MinMaxCurve {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("scalar".to_string(), self.scalar.to_value())),
+            Some(("minMaxState".to_string(), self.min_max_state.to_value())),
+            Some(("maxCurve".to_string(), self.max_curve.to_value())),
+            Some(("minCurve".to_string(), self.min_curve.to_value())),
+            crate::opt_field("minScalar", &self.min_scalar),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "scalar" => (self.scalar).inspect_value(path, offset, limit),
+                "minMaxState" => (self.min_max_state).inspect_value(path, offset, limit),
+                "maxCurve" => (self.max_curve).inspect_value(path, offset, limit),
+                "minCurve" => (self.min_curve).inspect_value(path, offset, limit),
+                "minScalar" => (self.min_scalar).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.scalar).inspect_value(path, offset, limit)).map(|v| ("scalar".to_string(), v)),
+            ((self.min_max_state).inspect_value(path, offset, limit))
+                .map(|v| ("minMaxState".to_string(), v)),
+            ((self.max_curve).inspect_value(path, offset, limit))
+                .map(|v| ("maxCurve".to_string(), v)),
+            ((self.min_curve).inspect_value(path, offset, limit))
+                .map(|v| ("minCurve".to_string(), v)),
+            ((self.min_scalar).inspect_value(path, offset, limit))
+                .map(|v| ("minScalar".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

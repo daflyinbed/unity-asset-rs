@@ -36,6 +36,21 @@ impl crate::Parse for BuildSettingsScenesVariant {
     }
 }
 
+impl crate::ToValue for BuildSettingsScenesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：BuildSettingsPreloadedPluginsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum BuildSettingsPreloadedPluginsVariant {
@@ -65,6 +80,21 @@ impl crate::Parse for BuildSettingsPreloadedPluginsVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for BuildSettingsPreloadedPluginsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -102,6 +132,21 @@ impl crate::Parse for BuildSettingsEnabledVrDevicesVariant {
     }
 }
 
+impl crate::ToValue for BuildSettingsEnabledVrDevicesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：BuildSettingsBuildTagsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum BuildSettingsBuildTagsVariant {
@@ -135,6 +180,21 @@ impl crate::Parse for BuildSettingsBuildTagsVariant {
     }
 }
 
+impl crate::ToValue for BuildSettingsBuildTagsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：BuildSettingsIsDebugBuildVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum BuildSettingsIsDebugBuildVariant {
@@ -158,6 +218,21 @@ impl crate::Parse for BuildSettingsIsDebugBuildVariant {
     }
 }
 
+impl crate::ToValue for BuildSettingsIsDebugBuildVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V4_0(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V4_0(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：BuildSettingsUsesOnMouseEventsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum BuildSettingsUsesOnMouseEventsVariant {
@@ -177,6 +252,21 @@ impl crate::Parse for BuildSettingsUsesOnMouseEventsVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for BuildSettingsUsesOnMouseEventsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V4_6_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V4_6_2(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -225,6 +315,21 @@ impl crate::Parse for BuildSettingsRuntimeClassHashesVariant {
     }
 }
 
+impl crate::ToValue for BuildSettingsRuntimeClassHashesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_0(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_0(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：BuildSettingsMGraphicsApIsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum BuildSettingsMGraphicsApIsVariant {
@@ -254,6 +359,21 @@ impl crate::Parse for BuildSettingsMGraphicsApIsVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for BuildSettingsMGraphicsApIsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -524,5 +644,188 @@ impl crate::Parse for BuildSettings {
             script_hashes,
             m_graphics_ap_is,
         })
+    }
+}
+
+impl crate::ToValue for BuildSettings {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            crate::opt_field("levels", &self.levels),
+            crate::opt_field("scenes", &self.scenes),
+            crate::opt_field("hasRenderTexture", &self.has_render_texture),
+            crate::opt_field("preloadedPlugins", &self.preloaded_plugins),
+            Some(("hasPROVersion".to_string(), self.has_pro_version.to_value())),
+            crate::opt_field("enabledVRDevices", &self.enabled_vr_devices),
+            Some((
+                "isEducationalBuild".to_string(),
+                self.is_educational_build.to_value(),
+            )),
+            crate::opt_field("isNoWatermarkBuild", &self.is_no_watermark_build),
+            crate::opt_field("buildTags", &self.build_tags),
+            Some((
+                "hasPublishingRights".to_string(),
+                self.has_publishing_rights.to_value(),
+            )),
+            crate::opt_field("isPrototypingBuild", &self.is_prototyping_build),
+            crate::opt_field("buildGUID", &self.build_guid),
+            Some(("hasShadows".to_string(), self.has_shadows.to_value())),
+            Some((
+                "hasAdvancedVersion".to_string(),
+                self.has_advanced_version.to_value(),
+            )),
+            crate::opt_field("isEmbedded", &self.is_embedded),
+            Some((
+                "enableDynamicBatching".to_string(),
+                self.enable_dynamic_batching.to_value(),
+            )),
+            crate::opt_field("isDebugBuild", &self.is_debug_build),
+            Some(("m_Version".to_string(), self.m_version.to_value())),
+            crate::opt_field("hasSoftShadows", &self.has_soft_shadows),
+            crate::opt_field("isTrial", &self.is_trial),
+            crate::opt_field("m_AuthToken", &self.m_auth_token),
+            crate::opt_field("hasLocalLightShadows", &self.has_local_light_shadows),
+            crate::opt_field("usesOnMouseEvents", &self.uses_on_mouse_events),
+            crate::opt_field(
+                "isWsaHolographicRemotingEnabled",
+                &self.is_wsa_holographic_remoting_enabled,
+            ),
+            crate::opt_field("runtimeClassHashes", &self.runtime_class_hashes),
+            crate::opt_field("hasOculusPlugin", &self.has_oculus_plugin),
+            crate::opt_field("hasClusterRendering", &self.has_cluster_rendering),
+            crate::opt_field("enableMultipleDisplays", &self.enable_multiple_displays),
+            crate::opt_field("scriptHashes", &self.script_hashes),
+            crate::opt_field("m_GraphicsAPIs", &self.m_graphics_ap_is),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "levels" => (self.levels).inspect_value(path, offset, limit),
+                "scenes" => (self.scenes).inspect_value(path, offset, limit),
+                "hasRenderTexture" => (self.has_render_texture).inspect_value(path, offset, limit),
+                "preloadedPlugins" => (self.preloaded_plugins).inspect_value(path, offset, limit),
+                "hasPROVersion" => (self.has_pro_version).inspect_value(path, offset, limit),
+                "enabledVRDevices" => (self.enabled_vr_devices).inspect_value(path, offset, limit),
+                "isEducationalBuild" => {
+                    (self.is_educational_build).inspect_value(path, offset, limit)
+                }
+                "isNoWatermarkBuild" => {
+                    (self.is_no_watermark_build).inspect_value(path, offset, limit)
+                }
+                "buildTags" => (self.build_tags).inspect_value(path, offset, limit),
+                "hasPublishingRights" => {
+                    (self.has_publishing_rights).inspect_value(path, offset, limit)
+                }
+                "isPrototypingBuild" => {
+                    (self.is_prototyping_build).inspect_value(path, offset, limit)
+                }
+                "buildGUID" => (self.build_guid).inspect_value(path, offset, limit),
+                "hasShadows" => (self.has_shadows).inspect_value(path, offset, limit),
+                "hasAdvancedVersion" => {
+                    (self.has_advanced_version).inspect_value(path, offset, limit)
+                }
+                "isEmbedded" => (self.is_embedded).inspect_value(path, offset, limit),
+                "enableDynamicBatching" => {
+                    (self.enable_dynamic_batching).inspect_value(path, offset, limit)
+                }
+                "isDebugBuild" => (self.is_debug_build).inspect_value(path, offset, limit),
+                "m_Version" => (self.m_version).inspect_value(path, offset, limit),
+                "hasSoftShadows" => (self.has_soft_shadows).inspect_value(path, offset, limit),
+                "isTrial" => (self.is_trial).inspect_value(path, offset, limit),
+                "m_AuthToken" => (self.m_auth_token).inspect_value(path, offset, limit),
+                "hasLocalLightShadows" => {
+                    (self.has_local_light_shadows).inspect_value(path, offset, limit)
+                }
+                "usesOnMouseEvents" => {
+                    (self.uses_on_mouse_events).inspect_value(path, offset, limit)
+                }
+                "isWsaHolographicRemotingEnabled" => {
+                    (self.is_wsa_holographic_remoting_enabled).inspect_value(path, offset, limit)
+                }
+                "runtimeClassHashes" => {
+                    (self.runtime_class_hashes).inspect_value(path, offset, limit)
+                }
+                "hasOculusPlugin" => (self.has_oculus_plugin).inspect_value(path, offset, limit),
+                "hasClusterRendering" => {
+                    (self.has_cluster_rendering).inspect_value(path, offset, limit)
+                }
+                "enableMultipleDisplays" => {
+                    (self.enable_multiple_displays).inspect_value(path, offset, limit)
+                }
+                "scriptHashes" => (self.script_hashes).inspect_value(path, offset, limit),
+                "m_GraphicsAPIs" => (self.m_graphics_ap_is).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.levels).inspect_value(path, offset, limit)).map(|v| ("levels".to_string(), v)),
+            ((self.scenes).inspect_value(path, offset, limit)).map(|v| ("scenes".to_string(), v)),
+            ((self.has_render_texture).inspect_value(path, offset, limit))
+                .map(|v| ("hasRenderTexture".to_string(), v)),
+            ((self.preloaded_plugins).inspect_value(path, offset, limit))
+                .map(|v| ("preloadedPlugins".to_string(), v)),
+            ((self.has_pro_version).inspect_value(path, offset, limit))
+                .map(|v| ("hasPROVersion".to_string(), v)),
+            ((self.enabled_vr_devices).inspect_value(path, offset, limit))
+                .map(|v| ("enabledVRDevices".to_string(), v)),
+            ((self.is_educational_build).inspect_value(path, offset, limit))
+                .map(|v| ("isEducationalBuild".to_string(), v)),
+            ((self.is_no_watermark_build).inspect_value(path, offset, limit))
+                .map(|v| ("isNoWatermarkBuild".to_string(), v)),
+            ((self.build_tags).inspect_value(path, offset, limit))
+                .map(|v| ("buildTags".to_string(), v)),
+            ((self.has_publishing_rights).inspect_value(path, offset, limit))
+                .map(|v| ("hasPublishingRights".to_string(), v)),
+            ((self.is_prototyping_build).inspect_value(path, offset, limit))
+                .map(|v| ("isPrototypingBuild".to_string(), v)),
+            ((self.build_guid).inspect_value(path, offset, limit))
+                .map(|v| ("buildGUID".to_string(), v)),
+            ((self.has_shadows).inspect_value(path, offset, limit))
+                .map(|v| ("hasShadows".to_string(), v)),
+            ((self.has_advanced_version).inspect_value(path, offset, limit))
+                .map(|v| ("hasAdvancedVersion".to_string(), v)),
+            ((self.is_embedded).inspect_value(path, offset, limit))
+                .map(|v| ("isEmbedded".to_string(), v)),
+            ((self.enable_dynamic_batching).inspect_value(path, offset, limit))
+                .map(|v| ("enableDynamicBatching".to_string(), v)),
+            ((self.is_debug_build).inspect_value(path, offset, limit))
+                .map(|v| ("isDebugBuild".to_string(), v)),
+            ((self.m_version).inspect_value(path, offset, limit))
+                .map(|v| ("m_Version".to_string(), v)),
+            ((self.has_soft_shadows).inspect_value(path, offset, limit))
+                .map(|v| ("hasSoftShadows".to_string(), v)),
+            ((self.is_trial).inspect_value(path, offset, limit))
+                .map(|v| ("isTrial".to_string(), v)),
+            ((self.m_auth_token).inspect_value(path, offset, limit))
+                .map(|v| ("m_AuthToken".to_string(), v)),
+            ((self.has_local_light_shadows).inspect_value(path, offset, limit))
+                .map(|v| ("hasLocalLightShadows".to_string(), v)),
+            ((self.uses_on_mouse_events).inspect_value(path, offset, limit))
+                .map(|v| ("usesOnMouseEvents".to_string(), v)),
+            ((self.is_wsa_holographic_remoting_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("isWsaHolographicRemotingEnabled".to_string(), v)),
+            ((self.runtime_class_hashes).inspect_value(path, offset, limit))
+                .map(|v| ("runtimeClassHashes".to_string(), v)),
+            ((self.has_oculus_plugin).inspect_value(path, offset, limit))
+                .map(|v| ("hasOculusPlugin".to_string(), v)),
+            ((self.has_cluster_rendering).inspect_value(path, offset, limit))
+                .map(|v| ("hasClusterRendering".to_string(), v)),
+            ((self.enable_multiple_displays).inspect_value(path, offset, limit))
+                .map(|v| ("enableMultipleDisplays".to_string(), v)),
+            ((self.script_hashes).inspect_value(path, offset, limit))
+                .map(|v| ("scriptHashes".to_string(), v)),
+            ((self.m_graphics_ap_is).inspect_value(path, offset, limit))
+                .map(|v| ("m_GraphicsAPIs".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

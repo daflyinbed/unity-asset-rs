@@ -24,6 +24,21 @@ impl crate::Parse for SketchUpImportCameraIsPerspectiveVariant {
         }
     }
 }
+
+impl crate::ToValue for SketchUpImportCameraIsPerspectiveVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2019_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2019_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct SketchUpImportCamera {
     pub position: Vector3f,
@@ -73,5 +88,64 @@ impl crate::Parse for SketchUpImportCamera {
             near_plane,
             far_plane,
         })
+    }
+}
+
+impl crate::ToValue for SketchUpImportCamera {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("position".to_string(), self.position.to_value())),
+            Some(("lookAt".to_string(), self.look_at.to_value())),
+            Some(("up".to_string(), self.up.to_value())),
+            Some(("fov".to_string(), self.fov.to_value())),
+            Some(("aspectRatio".to_string(), self.aspect_ratio.to_value())),
+            Some(("orthoSize".to_string(), self.ortho_size.to_value())),
+            Some(("isPerspective".to_string(), self.is_perspective.to_value())),
+            crate::opt_field("nearPlane", &self.near_plane),
+            crate::opt_field("farPlane", &self.far_plane),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "position" => (self.position).inspect_value(path, offset, limit),
+                "lookAt" => (self.look_at).inspect_value(path, offset, limit),
+                "up" => (self.up).inspect_value(path, offset, limit),
+                "fov" => (self.fov).inspect_value(path, offset, limit),
+                "aspectRatio" => (self.aspect_ratio).inspect_value(path, offset, limit),
+                "orthoSize" => (self.ortho_size).inspect_value(path, offset, limit),
+                "isPerspective" => (self.is_perspective).inspect_value(path, offset, limit),
+                "nearPlane" => (self.near_plane).inspect_value(path, offset, limit),
+                "farPlane" => (self.far_plane).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.position).inspect_value(path, offset, limit))
+                .map(|v| ("position".to_string(), v)),
+            ((self.look_at).inspect_value(path, offset, limit)).map(|v| ("lookAt".to_string(), v)),
+            ((self.up).inspect_value(path, offset, limit)).map(|v| ("up".to_string(), v)),
+            ((self.fov).inspect_value(path, offset, limit)).map(|v| ("fov".to_string(), v)),
+            ((self.aspect_ratio).inspect_value(path, offset, limit))
+                .map(|v| ("aspectRatio".to_string(), v)),
+            ((self.ortho_size).inspect_value(path, offset, limit))
+                .map(|v| ("orthoSize".to_string(), v)),
+            ((self.is_perspective).inspect_value(path, offset, limit))
+                .map(|v| ("isPerspective".to_string(), v)),
+            ((self.near_plane).inspect_value(path, offset, limit))
+                .map(|v| ("nearPlane".to_string(), v)),
+            ((self.far_plane).inspect_value(path, offset, limit))
+                .map(|v| ("farPlane".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

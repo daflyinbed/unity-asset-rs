@@ -25,6 +25,21 @@ impl crate::Parse for GradientKey0Variant {
     }
 }
 
+impl crate::ToValue for GradientKey0Variant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_6(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_6(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：GradientKey1Variant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum GradientKey1Variant {
@@ -43,6 +58,21 @@ impl crate::Parse for GradientKey1Variant {
         } else {
             let v = ({ Ok(Box::new(ColorRgba32::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for GradientKey1Variant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_6(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_6(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -69,6 +99,21 @@ impl crate::Parse for GradientKey2Variant {
     }
 }
 
+impl crate::ToValue for GradientKey2Variant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_6(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_6(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：GradientKey3Variant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum GradientKey3Variant {
@@ -87,6 +132,21 @@ impl crate::Parse for GradientKey3Variant {
         } else {
             let v = ({ Ok(Box::new(ColorRgba32::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for GradientKey3Variant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_6(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_6(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -113,6 +173,21 @@ impl crate::Parse for GradientKey4Variant {
     }
 }
 
+impl crate::ToValue for GradientKey4Variant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_6(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_6(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：GradientKey5Variant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum GradientKey5Variant {
@@ -131,6 +206,21 @@ impl crate::Parse for GradientKey5Variant {
         } else {
             let v = ({ Ok(Box::new(ColorRgba32::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for GradientKey5Variant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_6(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_6(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -157,6 +247,21 @@ impl crate::Parse for GradientKey6Variant {
     }
 }
 
+impl crate::ToValue for GradientKey6Variant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_6(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_6(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：GradientKey7Variant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum GradientKey7Variant {
@@ -179,6 +284,21 @@ impl crate::Parse for GradientKey7Variant {
     }
 }
 
+impl crate::ToValue for GradientKey7Variant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_6(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_6(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：GradientMModeVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum GradientMModeVariant {
@@ -197,6 +317,21 @@ impl crate::Parse for GradientMModeVariant {
         } else {
             let v = rdr.read_i32()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for GradientMModeVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2022_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2022_2(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -473,5 +608,138 @@ impl crate::Parse for Gradient {
             m_num_alpha_keys,
             m_color_space,
         })
+    }
+}
+
+impl crate::ToValue for Gradient {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            crate::opt_field("m_Color[0]", &self.m_color_0),
+            crate::opt_field("key0", &self.key0),
+            crate::opt_field("m_Color[1]", &self.m_color_1),
+            crate::opt_field("key1", &self.key1),
+            crate::opt_field("m_Color[2]", &self.m_color_2),
+            crate::opt_field("key2", &self.key2),
+            crate::opt_field("m_Color[3]", &self.m_color_3),
+            crate::opt_field("key3", &self.key3),
+            crate::opt_field("m_Color[4]", &self.m_color_4),
+            crate::opt_field("key4", &self.key4),
+            crate::opt_field("key5", &self.key5),
+            crate::opt_field("key6", &self.key6),
+            crate::opt_field("key7", &self.key7),
+            crate::opt_field("ctime0", &self.ctime0),
+            crate::opt_field("ctime1", &self.ctime1),
+            crate::opt_field("ctime2", &self.ctime2),
+            crate::opt_field("ctime3", &self.ctime3),
+            crate::opt_field("ctime4", &self.ctime4),
+            crate::opt_field("ctime5", &self.ctime5),
+            crate::opt_field("ctime6", &self.ctime6),
+            crate::opt_field("ctime7", &self.ctime7),
+            crate::opt_field("atime0", &self.atime0),
+            crate::opt_field("atime1", &self.atime1),
+            crate::opt_field("atime2", &self.atime2),
+            crate::opt_field("atime3", &self.atime3),
+            crate::opt_field("atime4", &self.atime4),
+            crate::opt_field("atime5", &self.atime5),
+            crate::opt_field("atime6", &self.atime6),
+            crate::opt_field("atime7", &self.atime7),
+            crate::opt_field("m_NumColorKeys", &self.m_num_color_keys),
+            crate::opt_field("m_Mode", &self.m_mode),
+            crate::opt_field("m_NumAlphaKeys", &self.m_num_alpha_keys),
+            crate::opt_field("m_ColorSpace", &self.m_color_space),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Color[0]" => (self.m_color_0).inspect_value(path, offset, limit),
+                "key0" => (self.key0).inspect_value(path, offset, limit),
+                "m_Color[1]" => (self.m_color_1).inspect_value(path, offset, limit),
+                "key1" => (self.key1).inspect_value(path, offset, limit),
+                "m_Color[2]" => (self.m_color_2).inspect_value(path, offset, limit),
+                "key2" => (self.key2).inspect_value(path, offset, limit),
+                "m_Color[3]" => (self.m_color_3).inspect_value(path, offset, limit),
+                "key3" => (self.key3).inspect_value(path, offset, limit),
+                "m_Color[4]" => (self.m_color_4).inspect_value(path, offset, limit),
+                "key4" => (self.key4).inspect_value(path, offset, limit),
+                "key5" => (self.key5).inspect_value(path, offset, limit),
+                "key6" => (self.key6).inspect_value(path, offset, limit),
+                "key7" => (self.key7).inspect_value(path, offset, limit),
+                "ctime0" => (self.ctime0).inspect_value(path, offset, limit),
+                "ctime1" => (self.ctime1).inspect_value(path, offset, limit),
+                "ctime2" => (self.ctime2).inspect_value(path, offset, limit),
+                "ctime3" => (self.ctime3).inspect_value(path, offset, limit),
+                "ctime4" => (self.ctime4).inspect_value(path, offset, limit),
+                "ctime5" => (self.ctime5).inspect_value(path, offset, limit),
+                "ctime6" => (self.ctime6).inspect_value(path, offset, limit),
+                "ctime7" => (self.ctime7).inspect_value(path, offset, limit),
+                "atime0" => (self.atime0).inspect_value(path, offset, limit),
+                "atime1" => (self.atime1).inspect_value(path, offset, limit),
+                "atime2" => (self.atime2).inspect_value(path, offset, limit),
+                "atime3" => (self.atime3).inspect_value(path, offset, limit),
+                "atime4" => (self.atime4).inspect_value(path, offset, limit),
+                "atime5" => (self.atime5).inspect_value(path, offset, limit),
+                "atime6" => (self.atime6).inspect_value(path, offset, limit),
+                "atime7" => (self.atime7).inspect_value(path, offset, limit),
+                "m_NumColorKeys" => (self.m_num_color_keys).inspect_value(path, offset, limit),
+                "m_Mode" => (self.m_mode).inspect_value(path, offset, limit),
+                "m_NumAlphaKeys" => (self.m_num_alpha_keys).inspect_value(path, offset, limit),
+                "m_ColorSpace" => (self.m_color_space).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_color_0).inspect_value(path, offset, limit))
+                .map(|v| ("m_Color[0]".to_string(), v)),
+            ((self.key0).inspect_value(path, offset, limit)).map(|v| ("key0".to_string(), v)),
+            ((self.m_color_1).inspect_value(path, offset, limit))
+                .map(|v| ("m_Color[1]".to_string(), v)),
+            ((self.key1).inspect_value(path, offset, limit)).map(|v| ("key1".to_string(), v)),
+            ((self.m_color_2).inspect_value(path, offset, limit))
+                .map(|v| ("m_Color[2]".to_string(), v)),
+            ((self.key2).inspect_value(path, offset, limit)).map(|v| ("key2".to_string(), v)),
+            ((self.m_color_3).inspect_value(path, offset, limit))
+                .map(|v| ("m_Color[3]".to_string(), v)),
+            ((self.key3).inspect_value(path, offset, limit)).map(|v| ("key3".to_string(), v)),
+            ((self.m_color_4).inspect_value(path, offset, limit))
+                .map(|v| ("m_Color[4]".to_string(), v)),
+            ((self.key4).inspect_value(path, offset, limit)).map(|v| ("key4".to_string(), v)),
+            ((self.key5).inspect_value(path, offset, limit)).map(|v| ("key5".to_string(), v)),
+            ((self.key6).inspect_value(path, offset, limit)).map(|v| ("key6".to_string(), v)),
+            ((self.key7).inspect_value(path, offset, limit)).map(|v| ("key7".to_string(), v)),
+            ((self.ctime0).inspect_value(path, offset, limit)).map(|v| ("ctime0".to_string(), v)),
+            ((self.ctime1).inspect_value(path, offset, limit)).map(|v| ("ctime1".to_string(), v)),
+            ((self.ctime2).inspect_value(path, offset, limit)).map(|v| ("ctime2".to_string(), v)),
+            ((self.ctime3).inspect_value(path, offset, limit)).map(|v| ("ctime3".to_string(), v)),
+            ((self.ctime4).inspect_value(path, offset, limit)).map(|v| ("ctime4".to_string(), v)),
+            ((self.ctime5).inspect_value(path, offset, limit)).map(|v| ("ctime5".to_string(), v)),
+            ((self.ctime6).inspect_value(path, offset, limit)).map(|v| ("ctime6".to_string(), v)),
+            ((self.ctime7).inspect_value(path, offset, limit)).map(|v| ("ctime7".to_string(), v)),
+            ((self.atime0).inspect_value(path, offset, limit)).map(|v| ("atime0".to_string(), v)),
+            ((self.atime1).inspect_value(path, offset, limit)).map(|v| ("atime1".to_string(), v)),
+            ((self.atime2).inspect_value(path, offset, limit)).map(|v| ("atime2".to_string(), v)),
+            ((self.atime3).inspect_value(path, offset, limit)).map(|v| ("atime3".to_string(), v)),
+            ((self.atime4).inspect_value(path, offset, limit)).map(|v| ("atime4".to_string(), v)),
+            ((self.atime5).inspect_value(path, offset, limit)).map(|v| ("atime5".to_string(), v)),
+            ((self.atime6).inspect_value(path, offset, limit)).map(|v| ("atime6".to_string(), v)),
+            ((self.atime7).inspect_value(path, offset, limit)).map(|v| ("atime7".to_string(), v)),
+            ((self.m_num_color_keys).inspect_value(path, offset, limit))
+                .map(|v| ("m_NumColorKeys".to_string(), v)),
+            ((self.m_mode).inspect_value(path, offset, limit)).map(|v| ("m_Mode".to_string(), v)),
+            ((self.m_num_alpha_keys).inspect_value(path, offset, limit))
+                .map(|v| ("m_NumAlphaKeys".to_string(), v)),
+            ((self.m_color_space).inspect_value(path, offset, limit))
+                .map(|v| ("m_ColorSpace".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

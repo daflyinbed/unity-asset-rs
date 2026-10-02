@@ -45,3 +45,60 @@ impl crate::Parse for CanvasGroup {
         })
     }
 }
+
+impl crate::ToValue for CanvasGroup {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_Alpha".to_string(), self.m_alpha.to_value())),
+            crate::opt_field("m_Enabled", &self.m_enabled),
+            Some(("m_Interactable".to_string(), self.m_interactable.to_value())),
+            Some((
+                "m_BlocksRaycasts".to_string(),
+                self.m_blocks_raycasts.to_value(),
+            )),
+            Some((
+                "m_IgnoreParentGroups".to_string(),
+                self.m_ignore_parent_groups.to_value(),
+            )),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Alpha" => (self.m_alpha).inspect_value(path, offset, limit),
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "m_Interactable" => (self.m_interactable).inspect_value(path, offset, limit),
+                "m_BlocksRaycasts" => (self.m_blocks_raycasts).inspect_value(path, offset, limit),
+                "m_IgnoreParentGroups" => {
+                    (self.m_ignore_parent_groups).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_alpha).inspect_value(path, offset, limit)).map(|v| ("m_Alpha".to_string(), v)),
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.m_interactable).inspect_value(path, offset, limit))
+                .map(|v| ("m_Interactable".to_string(), v)),
+            ((self.m_blocks_raycasts).inspect_value(path, offset, limit))
+                .map(|v| ("m_BlocksRaycasts".to_string(), v)),
+            ((self.m_ignore_parent_groups).inspect_value(path, offset, limit))
+                .map(|v| ("m_IgnoreParentGroups".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

@@ -40,6 +40,21 @@ impl crate::Parse for GraphicsSettingsMAlwaysIncludedShadersVariant {
     }
 }
 
+impl crate::ToValue for GraphicsSettingsMAlwaysIncludedShadersVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：GraphicsSettingsMPreloadedShadersVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum GraphicsSettingsMPreloadedShadersVariant {
@@ -73,6 +88,21 @@ impl crate::Parse for GraphicsSettingsMPreloadedShadersVariant {
     }
 }
 
+impl crate::ToValue for GraphicsSettingsMPreloadedShadersVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：GraphicsSettingsMLightsUseColorTemperatureVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum GraphicsSettingsMLightsUseColorTemperatureVariant {
@@ -92,6 +122,21 @@ impl crate::Parse for GraphicsSettingsMLightsUseColorTemperatureVariant {
         } else {
             let v = rdr.read_bool()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for GraphicsSettingsMLightsUseColorTemperatureVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2020_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2020_2(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -119,6 +164,21 @@ impl crate::Parse for GraphicsSettingsMLogWhenShaderIsCompiledVariant {
     }
 }
 
+impl crate::ToValue for GraphicsSettingsMLogWhenShaderIsCompiledVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2021_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2021_2(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：GraphicsSettingsMCameraRelativeLightCullingVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum GraphicsSettingsMCameraRelativeLightCullingVariant {
@@ -142,6 +202,21 @@ impl crate::Parse for GraphicsSettingsMCameraRelativeLightCullingVariant {
     }
 }
 
+impl crate::ToValue for GraphicsSettingsMCameraRelativeLightCullingVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V6000_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：GraphicsSettingsMCameraRelativeShadowCullingVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum GraphicsSettingsMCameraRelativeShadowCullingVariant {
@@ -161,6 +236,21 @@ impl crate::Parse for GraphicsSettingsMCameraRelativeShadowCullingVariant {
         } else {
             let v = rdr.read_bool()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for GraphicsSettingsMCameraRelativeShadowCullingVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V6000_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -1158,5 +1248,326 @@ impl crate::Parse for GraphicsSettings {
             m_light_probe_outside_hull_strategy,
             m_camera_relative_shadow_culling,
         })
+    }
+}
+
+impl crate::ToValue for GraphicsSettings {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            crate::opt_field("m_AlwaysIncludedShaders", &self.m_always_included_shaders),
+            crate::opt_field("m_Deferred", &self.m_deferred),
+            crate::opt_field("m_LegacyDeferred", &self.m_legacy_deferred),
+            crate::opt_field("m_DeferredReflections", &self.m_deferred_reflections),
+            crate::opt_field("m_ScreenSpaceShadows", &self.m_screen_space_shadows),
+            crate::opt_field("m_PreloadedShaders", &self.m_preloaded_shaders),
+            crate::opt_field("m_DepthNormals", &self.m_depth_normals),
+            crate::opt_field("m_MotionVectors", &self.m_motion_vectors),
+            crate::opt_field("m_Settings", &self.m_settings),
+            crate::opt_field("m_LightHalo", &self.m_light_halo),
+            crate::opt_field("m_LensFlare", &self.m_lens_flare),
+            crate::opt_field(
+                "m_VideoShadersIncludeMode",
+                &self.m_video_shaders_include_mode,
+            ),
+            crate::opt_field("m_SpritesDefaultMaterial", &self.m_sprites_default_material),
+            crate::opt_field(
+                "m_PreloadShadersBatchTimeLimit",
+                &self.m_preload_shaders_batch_time_limit,
+            ),
+            crate::opt_field("m_ShaderSettings_Tier1", &self.m_shader_settings_tier1),
+            crate::opt_field("m_TierSettings_Tier1", &self.m_tier_settings_tier1),
+            crate::opt_field("m_CustomRenderPipeline", &self.m_custom_render_pipeline),
+            crate::opt_field(
+                "m_GraphicsStateCollection",
+                &self.m_graphics_state_collection,
+            ),
+            crate::opt_field("m_ShaderSettings_Tier2", &self.m_shader_settings_tier2),
+            crate::opt_field("m_TierSettings_Tier2", &self.m_tier_settings_tier2),
+            crate::opt_field("m_TransparencySortMode", &self.m_transparency_sort_mode),
+            crate::opt_field(
+                "m_CollectionStartupAction",
+                &self.m_collection_startup_action,
+            ),
+            crate::opt_field("m_ShaderSettings_Tier3", &self.m_shader_settings_tier3),
+            crate::opt_field("m_TierSettings_Tier3", &self.m_tier_settings_tier3),
+            crate::opt_field("m_TransparencySortAxis", &self.m_transparency_sort_axis),
+            crate::opt_field("m_TraceSavePath", &self.m_trace_save_path),
+            crate::opt_field("m_TraceSendToEditor", &self.m_trace_send_to_editor),
+            crate::opt_field(
+                "m_AdditionalWarmupCollections",
+                &self.m_additional_warmup_collections,
+            ),
+            crate::opt_field("m_WarmupAsync", &self.m_warmup_async),
+            crate::opt_field(
+                "m_LightsUseLinearIntensity",
+                &self.m_lights_use_linear_intensity,
+            ),
+            crate::opt_field(
+                "m_ShaderDefinesPerShaderCompiler",
+                &self.m_shader_defines_per_shader_compiler,
+            ),
+            crate::opt_field(
+                "m_EnableCacheMissTracing",
+                &self.m_enable_cache_miss_tracing,
+            ),
+            crate::opt_field(
+                "m_LightsUseColorTemperature",
+                &self.m_lights_use_color_temperature,
+            ),
+            crate::opt_field(
+                "m_WarmupProgressivelyLimit",
+                &self.m_warmup_progressively_limit,
+            ),
+            crate::opt_field(
+                "m_CacheMissCollectionPath",
+                &self.m_cache_miss_collection_path,
+            ),
+            crate::opt_field(
+                "m_LogWhenShaderIsCompiled",
+                &self.m_log_when_shader_is_compiled,
+            ),
+            crate::opt_field(
+                "m_AllowEnlightenSupportForUpgradedProject",
+                &self.m_allow_enlighten_support_for_upgraded_project,
+            ),
+            crate::opt_field(
+                "m_DefaultRenderingLayerMask",
+                &self.m_default_rendering_layer_mask,
+            ),
+            crate::opt_field(
+                "m_CurrentRenderPipelineGlobalSettings",
+                &self.m_current_render_pipeline_global_settings,
+            ),
+            crate::opt_field(
+                "m_CameraRelativeLightCulling",
+                &self.m_camera_relative_light_culling,
+            ),
+            crate::opt_field("m_SRPDefaultSettings", &self.m_srp_default_settings),
+            crate::opt_field(
+                "m_LightProbeOutsideHullStrategy",
+                &self.m_light_probe_outside_hull_strategy,
+            ),
+            crate::opt_field(
+                "m_CameraRelativeShadowCulling",
+                &self.m_camera_relative_shadow_culling,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_AlwaysIncludedShaders" => {
+                    (self.m_always_included_shaders).inspect_value(path, offset, limit)
+                }
+                "m_Deferred" => (self.m_deferred).inspect_value(path, offset, limit),
+                "m_LegacyDeferred" => (self.m_legacy_deferred).inspect_value(path, offset, limit),
+                "m_DeferredReflections" => {
+                    (self.m_deferred_reflections).inspect_value(path, offset, limit)
+                }
+                "m_ScreenSpaceShadows" => {
+                    (self.m_screen_space_shadows).inspect_value(path, offset, limit)
+                }
+                "m_PreloadedShaders" => {
+                    (self.m_preloaded_shaders).inspect_value(path, offset, limit)
+                }
+                "m_DepthNormals" => (self.m_depth_normals).inspect_value(path, offset, limit),
+                "m_MotionVectors" => (self.m_motion_vectors).inspect_value(path, offset, limit),
+                "m_Settings" => (self.m_settings).inspect_value(path, offset, limit),
+                "m_LightHalo" => (self.m_light_halo).inspect_value(path, offset, limit),
+                "m_LensFlare" => (self.m_lens_flare).inspect_value(path, offset, limit),
+                "m_VideoShadersIncludeMode" => {
+                    (self.m_video_shaders_include_mode).inspect_value(path, offset, limit)
+                }
+                "m_SpritesDefaultMaterial" => {
+                    (self.m_sprites_default_material).inspect_value(path, offset, limit)
+                }
+                "m_PreloadShadersBatchTimeLimit" => {
+                    (self.m_preload_shaders_batch_time_limit).inspect_value(path, offset, limit)
+                }
+                "m_ShaderSettings_Tier1" => {
+                    (self.m_shader_settings_tier1).inspect_value(path, offset, limit)
+                }
+                "m_TierSettings_Tier1" => {
+                    (self.m_tier_settings_tier1).inspect_value(path, offset, limit)
+                }
+                "m_CustomRenderPipeline" => {
+                    (self.m_custom_render_pipeline).inspect_value(path, offset, limit)
+                }
+                "m_GraphicsStateCollection" => {
+                    (self.m_graphics_state_collection).inspect_value(path, offset, limit)
+                }
+                "m_ShaderSettings_Tier2" => {
+                    (self.m_shader_settings_tier2).inspect_value(path, offset, limit)
+                }
+                "m_TierSettings_Tier2" => {
+                    (self.m_tier_settings_tier2).inspect_value(path, offset, limit)
+                }
+                "m_TransparencySortMode" => {
+                    (self.m_transparency_sort_mode).inspect_value(path, offset, limit)
+                }
+                "m_CollectionStartupAction" => {
+                    (self.m_collection_startup_action).inspect_value(path, offset, limit)
+                }
+                "m_ShaderSettings_Tier3" => {
+                    (self.m_shader_settings_tier3).inspect_value(path, offset, limit)
+                }
+                "m_TierSettings_Tier3" => {
+                    (self.m_tier_settings_tier3).inspect_value(path, offset, limit)
+                }
+                "m_TransparencySortAxis" => {
+                    (self.m_transparency_sort_axis).inspect_value(path, offset, limit)
+                }
+                "m_TraceSavePath" => (self.m_trace_save_path).inspect_value(path, offset, limit),
+                "m_TraceSendToEditor" => {
+                    (self.m_trace_send_to_editor).inspect_value(path, offset, limit)
+                }
+                "m_AdditionalWarmupCollections" => {
+                    (self.m_additional_warmup_collections).inspect_value(path, offset, limit)
+                }
+                "m_WarmupAsync" => (self.m_warmup_async).inspect_value(path, offset, limit),
+                "m_LightsUseLinearIntensity" => {
+                    (self.m_lights_use_linear_intensity).inspect_value(path, offset, limit)
+                }
+                "m_ShaderDefinesPerShaderCompiler" => {
+                    (self.m_shader_defines_per_shader_compiler).inspect_value(path, offset, limit)
+                }
+                "m_EnableCacheMissTracing" => {
+                    (self.m_enable_cache_miss_tracing).inspect_value(path, offset, limit)
+                }
+                "m_LightsUseColorTemperature" => {
+                    (self.m_lights_use_color_temperature).inspect_value(path, offset, limit)
+                }
+                "m_WarmupProgressivelyLimit" => {
+                    (self.m_warmup_progressively_limit).inspect_value(path, offset, limit)
+                }
+                "m_CacheMissCollectionPath" => {
+                    (self.m_cache_miss_collection_path).inspect_value(path, offset, limit)
+                }
+                "m_LogWhenShaderIsCompiled" => {
+                    (self.m_log_when_shader_is_compiled).inspect_value(path, offset, limit)
+                }
+                "m_AllowEnlightenSupportForUpgradedProject" => (self
+                    .m_allow_enlighten_support_for_upgraded_project)
+                    .inspect_value(path, offset, limit),
+                "m_DefaultRenderingLayerMask" => {
+                    (self.m_default_rendering_layer_mask).inspect_value(path, offset, limit)
+                }
+                "m_CurrentRenderPipelineGlobalSettings" => (self
+                    .m_current_render_pipeline_global_settings)
+                    .inspect_value(path, offset, limit),
+                "m_CameraRelativeLightCulling" => {
+                    (self.m_camera_relative_light_culling).inspect_value(path, offset, limit)
+                }
+                "m_SRPDefaultSettings" => {
+                    (self.m_srp_default_settings).inspect_value(path, offset, limit)
+                }
+                "m_LightProbeOutsideHullStrategy" => {
+                    (self.m_light_probe_outside_hull_strategy).inspect_value(path, offset, limit)
+                }
+                "m_CameraRelativeShadowCulling" => {
+                    (self.m_camera_relative_shadow_culling).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_always_included_shaders).inspect_value(path, offset, limit))
+                .map(|v| ("m_AlwaysIncludedShaders".to_string(), v)),
+            ((self.m_deferred).inspect_value(path, offset, limit))
+                .map(|v| ("m_Deferred".to_string(), v)),
+            ((self.m_legacy_deferred).inspect_value(path, offset, limit))
+                .map(|v| ("m_LegacyDeferred".to_string(), v)),
+            ((self.m_deferred_reflections).inspect_value(path, offset, limit))
+                .map(|v| ("m_DeferredReflections".to_string(), v)),
+            ((self.m_screen_space_shadows).inspect_value(path, offset, limit))
+                .map(|v| ("m_ScreenSpaceShadows".to_string(), v)),
+            ((self.m_preloaded_shaders).inspect_value(path, offset, limit))
+                .map(|v| ("m_PreloadedShaders".to_string(), v)),
+            ((self.m_depth_normals).inspect_value(path, offset, limit))
+                .map(|v| ("m_DepthNormals".to_string(), v)),
+            ((self.m_motion_vectors).inspect_value(path, offset, limit))
+                .map(|v| ("m_MotionVectors".to_string(), v)),
+            ((self.m_settings).inspect_value(path, offset, limit))
+                .map(|v| ("m_Settings".to_string(), v)),
+            ((self.m_light_halo).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightHalo".to_string(), v)),
+            ((self.m_lens_flare).inspect_value(path, offset, limit))
+                .map(|v| ("m_LensFlare".to_string(), v)),
+            ((self.m_video_shaders_include_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_VideoShadersIncludeMode".to_string(), v)),
+            ((self.m_sprites_default_material).inspect_value(path, offset, limit))
+                .map(|v| ("m_SpritesDefaultMaterial".to_string(), v)),
+            ((self.m_preload_shaders_batch_time_limit).inspect_value(path, offset, limit))
+                .map(|v| ("m_PreloadShadersBatchTimeLimit".to_string(), v)),
+            ((self.m_shader_settings_tier1).inspect_value(path, offset, limit))
+                .map(|v| ("m_ShaderSettings_Tier1".to_string(), v)),
+            ((self.m_tier_settings_tier1).inspect_value(path, offset, limit))
+                .map(|v| ("m_TierSettings_Tier1".to_string(), v)),
+            ((self.m_custom_render_pipeline).inspect_value(path, offset, limit))
+                .map(|v| ("m_CustomRenderPipeline".to_string(), v)),
+            ((self.m_graphics_state_collection).inspect_value(path, offset, limit))
+                .map(|v| ("m_GraphicsStateCollection".to_string(), v)),
+            ((self.m_shader_settings_tier2).inspect_value(path, offset, limit))
+                .map(|v| ("m_ShaderSettings_Tier2".to_string(), v)),
+            ((self.m_tier_settings_tier2).inspect_value(path, offset, limit))
+                .map(|v| ("m_TierSettings_Tier2".to_string(), v)),
+            ((self.m_transparency_sort_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_TransparencySortMode".to_string(), v)),
+            ((self.m_collection_startup_action).inspect_value(path, offset, limit))
+                .map(|v| ("m_CollectionStartupAction".to_string(), v)),
+            ((self.m_shader_settings_tier3).inspect_value(path, offset, limit))
+                .map(|v| ("m_ShaderSettings_Tier3".to_string(), v)),
+            ((self.m_tier_settings_tier3).inspect_value(path, offset, limit))
+                .map(|v| ("m_TierSettings_Tier3".to_string(), v)),
+            ((self.m_transparency_sort_axis).inspect_value(path, offset, limit))
+                .map(|v| ("m_TransparencySortAxis".to_string(), v)),
+            ((self.m_trace_save_path).inspect_value(path, offset, limit))
+                .map(|v| ("m_TraceSavePath".to_string(), v)),
+            ((self.m_trace_send_to_editor).inspect_value(path, offset, limit))
+                .map(|v| ("m_TraceSendToEditor".to_string(), v)),
+            ((self.m_additional_warmup_collections).inspect_value(path, offset, limit))
+                .map(|v| ("m_AdditionalWarmupCollections".to_string(), v)),
+            ((self.m_warmup_async).inspect_value(path, offset, limit))
+                .map(|v| ("m_WarmupAsync".to_string(), v)),
+            ((self.m_lights_use_linear_intensity).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightsUseLinearIntensity".to_string(), v)),
+            ((self.m_shader_defines_per_shader_compiler).inspect_value(path, offset, limit))
+                .map(|v| ("m_ShaderDefinesPerShaderCompiler".to_string(), v)),
+            ((self.m_enable_cache_miss_tracing).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableCacheMissTracing".to_string(), v)),
+            ((self.m_lights_use_color_temperature).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightsUseColorTemperature".to_string(), v)),
+            ((self.m_warmup_progressively_limit).inspect_value(path, offset, limit))
+                .map(|v| ("m_WarmupProgressivelyLimit".to_string(), v)),
+            ((self.m_cache_miss_collection_path).inspect_value(path, offset, limit))
+                .map(|v| ("m_CacheMissCollectionPath".to_string(), v)),
+            ((self.m_log_when_shader_is_compiled).inspect_value(path, offset, limit))
+                .map(|v| ("m_LogWhenShaderIsCompiled".to_string(), v)),
+            ((self.m_allow_enlighten_support_for_upgraded_project)
+                .inspect_value(path, offset, limit))
+            .map(|v| ("m_AllowEnlightenSupportForUpgradedProject".to_string(), v)),
+            ((self.m_default_rendering_layer_mask).inspect_value(path, offset, limit))
+                .map(|v| ("m_DefaultRenderingLayerMask".to_string(), v)),
+            ((self.m_current_render_pipeline_global_settings).inspect_value(path, offset, limit))
+                .map(|v| ("m_CurrentRenderPipelineGlobalSettings".to_string(), v)),
+            ((self.m_camera_relative_light_culling).inspect_value(path, offset, limit))
+                .map(|v| ("m_CameraRelativeLightCulling".to_string(), v)),
+            ((self.m_srp_default_settings).inspect_value(path, offset, limit))
+                .map(|v| ("m_SRPDefaultSettings".to_string(), v)),
+            ((self.m_light_probe_outside_hull_strategy).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightProbeOutsideHullStrategy".to_string(), v)),
+            ((self.m_camera_relative_shadow_culling).inspect_value(path, offset, limit))
+                .map(|v| ("m_CameraRelativeShadowCulling".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

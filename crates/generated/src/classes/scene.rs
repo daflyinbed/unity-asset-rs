@@ -36,6 +36,21 @@ impl crate::Parse for SceneMStaticRenderersVariant {
     }
 }
 
+impl crate::ToValue for SceneMStaticRenderersVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：SceneMPortalsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum SceneMPortalsVariant {
@@ -65,6 +80,21 @@ impl crate::Parse for SceneMPortalsVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for SceneMPortalsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -175,5 +205,69 @@ impl crate::Parse for Scene {
             m_static_renderers,
             m_portals,
         })
+    }
+}
+
+impl crate::ToValue for Scene {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            crate::opt_field("m_PVSData", &self.m_pvs_data),
+            crate::opt_field("m_SceneGUID", &self.m_scene_guid),
+            crate::opt_field("m_PVSObjectsArray", &self.m_pvs_objects_array),
+            crate::opt_field("m_QueryMode", &self.m_query_mode),
+            crate::opt_field("m_OcclusionCullingData", &self.m_occlusion_culling_data),
+            crate::opt_field("m_PVSPortalsArray", &self.m_pvs_portals_array),
+            crate::opt_field("m_StaticRenderers", &self.m_static_renderers),
+            crate::opt_field("m_Portals", &self.m_portals),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_PVSData" => (self.m_pvs_data).inspect_value(path, offset, limit),
+                "m_SceneGUID" => (self.m_scene_guid).inspect_value(path, offset, limit),
+                "m_PVSObjectsArray" => {
+                    (self.m_pvs_objects_array).inspect_value(path, offset, limit)
+                }
+                "m_QueryMode" => (self.m_query_mode).inspect_value(path, offset, limit),
+                "m_OcclusionCullingData" => {
+                    (self.m_occlusion_culling_data).inspect_value(path, offset, limit)
+                }
+                "m_PVSPortalsArray" => {
+                    (self.m_pvs_portals_array).inspect_value(path, offset, limit)
+                }
+                "m_StaticRenderers" => (self.m_static_renderers).inspect_value(path, offset, limit),
+                "m_Portals" => (self.m_portals).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_pvs_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_PVSData".to_string(), v)),
+            ((self.m_scene_guid).inspect_value(path, offset, limit))
+                .map(|v| ("m_SceneGUID".to_string(), v)),
+            ((self.m_pvs_objects_array).inspect_value(path, offset, limit))
+                .map(|v| ("m_PVSObjectsArray".to_string(), v)),
+            ((self.m_query_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_QueryMode".to_string(), v)),
+            ((self.m_occlusion_culling_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_OcclusionCullingData".to_string(), v)),
+            ((self.m_pvs_portals_array).inspect_value(path, offset, limit))
+                .map(|v| ("m_PVSPortalsArray".to_string(), v)),
+            ((self.m_static_renderers).inspect_value(path, offset, limit))
+                .map(|v| ("m_StaticRenderers".to_string(), v)),
+            ((self.m_portals).inspect_value(path, offset, limit))
+                .map(|v| ("m_Portals".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

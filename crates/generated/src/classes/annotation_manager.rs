@@ -35,6 +35,21 @@ impl crate::Parse for AnnotationManagerMCurrentPresetMAnnotationListVariant {
     }
 }
 
+impl crate::ToValue for AnnotationManagerMCurrentPresetMAnnotationListVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：AnnotationManagerMRecentlyChangedVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AnnotationManagerMRecentlyChangedVariant {
@@ -68,6 +83,21 @@ impl crate::Parse for AnnotationManagerMRecentlyChangedVariant {
     }
 }
 
+impl crate::ToValue for AnnotationManagerMRecentlyChangedVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：AnnotationManagerMUse3dGizmosVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AnnotationManagerMUse3dGizmosVariant {
@@ -87,6 +117,21 @@ impl crate::Parse for AnnotationManagerMUse3dGizmosVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for AnnotationManagerMUse3dGizmosVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_5(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -114,6 +159,21 @@ impl crate::Parse for AnnotationManagerMShowGridVariant {
     }
 }
 
+impl crate::ToValue for AnnotationManagerMShowGridVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_5(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：AnnotationManagerMShowSelectionWireVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AnnotationManagerMShowSelectionWireVariant {
@@ -133,6 +193,21 @@ impl crate::Parse for AnnotationManagerMShowSelectionWireVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for AnnotationManagerMShowSelectionWireVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V6000_4(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_4(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -221,5 +296,87 @@ impl crate::Parse for AnnotationManager {
             m_show_selection_wire,
             m_show_lod_labels,
         })
+    }
+}
+
+impl crate::ToValue for AnnotationManager {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some((
+                "m_CurrentPreset_m_AnnotationList".to_string(),
+                self.m_current_preset_m_annotation_list.to_value(),
+            )),
+            Some((
+                "m_RecentlyChanged".to_string(),
+                self.m_recently_changed.to_value(),
+            )),
+            crate::opt_field("m_IconSize", &self.m_icon_size),
+            crate::opt_field("m_WorldIconSize", &self.m_world_icon_size),
+            crate::opt_field("m_Use3dGizmos", &self.m_use3d_gizmos),
+            crate::opt_field("m_FadeGizmoSize", &self.m_fade_gizmo_size),
+            crate::opt_field("m_ShowGrid", &self.m_show_grid),
+            crate::opt_field("m_FadeGizmos", &self.m_fade_gizmos),
+            crate::opt_field("m_ShowSelectionOutline", &self.m_show_selection_outline),
+            crate::opt_field("m_ShowSelectionWire", &self.m_show_selection_wire),
+            crate::opt_field("m_ShowLODLabels", &self.m_show_lod_labels),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_CurrentPreset_m_AnnotationList" => {
+                    (self.m_current_preset_m_annotation_list).inspect_value(path, offset, limit)
+                }
+                "m_RecentlyChanged" => (self.m_recently_changed).inspect_value(path, offset, limit),
+                "m_IconSize" => (self.m_icon_size).inspect_value(path, offset, limit),
+                "m_WorldIconSize" => (self.m_world_icon_size).inspect_value(path, offset, limit),
+                "m_Use3dGizmos" => (self.m_use3d_gizmos).inspect_value(path, offset, limit),
+                "m_FadeGizmoSize" => (self.m_fade_gizmo_size).inspect_value(path, offset, limit),
+                "m_ShowGrid" => (self.m_show_grid).inspect_value(path, offset, limit),
+                "m_FadeGizmos" => (self.m_fade_gizmos).inspect_value(path, offset, limit),
+                "m_ShowSelectionOutline" => {
+                    (self.m_show_selection_outline).inspect_value(path, offset, limit)
+                }
+                "m_ShowSelectionWire" => {
+                    (self.m_show_selection_wire).inspect_value(path, offset, limit)
+                }
+                "m_ShowLODLabels" => (self.m_show_lod_labels).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_current_preset_m_annotation_list).inspect_value(path, offset, limit))
+                .map(|v| ("m_CurrentPreset_m_AnnotationList".to_string(), v)),
+            ((self.m_recently_changed).inspect_value(path, offset, limit))
+                .map(|v| ("m_RecentlyChanged".to_string(), v)),
+            ((self.m_icon_size).inspect_value(path, offset, limit))
+                .map(|v| ("m_IconSize".to_string(), v)),
+            ((self.m_world_icon_size).inspect_value(path, offset, limit))
+                .map(|v| ("m_WorldIconSize".to_string(), v)),
+            ((self.m_use3d_gizmos).inspect_value(path, offset, limit))
+                .map(|v| ("m_Use3dGizmos".to_string(), v)),
+            ((self.m_fade_gizmo_size).inspect_value(path, offset, limit))
+                .map(|v| ("m_FadeGizmoSize".to_string(), v)),
+            ((self.m_show_grid).inspect_value(path, offset, limit))
+                .map(|v| ("m_ShowGrid".to_string(), v)),
+            ((self.m_fade_gizmos).inspect_value(path, offset, limit))
+                .map(|v| ("m_FadeGizmos".to_string(), v)),
+            ((self.m_show_selection_outline).inspect_value(path, offset, limit))
+                .map(|v| ("m_ShowSelectionOutline".to_string(), v)),
+            ((self.m_show_selection_wire).inspect_value(path, offset, limit))
+                .map(|v| ("m_ShowSelectionWire".to_string(), v)),
+            ((self.m_show_lod_labels).inspect_value(path, offset, limit))
+                .map(|v| ("m_ShowLODLabels".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

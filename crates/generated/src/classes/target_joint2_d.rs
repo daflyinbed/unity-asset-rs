@@ -75,3 +75,97 @@ impl crate::Parse for TargetJoint2D {
         })
     }
 }
+
+impl crate::ToValue for TargetJoint2D {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_Enabled".to_string(), self.m_enabled.to_value())),
+            Some((
+                "m_EnableCollision".to_string(),
+                self.m_enable_collision.to_value(),
+            )),
+            Some((
+                "m_ConnectedRigidBody".to_string(),
+                self.m_connected_rigid_body.to_value(),
+            )),
+            Some(("m_BreakForce".to_string(), self.m_break_force.to_value())),
+            Some(("m_BreakTorque".to_string(), self.m_break_torque.to_value())),
+            Some(("m_Anchor".to_string(), self.m_anchor.to_value())),
+            crate::opt_field("m_BreakAction", &self.m_break_action),
+            Some(("m_Target".to_string(), self.m_target.to_value())),
+            Some((
+                "m_AutoConfigureTarget".to_string(),
+                self.m_auto_configure_target.to_value(),
+            )),
+            Some(("m_MaxForce".to_string(), self.m_max_force.to_value())),
+            Some((
+                "m_DampingRatio".to_string(),
+                self.m_damping_ratio.to_value(),
+            )),
+            Some(("m_Frequency".to_string(), self.m_frequency.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "m_EnableCollision" => (self.m_enable_collision).inspect_value(path, offset, limit),
+                "m_ConnectedRigidBody" => {
+                    (self.m_connected_rigid_body).inspect_value(path, offset, limit)
+                }
+                "m_BreakForce" => (self.m_break_force).inspect_value(path, offset, limit),
+                "m_BreakTorque" => (self.m_break_torque).inspect_value(path, offset, limit),
+                "m_Anchor" => (self.m_anchor).inspect_value(path, offset, limit),
+                "m_BreakAction" => (self.m_break_action).inspect_value(path, offset, limit),
+                "m_Target" => (self.m_target).inspect_value(path, offset, limit),
+                "m_AutoConfigureTarget" => {
+                    (self.m_auto_configure_target).inspect_value(path, offset, limit)
+                }
+                "m_MaxForce" => (self.m_max_force).inspect_value(path, offset, limit),
+                "m_DampingRatio" => (self.m_damping_ratio).inspect_value(path, offset, limit),
+                "m_Frequency" => (self.m_frequency).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.m_enable_collision).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableCollision".to_string(), v)),
+            ((self.m_connected_rigid_body).inspect_value(path, offset, limit))
+                .map(|v| ("m_ConnectedRigidBody".to_string(), v)),
+            ((self.m_break_force).inspect_value(path, offset, limit))
+                .map(|v| ("m_BreakForce".to_string(), v)),
+            ((self.m_break_torque).inspect_value(path, offset, limit))
+                .map(|v| ("m_BreakTorque".to_string(), v)),
+            ((self.m_anchor).inspect_value(path, offset, limit))
+                .map(|v| ("m_Anchor".to_string(), v)),
+            ((self.m_break_action).inspect_value(path, offset, limit))
+                .map(|v| ("m_BreakAction".to_string(), v)),
+            ((self.m_target).inspect_value(path, offset, limit))
+                .map(|v| ("m_Target".to_string(), v)),
+            ((self.m_auto_configure_target).inspect_value(path, offset, limit))
+                .map(|v| ("m_AutoConfigureTarget".to_string(), v)),
+            ((self.m_max_force).inspect_value(path, offset, limit))
+                .map(|v| ("m_MaxForce".to_string(), v)),
+            ((self.m_damping_ratio).inspect_value(path, offset, limit))
+                .map(|v| ("m_DampingRatio".to_string(), v)),
+            ((self.m_frequency).inspect_value(path, offset, limit))
+                .map(|v| ("m_Frequency".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

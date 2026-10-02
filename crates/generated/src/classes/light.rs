@@ -31,6 +31,21 @@ impl crate::Parse for LightMDrawHaloVariant {
     }
 }
 
+impl crate::ToValue for LightMDrawHaloVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_4(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_4(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：LightMUseBoundingSphereOverrideVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum LightMUseBoundingSphereOverrideVariant {
@@ -54,6 +69,21 @@ impl crate::Parse for LightMUseBoundingSphereOverrideVariant {
     }
 }
 
+impl crate::ToValue for LightMUseBoundingSphereOverrideVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2020_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2020_2(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：LightMUseViewFrustumForShadowCasterCullVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum LightMUseViewFrustumForShadowCasterCullVariant {
@@ -73,6 +103,21 @@ impl crate::Parse for LightMUseViewFrustumForShadowCasterCullVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for LightMUseViewFrustumForShadowCasterCullVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2023_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2023_3(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -318,5 +363,190 @@ impl crate::Parse for Light {
             m_lux_at_distance,
             m_enable_spot_reflector,
         })
+    }
+}
+
+impl crate::ToValue for Light {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_Enabled".to_string(), self.m_enabled.to_value())),
+            Some(("m_Type".to_string(), self.m_type.to_value())),
+            Some(("m_Color".to_string(), self.m_color.to_value())),
+            crate::opt_field("m_Shape", &self.m_shape),
+            Some(("m_Intensity".to_string(), self.m_intensity.to_value())),
+            Some(("m_Range".to_string(), self.m_range.to_value())),
+            Some(("m_SpotAngle".to_string(), self.m_spot_angle.to_value())),
+            crate::opt_field("m_CookieSize", &self.m_cookie_size),
+            crate::opt_field("m_InnerSpotAngle", &self.m_inner_spot_angle),
+            Some(("m_Shadows".to_string(), self.m_shadows.to_value())),
+            crate::opt_field("m_CookieSize2D", &self.m_cookie_size2_d),
+            Some(("m_Cookie".to_string(), self.m_cookie.to_value())),
+            Some(("m_DrawHalo".to_string(), self.m_draw_halo.to_value())),
+            crate::opt_field("m_ActuallyLightmapped", &self.m_actually_lightmapped),
+            crate::opt_field("m_BakedIndex", &self.m_baked_index),
+            crate::opt_field("m_BakingOutput", &self.m_baking_output),
+            Some(("m_Flare".to_string(), self.m_flare.to_value())),
+            Some(("m_RenderMode".to_string(), self.m_render_mode.to_value())),
+            Some(("m_CullingMask".to_string(), self.m_culling_mask.to_value())),
+            Some(("m_Lightmapping".to_string(), self.m_lightmapping.to_value())),
+            crate::opt_field("m_BounceIntensity", &self.m_bounce_intensity),
+            crate::opt_field("m_AreaSize", &self.m_area_size),
+            crate::opt_field("m_LightShadowCasterMode", &self.m_light_shadow_caster_mode),
+            crate::opt_field("m_RenderingLayerMask", &self.m_rendering_layer_mask),
+            crate::opt_field("m_ColorTemperature", &self.m_color_temperature),
+            crate::opt_field("m_UseColorTemperature", &self.m_use_color_temperature),
+            crate::opt_field("m_BoundingSphereOverride", &self.m_bounding_sphere_override),
+            crate::opt_field(
+                "m_UseBoundingSphereOverride",
+                &self.m_use_bounding_sphere_override,
+            ),
+            crate::opt_field(
+                "m_UseViewFrustumForShadowCasterCull",
+                &self.m_use_view_frustum_for_shadow_caster_cull,
+            ),
+            crate::opt_field("m_ForceVisible", &self.m_force_visible),
+            crate::opt_field("m_LightUnit", &self.m_light_unit),
+            crate::opt_field("m_ShapeRadius", &self.m_shape_radius),
+            crate::opt_field("m_LuxAtDistance", &self.m_lux_at_distance),
+            crate::opt_field("m_EnableSpotReflector", &self.m_enable_spot_reflector),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "m_Type" => (self.m_type).inspect_value(path, offset, limit),
+                "m_Color" => (self.m_color).inspect_value(path, offset, limit),
+                "m_Shape" => (self.m_shape).inspect_value(path, offset, limit),
+                "m_Intensity" => (self.m_intensity).inspect_value(path, offset, limit),
+                "m_Range" => (self.m_range).inspect_value(path, offset, limit),
+                "m_SpotAngle" => (self.m_spot_angle).inspect_value(path, offset, limit),
+                "m_CookieSize" => (self.m_cookie_size).inspect_value(path, offset, limit),
+                "m_InnerSpotAngle" => (self.m_inner_spot_angle).inspect_value(path, offset, limit),
+                "m_Shadows" => (self.m_shadows).inspect_value(path, offset, limit),
+                "m_CookieSize2D" => (self.m_cookie_size2_d).inspect_value(path, offset, limit),
+                "m_Cookie" => (self.m_cookie).inspect_value(path, offset, limit),
+                "m_DrawHalo" => (self.m_draw_halo).inspect_value(path, offset, limit),
+                "m_ActuallyLightmapped" => {
+                    (self.m_actually_lightmapped).inspect_value(path, offset, limit)
+                }
+                "m_BakedIndex" => (self.m_baked_index).inspect_value(path, offset, limit),
+                "m_BakingOutput" => (self.m_baking_output).inspect_value(path, offset, limit),
+                "m_Flare" => (self.m_flare).inspect_value(path, offset, limit),
+                "m_RenderMode" => (self.m_render_mode).inspect_value(path, offset, limit),
+                "m_CullingMask" => (self.m_culling_mask).inspect_value(path, offset, limit),
+                "m_Lightmapping" => (self.m_lightmapping).inspect_value(path, offset, limit),
+                "m_BounceIntensity" => (self.m_bounce_intensity).inspect_value(path, offset, limit),
+                "m_AreaSize" => (self.m_area_size).inspect_value(path, offset, limit),
+                "m_LightShadowCasterMode" => {
+                    (self.m_light_shadow_caster_mode).inspect_value(path, offset, limit)
+                }
+                "m_RenderingLayerMask" => {
+                    (self.m_rendering_layer_mask).inspect_value(path, offset, limit)
+                }
+                "m_ColorTemperature" => {
+                    (self.m_color_temperature).inspect_value(path, offset, limit)
+                }
+                "m_UseColorTemperature" => {
+                    (self.m_use_color_temperature).inspect_value(path, offset, limit)
+                }
+                "m_BoundingSphereOverride" => {
+                    (self.m_bounding_sphere_override).inspect_value(path, offset, limit)
+                }
+                "m_UseBoundingSphereOverride" => {
+                    (self.m_use_bounding_sphere_override).inspect_value(path, offset, limit)
+                }
+                "m_UseViewFrustumForShadowCasterCull" => (self
+                    .m_use_view_frustum_for_shadow_caster_cull)
+                    .inspect_value(path, offset, limit),
+                "m_ForceVisible" => (self.m_force_visible).inspect_value(path, offset, limit),
+                "m_LightUnit" => (self.m_light_unit).inspect_value(path, offset, limit),
+                "m_ShapeRadius" => (self.m_shape_radius).inspect_value(path, offset, limit),
+                "m_LuxAtDistance" => (self.m_lux_at_distance).inspect_value(path, offset, limit),
+                "m_EnableSpotReflector" => {
+                    (self.m_enable_spot_reflector).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.m_type).inspect_value(path, offset, limit)).map(|v| ("m_Type".to_string(), v)),
+            ((self.m_color).inspect_value(path, offset, limit)).map(|v| ("m_Color".to_string(), v)),
+            ((self.m_shape).inspect_value(path, offset, limit)).map(|v| ("m_Shape".to_string(), v)),
+            ((self.m_intensity).inspect_value(path, offset, limit))
+                .map(|v| ("m_Intensity".to_string(), v)),
+            ((self.m_range).inspect_value(path, offset, limit)).map(|v| ("m_Range".to_string(), v)),
+            ((self.m_spot_angle).inspect_value(path, offset, limit))
+                .map(|v| ("m_SpotAngle".to_string(), v)),
+            ((self.m_cookie_size).inspect_value(path, offset, limit))
+                .map(|v| ("m_CookieSize".to_string(), v)),
+            ((self.m_inner_spot_angle).inspect_value(path, offset, limit))
+                .map(|v| ("m_InnerSpotAngle".to_string(), v)),
+            ((self.m_shadows).inspect_value(path, offset, limit))
+                .map(|v| ("m_Shadows".to_string(), v)),
+            ((self.m_cookie_size2_d).inspect_value(path, offset, limit))
+                .map(|v| ("m_CookieSize2D".to_string(), v)),
+            ((self.m_cookie).inspect_value(path, offset, limit))
+                .map(|v| ("m_Cookie".to_string(), v)),
+            ((self.m_draw_halo).inspect_value(path, offset, limit))
+                .map(|v| ("m_DrawHalo".to_string(), v)),
+            ((self.m_actually_lightmapped).inspect_value(path, offset, limit))
+                .map(|v| ("m_ActuallyLightmapped".to_string(), v)),
+            ((self.m_baked_index).inspect_value(path, offset, limit))
+                .map(|v| ("m_BakedIndex".to_string(), v)),
+            ((self.m_baking_output).inspect_value(path, offset, limit))
+                .map(|v| ("m_BakingOutput".to_string(), v)),
+            ((self.m_flare).inspect_value(path, offset, limit)).map(|v| ("m_Flare".to_string(), v)),
+            ((self.m_render_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_RenderMode".to_string(), v)),
+            ((self.m_culling_mask).inspect_value(path, offset, limit))
+                .map(|v| ("m_CullingMask".to_string(), v)),
+            ((self.m_lightmapping).inspect_value(path, offset, limit))
+                .map(|v| ("m_Lightmapping".to_string(), v)),
+            ((self.m_bounce_intensity).inspect_value(path, offset, limit))
+                .map(|v| ("m_BounceIntensity".to_string(), v)),
+            ((self.m_area_size).inspect_value(path, offset, limit))
+                .map(|v| ("m_AreaSize".to_string(), v)),
+            ((self.m_light_shadow_caster_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightShadowCasterMode".to_string(), v)),
+            ((self.m_rendering_layer_mask).inspect_value(path, offset, limit))
+                .map(|v| ("m_RenderingLayerMask".to_string(), v)),
+            ((self.m_color_temperature).inspect_value(path, offset, limit))
+                .map(|v| ("m_ColorTemperature".to_string(), v)),
+            ((self.m_use_color_temperature).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseColorTemperature".to_string(), v)),
+            ((self.m_bounding_sphere_override).inspect_value(path, offset, limit))
+                .map(|v| ("m_BoundingSphereOverride".to_string(), v)),
+            ((self.m_use_bounding_sphere_override).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseBoundingSphereOverride".to_string(), v)),
+            ((self.m_use_view_frustum_for_shadow_caster_cull).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseViewFrustumForShadowCasterCull".to_string(), v)),
+            ((self.m_force_visible).inspect_value(path, offset, limit))
+                .map(|v| ("m_ForceVisible".to_string(), v)),
+            ((self.m_light_unit).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightUnit".to_string(), v)),
+            ((self.m_shape_radius).inspect_value(path, offset, limit))
+                .map(|v| ("m_ShapeRadius".to_string(), v)),
+            ((self.m_lux_at_distance).inspect_value(path, offset, limit))
+                .map(|v| ("m_LuxAtDistance".to_string(), v)),
+            ((self.m_enable_spot_reflector).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableSpotReflector".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

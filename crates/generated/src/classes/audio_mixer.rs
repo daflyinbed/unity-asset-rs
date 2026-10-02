@@ -35,6 +35,21 @@ impl crate::Parse for AudioMixerMSnapshotsVariant {
         }
     }
 }
+
+impl crate::ToValue for AudioMixerMSnapshotsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct AudioMixer {
     pub m_name: String,
@@ -89,5 +104,80 @@ impl crate::Parse for AudioMixer {
             m_mixer_constant: m_mixer_constant.unwrap(),
             m_update_mode,
         })
+    }
+}
+
+impl crate::ToValue for AudioMixer {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some(("m_OutputGroup".to_string(), self.m_output_group.to_value())),
+            Some(("m_MasterGroup".to_string(), self.m_master_group.to_value())),
+            Some(("m_Snapshots".to_string(), self.m_snapshots.to_value())),
+            Some((
+                "m_StartSnapshot".to_string(),
+                self.m_start_snapshot.to_value(),
+            )),
+            Some((
+                "m_SuspendThreshold".to_string(),
+                self.m_suspend_threshold.to_value(),
+            )),
+            Some((
+                "m_EnableSuspend".to_string(),
+                self.m_enable_suspend.to_value(),
+            )),
+            Some((
+                "m_MixerConstant".to_string(),
+                self.m_mixer_constant.to_value(),
+            )),
+            crate::opt_field("m_UpdateMode", &self.m_update_mode),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_OutputGroup" => (self.m_output_group).inspect_value(path, offset, limit),
+                "m_MasterGroup" => (self.m_master_group).inspect_value(path, offset, limit),
+                "m_Snapshots" => (self.m_snapshots).inspect_value(path, offset, limit),
+                "m_StartSnapshot" => (self.m_start_snapshot).inspect_value(path, offset, limit),
+                "m_SuspendThreshold" => {
+                    (self.m_suspend_threshold).inspect_value(path, offset, limit)
+                }
+                "m_EnableSuspend" => (self.m_enable_suspend).inspect_value(path, offset, limit),
+                "m_MixerConstant" => (self.m_mixer_constant).inspect_value(path, offset, limit),
+                "m_UpdateMode" => (self.m_update_mode).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_output_group).inspect_value(path, offset, limit))
+                .map(|v| ("m_OutputGroup".to_string(), v)),
+            ((self.m_master_group).inspect_value(path, offset, limit))
+                .map(|v| ("m_MasterGroup".to_string(), v)),
+            ((self.m_snapshots).inspect_value(path, offset, limit))
+                .map(|v| ("m_Snapshots".to_string(), v)),
+            ((self.m_start_snapshot).inspect_value(path, offset, limit))
+                .map(|v| ("m_StartSnapshot".to_string(), v)),
+            ((self.m_suspend_threshold).inspect_value(path, offset, limit))
+                .map(|v| ("m_SuspendThreshold".to_string(), v)),
+            ((self.m_enable_suspend).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableSuspend".to_string(), v)),
+            ((self.m_mixer_constant).inspect_value(path, offset, limit))
+                .map(|v| ("m_MixerConstant".to_string(), v)),
+            ((self.m_update_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_UpdateMode".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

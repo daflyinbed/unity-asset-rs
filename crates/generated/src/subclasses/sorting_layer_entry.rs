@@ -30,3 +30,39 @@ impl crate::Parse for SortingLayerEntry {
         })
     }
 }
+
+impl crate::ToValue for SortingLayerEntry {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("name".to_string(), self.name.to_value())),
+            crate::opt_field("userID", &self.user_id),
+            Some(("uniqueID".to_string(), self.unique_id.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "name" => (self.name).inspect_value(path, offset, limit),
+                "userID" => (self.user_id).inspect_value(path, offset, limit),
+                "uniqueID" => (self.unique_id).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.name).inspect_value(path, offset, limit)).map(|v| ("name".to_string(), v)),
+            ((self.user_id).inspect_value(path, offset, limit)).map(|v| ("userID".to_string(), v)),
+            ((self.unique_id).inspect_value(path, offset, limit))
+                .map(|v| ("uniqueID".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

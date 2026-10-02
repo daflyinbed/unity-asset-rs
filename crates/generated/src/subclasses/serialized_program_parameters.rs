@@ -94,3 +94,81 @@ impl crate::Parse for SerializedProgramParameters {
         })
     }
 }
+
+impl crate::ToValue for SerializedProgramParameters {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some((
+                "m_VectorParams".to_string(),
+                self.m_vector_params.to_value(),
+            )),
+            Some((
+                "m_MatrixParams".to_string(),
+                self.m_matrix_params.to_value(),
+            )),
+            Some((
+                "m_TextureParams".to_string(),
+                self.m_texture_params.to_value(),
+            )),
+            Some((
+                "m_BufferParams".to_string(),
+                self.m_buffer_params.to_value(),
+            )),
+            Some((
+                "m_ConstantBuffers".to_string(),
+                self.m_constant_buffers.to_value(),
+            )),
+            Some((
+                "m_ConstantBufferBindings".to_string(),
+                self.m_constant_buffer_bindings.to_value(),
+            )),
+            Some(("m_UAVParams".to_string(), self.m_uav_params.to_value())),
+            Some(("m_Samplers".to_string(), self.m_samplers.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_VectorParams" => (self.m_vector_params).inspect_value(path, offset, limit),
+                "m_MatrixParams" => (self.m_matrix_params).inspect_value(path, offset, limit),
+                "m_TextureParams" => (self.m_texture_params).inspect_value(path, offset, limit),
+                "m_BufferParams" => (self.m_buffer_params).inspect_value(path, offset, limit),
+                "m_ConstantBuffers" => (self.m_constant_buffers).inspect_value(path, offset, limit),
+                "m_ConstantBufferBindings" => {
+                    (self.m_constant_buffer_bindings).inspect_value(path, offset, limit)
+                }
+                "m_UAVParams" => (self.m_uav_params).inspect_value(path, offset, limit),
+                "m_Samplers" => (self.m_samplers).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_vector_params).inspect_value(path, offset, limit))
+                .map(|v| ("m_VectorParams".to_string(), v)),
+            ((self.m_matrix_params).inspect_value(path, offset, limit))
+                .map(|v| ("m_MatrixParams".to_string(), v)),
+            ((self.m_texture_params).inspect_value(path, offset, limit))
+                .map(|v| ("m_TextureParams".to_string(), v)),
+            ((self.m_buffer_params).inspect_value(path, offset, limit))
+                .map(|v| ("m_BufferParams".to_string(), v)),
+            ((self.m_constant_buffers).inspect_value(path, offset, limit))
+                .map(|v| ("m_ConstantBuffers".to_string(), v)),
+            ((self.m_constant_buffer_bindings).inspect_value(path, offset, limit))
+                .map(|v| ("m_ConstantBufferBindings".to_string(), v)),
+            ((self.m_uav_params).inspect_value(path, offset, limit))
+                .map(|v| ("m_UAVParams".to_string(), v)),
+            ((self.m_samplers).inspect_value(path, offset, limit))
+                .map(|v| ("m_Samplers".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

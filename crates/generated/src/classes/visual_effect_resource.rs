@@ -63,3 +63,50 @@ impl crate::Parse for VisualEffectResource {
         })
     }
 }
+
+impl crate::ToValue for VisualEffectResource {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some(("m_Graph".to_string(), self.m_graph.to_value())),
+            crate::opt_field("m_ShaderSources", &self.m_shader_sources),
+            crate::opt_field("m_Settings", &self.m_settings),
+            crate::opt_field("m_Infos", &self.m_infos),
+            crate::opt_field("m_Systems", &self.m_systems),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_Graph" => (self.m_graph).inspect_value(path, offset, limit),
+                "m_ShaderSources" => (self.m_shader_sources).inspect_value(path, offset, limit),
+                "m_Settings" => (self.m_settings).inspect_value(path, offset, limit),
+                "m_Infos" => (self.m_infos).inspect_value(path, offset, limit),
+                "m_Systems" => (self.m_systems).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_graph).inspect_value(path, offset, limit)).map(|v| ("m_Graph".to_string(), v)),
+            ((self.m_shader_sources).inspect_value(path, offset, limit))
+                .map(|v| ("m_ShaderSources".to_string(), v)),
+            ((self.m_settings).inspect_value(path, offset, limit))
+                .map(|v| ("m_Settings".to_string(), v)),
+            ((self.m_infos).inspect_value(path, offset, limit)).map(|v| ("m_Infos".to_string(), v)),
+            ((self.m_systems).inspect_value(path, offset, limit))
+                .map(|v| ("m_Systems".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

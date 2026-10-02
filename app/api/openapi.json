@@ -840,7 +840,7 @@
         "tags": [
           "object"
         ],
-        "summary": "导出对象的原始数据:AudioClip(WAV/Ogg/tracker,支持多 sample 索引)与\nTextAsset / Font / VideoClip / MovieTexture。响应头带\n`X-Export-Extension` / `X-Sample-Count` / `Content-Disposition`。",
+        "summary": "导出对象的原始数据:AudioClip(WAV/Ogg/tracker,支持多 sample 索引)与\nTextAsset / Font / VideoClip / MovieTexture;**其余任意对象兜底 dump 成\nJSON**(typed 经 codegen ToValue,dynamic/mono 经 TypeTree Value)。响应头带\n`X-Export-Extension` / `X-Sample-Count` / `Content-Disposition`。",
         "operationId": "export_environment_object_file",
         "parameters": [
           {
@@ -939,6 +939,120 @@
         }
       }
     },
+    "/environment/collections/{cid}/objects/{pid}/inspect": {
+      "get": {
+        "tags": [
+          "object"
+        ],
+        "operationId": "inspect_environment_object",
+        "parameters": [
+          {
+            "name": "cid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "pid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "revision",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "int64",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "path",
+            "in": "query",
+            "description": "例如 [\"m_FontData\"] 或 [\"m_Components\",\"0\",\"component\"]。",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "数组/字节下标；字符串使用 Unicode 字符下标。",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "每页 1..256 个元素/字节/字符，默认 256。",
+            "required": false,
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InspectResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/environment/collections/{cid}/objects/{pid}/png": {
       "get": {
         "tags": [
@@ -1006,7 +1120,98 @@
               }
             }
           },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
           "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/environment/collections/{cid}/objects/{pid}/raw": {
+      "get": {
+        "tags": [
+          "object"
+        ],
+        "summary": "下载解析失败对象捕获的原始序列化字节（`ParseFailure::Object.data`，\nCLI `export --json` 的 `.bin` 兜底同源）。非失败对象 → 404。",
+        "operationId": "export_environment_object_raw",
+        "parameters": [
+          {
+            "name": "cid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "pid",
+            "in": "path",
+            "description": "path_id 十进制字符串",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "revision",
+            "in": "query",
+            "description": "若提供且与当前 revision 不同，返回 409，避免把旧句柄用于新 Environment。",
+            "required": false,
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "int64",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "原始序列化字节;头 X-Export-Extension 恒为 bin",
+            "content": {
+              "application/octet-stream": {}
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "409": {
             "description": "",
             "content": {
               "application/json": {
@@ -1082,6 +1287,53 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/environment/failures": {
+      "get": {
+        "tags": [
+          "environment"
+        ],
+        "summary": "解析失败列表（object/file/container 三类，`FailureDto` 扁平投影）。\nobject 类条目可经 `/environment/collections/{cid}/objects/{pid}/raw` 下载原始字节。",
+        "operationId": "list_environment_failures",
+        "parameters": [
+          {
+            "name": "revision",
+            "in": "query",
+            "description": "若提供且与当前 revision 不同，返回 409，避免把旧句柄用于新 Environment。",
+            "required": false,
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "int64",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailuresResponse"
                 }
               }
             }
@@ -1495,6 +1747,104 @@
           }
         }
       },
+      "FailureDto": {
+        "type": "object",
+        "description": "解析失败条目（`ParseFailure` 的扁平投影，不适用的字段省略）。",
+        "required": [
+          "kind",
+          "error"
+        ],
+        "properties": {
+          "class_id": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "description": "仅 object 失败：class_id。"
+          },
+          "class_name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "仅 object 失败：class 名（CLI `class_name` 同款）。"
+          },
+          "collection": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "仅 object 失败：collection 下标。",
+            "minimum": 0
+          },
+          "data_len": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "仅 object 失败：捕获的原始序列化字节数（0 = 越界未捕获）。",
+            "minimum": 0
+          },
+          "error": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "description": "\"object\" / \"file\" / \"container\"。"
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "仅 file/container 失败：原始 node 名。"
+          },
+          "path_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "仅 object 失败：path_id 十进制字符串（防 JS i64 精度丢失）。"
+          }
+        }
+      },
+      "FailuresResponse": {
+        "type": "object",
+        "required": [
+          "revision",
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FailureDto"
+            }
+          },
+          "revision": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          }
+        }
+      },
+      "InspectResponse": {
+        "type": "object",
+        "required": [
+          "revision",
+          "value"
+        ],
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "value": {}
+        }
+      },
       "LoadBody": {
         "type": "object",
         "description": "POST /bundles 的 body。",
@@ -1582,18 +1932,12 @@
       },
       "ObjectDetail": {
         "type": "object",
-        "description": "`?detail=full` 的原始 dump。typed/dynamic/mono 三路不同表示。",
+        "description": "有界对象检查视图。数组按页读取；Bytes/长 String 最多预览 256 字节/字符。",
         "required": [
-          "kind"
+          "kind",
+          "value"
         ],
         "properties": {
-          "debug": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "typed 路径:`{:#?}` Debug 字符串(codegen 大枚举,手写 DTO 成本过高,统一 Debug)。"
-          },
           "kind": {
             "type": "string",
             "description": "\"typed\" / \"dynamic\" / \"mono\"。"
@@ -1604,21 +1948,13 @@
                 "type": "null"
               },
               {
-                "$ref": "#/components/schemas/MonoShell",
-                "description": "MonoBehaviour 的 typed shell 字段(仅 mono 路径)。"
+                "$ref": "#/components/schemas/MonoShell"
               }
             ]
           },
           "value": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/Value",
-                "description": "dynamic/MonoBehaviour structure 路径:递归 JSON。\n\n**Schema 限制**:动态 Value 树结构不固定(每个 MonoBehaviour 用户字段都不同),\n这里用 `serde_json::Value`(自由 object)而非具体 schema。"
-              }
-            ]
+            "$ref": "#/components/schemas/Value",
+            "description": "递归 JSON；分页节点带 _kind/len/offset/next_offset 与 items、text 或 _bytes_hex。"
           }
         }
       },

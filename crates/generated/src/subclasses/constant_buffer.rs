@@ -37,6 +37,21 @@ impl crate::Parse for ConstantBufferMMatrixParamsVariant {
     }
 }
 
+impl crate::ToValue for ConstantBufferMMatrixParamsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：ConstantBufferMVectorParamsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ConstantBufferMVectorParamsVariant {
@@ -66,6 +81,21 @@ impl crate::Parse for ConstantBufferMVectorParamsVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for ConstantBufferMVectorParamsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -124,5 +154,60 @@ impl crate::Parse for ConstantBuffer {
             m_struct_params,
             m_is_partial_cb,
         })
+    }
+}
+
+impl crate::ToValue for ConstantBuffer {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_NameIndex".to_string(), self.m_name_index.to_value())),
+            Some((
+                "m_MatrixParams".to_string(),
+                self.m_matrix_params.to_value(),
+            )),
+            Some((
+                "m_VectorParams".to_string(),
+                self.m_vector_params.to_value(),
+            )),
+            Some(("m_Size".to_string(), self.m_size.to_value())),
+            crate::opt_field("m_StructParams", &self.m_struct_params),
+            crate::opt_field("m_IsPartialCB", &self.m_is_partial_cb),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_NameIndex" => (self.m_name_index).inspect_value(path, offset, limit),
+                "m_MatrixParams" => (self.m_matrix_params).inspect_value(path, offset, limit),
+                "m_VectorParams" => (self.m_vector_params).inspect_value(path, offset, limit),
+                "m_Size" => (self.m_size).inspect_value(path, offset, limit),
+                "m_StructParams" => (self.m_struct_params).inspect_value(path, offset, limit),
+                "m_IsPartialCB" => (self.m_is_partial_cb).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name_index).inspect_value(path, offset, limit))
+                .map(|v| ("m_NameIndex".to_string(), v)),
+            ((self.m_matrix_params).inspect_value(path, offset, limit))
+                .map(|v| ("m_MatrixParams".to_string(), v)),
+            ((self.m_vector_params).inspect_value(path, offset, limit))
+                .map(|v| ("m_VectorParams".to_string(), v)),
+            ((self.m_size).inspect_value(path, offset, limit)).map(|v| ("m_Size".to_string(), v)),
+            ((self.m_struct_params).inspect_value(path, offset, limit))
+                .map(|v| ("m_StructParams".to_string(), v)),
+            ((self.m_is_partial_cb).inspect_value(path, offset, limit))
+                .map(|v| ("m_IsPartialCB".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

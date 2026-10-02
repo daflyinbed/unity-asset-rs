@@ -41,3 +41,59 @@ impl crate::Parse for AudioLowPassFilter {
         })
     }
 }
+
+impl crate::ToValue for AudioLowPassFilter {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_Enabled".to_string(), self.m_enabled.to_value())),
+            crate::opt_field("m_CutoffFrequency", &self.m_cutoff_frequency),
+            Some((
+                "m_LowpassResonanceQ".to_string(),
+                self.m_lowpass_resonance_q.to_value(),
+            )),
+            Some((
+                "lowpassLevelCustomCurve".to_string(),
+                self.lowpass_level_custom_curve.to_value(),
+            )),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "m_CutoffFrequency" => (self.m_cutoff_frequency).inspect_value(path, offset, limit),
+                "m_LowpassResonanceQ" => {
+                    (self.m_lowpass_resonance_q).inspect_value(path, offset, limit)
+                }
+                "lowpassLevelCustomCurve" => {
+                    (self.lowpass_level_custom_curve).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.m_cutoff_frequency).inspect_value(path, offset, limit))
+                .map(|v| ("m_CutoffFrequency".to_string(), v)),
+            ((self.m_lowpass_resonance_q).inspect_value(path, offset, limit))
+                .map(|v| ("m_LowpassResonanceQ".to_string(), v)),
+            ((self.lowpass_level_custom_curve).inspect_value(path, offset, limit))
+                .map(|v| ("lowpassLevelCustomCurve".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

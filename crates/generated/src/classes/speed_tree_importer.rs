@@ -50,6 +50,21 @@ impl crate::Parse for SpeedTreeImporterMExternalObjectsVariant {
     }
 }
 
+impl crate::ToValue for SpeedTreeImporterMExternalObjectsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2019_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2019_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：SpeedTreeImporterMLodSettingsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum SpeedTreeImporterMLodSettingsVariant {
@@ -83,6 +98,21 @@ impl crate::Parse for SpeedTreeImporterMLodSettingsVariant {
     }
 }
 
+impl crate::ToValue for SpeedTreeImporterMLodSettingsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：SpeedTreeImporterMEnableSmoothLodTransitionVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum SpeedTreeImporterMEnableSmoothLodTransitionVariant {
@@ -102,6 +132,21 @@ impl crate::Parse for SpeedTreeImporterMEnableSmoothLodTransitionVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for SpeedTreeImporterMEnableSmoothLodTransitionVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -129,6 +174,21 @@ impl crate::Parse for SpeedTreeImporterMScaleFactorVariant {
     }
 }
 
+impl crate::ToValue for SpeedTreeImporterMScaleFactorVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_2(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：SpeedTreeImporterMMaterialVersionVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum SpeedTreeImporterMMaterialVersionVariant {
@@ -148,6 +208,21 @@ impl crate::Parse for SpeedTreeImporterMMaterialVersionVariant {
             let v = rdr.read_i32()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for SpeedTreeImporterMMaterialVersionVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2018_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2018_3(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -451,5 +526,256 @@ impl crate::Parse for SpeedTreeImporter {
             m_generate_colliders,
             m_generate_rigidbody,
         })
+    }
+}
+
+impl crate::ToValue for SpeedTreeImporter {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some(("m_MainColor".to_string(), self.m_main_color.to_value())),
+            crate::opt_field("m_ExternalObjects", &self.m_external_objects),
+            crate::opt_field("m_SpecColor", &self.m_spec_color),
+            Some((
+                "m_HueVariation".to_string(),
+                self.m_hue_variation.to_value(),
+            )),
+            crate::opt_field("m_UsedFileIDs", &self.m_used_file_i_ds),
+            Some((
+                "m_AlphaTestRef".to_string(),
+                self.m_alpha_test_ref.to_value(),
+            )),
+            crate::opt_field("m_Shininess", &self.m_shininess),
+            Some((
+                "m_BestWindQuality".to_string(),
+                self.m_best_wind_quality.to_value(),
+            )),
+            Some((
+                "m_HasBillboard".to_string(),
+                self.m_has_billboard.to_value(),
+            )),
+            Some(("m_LODSettings".to_string(), self.m_lod_settings.to_value())),
+            crate::opt_field("m_EnableHueVariation", &self.m_enable_hue_variation),
+            Some((
+                "m_EnableSmoothLODTransition".to_string(),
+                self.m_enable_smooth_lod_transition.to_value(),
+            )),
+            crate::opt_field("m_EnableBumpMapping", &self.m_enable_bump_mapping),
+            crate::opt_field("m_AnimateCrossFading", &self.m_animate_cross_fading),
+            crate::opt_field(
+                "m_EnableSubsurfaceScattering",
+                &self.m_enable_subsurface_scattering,
+            ),
+            Some((
+                "m_BillboardTransitionCrossFadeWidth".to_string(),
+                self.m_billboard_transition_cross_fade_width.to_value(),
+            )),
+            Some((
+                "m_FadeOutWidth".to_string(),
+                self.m_fade_out_width.to_value(),
+            )),
+            crate::opt_field("m_SelectedWindQuality", &self.m_selected_wind_quality),
+            Some(("m_ScaleFactor".to_string(), self.m_scale_factor.to_value())),
+            crate::opt_field("m_EnableShadowCasting", &self.m_enable_shadow_casting),
+            crate::opt_field("m_MaterialVersion", &self.m_material_version),
+            crate::opt_field("m_EnableShadowReceiving", &self.m_enable_shadow_receiving),
+            Some(("m_UserData".to_string(), self.m_user_data.to_value())),
+            crate::opt_field("m_EnableLightProbes", &self.m_enable_light_probes),
+            Some((
+                "m_AssetBundleName".to_string(),
+                self.m_asset_bundle_name.to_value(),
+            )),
+            crate::opt_field("m_MaterialLocation", &self.m_material_location),
+            crate::opt_field(
+                "m_MotionVectorModeEnumValue",
+                &self.m_motion_vector_mode_enum_value,
+            ),
+            crate::opt_field(
+                "m_ReflectionProbeEnumValue",
+                &self.m_reflection_probe_enum_value,
+            ),
+            Some((
+                "m_AssetBundleVariant".to_string(),
+                self.m_asset_bundle_variant.to_value(),
+            )),
+            crate::opt_field("m_Materials", &self.m_materials),
+            crate::opt_field(
+                "m_SupportsEmbeddedMaterials",
+                &self.m_supports_embedded_materials,
+            ),
+            crate::opt_field("m_FileIDType", &self.m_file_id_type),
+            crate::opt_field(
+                "m_UnitConversionEnumValue",
+                &self.m_unit_conversion_enum_value,
+            ),
+            crate::opt_field("m_GenerateColliders", &self.m_generate_colliders),
+            crate::opt_field("m_GenerateRigidbody", &self.m_generate_rigidbody),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_MainColor" => (self.m_main_color).inspect_value(path, offset, limit),
+                "m_ExternalObjects" => (self.m_external_objects).inspect_value(path, offset, limit),
+                "m_SpecColor" => (self.m_spec_color).inspect_value(path, offset, limit),
+                "m_HueVariation" => (self.m_hue_variation).inspect_value(path, offset, limit),
+                "m_UsedFileIDs" => (self.m_used_file_i_ds).inspect_value(path, offset, limit),
+                "m_AlphaTestRef" => (self.m_alpha_test_ref).inspect_value(path, offset, limit),
+                "m_Shininess" => (self.m_shininess).inspect_value(path, offset, limit),
+                "m_BestWindQuality" => {
+                    (self.m_best_wind_quality).inspect_value(path, offset, limit)
+                }
+                "m_HasBillboard" => (self.m_has_billboard).inspect_value(path, offset, limit),
+                "m_LODSettings" => (self.m_lod_settings).inspect_value(path, offset, limit),
+                "m_EnableHueVariation" => {
+                    (self.m_enable_hue_variation).inspect_value(path, offset, limit)
+                }
+                "m_EnableSmoothLODTransition" => {
+                    (self.m_enable_smooth_lod_transition).inspect_value(path, offset, limit)
+                }
+                "m_EnableBumpMapping" => {
+                    (self.m_enable_bump_mapping).inspect_value(path, offset, limit)
+                }
+                "m_AnimateCrossFading" => {
+                    (self.m_animate_cross_fading).inspect_value(path, offset, limit)
+                }
+                "m_EnableSubsurfaceScattering" => {
+                    (self.m_enable_subsurface_scattering).inspect_value(path, offset, limit)
+                }
+                "m_BillboardTransitionCrossFadeWidth" => (self
+                    .m_billboard_transition_cross_fade_width)
+                    .inspect_value(path, offset, limit),
+                "m_FadeOutWidth" => (self.m_fade_out_width).inspect_value(path, offset, limit),
+                "m_SelectedWindQuality" => {
+                    (self.m_selected_wind_quality).inspect_value(path, offset, limit)
+                }
+                "m_ScaleFactor" => (self.m_scale_factor).inspect_value(path, offset, limit),
+                "m_EnableShadowCasting" => {
+                    (self.m_enable_shadow_casting).inspect_value(path, offset, limit)
+                }
+                "m_MaterialVersion" => (self.m_material_version).inspect_value(path, offset, limit),
+                "m_EnableShadowReceiving" => {
+                    (self.m_enable_shadow_receiving).inspect_value(path, offset, limit)
+                }
+                "m_UserData" => (self.m_user_data).inspect_value(path, offset, limit),
+                "m_EnableLightProbes" => {
+                    (self.m_enable_light_probes).inspect_value(path, offset, limit)
+                }
+                "m_AssetBundleName" => {
+                    (self.m_asset_bundle_name).inspect_value(path, offset, limit)
+                }
+                "m_MaterialLocation" => {
+                    (self.m_material_location).inspect_value(path, offset, limit)
+                }
+                "m_MotionVectorModeEnumValue" => {
+                    (self.m_motion_vector_mode_enum_value).inspect_value(path, offset, limit)
+                }
+                "m_ReflectionProbeEnumValue" => {
+                    (self.m_reflection_probe_enum_value).inspect_value(path, offset, limit)
+                }
+                "m_AssetBundleVariant" => {
+                    (self.m_asset_bundle_variant).inspect_value(path, offset, limit)
+                }
+                "m_Materials" => (self.m_materials).inspect_value(path, offset, limit),
+                "m_SupportsEmbeddedMaterials" => {
+                    (self.m_supports_embedded_materials).inspect_value(path, offset, limit)
+                }
+                "m_FileIDType" => (self.m_file_id_type).inspect_value(path, offset, limit),
+                "m_UnitConversionEnumValue" => {
+                    (self.m_unit_conversion_enum_value).inspect_value(path, offset, limit)
+                }
+                "m_GenerateColliders" => {
+                    (self.m_generate_colliders).inspect_value(path, offset, limit)
+                }
+                "m_GenerateRigidbody" => {
+                    (self.m_generate_rigidbody).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_main_color).inspect_value(path, offset, limit))
+                .map(|v| ("m_MainColor".to_string(), v)),
+            ((self.m_external_objects).inspect_value(path, offset, limit))
+                .map(|v| ("m_ExternalObjects".to_string(), v)),
+            ((self.m_spec_color).inspect_value(path, offset, limit))
+                .map(|v| ("m_SpecColor".to_string(), v)),
+            ((self.m_hue_variation).inspect_value(path, offset, limit))
+                .map(|v| ("m_HueVariation".to_string(), v)),
+            ((self.m_used_file_i_ds).inspect_value(path, offset, limit))
+                .map(|v| ("m_UsedFileIDs".to_string(), v)),
+            ((self.m_alpha_test_ref).inspect_value(path, offset, limit))
+                .map(|v| ("m_AlphaTestRef".to_string(), v)),
+            ((self.m_shininess).inspect_value(path, offset, limit))
+                .map(|v| ("m_Shininess".to_string(), v)),
+            ((self.m_best_wind_quality).inspect_value(path, offset, limit))
+                .map(|v| ("m_BestWindQuality".to_string(), v)),
+            ((self.m_has_billboard).inspect_value(path, offset, limit))
+                .map(|v| ("m_HasBillboard".to_string(), v)),
+            ((self.m_lod_settings).inspect_value(path, offset, limit))
+                .map(|v| ("m_LODSettings".to_string(), v)),
+            ((self.m_enable_hue_variation).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableHueVariation".to_string(), v)),
+            ((self.m_enable_smooth_lod_transition).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableSmoothLODTransition".to_string(), v)),
+            ((self.m_enable_bump_mapping).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableBumpMapping".to_string(), v)),
+            ((self.m_animate_cross_fading).inspect_value(path, offset, limit))
+                .map(|v| ("m_AnimateCrossFading".to_string(), v)),
+            ((self.m_enable_subsurface_scattering).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableSubsurfaceScattering".to_string(), v)),
+            ((self.m_billboard_transition_cross_fade_width).inspect_value(path, offset, limit))
+                .map(|v| ("m_BillboardTransitionCrossFadeWidth".to_string(), v)),
+            ((self.m_fade_out_width).inspect_value(path, offset, limit))
+                .map(|v| ("m_FadeOutWidth".to_string(), v)),
+            ((self.m_selected_wind_quality).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectedWindQuality".to_string(), v)),
+            ((self.m_scale_factor).inspect_value(path, offset, limit))
+                .map(|v| ("m_ScaleFactor".to_string(), v)),
+            ((self.m_enable_shadow_casting).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableShadowCasting".to_string(), v)),
+            ((self.m_material_version).inspect_value(path, offset, limit))
+                .map(|v| ("m_MaterialVersion".to_string(), v)),
+            ((self.m_enable_shadow_receiving).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableShadowReceiving".to_string(), v)),
+            ((self.m_user_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_UserData".to_string(), v)),
+            ((self.m_enable_light_probes).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableLightProbes".to_string(), v)),
+            ((self.m_asset_bundle_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_AssetBundleName".to_string(), v)),
+            ((self.m_material_location).inspect_value(path, offset, limit))
+                .map(|v| ("m_MaterialLocation".to_string(), v)),
+            ((self.m_motion_vector_mode_enum_value).inspect_value(path, offset, limit))
+                .map(|v| ("m_MotionVectorModeEnumValue".to_string(), v)),
+            ((self.m_reflection_probe_enum_value).inspect_value(path, offset, limit))
+                .map(|v| ("m_ReflectionProbeEnumValue".to_string(), v)),
+            ((self.m_asset_bundle_variant).inspect_value(path, offset, limit))
+                .map(|v| ("m_AssetBundleVariant".to_string(), v)),
+            ((self.m_materials).inspect_value(path, offset, limit))
+                .map(|v| ("m_Materials".to_string(), v)),
+            ((self.m_supports_embedded_materials).inspect_value(path, offset, limit))
+                .map(|v| ("m_SupportsEmbeddedMaterials".to_string(), v)),
+            ((self.m_file_id_type).inspect_value(path, offset, limit))
+                .map(|v| ("m_FileIDType".to_string(), v)),
+            ((self.m_unit_conversion_enum_value).inspect_value(path, offset, limit))
+                .map(|v| ("m_UnitConversionEnumValue".to_string(), v)),
+            ((self.m_generate_colliders).inspect_value(path, offset, limit))
+                .map(|v| ("m_GenerateColliders".to_string(), v)),
+            ((self.m_generate_rigidbody).inspect_value(path, offset, limit))
+                .map(|v| ("m_GenerateRigidbody".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

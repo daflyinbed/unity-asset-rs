@@ -67,3 +67,52 @@ impl crate::Parse for ExternalForcesModule {
         })
     }
 }
+
+impl crate::ToValue for ExternalForcesModule {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("enabled".to_string(), self.enabled.to_value())),
+            crate::opt_field("multiplier", &self.multiplier),
+            crate::opt_field("multiplierCurve", &self.multiplier_curve),
+            crate::opt_field("influenceFilter", &self.influence_filter),
+            crate::opt_field("influenceMask", &self.influence_mask),
+            crate::opt_field("influenceList", &self.influence_list),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "enabled" => (self.enabled).inspect_value(path, offset, limit),
+                "multiplier" => (self.multiplier).inspect_value(path, offset, limit),
+                "multiplierCurve" => (self.multiplier_curve).inspect_value(path, offset, limit),
+                "influenceFilter" => (self.influence_filter).inspect_value(path, offset, limit),
+                "influenceMask" => (self.influence_mask).inspect_value(path, offset, limit),
+                "influenceList" => (self.influence_list).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.enabled).inspect_value(path, offset, limit)).map(|v| ("enabled".to_string(), v)),
+            ((self.multiplier).inspect_value(path, offset, limit))
+                .map(|v| ("multiplier".to_string(), v)),
+            ((self.multiplier_curve).inspect_value(path, offset, limit))
+                .map(|v| ("multiplierCurve".to_string(), v)),
+            ((self.influence_filter).inspect_value(path, offset, limit))
+                .map(|v| ("influenceFilter".to_string(), v)),
+            ((self.influence_mask).inspect_value(path, offset, limit))
+                .map(|v| ("influenceMask".to_string(), v)),
+            ((self.influence_list).inspect_value(path, offset, limit))
+                .map(|v| ("influenceList".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

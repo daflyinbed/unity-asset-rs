@@ -25,3 +25,39 @@ impl crate::Parse for ProbeSetIndex {
         })
     }
 }
+
+impl crate::ToValue for ProbeSetIndex {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Hash".to_string(), self.m_hash.to_value())),
+            Some(("m_Offset".to_string(), self.m_offset.to_value())),
+            Some(("m_Size".to_string(), self.m_size.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Hash" => (self.m_hash).inspect_value(path, offset, limit),
+                "m_Offset" => (self.m_offset).inspect_value(path, offset, limit),
+                "m_Size" => (self.m_size).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_hash).inspect_value(path, offset, limit)).map(|v| ("m_Hash".to_string(), v)),
+            ((self.m_offset).inspect_value(path, offset, limit))
+                .map(|v| ("m_Offset".to_string(), v)),
+            ((self.m_size).inspect_value(path, offset, limit)).map(|v| ("m_Size".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

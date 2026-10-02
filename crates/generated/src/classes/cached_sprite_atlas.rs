@@ -37,6 +37,21 @@ impl crate::Parse for CachedSpriteAtlasTexturesVariant {
     }
 }
 
+impl crate::ToValue for CachedSpriteAtlasTexturesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：CachedSpriteAtlasFramesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum CachedSpriteAtlasFramesVariant {
@@ -89,6 +104,21 @@ impl crate::Parse for CachedSpriteAtlasFramesVariant {
     }
 }
 
+impl crate::ToValue for CachedSpriteAtlasFramesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_0(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_0(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：CachedSpriteAtlasAlphaTexturesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum CachedSpriteAtlasAlphaTexturesVariant {
@@ -121,6 +151,21 @@ impl crate::Parse for CachedSpriteAtlasAlphaTexturesVariant {
         }
     }
 }
+
+impl crate::ToValue for CachedSpriteAtlasAlphaTexturesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct CachedSpriteAtlas {
     pub textures: CachedSpriteAtlasTexturesVariant,
@@ -148,5 +193,42 @@ impl crate::Parse for CachedSpriteAtlas {
             frames: frames.unwrap(),
             alpha_textures,
         })
+    }
+}
+
+impl crate::ToValue for CachedSpriteAtlas {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("textures".to_string(), self.textures.to_value())),
+            Some(("frames".to_string(), self.frames.to_value())),
+            crate::opt_field("alphaTextures", &self.alpha_textures),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "textures" => (self.textures).inspect_value(path, offset, limit),
+                "frames" => (self.frames).inspect_value(path, offset, limit),
+                "alphaTextures" => (self.alpha_textures).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.textures).inspect_value(path, offset, limit))
+                .map(|v| ("textures".to_string(), v)),
+            ((self.frames).inspect_value(path, offset, limit)).map(|v| ("frames".to_string(), v)),
+            ((self.alpha_textures).inspect_value(path, offset, limit))
+                .map(|v| ("alphaTextures".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

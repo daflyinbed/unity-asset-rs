@@ -25,6 +25,21 @@ impl crate::Parse for Rigidbody2DMInterpolateVariant {
     }
 }
 
+impl crate::ToValue for Rigidbody2DMInterpolateVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_5(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：Rigidbody2DMSleepingModeVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum Rigidbody2DMSleepingModeVariant {
@@ -43,6 +58,21 @@ impl crate::Parse for Rigidbody2DMSleepingModeVariant {
         } else {
             let v = rdr.read_u8()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for Rigidbody2DMSleepingModeVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_5(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -66,6 +96,21 @@ impl crate::Parse for Rigidbody2DMCollisionDetectionVariant {
             let v = rdr.read_u8()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for Rigidbody2DMCollisionDetectionVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_5(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -181,5 +226,126 @@ impl crate::Parse for Rigidbody2D {
             m_include_layers,
             m_exclude_layers,
         })
+    }
+}
+
+impl crate::ToValue for Rigidbody2D {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_Mass".to_string(), self.m_mass.to_value())),
+            crate::opt_field("m_UseAutoMass", &self.m_use_auto_mass),
+            crate::opt_field("m_BodyType", &self.m_body_type),
+            crate::opt_field("m_LinearDrag", &self.m_linear_drag),
+            crate::opt_field("m_Simulated", &self.m_simulated),
+            crate::opt_field("m_AngularDrag", &self.m_angular_drag),
+            crate::opt_field(
+                "m_UseFullKinematicContacts",
+                &self.m_use_full_kinematic_contacts,
+            ),
+            Some((
+                "m_GravityScale".to_string(),
+                self.m_gravity_scale.to_value(),
+            )),
+            crate::opt_field("m_FixedAngle", &self.m_fixed_angle),
+            crate::opt_field("m_IsKinematic", &self.m_is_kinematic),
+            Some(("m_Interpolate".to_string(), self.m_interpolate.to_value())),
+            crate::opt_field("m_LinearDamping", &self.m_linear_damping),
+            Some((
+                "m_SleepingMode".to_string(),
+                self.m_sleeping_mode.to_value(),
+            )),
+            crate::opt_field("m_AngularDamping", &self.m_angular_damping),
+            Some((
+                "m_CollisionDetection".to_string(),
+                self.m_collision_detection.to_value(),
+            )),
+            crate::opt_field("m_Constraints", &self.m_constraints),
+            crate::opt_field("m_Material", &self.m_material),
+            crate::opt_field("m_IncludeLayers", &self.m_include_layers),
+            crate::opt_field("m_ExcludeLayers", &self.m_exclude_layers),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Mass" => (self.m_mass).inspect_value(path, offset, limit),
+                "m_UseAutoMass" => (self.m_use_auto_mass).inspect_value(path, offset, limit),
+                "m_BodyType" => (self.m_body_type).inspect_value(path, offset, limit),
+                "m_LinearDrag" => (self.m_linear_drag).inspect_value(path, offset, limit),
+                "m_Simulated" => (self.m_simulated).inspect_value(path, offset, limit),
+                "m_AngularDrag" => (self.m_angular_drag).inspect_value(path, offset, limit),
+                "m_UseFullKinematicContacts" => {
+                    (self.m_use_full_kinematic_contacts).inspect_value(path, offset, limit)
+                }
+                "m_GravityScale" => (self.m_gravity_scale).inspect_value(path, offset, limit),
+                "m_FixedAngle" => (self.m_fixed_angle).inspect_value(path, offset, limit),
+                "m_IsKinematic" => (self.m_is_kinematic).inspect_value(path, offset, limit),
+                "m_Interpolate" => (self.m_interpolate).inspect_value(path, offset, limit),
+                "m_LinearDamping" => (self.m_linear_damping).inspect_value(path, offset, limit),
+                "m_SleepingMode" => (self.m_sleeping_mode).inspect_value(path, offset, limit),
+                "m_AngularDamping" => (self.m_angular_damping).inspect_value(path, offset, limit),
+                "m_CollisionDetection" => {
+                    (self.m_collision_detection).inspect_value(path, offset, limit)
+                }
+                "m_Constraints" => (self.m_constraints).inspect_value(path, offset, limit),
+                "m_Material" => (self.m_material).inspect_value(path, offset, limit),
+                "m_IncludeLayers" => (self.m_include_layers).inspect_value(path, offset, limit),
+                "m_ExcludeLayers" => (self.m_exclude_layers).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_mass).inspect_value(path, offset, limit)).map(|v| ("m_Mass".to_string(), v)),
+            ((self.m_use_auto_mass).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseAutoMass".to_string(), v)),
+            ((self.m_body_type).inspect_value(path, offset, limit))
+                .map(|v| ("m_BodyType".to_string(), v)),
+            ((self.m_linear_drag).inspect_value(path, offset, limit))
+                .map(|v| ("m_LinearDrag".to_string(), v)),
+            ((self.m_simulated).inspect_value(path, offset, limit))
+                .map(|v| ("m_Simulated".to_string(), v)),
+            ((self.m_angular_drag).inspect_value(path, offset, limit))
+                .map(|v| ("m_AngularDrag".to_string(), v)),
+            ((self.m_use_full_kinematic_contacts).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseFullKinematicContacts".to_string(), v)),
+            ((self.m_gravity_scale).inspect_value(path, offset, limit))
+                .map(|v| ("m_GravityScale".to_string(), v)),
+            ((self.m_fixed_angle).inspect_value(path, offset, limit))
+                .map(|v| ("m_FixedAngle".to_string(), v)),
+            ((self.m_is_kinematic).inspect_value(path, offset, limit))
+                .map(|v| ("m_IsKinematic".to_string(), v)),
+            ((self.m_interpolate).inspect_value(path, offset, limit))
+                .map(|v| ("m_Interpolate".to_string(), v)),
+            ((self.m_linear_damping).inspect_value(path, offset, limit))
+                .map(|v| ("m_LinearDamping".to_string(), v)),
+            ((self.m_sleeping_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_SleepingMode".to_string(), v)),
+            ((self.m_angular_damping).inspect_value(path, offset, limit))
+                .map(|v| ("m_AngularDamping".to_string(), v)),
+            ((self.m_collision_detection).inspect_value(path, offset, limit))
+                .map(|v| ("m_CollisionDetection".to_string(), v)),
+            ((self.m_constraints).inspect_value(path, offset, limit))
+                .map(|v| ("m_Constraints".to_string(), v)),
+            ((self.m_material).inspect_value(path, offset, limit))
+                .map(|v| ("m_Material".to_string(), v)),
+            ((self.m_include_layers).inspect_value(path, offset, limit))
+                .map(|v| ("m_IncludeLayers".to_string(), v)),
+            ((self.m_exclude_layers).inspect_value(path, offset, limit))
+                .map(|v| ("m_ExcludeLayers".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

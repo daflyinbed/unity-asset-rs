@@ -25,6 +25,21 @@ impl crate::Parse for EmissionModuleCnt0Variant {
     }
 }
 
+impl crate::ToValue for EmissionModuleCnt0Variant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_4(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_4(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：EmissionModuleMBurstCountVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum EmissionModuleMBurstCountVariant {
@@ -49,6 +64,21 @@ impl crate::Parse for EmissionModuleMBurstCountVariant {
     }
 }
 
+impl crate::ToValue for EmissionModuleMBurstCountVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_4(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_4(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：EmissionModuleCnt1Variant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum EmissionModuleCnt1Variant {
@@ -67,6 +97,21 @@ impl crate::Parse for EmissionModuleCnt1Variant {
         } else {
             let v = rdr.read_u16()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for EmissionModuleCnt1Variant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_4(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_4(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -104,6 +149,21 @@ impl crate::Parse for EmissionModuleMBurstsVariant {
     }
 }
 
+impl crate::ToValue for EmissionModuleMBurstsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：EmissionModuleCnt2Variant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum EmissionModuleCnt2Variant {
@@ -122,6 +182,21 @@ impl crate::Parse for EmissionModuleCnt2Variant {
         } else {
             let v = rdr.read_u16()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for EmissionModuleCnt2Variant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_4(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_4(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -148,6 +223,21 @@ impl crate::Parse for EmissionModuleCnt3Variant {
     }
 }
 
+impl crate::ToValue for EmissionModuleCnt3Variant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_4(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_4(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：EmissionModuleCntmax0Variant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum EmissionModuleCntmax0Variant {
@@ -166,6 +256,21 @@ impl crate::Parse for EmissionModuleCntmax0Variant {
         } else {
             let v = rdr.read_u16()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for EmissionModuleCntmax0Variant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_4(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_4(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -192,6 +297,21 @@ impl crate::Parse for EmissionModuleCntmax1Variant {
     }
 }
 
+impl crate::ToValue for EmissionModuleCntmax1Variant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_4(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_4(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：EmissionModuleCntmax2Variant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum EmissionModuleCntmax2Variant {
@@ -214,6 +334,21 @@ impl crate::Parse for EmissionModuleCntmax2Variant {
     }
 }
 
+impl crate::ToValue for EmissionModuleCntmax2Variant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_4(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_4(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：EmissionModuleCntmax3Variant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum EmissionModuleCntmax3Variant {
@@ -232,6 +367,21 @@ impl crate::Parse for EmissionModuleCntmax3Variant {
         } else {
             let v = rdr.read_u16()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for EmissionModuleCntmax3Variant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_4(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_4(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -356,5 +506,92 @@ impl crate::Parse for EmissionModule {
             time3,
             cntmax3,
         })
+    }
+}
+
+impl crate::ToValue for EmissionModule {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("enabled".to_string(), self.enabled.to_value())),
+            crate::opt_field("m_Type", &self.m_type),
+            crate::opt_field("rateOverTime", &self.rate_over_time),
+            crate::opt_field("rate", &self.rate),
+            crate::opt_field("rateOverDistance", &self.rate_over_distance),
+            crate::opt_field("cnt0", &self.cnt0),
+            Some(("m_BurstCount".to_string(), self.m_burst_count.to_value())),
+            crate::opt_field("cnt1", &self.cnt1),
+            crate::opt_field("m_Bursts", &self.m_bursts),
+            crate::opt_field("cnt2", &self.cnt2),
+            crate::opt_field("cnt3", &self.cnt3),
+            crate::opt_field("time0", &self.time0),
+            crate::opt_field("cntmax0", &self.cntmax0),
+            crate::opt_field("time1", &self.time1),
+            crate::opt_field("cntmax1", &self.cntmax1),
+            crate::opt_field("time2", &self.time2),
+            crate::opt_field("cntmax2", &self.cntmax2),
+            crate::opt_field("time3", &self.time3),
+            crate::opt_field("cntmax3", &self.cntmax3),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "enabled" => (self.enabled).inspect_value(path, offset, limit),
+                "m_Type" => (self.m_type).inspect_value(path, offset, limit),
+                "rateOverTime" => (self.rate_over_time).inspect_value(path, offset, limit),
+                "rate" => (self.rate).inspect_value(path, offset, limit),
+                "rateOverDistance" => (self.rate_over_distance).inspect_value(path, offset, limit),
+                "cnt0" => (self.cnt0).inspect_value(path, offset, limit),
+                "m_BurstCount" => (self.m_burst_count).inspect_value(path, offset, limit),
+                "cnt1" => (self.cnt1).inspect_value(path, offset, limit),
+                "m_Bursts" => (self.m_bursts).inspect_value(path, offset, limit),
+                "cnt2" => (self.cnt2).inspect_value(path, offset, limit),
+                "cnt3" => (self.cnt3).inspect_value(path, offset, limit),
+                "time0" => (self.time0).inspect_value(path, offset, limit),
+                "cntmax0" => (self.cntmax0).inspect_value(path, offset, limit),
+                "time1" => (self.time1).inspect_value(path, offset, limit),
+                "cntmax1" => (self.cntmax1).inspect_value(path, offset, limit),
+                "time2" => (self.time2).inspect_value(path, offset, limit),
+                "cntmax2" => (self.cntmax2).inspect_value(path, offset, limit),
+                "time3" => (self.time3).inspect_value(path, offset, limit),
+                "cntmax3" => (self.cntmax3).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.enabled).inspect_value(path, offset, limit)).map(|v| ("enabled".to_string(), v)),
+            ((self.m_type).inspect_value(path, offset, limit)).map(|v| ("m_Type".to_string(), v)),
+            ((self.rate_over_time).inspect_value(path, offset, limit))
+                .map(|v| ("rateOverTime".to_string(), v)),
+            ((self.rate).inspect_value(path, offset, limit)).map(|v| ("rate".to_string(), v)),
+            ((self.rate_over_distance).inspect_value(path, offset, limit))
+                .map(|v| ("rateOverDistance".to_string(), v)),
+            ((self.cnt0).inspect_value(path, offset, limit)).map(|v| ("cnt0".to_string(), v)),
+            ((self.m_burst_count).inspect_value(path, offset, limit))
+                .map(|v| ("m_BurstCount".to_string(), v)),
+            ((self.cnt1).inspect_value(path, offset, limit)).map(|v| ("cnt1".to_string(), v)),
+            ((self.m_bursts).inspect_value(path, offset, limit))
+                .map(|v| ("m_Bursts".to_string(), v)),
+            ((self.cnt2).inspect_value(path, offset, limit)).map(|v| ("cnt2".to_string(), v)),
+            ((self.cnt3).inspect_value(path, offset, limit)).map(|v| ("cnt3".to_string(), v)),
+            ((self.time0).inspect_value(path, offset, limit)).map(|v| ("time0".to_string(), v)),
+            ((self.cntmax0).inspect_value(path, offset, limit)).map(|v| ("cntmax0".to_string(), v)),
+            ((self.time1).inspect_value(path, offset, limit)).map(|v| ("time1".to_string(), v)),
+            ((self.cntmax1).inspect_value(path, offset, limit)).map(|v| ("cntmax1".to_string(), v)),
+            ((self.time2).inspect_value(path, offset, limit)).map(|v| ("time2".to_string(), v)),
+            ((self.cntmax2).inspect_value(path, offset, limit)).map(|v| ("cntmax2".to_string(), v)),
+            ((self.time3).inspect_value(path, offset, limit)).map(|v| ("time3".to_string(), v)),
+            ((self.cntmax3).inspect_value(path, offset, limit)).map(|v| ("cntmax3".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

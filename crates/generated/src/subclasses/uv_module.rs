@@ -153,3 +153,92 @@ impl crate::Parse for UvModule {
         })
     }
 }
+
+impl crate::ToValue for UvModule {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("enabled".to_string(), self.enabled.to_value())),
+            Some(("frameOverTime".to_string(), self.frame_over_time.to_value())),
+            crate::opt_field("mode", &self.mode),
+            Some(("tilesX".to_string(), self.tiles_x.to_value())),
+            crate::opt_field("startFrame", &self.start_frame),
+            crate::opt_field("timeMode", &self.time_mode),
+            Some(("tilesY".to_string(), self.tiles_y.to_value())),
+            crate::opt_field("fps", &self.fps),
+            Some(("animationType".to_string(), self.animation_type.to_value())),
+            Some(("rowIndex".to_string(), self.row_index.to_value())),
+            Some(("cycles".to_string(), self.cycles.to_value())),
+            crate::opt_field("speedRange", &self.speed_range),
+            crate::opt_field("randomRow", &self.random_row),
+            crate::opt_field("uvChannelMask", &self.uv_channel_mask),
+            crate::opt_field("flipU", &self.flip_u),
+            crate::opt_field("flipV", &self.flip_v),
+            crate::opt_field("sprites", &self.sprites),
+            crate::opt_field("rowMode", &self.row_mode),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "enabled" => (self.enabled).inspect_value(path, offset, limit),
+                "frameOverTime" => (self.frame_over_time).inspect_value(path, offset, limit),
+                "mode" => (self.mode).inspect_value(path, offset, limit),
+                "tilesX" => (self.tiles_x).inspect_value(path, offset, limit),
+                "startFrame" => (self.start_frame).inspect_value(path, offset, limit),
+                "timeMode" => (self.time_mode).inspect_value(path, offset, limit),
+                "tilesY" => (self.tiles_y).inspect_value(path, offset, limit),
+                "fps" => (self.fps).inspect_value(path, offset, limit),
+                "animationType" => (self.animation_type).inspect_value(path, offset, limit),
+                "rowIndex" => (self.row_index).inspect_value(path, offset, limit),
+                "cycles" => (self.cycles).inspect_value(path, offset, limit),
+                "speedRange" => (self.speed_range).inspect_value(path, offset, limit),
+                "randomRow" => (self.random_row).inspect_value(path, offset, limit),
+                "uvChannelMask" => (self.uv_channel_mask).inspect_value(path, offset, limit),
+                "flipU" => (self.flip_u).inspect_value(path, offset, limit),
+                "flipV" => (self.flip_v).inspect_value(path, offset, limit),
+                "sprites" => (self.sprites).inspect_value(path, offset, limit),
+                "rowMode" => (self.row_mode).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.enabled).inspect_value(path, offset, limit)).map(|v| ("enabled".to_string(), v)),
+            ((self.frame_over_time).inspect_value(path, offset, limit))
+                .map(|v| ("frameOverTime".to_string(), v)),
+            ((self.mode).inspect_value(path, offset, limit)).map(|v| ("mode".to_string(), v)),
+            ((self.tiles_x).inspect_value(path, offset, limit)).map(|v| ("tilesX".to_string(), v)),
+            ((self.start_frame).inspect_value(path, offset, limit))
+                .map(|v| ("startFrame".to_string(), v)),
+            ((self.time_mode).inspect_value(path, offset, limit))
+                .map(|v| ("timeMode".to_string(), v)),
+            ((self.tiles_y).inspect_value(path, offset, limit)).map(|v| ("tilesY".to_string(), v)),
+            ((self.fps).inspect_value(path, offset, limit)).map(|v| ("fps".to_string(), v)),
+            ((self.animation_type).inspect_value(path, offset, limit))
+                .map(|v| ("animationType".to_string(), v)),
+            ((self.row_index).inspect_value(path, offset, limit))
+                .map(|v| ("rowIndex".to_string(), v)),
+            ((self.cycles).inspect_value(path, offset, limit)).map(|v| ("cycles".to_string(), v)),
+            ((self.speed_range).inspect_value(path, offset, limit))
+                .map(|v| ("speedRange".to_string(), v)),
+            ((self.random_row).inspect_value(path, offset, limit))
+                .map(|v| ("randomRow".to_string(), v)),
+            ((self.uv_channel_mask).inspect_value(path, offset, limit))
+                .map(|v| ("uvChannelMask".to_string(), v)),
+            ((self.flip_u).inspect_value(path, offset, limit)).map(|v| ("flipU".to_string(), v)),
+            ((self.flip_v).inspect_value(path, offset, limit)).map(|v| ("flipV".to_string(), v)),
+            ((self.sprites).inspect_value(path, offset, limit)).map(|v| ("sprites".to_string(), v)),
+            ((self.row_mode).inspect_value(path, offset, limit))
+                .map(|v| ("rowMode".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

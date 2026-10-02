@@ -32,6 +32,23 @@ impl crate::Parse for AnimatorStateMachineMDefaultStateVariant {
     }
 }
 
+impl crate::ToValue for AnimatorStateMachineMDefaultStateVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_0(v) => v.to_value(),
+            Self::V6000_4(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_0(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_4(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：AnimatorStateMachineMChildStatesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AnimatorStateMachineMChildStatesVariant {
@@ -61,6 +78,21 @@ impl crate::Parse for AnimatorStateMachineMChildStatesVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for AnimatorStateMachineMChildStatesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -98,6 +130,21 @@ impl crate::Parse for AnimatorStateMachineMChildStateMachinesVariant {
     }
 }
 
+impl crate::ToValue for AnimatorStateMachineMChildStateMachinesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：AnimatorStateMachineMAnyStateTransitionsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AnimatorStateMachineMAnyStateTransitionsVariant {
@@ -127,6 +174,21 @@ impl crate::Parse for AnimatorStateMachineMAnyStateTransitionsVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for AnimatorStateMachineMAnyStateTransitionsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -164,6 +226,21 @@ impl crate::Parse for AnimatorStateMachineMEntryTransitionsVariant {
     }
 }
 
+impl crate::ToValue for AnimatorStateMachineMEntryTransitionsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：AnimatorStateMachineMStateMachineBehavioursVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AnimatorStateMachineMStateMachineBehavioursVariant {
@@ -193,6 +270,21 @@ impl crate::Parse for AnimatorStateMachineMStateMachineBehavioursVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for AnimatorStateMachineMStateMachineBehavioursVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -419,5 +511,139 @@ impl crate::Parse for AnimatorStateMachine {
             m_entry_position,
             m_exit_position,
         })
+    }
+}
+
+impl crate::ToValue for AnimatorStateMachine {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some((
+                "m_DefaultState".to_string(),
+                self.m_default_state.to_value(),
+            )),
+            crate::opt_field("m_ChildStates", &self.m_child_states),
+            crate::opt_field("m_States", &self.m_states),
+            crate::opt_field("m_ChildStateMachines", &self.m_child_state_machines),
+            crate::opt_field("m_ChildStateMachine", &self.m_child_state_machine),
+            crate::opt_field("m_AnyStateTransitions", &self.m_any_state_transitions),
+            crate::opt_field(
+                "m_ChildStateMachinePosition",
+                &self.m_child_state_machine_position,
+            ),
+            crate::opt_field("m_EntryTransitions", &self.m_entry_transitions),
+            crate::opt_field("m_LocalTransitions", &self.m_local_transitions),
+            crate::opt_field("m_OrderedTransitions", &self.m_ordered_transitions),
+            crate::opt_field(
+                "m_StateMachineTransitions",
+                &self.m_state_machine_transitions,
+            ),
+            crate::opt_field("m_MotionSetCount", &self.m_motion_set_count),
+            crate::opt_field("m_StateMachineBehaviours", &self.m_state_machine_behaviours),
+            Some((
+                "m_AnyStatePosition".to_string(),
+                self.m_any_state_position.to_value(),
+            )),
+            Some((
+                "m_ParentStateMachinePosition".to_string(),
+                self.m_parent_state_machine_position.to_value(),
+            )),
+            crate::opt_field("m_EntryPosition", &self.m_entry_position),
+            crate::opt_field("m_ExitPosition", &self.m_exit_position),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_DefaultState" => (self.m_default_state).inspect_value(path, offset, limit),
+                "m_ChildStates" => (self.m_child_states).inspect_value(path, offset, limit),
+                "m_States" => (self.m_states).inspect_value(path, offset, limit),
+                "m_ChildStateMachines" => {
+                    (self.m_child_state_machines).inspect_value(path, offset, limit)
+                }
+                "m_ChildStateMachine" => {
+                    (self.m_child_state_machine).inspect_value(path, offset, limit)
+                }
+                "m_AnyStateTransitions" => {
+                    (self.m_any_state_transitions).inspect_value(path, offset, limit)
+                }
+                "m_ChildStateMachinePosition" => {
+                    (self.m_child_state_machine_position).inspect_value(path, offset, limit)
+                }
+                "m_EntryTransitions" => {
+                    (self.m_entry_transitions).inspect_value(path, offset, limit)
+                }
+                "m_LocalTransitions" => {
+                    (self.m_local_transitions).inspect_value(path, offset, limit)
+                }
+                "m_OrderedTransitions" => {
+                    (self.m_ordered_transitions).inspect_value(path, offset, limit)
+                }
+                "m_StateMachineTransitions" => {
+                    (self.m_state_machine_transitions).inspect_value(path, offset, limit)
+                }
+                "m_MotionSetCount" => (self.m_motion_set_count).inspect_value(path, offset, limit),
+                "m_StateMachineBehaviours" => {
+                    (self.m_state_machine_behaviours).inspect_value(path, offset, limit)
+                }
+                "m_AnyStatePosition" => {
+                    (self.m_any_state_position).inspect_value(path, offset, limit)
+                }
+                "m_ParentStateMachinePosition" => {
+                    (self.m_parent_state_machine_position).inspect_value(path, offset, limit)
+                }
+                "m_EntryPosition" => (self.m_entry_position).inspect_value(path, offset, limit),
+                "m_ExitPosition" => (self.m_exit_position).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_default_state).inspect_value(path, offset, limit))
+                .map(|v| ("m_DefaultState".to_string(), v)),
+            ((self.m_child_states).inspect_value(path, offset, limit))
+                .map(|v| ("m_ChildStates".to_string(), v)),
+            ((self.m_states).inspect_value(path, offset, limit))
+                .map(|v| ("m_States".to_string(), v)),
+            ((self.m_child_state_machines).inspect_value(path, offset, limit))
+                .map(|v| ("m_ChildStateMachines".to_string(), v)),
+            ((self.m_child_state_machine).inspect_value(path, offset, limit))
+                .map(|v| ("m_ChildStateMachine".to_string(), v)),
+            ((self.m_any_state_transitions).inspect_value(path, offset, limit))
+                .map(|v| ("m_AnyStateTransitions".to_string(), v)),
+            ((self.m_child_state_machine_position).inspect_value(path, offset, limit))
+                .map(|v| ("m_ChildStateMachinePosition".to_string(), v)),
+            ((self.m_entry_transitions).inspect_value(path, offset, limit))
+                .map(|v| ("m_EntryTransitions".to_string(), v)),
+            ((self.m_local_transitions).inspect_value(path, offset, limit))
+                .map(|v| ("m_LocalTransitions".to_string(), v)),
+            ((self.m_ordered_transitions).inspect_value(path, offset, limit))
+                .map(|v| ("m_OrderedTransitions".to_string(), v)),
+            ((self.m_state_machine_transitions).inspect_value(path, offset, limit))
+                .map(|v| ("m_StateMachineTransitions".to_string(), v)),
+            ((self.m_motion_set_count).inspect_value(path, offset, limit))
+                .map(|v| ("m_MotionSetCount".to_string(), v)),
+            ((self.m_state_machine_behaviours).inspect_value(path, offset, limit))
+                .map(|v| ("m_StateMachineBehaviours".to_string(), v)),
+            ((self.m_any_state_position).inspect_value(path, offset, limit))
+                .map(|v| ("m_AnyStatePosition".to_string(), v)),
+            ((self.m_parent_state_machine_position).inspect_value(path, offset, limit))
+                .map(|v| ("m_ParentStateMachinePosition".to_string(), v)),
+            ((self.m_entry_position).inspect_value(path, offset, limit))
+                .map(|v| ("m_EntryPosition".to_string(), v)),
+            ((self.m_exit_position).inspect_value(path, offset, limit))
+                .map(|v| ("m_ExitPosition".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

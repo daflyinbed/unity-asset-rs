@@ -23,6 +23,21 @@ impl crate::Parse for ParticleSystemEmissionBurstCycleCountVariant {
         }
     }
 }
+
+impl crate::ToValue for ParticleSystemEmissionBurstCycleCountVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_3(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct ParticleSystemEmissionBurst {
     pub time: f32,
@@ -71,5 +86,61 @@ impl crate::Parse for ParticleSystemEmissionBurst {
             repeat_interval: repeat_interval.unwrap(),
             probability,
         })
+    }
+}
+
+impl crate::ToValue for ParticleSystemEmissionBurst {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("time".to_string(), self.time.to_value())),
+            crate::opt_field("minCount", &self.min_count),
+            crate::opt_field("countCurve", &self.count_curve),
+            crate::opt_field("maxCount", &self.max_count),
+            Some(("cycleCount".to_string(), self.cycle_count.to_value())),
+            Some((
+                "repeatInterval".to_string(),
+                self.repeat_interval.to_value(),
+            )),
+            crate::opt_field("probability", &self.probability),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "time" => (self.time).inspect_value(path, offset, limit),
+                "minCount" => (self.min_count).inspect_value(path, offset, limit),
+                "countCurve" => (self.count_curve).inspect_value(path, offset, limit),
+                "maxCount" => (self.max_count).inspect_value(path, offset, limit),
+                "cycleCount" => (self.cycle_count).inspect_value(path, offset, limit),
+                "repeatInterval" => (self.repeat_interval).inspect_value(path, offset, limit),
+                "probability" => (self.probability).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.time).inspect_value(path, offset, limit)).map(|v| ("time".to_string(), v)),
+            ((self.min_count).inspect_value(path, offset, limit))
+                .map(|v| ("minCount".to_string(), v)),
+            ((self.count_curve).inspect_value(path, offset, limit))
+                .map(|v| ("countCurve".to_string(), v)),
+            ((self.max_count).inspect_value(path, offset, limit))
+                .map(|v| ("maxCount".to_string(), v)),
+            ((self.cycle_count).inspect_value(path, offset, limit))
+                .map(|v| ("cycleCount".to_string(), v)),
+            ((self.repeat_interval).inspect_value(path, offset, limit))
+                .map(|v| ("repeatInterval".to_string(), v)),
+            ((self.probability).inspect_value(path, offset, limit))
+                .map(|v| ("probability".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

@@ -23,6 +23,21 @@ impl crate::Parse for TextureImporterPlatformSettingsMAllowsAlphaSplittingVarian
     }
 }
 
+impl crate::ToValue for TextureImporterPlatformSettingsMAllowsAlphaSplittingVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_5(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：TextureImporterPlatformSettingsMOverriddenVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TextureImporterPlatformSettingsMOverriddenVariant {
@@ -51,6 +66,25 @@ impl crate::Parse for TextureImporterPlatformSettingsMOverriddenVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for TextureImporterPlatformSettingsMOverriddenVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2022_2_20(v) => v.to_value(),
+            Self::V2023_1(v) => v.to_value(),
+            Self::V2023_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2022_2_20(v) => (v).inspect_value(path, offset, limit),
+            Self::V2023_1(v) => (v).inspect_value(path, offset, limit),
+            Self::V2023_2(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -185,5 +219,103 @@ impl crate::Parse for TextureImporterPlatformSettings {
             m_ignore_platform_support,
             m_force_maximum_compression_quality_bc6h_bc7,
         })
+    }
+}
+
+impl crate::ToValue for TextureImporterPlatformSettings {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_BuildTarget".to_string(), self.m_build_target.to_value())),
+            Some((
+                "m_MaxTextureSize".to_string(),
+                self.m_max_texture_size.to_value(),
+            )),
+            Some(("m_Format".to_string(), self.m_format.to_value())),
+            crate::opt_field("m_ResizeAlgorithm", &self.m_resize_algorithm),
+            crate::opt_field("m_CompressionQuality", &self.m_compression_quality),
+            crate::opt_field("m_TextureCompression", &self.m_texture_compression),
+            crate::opt_field("m_AllowsAlphaSplitting", &self.m_allows_alpha_splitting),
+            crate::opt_field("m_CrunchedCompression", &self.m_crunched_compression),
+            crate::opt_field("m_Overridden", &self.m_overridden),
+            crate::opt_field(
+                "m_AndroidETC2FallbackOverride",
+                &self.m_android_etc2_fallback_override,
+            ),
+            crate::opt_field("m_IgnorePlatformSupport", &self.m_ignore_platform_support),
+            crate::opt_field(
+                "m_ForceMaximumCompressionQuality_BC6H_BC7",
+                &self.m_force_maximum_compression_quality_bc6h_bc7,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_BuildTarget" => (self.m_build_target).inspect_value(path, offset, limit),
+                "m_MaxTextureSize" => (self.m_max_texture_size).inspect_value(path, offset, limit),
+                "m_Format" => (self.m_format).inspect_value(path, offset, limit),
+                "m_ResizeAlgorithm" => (self.m_resize_algorithm).inspect_value(path, offset, limit),
+                "m_CompressionQuality" => {
+                    (self.m_compression_quality).inspect_value(path, offset, limit)
+                }
+                "m_TextureCompression" => {
+                    (self.m_texture_compression).inspect_value(path, offset, limit)
+                }
+                "m_AllowsAlphaSplitting" => {
+                    (self.m_allows_alpha_splitting).inspect_value(path, offset, limit)
+                }
+                "m_CrunchedCompression" => {
+                    (self.m_crunched_compression).inspect_value(path, offset, limit)
+                }
+                "m_Overridden" => (self.m_overridden).inspect_value(path, offset, limit),
+                "m_AndroidETC2FallbackOverride" => {
+                    (self.m_android_etc2_fallback_override).inspect_value(path, offset, limit)
+                }
+                "m_IgnorePlatformSupport" => {
+                    (self.m_ignore_platform_support).inspect_value(path, offset, limit)
+                }
+                "m_ForceMaximumCompressionQuality_BC6H_BC7" => (self
+                    .m_force_maximum_compression_quality_bc6h_bc7)
+                    .inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_build_target).inspect_value(path, offset, limit))
+                .map(|v| ("m_BuildTarget".to_string(), v)),
+            ((self.m_max_texture_size).inspect_value(path, offset, limit))
+                .map(|v| ("m_MaxTextureSize".to_string(), v)),
+            ((self.m_format).inspect_value(path, offset, limit))
+                .map(|v| ("m_Format".to_string(), v)),
+            ((self.m_resize_algorithm).inspect_value(path, offset, limit))
+                .map(|v| ("m_ResizeAlgorithm".to_string(), v)),
+            ((self.m_compression_quality).inspect_value(path, offset, limit))
+                .map(|v| ("m_CompressionQuality".to_string(), v)),
+            ((self.m_texture_compression).inspect_value(path, offset, limit))
+                .map(|v| ("m_TextureCompression".to_string(), v)),
+            ((self.m_allows_alpha_splitting).inspect_value(path, offset, limit))
+                .map(|v| ("m_AllowsAlphaSplitting".to_string(), v)),
+            ((self.m_crunched_compression).inspect_value(path, offset, limit))
+                .map(|v| ("m_CrunchedCompression".to_string(), v)),
+            ((self.m_overridden).inspect_value(path, offset, limit))
+                .map(|v| ("m_Overridden".to_string(), v)),
+            ((self.m_android_etc2_fallback_override).inspect_value(path, offset, limit))
+                .map(|v| ("m_AndroidETC2FallbackOverride".to_string(), v)),
+            ((self.m_ignore_platform_support).inspect_value(path, offset, limit))
+                .map(|v| ("m_IgnorePlatformSupport".to_string(), v)),
+            ((self.m_force_maximum_compression_quality_bc6h_bc7)
+                .inspect_value(path, offset, limit))
+            .map(|v| ("m_ForceMaximumCompressionQuality_BC6H_BC7".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

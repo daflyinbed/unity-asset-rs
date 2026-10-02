@@ -38,6 +38,21 @@ impl crate::Parse for PrefabModificationMModificationsVariant {
     }
 }
 
+impl crate::ToValue for PrefabModificationMModificationsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：PrefabModificationMRemovedComponentsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum PrefabModificationMRemovedComponentsVariant {
@@ -77,6 +92,23 @@ impl crate::Parse for PrefabModificationMRemovedComponentsVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for PrefabModificationMRemovedComponentsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+            Self::V2018_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+            Self::V2018_3(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -155,5 +187,70 @@ impl crate::Parse for PrefabModification {
             m_removed_game_objects,
             m_added_components,
         })
+    }
+}
+
+impl crate::ToValue for PrefabModification {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some((
+                "m_TransformParent".to_string(),
+                self.m_transform_parent.to_value(),
+            )),
+            Some((
+                "m_Modifications".to_string(),
+                self.m_modifications.to_value(),
+            )),
+            Some((
+                "m_RemovedComponents".to_string(),
+                self.m_removed_components.to_value(),
+            )),
+            crate::opt_field("m_AddedGameObjects", &self.m_added_game_objects),
+            crate::opt_field("m_RemovedGameObjects", &self.m_removed_game_objects),
+            crate::opt_field("m_AddedComponents", &self.m_added_components),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_TransformParent" => (self.m_transform_parent).inspect_value(path, offset, limit),
+                "m_Modifications" => (self.m_modifications).inspect_value(path, offset, limit),
+                "m_RemovedComponents" => {
+                    (self.m_removed_components).inspect_value(path, offset, limit)
+                }
+                "m_AddedGameObjects" => {
+                    (self.m_added_game_objects).inspect_value(path, offset, limit)
+                }
+                "m_RemovedGameObjects" => {
+                    (self.m_removed_game_objects).inspect_value(path, offset, limit)
+                }
+                "m_AddedComponents" => (self.m_added_components).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_transform_parent).inspect_value(path, offset, limit))
+                .map(|v| ("m_TransformParent".to_string(), v)),
+            ((self.m_modifications).inspect_value(path, offset, limit))
+                .map(|v| ("m_Modifications".to_string(), v)),
+            ((self.m_removed_components).inspect_value(path, offset, limit))
+                .map(|v| ("m_RemovedComponents".to_string(), v)),
+            ((self.m_added_game_objects).inspect_value(path, offset, limit))
+                .map(|v| ("m_AddedGameObjects".to_string(), v)),
+            ((self.m_removed_game_objects).inspect_value(path, offset, limit))
+                .map(|v| ("m_RemovedGameObjects".to_string(), v)),
+            ((self.m_added_components).inspect_value(path, offset, limit))
+                .map(|v| ("m_AddedComponents".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

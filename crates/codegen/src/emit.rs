@@ -126,6 +126,9 @@ fn emit_class_file(class: &EmitClass, main_names: &BTreeSet<String>) -> String {
     // impl Parse
     emit_impl_parse(&mut out, class);
 
+    // impl ToValue（typed struct → Value，JSON dump 数据面）
+    emit_impl_to_value(&mut out, class);
+
     out
 }
 
@@ -263,6 +266,25 @@ fn emit_versioned_enum(out: &mut String, name: &str, variants: &[EnumVariant]) {
     out.push_str("        }\n");
     out.push_str("    }\n");
     out.push_str("}\n");
+
+    // impl ToValue：各 newtype 变体委托内层转换（内层可能是标量/String/
+    // subclass/Bytes，由 field_to_value_expr 分派）。
+    out.push_str(&format!("\nimpl crate::ToValue for {} {{\n", name));
+    out.push_str("    fn to_value(&self) -> crate::Value {\n");
+    out.push_str("        match self {\n");
+    for v in variants {
+        let vname = variant_name(&v.gate);
+        let expr = field_to_value_expr(&v.rust_type, "v");
+        out.push_str(&format!("            Self::{vname}(v) => {expr},\n"));
+    }
+    out.push_str("        }\n    }\n");
+    out.push_str("    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {\n        match self {\n");
+    for v in variants {
+        let vname = variant_name(&v.gate);
+        let expr = field_inspect_expr(&v.rust_type, "v");
+        out.push_str(&format!("            Self::{vname}(v) => {expr},\n"));
+    }
+    out.push_str("        }\n    }\n}\n");
 }
 
 /// emit `AudioClipMAudioData` 枚举：pre-5.0 AudioClip.m_AudioData 的值依赖读取结果。
@@ -291,6 +313,19 @@ fn emit_audio_data_enum(out: &mut String) {
     out.push_str("    /// 指向 `<collection.name>.resS`，字节由 Environment 取。\n");
     out.push_str("    Streamed { size: u32, offset: u32 },\n");
     out.push_str("}\n");
+
+    // impl ToValue：Inline → 原始字节；Streamed → size/offset（字节在
+    // Environment 层按 offset/size 取，dump 只携带定位信息）。
+    out.push_str("\nimpl crate::ToValue for AudioClipMAudioData {\n");
+    out.push_str("    fn to_value(&self) -> crate::Value {\n");
+    out.push_str("        match self {\n");
+    out.push_str("            Self::Inline(v) => crate::Value::Bytes(v.clone()),\n");
+    out.push_str("            Self::Streamed { size, offset } => crate::Value::Struct(vec![\n");
+    out.push_str("                (\"size\".to_string(), crate::Value::U32(*size)),\n");
+    out.push_str("                (\"offset\".to_string(), crate::Value::U32(*offset)),\n");
+    out.push_str("            ]),\n");
+    out.push_str("        }\n    }\n");
+    out.push_str("    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {\n        match self {\n            Self::Inline(v) => crate::inspect_bytes(v, path, offset, limit),\n            Self::Streamed { .. } => self.to_value().inspect_value(path, offset, limit),\n        }\n    }\n}\n");
 }
 /// build 非 0 时附加 build 号，避免同 major.minor 不同 build 的变体重名。
 /// 参见 §12.6：避免用 Legacy/Modern，改用版本号。
@@ -376,6 +411,150 @@ fn emit_impl_parse(out: &mut String, class: &EmitClass) {
     out.push_str("        })\n");
     out.push_str("    }\n");
     out.push_str("}\n");
+}
+
+/// emit `impl crate::ToValue`：typed struct → `Value`（JSON dump 数据面，
+/// 参见 `crates/unity-asset/src/json_export.rs`）。
+///
+/// - 键用 `unity_name`（原始 PascalCase），与 typetree 解释器产出的
+///   `Value::Struct` 键一致，对齐 AssetRipper JSON dump。
+/// - 版本门控字段（Option）为 None 时跳过——对应 Unity 该版本不序列化该字段。
+/// - 字段顺序取 `own_fields` 合并序（≈ 序列化顺序）；字段集与 struct 定义一致。
+fn emit_impl_to_value(out: &mut String, class: &EmitClass) {
+    out.push_str(&format!("\nimpl crate::ToValue for {} {{\n", class.name));
+    out.push_str("    fn to_value(&self) -> crate::Value {\n");
+    if class.own_fields.is_empty() {
+        // 空 struct：空数组字面量无法推断元素类型，单独发射。
+        out.push_str("        let fields: Vec<(String, crate::Value)> = Vec::new();\n");
+        out.push_str("        crate::Value::Struct(fields)\n");
+        out.push_str("    }\n");
+        emit_inspect_method(out, class);
+        out.push_str("}\n");
+        return;
+    }
+    out.push_str("        let fields: Vec<(String, crate::Value)> = [\n");
+    for f in &class.own_fields {
+        // 值依赖特判：m_audio_data 的实际类型是 Option<AudioClipMAudioData>
+        // （emit_struct 同款特判），IR 类型不可信，恒走 opt_field。
+        if class.name == "AudioClip" && f.rust_name == "m_audio_data" {
+            out.push_str(&format!(
+                "            crate::opt_field(\"{}\", &self.m_audio_data),\n",
+                f.unity_name
+            ));
+            continue;
+        }
+        match &f.rust_type {
+            RustType::Option(inner) if contains_bytes(inner) => {
+                let expr = field_to_value_expr(inner, "v");
+                out.push_str(&format!(
+                    "            self.{}.as_ref().map(|v| (\"{}\".to_string(), {})),\n",
+                    f.rust_name, f.unity_name, expr
+                ));
+            }
+            RustType::Option(_) => {
+                out.push_str(&format!(
+                    "            crate::opt_field(\"{}\", &self.{}),\n",
+                    f.unity_name, f.rust_name
+                ));
+            }
+            _ => {
+                let expr = field_to_value_expr(&f.rust_type, &format!("self.{}", f.rust_name));
+                out.push_str(&format!(
+                    "            Some((\"{}\".to_string(), {})),\n",
+                    f.unity_name, expr
+                ));
+            }
+        }
+    }
+    out.push_str("        ]\n        .into_iter()\n        .flatten()\n        .collect();\n");
+    out.push_str("        crate::Value::Struct(fields)\n");
+    out.push_str("    }\n");
+    emit_inspect_method(out, class);
+    out.push_str("}\n");
+}
+
+/// 字段值 → `Value` 的转换表达式（`field_read_expr` 的镜像，但产出值而非读字节）。
+///
+/// 大多数类型直接 `{access}.to_value()`（unity-core 的 ToValue trait + 容器
+/// blanket impl 兜底）；仅 TypelessData 特判——`Vec<u8>` 无法区分「字节数组」
+/// 与「U8 数组」，这里按 IR 语义直取 `Value::Bytes`。
+fn contains_bytes(t: &RustType) -> bool {
+    match t {
+        RustType::Bytes => true,
+        RustType::List(t) | RustType::Option(t) | RustType::Box(t) => contains_bytes(t),
+        RustType::Pair(a, b) => contains_bytes(a) || contains_bytes(b),
+        _ => false,
+    }
+}
+
+fn field_to_value_expr(t: &RustType, access: &str) -> String {
+    match t {
+        RustType::Bytes => format!("crate::Value::Bytes({access}.clone())"),
+        RustType::List(inner) if contains_bytes(inner) => {
+            let inner = field_to_value_expr(inner, "x");
+            format!("crate::Value::Array(({access}).iter().map(|x| {inner}).collect())")
+        }
+        RustType::Pair(a, b) if contains_bytes(t) => format!(
+            "crate::Value::Pair(Box::new({}), Box::new({}))",
+            field_to_value_expr(a, &format!("({access}).0")),
+            field_to_value_expr(b, &format!("({access}).1"))
+        ),
+        RustType::Box(inner) if contains_bytes(inner) => {
+            field_to_value_expr(inner, &format!("*({access})"))
+        }
+        _ => format!("{access}.to_value()"),
+    }
+}
+
+/// 检查入口直接访问字段/数组页，禁止先 to_value 再截断（大字体可含数百万元素）。
+fn emit_inspect_method(out: &mut String, class: &EmitClass) {
+    if class.own_fields.is_empty() {
+        out.push_str("    fn inspect_value(&self, path: &[String], _offset: usize, _limit: usize) -> Option<crate::Value> { path.is_empty().then(|| crate::Value::Struct(Vec::new())) }\n");
+        return;
+    }
+    out.push_str("\n    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {\n");
+    out.push_str("        if let Some((name, path)) = path.split_first() {\n            return match name.as_str() {\n");
+    for f in &class.own_fields {
+        let expr = if class.name == "AudioClip" && f.rust_name == "m_audio_data" {
+            "self.m_audio_data.inspect_value(path, offset, limit)".into()
+        } else {
+            field_inspect_expr(&f.rust_type, &format!("self.{}", f.rust_name))
+        };
+        out.push_str(&format!(
+            "                \"{}\" => {},\n",
+            f.unity_name, expr
+        ));
+    }
+    out.push_str("                _ => None,\n            };\n        }\n");
+    out.push_str("        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);\n");
+    out.push_str("        let fields: Vec<(String, crate::Value)> = vec![\n");
+    for f in &class.own_fields {
+        let expr = if class.name == "AudioClip" && f.rust_name == "m_audio_data" {
+            "self.m_audio_data.inspect_value(path, offset, limit)".into()
+        } else {
+            field_inspect_expr(&f.rust_type, &format!("self.{}", f.rust_name))
+        };
+        out.push_str(&format!(
+            "            ({}).map(|v| (\"{}\".to_string(), v)),\n",
+            expr, f.unity_name
+        ));
+    }
+    out.push_str("        ].into_iter().flatten().collect();\n        Some(crate::Value::Struct(fields))\n    }\n");
+}
+
+fn field_inspect_expr(t: &RustType, access: &str) -> String {
+    match t {
+        RustType::Bytes => format!("crate::inspect_bytes(&({access}), path, offset, limit)"),
+        RustType::Option(inner) if contains_bytes(inner) => format!(
+            "({access}).as_ref().and_then(|v| {})",
+            field_inspect_expr(inner, "v")
+        ),
+        RustType::List(inner) if contains_bytes(inner) => format!(
+            "crate::inspect_array(({access}).len(), path, offset, limit, |i, path, offset, limit| {})",
+            field_inspect_expr(inner, &format!("({access})[i]"))
+        ),
+        _ => format!("({access}).inspect_value(path, offset, limit)"),
+    }
 }
 
 /// 生成 version-gated parse 块：按 TPK release_root 的真实顺序读字段。
@@ -803,7 +982,7 @@ pub use unity_object::UnityObject;
 
 // 从 unity-core re-export，使生成代码中的 `crate::UnityVersion`、`crate::Parse`、
 // `crate::EndianReader`、`crate::PPtr` 等引用仍然解析正确。
-pub use unity_core::{Endian, EndianReader, Parse, PPtr, UnityVersion};
+pub use unity_core::{Endian, EndianReader, Parse, PPtr, ToValue, UnityVersion, Value, inspect_array, inspect_bytes, opt_field};
 "#
     .to_string()
 }
@@ -841,6 +1020,26 @@ fn emit_unity_object(main_classes: &[&EmitClass]) -> String {
     s.push_str("        }\n");
     s.push_str("    }\n");
     s.push_str("}\n");
+
+    // ToValue 分派：JSON dump 数据面（crates/unity-asset/src/json_export.rs）。
+    s.push_str("\nimpl crate::ToValue for UnityObject {\n");
+    s.push_str("    fn to_value(&self) -> crate::Value {\n");
+    s.push_str("        match self {\n");
+    for c in main_classes {
+        s.push_str(&format!(
+            "            Self::{}(v) => v.to_value(),\n",
+            c.name
+        ));
+    }
+    s.push_str("        }\n    }\n");
+    s.push_str("    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {\n        match self {\n");
+    for c in main_classes {
+        s.push_str(&format!(
+            "            Self::{}(v) => v.inspect_value(path, offset, limit),\n",
+            c.name
+        ));
+    }
+    s.push_str("        }\n    }\n}\n");
     s
 }
 

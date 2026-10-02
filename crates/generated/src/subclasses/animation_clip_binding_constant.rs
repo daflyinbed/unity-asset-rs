@@ -36,6 +36,21 @@ impl crate::Parse for AnimationClipBindingConstantGenericBindingsVariant {
     }
 }
 
+impl crate::ToValue for AnimationClipBindingConstantGenericBindingsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：AnimationClipBindingConstantPptrCurveMappingVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum AnimationClipBindingConstantPptrCurveMappingVariant {
@@ -68,6 +83,21 @@ impl crate::Parse for AnimationClipBindingConstantPptrCurveMappingVariant {
         }
     }
 }
+
+impl crate::ToValue for AnimationClipBindingConstantPptrCurveMappingVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct AnimationClipBindingConstant {
     pub generic_bindings: AnimationClipBindingConstantGenericBindingsVariant,
@@ -87,5 +117,45 @@ impl crate::Parse for AnimationClipBindingConstant {
             generic_bindings,
             pptr_curve_mapping,
         })
+    }
+}
+
+impl crate::ToValue for AnimationClipBindingConstant {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some((
+                "genericBindings".to_string(),
+                self.generic_bindings.to_value(),
+            )),
+            Some((
+                "pptrCurveMapping".to_string(),
+                self.pptr_curve_mapping.to_value(),
+            )),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "genericBindings" => (self.generic_bindings).inspect_value(path, offset, limit),
+                "pptrCurveMapping" => (self.pptr_curve_mapping).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.generic_bindings).inspect_value(path, offset, limit))
+                .map(|v| ("genericBindings".to_string(), v)),
+            ((self.pptr_curve_mapping).inspect_value(path, offset, limit))
+                .map(|v| ("pptrCurveMapping".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

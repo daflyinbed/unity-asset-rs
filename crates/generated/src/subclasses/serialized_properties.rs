@@ -34,6 +34,21 @@ impl crate::Parse for SerializedPropertiesMPropsVariant {
         }
     }
 }
+
+impl crate::ToValue for SerializedPropertiesMPropsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct SerializedProperties {
     pub m_props: SerializedPropertiesMPropsVariant,
@@ -47,5 +62,33 @@ impl crate::Parse for SerializedProperties {
         let m_props = SerializedPropertiesMPropsVariant::parse(rdr, ver)?;
 
         Ok(SerializedProperties { m_props })
+    }
+}
+
+impl crate::ToValue for SerializedProperties {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> =
+            [Some(("m_Props".to_string(), self.m_props.to_value()))]
+                .into_iter()
+                .flatten()
+                .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Props" => (self.m_props).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_props).inspect_value(path, offset, limit)).map(|v| ("m_Props".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

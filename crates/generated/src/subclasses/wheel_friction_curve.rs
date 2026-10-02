@@ -57,3 +57,69 @@ impl crate::Parse for WheelFrictionCurve {
         })
     }
 }
+
+impl crate::ToValue for WheelFrictionCurve {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            crate::opt_field("extremumSlip", &self.extremum_slip),
+            crate::opt_field("m_ExtremumSlip", &self.m_extremum_slip),
+            crate::opt_field("extremumValue", &self.extremum_value),
+            crate::opt_field("m_ExtremumValue", &self.m_extremum_value),
+            crate::opt_field("asymptoteSlip", &self.asymptote_slip),
+            crate::opt_field("m_AsymptoteSlip", &self.m_asymptote_slip),
+            crate::opt_field("asymptoteValue", &self.asymptote_value),
+            crate::opt_field("m_AsymptoteValue", &self.m_asymptote_value),
+            crate::opt_field("stiffnessFactor", &self.stiffness_factor),
+            crate::opt_field("m_Stiffness", &self.m_stiffness),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "extremumSlip" => (self.extremum_slip).inspect_value(path, offset, limit),
+                "m_ExtremumSlip" => (self.m_extremum_slip).inspect_value(path, offset, limit),
+                "extremumValue" => (self.extremum_value).inspect_value(path, offset, limit),
+                "m_ExtremumValue" => (self.m_extremum_value).inspect_value(path, offset, limit),
+                "asymptoteSlip" => (self.asymptote_slip).inspect_value(path, offset, limit),
+                "m_AsymptoteSlip" => (self.m_asymptote_slip).inspect_value(path, offset, limit),
+                "asymptoteValue" => (self.asymptote_value).inspect_value(path, offset, limit),
+                "m_AsymptoteValue" => (self.m_asymptote_value).inspect_value(path, offset, limit),
+                "stiffnessFactor" => (self.stiffness_factor).inspect_value(path, offset, limit),
+                "m_Stiffness" => (self.m_stiffness).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.extremum_slip).inspect_value(path, offset, limit))
+                .map(|v| ("extremumSlip".to_string(), v)),
+            ((self.m_extremum_slip).inspect_value(path, offset, limit))
+                .map(|v| ("m_ExtremumSlip".to_string(), v)),
+            ((self.extremum_value).inspect_value(path, offset, limit))
+                .map(|v| ("extremumValue".to_string(), v)),
+            ((self.m_extremum_value).inspect_value(path, offset, limit))
+                .map(|v| ("m_ExtremumValue".to_string(), v)),
+            ((self.asymptote_slip).inspect_value(path, offset, limit))
+                .map(|v| ("asymptoteSlip".to_string(), v)),
+            ((self.m_asymptote_slip).inspect_value(path, offset, limit))
+                .map(|v| ("m_AsymptoteSlip".to_string(), v)),
+            ((self.asymptote_value).inspect_value(path, offset, limit))
+                .map(|v| ("asymptoteValue".to_string(), v)),
+            ((self.m_asymptote_value).inspect_value(path, offset, limit))
+                .map(|v| ("m_AsymptoteValue".to_string(), v)),
+            ((self.stiffness_factor).inspect_value(path, offset, limit))
+                .map(|v| ("stiffnessFactor".to_string(), v)),
+            ((self.m_stiffness).inspect_value(path, offset, limit))
+                .map(|v| ("m_Stiffness".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

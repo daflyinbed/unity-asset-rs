@@ -27,6 +27,21 @@ impl crate::Parse for HumanMHasRightHandVariant {
         }
     }
 }
+
+impl crate::ToValue for HumanMHasRightHandVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_2(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct Human {
     pub m_root_x: xform,
@@ -168,5 +183,132 @@ impl crate::Parse for Human {
             m_has_right_hand: m_has_right_hand.unwrap(),
             m_has_t_do_f,
         })
+    }
+}
+
+impl crate::ToValue for Human {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_RootX".to_string(), self.m_root_x.to_value())),
+            Some(("m_Skeleton".to_string(), self.m_skeleton.to_value())),
+            Some((
+                "m_SkeletonPose".to_string(),
+                self.m_skeleton_pose.to_value(),
+            )),
+            Some(("m_LeftHand".to_string(), self.m_left_hand.to_value())),
+            Some(("m_RightHand".to_string(), self.m_right_hand.to_value())),
+            crate::opt_field("m_Handles", &self.m_handles),
+            Some((
+                "m_HumanBoneIndex".to_string(),
+                self.m_human_bone_index.to_value(),
+            )),
+            crate::opt_field("m_ColliderArray", &self.m_collider_array),
+            Some((
+                "m_HumanBoneMass".to_string(),
+                self.m_human_bone_mass.to_value(),
+            )),
+            Some(("m_Scale".to_string(), self.m_scale.to_value())),
+            Some(("m_ArmTwist".to_string(), self.m_arm_twist.to_value())),
+            crate::opt_field("m_ColliderIndex", &self.m_collider_index),
+            Some((
+                "m_ForeArmTwist".to_string(),
+                self.m_fore_arm_twist.to_value(),
+            )),
+            Some((
+                "m_UpperLegTwist".to_string(),
+                self.m_upper_leg_twist.to_value(),
+            )),
+            Some(("m_LegTwist".to_string(), self.m_leg_twist.to_value())),
+            Some(("m_ArmStretch".to_string(), self.m_arm_stretch.to_value())),
+            Some(("m_LegStretch".to_string(), self.m_leg_stretch.to_value())),
+            Some(("m_FeetSpacing".to_string(), self.m_feet_spacing.to_value())),
+            Some(("m_HasLeftHand".to_string(), self.m_has_left_hand.to_value())),
+            Some((
+                "m_HasRightHand".to_string(),
+                self.m_has_right_hand.to_value(),
+            )),
+            crate::opt_field("m_HasTDoF", &self.m_has_t_do_f),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_RootX" => (self.m_root_x).inspect_value(path, offset, limit),
+                "m_Skeleton" => (self.m_skeleton).inspect_value(path, offset, limit),
+                "m_SkeletonPose" => (self.m_skeleton_pose).inspect_value(path, offset, limit),
+                "m_LeftHand" => (self.m_left_hand).inspect_value(path, offset, limit),
+                "m_RightHand" => (self.m_right_hand).inspect_value(path, offset, limit),
+                "m_Handles" => (self.m_handles).inspect_value(path, offset, limit),
+                "m_HumanBoneIndex" => (self.m_human_bone_index).inspect_value(path, offset, limit),
+                "m_ColliderArray" => (self.m_collider_array).inspect_value(path, offset, limit),
+                "m_HumanBoneMass" => (self.m_human_bone_mass).inspect_value(path, offset, limit),
+                "m_Scale" => (self.m_scale).inspect_value(path, offset, limit),
+                "m_ArmTwist" => (self.m_arm_twist).inspect_value(path, offset, limit),
+                "m_ColliderIndex" => (self.m_collider_index).inspect_value(path, offset, limit),
+                "m_ForeArmTwist" => (self.m_fore_arm_twist).inspect_value(path, offset, limit),
+                "m_UpperLegTwist" => (self.m_upper_leg_twist).inspect_value(path, offset, limit),
+                "m_LegTwist" => (self.m_leg_twist).inspect_value(path, offset, limit),
+                "m_ArmStretch" => (self.m_arm_stretch).inspect_value(path, offset, limit),
+                "m_LegStretch" => (self.m_leg_stretch).inspect_value(path, offset, limit),
+                "m_FeetSpacing" => (self.m_feet_spacing).inspect_value(path, offset, limit),
+                "m_HasLeftHand" => (self.m_has_left_hand).inspect_value(path, offset, limit),
+                "m_HasRightHand" => (self.m_has_right_hand).inspect_value(path, offset, limit),
+                "m_HasTDoF" => (self.m_has_t_do_f).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_root_x).inspect_value(path, offset, limit))
+                .map(|v| ("m_RootX".to_string(), v)),
+            ((self.m_skeleton).inspect_value(path, offset, limit))
+                .map(|v| ("m_Skeleton".to_string(), v)),
+            ((self.m_skeleton_pose).inspect_value(path, offset, limit))
+                .map(|v| ("m_SkeletonPose".to_string(), v)),
+            ((self.m_left_hand).inspect_value(path, offset, limit))
+                .map(|v| ("m_LeftHand".to_string(), v)),
+            ((self.m_right_hand).inspect_value(path, offset, limit))
+                .map(|v| ("m_RightHand".to_string(), v)),
+            ((self.m_handles).inspect_value(path, offset, limit))
+                .map(|v| ("m_Handles".to_string(), v)),
+            ((self.m_human_bone_index).inspect_value(path, offset, limit))
+                .map(|v| ("m_HumanBoneIndex".to_string(), v)),
+            ((self.m_collider_array).inspect_value(path, offset, limit))
+                .map(|v| ("m_ColliderArray".to_string(), v)),
+            ((self.m_human_bone_mass).inspect_value(path, offset, limit))
+                .map(|v| ("m_HumanBoneMass".to_string(), v)),
+            ((self.m_scale).inspect_value(path, offset, limit)).map(|v| ("m_Scale".to_string(), v)),
+            ((self.m_arm_twist).inspect_value(path, offset, limit))
+                .map(|v| ("m_ArmTwist".to_string(), v)),
+            ((self.m_collider_index).inspect_value(path, offset, limit))
+                .map(|v| ("m_ColliderIndex".to_string(), v)),
+            ((self.m_fore_arm_twist).inspect_value(path, offset, limit))
+                .map(|v| ("m_ForeArmTwist".to_string(), v)),
+            ((self.m_upper_leg_twist).inspect_value(path, offset, limit))
+                .map(|v| ("m_UpperLegTwist".to_string(), v)),
+            ((self.m_leg_twist).inspect_value(path, offset, limit))
+                .map(|v| ("m_LegTwist".to_string(), v)),
+            ((self.m_arm_stretch).inspect_value(path, offset, limit))
+                .map(|v| ("m_ArmStretch".to_string(), v)),
+            ((self.m_leg_stretch).inspect_value(path, offset, limit))
+                .map(|v| ("m_LegStretch".to_string(), v)),
+            ((self.m_feet_spacing).inspect_value(path, offset, limit))
+                .map(|v| ("m_FeetSpacing".to_string(), v)),
+            ((self.m_has_left_hand).inspect_value(path, offset, limit))
+                .map(|v| ("m_HasLeftHand".to_string(), v)),
+            ((self.m_has_right_hand).inspect_value(path, offset, limit))
+                .map(|v| ("m_HasRightHand".to_string(), v)),
+            ((self.m_has_t_do_f).inspect_value(path, offset, limit))
+                .map(|v| ("m_HasTDoF".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

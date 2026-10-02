@@ -73,3 +73,155 @@ impl crate::Parse for LightmapEditorSettings {
         })
     }
 }
+
+impl crate::ToValue for LightmapEditorSettings {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Resolution".to_string(), self.m_resolution.to_value())),
+            Some((
+                "m_LastUsedResolution".to_string(),
+                self.m_last_used_resolution.to_value(),
+            )),
+            Some((
+                "m_TextureWidth".to_string(),
+                self.m_texture_width.to_value(),
+            )),
+            Some((
+                "m_TextureHeight".to_string(),
+                self.m_texture_height.to_value(),
+            )),
+            Some(("m_BounceBoost".to_string(), self.m_bounce_boost.to_value())),
+            Some((
+                "m_BounceIntensity".to_string(),
+                self.m_bounce_intensity.to_value(),
+            )),
+            Some((
+                "m_SkyLightColor".to_string(),
+                self.m_sky_light_color.to_value(),
+            )),
+            Some((
+                "m_SkyLightIntensity".to_string(),
+                self.m_sky_light_intensity.to_value(),
+            )),
+            Some(("m_Quality".to_string(), self.m_quality.to_value())),
+            Some(("m_Bounces".to_string(), self.m_bounces.to_value())),
+            Some((
+                "m_FinalGatherRays".to_string(),
+                self.m_final_gather_rays.to_value(),
+            )),
+            Some((
+                "m_FinalGatherContrastThreshold".to_string(),
+                self.m_final_gather_contrast_threshold.to_value(),
+            )),
+            Some((
+                "m_FinalGatherGradientThreshold".to_string(),
+                self.m_final_gather_gradient_threshold.to_value(),
+            )),
+            Some((
+                "m_FinalGatherInterpolationPoints".to_string(),
+                self.m_final_gather_interpolation_points.to_value(),
+            )),
+            Some(("m_AOAmount".to_string(), self.m_ao_amount.to_value())),
+            Some((
+                "m_AOMaxDistance".to_string(),
+                self.m_ao_max_distance.to_value(),
+            )),
+            Some(("m_AOContrast".to_string(), self.m_ao_contrast.to_value())),
+            Some((
+                "m_TextureCompression".to_string(),
+                self.m_texture_compression.to_value(),
+            )),
+            Some(("m_LockAtlas".to_string(), self.m_lock_atlas.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Resolution" => (self.m_resolution).inspect_value(path, offset, limit),
+                "m_LastUsedResolution" => {
+                    (self.m_last_used_resolution).inspect_value(path, offset, limit)
+                }
+                "m_TextureWidth" => (self.m_texture_width).inspect_value(path, offset, limit),
+                "m_TextureHeight" => (self.m_texture_height).inspect_value(path, offset, limit),
+                "m_BounceBoost" => (self.m_bounce_boost).inspect_value(path, offset, limit),
+                "m_BounceIntensity" => (self.m_bounce_intensity).inspect_value(path, offset, limit),
+                "m_SkyLightColor" => (self.m_sky_light_color).inspect_value(path, offset, limit),
+                "m_SkyLightIntensity" => {
+                    (self.m_sky_light_intensity).inspect_value(path, offset, limit)
+                }
+                "m_Quality" => (self.m_quality).inspect_value(path, offset, limit),
+                "m_Bounces" => (self.m_bounces).inspect_value(path, offset, limit),
+                "m_FinalGatherRays" => {
+                    (self.m_final_gather_rays).inspect_value(path, offset, limit)
+                }
+                "m_FinalGatherContrastThreshold" => {
+                    (self.m_final_gather_contrast_threshold).inspect_value(path, offset, limit)
+                }
+                "m_FinalGatherGradientThreshold" => {
+                    (self.m_final_gather_gradient_threshold).inspect_value(path, offset, limit)
+                }
+                "m_FinalGatherInterpolationPoints" => {
+                    (self.m_final_gather_interpolation_points).inspect_value(path, offset, limit)
+                }
+                "m_AOAmount" => (self.m_ao_amount).inspect_value(path, offset, limit),
+                "m_AOMaxDistance" => (self.m_ao_max_distance).inspect_value(path, offset, limit),
+                "m_AOContrast" => (self.m_ao_contrast).inspect_value(path, offset, limit),
+                "m_TextureCompression" => {
+                    (self.m_texture_compression).inspect_value(path, offset, limit)
+                }
+                "m_LockAtlas" => (self.m_lock_atlas).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_resolution).inspect_value(path, offset, limit))
+                .map(|v| ("m_Resolution".to_string(), v)),
+            ((self.m_last_used_resolution).inspect_value(path, offset, limit))
+                .map(|v| ("m_LastUsedResolution".to_string(), v)),
+            ((self.m_texture_width).inspect_value(path, offset, limit))
+                .map(|v| ("m_TextureWidth".to_string(), v)),
+            ((self.m_texture_height).inspect_value(path, offset, limit))
+                .map(|v| ("m_TextureHeight".to_string(), v)),
+            ((self.m_bounce_boost).inspect_value(path, offset, limit))
+                .map(|v| ("m_BounceBoost".to_string(), v)),
+            ((self.m_bounce_intensity).inspect_value(path, offset, limit))
+                .map(|v| ("m_BounceIntensity".to_string(), v)),
+            ((self.m_sky_light_color).inspect_value(path, offset, limit))
+                .map(|v| ("m_SkyLightColor".to_string(), v)),
+            ((self.m_sky_light_intensity).inspect_value(path, offset, limit))
+                .map(|v| ("m_SkyLightIntensity".to_string(), v)),
+            ((self.m_quality).inspect_value(path, offset, limit))
+                .map(|v| ("m_Quality".to_string(), v)),
+            ((self.m_bounces).inspect_value(path, offset, limit))
+                .map(|v| ("m_Bounces".to_string(), v)),
+            ((self.m_final_gather_rays).inspect_value(path, offset, limit))
+                .map(|v| ("m_FinalGatherRays".to_string(), v)),
+            ((self.m_final_gather_contrast_threshold).inspect_value(path, offset, limit))
+                .map(|v| ("m_FinalGatherContrastThreshold".to_string(), v)),
+            ((self.m_final_gather_gradient_threshold).inspect_value(path, offset, limit))
+                .map(|v| ("m_FinalGatherGradientThreshold".to_string(), v)),
+            ((self.m_final_gather_interpolation_points).inspect_value(path, offset, limit))
+                .map(|v| ("m_FinalGatherInterpolationPoints".to_string(), v)),
+            ((self.m_ao_amount).inspect_value(path, offset, limit))
+                .map(|v| ("m_AOAmount".to_string(), v)),
+            ((self.m_ao_max_distance).inspect_value(path, offset, limit))
+                .map(|v| ("m_AOMaxDistance".to_string(), v)),
+            ((self.m_ao_contrast).inspect_value(path, offset, limit))
+                .map(|v| ("m_AOContrast".to_string(), v)),
+            ((self.m_texture_compression).inspect_value(path, offset, limit))
+                .map(|v| ("m_TextureCompression".to_string(), v)),
+            ((self.m_lock_atlas).inspect_value(path, offset, limit))
+                .map(|v| ("m_LockAtlas".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

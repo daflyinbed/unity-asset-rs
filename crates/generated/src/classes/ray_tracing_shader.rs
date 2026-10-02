@@ -37,6 +37,21 @@ impl crate::Parse for RayTracingShaderVariantsVariant {
     }
 }
 
+impl crate::ToValue for RayTracingShaderVariantsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V6000_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_3(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：RayTracingShaderMEnableRayPayloadSizeChecksVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum RayTracingShaderMEnableRayPayloadSizeChecksVariant {
@@ -56,6 +71,21 @@ impl crate::Parse for RayTracingShaderMEnableRayPayloadSizeChecksVariant {
         } else {
             let v = rdr.read_bool()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for RayTracingShaderMEnableRayPayloadSizeChecksVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V6000_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_3(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -90,5 +120,56 @@ impl crate::Parse for RayTracingShader {
             m_max_recursion_depth,
             m_enable_ray_payload_size_checks,
         })
+    }
+}
+
+impl crate::ToValue for RayTracingShader {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some(("variants".to_string(), self.variants.to_value())),
+            Some((
+                "m_MaxRecursionDepth".to_string(),
+                self.m_max_recursion_depth.to_value(),
+            )),
+            crate::opt_field(
+                "m_EnableRayPayloadSizeChecks",
+                &self.m_enable_ray_payload_size_checks,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "variants" => (self.variants).inspect_value(path, offset, limit),
+                "m_MaxRecursionDepth" => {
+                    (self.m_max_recursion_depth).inspect_value(path, offset, limit)
+                }
+                "m_EnableRayPayloadSizeChecks" => {
+                    (self.m_enable_ray_payload_size_checks).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.variants).inspect_value(path, offset, limit))
+                .map(|v| ("variants".to_string(), v)),
+            ((self.m_max_recursion_depth).inspect_value(path, offset, limit))
+                .map(|v| ("m_MaxRecursionDepth".to_string(), v)),
+            ((self.m_enable_ray_payload_size_checks).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableRayPayloadSizeChecks".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

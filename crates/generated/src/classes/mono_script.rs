@@ -23,6 +23,21 @@ impl crate::Parse for MonoScriptMPropertiesHashVariant {
         }
     }
 }
+
+impl crate::ToValue for MonoScriptMPropertiesHashVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_0(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_0(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct MonoScript {
     pub m_name: String,
@@ -66,5 +81,67 @@ impl crate::Parse for MonoScript {
             m_assembly_name: m_assembly_name.unwrap(),
             m_is_editor_script,
         })
+    }
+}
+
+impl crate::ToValue for MonoScript {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some((
+                "m_ExecutionOrder".to_string(),
+                self.m_execution_order.to_value(),
+            )),
+            Some((
+                "m_PropertiesHash".to_string(),
+                self.m_properties_hash.to_value(),
+            )),
+            Some(("m_ClassName".to_string(), self.m_class_name.to_value())),
+            Some(("m_Namespace".to_string(), self.m_namespace.to_value())),
+            Some((
+                "m_AssemblyName".to_string(),
+                self.m_assembly_name.to_value(),
+            )),
+            crate::opt_field("m_IsEditorScript", &self.m_is_editor_script),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_ExecutionOrder" => (self.m_execution_order).inspect_value(path, offset, limit),
+                "m_PropertiesHash" => (self.m_properties_hash).inspect_value(path, offset, limit),
+                "m_ClassName" => (self.m_class_name).inspect_value(path, offset, limit),
+                "m_Namespace" => (self.m_namespace).inspect_value(path, offset, limit),
+                "m_AssemblyName" => (self.m_assembly_name).inspect_value(path, offset, limit),
+                "m_IsEditorScript" => (self.m_is_editor_script).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_execution_order).inspect_value(path, offset, limit))
+                .map(|v| ("m_ExecutionOrder".to_string(), v)),
+            ((self.m_properties_hash).inspect_value(path, offset, limit))
+                .map(|v| ("m_PropertiesHash".to_string(), v)),
+            ((self.m_class_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_ClassName".to_string(), v)),
+            ((self.m_namespace).inspect_value(path, offset, limit))
+                .map(|v| ("m_Namespace".to_string(), v)),
+            ((self.m_assembly_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_AssemblyName".to_string(), v)),
+            ((self.m_is_editor_script).inspect_value(path, offset, limit))
+                .map(|v| ("m_IsEditorScript".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

@@ -34,6 +34,21 @@ impl crate::Parse for QualitySettingsMQualitySettingsVariant {
         }
     }
 }
+
+impl crate::ToValue for QualitySettingsMQualitySettingsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct QualitySettings {
     pub m_default_standalone_quality: Option<i32>,
@@ -117,5 +132,105 @@ impl crate::Parse for QualitySettings {
             beautiful,
             fantastic,
         })
+    }
+}
+
+impl crate::ToValue for QualitySettings {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            crate::opt_field(
+                "m_DefaultStandaloneQuality",
+                &self.m_default_standalone_quality,
+            ),
+            crate::opt_field("m_CurrentQuality", &self.m_current_quality),
+            crate::opt_field(
+                "m_DefaultWebPlayerQuality",
+                &self.m_default_web_player_quality,
+            ),
+            crate::opt_field("m_QualitySettings", &self.m_quality_settings),
+            crate::opt_field("m_DefaultMobileQuality", &self.m_default_mobile_quality),
+            crate::opt_field(
+                "m_StrippedMaximumLODLevel",
+                &self.m_stripped_maximum_lod_level,
+            ),
+            crate::opt_field(
+                "m_TextureMipmapLimitGroupNames",
+                &self.m_texture_mipmap_limit_group_names,
+            ),
+            crate::opt_field("m_EditorQuality", &self.m_editor_quality),
+            crate::opt_field("Fastest", &self.fastest),
+            crate::opt_field("Fast", &self.fast),
+            crate::opt_field("Simple", &self.simple),
+            crate::opt_field("Good", &self.good),
+            crate::opt_field("Beautiful", &self.beautiful),
+            crate::opt_field("Fantastic", &self.fantastic),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_DefaultStandaloneQuality" => {
+                    (self.m_default_standalone_quality).inspect_value(path, offset, limit)
+                }
+                "m_CurrentQuality" => (self.m_current_quality).inspect_value(path, offset, limit),
+                "m_DefaultWebPlayerQuality" => {
+                    (self.m_default_web_player_quality).inspect_value(path, offset, limit)
+                }
+                "m_QualitySettings" => (self.m_quality_settings).inspect_value(path, offset, limit),
+                "m_DefaultMobileQuality" => {
+                    (self.m_default_mobile_quality).inspect_value(path, offset, limit)
+                }
+                "m_StrippedMaximumLODLevel" => {
+                    (self.m_stripped_maximum_lod_level).inspect_value(path, offset, limit)
+                }
+                "m_TextureMipmapLimitGroupNames" => {
+                    (self.m_texture_mipmap_limit_group_names).inspect_value(path, offset, limit)
+                }
+                "m_EditorQuality" => (self.m_editor_quality).inspect_value(path, offset, limit),
+                "Fastest" => (self.fastest).inspect_value(path, offset, limit),
+                "Fast" => (self.fast).inspect_value(path, offset, limit),
+                "Simple" => (self.simple).inspect_value(path, offset, limit),
+                "Good" => (self.good).inspect_value(path, offset, limit),
+                "Beautiful" => (self.beautiful).inspect_value(path, offset, limit),
+                "Fantastic" => (self.fantastic).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_default_standalone_quality).inspect_value(path, offset, limit))
+                .map(|v| ("m_DefaultStandaloneQuality".to_string(), v)),
+            ((self.m_current_quality).inspect_value(path, offset, limit))
+                .map(|v| ("m_CurrentQuality".to_string(), v)),
+            ((self.m_default_web_player_quality).inspect_value(path, offset, limit))
+                .map(|v| ("m_DefaultWebPlayerQuality".to_string(), v)),
+            ((self.m_quality_settings).inspect_value(path, offset, limit))
+                .map(|v| ("m_QualitySettings".to_string(), v)),
+            ((self.m_default_mobile_quality).inspect_value(path, offset, limit))
+                .map(|v| ("m_DefaultMobileQuality".to_string(), v)),
+            ((self.m_stripped_maximum_lod_level).inspect_value(path, offset, limit))
+                .map(|v| ("m_StrippedMaximumLODLevel".to_string(), v)),
+            ((self.m_texture_mipmap_limit_group_names).inspect_value(path, offset, limit))
+                .map(|v| ("m_TextureMipmapLimitGroupNames".to_string(), v)),
+            ((self.m_editor_quality).inspect_value(path, offset, limit))
+                .map(|v| ("m_EditorQuality".to_string(), v)),
+            ((self.fastest).inspect_value(path, offset, limit)).map(|v| ("Fastest".to_string(), v)),
+            ((self.fast).inspect_value(path, offset, limit)).map(|v| ("Fast".to_string(), v)),
+            ((self.simple).inspect_value(path, offset, limit)).map(|v| ("Simple".to_string(), v)),
+            ((self.good).inspect_value(path, offset, limit)).map(|v| ("Good".to_string(), v)),
+            ((self.beautiful).inspect_value(path, offset, limit))
+                .map(|v| ("Beautiful".to_string(), v)),
+            ((self.fantastic).inspect_value(path, offset, limit))
+                .map(|v| ("Fantastic".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

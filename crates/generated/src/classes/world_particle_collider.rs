@@ -36,3 +36,74 @@ impl crate::Parse for WorldParticleCollider {
         })
     }
 }
+
+impl crate::ToValue for WorldParticleCollider {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some((
+                "m_BounceFactor".to_string(),
+                self.m_bounce_factor.to_value(),
+            )),
+            Some((
+                "m_CollisionEnergyLoss".to_string(),
+                self.m_collision_energy_loss.to_value(),
+            )),
+            Some((
+                "m_CollidesWith".to_string(),
+                self.m_collides_with.to_value(),
+            )),
+            Some((
+                "m_SendCollisionMessage".to_string(),
+                self.m_send_collision_message.to_value(),
+            )),
+            Some((
+                "m_MinKillVelocity".to_string(),
+                self.m_min_kill_velocity.to_value(),
+            )),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_BounceFactor" => (self.m_bounce_factor).inspect_value(path, offset, limit),
+                "m_CollisionEnergyLoss" => {
+                    (self.m_collision_energy_loss).inspect_value(path, offset, limit)
+                }
+                "m_CollidesWith" => (self.m_collides_with).inspect_value(path, offset, limit),
+                "m_SendCollisionMessage" => {
+                    (self.m_send_collision_message).inspect_value(path, offset, limit)
+                }
+                "m_MinKillVelocity" => {
+                    (self.m_min_kill_velocity).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_bounce_factor).inspect_value(path, offset, limit))
+                .map(|v| ("m_BounceFactor".to_string(), v)),
+            ((self.m_collision_energy_loss).inspect_value(path, offset, limit))
+                .map(|v| ("m_CollisionEnergyLoss".to_string(), v)),
+            ((self.m_collides_with).inspect_value(path, offset, limit))
+                .map(|v| ("m_CollidesWith".to_string(), v)),
+            ((self.m_send_collision_message).inspect_value(path, offset, limit))
+                .map(|v| ("m_SendCollisionMessage".to_string(), v)),
+            ((self.m_min_kill_velocity).inspect_value(path, offset, limit))
+                .map(|v| ("m_MinKillVelocity".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

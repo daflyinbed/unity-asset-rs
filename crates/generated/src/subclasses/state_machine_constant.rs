@@ -68,3 +68,81 @@ impl crate::Parse for StateMachineConstant {
         })
     }
 }
+
+impl crate::ToValue for StateMachineConstant {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some((
+                "m_StateConstantArray".to_string(),
+                self.m_state_constant_array.to_value(),
+            )),
+            Some((
+                "m_AnyStateTransitionConstantArray".to_string(),
+                self.m_any_state_transition_constant_array.to_value(),
+            )),
+            Some((
+                "m_DefaultState".to_string(),
+                self.m_default_state.to_value(),
+            )),
+            crate::opt_field(
+                "m_SelectorStateConstantArray",
+                &self.m_selector_state_constant_array,
+            ),
+            Some((
+                "m_SynchronizedLayerCount".to_string(),
+                self.m_synchronized_layer_count.to_value(),
+            )),
+            crate::opt_field(
+                "m_EvaluateTransitionsOnStart",
+                &self.m_evaluate_transitions_on_start,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_StateConstantArray" => {
+                    (self.m_state_constant_array).inspect_value(path, offset, limit)
+                }
+                "m_AnyStateTransitionConstantArray" => {
+                    (self.m_any_state_transition_constant_array).inspect_value(path, offset, limit)
+                }
+                "m_DefaultState" => (self.m_default_state).inspect_value(path, offset, limit),
+                "m_SelectorStateConstantArray" => {
+                    (self.m_selector_state_constant_array).inspect_value(path, offset, limit)
+                }
+                "m_SynchronizedLayerCount" => {
+                    (self.m_synchronized_layer_count).inspect_value(path, offset, limit)
+                }
+                "m_EvaluateTransitionsOnStart" => {
+                    (self.m_evaluate_transitions_on_start).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_state_constant_array).inspect_value(path, offset, limit))
+                .map(|v| ("m_StateConstantArray".to_string(), v)),
+            ((self.m_any_state_transition_constant_array).inspect_value(path, offset, limit))
+                .map(|v| ("m_AnyStateTransitionConstantArray".to_string(), v)),
+            ((self.m_default_state).inspect_value(path, offset, limit))
+                .map(|v| ("m_DefaultState".to_string(), v)),
+            ((self.m_selector_state_constant_array).inspect_value(path, offset, limit))
+                .map(|v| ("m_SelectorStateConstantArray".to_string(), v)),
+            ((self.m_synchronized_layer_count).inspect_value(path, offset, limit))
+                .map(|v| ("m_SynchronizedLayerCount".to_string(), v)),
+            ((self.m_evaluate_transitions_on_start).inspect_value(path, offset, limit))
+                .map(|v| ("m_EvaluateTransitionsOnStart".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

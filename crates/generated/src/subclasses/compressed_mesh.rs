@@ -79,3 +79,83 @@ impl crate::Parse for CompressedMesh {
         })
     }
 }
+
+impl crate::ToValue for CompressedMesh {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Vertices".to_string(), self.m_vertices.to_value())),
+            Some(("m_UV".to_string(), self.m_uv.to_value())),
+            crate::opt_field("m_BindPoses", &self.m_bind_poses),
+            Some(("m_Normals".to_string(), self.m_normals.to_value())),
+            Some(("m_Tangents".to_string(), self.m_tangents.to_value())),
+            Some(("m_Weights".to_string(), self.m_weights.to_value())),
+            Some(("m_NormalSigns".to_string(), self.m_normal_signs.to_value())),
+            Some((
+                "m_TangentSigns".to_string(),
+                self.m_tangent_signs.to_value(),
+            )),
+            crate::opt_field("m_FloatColors", &self.m_float_colors),
+            Some(("m_BoneIndices".to_string(), self.m_bone_indices.to_value())),
+            Some(("m_Triangles".to_string(), self.m_triangles.to_value())),
+            crate::opt_field("m_Colors", &self.m_colors),
+            crate::opt_field("m_UVInfo", &self.m_uv_info),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Vertices" => (self.m_vertices).inspect_value(path, offset, limit),
+                "m_UV" => (self.m_uv).inspect_value(path, offset, limit),
+                "m_BindPoses" => (self.m_bind_poses).inspect_value(path, offset, limit),
+                "m_Normals" => (self.m_normals).inspect_value(path, offset, limit),
+                "m_Tangents" => (self.m_tangents).inspect_value(path, offset, limit),
+                "m_Weights" => (self.m_weights).inspect_value(path, offset, limit),
+                "m_NormalSigns" => (self.m_normal_signs).inspect_value(path, offset, limit),
+                "m_TangentSigns" => (self.m_tangent_signs).inspect_value(path, offset, limit),
+                "m_FloatColors" => (self.m_float_colors).inspect_value(path, offset, limit),
+                "m_BoneIndices" => (self.m_bone_indices).inspect_value(path, offset, limit),
+                "m_Triangles" => (self.m_triangles).inspect_value(path, offset, limit),
+                "m_Colors" => (self.m_colors).inspect_value(path, offset, limit),
+                "m_UVInfo" => (self.m_uv_info).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_vertices).inspect_value(path, offset, limit))
+                .map(|v| ("m_Vertices".to_string(), v)),
+            ((self.m_uv).inspect_value(path, offset, limit)).map(|v| ("m_UV".to_string(), v)),
+            ((self.m_bind_poses).inspect_value(path, offset, limit))
+                .map(|v| ("m_BindPoses".to_string(), v)),
+            ((self.m_normals).inspect_value(path, offset, limit))
+                .map(|v| ("m_Normals".to_string(), v)),
+            ((self.m_tangents).inspect_value(path, offset, limit))
+                .map(|v| ("m_Tangents".to_string(), v)),
+            ((self.m_weights).inspect_value(path, offset, limit))
+                .map(|v| ("m_Weights".to_string(), v)),
+            ((self.m_normal_signs).inspect_value(path, offset, limit))
+                .map(|v| ("m_NormalSigns".to_string(), v)),
+            ((self.m_tangent_signs).inspect_value(path, offset, limit))
+                .map(|v| ("m_TangentSigns".to_string(), v)),
+            ((self.m_float_colors).inspect_value(path, offset, limit))
+                .map(|v| ("m_FloatColors".to_string(), v)),
+            ((self.m_bone_indices).inspect_value(path, offset, limit))
+                .map(|v| ("m_BoneIndices".to_string(), v)),
+            ((self.m_triangles).inspect_value(path, offset, limit))
+                .map(|v| ("m_Triangles".to_string(), v)),
+            ((self.m_colors).inspect_value(path, offset, limit))
+                .map(|v| ("m_Colors".to_string(), v)),
+            ((self.m_uv_info).inspect_value(path, offset, limit))
+                .map(|v| ("m_UVInfo".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

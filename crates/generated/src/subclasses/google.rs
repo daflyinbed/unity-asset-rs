@@ -22,6 +22,21 @@ impl crate::Parse for GoogleUseSustainedPerformanceModeVariant {
         }
     }
 }
+
+impl crate::ToValue for GoogleUseSustainedPerformanceModeVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_2(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct Google {
     pub depth_format: i32,
@@ -71,5 +86,72 @@ impl crate::Parse for Google {
             minimum_supported_head_tracking,
             maximum_supported_head_tracking,
         })
+    }
+}
+
+impl crate::ToValue for Google {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("depthFormat".to_string(), self.depth_format.to_value())),
+            Some((
+                "useSustainedPerformanceMode".to_string(),
+                self.use_sustained_performance_mode.to_value(),
+            )),
+            crate::opt_field("enableVideoLayer", &self.enable_video_layer),
+            crate::opt_field("useProtectedVideoMemory", &self.use_protected_video_memory),
+            crate::opt_field(
+                "minimumSupportedHeadTracking",
+                &self.minimum_supported_head_tracking,
+            ),
+            crate::opt_field(
+                "maximumSupportedHeadTracking",
+                &self.maximum_supported_head_tracking,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "depthFormat" => (self.depth_format).inspect_value(path, offset, limit),
+                "useSustainedPerformanceMode" => {
+                    (self.use_sustained_performance_mode).inspect_value(path, offset, limit)
+                }
+                "enableVideoLayer" => (self.enable_video_layer).inspect_value(path, offset, limit),
+                "useProtectedVideoMemory" => {
+                    (self.use_protected_video_memory).inspect_value(path, offset, limit)
+                }
+                "minimumSupportedHeadTracking" => {
+                    (self.minimum_supported_head_tracking).inspect_value(path, offset, limit)
+                }
+                "maximumSupportedHeadTracking" => {
+                    (self.maximum_supported_head_tracking).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.depth_format).inspect_value(path, offset, limit))
+                .map(|v| ("depthFormat".to_string(), v)),
+            ((self.use_sustained_performance_mode).inspect_value(path, offset, limit))
+                .map(|v| ("useSustainedPerformanceMode".to_string(), v)),
+            ((self.enable_video_layer).inspect_value(path, offset, limit))
+                .map(|v| ("enableVideoLayer".to_string(), v)),
+            ((self.use_protected_video_memory).inspect_value(path, offset, limit))
+                .map(|v| ("useProtectedVideoMemory".to_string(), v)),
+            ((self.minimum_supported_head_tracking).inspect_value(path, offset, limit))
+                .map(|v| ("minimumSupportedHeadTracking".to_string(), v)),
+            ((self.maximum_supported_head_tracking).inspect_value(path, offset, limit))
+                .map(|v| ("maximumSupportedHeadTracking".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

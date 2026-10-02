@@ -19,7 +19,7 @@
 
 pub use bytes::Bytes;
 pub use error::{Error, Result};
-pub use unity_core::{Endian, PPtr, UnityVersion};
+pub use unity_core::{Endian, PPtr, ToValue, UnityVersion};
 
 // ── 模块树 ──
 mod bundle;
@@ -42,9 +42,11 @@ pub mod typetree;
 pub mod audio_export;
 #[cfg(feature = "export")]
 pub mod export;
+pub mod io;
+#[cfg(feature = "export")]
+pub mod json_export;
 #[cfg(feature = "export")]
 pub mod misc_export;
-pub mod io;
 pub mod types;
 
 #[cfg(feature = "export")]
@@ -60,7 +62,7 @@ pub use environment::{
     ResourceFile, ResourceProvider, ResourceRequest, SourceId,
 };
 #[cfg(feature = "export")]
-pub use export::{DecodeImageError, DecodeOptions, DecodedImage, decode_texture};
+pub use export::{DecodeImageError, DecodeOptions, DecodedImage, decode_texture, dump_object};
 pub use format::{FileFormat, LoadedFile, load_recursive, sniff};
 pub use loader::{Diagnostic, DiagnosticKind, LoadReport, Loader, LoaderBuilder, Severity};
 pub use object_parser::{MonoBehaviour, ParsedObject};

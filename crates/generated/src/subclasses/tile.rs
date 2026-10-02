@@ -24,6 +24,21 @@ impl crate::Parse for TileMTileMatrixIndexVariant {
     }
 }
 
+impl crate::ToValue for TileMTileMatrixIndexVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2019_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2019_3(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：TileMTileColorIndexVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum TileMTileColorIndexVariant {
@@ -42,6 +57,21 @@ impl crate::Parse for TileMTileColorIndexVariant {
         } else {
             let v = rdr.read_u32()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for TileMTileColorIndexVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2019_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2019_3(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -74,6 +104,25 @@ impl crate::Parse for TileMTileObjectToInstantiateIndexVariant {
             let v = rdr.read_u16()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for TileMTileObjectToInstantiateIndexVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2019_4_24(v) => v.to_value(),
+            Self::V2020_1(v) => v.to_value(),
+            Self::V2020_1_8(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2019_4_24(v) => (v).inspect_value(path, offset, limit),
+            Self::V2020_1(v) => (v).inspect_value(path, offset, limit),
+            Self::V2020_1_8(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -146,5 +195,91 @@ impl crate::Parse for Tile {
             dummy_alignment,
             m_collider_type,
         })
+    }
+}
+
+impl crate::ToValue for Tile {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_TileIndex".to_string(), self.m_tile_index.to_value())),
+            Some((
+                "m_TileSpriteIndex".to_string(),
+                self.m_tile_sprite_index.to_value(),
+            )),
+            Some((
+                "m_TileMatrixIndex".to_string(),
+                self.m_tile_matrix_index.to_value(),
+            )),
+            Some((
+                "m_TileColorIndex".to_string(),
+                self.m_tile_color_index.to_value(),
+            )),
+            crate::opt_field("m_ObjectToInstantiate", &self.m_object_to_instantiate),
+            crate::opt_field(
+                "m_TileObjectToInstantiateIndex",
+                &self.m_tile_object_to_instantiate_index,
+            ),
+            crate::opt_field("m_TileFlags", &self.m_tile_flags),
+            crate::opt_field("m_AllTileFlags", &self.m_all_tile_flags),
+            crate::opt_field("dummyAlignment", &self.dummy_alignment),
+            crate::opt_field("m_ColliderType", &self.m_collider_type),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_TileIndex" => (self.m_tile_index).inspect_value(path, offset, limit),
+                "m_TileSpriteIndex" => {
+                    (self.m_tile_sprite_index).inspect_value(path, offset, limit)
+                }
+                "m_TileMatrixIndex" => {
+                    (self.m_tile_matrix_index).inspect_value(path, offset, limit)
+                }
+                "m_TileColorIndex" => (self.m_tile_color_index).inspect_value(path, offset, limit),
+                "m_ObjectToInstantiate" => {
+                    (self.m_object_to_instantiate).inspect_value(path, offset, limit)
+                }
+                "m_TileObjectToInstantiateIndex" => {
+                    (self.m_tile_object_to_instantiate_index).inspect_value(path, offset, limit)
+                }
+                "m_TileFlags" => (self.m_tile_flags).inspect_value(path, offset, limit),
+                "m_AllTileFlags" => (self.m_all_tile_flags).inspect_value(path, offset, limit),
+                "dummyAlignment" => (self.dummy_alignment).inspect_value(path, offset, limit),
+                "m_ColliderType" => (self.m_collider_type).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_tile_index).inspect_value(path, offset, limit))
+                .map(|v| ("m_TileIndex".to_string(), v)),
+            ((self.m_tile_sprite_index).inspect_value(path, offset, limit))
+                .map(|v| ("m_TileSpriteIndex".to_string(), v)),
+            ((self.m_tile_matrix_index).inspect_value(path, offset, limit))
+                .map(|v| ("m_TileMatrixIndex".to_string(), v)),
+            ((self.m_tile_color_index).inspect_value(path, offset, limit))
+                .map(|v| ("m_TileColorIndex".to_string(), v)),
+            ((self.m_object_to_instantiate).inspect_value(path, offset, limit))
+                .map(|v| ("m_ObjectToInstantiate".to_string(), v)),
+            ((self.m_tile_object_to_instantiate_index).inspect_value(path, offset, limit))
+                .map(|v| ("m_TileObjectToInstantiateIndex".to_string(), v)),
+            ((self.m_tile_flags).inspect_value(path, offset, limit))
+                .map(|v| ("m_TileFlags".to_string(), v)),
+            ((self.m_all_tile_flags).inspect_value(path, offset, limit))
+                .map(|v| ("m_AllTileFlags".to_string(), v)),
+            ((self.dummy_alignment).inspect_value(path, offset, limit))
+                .map(|v| ("dummyAlignment".to_string(), v)),
+            ((self.m_collider_type).inspect_value(path, offset, limit))
+                .map(|v| ("m_ColliderType".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

@@ -105,3 +105,104 @@ impl crate::Parse for Rigidbody {
         })
     }
 }
+
+impl crate::ToValue for Rigidbody {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_Mass".to_string(), self.m_mass.to_value())),
+            crate::opt_field("m_Drag", &self.m_drag),
+            crate::opt_field("m_LinearDamping", &self.m_linear_damping),
+            crate::opt_field("m_AngularDrag", &self.m_angular_drag),
+            crate::opt_field("m_AngularDamping", &self.m_angular_damping),
+            Some(("m_UseGravity".to_string(), self.m_use_gravity.to_value())),
+            crate::opt_field("m_CenterOfMass", &self.m_center_of_mass),
+            Some(("m_IsKinematic".to_string(), self.m_is_kinematic.to_value())),
+            crate::opt_field("m_InertiaTensor", &self.m_inertia_tensor),
+            Some(("m_Interpolate".to_string(), self.m_interpolate.to_value())),
+            crate::opt_field("m_InertiaRotation", &self.m_inertia_rotation),
+            Some(("m_Constraints".to_string(), self.m_constraints.to_value())),
+            crate::opt_field("m_IncludeLayers", &self.m_include_layers),
+            Some((
+                "m_CollisionDetection".to_string(),
+                self.m_collision_detection.to_value(),
+            )),
+            crate::opt_field("m_ExcludeLayers", &self.m_exclude_layers),
+            crate::opt_field("m_ImplicitCom", &self.m_implicit_com),
+            crate::opt_field("m_ImplicitTensor", &self.m_implicit_tensor),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Mass" => (self.m_mass).inspect_value(path, offset, limit),
+                "m_Drag" => (self.m_drag).inspect_value(path, offset, limit),
+                "m_LinearDamping" => (self.m_linear_damping).inspect_value(path, offset, limit),
+                "m_AngularDrag" => (self.m_angular_drag).inspect_value(path, offset, limit),
+                "m_AngularDamping" => (self.m_angular_damping).inspect_value(path, offset, limit),
+                "m_UseGravity" => (self.m_use_gravity).inspect_value(path, offset, limit),
+                "m_CenterOfMass" => (self.m_center_of_mass).inspect_value(path, offset, limit),
+                "m_IsKinematic" => (self.m_is_kinematic).inspect_value(path, offset, limit),
+                "m_InertiaTensor" => (self.m_inertia_tensor).inspect_value(path, offset, limit),
+                "m_Interpolate" => (self.m_interpolate).inspect_value(path, offset, limit),
+                "m_InertiaRotation" => (self.m_inertia_rotation).inspect_value(path, offset, limit),
+                "m_Constraints" => (self.m_constraints).inspect_value(path, offset, limit),
+                "m_IncludeLayers" => (self.m_include_layers).inspect_value(path, offset, limit),
+                "m_CollisionDetection" => {
+                    (self.m_collision_detection).inspect_value(path, offset, limit)
+                }
+                "m_ExcludeLayers" => (self.m_exclude_layers).inspect_value(path, offset, limit),
+                "m_ImplicitCom" => (self.m_implicit_com).inspect_value(path, offset, limit),
+                "m_ImplicitTensor" => (self.m_implicit_tensor).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_mass).inspect_value(path, offset, limit)).map(|v| ("m_Mass".to_string(), v)),
+            ((self.m_drag).inspect_value(path, offset, limit)).map(|v| ("m_Drag".to_string(), v)),
+            ((self.m_linear_damping).inspect_value(path, offset, limit))
+                .map(|v| ("m_LinearDamping".to_string(), v)),
+            ((self.m_angular_drag).inspect_value(path, offset, limit))
+                .map(|v| ("m_AngularDrag".to_string(), v)),
+            ((self.m_angular_damping).inspect_value(path, offset, limit))
+                .map(|v| ("m_AngularDamping".to_string(), v)),
+            ((self.m_use_gravity).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseGravity".to_string(), v)),
+            ((self.m_center_of_mass).inspect_value(path, offset, limit))
+                .map(|v| ("m_CenterOfMass".to_string(), v)),
+            ((self.m_is_kinematic).inspect_value(path, offset, limit))
+                .map(|v| ("m_IsKinematic".to_string(), v)),
+            ((self.m_inertia_tensor).inspect_value(path, offset, limit))
+                .map(|v| ("m_InertiaTensor".to_string(), v)),
+            ((self.m_interpolate).inspect_value(path, offset, limit))
+                .map(|v| ("m_Interpolate".to_string(), v)),
+            ((self.m_inertia_rotation).inspect_value(path, offset, limit))
+                .map(|v| ("m_InertiaRotation".to_string(), v)),
+            ((self.m_constraints).inspect_value(path, offset, limit))
+                .map(|v| ("m_Constraints".to_string(), v)),
+            ((self.m_include_layers).inspect_value(path, offset, limit))
+                .map(|v| ("m_IncludeLayers".to_string(), v)),
+            ((self.m_collision_detection).inspect_value(path, offset, limit))
+                .map(|v| ("m_CollisionDetection".to_string(), v)),
+            ((self.m_exclude_layers).inspect_value(path, offset, limit))
+                .map(|v| ("m_ExcludeLayers".to_string(), v)),
+            ((self.m_implicit_com).inspect_value(path, offset, limit))
+                .map(|v| ("m_ImplicitCom".to_string(), v)),
+            ((self.m_implicit_tensor).inspect_value(path, offset, limit))
+                .map(|v| ("m_ImplicitTensor".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

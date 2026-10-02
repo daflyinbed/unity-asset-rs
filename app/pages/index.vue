@@ -5,6 +5,7 @@
     <!-- ═══ Row 1: title bar ═══ -->
     <TitleBar
       :bundle-name="bundle.name"
+      :can-export="!!activeAsset"
       :loading="loading"
       :project-name="projectName"
       :projects="projects"
@@ -17,6 +18,7 @@
       @open-project="openProject"
       @refresh-source="refreshSource"
       @remove-source="removeSource"
+      @export-object="exportCurrentObject"
       @toggle-bottom="bottomOpen = !bottomOpen"
       @toggle-right="drawerOpen = !drawerOpen"
     />
@@ -94,7 +96,14 @@
             </button>
             <button
               class="inline-flex items-center justify-center rounded p-1.5 text-neutral-10/50 active:bg-neutral-2 hover:bg-neutral-1"
-              title="Copy dump"
+              title="Copy visible dump"
+              :disabled="
+                activeTab?.mode !== 'dump' ||
+                dumpPreview.loading ||
+                !!dumpPreview.error ||
+                dumpLines.length === 0
+              "
+              @click="copyDump"
             >
               <i-lucide-copy class="h-4 w-4" />
             </button>
@@ -121,7 +130,10 @@
             class="h-full flex flex-col"
           >
             <PreviewCanvas
-              v-if="activeAsset.type === 'Texture2D'"
+              v-if="
+                activeAsset.type === 'Texture2D' ||
+                activeAsset.type === 'Sprite'
+              "
               :asset="activeAsset"
               class="min-h-0 flex-1"
               :error="texturePreview.error"
@@ -140,6 +152,7 @@
               :text="filePreview.text"
               :url="filePreview.url"
               @select-sample="selectSample"
+              @export="exportCurrentObject"
             />
             <div
               class="grid grid-cols-4 shrink-0 border-t border-neutral-5 bg-panel divide-x divide-neutral-5"
@@ -160,35 +173,96 @@
           <!-- Dump -->
           <div v-else class="flex bg-panel text-[12.5px] leading-6 font-mono">
             <div
-              class="shrink-0 select-none border-r border-neutral-5 bg-panel px-3 text-right text-neutral-10/40"
+              v-if="dumpPreview.loading"
+              class="h-full w-full flex items-center justify-center gap-2 text-neutral-10/60"
             >
-              <div v-for="(_, i) in dumpLines" :key="i">{{ i + 1 }}</div>
+              <i-lucide-loader-circle class="h-4 w-4 animate-spin" />
+              <span>Loading dump…</span>
             </div>
-            <div class="min-w-0 flex-1 px-4 py-0">
+            <div
+              v-else-if="dumpPreview.error"
+              class="h-full w-full flex items-center justify-center gap-2 text-danger-10"
+            >
+              <i-lucide-circle-alert class="h-4 w-4" />
+              <span>{{ dumpPreview.error }}</span>
+            </div>
+            <div
+              v-else-if="dumpLines.length === 0"
+              class="h-full w-full flex items-center justify-center text-neutral-10/40"
+            >
+              <span>No data</span>
+            </div>
+            <template v-else>
               <div
-                v-for="(l, i) in dumpLines"
-                :key="i"
-                class="whitespace-pre"
-                :style="{ paddingLeft: `${l.depth * 1.5}rem` }"
+                class="shrink-0 select-none border-r border-neutral-5 bg-panel px-3 text-right text-neutral-10/40"
               >
-                <span
-                  :class="
-                    l.header
-                      ? 'font-semibold text-neutral-10'
-                      : 'text-neutral-10/80'
-                  "
-                  >{{ l.key }}</span
-                >
-                <span
-                  v-if="l.value !== undefined"
-                  :class="
-                    l.kind === 'str' ? 'text-accent-10' : 'text-neutral-10/50'
-                  "
-                >
-                  {{ ` ${l.value}` }}</span
-                >
+                <div v-for="(_, i) in dumpLines" :key="i">{{ i + 1 }}</div>
               </div>
-            </div>
+              <div class="min-w-0 flex-1 px-4 py-0">
+                <div
+                  v-for="(l, i) in dumpLines"
+                  :key="i"
+                  class="whitespace-pre"
+                  :style="{ paddingLeft: `${l.depth * 1.5}rem` }"
+                >
+                  <span
+                    :class="
+                      l.header
+                        ? 'font-semibold text-neutral-10'
+                        : 'text-neutral-10/80'
+                    "
+                    >{{ l.key }}</span
+                  >
+                  <span
+                    v-if="l.value !== undefined"
+                    :class="
+                      l.kind === 'str' ? 'text-accent-10' : 'text-neutral-10/50'
+                    "
+                  >
+                    {{ ` ${l.value}` }}</span
+                  >
+                  <template v-if="l.page">
+                    <button
+                      class="ml-2 rounded px-2 text-accent-10 hover:bg-accent-1 disabled:opacity-40"
+                      :disabled="
+                        dumpPageLoading.has(JSON.stringify(l.page.path)) ||
+                        l.page.offset === 0
+                      "
+                      @click="
+                        loadDumpPage(
+                          l.page.path,
+                          Math.max(0, l.page.offset - 256),
+                        )
+                      "
+                    >
+                      Previous
+                    </button>
+                    <button
+                      v-if="l.page.next !== undefined"
+                      class="ml-2 rounded px-2 text-accent-10 hover:bg-accent-1 disabled:opacity-40"
+                      :disabled="
+                        dumpPageLoading.has(JSON.stringify(l.page.path))
+                      "
+                      @click="loadDumpPage(l.page.path, l.page.next)"
+                    >
+                      {{
+                        dumpPageLoading.has(JSON.stringify(l.page.path))
+                          ? "Loading…"
+                          : l.page.next === 0
+                            ? "Load items"
+                            : "Next"
+                      }}
+                    </button>
+                    <span
+                      v-if="dumpPageErrors.get(JSON.stringify(l.page.path))"
+                      class="ml-2 text-danger-10"
+                    >
+                      {{ dumpPageErrors.get(JSON.stringify(l.page.path)) }}
+                    </span>
+                  </template>
+                </div>
+              </div>
+            </template>
           </div>
         </div>
 
@@ -255,6 +329,62 @@
         >{{ drawerAssets.length }} shown</span
       >
 
+      <!-- 解析失败(object 级可下载原始字节 .bin) -->
+      <PopoverRoot v-if="failures.length > 0" v-model:open="failuresOpen">
+        <PopoverTrigger
+          class="flex items-center gap-1 rounded px-1.5 text-danger-10 active:bg-neutral-2 hover:bg-neutral-1"
+          title="Parse failures"
+        >
+          <i-lucide-triangle-alert class="h-4 w-4" />
+          {{ failures.length }} failed
+        </PopoverTrigger>
+        <PopoverPortal>
+          <PopoverContent
+            align="start"
+            side="top"
+            :side-offset="6"
+            class="max-h-80 w-[440px] overflow-auto border border-neutral-5 rounded bg-panel p-1.5 text-left shadow-lg"
+          >
+            <p
+              class="px-2 py-1.5 text-[11px] text-neutral-10/50 tracking-wide uppercase"
+            >
+              Parse failures ({{ failures.length }})
+            </p>
+            <div
+              v-for="(f, i) in failures"
+              :key="i"
+              class="flex items-start gap-2 border-t border-neutral-5 px-2 py-1.5 first:border-t-0"
+            >
+              <span
+                class="mt-0.5 shrink-0 rounded bg-danger-2 px-1.5 text-[10px] text-danger-10 uppercase"
+                >{{ f.kind }}</span
+              >
+              <div class="min-w-0 flex-1">
+                <p class="truncate text-[11.5px] text-neutral-10 font-mono">
+                  {{ f.class_name ?? f.name ?? "unknown"
+                  }}<template v-if="f.path_id"> · {{ f.path_id }}</template>
+                </p>
+                <p
+                  class="truncate text-[11px] text-neutral-10/50"
+                  :title="f.error"
+                >
+                  {{ f.error }}
+                </p>
+              </div>
+              <button
+                v-if="f.kind === 'object' && (f.data_len ?? 0) > 0"
+                class="mt-0.5 inline-flex shrink-0 items-center gap-1 rounded px-1.5 py-0.5 text-[11px] text-neutral-10/70 active:bg-neutral-2 hover:bg-neutral-1"
+                title="Save raw bytes (.bin)"
+                @click="saveFailureBytes(f)"
+              >
+                <i-lucide-download class="h-3.5 w-3.5" />
+                .bin
+              </button>
+            </div>
+          </PopoverContent>
+        </PopoverPortal>
+      </PopoverRoot>
+
       <div class="ml-auto flex items-center gap-1">
         <template v-if="activeAsset">
           <span class="px-1.5 font-mono">{{ activeAsset.pathId }}</span>
@@ -293,7 +423,15 @@
 </template>
 
 <script setup lang="ts">
-import { SplitterGroup, SplitterPanel, SplitterResizeHandle } from "reka-ui";
+import {
+  PopoverContent,
+  PopoverPortal,
+  PopoverRoot,
+  PopoverTrigger,
+  SplitterGroup,
+  SplitterPanel,
+  SplitterResizeHandle,
+} from "reka-ui";
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { api } from "../api/client";
 import { formatSize } from "../assets";
@@ -360,14 +498,8 @@ const activeAsset = computed(() =>
 const texturePreview = ref({ loading: false, url: "", error: "" });
 let previewRequest = 0;
 
-// AudioClip/TextAsset/Font/VideoClip/MovieTexture 的 /export 预览。
-const EXPORT_TYPES = new Set([
-  "AudioClip",
-  "TextAsset",
-  "Font",
-  "VideoClip",
-  "MovieTexture",
-]);
+// 预览/导出走 /export 端点:专用格式(AudioClip/TextAsset/Font/VideoClip/
+// MovieTexture)之外的任意类型由 Rust 兜底 dump 成 JSON,故不再白名单过滤。
 const filePreview = ref<{
   loading: boolean;
   url: string;
@@ -387,6 +519,15 @@ const filePreview = ref<{
 });
 let fileRequest = 0;
 
+// dump 页签:?detail=full 的截断检查视图(typed 经 codegen ToValue,三路统一 JSON)。
+const dumpPreview = ref({ loading: false, error: "" });
+const dumpRoot = ref<unknown>(null);
+const dumpShell = ref<Record<string, unknown> | null>(null);
+const dumpPages = ref(new Map<string, unknown>());
+const dumpPageLoading = ref(new Set<string>());
+const dumpPageErrors = ref(new Map<string, string>());
+let dumpRequest = 0;
+
 watch(
   [activeAsset, () => environment.value?.revision, () => activeTab.value?.mode],
   ([asset, revision, mode]) => {
@@ -394,6 +535,7 @@ watch(
     // sample 不进 watcher 依赖：切资产/环境/模式总是从 0 重载，
     // 避免上一个资产的 sample 索引泄漏到 sample 数更少的 AudioClip（422）。
     void loadFilePreview(asset, revision, mode);
+    void loadDumpDetail(asset, revision, mode);
   },
   { immediate: true },
 );
@@ -416,9 +558,10 @@ async function loadTexturePreview(
   const request = ++previewRequest;
   revokeTexturePreview();
   texturePreview.value = { loading: false, url: "", error: "" };
+  // Sprite 与 Texture2D 同走 /png 端点。
   if (
     !asset ||
-    asset.type !== "Texture2D" ||
+    (asset.type !== "Texture2D" && asset.type !== "Sprite") ||
     revision === undefined ||
     mode !== "preview"
   )
@@ -478,15 +621,52 @@ async function loadFilePreview(
   };
   if (
     !asset ||
-    !EXPORT_TYPES.has(asset.type) ||
     revision === undefined ||
-    mode !== "preview"
+    mode !== "preview" ||
+    asset.type === "Texture2D" ||
+    asset.type === "Sprite"
   )
     return;
 
   filePreview.value.loading = true;
   const [collection] = asset.id.split(":");
   try {
+    // JSON 预览只读取有界详情；完整导出由显式保存动作触发。
+    if (
+      !["AudioClip", "TextAsset", "Font", "VideoClip", "MovieTexture"].includes(
+        asset.type,
+      )
+    ) {
+      const result = await api.GET(
+        "/environment/collections/{cid}/objects/{pid}",
+        {
+          params: {
+            path: { cid: Number(collection), pid: asset.pathId },
+            query: { revision, detail: "full" },
+          },
+        },
+      );
+      if (request !== fileRequest) return;
+      if (result.error) throw new Error(apiError(result.error));
+      const detail = result.data.object.detail;
+      if (!detail) throw new Error("Rust 未返回 detail");
+      filePreview.value = {
+        loading: false,
+        url: "",
+        text: JSON.stringify(
+          detail.mono_shell
+            ? { ...detail.mono_shell, structure: detail.value }
+            : detail.value,
+          null,
+          2,
+        ),
+        extension: "json",
+        sampleCount: 1,
+        sampleIndex: 0,
+        error: "",
+      };
+      return;
+    }
     const result = await api.GET(
       "/environment/collections/{cid}/objects/{pid}/export",
       {
@@ -504,9 +684,10 @@ async function loadFilePreview(
     const headers = result.response.headers;
     const extension = headers.get("x-export-extension") ?? "";
     const sampleCount = Number(headers.get("x-sample-count") ?? "1") || 1;
+    // JSON 兜底 dump（任意类型）与 TextAsset 文本内联展示;其余二进制走播放器/blob。
     const text =
-      asset.type === "TextAsset" &&
-      (extension === "txt" || extension === "json")
+      extension === "json" ||
+      (asset.type === "TextAsset" && extension === "txt")
         ? await blob.text()
         : null;
     if (request !== fileRequest) return;
@@ -532,6 +713,271 @@ async function loadFilePreview(
     };
   }
 }
+
+// ── 导出到磁盘(files:save 原生保存对话框) ──
+
+// 统一取对象的导出字节:Texture2D/Sprite 走 /png,其余走 /export(可带 sample)。
+async function fetchObjectBytes(
+  asset: Asset,
+  revision: number,
+  sample = 0,
+): Promise<{ data: Blob; extension: string }> {
+  const [collection] = asset.id.split(":");
+  const isImage = asset.type === "Texture2D" || asset.type === "Sprite";
+  const result = await api.GET(
+    isImage
+      ? "/environment/collections/{cid}/objects/{pid}/png"
+      : "/environment/collections/{cid}/objects/{pid}/export",
+    {
+      params: {
+        path: { cid: Number(collection), pid: asset.pathId },
+        query: { revision, sample: isImage ? undefined : sample },
+      },
+      parseAs: "blob",
+    },
+  );
+  if (result.error) throw new Error(apiError(result.error));
+  const extension = isImage
+    ? "png"
+    : (result.response.headers.get("x-export-extension") ?? "bin");
+  return { data: result.data as Blob, extension };
+}
+
+// 菜单 Export Current Object… / Ctrl+E。用户取消对话框时静默返回。
+async function exportCurrentObject() {
+  const asset = activeAsset.value;
+  const revision = environment.value?.revision;
+  if (!asset || revision === undefined) return;
+  try {
+    const sample =
+      asset.type === "AudioClip" ? filePreview.value.sampleIndex : 0;
+    const { data, extension } = await fetchObjectBytes(asset, revision, sample);
+    const save = await window.electron.invoke("files:save", {
+      defaultName: `${asset.name || "export"}.${extension}`,
+      data: await data.arrayBuffer(),
+    });
+    if (!save.ok) throw new Error(save.error.message);
+    if (save.value) {
+      logLine(`Exported ${asset.name} → ${save.value.path}`, true);
+    }
+  } catch (error) {
+    logLine(toErrorMessage(error), false);
+    bottomOpen.value = true;
+  }
+}
+
+// ── 解析失败对象(状态栏 popover + Save .bin) ──
+
+const logLines = ref<Array<{ t: string; msg: string; accent: boolean }>>([]);
+const failures = ref<Array<components["schemas"]["FailureDto"]>>([]);
+const failuresOpen = ref(false);
+
+async function saveFailureBytes(failure: components["schemas"]["FailureDto"]) {
+  // schema 可选字段为 `?: T | null`,同时挡 undefined 与 null。
+  if (failure.collection == null || failure.path_id == null) return;
+  try {
+    const result = await api.GET(
+      "/environment/collections/{cid}/objects/{pid}/raw",
+      {
+        params: {
+          path: { cid: failure.collection, pid: failure.path_id },
+          query: { revision: environment.value?.revision },
+        },
+        parseAs: "blob",
+      },
+    );
+    if (result.error) throw new Error(apiError(result.error));
+    const save = await window.electron.invoke("files:save", {
+      defaultName: `${failure.class_name ?? "Unknown"}_${failure.path_id}.bin`,
+      data: await (result.data as Blob).arrayBuffer(),
+    });
+    if (!save.ok) throw new Error(save.error.message);
+    if (save.value) {
+      logLine(`Saved raw bytes → ${save.value.path}`, true);
+    }
+  } catch (error) {
+    logLine(toErrorMessage(error), false);
+    bottomOpen.value = true;
+  }
+}
+
+function logLine(msg: string, accent: boolean) {
+  logLines.value.push({ t: new Date().toLocaleTimeString(), msg, accent });
+}
+
+// ── dump 页签(?detail=full 截断检查视图 → DumpLine 树) ──
+
+async function loadDumpDetail(
+  asset: Asset | null,
+  revision?: number,
+  mode?: Mode,
+) {
+  const request = ++dumpRequest;
+  dumpPreview.value = { loading: false, error: "" };
+  dumpRoot.value = null;
+  dumpShell.value = null;
+  dumpPages.value.clear();
+  dumpPageLoading.value.clear();
+  dumpPageErrors.value.clear();
+  if (!asset || revision === undefined || mode !== "dump") return;
+
+  dumpPreview.value.loading = true;
+  const [collection] = asset.id.split(":");
+  try {
+    const result = await api.GET(
+      "/environment/collections/{cid}/objects/{pid}",
+      {
+        params: {
+          path: { cid: Number(collection), pid: asset.pathId },
+          query: { revision, detail: "full" },
+        },
+      },
+    );
+    if (request !== dumpRequest) return;
+    if (result.error) throw new Error(apiError(result.error));
+    const detail = result.data.object.detail;
+    if (!detail) throw new Error("Rust 未返回 detail");
+
+    dumpRoot.value = detail.value;
+    dumpShell.value = detail.mono_shell as unknown as Record<
+      string,
+      unknown
+    > | null;
+    dumpPreview.value = { loading: false, error: "" };
+  } catch (error) {
+    if (request !== dumpRequest) return;
+    dumpPreview.value = {
+      loading: false,
+      error: toErrorMessage(error),
+    };
+  }
+}
+
+// 页数据替换原页；切对象或模式后忽略旧响应，不累计已翻过的页。
+async function loadDumpPage(path: string[], offset: number) {
+  const asset = activeAsset.value;
+  const revision = environment.value?.revision;
+  if (!asset || revision === undefined) return;
+  const request = dumpRequest;
+  const key = JSON.stringify(path);
+  dumpPageLoading.value.add(key);
+  dumpPageErrors.value.delete(key);
+  try {
+    const [collection] = asset.id.split(":");
+    const result = await api.GET(
+      "/environment/collections/{cid}/objects/{pid}/inspect",
+      {
+        params: {
+          path: { cid: Number(collection), pid: asset.pathId },
+          query: { revision, path: key, offset, limit: 256 },
+        },
+      },
+    );
+    if (request !== dumpRequest) return;
+    if (result.error) throw new Error(apiError(result.error));
+    for (const cached of dumpPages.value.keys()) {
+      const child: string[] = JSON.parse(cached);
+      if (child.length > path.length && path.every((p, i) => child[i] === p))
+        dumpPages.value.delete(cached);
+    }
+    dumpPages.value.set(key, result.data.value);
+  } catch (error) {
+    if (request === dumpRequest)
+      dumpPageErrors.value.set(key, toErrorMessage(error));
+  } finally {
+    if (request === dumpRequest) dumpPageLoading.value.delete(key);
+  }
+}
+
+function flattenJsonEntries(
+  value: Record<string, unknown>,
+  depth: number,
+  out: DumpLine[],
+  path: string[] = [],
+) {
+  for (const [k, v] of Object.entries(value))
+    flattenJsonValue(v, k, depth, out, [...path, k]);
+}
+
+function flattenJsonValue(
+  value: unknown,
+  key: string,
+  depth: number,
+  out: DumpLine[],
+  path: string[] = [],
+) {
+  value = dumpPages.value.get(JSON.stringify(path)) ?? value;
+  if (value !== null && typeof value === "object" && !Array.isArray(value)) {
+    const page = value as Record<string, unknown>;
+    if (
+      ["array", "bytes", "string"].includes(String(page._kind)) &&
+      typeof page.len === "number" &&
+      typeof page.offset === "number"
+    ) {
+      const items = Array.isArray(page.items) ? page.items : [];
+      const next =
+        typeof page.next_offset === "number" ? page.next_offset : undefined;
+      out.push({
+        depth: Math.max(0, depth),
+        key: `${key}: ${page._kind} [${page.len}]`,
+        value:
+          page._kind === "array"
+            ? `${items.length} items at ${page.offset}`
+            : String(page._bytes_hex ?? page.text ?? ""),
+        kind: "str",
+        page: { path, offset: page.offset, next },
+      });
+      for (const [i, v] of items.entries()) {
+        const index = String(Number(page.offset) + i);
+        flattenJsonValue(v, index, depth + 1, out, [...path, index]);
+      }
+      return;
+    }
+    if (depth >= 0) out.push({ depth, key: `${key}:` });
+    flattenJsonEntries(page, depth + 1, out, path);
+    return;
+  }
+  if (Array.isArray(value)) {
+    if (depth >= 0) out.push({ depth, key: `${key}: [${value.length}]` });
+    for (const [i, v] of value.entries())
+      flattenJsonValue(v, String(i), depth + 1, out, [...path, String(i)]);
+    return;
+  }
+  if (depth >= 0)
+    out.push({
+      depth,
+      key,
+      value: value === null ? "null" : String(value),
+      kind: typeof value === "string" ? "str" : "num",
+    });
+}
+
+const dumpLines = computed<DumpLine[]>(() => {
+  if (dumpRoot.value === null) return [];
+  const lines: DumpLine[] = [
+    { depth: 0, key: `${activeAsset.value?.type}:`, header: true },
+  ];
+  if (dumpShell.value) flattenJsonEntries(dumpShell.value, 1, lines);
+  flattenJsonValue(dumpRoot.value, "value", -1, lines);
+  return lines;
+});
+
+async function copyDump() {
+  const text = dumpLines.value
+    .map(
+      (line) =>
+        `${"  ".repeat(line.depth)}${line.key}${line.value === undefined ? "" : ` ${line.value}`}`,
+    )
+    .join("\n");
+  try {
+    await navigator.clipboard.writeText(text);
+    logLine("Copied visible dump", true);
+  } catch (error) {
+    logLine(toErrorMessage(error), false);
+    bottomOpen.value = true;
+  }
+}
+
 const editorTabs = computed(() =>
   tabs.value.map((tab) => {
     const asset = assetOf(tab);
@@ -636,7 +1082,7 @@ const metaRows = computed(() => {
   if (!a) return [];
   return [
     { k: "Type", v: a.type },
-    { k: "Size", v: formatSize(a.size) },
+    { k: "Size", v: a.size === undefined ? "—" : formatSize(a.size) },
     { k: "PathID", v: String(a.pathId) },
     { k: "Dims", v: a.dims ?? "—" },
   ];
@@ -648,52 +1094,8 @@ interface DumpLine {
   value?: string;
   kind?: "str" | "num";
   header?: boolean;
+  page?: { path: string[]; offset: number; next?: number };
 }
-
-const dumpLines = computed<DumpLine[]>(() => {
-  const a = activeAsset.value;
-  if (!a) return [];
-  const lines: DumpLine[] = [
-    { depth: 0, key: `${a.type}:`, header: true },
-    { depth: 1, key: "m_Name", value: a.name, kind: "str" },
-    { depth: 1, key: "m_PathID", value: String(a.pathId), kind: "num" },
-  ];
-  const [w, h] = (a.dims ?? "0×0").split("×");
-  if (a.type === "Sprite" || a.type === "Texture2D") {
-    lines.push(
-      { depth: 1, key: "m_Rect:" },
-      { depth: 2, key: "x", value: "0", kind: "num" },
-      { depth: 2, key: "y", value: "0", kind: "num" },
-      { depth: 2, key: "width", value: w, kind: "num" },
-      { depth: 2, key: "height", value: h, kind: "num" },
-      { depth: 1, key: "m_TextureFormat", value: "ASTC_6x6", kind: "str" },
-      { depth: 1, key: "m_MipCount", value: "1", kind: "num" },
-      { depth: 1, key: "m_StreamData:" },
-      { depth: 2, key: "offset", value: "0", kind: "num" },
-      { depth: 2, key: "size", value: String(a.size), kind: "num" },
-      { depth: 2, key: "path", value: "archive:/resS", kind: "str" },
-    );
-  } else if (a.type === "TextAsset") {
-    lines.push(
-      { depth: 1, key: "m_Script", value: a.container, kind: "str" },
-      { depth: 1, key: "m_Size", value: String(a.size), kind: "num" },
-    );
-  } else if (a.type === "AudioClip") {
-    lines.push(
-      { depth: 1, key: "m_Length", value: "3.72", kind: "num" },
-      { depth: 1, key: "m_Channels", value: "2", kind: "num" },
-      { depth: 1, key: "m_Frequency", value: "44100", kind: "num" },
-    );
-  } else {
-    lines.push(
-      { depth: 1, key: "m_Container", value: a.container, kind: "str" },
-      { depth: 1, key: "m_DataSize", value: String(a.size), kind: "num" },
-    );
-  }
-  return lines;
-});
-
-const logLines = ref<Array<{ t: string; msg: string; accent: boolean }>>([]);
 
 type OpenMode = "new" | "add";
 
@@ -777,6 +1179,8 @@ function resetWorkspace() {
   activeTabId.value = null;
   drawerQuery.value = "";
   typeFilter.value = [];
+  failures.value = [];
+  failuresOpen.value = false;
   logLines.value = [];
   bottomOpen.value = false;
 }
@@ -799,6 +1203,11 @@ function onOpenShortcut(event: KeyboardEvent) {
     if (!loading.value) resetWorkspace();
     return;
   }
+  if (key === "e") {
+    event.preventDefault();
+    void exportCurrentObject();
+    return;
+  }
   if (key !== "o") return;
   event.preventDefault();
   if (loading.value) return;
@@ -814,6 +1223,7 @@ onBeforeUnmount(() => {
   revokeTexturePreview();
   fileRequest++;
   if (filePreview.value.url) URL.revokeObjectURL(filePreview.value.url);
+  dumpRequest++;
   window.removeEventListener("keydown", onOpenShortcut);
 });
 
@@ -852,6 +1262,12 @@ async function refreshEnvironment() {
       );
     }
   }
+
+  // 解析失败列表(状态栏警告段 + Save .bin 的数据源)。
+  const failuresResult = await api.GET("/environment/failures", {
+    params: { query: { revision: summary.revision } },
+  });
+  failures.value = failuresResult.data?.items ?? [];
 
   const collectionRows = await Promise.all(
     collections.map(async (collection) => {
@@ -899,7 +1315,6 @@ function toAsset(
     container: container ?? collection.name_fixed ?? collection.name,
     type: object.class_name,
     pathId: object.path_id,
-    size: 0,
   };
 }
 

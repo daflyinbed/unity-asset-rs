@@ -48,6 +48,21 @@ impl crate::Parse for UnityPropertySheetMTexEnvsVariant {
     }
 }
 
+impl crate::ToValue for UnityPropertySheetMTexEnvsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_6(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_6(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：UnityPropertySheetMFloatsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum UnityPropertySheetMFloatsVariant {
@@ -88,6 +103,21 @@ impl crate::Parse for UnityPropertySheetMFloatsVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for UnityPropertySheetMFloatsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_6(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_6(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -135,6 +165,21 @@ impl crate::Parse for UnityPropertySheetMColorsVariant {
         }
     }
 }
+
+impl crate::ToValue for UnityPropertySheetMColorsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_6(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_6(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct UnityPropertySheet {
     pub m_tex_envs: UnityPropertySheetMTexEnvsVariant,
@@ -179,5 +224,46 @@ impl crate::Parse for UnityPropertySheet {
             m_ints,
             m_colors: m_colors.unwrap(),
         })
+    }
+}
+
+impl crate::ToValue for UnityPropertySheet {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_TexEnvs".to_string(), self.m_tex_envs.to_value())),
+            Some(("m_Floats".to_string(), self.m_floats.to_value())),
+            crate::opt_field("m_Ints", &self.m_ints),
+            Some(("m_Colors".to_string(), self.m_colors.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_TexEnvs" => (self.m_tex_envs).inspect_value(path, offset, limit),
+                "m_Floats" => (self.m_floats).inspect_value(path, offset, limit),
+                "m_Ints" => (self.m_ints).inspect_value(path, offset, limit),
+                "m_Colors" => (self.m_colors).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_tex_envs).inspect_value(path, offset, limit))
+                .map(|v| ("m_TexEnvs".to_string(), v)),
+            ((self.m_floats).inspect_value(path, offset, limit))
+                .map(|v| ("m_Floats".to_string(), v)),
+            ((self.m_ints).inspect_value(path, offset, limit)).map(|v| ("m_Ints".to_string(), v)),
+            ((self.m_colors).inspect_value(path, offset, limit))
+                .map(|v| ("m_Colors".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

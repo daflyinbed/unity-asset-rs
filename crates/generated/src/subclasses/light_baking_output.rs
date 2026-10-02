@@ -40,3 +40,59 @@ impl crate::Parse for LightBakingOutput {
         })
     }
 }
+
+impl crate::ToValue for LightBakingOutput {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some((
+                "probeOcclusionLightIndex".to_string(),
+                self.probe_occlusion_light_index.to_value(),
+            )),
+            Some((
+                "occlusionMaskChannel".to_string(),
+                self.occlusion_mask_channel.to_value(),
+            )),
+            crate::opt_field("lightmappingMask", &self.lightmapping_mask),
+            crate::opt_field("lightmapBakeMode", &self.lightmap_bake_mode),
+            crate::opt_field("isBaked", &self.is_baked),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "probeOcclusionLightIndex" => {
+                    (self.probe_occlusion_light_index).inspect_value(path, offset, limit)
+                }
+                "occlusionMaskChannel" => {
+                    (self.occlusion_mask_channel).inspect_value(path, offset, limit)
+                }
+                "lightmappingMask" => (self.lightmapping_mask).inspect_value(path, offset, limit),
+                "lightmapBakeMode" => (self.lightmap_bake_mode).inspect_value(path, offset, limit),
+                "isBaked" => (self.is_baked).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.probe_occlusion_light_index).inspect_value(path, offset, limit))
+                .map(|v| ("probeOcclusionLightIndex".to_string(), v)),
+            ((self.occlusion_mask_channel).inspect_value(path, offset, limit))
+                .map(|v| ("occlusionMaskChannel".to_string(), v)),
+            ((self.lightmapping_mask).inspect_value(path, offset, limit))
+                .map(|v| ("lightmappingMask".to_string(), v)),
+            ((self.lightmap_bake_mode).inspect_value(path, offset, limit))
+                .map(|v| ("lightmapBakeMode".to_string(), v)),
+            ((self.is_baked).inspect_value(path, offset, limit))
+                .map(|v| ("isBaked".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

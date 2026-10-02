@@ -72,3 +72,64 @@ impl crate::Parse for RayTracingShaderResources {
         })
     }
 }
+
+impl crate::ToValue for RayTracingShaderResources {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("textures".to_string(), self.textures.to_value())),
+            Some((
+                "builtinSamplers".to_string(),
+                self.builtin_samplers.to_value(),
+            )),
+            Some(("inputBuffers".to_string(), self.input_buffers.to_value())),
+            Some(("outputBuffers".to_string(), self.output_buffers.to_value())),
+            Some((
+                "constantBuffersDesc".to_string(),
+                self.constant_buffers_desc.to_value(),
+            )),
+            Some((
+                "constantBuffers".to_string(),
+                self.constant_buffers.to_value(),
+            )),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "textures" => (self.textures).inspect_value(path, offset, limit),
+                "builtinSamplers" => (self.builtin_samplers).inspect_value(path, offset, limit),
+                "inputBuffers" => (self.input_buffers).inspect_value(path, offset, limit),
+                "outputBuffers" => (self.output_buffers).inspect_value(path, offset, limit),
+                "constantBuffersDesc" => {
+                    (self.constant_buffers_desc).inspect_value(path, offset, limit)
+                }
+                "constantBuffers" => (self.constant_buffers).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.textures).inspect_value(path, offset, limit))
+                .map(|v| ("textures".to_string(), v)),
+            ((self.builtin_samplers).inspect_value(path, offset, limit))
+                .map(|v| ("builtinSamplers".to_string(), v)),
+            ((self.input_buffers).inspect_value(path, offset, limit))
+                .map(|v| ("inputBuffers".to_string(), v)),
+            ((self.output_buffers).inspect_value(path, offset, limit))
+                .map(|v| ("outputBuffers".to_string(), v)),
+            ((self.constant_buffers_desc).inspect_value(path, offset, limit))
+                .map(|v| ("constantBuffersDesc".to_string(), v)),
+            ((self.constant_buffers).inspect_value(path, offset, limit))
+                .map(|v| ("constantBuffers".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

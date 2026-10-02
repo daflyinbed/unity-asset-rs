@@ -54,3 +54,62 @@ impl crate::Parse for LensFlare {
         })
     }
 }
+
+impl crate::ToValue for LensFlare {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_Enabled".to_string(), self.m_enabled.to_value())),
+            Some(("m_Flare".to_string(), self.m_flare.to_value())),
+            Some(("m_Color".to_string(), self.m_color.to_value())),
+            Some(("m_Brightness".to_string(), self.m_brightness.to_value())),
+            Some((
+                "m_IgnoreLayers".to_string(),
+                self.m_ignore_layers.to_value(),
+            )),
+            crate::opt_field("m_FadeSpeed", &self.m_fade_speed),
+            Some(("m_Directional".to_string(), self.m_directional.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "m_Flare" => (self.m_flare).inspect_value(path, offset, limit),
+                "m_Color" => (self.m_color).inspect_value(path, offset, limit),
+                "m_Brightness" => (self.m_brightness).inspect_value(path, offset, limit),
+                "m_IgnoreLayers" => (self.m_ignore_layers).inspect_value(path, offset, limit),
+                "m_FadeSpeed" => (self.m_fade_speed).inspect_value(path, offset, limit),
+                "m_Directional" => (self.m_directional).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.m_flare).inspect_value(path, offset, limit)).map(|v| ("m_Flare".to_string(), v)),
+            ((self.m_color).inspect_value(path, offset, limit)).map(|v| ("m_Color".to_string(), v)),
+            ((self.m_brightness).inspect_value(path, offset, limit))
+                .map(|v| ("m_Brightness".to_string(), v)),
+            ((self.m_ignore_layers).inspect_value(path, offset, limit))
+                .map(|v| ("m_IgnoreLayers".to_string(), v)),
+            ((self.m_fade_speed).inspect_value(path, offset, limit))
+                .map(|v| ("m_FadeSpeed".to_string(), v)),
+            ((self.m_directional).inspect_value(path, offset, limit))
+                .map(|v| ("m_Directional".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

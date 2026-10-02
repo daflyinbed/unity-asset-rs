@@ -3,8 +3,8 @@
 //! 库 `unity-asset` 刻意零 serde(AGENTS.md「公共 API 精简,勿随意扩 pub」),故
 //! HTTP 层自己定义 DTO。分层:
 //! - [`ObjectMeta`]:默认元数据(path_id / class / 解析方式 / 名),列表和详情共用。
-//! - [`ObjectDetail`]:`?detail=full` 时附带的原始 dump——typed 走 `{:#?}` Debug,
-//!   dynamic/MonoBehaviour structure 走 [`value_to_json`] 递归 JSON。
+//! - [`ObjectDetail`]:有界检查视图，typed/dynamic/mono 均按字段访问；
+//!   数组按页请求，字节和长字符串返回摘要。完整导出不截断。
 //!
 //! 复用 main.rs 的 [`crate::class_name`] / [`crate::obj_display_name`] / [`crate::parse_status`],
 //! 不重复实现这些展示逻辑。
@@ -16,9 +16,6 @@ use unity_asset::{
     ContainerEntry, ContainerKind, EnvironmentObject, MonoBehaviour, ParsedObject, Value,
 };
 use utoipa::ToSchema;
-
-/// bytes/string 在 JSON 里截断到此长度(与 CLI `dump_value` 思路一致,防超大字段刷屏)。
-const TRUNCATE_LEN: usize = 256;
 
 /// 对象元数据。列表项和详情头部共用。
 #[derive(Serialize, ToSchema)]
@@ -55,21 +52,13 @@ pub struct ObjectDto {
     pub detail: Option<ObjectDetail>,
 }
 
-/// `?detail=full` 的原始 dump。typed/dynamic/mono 三路不同表示。
+/// 有界对象检查视图。数组按页读取；Bytes/长 String 最多预览 256 字节/字符。
 #[derive(Serialize, ToSchema)]
 pub struct ObjectDetail {
     /// "typed" / "dynamic" / "mono"。
     pub kind: &'static str,
-    /// typed 路径:`{:#?}` Debug 字符串(codegen 大枚举,手写 DTO 成本过高,统一 Debug)。
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub debug: Option<String>,
-    /// dynamic/MonoBehaviour structure 路径:递归 JSON。
-    ///
-    /// **Schema 限制**:动态 Value 树结构不固定(每个 MonoBehaviour 用户字段都不同),
-    /// 这里用 `serde_json::Value`(自由 object)而非具体 schema。
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub value: Option<JsonValue>,
-    /// MonoBehaviour 的 typed shell 字段(仅 mono 路径)。
+    /// 递归 JSON；分页节点带 _kind/len/offset/next_offset 与 items、text 或 _bytes_hex。
+    pub value: JsonValue,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub mono_shell: Option<MonoShell>,
 }
@@ -102,27 +91,16 @@ impl From<&unity_asset::PPtrValue> for PPtrJson {
 }
 
 impl ObjectDetail {
-    /// 由 [`ParsedObject`] 构造 detail。typed → debug;dynamic → value;mono → shell+value。
     pub fn from_parsed(obj: &ParsedObject) -> Self {
-        match obj {
-            ParsedObject::Typed(uo) => Self {
-                kind: "typed",
-                debug: Some(format!("{uo:#?}")),
-                value: None,
-                mono_shell: None,
-            },
-            ParsedObject::Dynamic(v) => Self {
-                kind: "dynamic",
-                debug: None,
-                value: Some(value_to_json(v)),
-                mono_shell: None,
-            },
-            ParsedObject::MonoBehaviour(mb) => Self {
-                kind: "mono",
-                debug: None,
-                value: Some(value_to_json(&mb.structure)),
-                mono_shell: Some(mono_shell(mb)),
-            },
+        let (kind, mono_shell) = match obj {
+            ParsedObject::Typed(_) => ("typed", None),
+            ParsedObject::Dynamic(_) => ("dynamic", None),
+            ParsedObject::MonoBehaviour(mb) => ("mono", Some(mono_shell(mb))),
+        };
+        Self {
+            kind,
+            value: inspect_parsed(obj, &[], 0, 0).expect("根对象可检查"),
+            mono_shell,
         }
     }
 }
@@ -137,14 +115,38 @@ fn mono_shell(mb: &MonoBehaviour) -> MonoShell {
     }
 }
 
-/// [`Value`] 树 → `serde_json::Value`。
-///
-/// 13 变体递归 match。`Bytes`/`String` 超长截断(附 `_truncated: true` 标记)。
-/// `Struct` → JSON object,`Array` → JSON array,`Pair` → 2-元素 array,
-/// `PPtr` → `{file_id, path_id}`。其余标量直接映射。
+/// 路径针对 detail.value。typed 直接访问字段/数组页，禁止先转换整棵值树。
+pub fn inspect_parsed(
+    obj: &ParsedObject,
+    path: &[String],
+    offset: usize,
+    limit: usize,
+) -> Option<JsonValue> {
+    use unity_asset::ToValue;
+    let value = match obj {
+        ParsedObject::Typed(uo) => uo.inspect_value(path, offset, limit),
+        ParsedObject::Dynamic(v) => v.inspect_value(path, offset, limit),
+        ParsedObject::MonoBehaviour(mb) => mb.structure.inspect_value(path, offset, limit),
+    }?;
+    Some(encode_json(&value, false))
+}
+
+/// 动态值的有界检查视图（与 typed inspect_value 同形状）。
+#[cfg(test)]
 pub fn value_to_json(v: &Value) -> JsonValue {
+    use unity_asset::ToValue;
+    encode_json(&v.inspect_value(&[], 0, 0).expect("根值可检查"), false)
+}
+
+/// 完整导出：Bytes 使用 base64；不截断数组/字符串，PPtr 用 Unity 字段名。
+pub fn value_to_json_full(v: &Value) -> JsonValue {
+    encode_json(v, true)
+}
+
+fn encode_json(v: &Value, full: bool) -> JsonValue {
+    use base64::Engine as _;
     match v {
-        Value::Bool(b) => json!(b),
+        Value::Bool(x) => json!(x),
         Value::I8(x) => json!(x),
         Value::U8(x) => json!(x),
         Value::I16(x) => json!(x),
@@ -153,54 +155,122 @@ pub fn value_to_json(v: &Value) -> JsonValue {
         Value::U32(x) => json!(x),
         Value::I64(x) => json!(x),
         Value::U64(x) => json!(x),
-        Value::F32(x) => json!(x),
-        Value::F64(x) => json!(x),
-        Value::String(s) => JsonValue::String(truncate_string(s)),
-        Value::Bytes(b) => truncate_bytes(b),
-        Value::Pair(a, bb) => json!([value_to_json(a), value_to_json(bb)]),
-        Value::Array(items) => JsonValue::Array(items.iter().map(value_to_json).collect()),
-        Value::Struct(fields) => {
-            let mut m = Map::with_capacity(fields.len());
-            for (k, val) in fields {
-                m.insert(k.clone(), value_to_json(val));
-            }
-            JsonValue::Object(m)
+        Value::F32(x) => float_to_json(*x as f64),
+        Value::F64(x) => float_to_json(*x),
+        Value::String(x) => json!(x),
+        Value::Bytes(x) => json!(base64::engine::general_purpose::STANDARD.encode(x)),
+        Value::Pair(a, b) => json!([encode_json(a, full), encode_json(b, full)]),
+        Value::Array(items) => {
+            JsonValue::Array(items.iter().map(|v| encode_json(v, full)).collect())
         }
-        Value::PPtr(p) => json!({ "file_id": p.file_id, "path_id": p.path_id.to_string() }),
+        Value::Struct(fields) => {
+            let mut map = Map::with_capacity(fields.len());
+            for (k, v) in fields {
+                map.insert(k.clone(), encode_json(v, full));
+            }
+            JsonValue::Object(map)
+        }
+        Value::PPtr(p) if full => json!({"m_FileID": p.file_id, "m_PathID": p.path_id}),
+        Value::PPtr(p) => json!({"file_id": p.file_id, "path_id": p.path_id.to_string()}),
     }
 }
 
-/// String 截断到 [`TRUNCATE_LEN`] 字符;超出直接截断(不加省略号,JSON 消费方自行处理)。
-fn truncate_string(s: &str) -> String {
-    if s.chars().count() <= TRUNCATE_LEN {
-        return s.to_string();
-    }
-    let mut t: String = s.chars().take(TRUNCATE_LEN).collect();
-    t.push('…');
-    t
-}
-
-/// Bytes 转 hex 字符串(截断)。前缀 `0x`,附长度信息避免歧义。
-fn truncate_bytes(b: &[u8]) -> JsonValue {
-    let truncated = b.len() > TRUNCATE_LEN;
-    let head: String = if truncated {
-        b.iter()
-            .take(TRUNCATE_LEN)
-            .map(|x| format!("{x:02x}"))
-            .collect()
+/// 非有限浮点保留为字符串；f32 展宽后仍可逐位 roundtrip。
+fn float_to_json(x: f64) -> JsonValue {
+    if x.is_finite() {
+        json!(x)
+    } else if x.is_nan() {
+        json!("NaN")
+    } else if x > 0.0 {
+        json!("Infinity")
     } else {
-        b.iter().map(|x| format!("{x:02x}")).collect()
-    };
-    json!({
-        "_bytes_hex": head,
-        "len": b.len(),
-        "_truncated": truncated,
-    })
+        json!("-Infinity")
+    }
 }
 
-/// `UnityObject` 是否是可导出 PNG 的类(Texture2D / Sprite)。
 pub fn is_image_class(uo: &UnityObject) -> bool {
     matches!(uo, UnityObject::Texture2D(_) | UnityObject::Sprite(_))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::Value as JsonValue;
+
+    fn f64_of(j: &JsonValue) -> f64 {
+        j.as_f64().expect("应为 JSON number")
+    }
+
+    /// 非有限浮点降级为字符串，两个转换器都不 panic / 不产出非法值。
+    #[test]
+    fn non_finite_floats_become_strings() {
+        for v in [f64::NAN, f64::INFINITY, f64::NEG_INFINITY] {
+            for conv in [
+                value_to_json(&Value::F64(v)),
+                value_to_json_full(&Value::F64(v)),
+            ] {
+                assert!(conv.is_string(), "非有限值应降级为字符串: {conv:?}");
+            }
+        }
+        assert_eq!(value_to_json_full(&Value::F64(f64::NAN)), json!("NaN"));
+        assert_eq!(
+            value_to_json_full(&Value::F64(f64::INFINITY)),
+            json!("Infinity")
+        );
+        assert_eq!(
+            value_to_json_full(&Value::F64(f64::NEG_INFINITY)),
+            json!("-Infinity")
+        );
+    }
+
+    /// f32 经 `as f64` 进 JSON number，parse 回后逐位还原（诚实表示，非精度丢失）。
+    #[test]
+    fn f32_survives_json_roundtrip_bit_exact() {
+        for x in [0.1f32, -3.7f32, 16777216.0f32, f32::MIN_POSITIVE] {
+            let j = value_to_json_full(&Value::F32(x));
+            let back = f64_of(&j) as f32;
+            assert_eq!(back.to_bits(), x.to_bits(), "f32 roundtrip 应逐位还原: {x}");
+        }
+    }
+
+    /// 全量版 Bytes → base64（不截断），与截断版（hex + 截断标记）并存。
+    #[test]
+    fn full_version_base64_encodes_bytes() {
+        let v = Value::Bytes(b"hi".to_vec());
+        let full = value_to_json_full(&v);
+        assert_eq!(full, json!("aGk="));
+        // 截断版仍是 hex 视图。
+        let truncated = value_to_json(&v);
+        assert_eq!(truncated["len"], json!(2));
+        assert_eq!(truncated["_bytes_hex"], json!("6869"));
+    }
+
+    /// 全量版 PPtr 用 Unity 原名 + 数字（serde_json Number 精确持有 i64），
+    /// 截断版 path_id 为字符串（防 JS 精度丢失——那是给浏览器的视图）。
+    #[test]
+    fn pptr_shape_differs_between_full_and_detail_view() {
+        let p = Value::PPtr(unity_asset::PPtrValue {
+            file_id: 3,
+            path_id: -8764833589149381726i64,
+        });
+        let full = value_to_json_full(&p);
+        assert_eq!(full["m_FileID"], json!(3));
+        assert_eq!(full["m_PathID"], json!(-8764833589149381726i64));
+
+        let detail = value_to_json(&p);
+        assert_eq!(detail["file_id"], json!(3));
+        assert_eq!(detail["path_id"], json!("-8764833589149381726"));
+    }
+
+    /// 全量版 String 不截断。
+    #[test]
+    fn full_version_does_not_truncate_strings() {
+        let long = "x".repeat(1000);
+        assert_eq!(
+            value_to_json_full(&Value::String(long.clone())),
+            JsonValue::String(long)
+        );
+    }
 }
 
 // ── container DTO ──

@@ -69,3 +69,66 @@ impl crate::Parse for RayTracingShaderReflectionData {
         })
     }
 }
+
+impl crate::ToValue for RayTracingShaderReflectionData {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("functions".to_string(), self.functions.to_value())),
+            Some((
+                "localResources".to_string(),
+                self.local_resources.to_value(),
+            )),
+            Some((
+                "globalResources".to_string(),
+                self.global_resources.to_value(),
+            )),
+            Some(("hasErrors".to_string(), self.has_errors.to_value())),
+            Some(("code".to_string(), self.code.to_value())),
+            crate::opt_field("precompiled", &self.precompiled),
+            crate::opt_field("requirements", &self.requirements),
+            crate::opt_field("codeHash", &self.code_hash),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "functions" => (self.functions).inspect_value(path, offset, limit),
+                "localResources" => (self.local_resources).inspect_value(path, offset, limit),
+                "globalResources" => (self.global_resources).inspect_value(path, offset, limit),
+                "hasErrors" => (self.has_errors).inspect_value(path, offset, limit),
+                "code" => (self.code).inspect_value(path, offset, limit),
+                "precompiled" => (self.precompiled).inspect_value(path, offset, limit),
+                "requirements" => (self.requirements).inspect_value(path, offset, limit),
+                "codeHash" => (self.code_hash).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.functions).inspect_value(path, offset, limit))
+                .map(|v| ("functions".to_string(), v)),
+            ((self.local_resources).inspect_value(path, offset, limit))
+                .map(|v| ("localResources".to_string(), v)),
+            ((self.global_resources).inspect_value(path, offset, limit))
+                .map(|v| ("globalResources".to_string(), v)),
+            ((self.has_errors).inspect_value(path, offset, limit))
+                .map(|v| ("hasErrors".to_string(), v)),
+            ((self.code).inspect_value(path, offset, limit)).map(|v| ("code".to_string(), v)),
+            ((self.precompiled).inspect_value(path, offset, limit))
+                .map(|v| ("precompiled".to_string(), v)),
+            ((self.requirements).inspect_value(path, offset, limit))
+                .map(|v| ("requirements".to_string(), v)),
+            ((self.code_hash).inspect_value(path, offset, limit))
+                .map(|v| ("codeHash".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

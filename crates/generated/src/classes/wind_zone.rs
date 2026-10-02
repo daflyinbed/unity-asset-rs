@@ -41,3 +41,73 @@ impl crate::Parse for WindZone {
         })
     }
 }
+
+impl crate::ToValue for WindZone {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_Enabled".to_string(), self.m_enabled.to_value())),
+            Some(("m_Mode".to_string(), self.m_mode.to_value())),
+            Some(("m_Radius".to_string(), self.m_radius.to_value())),
+            Some(("m_WindMain".to_string(), self.m_wind_main.to_value())),
+            Some((
+                "m_WindTurbulence".to_string(),
+                self.m_wind_turbulence.to_value(),
+            )),
+            Some((
+                "m_WindPulseMagnitude".to_string(),
+                self.m_wind_pulse_magnitude.to_value(),
+            )),
+            Some((
+                "m_WindPulseFrequency".to_string(),
+                self.m_wind_pulse_frequency.to_value(),
+            )),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "m_Mode" => (self.m_mode).inspect_value(path, offset, limit),
+                "m_Radius" => (self.m_radius).inspect_value(path, offset, limit),
+                "m_WindMain" => (self.m_wind_main).inspect_value(path, offset, limit),
+                "m_WindTurbulence" => (self.m_wind_turbulence).inspect_value(path, offset, limit),
+                "m_WindPulseMagnitude" => {
+                    (self.m_wind_pulse_magnitude).inspect_value(path, offset, limit)
+                }
+                "m_WindPulseFrequency" => {
+                    (self.m_wind_pulse_frequency).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.m_mode).inspect_value(path, offset, limit)).map(|v| ("m_Mode".to_string(), v)),
+            ((self.m_radius).inspect_value(path, offset, limit))
+                .map(|v| ("m_Radius".to_string(), v)),
+            ((self.m_wind_main).inspect_value(path, offset, limit))
+                .map(|v| ("m_WindMain".to_string(), v)),
+            ((self.m_wind_turbulence).inspect_value(path, offset, limit))
+                .map(|v| ("m_WindTurbulence".to_string(), v)),
+            ((self.m_wind_pulse_magnitude).inspect_value(path, offset, limit))
+                .map(|v| ("m_WindPulseMagnitude".to_string(), v)),
+            ((self.m_wind_pulse_frequency).inspect_value(path, offset, limit))
+                .map(|v| ("m_WindPulseFrequency".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

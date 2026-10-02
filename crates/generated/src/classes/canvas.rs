@@ -25,6 +25,21 @@ impl crate::Parse for CanvasMOverridePixelPerfectVariant {
     }
 }
 
+impl crate::ToValue for CanvasMOverridePixelPerfectVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_3_4(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_3_4(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：CanvasMSortingLayerIdVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum CanvasMSortingLayerIdVariant {
@@ -43,6 +58,21 @@ impl crate::Parse for CanvasMSortingLayerIdVariant {
         } else {
             let v = rdr.read_u32()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for CanvasMSortingLayerIdVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_0(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_0(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -70,6 +100,21 @@ impl crate::Parse for CanvasMSortingBucketNormalizedSizeVariant {
     }
 }
 
+impl crate::ToValue for CanvasMSortingBucketNormalizedSizeVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_6(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_6(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：CanvasMAdditionalShaderChannelsFlagVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum CanvasMAdditionalShaderChannelsFlagVariant {
@@ -93,6 +138,21 @@ impl crate::Parse for CanvasMAdditionalShaderChannelsFlagVariant {
     }
 }
 
+impl crate::ToValue for CanvasMAdditionalShaderChannelsFlagVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2022_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2022_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：CanvasMVertexColorAlwaysGammaSpaceVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum CanvasMVertexColorAlwaysGammaSpaceVariant {
@@ -112,6 +172,21 @@ impl crate::Parse for CanvasMVertexColorAlwaysGammaSpaceVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for CanvasMVertexColorAlwaysGammaSpaceVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V6000_4(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_4(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -296,5 +371,137 @@ impl crate::Parse for Canvas {
             m_update_rect_transform_for_standalone,
             m_use_reflection_probes,
         })
+    }
+}
+
+impl crate::ToValue for Canvas {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_Enabled".to_string(), self.m_enabled.to_value())),
+            crate::opt_field("m_Alpha", &self.m_alpha),
+            Some(("m_RenderMode".to_string(), self.m_render_mode.to_value())),
+            Some(("m_Camera".to_string(), self.m_camera.to_value())),
+            crate::opt_field("m_PlaneDistance", &self.m_plane_distance),
+            crate::opt_field("m_Normals", &self.m_normals),
+            Some((
+                "m_PixelPerfect".to_string(),
+                self.m_pixel_perfect.to_value(),
+            )),
+            crate::opt_field("m_PositionUVs", &self.m_position_u_vs),
+            crate::opt_field("m_ReceivesEvents", &self.m_receives_events),
+            crate::opt_field("m_OverrideSorting", &self.m_override_sorting),
+            crate::opt_field("m_OverridePixelPerfect", &self.m_override_pixel_perfect),
+            crate::opt_field("m_SortingLayerID", &self.m_sorting_layer_id),
+            crate::opt_field(
+                "m_SortingBucketNormalizedSize",
+                &self.m_sorting_bucket_normalized_size,
+            ),
+            crate::opt_field("m_SortingOrder", &self.m_sorting_order),
+            crate::opt_field(
+                "m_AdditionalShaderChannelsFlag",
+                &self.m_additional_shader_channels_flag,
+            ),
+            crate::opt_field(
+                "m_VertexColorAlwaysGammaSpace",
+                &self.m_vertex_color_always_gamma_space,
+            ),
+            crate::opt_field("m_TargetDisplay", &self.m_target_display),
+            crate::opt_field(
+                "m_UpdateRectTransformForStandalone",
+                &self.m_update_rect_transform_for_standalone,
+            ),
+            crate::opt_field("m_UseReflectionProbes", &self.m_use_reflection_probes),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "m_Alpha" => (self.m_alpha).inspect_value(path, offset, limit),
+                "m_RenderMode" => (self.m_render_mode).inspect_value(path, offset, limit),
+                "m_Camera" => (self.m_camera).inspect_value(path, offset, limit),
+                "m_PlaneDistance" => (self.m_plane_distance).inspect_value(path, offset, limit),
+                "m_Normals" => (self.m_normals).inspect_value(path, offset, limit),
+                "m_PixelPerfect" => (self.m_pixel_perfect).inspect_value(path, offset, limit),
+                "m_PositionUVs" => (self.m_position_u_vs).inspect_value(path, offset, limit),
+                "m_ReceivesEvents" => (self.m_receives_events).inspect_value(path, offset, limit),
+                "m_OverrideSorting" => (self.m_override_sorting).inspect_value(path, offset, limit),
+                "m_OverridePixelPerfect" => {
+                    (self.m_override_pixel_perfect).inspect_value(path, offset, limit)
+                }
+                "m_SortingLayerID" => (self.m_sorting_layer_id).inspect_value(path, offset, limit),
+                "m_SortingBucketNormalizedSize" => {
+                    (self.m_sorting_bucket_normalized_size).inspect_value(path, offset, limit)
+                }
+                "m_SortingOrder" => (self.m_sorting_order).inspect_value(path, offset, limit),
+                "m_AdditionalShaderChannelsFlag" => {
+                    (self.m_additional_shader_channels_flag).inspect_value(path, offset, limit)
+                }
+                "m_VertexColorAlwaysGammaSpace" => {
+                    (self.m_vertex_color_always_gamma_space).inspect_value(path, offset, limit)
+                }
+                "m_TargetDisplay" => (self.m_target_display).inspect_value(path, offset, limit),
+                "m_UpdateRectTransformForStandalone" => {
+                    (self.m_update_rect_transform_for_standalone).inspect_value(path, offset, limit)
+                }
+                "m_UseReflectionProbes" => {
+                    (self.m_use_reflection_probes).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.m_alpha).inspect_value(path, offset, limit)).map(|v| ("m_Alpha".to_string(), v)),
+            ((self.m_render_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_RenderMode".to_string(), v)),
+            ((self.m_camera).inspect_value(path, offset, limit))
+                .map(|v| ("m_Camera".to_string(), v)),
+            ((self.m_plane_distance).inspect_value(path, offset, limit))
+                .map(|v| ("m_PlaneDistance".to_string(), v)),
+            ((self.m_normals).inspect_value(path, offset, limit))
+                .map(|v| ("m_Normals".to_string(), v)),
+            ((self.m_pixel_perfect).inspect_value(path, offset, limit))
+                .map(|v| ("m_PixelPerfect".to_string(), v)),
+            ((self.m_position_u_vs).inspect_value(path, offset, limit))
+                .map(|v| ("m_PositionUVs".to_string(), v)),
+            ((self.m_receives_events).inspect_value(path, offset, limit))
+                .map(|v| ("m_ReceivesEvents".to_string(), v)),
+            ((self.m_override_sorting).inspect_value(path, offset, limit))
+                .map(|v| ("m_OverrideSorting".to_string(), v)),
+            ((self.m_override_pixel_perfect).inspect_value(path, offset, limit))
+                .map(|v| ("m_OverridePixelPerfect".to_string(), v)),
+            ((self.m_sorting_layer_id).inspect_value(path, offset, limit))
+                .map(|v| ("m_SortingLayerID".to_string(), v)),
+            ((self.m_sorting_bucket_normalized_size).inspect_value(path, offset, limit))
+                .map(|v| ("m_SortingBucketNormalizedSize".to_string(), v)),
+            ((self.m_sorting_order).inspect_value(path, offset, limit))
+                .map(|v| ("m_SortingOrder".to_string(), v)),
+            ((self.m_additional_shader_channels_flag).inspect_value(path, offset, limit))
+                .map(|v| ("m_AdditionalShaderChannelsFlag".to_string(), v)),
+            ((self.m_vertex_color_always_gamma_space).inspect_value(path, offset, limit))
+                .map(|v| ("m_VertexColorAlwaysGammaSpace".to_string(), v)),
+            ((self.m_target_display).inspect_value(path, offset, limit))
+                .map(|v| ("m_TargetDisplay".to_string(), v)),
+            ((self.m_update_rect_transform_for_standalone).inspect_value(path, offset, limit))
+                .map(|v| ("m_UpdateRectTransformForStandalone".to_string(), v)),
+            ((self.m_use_reflection_probes).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseReflectionProbes".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

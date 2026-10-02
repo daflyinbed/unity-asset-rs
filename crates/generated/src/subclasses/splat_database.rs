@@ -36,6 +36,21 @@ impl crate::Parse for SplatDatabaseMSplatsVariant {
     }
 }
 
+impl crate::ToValue for SplatDatabaseMSplatsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：SplatDatabaseMAlphaTexturesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum SplatDatabaseMAlphaTexturesVariant {
@@ -65,6 +80,21 @@ impl crate::Parse for SplatDatabaseMAlphaTexturesVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for SplatDatabaseMAlphaTexturesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -128,5 +158,86 @@ impl crate::Parse for SplatDatabase {
             m_material_requires_metallic,
             m_material_requires_smoothness,
         })
+    }
+}
+
+impl crate::ToValue for SplatDatabase {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            crate::opt_field("m_Splats", &self.m_splats),
+            crate::opt_field("m_TerrainLayers", &self.m_terrain_layers),
+            Some((
+                "m_AlphaTextures".to_string(),
+                self.m_alpha_textures.to_value(),
+            )),
+            Some((
+                "m_AlphamapResolution".to_string(),
+                self.m_alphamap_resolution.to_value(),
+            )),
+            Some((
+                "m_BaseMapResolution".to_string(),
+                self.m_base_map_resolution.to_value(),
+            )),
+            crate::opt_field("m_ColorSpace", &self.m_color_space),
+            crate::opt_field(
+                "m_MaterialRequiresMetallic",
+                &self.m_material_requires_metallic,
+            ),
+            crate::opt_field(
+                "m_MaterialRequiresSmoothness",
+                &self.m_material_requires_smoothness,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Splats" => (self.m_splats).inspect_value(path, offset, limit),
+                "m_TerrainLayers" => (self.m_terrain_layers).inspect_value(path, offset, limit),
+                "m_AlphaTextures" => (self.m_alpha_textures).inspect_value(path, offset, limit),
+                "m_AlphamapResolution" => {
+                    (self.m_alphamap_resolution).inspect_value(path, offset, limit)
+                }
+                "m_BaseMapResolution" => {
+                    (self.m_base_map_resolution).inspect_value(path, offset, limit)
+                }
+                "m_ColorSpace" => (self.m_color_space).inspect_value(path, offset, limit),
+                "m_MaterialRequiresMetallic" => {
+                    (self.m_material_requires_metallic).inspect_value(path, offset, limit)
+                }
+                "m_MaterialRequiresSmoothness" => {
+                    (self.m_material_requires_smoothness).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_splats).inspect_value(path, offset, limit))
+                .map(|v| ("m_Splats".to_string(), v)),
+            ((self.m_terrain_layers).inspect_value(path, offset, limit))
+                .map(|v| ("m_TerrainLayers".to_string(), v)),
+            ((self.m_alpha_textures).inspect_value(path, offset, limit))
+                .map(|v| ("m_AlphaTextures".to_string(), v)),
+            ((self.m_alphamap_resolution).inspect_value(path, offset, limit))
+                .map(|v| ("m_AlphamapResolution".to_string(), v)),
+            ((self.m_base_map_resolution).inspect_value(path, offset, limit))
+                .map(|v| ("m_BaseMapResolution".to_string(), v)),
+            ((self.m_color_space).inspect_value(path, offset, limit))
+                .map(|v| ("m_ColorSpace".to_string(), v)),
+            ((self.m_material_requires_metallic).inspect_value(path, offset, limit))
+                .map(|v| ("m_MaterialRequiresMetallic".to_string(), v)),
+            ((self.m_material_requires_smoothness).inspect_value(path, offset, limit))
+                .map(|v| ("m_MaterialRequiresSmoothness".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

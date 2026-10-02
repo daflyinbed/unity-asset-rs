@@ -52,6 +52,21 @@ impl crate::Parse for Mesh3DsImporterMFileIdToRecycleNameVariant {
     }
 }
 
+impl crate::ToValue for Mesh3DsImporterMFileIdToRecycleNameVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_0(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_0(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：Mesh3DsImporterMImportMaterialsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum Mesh3DsImporterMImportMaterialsVariant {
@@ -71,6 +86,21 @@ impl crate::Parse for Mesh3DsImporterMImportMaterialsVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for Mesh3DsImporterMImportMaterialsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_2(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -120,6 +150,21 @@ impl crate::Parse for Mesh3DsImporterMExternalObjectsVariant {
     }
 }
 
+impl crate::ToValue for Mesh3DsImporterMExternalObjectsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2019_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2019_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：Mesh3DsImporterMBakeSimulationVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum Mesh3DsImporterMBakeSimulationVariant {
@@ -147,6 +192,23 @@ impl crate::Parse for Mesh3DsImporterMBakeSimulationVariant {
     }
 }
 
+impl crate::ToValue for Mesh3DsImporterMBakeSimulationVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V4_0(v) => v.to_value(),
+            Self::V4_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V4_0(v) => (v).inspect_value(path, offset, limit),
+            Self::V4_3(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：Mesh3DsImporterMSplitAnimationsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum Mesh3DsImporterMSplitAnimationsVariant {
@@ -166,6 +228,21 @@ impl crate::Parse for Mesh3DsImporterMSplitAnimationsVariant {
         } else {
             let v = rdr.read_bool()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for Mesh3DsImporterMSplitAnimationsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V3_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V3_5(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -193,6 +270,21 @@ impl crate::Parse for Mesh3DsImporterMOptimizeGameObjectsVariant {
     }
 }
 
+impl crate::ToValue for Mesh3DsImporterMOptimizeGameObjectsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2021_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2021_2(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：Mesh3DsImporterMUseFileUnitsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum Mesh3DsImporterMUseFileUnitsVariant {
@@ -212,6 +304,21 @@ impl crate::Parse for Mesh3DsImporterMUseFileUnitsVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for Mesh3DsImporterMUseFileUnitsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V3_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V3_5(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -249,6 +356,21 @@ impl crate::Parse for Mesh3DsImporterMClipAnimationsVariant {
     }
 }
 
+impl crate::ToValue for Mesh3DsImporterMClipAnimationsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：Mesh3DsImporterMAnimationDoRetargetingWarningsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum Mesh3DsImporterMAnimationDoRetargetingWarningsVariant {
@@ -268,6 +390,21 @@ impl crate::Parse for Mesh3DsImporterMAnimationDoRetargetingWarningsVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for Mesh3DsImporterMAnimationDoRetargetingWarningsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_2(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -305,6 +442,21 @@ impl crate::Parse for Mesh3DsImporterMExtraExposedTransformPathsVariant {
     }
 }
 
+impl crate::ToValue for Mesh3DsImporterMExtraExposedTransformPathsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：Mesh3DsImporterMLodScreenPercentagesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum Mesh3DsImporterMLodScreenPercentagesVariant {
@@ -338,6 +490,21 @@ impl crate::Parse for Mesh3DsImporterMLodScreenPercentagesVariant {
     }
 }
 
+impl crate::ToValue for Mesh3DsImporterMLodScreenPercentagesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：Mesh3DsImporterMImportAnimatedCustomPropertiesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum Mesh3DsImporterMImportAnimatedCustomPropertiesVariant {
@@ -357,6 +524,21 @@ impl crate::Parse for Mesh3DsImporterMImportAnimatedCustomPropertiesVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for Mesh3DsImporterMImportAnimatedCustomPropertiesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2018_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2018_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -384,6 +566,21 @@ impl crate::Parse for Mesh3DsImporterOptimizeMeshForGpuVariant {
     }
 }
 
+impl crate::ToValue for Mesh3DsImporterOptimizeMeshForGpuVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V4_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V4_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：Mesh3DsImporterWeldVerticesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum Mesh3DsImporterWeldVerticesVariant {
@@ -407,6 +604,21 @@ impl crate::Parse for Mesh3DsImporterWeldVerticesVariant {
     }
 }
 
+impl crate::ToValue for Mesh3DsImporterWeldVerticesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_3(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：Mesh3DsImporterNormalSmoothAngleVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum Mesh3DsImporterNormalSmoothAngleVariant {
@@ -426,6 +638,21 @@ impl crate::Parse for Mesh3DsImporterNormalSmoothAngleVariant {
         } else {
             let v = rdr.read_f32()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for Mesh3DsImporterNormalSmoothAngleVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_3(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -463,6 +690,21 @@ impl crate::Parse for Mesh3DsImporterMImportedRootsVariant {
     }
 }
 
+impl crate::ToValue for Mesh3DsImporterMImportedRootsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：Mesh3DsImporterTangentImportModeVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum Mesh3DsImporterTangentImportModeVariant {
@@ -482,6 +724,21 @@ impl crate::Parse for Mesh3DsImporterTangentImportModeVariant {
             let v = rdr.read_i32()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for Mesh3DsImporterTangentImportModeVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -509,6 +766,23 @@ impl crate::Parse for Mesh3DsImporterMHasExtraRootVariant {
         } else {
             let v = rdr.read_bool()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for Mesh3DsImporterMHasExtraRootVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V4_3(v) => v.to_value(),
+            Self::V2017_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V4_3(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_2(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -542,6 +816,21 @@ impl crate::Parse for Mesh3DsImporterMImportedTakeInfosVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for Mesh3DsImporterMImportedTakeInfosVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -588,6 +877,23 @@ impl crate::Parse for Mesh3DsImporterMReferencedClipsVariant {
     }
 }
 
+impl crate::ToValue for Mesh3DsImporterMReferencedClipsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+            Self::V6000_0(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_0(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：Mesh3DsImporterMFileScaleVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum Mesh3DsImporterMFileScaleVariant {
@@ -607,6 +913,21 @@ impl crate::Parse for Mesh3DsImporterMFileScaleVariant {
             let v = rdr.read_f32()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for Mesh3DsImporterMFileScaleVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2018_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2018_3(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -634,6 +955,21 @@ impl crate::Parse for Mesh3DsImporterMImportAnimationVariant {
     }
 }
 
+impl crate::ToValue for Mesh3DsImporterMImportAnimationVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2019_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2019_3(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：Mesh3DsImporterMAnimationTypeVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum Mesh3DsImporterMAnimationTypeVariant {
@@ -653,6 +989,21 @@ impl crate::Parse for Mesh3DsImporterMAnimationTypeVariant {
             let v = rdr.read_i32()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for Mesh3DsImporterMAnimationTypeVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V4_3_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V4_3_3(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -680,6 +1031,21 @@ impl crate::Parse for Mesh3DsImporterNormalCalculationModeVariant {
     }
 }
 
+impl crate::ToValue for Mesh3DsImporterNormalCalculationModeVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2018_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2018_3(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：Mesh3DsImporterOptimizeBonesVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum Mesh3DsImporterOptimizeBonesVariant {
@@ -699,6 +1065,21 @@ impl crate::Parse for Mesh3DsImporterOptimizeBonesVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for Mesh3DsImporterOptimizeBonesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V6000_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_2(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -726,6 +1107,21 @@ impl crate::Parse for Mesh3DsImporterMHasEmbeddedTexturesVariant {
     }
 }
 
+impl crate::ToValue for Mesh3DsImporterMHasEmbeddedTexturesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2023_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2023_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：Mesh3DsImporterNormalSmoothingSourceVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum Mesh3DsImporterNormalSmoothingSourceVariant {
@@ -745,6 +1141,21 @@ impl crate::Parse for Mesh3DsImporterNormalSmoothingSourceVariant {
             let v = rdr.read_i32()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for Mesh3DsImporterNormalSmoothingSourceVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V6000_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_5(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -781,6 +1192,25 @@ impl crate::Parse for Mesh3DsImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVar
     }
 }
 
+impl crate::ToValue for Mesh3DsImporterMAddHumanoidExtraRootOnlyWhenUsingAvatarVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2020_3_37(v) => v.to_value(),
+            Self::V2021_1(v) => v.to_value(),
+            Self::V2021_3_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2020_3_37(v) => (v).inspect_value(path, offset, limit),
+            Self::V2021_1(v) => (v).inspect_value(path, offset, limit),
+            Self::V2021_3_5(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：Mesh3DsImporterMImportBlendShapeDeformPercentVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum Mesh3DsImporterMImportBlendShapeDeformPercentVariant {
@@ -800,6 +1230,21 @@ impl crate::Parse for Mesh3DsImporterMImportBlendShapeDeformPercentVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for Mesh3DsImporterMImportBlendShapeDeformPercentVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2022_1_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2022_1_5(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -2549,5 +2994,864 @@ impl crate::Parse for Mesh3DsImporter {
             m_remap_materials_if_material_import_mode_is_none,
             m_import_blend_shape_deform_percent,
         })
+    }
+}
+
+impl crate::ToValue for Mesh3DsImporter {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            crate::opt_field("m_FileIDToRecycleName", &self.m_file_id_to_recycle_name),
+            crate::opt_field("m_InternalIDToNameTable", &self.m_internal_id_to_name_table),
+            crate::opt_field("m_OldHashIdentity", &self.m_old_hash_identity),
+            crate::opt_field("m_ImportMaterials", &self.m_import_materials),
+            crate::opt_field("m_ExternalObjects", &self.m_external_objects),
+            crate::opt_field("m_NewHashIdentity", &self.m_new_hash_identity),
+            crate::opt_field("m_MaterialName", &self.m_material_name),
+            crate::opt_field("m_UsedFileIDs", &self.m_used_file_i_ds),
+            crate::opt_field("m_GenerateMaterials", &self.m_generate_materials),
+            crate::opt_field("m_MaterialSearch", &self.m_material_search),
+            crate::opt_field(
+                "m_SupportsEmbeddedMaterials",
+                &self.m_supports_embedded_materials,
+            ),
+            crate::opt_field("m_GenerateAnimations", &self.m_generate_animations),
+            crate::opt_field(
+                "m_LegacyGenerateAnimations",
+                &self.m_legacy_generate_animations,
+            ),
+            crate::opt_field("m_MaterialImportMode", &self.m_material_import_mode),
+            Some(("m_GlobalScale".to_string(), self.m_global_scale.to_value())),
+            Some((
+                "m_BakeSimulation".to_string(),
+                self.m_bake_simulation.to_value(),
+            )),
+            crate::opt_field("m_SplitAnimations", &self.m_split_animations),
+            Some((
+                "m_AnimationCompression".to_string(),
+                self.m_animation_compression.to_value(),
+            )),
+            crate::opt_field("m_OptimizeGameObjects", &self.m_optimize_game_objects),
+            crate::opt_field("m_ResampleRotations", &self.m_resample_rotations),
+            crate::opt_field("m_ResampleCurves", &self.m_resample_curves),
+            crate::opt_field("m_MaterialLocation", &self.m_material_location),
+            Some((
+                "m_AnimationRotationError".to_string(),
+                self.m_animation_rotation_error.to_value(),
+            )),
+            crate::opt_field("m_MotionNodeName", &self.m_motion_node_name),
+            crate::opt_field("m_Materials", &self.m_materials),
+            Some((
+                "m_AddColliders".to_string(),
+                self.m_add_colliders.to_value(),
+            )),
+            Some((
+                "m_AnimationPositionError".to_string(),
+                self.m_animation_position_error.to_value(),
+            )),
+            crate::opt_field("m_AnimationImportErrors", &self.m_animation_import_errors),
+            crate::opt_field("m_SearchTexturesGlobally", &self.m_search_textures_globally),
+            Some((
+                "m_UseFileUnits".to_string(),
+                self.m_use_file_units.to_value(),
+            )),
+            Some((
+                "m_AnimationScaleError".to_string(),
+                self.m_animation_scale_error.to_value(),
+            )),
+            crate::opt_field(
+                "m_AnimationImportWarnings",
+                &self.m_animation_import_warnings,
+            ),
+            crate::opt_field("m_RigImportErrors", &self.m_rig_import_errors),
+            Some((
+                "m_AnimationWrapMode".to_string(),
+                self.m_animation_wrap_mode.to_value(),
+            )),
+            crate::opt_field(
+                "m_AnimationRetargetingWarnings",
+                &self.m_animation_retargeting_warnings,
+            ),
+            crate::opt_field("m_RigImportWarnings", &self.m_rig_import_warnings),
+            Some((
+                "m_ClipAnimations".to_string(),
+                self.m_clip_animations.to_value(),
+            )),
+            crate::opt_field(
+                "m_AnimationDoRetargetingWarnings",
+                &self.m_animation_do_retargeting_warnings,
+            ),
+            crate::opt_field("m_IsReadable", &self.m_is_readable),
+            crate::opt_field(
+                "m_ExtraExposedTransformPaths",
+                &self.m_extra_exposed_transform_paths,
+            ),
+            crate::opt_field("m_LODScreenPercentages", &self.m_lod_screen_percentages),
+            crate::opt_field(
+                "m_RemoveConstantScaleCurves",
+                &self.m_remove_constant_scale_curves,
+            ),
+            Some((
+                "m_MeshCompression".to_string(),
+                self.m_mesh_compression.to_value(),
+            )),
+            crate::opt_field(
+                "m_MeshSettings.swapUVChannels",
+                &self.m_mesh_settings_swap_uv_channels,
+            ),
+            crate::opt_field(
+                "m_MeshSettings.generateSecondaryUV",
+                &self.m_mesh_settings_generate_secondary_uv,
+            ),
+            crate::opt_field(
+                "m_MeshSettings.secondaryUVAngleDistortion",
+                &self.m_mesh_settings_secondary_uv_angle_distortion,
+            ),
+            crate::opt_field("swapUVChannels", &self.swap_uv_channels),
+            crate::opt_field("m_ImportBlendShapes", &self.m_import_blend_shapes),
+            crate::opt_field(
+                "m_MeshSettings.secondaryUVAreaDistortion",
+                &self.m_mesh_settings_secondary_uv_area_distortion,
+            ),
+            crate::opt_field("generateSecondaryUV", &self.generate_secondary_uv),
+            crate::opt_field(
+                "m_MeshSettings.secondaryUVHardAngle",
+                &self.m_mesh_settings_secondary_uv_hard_angle,
+            ),
+            crate::opt_field(
+                "m_ImportAnimatedCustomProperties",
+                &self.m_import_animated_custom_properties,
+            ),
+            crate::opt_field(
+                "m_MeshSettings.secondaryUVPackMargin",
+                &self.m_mesh_settings_secondary_uv_pack_margin,
+            ),
+            crate::opt_field("optimizeMesh", &self.optimize_mesh),
+            crate::opt_field("optimizeMeshForGPU", &self.optimize_mesh_for_gpu),
+            crate::opt_field("m_ImportConstraints", &self.m_import_constraints),
+            crate::opt_field(
+                "m_MeshSettings.normalImportMode",
+                &self.m_mesh_settings_normal_import_mode,
+            ),
+            crate::opt_field(
+                "secondaryUVAngleDistortion",
+                &self.secondary_uv_angle_distortion,
+            ),
+            crate::opt_field("m_ExtraUserProperties", &self.m_extra_user_properties),
+            crate::opt_field(
+                "m_MeshSettings.tangentImportMode",
+                &self.m_mesh_settings_tangent_import_mode,
+            ),
+            crate::opt_field(
+                "secondaryUVAreaDistortion",
+                &self.secondary_uv_area_distortion,
+            ),
+            crate::opt_field("weldVertices", &self.weld_vertices),
+            crate::opt_field("secondaryUVHardAngle", &self.secondary_uv_hard_angle),
+            crate::opt_field("secondaryUVPackMargin", &self.secondary_uv_pack_margin),
+            crate::opt_field("m_FirstImportVersion", &self.m_first_import_version),
+            Some((
+                "normalSmoothAngle".to_string(),
+                self.normal_smooth_angle.to_value(),
+            )),
+            crate::opt_field("keepQuads", &self.keep_quads),
+            crate::opt_field("splitTangentsAcrossUV", &self.split_tangents_across_uv),
+            crate::opt_field("normalImportMode", &self.normal_import_mode),
+            Some((
+                "m_ImportedRoots".to_string(),
+                self.m_imported_roots.to_value(),
+            )),
+            crate::opt_field("tangentImportMode", &self.tangent_import_mode),
+            crate::opt_field("m_ImportVisibility", &self.m_import_visibility),
+            Some((
+                "m_HasExtraRoot".to_string(),
+                self.m_has_extra_root.to_value(),
+            )),
+            crate::opt_field("m_ImportedTakeInfos", &self.m_imported_take_infos),
+            crate::opt_field("m_ReferencedClips", &self.m_referenced_clips),
+            crate::opt_field("m_ImportCameras", &self.m_import_cameras),
+            crate::opt_field("m_UseFileScale", &self.m_use_file_scale),
+            crate::opt_field("m_ImportLights", &self.m_import_lights),
+            crate::opt_field("m_FileScale", &self.m_file_scale),
+            crate::opt_field("m_ImportAnimation", &self.m_import_animation),
+            crate::opt_field("m_CopyAvatar", &self.m_copy_avatar),
+            crate::opt_field("m_UseSRGBMaterialColor", &self.m_use_srgb_material_color),
+            crate::opt_field("m_HumanDescription", &self.m_human_description),
+            crate::opt_field("m_SortHierarchyByName", &self.m_sort_hierarchy_by_name),
+            crate::opt_field(
+                "m_LastHumanDescriptionAvatarSource",
+                &self.m_last_human_description_avatar_source,
+            ),
+            crate::opt_field("m_ImportPhysicalCameras", &self.m_import_physical_cameras),
+            crate::opt_field("m_AdditionalBone", &self.m_additional_bone),
+            crate::opt_field("m_AnimationType", &self.m_animation_type),
+            crate::opt_field("m_UserData", &self.m_user_data),
+            crate::opt_field("m_FileIdsGeneration", &self.m_file_ids_generation),
+            crate::opt_field(
+                "m_NodeNameCollisionStrategy",
+                &self.m_node_name_collision_strategy,
+            ),
+            crate::opt_field("m_PreserveHierarchy", &self.m_preserve_hierarchy),
+            crate::opt_field("indexFormat", &self.index_format),
+            crate::opt_field("skinWeightsMode", &self.skin_weights_mode),
+            crate::opt_field("normalCalculationMode", &self.normal_calculation_mode),
+            crate::opt_field("maxBonesPerVertex", &self.max_bones_per_vertex),
+            crate::opt_field("bakeAxisConversion", &self.bake_axis_conversion),
+            crate::opt_field("m_AssetBundleName", &self.m_asset_bundle_name),
+            crate::opt_field("minBoneWeight", &self.min_bone_weight),
+            crate::opt_field("m_AssetBundleVariant", &self.m_asset_bundle_variant),
+            crate::opt_field("meshOptimizationFlags", &self.mesh_optimization_flags),
+            crate::opt_field("m_HumanoidOversampling", &self.m_humanoid_oversampling),
+            crate::opt_field(
+                "m_PreviousCalculatedGlobalScale",
+                &self.m_previous_calculated_global_scale,
+            ),
+            crate::opt_field(
+                "m_HasPreviousCalculatedGlobalScale",
+                &self.m_has_previous_calculated_global_scale,
+            ),
+            crate::opt_field("m_FileScaleUnit", &self.m_file_scale_unit),
+            crate::opt_field("optimizeBones", &self.optimize_bones),
+            crate::opt_field("m_FileScaleFactor", &self.m_file_scale_factor),
+            crate::opt_field("generateMeshLods", &self.generate_mesh_lods),
+            crate::opt_field("meshLodGenerationFlags", &self.mesh_lod_generation_flags),
+            crate::opt_field("maximumMeshLod", &self.maximum_mesh_lod),
+            crate::opt_field("m_HasEmbeddedTextures", &self.m_has_embedded_textures),
+            crate::opt_field("secondaryUVMarginMethod", &self.secondary_uv_margin_method),
+            crate::opt_field("importUVs", &self.import_u_vs),
+            crate::opt_field(
+                "secondaryUVMinLightmapResolution",
+                &self.secondary_uv_min_lightmap_resolution,
+            ),
+            crate::opt_field("importVertexColors", &self.import_vertex_colors),
+            crate::opt_field(
+                "secondaryUVMinObjectScale",
+                &self.secondary_uv_min_object_scale,
+            ),
+            crate::opt_field(
+                "legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes",
+                &self.legacy_compute_all_normals_from_smoothing_groups_when_mesh_has_blend_shapes,
+            ),
+            crate::opt_field(
+                "blendShapeNormalImportMode",
+                &self.blend_shape_normal_import_mode,
+            ),
+            crate::opt_field("normalSmoothingSource", &self.normal_smoothing_source),
+            crate::opt_field(
+                "m_StrictVertexDataChecks",
+                &self.m_strict_vertex_data_checks,
+            ),
+            crate::opt_field(
+                "m_AutoGenerateAvatarMappingIfUnspecified",
+                &self.m_auto_generate_avatar_mapping_if_unspecified,
+            ),
+            crate::opt_field("m_AvatarSetup", &self.m_avatar_setup),
+            crate::opt_field("m_ContainsAnimation", &self.m_contains_animation),
+            crate::opt_field(
+                "calculateBlendshapeNormalsDeltaFromImportedNormals",
+                &self.calculate_blendshape_normals_delta_from_imported_normals,
+            ),
+            crate::opt_field(
+                "m_AddHumanoidExtraRootOnlyWhenUsingAvatar",
+                &self.m_add_humanoid_extra_root_only_when_using_avatar,
+            ),
+            crate::opt_field(
+                "m_RemapMaterialsIfMaterialImportModeIsNone",
+                &self.m_remap_materials_if_material_import_mode_is_none,
+            ),
+            crate::opt_field(
+                "m_ImportBlendShapeDeformPercent",
+                &self.m_import_blend_shape_deform_percent,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_FileIDToRecycleName" => {
+                    (self.m_file_id_to_recycle_name).inspect_value(path, offset, limit)
+                }
+                "m_InternalIDToNameTable" => {
+                    (self.m_internal_id_to_name_table).inspect_value(path, offset, limit)
+                }
+                "m_OldHashIdentity" => {
+                    (self.m_old_hash_identity).inspect_value(path, offset, limit)
+                }
+                "m_ImportMaterials" => (self.m_import_materials).inspect_value(path, offset, limit),
+                "m_ExternalObjects" => (self.m_external_objects).inspect_value(path, offset, limit),
+                "m_NewHashIdentity" => {
+                    (self.m_new_hash_identity).inspect_value(path, offset, limit)
+                }
+                "m_MaterialName" => (self.m_material_name).inspect_value(path, offset, limit),
+                "m_UsedFileIDs" => (self.m_used_file_i_ds).inspect_value(path, offset, limit),
+                "m_GenerateMaterials" => {
+                    (self.m_generate_materials).inspect_value(path, offset, limit)
+                }
+                "m_MaterialSearch" => (self.m_material_search).inspect_value(path, offset, limit),
+                "m_SupportsEmbeddedMaterials" => {
+                    (self.m_supports_embedded_materials).inspect_value(path, offset, limit)
+                }
+                "m_GenerateAnimations" => {
+                    (self.m_generate_animations).inspect_value(path, offset, limit)
+                }
+                "m_LegacyGenerateAnimations" => {
+                    (self.m_legacy_generate_animations).inspect_value(path, offset, limit)
+                }
+                "m_MaterialImportMode" => {
+                    (self.m_material_import_mode).inspect_value(path, offset, limit)
+                }
+                "m_GlobalScale" => (self.m_global_scale).inspect_value(path, offset, limit),
+                "m_BakeSimulation" => (self.m_bake_simulation).inspect_value(path, offset, limit),
+                "m_SplitAnimations" => (self.m_split_animations).inspect_value(path, offset, limit),
+                "m_AnimationCompression" => {
+                    (self.m_animation_compression).inspect_value(path, offset, limit)
+                }
+                "m_OptimizeGameObjects" => {
+                    (self.m_optimize_game_objects).inspect_value(path, offset, limit)
+                }
+                "m_ResampleRotations" => {
+                    (self.m_resample_rotations).inspect_value(path, offset, limit)
+                }
+                "m_ResampleCurves" => (self.m_resample_curves).inspect_value(path, offset, limit),
+                "m_MaterialLocation" => {
+                    (self.m_material_location).inspect_value(path, offset, limit)
+                }
+                "m_AnimationRotationError" => {
+                    (self.m_animation_rotation_error).inspect_value(path, offset, limit)
+                }
+                "m_MotionNodeName" => (self.m_motion_node_name).inspect_value(path, offset, limit),
+                "m_Materials" => (self.m_materials).inspect_value(path, offset, limit),
+                "m_AddColliders" => (self.m_add_colliders).inspect_value(path, offset, limit),
+                "m_AnimationPositionError" => {
+                    (self.m_animation_position_error).inspect_value(path, offset, limit)
+                }
+                "m_AnimationImportErrors" => {
+                    (self.m_animation_import_errors).inspect_value(path, offset, limit)
+                }
+                "m_SearchTexturesGlobally" => {
+                    (self.m_search_textures_globally).inspect_value(path, offset, limit)
+                }
+                "m_UseFileUnits" => (self.m_use_file_units).inspect_value(path, offset, limit),
+                "m_AnimationScaleError" => {
+                    (self.m_animation_scale_error).inspect_value(path, offset, limit)
+                }
+                "m_AnimationImportWarnings" => {
+                    (self.m_animation_import_warnings).inspect_value(path, offset, limit)
+                }
+                "m_RigImportErrors" => {
+                    (self.m_rig_import_errors).inspect_value(path, offset, limit)
+                }
+                "m_AnimationWrapMode" => {
+                    (self.m_animation_wrap_mode).inspect_value(path, offset, limit)
+                }
+                "m_AnimationRetargetingWarnings" => {
+                    (self.m_animation_retargeting_warnings).inspect_value(path, offset, limit)
+                }
+                "m_RigImportWarnings" => {
+                    (self.m_rig_import_warnings).inspect_value(path, offset, limit)
+                }
+                "m_ClipAnimations" => (self.m_clip_animations).inspect_value(path, offset, limit),
+                "m_AnimationDoRetargetingWarnings" => {
+                    (self.m_animation_do_retargeting_warnings).inspect_value(path, offset, limit)
+                }
+                "m_IsReadable" => (self.m_is_readable).inspect_value(path, offset, limit),
+                "m_ExtraExposedTransformPaths" => {
+                    (self.m_extra_exposed_transform_paths).inspect_value(path, offset, limit)
+                }
+                "m_LODScreenPercentages" => {
+                    (self.m_lod_screen_percentages).inspect_value(path, offset, limit)
+                }
+                "m_RemoveConstantScaleCurves" => {
+                    (self.m_remove_constant_scale_curves).inspect_value(path, offset, limit)
+                }
+                "m_MeshCompression" => (self.m_mesh_compression).inspect_value(path, offset, limit),
+                "m_MeshSettings.swapUVChannels" => {
+                    (self.m_mesh_settings_swap_uv_channels).inspect_value(path, offset, limit)
+                }
+                "m_MeshSettings.generateSecondaryUV" => {
+                    (self.m_mesh_settings_generate_secondary_uv).inspect_value(path, offset, limit)
+                }
+                "m_MeshSettings.secondaryUVAngleDistortion" => (self
+                    .m_mesh_settings_secondary_uv_angle_distortion)
+                    .inspect_value(path, offset, limit),
+                "swapUVChannels" => (self.swap_uv_channels).inspect_value(path, offset, limit),
+                "m_ImportBlendShapes" => {
+                    (self.m_import_blend_shapes).inspect_value(path, offset, limit)
+                }
+                "m_MeshSettings.secondaryUVAreaDistortion" => (self
+                    .m_mesh_settings_secondary_uv_area_distortion)
+                    .inspect_value(path, offset, limit),
+                "generateSecondaryUV" => {
+                    (self.generate_secondary_uv).inspect_value(path, offset, limit)
+                }
+                "m_MeshSettings.secondaryUVHardAngle" => (self
+                    .m_mesh_settings_secondary_uv_hard_angle)
+                    .inspect_value(path, offset, limit),
+                "m_ImportAnimatedCustomProperties" => {
+                    (self.m_import_animated_custom_properties).inspect_value(path, offset, limit)
+                }
+                "m_MeshSettings.secondaryUVPackMargin" => (self
+                    .m_mesh_settings_secondary_uv_pack_margin)
+                    .inspect_value(path, offset, limit),
+                "optimizeMesh" => (self.optimize_mesh).inspect_value(path, offset, limit),
+                "optimizeMeshForGPU" => {
+                    (self.optimize_mesh_for_gpu).inspect_value(path, offset, limit)
+                }
+                "m_ImportConstraints" => {
+                    (self.m_import_constraints).inspect_value(path, offset, limit)
+                }
+                "m_MeshSettings.normalImportMode" => {
+                    (self.m_mesh_settings_normal_import_mode).inspect_value(path, offset, limit)
+                }
+                "secondaryUVAngleDistortion" => {
+                    (self.secondary_uv_angle_distortion).inspect_value(path, offset, limit)
+                }
+                "m_ExtraUserProperties" => {
+                    (self.m_extra_user_properties).inspect_value(path, offset, limit)
+                }
+                "m_MeshSettings.tangentImportMode" => {
+                    (self.m_mesh_settings_tangent_import_mode).inspect_value(path, offset, limit)
+                }
+                "secondaryUVAreaDistortion" => {
+                    (self.secondary_uv_area_distortion).inspect_value(path, offset, limit)
+                }
+                "weldVertices" => (self.weld_vertices).inspect_value(path, offset, limit),
+                "secondaryUVHardAngle" => {
+                    (self.secondary_uv_hard_angle).inspect_value(path, offset, limit)
+                }
+                "secondaryUVPackMargin" => {
+                    (self.secondary_uv_pack_margin).inspect_value(path, offset, limit)
+                }
+                "m_FirstImportVersion" => {
+                    (self.m_first_import_version).inspect_value(path, offset, limit)
+                }
+                "normalSmoothAngle" => {
+                    (self.normal_smooth_angle).inspect_value(path, offset, limit)
+                }
+                "keepQuads" => (self.keep_quads).inspect_value(path, offset, limit),
+                "splitTangentsAcrossUV" => {
+                    (self.split_tangents_across_uv).inspect_value(path, offset, limit)
+                }
+                "normalImportMode" => (self.normal_import_mode).inspect_value(path, offset, limit),
+                "m_ImportedRoots" => (self.m_imported_roots).inspect_value(path, offset, limit),
+                "tangentImportMode" => {
+                    (self.tangent_import_mode).inspect_value(path, offset, limit)
+                }
+                "m_ImportVisibility" => {
+                    (self.m_import_visibility).inspect_value(path, offset, limit)
+                }
+                "m_HasExtraRoot" => (self.m_has_extra_root).inspect_value(path, offset, limit),
+                "m_ImportedTakeInfos" => {
+                    (self.m_imported_take_infos).inspect_value(path, offset, limit)
+                }
+                "m_ReferencedClips" => (self.m_referenced_clips).inspect_value(path, offset, limit),
+                "m_ImportCameras" => (self.m_import_cameras).inspect_value(path, offset, limit),
+                "m_UseFileScale" => (self.m_use_file_scale).inspect_value(path, offset, limit),
+                "m_ImportLights" => (self.m_import_lights).inspect_value(path, offset, limit),
+                "m_FileScale" => (self.m_file_scale).inspect_value(path, offset, limit),
+                "m_ImportAnimation" => (self.m_import_animation).inspect_value(path, offset, limit),
+                "m_CopyAvatar" => (self.m_copy_avatar).inspect_value(path, offset, limit),
+                "m_UseSRGBMaterialColor" => {
+                    (self.m_use_srgb_material_color).inspect_value(path, offset, limit)
+                }
+                "m_HumanDescription" => {
+                    (self.m_human_description).inspect_value(path, offset, limit)
+                }
+                "m_SortHierarchyByName" => {
+                    (self.m_sort_hierarchy_by_name).inspect_value(path, offset, limit)
+                }
+                "m_LastHumanDescriptionAvatarSource" => {
+                    (self.m_last_human_description_avatar_source).inspect_value(path, offset, limit)
+                }
+                "m_ImportPhysicalCameras" => {
+                    (self.m_import_physical_cameras).inspect_value(path, offset, limit)
+                }
+                "m_AdditionalBone" => (self.m_additional_bone).inspect_value(path, offset, limit),
+                "m_AnimationType" => (self.m_animation_type).inspect_value(path, offset, limit),
+                "m_UserData" => (self.m_user_data).inspect_value(path, offset, limit),
+                "m_FileIdsGeneration" => {
+                    (self.m_file_ids_generation).inspect_value(path, offset, limit)
+                }
+                "m_NodeNameCollisionStrategy" => {
+                    (self.m_node_name_collision_strategy).inspect_value(path, offset, limit)
+                }
+                "m_PreserveHierarchy" => {
+                    (self.m_preserve_hierarchy).inspect_value(path, offset, limit)
+                }
+                "indexFormat" => (self.index_format).inspect_value(path, offset, limit),
+                "skinWeightsMode" => (self.skin_weights_mode).inspect_value(path, offset, limit),
+                "normalCalculationMode" => {
+                    (self.normal_calculation_mode).inspect_value(path, offset, limit)
+                }
+                "maxBonesPerVertex" => {
+                    (self.max_bones_per_vertex).inspect_value(path, offset, limit)
+                }
+                "bakeAxisConversion" => {
+                    (self.bake_axis_conversion).inspect_value(path, offset, limit)
+                }
+                "m_AssetBundleName" => {
+                    (self.m_asset_bundle_name).inspect_value(path, offset, limit)
+                }
+                "minBoneWeight" => (self.min_bone_weight).inspect_value(path, offset, limit),
+                "m_AssetBundleVariant" => {
+                    (self.m_asset_bundle_variant).inspect_value(path, offset, limit)
+                }
+                "meshOptimizationFlags" => {
+                    (self.mesh_optimization_flags).inspect_value(path, offset, limit)
+                }
+                "m_HumanoidOversampling" => {
+                    (self.m_humanoid_oversampling).inspect_value(path, offset, limit)
+                }
+                "m_PreviousCalculatedGlobalScale" => {
+                    (self.m_previous_calculated_global_scale).inspect_value(path, offset, limit)
+                }
+                "m_HasPreviousCalculatedGlobalScale" => {
+                    (self.m_has_previous_calculated_global_scale).inspect_value(path, offset, limit)
+                }
+                "m_FileScaleUnit" => (self.m_file_scale_unit).inspect_value(path, offset, limit),
+                "optimizeBones" => (self.optimize_bones).inspect_value(path, offset, limit),
+                "m_FileScaleFactor" => {
+                    (self.m_file_scale_factor).inspect_value(path, offset, limit)
+                }
+                "generateMeshLods" => (self.generate_mesh_lods).inspect_value(path, offset, limit),
+                "meshLodGenerationFlags" => {
+                    (self.mesh_lod_generation_flags).inspect_value(path, offset, limit)
+                }
+                "maximumMeshLod" => (self.maximum_mesh_lod).inspect_value(path, offset, limit),
+                "m_HasEmbeddedTextures" => {
+                    (self.m_has_embedded_textures).inspect_value(path, offset, limit)
+                }
+                "secondaryUVMarginMethod" => {
+                    (self.secondary_uv_margin_method).inspect_value(path, offset, limit)
+                }
+                "importUVs" => (self.import_u_vs).inspect_value(path, offset, limit),
+                "secondaryUVMinLightmapResolution" => {
+                    (self.secondary_uv_min_lightmap_resolution).inspect_value(path, offset, limit)
+                }
+                "importVertexColors" => {
+                    (self.import_vertex_colors).inspect_value(path, offset, limit)
+                }
+                "secondaryUVMinObjectScale" => {
+                    (self.secondary_uv_min_object_scale).inspect_value(path, offset, limit)
+                }
+                "legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes" => (self
+                    .legacy_compute_all_normals_from_smoothing_groups_when_mesh_has_blend_shapes)
+                    .inspect_value(path, offset, limit),
+                "blendShapeNormalImportMode" => {
+                    (self.blend_shape_normal_import_mode).inspect_value(path, offset, limit)
+                }
+                "normalSmoothingSource" => {
+                    (self.normal_smoothing_source).inspect_value(path, offset, limit)
+                }
+                "m_StrictVertexDataChecks" => {
+                    (self.m_strict_vertex_data_checks).inspect_value(path, offset, limit)
+                }
+                "m_AutoGenerateAvatarMappingIfUnspecified" => (self
+                    .m_auto_generate_avatar_mapping_if_unspecified)
+                    .inspect_value(path, offset, limit),
+                "m_AvatarSetup" => (self.m_avatar_setup).inspect_value(path, offset, limit),
+                "m_ContainsAnimation" => {
+                    (self.m_contains_animation).inspect_value(path, offset, limit)
+                }
+                "calculateBlendshapeNormalsDeltaFromImportedNormals" => (self
+                    .calculate_blendshape_normals_delta_from_imported_normals)
+                    .inspect_value(path, offset, limit),
+                "m_AddHumanoidExtraRootOnlyWhenUsingAvatar" => (self
+                    .m_add_humanoid_extra_root_only_when_using_avatar)
+                    .inspect_value(path, offset, limit),
+                "m_RemapMaterialsIfMaterialImportModeIsNone" => (self
+                    .m_remap_materials_if_material_import_mode_is_none)
+                    .inspect_value(path, offset, limit),
+                "m_ImportBlendShapeDeformPercent" => {
+                    (self.m_import_blend_shape_deform_percent).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_file_id_to_recycle_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_FileIDToRecycleName".to_string(), v)),
+            ((self.m_internal_id_to_name_table).inspect_value(path, offset, limit))
+                .map(|v| ("m_InternalIDToNameTable".to_string(), v)),
+            ((self.m_old_hash_identity).inspect_value(path, offset, limit))
+                .map(|v| ("m_OldHashIdentity".to_string(), v)),
+            ((self.m_import_materials).inspect_value(path, offset, limit))
+                .map(|v| ("m_ImportMaterials".to_string(), v)),
+            ((self.m_external_objects).inspect_value(path, offset, limit))
+                .map(|v| ("m_ExternalObjects".to_string(), v)),
+            ((self.m_new_hash_identity).inspect_value(path, offset, limit))
+                .map(|v| ("m_NewHashIdentity".to_string(), v)),
+            ((self.m_material_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_MaterialName".to_string(), v)),
+            ((self.m_used_file_i_ds).inspect_value(path, offset, limit))
+                .map(|v| ("m_UsedFileIDs".to_string(), v)),
+            ((self.m_generate_materials).inspect_value(path, offset, limit))
+                .map(|v| ("m_GenerateMaterials".to_string(), v)),
+            ((self.m_material_search).inspect_value(path, offset, limit))
+                .map(|v| ("m_MaterialSearch".to_string(), v)),
+            ((self.m_supports_embedded_materials).inspect_value(path, offset, limit))
+                .map(|v| ("m_SupportsEmbeddedMaterials".to_string(), v)),
+            ((self.m_generate_animations).inspect_value(path, offset, limit))
+                .map(|v| ("m_GenerateAnimations".to_string(), v)),
+            ((self.m_legacy_generate_animations).inspect_value(path, offset, limit))
+                .map(|v| ("m_LegacyGenerateAnimations".to_string(), v)),
+            ((self.m_material_import_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_MaterialImportMode".to_string(), v)),
+            ((self.m_global_scale).inspect_value(path, offset, limit))
+                .map(|v| ("m_GlobalScale".to_string(), v)),
+            ((self.m_bake_simulation).inspect_value(path, offset, limit))
+                .map(|v| ("m_BakeSimulation".to_string(), v)),
+            ((self.m_split_animations).inspect_value(path, offset, limit))
+                .map(|v| ("m_SplitAnimations".to_string(), v)),
+            ((self.m_animation_compression).inspect_value(path, offset, limit))
+                .map(|v| ("m_AnimationCompression".to_string(), v)),
+            ((self.m_optimize_game_objects).inspect_value(path, offset, limit))
+                .map(|v| ("m_OptimizeGameObjects".to_string(), v)),
+            ((self.m_resample_rotations).inspect_value(path, offset, limit))
+                .map(|v| ("m_ResampleRotations".to_string(), v)),
+            ((self.m_resample_curves).inspect_value(path, offset, limit))
+                .map(|v| ("m_ResampleCurves".to_string(), v)),
+            ((self.m_material_location).inspect_value(path, offset, limit))
+                .map(|v| ("m_MaterialLocation".to_string(), v)),
+            ((self.m_animation_rotation_error).inspect_value(path, offset, limit))
+                .map(|v| ("m_AnimationRotationError".to_string(), v)),
+            ((self.m_motion_node_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_MotionNodeName".to_string(), v)),
+            ((self.m_materials).inspect_value(path, offset, limit))
+                .map(|v| ("m_Materials".to_string(), v)),
+            ((self.m_add_colliders).inspect_value(path, offset, limit))
+                .map(|v| ("m_AddColliders".to_string(), v)),
+            ((self.m_animation_position_error).inspect_value(path, offset, limit))
+                .map(|v| ("m_AnimationPositionError".to_string(), v)),
+            ((self.m_animation_import_errors).inspect_value(path, offset, limit))
+                .map(|v| ("m_AnimationImportErrors".to_string(), v)),
+            ((self.m_search_textures_globally).inspect_value(path, offset, limit))
+                .map(|v| ("m_SearchTexturesGlobally".to_string(), v)),
+            ((self.m_use_file_units).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseFileUnits".to_string(), v)),
+            ((self.m_animation_scale_error).inspect_value(path, offset, limit))
+                .map(|v| ("m_AnimationScaleError".to_string(), v)),
+            ((self.m_animation_import_warnings).inspect_value(path, offset, limit))
+                .map(|v| ("m_AnimationImportWarnings".to_string(), v)),
+            ((self.m_rig_import_errors).inspect_value(path, offset, limit))
+                .map(|v| ("m_RigImportErrors".to_string(), v)),
+            ((self.m_animation_wrap_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_AnimationWrapMode".to_string(), v)),
+            ((self.m_animation_retargeting_warnings).inspect_value(path, offset, limit))
+                .map(|v| ("m_AnimationRetargetingWarnings".to_string(), v)),
+            ((self.m_rig_import_warnings).inspect_value(path, offset, limit))
+                .map(|v| ("m_RigImportWarnings".to_string(), v)),
+            ((self.m_clip_animations).inspect_value(path, offset, limit))
+                .map(|v| ("m_ClipAnimations".to_string(), v)),
+            ((self.m_animation_do_retargeting_warnings).inspect_value(path, offset, limit))
+                .map(|v| ("m_AnimationDoRetargetingWarnings".to_string(), v)),
+            ((self.m_is_readable).inspect_value(path, offset, limit))
+                .map(|v| ("m_IsReadable".to_string(), v)),
+            ((self.m_extra_exposed_transform_paths).inspect_value(path, offset, limit))
+                .map(|v| ("m_ExtraExposedTransformPaths".to_string(), v)),
+            ((self.m_lod_screen_percentages).inspect_value(path, offset, limit))
+                .map(|v| ("m_LODScreenPercentages".to_string(), v)),
+            ((self.m_remove_constant_scale_curves).inspect_value(path, offset, limit))
+                .map(|v| ("m_RemoveConstantScaleCurves".to_string(), v)),
+            ((self.m_mesh_compression).inspect_value(path, offset, limit))
+                .map(|v| ("m_MeshCompression".to_string(), v)),
+            ((self.m_mesh_settings_swap_uv_channels).inspect_value(path, offset, limit))
+                .map(|v| ("m_MeshSettings.swapUVChannels".to_string(), v)),
+            ((self.m_mesh_settings_generate_secondary_uv).inspect_value(path, offset, limit))
+                .map(|v| ("m_MeshSettings.generateSecondaryUV".to_string(), v)),
+            ((self.m_mesh_settings_secondary_uv_angle_distortion)
+                .inspect_value(path, offset, limit))
+            .map(|v| ("m_MeshSettings.secondaryUVAngleDistortion".to_string(), v)),
+            ((self.swap_uv_channels).inspect_value(path, offset, limit))
+                .map(|v| ("swapUVChannels".to_string(), v)),
+            ((self.m_import_blend_shapes).inspect_value(path, offset, limit))
+                .map(|v| ("m_ImportBlendShapes".to_string(), v)),
+            ((self.m_mesh_settings_secondary_uv_area_distortion)
+                .inspect_value(path, offset, limit))
+            .map(|v| ("m_MeshSettings.secondaryUVAreaDistortion".to_string(), v)),
+            ((self.generate_secondary_uv).inspect_value(path, offset, limit))
+                .map(|v| ("generateSecondaryUV".to_string(), v)),
+            ((self.m_mesh_settings_secondary_uv_hard_angle).inspect_value(path, offset, limit))
+                .map(|v| ("m_MeshSettings.secondaryUVHardAngle".to_string(), v)),
+            ((self.m_import_animated_custom_properties).inspect_value(path, offset, limit))
+                .map(|v| ("m_ImportAnimatedCustomProperties".to_string(), v)),
+            ((self.m_mesh_settings_secondary_uv_pack_margin).inspect_value(path, offset, limit))
+                .map(|v| ("m_MeshSettings.secondaryUVPackMargin".to_string(), v)),
+            ((self.optimize_mesh).inspect_value(path, offset, limit))
+                .map(|v| ("optimizeMesh".to_string(), v)),
+            ((self.optimize_mesh_for_gpu).inspect_value(path, offset, limit))
+                .map(|v| ("optimizeMeshForGPU".to_string(), v)),
+            ((self.m_import_constraints).inspect_value(path, offset, limit))
+                .map(|v| ("m_ImportConstraints".to_string(), v)),
+            ((self.m_mesh_settings_normal_import_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_MeshSettings.normalImportMode".to_string(), v)),
+            ((self.secondary_uv_angle_distortion).inspect_value(path, offset, limit))
+                .map(|v| ("secondaryUVAngleDistortion".to_string(), v)),
+            ((self.m_extra_user_properties).inspect_value(path, offset, limit))
+                .map(|v| ("m_ExtraUserProperties".to_string(), v)),
+            ((self.m_mesh_settings_tangent_import_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_MeshSettings.tangentImportMode".to_string(), v)),
+            ((self.secondary_uv_area_distortion).inspect_value(path, offset, limit))
+                .map(|v| ("secondaryUVAreaDistortion".to_string(), v)),
+            ((self.weld_vertices).inspect_value(path, offset, limit))
+                .map(|v| ("weldVertices".to_string(), v)),
+            ((self.secondary_uv_hard_angle).inspect_value(path, offset, limit))
+                .map(|v| ("secondaryUVHardAngle".to_string(), v)),
+            ((self.secondary_uv_pack_margin).inspect_value(path, offset, limit))
+                .map(|v| ("secondaryUVPackMargin".to_string(), v)),
+            ((self.m_first_import_version).inspect_value(path, offset, limit))
+                .map(|v| ("m_FirstImportVersion".to_string(), v)),
+            ((self.normal_smooth_angle).inspect_value(path, offset, limit))
+                .map(|v| ("normalSmoothAngle".to_string(), v)),
+            ((self.keep_quads).inspect_value(path, offset, limit))
+                .map(|v| ("keepQuads".to_string(), v)),
+            ((self.split_tangents_across_uv).inspect_value(path, offset, limit))
+                .map(|v| ("splitTangentsAcrossUV".to_string(), v)),
+            ((self.normal_import_mode).inspect_value(path, offset, limit))
+                .map(|v| ("normalImportMode".to_string(), v)),
+            ((self.m_imported_roots).inspect_value(path, offset, limit))
+                .map(|v| ("m_ImportedRoots".to_string(), v)),
+            ((self.tangent_import_mode).inspect_value(path, offset, limit))
+                .map(|v| ("tangentImportMode".to_string(), v)),
+            ((self.m_import_visibility).inspect_value(path, offset, limit))
+                .map(|v| ("m_ImportVisibility".to_string(), v)),
+            ((self.m_has_extra_root).inspect_value(path, offset, limit))
+                .map(|v| ("m_HasExtraRoot".to_string(), v)),
+            ((self.m_imported_take_infos).inspect_value(path, offset, limit))
+                .map(|v| ("m_ImportedTakeInfos".to_string(), v)),
+            ((self.m_referenced_clips).inspect_value(path, offset, limit))
+                .map(|v| ("m_ReferencedClips".to_string(), v)),
+            ((self.m_import_cameras).inspect_value(path, offset, limit))
+                .map(|v| ("m_ImportCameras".to_string(), v)),
+            ((self.m_use_file_scale).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseFileScale".to_string(), v)),
+            ((self.m_import_lights).inspect_value(path, offset, limit))
+                .map(|v| ("m_ImportLights".to_string(), v)),
+            ((self.m_file_scale).inspect_value(path, offset, limit))
+                .map(|v| ("m_FileScale".to_string(), v)),
+            ((self.m_import_animation).inspect_value(path, offset, limit))
+                .map(|v| ("m_ImportAnimation".to_string(), v)),
+            ((self.m_copy_avatar).inspect_value(path, offset, limit))
+                .map(|v| ("m_CopyAvatar".to_string(), v)),
+            ((self.m_use_srgb_material_color).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseSRGBMaterialColor".to_string(), v)),
+            ((self.m_human_description).inspect_value(path, offset, limit))
+                .map(|v| ("m_HumanDescription".to_string(), v)),
+            ((self.m_sort_hierarchy_by_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_SortHierarchyByName".to_string(), v)),
+            ((self.m_last_human_description_avatar_source).inspect_value(path, offset, limit))
+                .map(|v| ("m_LastHumanDescriptionAvatarSource".to_string(), v)),
+            ((self.m_import_physical_cameras).inspect_value(path, offset, limit))
+                .map(|v| ("m_ImportPhysicalCameras".to_string(), v)),
+            ((self.m_additional_bone).inspect_value(path, offset, limit))
+                .map(|v| ("m_AdditionalBone".to_string(), v)),
+            ((self.m_animation_type).inspect_value(path, offset, limit))
+                .map(|v| ("m_AnimationType".to_string(), v)),
+            ((self.m_user_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_UserData".to_string(), v)),
+            ((self.m_file_ids_generation).inspect_value(path, offset, limit))
+                .map(|v| ("m_FileIdsGeneration".to_string(), v)),
+            ((self.m_node_name_collision_strategy).inspect_value(path, offset, limit))
+                .map(|v| ("m_NodeNameCollisionStrategy".to_string(), v)),
+            ((self.m_preserve_hierarchy).inspect_value(path, offset, limit))
+                .map(|v| ("m_PreserveHierarchy".to_string(), v)),
+            ((self.index_format).inspect_value(path, offset, limit))
+                .map(|v| ("indexFormat".to_string(), v)),
+            ((self.skin_weights_mode).inspect_value(path, offset, limit))
+                .map(|v| ("skinWeightsMode".to_string(), v)),
+            ((self.normal_calculation_mode).inspect_value(path, offset, limit))
+                .map(|v| ("normalCalculationMode".to_string(), v)),
+            ((self.max_bones_per_vertex).inspect_value(path, offset, limit))
+                .map(|v| ("maxBonesPerVertex".to_string(), v)),
+            ((self.bake_axis_conversion).inspect_value(path, offset, limit))
+                .map(|v| ("bakeAxisConversion".to_string(), v)),
+            ((self.m_asset_bundle_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_AssetBundleName".to_string(), v)),
+            ((self.min_bone_weight).inspect_value(path, offset, limit))
+                .map(|v| ("minBoneWeight".to_string(), v)),
+            ((self.m_asset_bundle_variant).inspect_value(path, offset, limit))
+                .map(|v| ("m_AssetBundleVariant".to_string(), v)),
+            ((self.mesh_optimization_flags).inspect_value(path, offset, limit))
+                .map(|v| ("meshOptimizationFlags".to_string(), v)),
+            ((self.m_humanoid_oversampling).inspect_value(path, offset, limit))
+                .map(|v| ("m_HumanoidOversampling".to_string(), v)),
+            ((self.m_previous_calculated_global_scale).inspect_value(path, offset, limit))
+                .map(|v| ("m_PreviousCalculatedGlobalScale".to_string(), v)),
+            ((self.m_has_previous_calculated_global_scale).inspect_value(path, offset, limit))
+                .map(|v| ("m_HasPreviousCalculatedGlobalScale".to_string(), v)),
+            ((self.m_file_scale_unit).inspect_value(path, offset, limit))
+                .map(|v| ("m_FileScaleUnit".to_string(), v)),
+            ((self.optimize_bones).inspect_value(path, offset, limit))
+                .map(|v| ("optimizeBones".to_string(), v)),
+            ((self.m_file_scale_factor).inspect_value(path, offset, limit))
+                .map(|v| ("m_FileScaleFactor".to_string(), v)),
+            ((self.generate_mesh_lods).inspect_value(path, offset, limit))
+                .map(|v| ("generateMeshLods".to_string(), v)),
+            ((self.mesh_lod_generation_flags).inspect_value(path, offset, limit))
+                .map(|v| ("meshLodGenerationFlags".to_string(), v)),
+            ((self.maximum_mesh_lod).inspect_value(path, offset, limit))
+                .map(|v| ("maximumMeshLod".to_string(), v)),
+            ((self.m_has_embedded_textures).inspect_value(path, offset, limit))
+                .map(|v| ("m_HasEmbeddedTextures".to_string(), v)),
+            ((self.secondary_uv_margin_method).inspect_value(path, offset, limit))
+                .map(|v| ("secondaryUVMarginMethod".to_string(), v)),
+            ((self.import_u_vs).inspect_value(path, offset, limit))
+                .map(|v| ("importUVs".to_string(), v)),
+            ((self.secondary_uv_min_lightmap_resolution).inspect_value(path, offset, limit))
+                .map(|v| ("secondaryUVMinLightmapResolution".to_string(), v)),
+            ((self.import_vertex_colors).inspect_value(path, offset, limit))
+                .map(|v| ("importVertexColors".to_string(), v)),
+            ((self.secondary_uv_min_object_scale).inspect_value(path, offset, limit))
+                .map(|v| ("secondaryUVMinObjectScale".to_string(), v)),
+            ((self.legacy_compute_all_normals_from_smoothing_groups_when_mesh_has_blend_shapes)
+                .inspect_value(path, offset, limit))
+            .map(|v| {
+                (
+                    "legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes".to_string(),
+                    v,
+                )
+            }),
+            ((self.blend_shape_normal_import_mode).inspect_value(path, offset, limit))
+                .map(|v| ("blendShapeNormalImportMode".to_string(), v)),
+            ((self.normal_smoothing_source).inspect_value(path, offset, limit))
+                .map(|v| ("normalSmoothingSource".to_string(), v)),
+            ((self.m_strict_vertex_data_checks).inspect_value(path, offset, limit))
+                .map(|v| ("m_StrictVertexDataChecks".to_string(), v)),
+            ((self.m_auto_generate_avatar_mapping_if_unspecified)
+                .inspect_value(path, offset, limit))
+            .map(|v| ("m_AutoGenerateAvatarMappingIfUnspecified".to_string(), v)),
+            ((self.m_avatar_setup).inspect_value(path, offset, limit))
+                .map(|v| ("m_AvatarSetup".to_string(), v)),
+            ((self.m_contains_animation).inspect_value(path, offset, limit))
+                .map(|v| ("m_ContainsAnimation".to_string(), v)),
+            ((self.calculate_blendshape_normals_delta_from_imported_normals)
+                .inspect_value(path, offset, limit))
+            .map(|v| {
+                (
+                    "calculateBlendshapeNormalsDeltaFromImportedNormals".to_string(),
+                    v,
+                )
+            }),
+            ((self.m_add_humanoid_extra_root_only_when_using_avatar)
+                .inspect_value(path, offset, limit))
+            .map(|v| ("m_AddHumanoidExtraRootOnlyWhenUsingAvatar".to_string(), v)),
+            ((self.m_remap_materials_if_material_import_mode_is_none)
+                .inspect_value(path, offset, limit))
+            .map(|v| ("m_RemapMaterialsIfMaterialImportModeIsNone".to_string(), v)),
+            ((self.m_import_blend_shape_deform_percent).inspect_value(path, offset, limit))
+                .map(|v| ("m_ImportBlendShapeDeformPercent".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

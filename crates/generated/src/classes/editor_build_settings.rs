@@ -35,6 +35,21 @@ impl crate::Parse for EditorBuildSettingsMScenesVariant {
         }
     }
 }
+
+impl crate::ToValue for EditorBuildSettingsMScenesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct EditorBuildSettings {
     pub m_scenes: EditorBuildSettingsMScenesVariant,
@@ -105,5 +120,48 @@ impl crate::Parse for EditorBuildSettings {
             m_config_objects,
             m_use_ucbp_for_asset_bundles,
         })
+    }
+}
+
+impl crate::ToValue for EditorBuildSettings {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Scenes".to_string(), self.m_scenes.to_value())),
+            crate::opt_field("m_configObjects", &self.m_config_objects),
+            crate::opt_field(
+                "m_UseUCBPForAssetBundles",
+                &self.m_use_ucbp_for_asset_bundles,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Scenes" => (self.m_scenes).inspect_value(path, offset, limit),
+                "m_configObjects" => (self.m_config_objects).inspect_value(path, offset, limit),
+                "m_UseUCBPForAssetBundles" => {
+                    (self.m_use_ucbp_for_asset_bundles).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_scenes).inspect_value(path, offset, limit))
+                .map(|v| ("m_Scenes".to_string(), v)),
+            ((self.m_config_objects).inspect_value(path, offset, limit))
+                .map(|v| ("m_configObjects".to_string(), v)),
+            ((self.m_use_ucbp_for_asset_bundles).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseUCBPForAssetBundles".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

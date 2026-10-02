@@ -36,6 +36,21 @@ impl crate::Parse for HeightmapMPrecomputedErrorVariant {
     }
 }
 
+impl crate::ToValue for HeightmapMPrecomputedErrorVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：HeightmapMMinMaxPatchHeightsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum HeightmapMMinMaxPatchHeightsVariant {
@@ -65,6 +80,21 @@ impl crate::Parse for HeightmapMMinMaxPatchHeightsVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for HeightmapMMinMaxPatchHeightsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -162,5 +192,97 @@ impl crate::Parse for Heightmap {
             m_resolution,
             m_scale: m_scale.unwrap(),
         })
+    }
+}
+
+impl crate::ToValue for Heightmap {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Heights".to_string(), self.m_heights.to_value())),
+            Some((
+                "m_PrecomputedError".to_string(),
+                self.m_precomputed_error.to_value(),
+            )),
+            crate::opt_field("m_Holes", &self.m_holes),
+            Some((
+                "m_MinMaxPatchHeights".to_string(),
+                self.m_min_max_patch_heights.to_value(),
+            )),
+            crate::opt_field("m_HolesLOD", &self.m_holes_lod),
+            crate::opt_field("m_DefaultPhysicMaterial", &self.m_default_physic_material),
+            crate::opt_field("m_Width", &self.m_width),
+            crate::opt_field(
+                "m_EnableHolesTextureCompression",
+                &self.m_enable_holes_texture_compression,
+            ),
+            crate::opt_field("m_Height", &self.m_height),
+            crate::opt_field("m_Thickness", &self.m_thickness),
+            Some(("m_Levels".to_string(), self.m_levels.to_value())),
+            crate::opt_field("m_Resolution", &self.m_resolution),
+            Some(("m_Scale".to_string(), self.m_scale.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Heights" => (self.m_heights).inspect_value(path, offset, limit),
+                "m_PrecomputedError" => {
+                    (self.m_precomputed_error).inspect_value(path, offset, limit)
+                }
+                "m_Holes" => (self.m_holes).inspect_value(path, offset, limit),
+                "m_MinMaxPatchHeights" => {
+                    (self.m_min_max_patch_heights).inspect_value(path, offset, limit)
+                }
+                "m_HolesLOD" => (self.m_holes_lod).inspect_value(path, offset, limit),
+                "m_DefaultPhysicMaterial" => {
+                    (self.m_default_physic_material).inspect_value(path, offset, limit)
+                }
+                "m_Width" => (self.m_width).inspect_value(path, offset, limit),
+                "m_EnableHolesTextureCompression" => {
+                    (self.m_enable_holes_texture_compression).inspect_value(path, offset, limit)
+                }
+                "m_Height" => (self.m_height).inspect_value(path, offset, limit),
+                "m_Thickness" => (self.m_thickness).inspect_value(path, offset, limit),
+                "m_Levels" => (self.m_levels).inspect_value(path, offset, limit),
+                "m_Resolution" => (self.m_resolution).inspect_value(path, offset, limit),
+                "m_Scale" => (self.m_scale).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_heights).inspect_value(path, offset, limit))
+                .map(|v| ("m_Heights".to_string(), v)),
+            ((self.m_precomputed_error).inspect_value(path, offset, limit))
+                .map(|v| ("m_PrecomputedError".to_string(), v)),
+            ((self.m_holes).inspect_value(path, offset, limit)).map(|v| ("m_Holes".to_string(), v)),
+            ((self.m_min_max_patch_heights).inspect_value(path, offset, limit))
+                .map(|v| ("m_MinMaxPatchHeights".to_string(), v)),
+            ((self.m_holes_lod).inspect_value(path, offset, limit))
+                .map(|v| ("m_HolesLOD".to_string(), v)),
+            ((self.m_default_physic_material).inspect_value(path, offset, limit))
+                .map(|v| ("m_DefaultPhysicMaterial".to_string(), v)),
+            ((self.m_width).inspect_value(path, offset, limit)).map(|v| ("m_Width".to_string(), v)),
+            ((self.m_enable_holes_texture_compression).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableHolesTextureCompression".to_string(), v)),
+            ((self.m_height).inspect_value(path, offset, limit))
+                .map(|v| ("m_Height".to_string(), v)),
+            ((self.m_thickness).inspect_value(path, offset, limit))
+                .map(|v| ("m_Thickness".to_string(), v)),
+            ((self.m_levels).inspect_value(path, offset, limit))
+                .map(|v| ("m_Levels".to_string(), v)),
+            ((self.m_resolution).inspect_value(path, offset, limit))
+                .map(|v| ("m_Resolution".to_string(), v)),
+            ((self.m_scale).inspect_value(path, offset, limit)).map(|v| ("m_Scale".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

@@ -70,3 +70,74 @@ impl crate::Parse for SpriteAtlasData {
         })
     }
 }
+
+impl crate::ToValue for SpriteAtlasData {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("texture".to_string(), self.texture.to_value())),
+            Some(("alphaTexture".to_string(), self.alpha_texture.to_value())),
+            Some(("textureRect".to_string(), self.texture_rect.to_value())),
+            Some((
+                "textureRectOffset".to_string(),
+                self.texture_rect_offset.to_value(),
+            )),
+            Some(("uvTransform".to_string(), self.uv_transform.to_value())),
+            crate::opt_field("atlasRectOffset", &self.atlas_rect_offset),
+            Some((
+                "downscaleMultiplier".to_string(),
+                self.downscale_multiplier.to_value(),
+            )),
+            Some(("settingsRaw".to_string(), self.settings_raw.to_value())),
+            crate::opt_field("secondaryTextures", &self.secondary_textures),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "texture" => (self.texture).inspect_value(path, offset, limit),
+                "alphaTexture" => (self.alpha_texture).inspect_value(path, offset, limit),
+                "textureRect" => (self.texture_rect).inspect_value(path, offset, limit),
+                "textureRectOffset" => {
+                    (self.texture_rect_offset).inspect_value(path, offset, limit)
+                }
+                "uvTransform" => (self.uv_transform).inspect_value(path, offset, limit),
+                "atlasRectOffset" => (self.atlas_rect_offset).inspect_value(path, offset, limit),
+                "downscaleMultiplier" => {
+                    (self.downscale_multiplier).inspect_value(path, offset, limit)
+                }
+                "settingsRaw" => (self.settings_raw).inspect_value(path, offset, limit),
+                "secondaryTextures" => (self.secondary_textures).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.texture).inspect_value(path, offset, limit)).map(|v| ("texture".to_string(), v)),
+            ((self.alpha_texture).inspect_value(path, offset, limit))
+                .map(|v| ("alphaTexture".to_string(), v)),
+            ((self.texture_rect).inspect_value(path, offset, limit))
+                .map(|v| ("textureRect".to_string(), v)),
+            ((self.texture_rect_offset).inspect_value(path, offset, limit))
+                .map(|v| ("textureRectOffset".to_string(), v)),
+            ((self.uv_transform).inspect_value(path, offset, limit))
+                .map(|v| ("uvTransform".to_string(), v)),
+            ((self.atlas_rect_offset).inspect_value(path, offset, limit))
+                .map(|v| ("atlasRectOffset".to_string(), v)),
+            ((self.downscale_multiplier).inspect_value(path, offset, limit))
+                .map(|v| ("downscaleMultiplier".to_string(), v)),
+            ((self.settings_raw).inspect_value(path, offset, limit))
+                .map(|v| ("settingsRaw".to_string(), v)),
+            ((self.secondary_textures).inspect_value(path, offset, limit))
+                .map(|v| ("secondaryTextures".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

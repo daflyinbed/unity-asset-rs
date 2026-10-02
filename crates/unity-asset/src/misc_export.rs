@@ -29,9 +29,7 @@ pub struct ExportedRaw {
 #[derive(Debug)]
 pub enum MiscExportError {
     /// 对象不是这四类资源之一。
-    UnsupportedClass {
-        class_id: crate::ClassId,
-    },
+    UnsupportedClass { class_id: crate::ClassId },
     /// 序列化数据为空或流文件缺失。
     MissingData,
 }
@@ -106,7 +104,10 @@ pub fn export_raw(
             })
         }
         ParsedObject::Typed(UnityObject::MovieTexture(m)) => {
-            let data = m.m_movie_data.as_ref().ok_or(MiscExportError::MissingData)?;
+            let data = m
+                .m_movie_data
+                .as_ref()
+                .ok_or(MiscExportError::MissingData)?;
             if data.is_empty() {
                 return Err(MiscExportError::MissingData);
             }
@@ -116,7 +117,9 @@ pub fn export_raw(
             })
         }
         ParsedObject::Typed(UnityObject::Font(_)) => Err(MiscExportError::MissingData),
-        _ => Err(MiscExportError::UnsupportedClass { class_id: obj.class_id }),
+        _ => Err(MiscExportError::UnsupportedClass {
+            class_id: obj.class_id,
+        }),
     }
 }
 
@@ -158,8 +161,7 @@ fn is_plain_text(bytes: &[u8]) -> bool {
     let Ok(text) = std::str::from_utf8(bytes) else {
         return false;
     };
-    text.chars()
-        .all(|c| !c.is_control() || c.is_whitespace())
+    text.chars().all(|c| !c.is_control() || c.is_whitespace())
 }
 
 /// 对齐 AssetRipper `IsValidJson`（JsonDocument.Parse）。
@@ -363,7 +365,8 @@ impl JsonParser<'_> {
     }
 
     fn parse_literal(&mut self, lit: &[u8]) -> bool {
-        if self.bytes.len() >= self.pos + lit.len() && &self.bytes[self.pos..self.pos + lit.len()] == lit
+        if self.bytes.len() >= self.pos + lit.len()
+            && &self.bytes[self.pos..self.pos + lit.len()] == lit
         {
             self.pos += lit.len();
             true
@@ -422,7 +425,10 @@ mod tests {
             ("m_Name".to_string(), Value::String("t".to_string())),
             ("m_Script".to_string(), Value::String("{}".to_string())),
         ]));
-        assert_eq!(text_asset_script(&dynamic_text).as_deref(), Some(&b"{}"[..]));
+        assert_eq!(
+            text_asset_script(&dynamic_text).as_deref(),
+            Some(&b"{}"[..])
+        );
 
         // Typed：m_script 字节直取
         let typed = ParsedObject::Typed(UnityObject::TextAsset(TextAsset {

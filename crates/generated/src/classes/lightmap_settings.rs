@@ -38,6 +38,21 @@ impl crate::Parse for LightmapSettingsMLightmapsVariant {
     }
 }
 
+impl crate::ToValue for LightmapSettingsMLightmapsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：LightmapSettingsMLightmapsModeVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum LightmapSettingsMLightmapsModeVariant {
@@ -65,6 +80,23 @@ impl crate::Parse for LightmapSettingsMLightmapsModeVariant {
     }
 }
 
+impl crate::ToValue for LightmapSettingsMLightmapsModeVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_0(v) => v.to_value(),
+            Self::V2023_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_0(v) => (v).inspect_value(path, offset, limit),
+            Self::V2023_2(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：LightmapSettingsMGiSettingsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum LightmapSettingsMGiSettingsVariant {
@@ -88,6 +120,23 @@ impl crate::Parse for LightmapSettingsMGiSettingsVariant {
         } else {
             let v = ({ Ok(Box::new(GiSettings::parse(rdr, ver)?)) })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for LightmapSettingsMGiSettingsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2020_1(v) => v.to_value(),
+            Self::V2023_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2020_1(v) => (v).inspect_value(path, offset, limit),
+            Self::V2023_2(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -172,5 +221,97 @@ impl crate::Parse for LightmapSettings {
             m_use_shadowmask,
             m_lighting_settings,
         })
+    }
+}
+
+impl crate::ToValue for LightmapSettings {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Lightmaps".to_string(), self.m_lightmaps.to_value())),
+            crate::opt_field("m_LightProbes", &self.m_light_probes),
+            crate::opt_field("m_EnlightenSceneMapping", &self.m_enlighten_scene_mapping),
+            Some((
+                "m_LightmapsMode".to_string(),
+                self.m_lightmaps_mode.to_value(),
+            )),
+            crate::opt_field("m_BakeOnSceneLoad", &self.m_bake_on_scene_load),
+            crate::opt_field(
+                "m_UseDualLightmapsInForward",
+                &self.m_use_dual_lightmaps_in_forward,
+            ),
+            crate::opt_field("m_BakedColorSpace", &self.m_baked_color_space),
+            crate::opt_field("m_GISettings", &self.m_gi_settings),
+            crate::opt_field("m_RuntimeCPUUsage", &self.m_runtime_cpu_usage),
+            crate::opt_field("m_ShadowMaskMode", &self.m_shadow_mask_mode),
+            crate::opt_field("m_UseShadowmask", &self.m_use_shadowmask),
+            crate::opt_field("m_LightingSettings", &self.m_lighting_settings),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Lightmaps" => (self.m_lightmaps).inspect_value(path, offset, limit),
+                "m_LightProbes" => (self.m_light_probes).inspect_value(path, offset, limit),
+                "m_EnlightenSceneMapping" => {
+                    (self.m_enlighten_scene_mapping).inspect_value(path, offset, limit)
+                }
+                "m_LightmapsMode" => (self.m_lightmaps_mode).inspect_value(path, offset, limit),
+                "m_BakeOnSceneLoad" => {
+                    (self.m_bake_on_scene_load).inspect_value(path, offset, limit)
+                }
+                "m_UseDualLightmapsInForward" => {
+                    (self.m_use_dual_lightmaps_in_forward).inspect_value(path, offset, limit)
+                }
+                "m_BakedColorSpace" => {
+                    (self.m_baked_color_space).inspect_value(path, offset, limit)
+                }
+                "m_GISettings" => (self.m_gi_settings).inspect_value(path, offset, limit),
+                "m_RuntimeCPUUsage" => {
+                    (self.m_runtime_cpu_usage).inspect_value(path, offset, limit)
+                }
+                "m_ShadowMaskMode" => (self.m_shadow_mask_mode).inspect_value(path, offset, limit),
+                "m_UseShadowmask" => (self.m_use_shadowmask).inspect_value(path, offset, limit),
+                "m_LightingSettings" => {
+                    (self.m_lighting_settings).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_lightmaps).inspect_value(path, offset, limit))
+                .map(|v| ("m_Lightmaps".to_string(), v)),
+            ((self.m_light_probes).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightProbes".to_string(), v)),
+            ((self.m_enlighten_scene_mapping).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnlightenSceneMapping".to_string(), v)),
+            ((self.m_lightmaps_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightmapsMode".to_string(), v)),
+            ((self.m_bake_on_scene_load).inspect_value(path, offset, limit))
+                .map(|v| ("m_BakeOnSceneLoad".to_string(), v)),
+            ((self.m_use_dual_lightmaps_in_forward).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseDualLightmapsInForward".to_string(), v)),
+            ((self.m_baked_color_space).inspect_value(path, offset, limit))
+                .map(|v| ("m_BakedColorSpace".to_string(), v)),
+            ((self.m_gi_settings).inspect_value(path, offset, limit))
+                .map(|v| ("m_GISettings".to_string(), v)),
+            ((self.m_runtime_cpu_usage).inspect_value(path, offset, limit))
+                .map(|v| ("m_RuntimeCPUUsage".to_string(), v)),
+            ((self.m_shadow_mask_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_ShadowMaskMode".to_string(), v)),
+            ((self.m_use_shadowmask).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseShadowmask".to_string(), v)),
+            ((self.m_lighting_settings).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightingSettings".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

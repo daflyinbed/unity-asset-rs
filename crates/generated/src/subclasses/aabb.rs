@@ -19,3 +19,37 @@ impl crate::Parse for Aabb {
         Ok(Aabb { m_center, m_extent })
     }
 }
+
+impl crate::ToValue for Aabb {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Center".to_string(), self.m_center.to_value())),
+            Some(("m_Extent".to_string(), self.m_extent.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Center" => (self.m_center).inspect_value(path, offset, limit),
+                "m_Extent" => (self.m_extent).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_center).inspect_value(path, offset, limit))
+                .map(|v| ("m_Center".to_string(), v)),
+            ((self.m_extent).inspect_value(path, offset, limit))
+                .map(|v| ("m_Extent".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

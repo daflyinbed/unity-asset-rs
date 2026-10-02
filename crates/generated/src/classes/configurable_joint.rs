@@ -30,6 +30,21 @@ impl crate::Parse for ConfigurableJointMConfiguredInWorldSpaceVariant {
     }
 }
 
+impl crate::ToValue for ConfigurableJointMConfiguredInWorldSpaceVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V3_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V3_5(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：ConfigurableJointMEnablePreprocessingVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ConfigurableJointMEnablePreprocessingVariant {
@@ -49,6 +64,21 @@ impl crate::Parse for ConfigurableJointMEnablePreprocessingVariant {
         } else {
             let v = rdr.read_bool()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for ConfigurableJointMEnablePreprocessingVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -274,5 +304,298 @@ impl crate::Parse for ConfigurableJoint {
             m_mass_scale,
             m_connected_mass_scale,
         })
+    }
+}
+
+impl crate::ToValue for ConfigurableJoint {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some((
+                "m_ConnectedBody".to_string(),
+                self.m_connected_body.to_value(),
+            )),
+            Some(("m_Anchor".to_string(), self.m_anchor.to_value())),
+            crate::opt_field(
+                "m_ConnectedArticulationBody",
+                &self.m_connected_articulation_body,
+            ),
+            Some(("m_Axis".to_string(), self.m_axis.to_value())),
+            Some((
+                "m_SecondaryAxis".to_string(),
+                self.m_secondary_axis.to_value(),
+            )),
+            crate::opt_field(
+                "m_AutoConfigureConnectedAnchor",
+                &self.m_auto_configure_connected_anchor,
+            ),
+            Some(("m_XMotion".to_string(), self.m_x_motion.to_value())),
+            crate::opt_field("m_ConnectedAnchor", &self.m_connected_anchor),
+            Some(("m_YMotion".to_string(), self.m_y_motion.to_value())),
+            Some(("m_ZMotion".to_string(), self.m_z_motion.to_value())),
+            Some((
+                "m_AngularXMotion".to_string(),
+                self.m_angular_x_motion.to_value(),
+            )),
+            Some((
+                "m_AngularYMotion".to_string(),
+                self.m_angular_y_motion.to_value(),
+            )),
+            Some((
+                "m_AngularZMotion".to_string(),
+                self.m_angular_z_motion.to_value(),
+            )),
+            Some(("m_LinearLimit".to_string(), self.m_linear_limit.to_value())),
+            Some((
+                "m_LowAngularXLimit".to_string(),
+                self.m_low_angular_x_limit.to_value(),
+            )),
+            Some((
+                "m_HighAngularXLimit".to_string(),
+                self.m_high_angular_x_limit.to_value(),
+            )),
+            crate::opt_field("m_LinearLimitSpring", &self.m_linear_limit_spring),
+            Some((
+                "m_AngularYLimit".to_string(),
+                self.m_angular_y_limit.to_value(),
+            )),
+            Some((
+                "m_AngularZLimit".to_string(),
+                self.m_angular_z_limit.to_value(),
+            )),
+            crate::opt_field("m_AngularXLimitSpring", &self.m_angular_x_limit_spring),
+            Some((
+                "m_TargetPosition".to_string(),
+                self.m_target_position.to_value(),
+            )),
+            Some((
+                "m_TargetVelocity".to_string(),
+                self.m_target_velocity.to_value(),
+            )),
+            Some(("m_XDrive".to_string(), self.m_x_drive.to_value())),
+            crate::opt_field("m_AngularYZLimitSpring", &self.m_angular_yz_limit_spring),
+            Some(("m_YDrive".to_string(), self.m_y_drive.to_value())),
+            Some(("m_ZDrive".to_string(), self.m_z_drive.to_value())),
+            Some((
+                "m_TargetRotation".to_string(),
+                self.m_target_rotation.to_value(),
+            )),
+            Some((
+                "m_TargetAngularVelocity".to_string(),
+                self.m_target_angular_velocity.to_value(),
+            )),
+            Some((
+                "m_RotationDriveMode".to_string(),
+                self.m_rotation_drive_mode.to_value(),
+            )),
+            Some((
+                "m_AngularXDrive".to_string(),
+                self.m_angular_x_drive.to_value(),
+            )),
+            Some((
+                "m_AngularYZDrive".to_string(),
+                self.m_angular_yz_drive.to_value(),
+            )),
+            Some(("m_SlerpDrive".to_string(), self.m_slerp_drive.to_value())),
+            Some((
+                "m_ProjectionMode".to_string(),
+                self.m_projection_mode.to_value(),
+            )),
+            Some((
+                "m_ProjectionDistance".to_string(),
+                self.m_projection_distance.to_value(),
+            )),
+            Some((
+                "m_ProjectionAngle".to_string(),
+                self.m_projection_angle.to_value(),
+            )),
+            Some((
+                "m_ConfiguredInWorldSpace".to_string(),
+                self.m_configured_in_world_space.to_value(),
+            )),
+            Some(("m_BreakForce".to_string(), self.m_break_force.to_value())),
+            crate::opt_field("m_SwapBodies", &self.m_swap_bodies),
+            Some(("m_BreakTorque".to_string(), self.m_break_torque.to_value())),
+            crate::opt_field("m_EnableCollision", &self.m_enable_collision),
+            crate::opt_field("m_EnablePreprocessing", &self.m_enable_preprocessing),
+            crate::opt_field("m_MassScale", &self.m_mass_scale),
+            crate::opt_field("m_ConnectedMassScale", &self.m_connected_mass_scale),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_ConnectedBody" => (self.m_connected_body).inspect_value(path, offset, limit),
+                "m_Anchor" => (self.m_anchor).inspect_value(path, offset, limit),
+                "m_ConnectedArticulationBody" => {
+                    (self.m_connected_articulation_body).inspect_value(path, offset, limit)
+                }
+                "m_Axis" => (self.m_axis).inspect_value(path, offset, limit),
+                "m_SecondaryAxis" => (self.m_secondary_axis).inspect_value(path, offset, limit),
+                "m_AutoConfigureConnectedAnchor" => {
+                    (self.m_auto_configure_connected_anchor).inspect_value(path, offset, limit)
+                }
+                "m_XMotion" => (self.m_x_motion).inspect_value(path, offset, limit),
+                "m_ConnectedAnchor" => (self.m_connected_anchor).inspect_value(path, offset, limit),
+                "m_YMotion" => (self.m_y_motion).inspect_value(path, offset, limit),
+                "m_ZMotion" => (self.m_z_motion).inspect_value(path, offset, limit),
+                "m_AngularXMotion" => (self.m_angular_x_motion).inspect_value(path, offset, limit),
+                "m_AngularYMotion" => (self.m_angular_y_motion).inspect_value(path, offset, limit),
+                "m_AngularZMotion" => (self.m_angular_z_motion).inspect_value(path, offset, limit),
+                "m_LinearLimit" => (self.m_linear_limit).inspect_value(path, offset, limit),
+                "m_LowAngularXLimit" => {
+                    (self.m_low_angular_x_limit).inspect_value(path, offset, limit)
+                }
+                "m_HighAngularXLimit" => {
+                    (self.m_high_angular_x_limit).inspect_value(path, offset, limit)
+                }
+                "m_LinearLimitSpring" => {
+                    (self.m_linear_limit_spring).inspect_value(path, offset, limit)
+                }
+                "m_AngularYLimit" => (self.m_angular_y_limit).inspect_value(path, offset, limit),
+                "m_AngularZLimit" => (self.m_angular_z_limit).inspect_value(path, offset, limit),
+                "m_AngularXLimitSpring" => {
+                    (self.m_angular_x_limit_spring).inspect_value(path, offset, limit)
+                }
+                "m_TargetPosition" => (self.m_target_position).inspect_value(path, offset, limit),
+                "m_TargetVelocity" => (self.m_target_velocity).inspect_value(path, offset, limit),
+                "m_XDrive" => (self.m_x_drive).inspect_value(path, offset, limit),
+                "m_AngularYZLimitSpring" => {
+                    (self.m_angular_yz_limit_spring).inspect_value(path, offset, limit)
+                }
+                "m_YDrive" => (self.m_y_drive).inspect_value(path, offset, limit),
+                "m_ZDrive" => (self.m_z_drive).inspect_value(path, offset, limit),
+                "m_TargetRotation" => (self.m_target_rotation).inspect_value(path, offset, limit),
+                "m_TargetAngularVelocity" => {
+                    (self.m_target_angular_velocity).inspect_value(path, offset, limit)
+                }
+                "m_RotationDriveMode" => {
+                    (self.m_rotation_drive_mode).inspect_value(path, offset, limit)
+                }
+                "m_AngularXDrive" => (self.m_angular_x_drive).inspect_value(path, offset, limit),
+                "m_AngularYZDrive" => (self.m_angular_yz_drive).inspect_value(path, offset, limit),
+                "m_SlerpDrive" => (self.m_slerp_drive).inspect_value(path, offset, limit),
+                "m_ProjectionMode" => (self.m_projection_mode).inspect_value(path, offset, limit),
+                "m_ProjectionDistance" => {
+                    (self.m_projection_distance).inspect_value(path, offset, limit)
+                }
+                "m_ProjectionAngle" => (self.m_projection_angle).inspect_value(path, offset, limit),
+                "m_ConfiguredInWorldSpace" => {
+                    (self.m_configured_in_world_space).inspect_value(path, offset, limit)
+                }
+                "m_BreakForce" => (self.m_break_force).inspect_value(path, offset, limit),
+                "m_SwapBodies" => (self.m_swap_bodies).inspect_value(path, offset, limit),
+                "m_BreakTorque" => (self.m_break_torque).inspect_value(path, offset, limit),
+                "m_EnableCollision" => (self.m_enable_collision).inspect_value(path, offset, limit),
+                "m_EnablePreprocessing" => {
+                    (self.m_enable_preprocessing).inspect_value(path, offset, limit)
+                }
+                "m_MassScale" => (self.m_mass_scale).inspect_value(path, offset, limit),
+                "m_ConnectedMassScale" => {
+                    (self.m_connected_mass_scale).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_connected_body).inspect_value(path, offset, limit))
+                .map(|v| ("m_ConnectedBody".to_string(), v)),
+            ((self.m_anchor).inspect_value(path, offset, limit))
+                .map(|v| ("m_Anchor".to_string(), v)),
+            ((self.m_connected_articulation_body).inspect_value(path, offset, limit))
+                .map(|v| ("m_ConnectedArticulationBody".to_string(), v)),
+            ((self.m_axis).inspect_value(path, offset, limit)).map(|v| ("m_Axis".to_string(), v)),
+            ((self.m_secondary_axis).inspect_value(path, offset, limit))
+                .map(|v| ("m_SecondaryAxis".to_string(), v)),
+            ((self.m_auto_configure_connected_anchor).inspect_value(path, offset, limit))
+                .map(|v| ("m_AutoConfigureConnectedAnchor".to_string(), v)),
+            ((self.m_x_motion).inspect_value(path, offset, limit))
+                .map(|v| ("m_XMotion".to_string(), v)),
+            ((self.m_connected_anchor).inspect_value(path, offset, limit))
+                .map(|v| ("m_ConnectedAnchor".to_string(), v)),
+            ((self.m_y_motion).inspect_value(path, offset, limit))
+                .map(|v| ("m_YMotion".to_string(), v)),
+            ((self.m_z_motion).inspect_value(path, offset, limit))
+                .map(|v| ("m_ZMotion".to_string(), v)),
+            ((self.m_angular_x_motion).inspect_value(path, offset, limit))
+                .map(|v| ("m_AngularXMotion".to_string(), v)),
+            ((self.m_angular_y_motion).inspect_value(path, offset, limit))
+                .map(|v| ("m_AngularYMotion".to_string(), v)),
+            ((self.m_angular_z_motion).inspect_value(path, offset, limit))
+                .map(|v| ("m_AngularZMotion".to_string(), v)),
+            ((self.m_linear_limit).inspect_value(path, offset, limit))
+                .map(|v| ("m_LinearLimit".to_string(), v)),
+            ((self.m_low_angular_x_limit).inspect_value(path, offset, limit))
+                .map(|v| ("m_LowAngularXLimit".to_string(), v)),
+            ((self.m_high_angular_x_limit).inspect_value(path, offset, limit))
+                .map(|v| ("m_HighAngularXLimit".to_string(), v)),
+            ((self.m_linear_limit_spring).inspect_value(path, offset, limit))
+                .map(|v| ("m_LinearLimitSpring".to_string(), v)),
+            ((self.m_angular_y_limit).inspect_value(path, offset, limit))
+                .map(|v| ("m_AngularYLimit".to_string(), v)),
+            ((self.m_angular_z_limit).inspect_value(path, offset, limit))
+                .map(|v| ("m_AngularZLimit".to_string(), v)),
+            ((self.m_angular_x_limit_spring).inspect_value(path, offset, limit))
+                .map(|v| ("m_AngularXLimitSpring".to_string(), v)),
+            ((self.m_target_position).inspect_value(path, offset, limit))
+                .map(|v| ("m_TargetPosition".to_string(), v)),
+            ((self.m_target_velocity).inspect_value(path, offset, limit))
+                .map(|v| ("m_TargetVelocity".to_string(), v)),
+            ((self.m_x_drive).inspect_value(path, offset, limit))
+                .map(|v| ("m_XDrive".to_string(), v)),
+            ((self.m_angular_yz_limit_spring).inspect_value(path, offset, limit))
+                .map(|v| ("m_AngularYZLimitSpring".to_string(), v)),
+            ((self.m_y_drive).inspect_value(path, offset, limit))
+                .map(|v| ("m_YDrive".to_string(), v)),
+            ((self.m_z_drive).inspect_value(path, offset, limit))
+                .map(|v| ("m_ZDrive".to_string(), v)),
+            ((self.m_target_rotation).inspect_value(path, offset, limit))
+                .map(|v| ("m_TargetRotation".to_string(), v)),
+            ((self.m_target_angular_velocity).inspect_value(path, offset, limit))
+                .map(|v| ("m_TargetAngularVelocity".to_string(), v)),
+            ((self.m_rotation_drive_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_RotationDriveMode".to_string(), v)),
+            ((self.m_angular_x_drive).inspect_value(path, offset, limit))
+                .map(|v| ("m_AngularXDrive".to_string(), v)),
+            ((self.m_angular_yz_drive).inspect_value(path, offset, limit))
+                .map(|v| ("m_AngularYZDrive".to_string(), v)),
+            ((self.m_slerp_drive).inspect_value(path, offset, limit))
+                .map(|v| ("m_SlerpDrive".to_string(), v)),
+            ((self.m_projection_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_ProjectionMode".to_string(), v)),
+            ((self.m_projection_distance).inspect_value(path, offset, limit))
+                .map(|v| ("m_ProjectionDistance".to_string(), v)),
+            ((self.m_projection_angle).inspect_value(path, offset, limit))
+                .map(|v| ("m_ProjectionAngle".to_string(), v)),
+            ((self.m_configured_in_world_space).inspect_value(path, offset, limit))
+                .map(|v| ("m_ConfiguredInWorldSpace".to_string(), v)),
+            ((self.m_break_force).inspect_value(path, offset, limit))
+                .map(|v| ("m_BreakForce".to_string(), v)),
+            ((self.m_swap_bodies).inspect_value(path, offset, limit))
+                .map(|v| ("m_SwapBodies".to_string(), v)),
+            ((self.m_break_torque).inspect_value(path, offset, limit))
+                .map(|v| ("m_BreakTorque".to_string(), v)),
+            ((self.m_enable_collision).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableCollision".to_string(), v)),
+            ((self.m_enable_preprocessing).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnablePreprocessing".to_string(), v)),
+            ((self.m_mass_scale).inspect_value(path, offset, limit))
+                .map(|v| ("m_MassScale".to_string(), v)),
+            ((self.m_connected_mass_scale).inspect_value(path, offset, limit))
+                .map(|v| ("m_ConnectedMassScale".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

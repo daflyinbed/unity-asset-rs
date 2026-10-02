@@ -76,3 +76,54 @@ impl crate::Parse for VfxEditorSystemDesc {
         })
     }
 }
+
+impl crate::ToValue for VfxEditorSystemDesc {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("type".to_string(), self.r#type.to_value())),
+            Some(("flags".to_string(), self.flags.to_value())),
+            Some(("capacity".to_string(), self.capacity.to_value())),
+            Some(("layer".to_string(), self.layer.to_value())),
+            Some(("buffers".to_string(), self.buffers.to_value())),
+            crate::opt_field("name", &self.name),
+            Some(("values".to_string(), self.values.to_value())),
+            Some(("tasks".to_string(), self.tasks.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "type" => (self.r#type).inspect_value(path, offset, limit),
+                "flags" => (self.flags).inspect_value(path, offset, limit),
+                "capacity" => (self.capacity).inspect_value(path, offset, limit),
+                "layer" => (self.layer).inspect_value(path, offset, limit),
+                "buffers" => (self.buffers).inspect_value(path, offset, limit),
+                "name" => (self.name).inspect_value(path, offset, limit),
+                "values" => (self.values).inspect_value(path, offset, limit),
+                "tasks" => (self.tasks).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.r#type).inspect_value(path, offset, limit)).map(|v| ("type".to_string(), v)),
+            ((self.flags).inspect_value(path, offset, limit)).map(|v| ("flags".to_string(), v)),
+            ((self.capacity).inspect_value(path, offset, limit))
+                .map(|v| ("capacity".to_string(), v)),
+            ((self.layer).inspect_value(path, offset, limit)).map(|v| ("layer".to_string(), v)),
+            ((self.buffers).inspect_value(path, offset, limit)).map(|v| ("buffers".to_string(), v)),
+            ((self.name).inspect_value(path, offset, limit)).map(|v| ("name".to_string(), v)),
+            ((self.values).inspect_value(path, offset, limit)).map(|v| ("values".to_string(), v)),
+            ((self.tasks).inspect_value(path, offset, limit)).map(|v| ("tasks".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

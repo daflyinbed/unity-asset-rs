@@ -160,3 +160,165 @@ impl crate::Parse for SerializedShaderState {
         })
     }
 }
+
+impl crate::ToValue for SerializedShaderState {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some(("rtBlend0".to_string(), self.rt_blend0.to_value())),
+            Some(("rtBlend1".to_string(), self.rt_blend1.to_value())),
+            Some(("rtBlend2".to_string(), self.rt_blend2.to_value())),
+            Some(("rtBlend3".to_string(), self.rt_blend3.to_value())),
+            Some(("rtBlend4".to_string(), self.rt_blend4.to_value())),
+            Some(("rtBlend5".to_string(), self.rt_blend5.to_value())),
+            Some(("rtBlend6".to_string(), self.rt_blend6.to_value())),
+            Some(("rtBlend7".to_string(), self.rt_blend7.to_value())),
+            Some((
+                "rtSeparateBlend".to_string(),
+                self.rt_separate_blend.to_value(),
+            )),
+            Some(("zTest".to_string(), self.z_test.to_value())),
+            crate::opt_field("zClip", &self.z_clip),
+            Some(("zWrite".to_string(), self.z_write.to_value())),
+            Some(("culling".to_string(), self.culling.to_value())),
+            Some(("offsetFactor".to_string(), self.offset_factor.to_value())),
+            Some(("offsetUnits".to_string(), self.offset_units.to_value())),
+            crate::opt_field("conservative", &self.conservative),
+            Some(("alphaToMask".to_string(), self.alpha_to_mask.to_value())),
+            Some(("stencilOp".to_string(), self.stencil_op.to_value())),
+            Some((
+                "stencilOpFront".to_string(),
+                self.stencil_op_front.to_value(),
+            )),
+            Some(("stencilOpBack".to_string(), self.stencil_op_back.to_value())),
+            Some((
+                "stencilReadMask".to_string(),
+                self.stencil_read_mask.to_value(),
+            )),
+            Some((
+                "stencilWriteMask".to_string(),
+                self.stencil_write_mask.to_value(),
+            )),
+            Some(("stencilRef".to_string(), self.stencil_ref.to_value())),
+            Some(("fogStart".to_string(), self.fog_start.to_value())),
+            Some(("fogEnd".to_string(), self.fog_end.to_value())),
+            Some(("fogDensity".to_string(), self.fog_density.to_value())),
+            Some(("fogColor".to_string(), self.fog_color.to_value())),
+            Some(("fogMode".to_string(), self.fog_mode.to_value())),
+            Some(("gpuProgramID".to_string(), self.gpu_program_id.to_value())),
+            Some(("m_Tags".to_string(), self.m_tags.to_value())),
+            Some(("m_LOD".to_string(), self.m_lod.to_value())),
+            Some(("lighting".to_string(), self.lighting.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "rtBlend0" => (self.rt_blend0).inspect_value(path, offset, limit),
+                "rtBlend1" => (self.rt_blend1).inspect_value(path, offset, limit),
+                "rtBlend2" => (self.rt_blend2).inspect_value(path, offset, limit),
+                "rtBlend3" => (self.rt_blend3).inspect_value(path, offset, limit),
+                "rtBlend4" => (self.rt_blend4).inspect_value(path, offset, limit),
+                "rtBlend5" => (self.rt_blend5).inspect_value(path, offset, limit),
+                "rtBlend6" => (self.rt_blend6).inspect_value(path, offset, limit),
+                "rtBlend7" => (self.rt_blend7).inspect_value(path, offset, limit),
+                "rtSeparateBlend" => (self.rt_separate_blend).inspect_value(path, offset, limit),
+                "zTest" => (self.z_test).inspect_value(path, offset, limit),
+                "zClip" => (self.z_clip).inspect_value(path, offset, limit),
+                "zWrite" => (self.z_write).inspect_value(path, offset, limit),
+                "culling" => (self.culling).inspect_value(path, offset, limit),
+                "offsetFactor" => (self.offset_factor).inspect_value(path, offset, limit),
+                "offsetUnits" => (self.offset_units).inspect_value(path, offset, limit),
+                "conservative" => (self.conservative).inspect_value(path, offset, limit),
+                "alphaToMask" => (self.alpha_to_mask).inspect_value(path, offset, limit),
+                "stencilOp" => (self.stencil_op).inspect_value(path, offset, limit),
+                "stencilOpFront" => (self.stencil_op_front).inspect_value(path, offset, limit),
+                "stencilOpBack" => (self.stencil_op_back).inspect_value(path, offset, limit),
+                "stencilReadMask" => (self.stencil_read_mask).inspect_value(path, offset, limit),
+                "stencilWriteMask" => (self.stencil_write_mask).inspect_value(path, offset, limit),
+                "stencilRef" => (self.stencil_ref).inspect_value(path, offset, limit),
+                "fogStart" => (self.fog_start).inspect_value(path, offset, limit),
+                "fogEnd" => (self.fog_end).inspect_value(path, offset, limit),
+                "fogDensity" => (self.fog_density).inspect_value(path, offset, limit),
+                "fogColor" => (self.fog_color).inspect_value(path, offset, limit),
+                "fogMode" => (self.fog_mode).inspect_value(path, offset, limit),
+                "gpuProgramID" => (self.gpu_program_id).inspect_value(path, offset, limit),
+                "m_Tags" => (self.m_tags).inspect_value(path, offset, limit),
+                "m_LOD" => (self.m_lod).inspect_value(path, offset, limit),
+                "lighting" => (self.lighting).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.rt_blend0).inspect_value(path, offset, limit))
+                .map(|v| ("rtBlend0".to_string(), v)),
+            ((self.rt_blend1).inspect_value(path, offset, limit))
+                .map(|v| ("rtBlend1".to_string(), v)),
+            ((self.rt_blend2).inspect_value(path, offset, limit))
+                .map(|v| ("rtBlend2".to_string(), v)),
+            ((self.rt_blend3).inspect_value(path, offset, limit))
+                .map(|v| ("rtBlend3".to_string(), v)),
+            ((self.rt_blend4).inspect_value(path, offset, limit))
+                .map(|v| ("rtBlend4".to_string(), v)),
+            ((self.rt_blend5).inspect_value(path, offset, limit))
+                .map(|v| ("rtBlend5".to_string(), v)),
+            ((self.rt_blend6).inspect_value(path, offset, limit))
+                .map(|v| ("rtBlend6".to_string(), v)),
+            ((self.rt_blend7).inspect_value(path, offset, limit))
+                .map(|v| ("rtBlend7".to_string(), v)),
+            ((self.rt_separate_blend).inspect_value(path, offset, limit))
+                .map(|v| ("rtSeparateBlend".to_string(), v)),
+            ((self.z_test).inspect_value(path, offset, limit)).map(|v| ("zTest".to_string(), v)),
+            ((self.z_clip).inspect_value(path, offset, limit)).map(|v| ("zClip".to_string(), v)),
+            ((self.z_write).inspect_value(path, offset, limit)).map(|v| ("zWrite".to_string(), v)),
+            ((self.culling).inspect_value(path, offset, limit)).map(|v| ("culling".to_string(), v)),
+            ((self.offset_factor).inspect_value(path, offset, limit))
+                .map(|v| ("offsetFactor".to_string(), v)),
+            ((self.offset_units).inspect_value(path, offset, limit))
+                .map(|v| ("offsetUnits".to_string(), v)),
+            ((self.conservative).inspect_value(path, offset, limit))
+                .map(|v| ("conservative".to_string(), v)),
+            ((self.alpha_to_mask).inspect_value(path, offset, limit))
+                .map(|v| ("alphaToMask".to_string(), v)),
+            ((self.stencil_op).inspect_value(path, offset, limit))
+                .map(|v| ("stencilOp".to_string(), v)),
+            ((self.stencil_op_front).inspect_value(path, offset, limit))
+                .map(|v| ("stencilOpFront".to_string(), v)),
+            ((self.stencil_op_back).inspect_value(path, offset, limit))
+                .map(|v| ("stencilOpBack".to_string(), v)),
+            ((self.stencil_read_mask).inspect_value(path, offset, limit))
+                .map(|v| ("stencilReadMask".to_string(), v)),
+            ((self.stencil_write_mask).inspect_value(path, offset, limit))
+                .map(|v| ("stencilWriteMask".to_string(), v)),
+            ((self.stencil_ref).inspect_value(path, offset, limit))
+                .map(|v| ("stencilRef".to_string(), v)),
+            ((self.fog_start).inspect_value(path, offset, limit))
+                .map(|v| ("fogStart".to_string(), v)),
+            ((self.fog_end).inspect_value(path, offset, limit)).map(|v| ("fogEnd".to_string(), v)),
+            ((self.fog_density).inspect_value(path, offset, limit))
+                .map(|v| ("fogDensity".to_string(), v)),
+            ((self.fog_color).inspect_value(path, offset, limit))
+                .map(|v| ("fogColor".to_string(), v)),
+            ((self.fog_mode).inspect_value(path, offset, limit))
+                .map(|v| ("fogMode".to_string(), v)),
+            ((self.gpu_program_id).inspect_value(path, offset, limit))
+                .map(|v| ("gpuProgramID".to_string(), v)),
+            ((self.m_tags).inspect_value(path, offset, limit)).map(|v| ("m_Tags".to_string(), v)),
+            ((self.m_lod).inspect_value(path, offset, limit)).map(|v| ("m_LOD".to_string(), v)),
+            ((self.lighting).inspect_value(path, offset, limit))
+                .map(|v| ("lighting".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

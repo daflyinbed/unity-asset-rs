@@ -26,6 +26,21 @@ impl crate::Parse for ClothRendererMLightProbeAnchorVariant {
     }
 }
 
+impl crate::ToValue for ClothRendererMLightProbeAnchorVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V4_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V4_3(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：ClothRendererMSortingOrderVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ClothRendererMSortingOrderVariant {
@@ -45,6 +60,21 @@ impl crate::Parse for ClothRendererMSortingOrderVariant {
         } else {
             let v = rdr.read_i16()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for ClothRendererMSortingOrderVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V4_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V4_5(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -147,5 +177,117 @@ impl crate::Parse for ClothRenderer {
             m_sorting_layer_id,
             m_sorting_order,
         })
+    }
+}
+
+impl crate::ToValue for ClothRenderer {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_Enabled".to_string(), self.m_enabled.to_value())),
+            Some(("m_CastShadows".to_string(), self.m_cast_shadows.to_value())),
+            Some((
+                "m_ReceiveShadows".to_string(),
+                self.m_receive_shadows.to_value(),
+            )),
+            Some((
+                "m_LightmapIndex".to_string(),
+                self.m_lightmap_index.to_value(),
+            )),
+            Some((
+                "m_LightmapTilingOffset".to_string(),
+                self.m_lightmap_tiling_offset.to_value(),
+            )),
+            Some(("m_Materials".to_string(), self.m_materials.to_value())),
+            Some((
+                "m_SubsetIndices".to_string(),
+                self.m_subset_indices.to_value(),
+            )),
+            Some((
+                "m_StaticBatchRoot".to_string(),
+                self.m_static_batch_root.to_value(),
+            )),
+            Some((
+                "m_PauseWhenNotVisible".to_string(),
+                self.m_pause_when_not_visible.to_value(),
+            )),
+            crate::opt_field("m_UseLightProbes", &self.m_use_light_probes),
+            crate::opt_field("m_LightProbeAnchor", &self.m_light_probe_anchor),
+            crate::opt_field("m_SortingLayer", &self.m_sorting_layer),
+            crate::opt_field("m_SortingLayerID", &self.m_sorting_layer_id),
+            crate::opt_field("m_SortingOrder", &self.m_sorting_order),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "m_CastShadows" => (self.m_cast_shadows).inspect_value(path, offset, limit),
+                "m_ReceiveShadows" => (self.m_receive_shadows).inspect_value(path, offset, limit),
+                "m_LightmapIndex" => (self.m_lightmap_index).inspect_value(path, offset, limit),
+                "m_LightmapTilingOffset" => {
+                    (self.m_lightmap_tiling_offset).inspect_value(path, offset, limit)
+                }
+                "m_Materials" => (self.m_materials).inspect_value(path, offset, limit),
+                "m_SubsetIndices" => (self.m_subset_indices).inspect_value(path, offset, limit),
+                "m_StaticBatchRoot" => {
+                    (self.m_static_batch_root).inspect_value(path, offset, limit)
+                }
+                "m_PauseWhenNotVisible" => {
+                    (self.m_pause_when_not_visible).inspect_value(path, offset, limit)
+                }
+                "m_UseLightProbes" => (self.m_use_light_probes).inspect_value(path, offset, limit),
+                "m_LightProbeAnchor" => {
+                    (self.m_light_probe_anchor).inspect_value(path, offset, limit)
+                }
+                "m_SortingLayer" => (self.m_sorting_layer).inspect_value(path, offset, limit),
+                "m_SortingLayerID" => (self.m_sorting_layer_id).inspect_value(path, offset, limit),
+                "m_SortingOrder" => (self.m_sorting_order).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.m_cast_shadows).inspect_value(path, offset, limit))
+                .map(|v| ("m_CastShadows".to_string(), v)),
+            ((self.m_receive_shadows).inspect_value(path, offset, limit))
+                .map(|v| ("m_ReceiveShadows".to_string(), v)),
+            ((self.m_lightmap_index).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightmapIndex".to_string(), v)),
+            ((self.m_lightmap_tiling_offset).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightmapTilingOffset".to_string(), v)),
+            ((self.m_materials).inspect_value(path, offset, limit))
+                .map(|v| ("m_Materials".to_string(), v)),
+            ((self.m_subset_indices).inspect_value(path, offset, limit))
+                .map(|v| ("m_SubsetIndices".to_string(), v)),
+            ((self.m_static_batch_root).inspect_value(path, offset, limit))
+                .map(|v| ("m_StaticBatchRoot".to_string(), v)),
+            ((self.m_pause_when_not_visible).inspect_value(path, offset, limit))
+                .map(|v| ("m_PauseWhenNotVisible".to_string(), v)),
+            ((self.m_use_light_probes).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseLightProbes".to_string(), v)),
+            ((self.m_light_probe_anchor).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightProbeAnchor".to_string(), v)),
+            ((self.m_sorting_layer).inspect_value(path, offset, limit))
+                .map(|v| ("m_SortingLayer".to_string(), v)),
+            ((self.m_sorting_layer_id).inspect_value(path, offset, limit))
+                .map(|v| ("m_SortingLayerID".to_string(), v)),
+            ((self.m_sorting_order).inspect_value(path, offset, limit))
+                .map(|v| ("m_SortingOrder".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

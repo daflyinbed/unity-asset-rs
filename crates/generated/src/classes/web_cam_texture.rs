@@ -22,6 +22,21 @@ impl crate::Parse for WebCamTextureMDownscaleFallbackVariant {
         }
     }
 }
+
+impl crate::ToValue for WebCamTextureMDownscaleFallbackVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2020_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2020_2(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct WebCamTexture {
     pub m_name: String,
@@ -60,5 +75,55 @@ impl crate::Parse for WebCamTexture {
             m_is_alpha_channel_optional,
             m_downscale_fallback,
         })
+    }
+}
+
+impl crate::ToValue for WebCamTexture {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            crate::opt_field("m_ForcedFallbackFormat", &self.m_forced_fallback_format),
+            crate::opt_field(
+                "m_IsAlphaChannelOptional",
+                &self.m_is_alpha_channel_optional,
+            ),
+            crate::opt_field("m_DownscaleFallback", &self.m_downscale_fallback),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_ForcedFallbackFormat" => {
+                    (self.m_forced_fallback_format).inspect_value(path, offset, limit)
+                }
+                "m_IsAlphaChannelOptional" => {
+                    (self.m_is_alpha_channel_optional).inspect_value(path, offset, limit)
+                }
+                "m_DownscaleFallback" => {
+                    (self.m_downscale_fallback).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_forced_fallback_format).inspect_value(path, offset, limit))
+                .map(|v| ("m_ForcedFallbackFormat".to_string(), v)),
+            ((self.m_is_alpha_channel_optional).inspect_value(path, offset, limit))
+                .map(|v| ("m_IsAlphaChannelOptional".to_string(), v)),
+            ((self.m_downscale_fallback).inspect_value(path, offset, limit))
+                .map(|v| ("m_DownscaleFallback".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

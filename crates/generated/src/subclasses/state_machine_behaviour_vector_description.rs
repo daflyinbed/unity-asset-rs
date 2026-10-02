@@ -35,6 +35,21 @@ impl crate::Parse for StateMachineBehaviourVectorDescriptionMStateMachineBehavio
         }
     }
 }
+
+impl crate::ToValue for StateMachineBehaviourVectorDescriptionMStateMachineBehaviourIndicesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct StateMachineBehaviourVectorDescription {
     pub m_state_machine_behaviour_ranges: Vec<(StateKey, StateRange)>,
@@ -68,5 +83,49 @@ impl crate::Parse for StateMachineBehaviourVectorDescription {
             m_state_machine_behaviour_ranges,
             m_state_machine_behaviour_indices,
         })
+    }
+}
+
+impl crate::ToValue for StateMachineBehaviourVectorDescription {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some((
+                "m_StateMachineBehaviourRanges".to_string(),
+                self.m_state_machine_behaviour_ranges.to_value(),
+            )),
+            Some((
+                "m_StateMachineBehaviourIndices".to_string(),
+                self.m_state_machine_behaviour_indices.to_value(),
+            )),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_StateMachineBehaviourRanges" => {
+                    (self.m_state_machine_behaviour_ranges).inspect_value(path, offset, limit)
+                }
+                "m_StateMachineBehaviourIndices" => {
+                    (self.m_state_machine_behaviour_indices).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_state_machine_behaviour_ranges).inspect_value(path, offset, limit))
+                .map(|v| ("m_StateMachineBehaviourRanges".to_string(), v)),
+            ((self.m_state_machine_behaviour_indices).inspect_value(path, offset, limit))
+                .map(|v| ("m_StateMachineBehaviourIndices".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

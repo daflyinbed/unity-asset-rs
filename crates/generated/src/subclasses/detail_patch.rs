@@ -56,3 +56,44 @@ impl crate::Parse for DetailPatch {
         })
     }
 }
+
+impl crate::ToValue for DetailPatch {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            crate::opt_field("bounds", &self.bounds),
+            Some(("layerIndices".to_string(), self.layer_indices.to_value())),
+            crate::opt_field("numberOfObjects", &self.number_of_objects),
+            crate::opt_field("coverage", &self.coverage),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "bounds" => (self.bounds).inspect_value(path, offset, limit),
+                "layerIndices" => (self.layer_indices).inspect_value(path, offset, limit),
+                "numberOfObjects" => (self.number_of_objects).inspect_value(path, offset, limit),
+                "coverage" => (self.coverage).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.bounds).inspect_value(path, offset, limit)).map(|v| ("bounds".to_string(), v)),
+            ((self.layer_indices).inspect_value(path, offset, limit))
+                .map(|v| ("layerIndices".to_string(), v)),
+            ((self.number_of_objects).inspect_value(path, offset, limit))
+                .map(|v| ("numberOfObjects".to_string(), v)),
+            ((self.coverage).inspect_value(path, offset, limit))
+                .map(|v| ("coverage".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

@@ -56,3 +56,60 @@ impl crate::Parse for GroupConstant {
         })
     }
 }
+
+impl crate::ToValue for GroupConstant {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some((
+                "parentConstantIndex".to_string(),
+                self.parent_constant_index.to_value(),
+            )),
+            Some(("volumeIndex".to_string(), self.volume_index.to_value())),
+            Some(("pitchIndex".to_string(), self.pitch_index.to_value())),
+            Some(("mute".to_string(), self.mute.to_value())),
+            crate::opt_field("sendIndex", &self.send_index),
+            Some(("solo".to_string(), self.solo.to_value())),
+            Some(("bypassEffects".to_string(), self.bypass_effects.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "parentConstantIndex" => {
+                    (self.parent_constant_index).inspect_value(path, offset, limit)
+                }
+                "volumeIndex" => (self.volume_index).inspect_value(path, offset, limit),
+                "pitchIndex" => (self.pitch_index).inspect_value(path, offset, limit),
+                "mute" => (self.mute).inspect_value(path, offset, limit),
+                "sendIndex" => (self.send_index).inspect_value(path, offset, limit),
+                "solo" => (self.solo).inspect_value(path, offset, limit),
+                "bypassEffects" => (self.bypass_effects).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.parent_constant_index).inspect_value(path, offset, limit))
+                .map(|v| ("parentConstantIndex".to_string(), v)),
+            ((self.volume_index).inspect_value(path, offset, limit))
+                .map(|v| ("volumeIndex".to_string(), v)),
+            ((self.pitch_index).inspect_value(path, offset, limit))
+                .map(|v| ("pitchIndex".to_string(), v)),
+            ((self.mute).inspect_value(path, offset, limit)).map(|v| ("mute".to_string(), v)),
+            ((self.send_index).inspect_value(path, offset, limit))
+                .map(|v| ("sendIndex".to_string(), v)),
+            ((self.solo).inspect_value(path, offset, limit)).map(|v| ("solo".to_string(), v)),
+            ((self.bypass_effects).inspect_value(path, offset, limit))
+                .map(|v| ("bypassEffects".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

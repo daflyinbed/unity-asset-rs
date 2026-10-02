@@ -106,3 +106,56 @@ impl crate::Parse for VrSettings {
         })
     }
 }
+
+impl crate::ToValue for VrSettings {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            crate::opt_field("none", &self.none),
+            crate::opt_field("enable360StereoCapture", &self.enable360_stereo_capture),
+            crate::opt_field("cardboard", &self.cardboard),
+            crate::opt_field("daydream", &self.daydream),
+            crate::opt_field("hololens", &self.hololens),
+            crate::opt_field("oculus", &self.oculus),
+            crate::opt_field("lumin", &self.lumin),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "none" => (self.none).inspect_value(path, offset, limit),
+                "enable360StereoCapture" => {
+                    (self.enable360_stereo_capture).inspect_value(path, offset, limit)
+                }
+                "cardboard" => (self.cardboard).inspect_value(path, offset, limit),
+                "daydream" => (self.daydream).inspect_value(path, offset, limit),
+                "hololens" => (self.hololens).inspect_value(path, offset, limit),
+                "oculus" => (self.oculus).inspect_value(path, offset, limit),
+                "lumin" => (self.lumin).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.none).inspect_value(path, offset, limit)).map(|v| ("none".to_string(), v)),
+            ((self.enable360_stereo_capture).inspect_value(path, offset, limit))
+                .map(|v| ("enable360StereoCapture".to_string(), v)),
+            ((self.cardboard).inspect_value(path, offset, limit))
+                .map(|v| ("cardboard".to_string(), v)),
+            ((self.daydream).inspect_value(path, offset, limit))
+                .map(|v| ("daydream".to_string(), v)),
+            ((self.hololens).inspect_value(path, offset, limit))
+                .map(|v| ("hololens".to_string(), v)),
+            ((self.oculus).inspect_value(path, offset, limit)).map(|v| ("oculus".to_string(), v)),
+            ((self.lumin).inspect_value(path, offset, limit)).map(|v| ("lumin".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

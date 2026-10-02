@@ -35,6 +35,21 @@ impl crate::Parse for AnimatorTransitionMConditionsVariant {
         }
     }
 }
+
+impl crate::ToValue for AnimatorTransitionMConditionsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct AnimatorTransition {
     pub m_name: String,
@@ -69,5 +84,66 @@ impl crate::Parse for AnimatorTransition {
             m_mute,
             m_is_exit,
         })
+    }
+}
+
+impl crate::ToValue for AnimatorTransition {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some(("m_Conditions".to_string(), self.m_conditions.to_value())),
+            Some((
+                "m_DestinationStateMachine".to_string(),
+                self.m_destination_state_machine.to_value(),
+            )),
+            Some((
+                "m_DestinationState".to_string(),
+                self.m_destination_state.to_value(),
+            )),
+            Some(("m_Solo".to_string(), self.m_solo.to_value())),
+            Some(("m_Mute".to_string(), self.m_mute.to_value())),
+            Some(("m_IsExit".to_string(), self.m_is_exit.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_Conditions" => (self.m_conditions).inspect_value(path, offset, limit),
+                "m_DestinationStateMachine" => {
+                    (self.m_destination_state_machine).inspect_value(path, offset, limit)
+                }
+                "m_DestinationState" => {
+                    (self.m_destination_state).inspect_value(path, offset, limit)
+                }
+                "m_Solo" => (self.m_solo).inspect_value(path, offset, limit),
+                "m_Mute" => (self.m_mute).inspect_value(path, offset, limit),
+                "m_IsExit" => (self.m_is_exit).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_conditions).inspect_value(path, offset, limit))
+                .map(|v| ("m_Conditions".to_string(), v)),
+            ((self.m_destination_state_machine).inspect_value(path, offset, limit))
+                .map(|v| ("m_DestinationStateMachine".to_string(), v)),
+            ((self.m_destination_state).inspect_value(path, offset, limit))
+                .map(|v| ("m_DestinationState".to_string(), v)),
+            ((self.m_solo).inspect_value(path, offset, limit)).map(|v| ("m_Solo".to_string(), v)),
+            ((self.m_mute).inspect_value(path, offset, limit)).map(|v| ("m_Mute".to_string(), v)),
+            ((self.m_is_exit).inspect_value(path, offset, limit))
+                .map(|v| ("m_IsExit".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

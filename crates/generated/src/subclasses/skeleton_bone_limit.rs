@@ -49,3 +49,53 @@ impl crate::Parse for SkeletonBoneLimit {
         })
     }
 }
+
+impl crate::ToValue for SkeletonBoneLimit {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Min".to_string(), self.m_min.to_value())),
+            Some(("m_Max".to_string(), self.m_max.to_value())),
+            Some(("m_Value".to_string(), self.m_value.to_value())),
+            crate::opt_field("m_PreQ", &self.m_pre_q),
+            Some(("m_Length".to_string(), self.m_length.to_value())),
+            crate::opt_field("m_PostQ", &self.m_post_q),
+            Some(("m_Modified".to_string(), self.m_modified.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Min" => (self.m_min).inspect_value(path, offset, limit),
+                "m_Max" => (self.m_max).inspect_value(path, offset, limit),
+                "m_Value" => (self.m_value).inspect_value(path, offset, limit),
+                "m_PreQ" => (self.m_pre_q).inspect_value(path, offset, limit),
+                "m_Length" => (self.m_length).inspect_value(path, offset, limit),
+                "m_PostQ" => (self.m_post_q).inspect_value(path, offset, limit),
+                "m_Modified" => (self.m_modified).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_min).inspect_value(path, offset, limit)).map(|v| ("m_Min".to_string(), v)),
+            ((self.m_max).inspect_value(path, offset, limit)).map(|v| ("m_Max".to_string(), v)),
+            ((self.m_value).inspect_value(path, offset, limit)).map(|v| ("m_Value".to_string(), v)),
+            ((self.m_pre_q).inspect_value(path, offset, limit)).map(|v| ("m_PreQ".to_string(), v)),
+            ((self.m_length).inspect_value(path, offset, limit))
+                .map(|v| ("m_Length".to_string(), v)),
+            ((self.m_post_q).inspect_value(path, offset, limit))
+                .map(|v| ("m_PostQ".to_string(), v)),
+            ((self.m_modified).inspect_value(path, offset, limit))
+                .map(|v| ("m_Modified".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

@@ -25,6 +25,21 @@ impl crate::Parse for InitialModuleGravityModifierVariant {
         }
     }
 }
+
+impl crate::ToValue for InitialModuleGravityModifierVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_5(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct InitialModule {
     pub enabled: bool,
@@ -141,5 +156,114 @@ impl crate::Parse for InitialModule {
             size3_d,
             custom_emitter_velocity,
         })
+    }
+}
+
+impl crate::ToValue for InitialModule {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("enabled".to_string(), self.enabled.to_value())),
+            Some(("startLifetime".to_string(), self.start_lifetime.to_value())),
+            Some(("startSpeed".to_string(), self.start_speed.to_value())),
+            Some(("startColor".to_string(), self.start_color.to_value())),
+            Some(("startSize".to_string(), self.start_size.to_value())),
+            Some(("startRotation".to_string(), self.start_rotation.to_value())),
+            crate::opt_field("startRotationX", &self.start_rotation_x),
+            crate::opt_field("startSizeY", &self.start_size_y),
+            Some((
+                "gravityModifier".to_string(),
+                self.gravity_modifier.to_value(),
+            )),
+            crate::opt_field("startRotationY", &self.start_rotation_y),
+            crate::opt_field("startSizeZ", &self.start_size_z),
+            crate::opt_field("inheritVelocity", &self.inherit_velocity),
+            Some((
+                "maxNumParticles".to_string(),
+                self.max_num_particles.to_value(),
+            )),
+            crate::opt_field(
+                "randomizeRotationDirection",
+                &self.randomize_rotation_direction,
+            ),
+            crate::opt_field("rotation3D", &self.rotation3_d),
+            crate::opt_field("gravitySource", &self.gravity_source),
+            crate::opt_field("size3D", &self.size3_d),
+            crate::opt_field("customEmitterVelocity", &self.custom_emitter_velocity),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "enabled" => (self.enabled).inspect_value(path, offset, limit),
+                "startLifetime" => (self.start_lifetime).inspect_value(path, offset, limit),
+                "startSpeed" => (self.start_speed).inspect_value(path, offset, limit),
+                "startColor" => (self.start_color).inspect_value(path, offset, limit),
+                "startSize" => (self.start_size).inspect_value(path, offset, limit),
+                "startRotation" => (self.start_rotation).inspect_value(path, offset, limit),
+                "startRotationX" => (self.start_rotation_x).inspect_value(path, offset, limit),
+                "startSizeY" => (self.start_size_y).inspect_value(path, offset, limit),
+                "gravityModifier" => (self.gravity_modifier).inspect_value(path, offset, limit),
+                "startRotationY" => (self.start_rotation_y).inspect_value(path, offset, limit),
+                "startSizeZ" => (self.start_size_z).inspect_value(path, offset, limit),
+                "inheritVelocity" => (self.inherit_velocity).inspect_value(path, offset, limit),
+                "maxNumParticles" => (self.max_num_particles).inspect_value(path, offset, limit),
+                "randomizeRotationDirection" => {
+                    (self.randomize_rotation_direction).inspect_value(path, offset, limit)
+                }
+                "rotation3D" => (self.rotation3_d).inspect_value(path, offset, limit),
+                "gravitySource" => (self.gravity_source).inspect_value(path, offset, limit),
+                "size3D" => (self.size3_d).inspect_value(path, offset, limit),
+                "customEmitterVelocity" => {
+                    (self.custom_emitter_velocity).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.enabled).inspect_value(path, offset, limit)).map(|v| ("enabled".to_string(), v)),
+            ((self.start_lifetime).inspect_value(path, offset, limit))
+                .map(|v| ("startLifetime".to_string(), v)),
+            ((self.start_speed).inspect_value(path, offset, limit))
+                .map(|v| ("startSpeed".to_string(), v)),
+            ((self.start_color).inspect_value(path, offset, limit))
+                .map(|v| ("startColor".to_string(), v)),
+            ((self.start_size).inspect_value(path, offset, limit))
+                .map(|v| ("startSize".to_string(), v)),
+            ((self.start_rotation).inspect_value(path, offset, limit))
+                .map(|v| ("startRotation".to_string(), v)),
+            ((self.start_rotation_x).inspect_value(path, offset, limit))
+                .map(|v| ("startRotationX".to_string(), v)),
+            ((self.start_size_y).inspect_value(path, offset, limit))
+                .map(|v| ("startSizeY".to_string(), v)),
+            ((self.gravity_modifier).inspect_value(path, offset, limit))
+                .map(|v| ("gravityModifier".to_string(), v)),
+            ((self.start_rotation_y).inspect_value(path, offset, limit))
+                .map(|v| ("startRotationY".to_string(), v)),
+            ((self.start_size_z).inspect_value(path, offset, limit))
+                .map(|v| ("startSizeZ".to_string(), v)),
+            ((self.inherit_velocity).inspect_value(path, offset, limit))
+                .map(|v| ("inheritVelocity".to_string(), v)),
+            ((self.max_num_particles).inspect_value(path, offset, limit))
+                .map(|v| ("maxNumParticles".to_string(), v)),
+            ((self.randomize_rotation_direction).inspect_value(path, offset, limit))
+                .map(|v| ("randomizeRotationDirection".to_string(), v)),
+            ((self.rotation3_d).inspect_value(path, offset, limit))
+                .map(|v| ("rotation3D".to_string(), v)),
+            ((self.gravity_source).inspect_value(path, offset, limit))
+                .map(|v| ("gravitySource".to_string(), v)),
+            ((self.size3_d).inspect_value(path, offset, limit)).map(|v| ("size3D".to_string(), v)),
+            ((self.custom_emitter_velocity).inspect_value(path, offset, limit))
+                .map(|v| ("customEmitterVelocity".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

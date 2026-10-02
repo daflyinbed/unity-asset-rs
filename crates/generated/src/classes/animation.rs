@@ -35,6 +35,21 @@ impl crate::Parse for AnimationMAnimationsVariant {
         }
     }
 }
+
+impl crate::ToValue for AnimationMAnimationsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct Animation {
     pub m_game_object: PPtr,
@@ -95,5 +110,79 @@ impl crate::Parse for Animation {
             m_update_mode,
             m_user_aabb,
         })
+    }
+}
+
+impl crate::ToValue for Animation {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_Enabled".to_string(), self.m_enabled.to_value())),
+            Some(("m_Animation".to_string(), self.m_animation.to_value())),
+            Some(("m_Animations".to_string(), self.m_animations.to_value())),
+            Some(("m_WrapMode".to_string(), self.m_wrap_mode.to_value())),
+            Some((
+                "m_PlayAutomatically".to_string(),
+                self.m_play_automatically.to_value(),
+            )),
+            Some((
+                "m_AnimatePhysics".to_string(),
+                self.m_animate_physics.to_value(),
+            )),
+            Some(("m_CullingType".to_string(), self.m_culling_type.to_value())),
+            crate::opt_field("m_UpdateMode", &self.m_update_mode),
+            crate::opt_field("m_UserAABB", &self.m_user_aabb),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "m_Animation" => (self.m_animation).inspect_value(path, offset, limit),
+                "m_Animations" => (self.m_animations).inspect_value(path, offset, limit),
+                "m_WrapMode" => (self.m_wrap_mode).inspect_value(path, offset, limit),
+                "m_PlayAutomatically" => {
+                    (self.m_play_automatically).inspect_value(path, offset, limit)
+                }
+                "m_AnimatePhysics" => (self.m_animate_physics).inspect_value(path, offset, limit),
+                "m_CullingType" => (self.m_culling_type).inspect_value(path, offset, limit),
+                "m_UpdateMode" => (self.m_update_mode).inspect_value(path, offset, limit),
+                "m_UserAABB" => (self.m_user_aabb).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.m_animation).inspect_value(path, offset, limit))
+                .map(|v| ("m_Animation".to_string(), v)),
+            ((self.m_animations).inspect_value(path, offset, limit))
+                .map(|v| ("m_Animations".to_string(), v)),
+            ((self.m_wrap_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_WrapMode".to_string(), v)),
+            ((self.m_play_automatically).inspect_value(path, offset, limit))
+                .map(|v| ("m_PlayAutomatically".to_string(), v)),
+            ((self.m_animate_physics).inspect_value(path, offset, limit))
+                .map(|v| ("m_AnimatePhysics".to_string(), v)),
+            ((self.m_culling_type).inspect_value(path, offset, limit))
+                .map(|v| ("m_CullingType".to_string(), v)),
+            ((self.m_update_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_UpdateMode".to_string(), v)),
+            ((self.m_user_aabb).inspect_value(path, offset, limit))
+                .map(|v| ("m_UserAABB".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

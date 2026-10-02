@@ -28,3 +28,35 @@ impl crate::Parse for SpriteVertex {
         })
     }
 }
+
+impl crate::ToValue for SpriteVertex {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("pos".to_string(), self.pos.to_value())),
+            crate::opt_field("uv", &self.uv),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "pos" => (self.pos).inspect_value(path, offset, limit),
+                "uv" => (self.uv).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.pos).inspect_value(path, offset, limit)).map(|v| ("pos".to_string(), v)),
+            ((self.uv).inspect_value(path, offset, limit)).map(|v| ("uv".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

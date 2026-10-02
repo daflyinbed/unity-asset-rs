@@ -34,6 +34,21 @@ impl crate::Parse for PackedAssetsMContentsVariant {
         }
     }
 }
+
+impl crate::ToValue for PackedAssetsMContentsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct PackedAssets {
     pub m_file: Option<u32>,
@@ -65,5 +80,46 @@ impl crate::Parse for PackedAssets {
             m_overhead: m_overhead.unwrap(),
             m_contents: m_contents.unwrap(),
         })
+    }
+}
+
+impl crate::ToValue for PackedAssets {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            crate::opt_field("m_File", &self.m_file),
+            Some(("m_ShortPath".to_string(), self.m_short_path.to_value())),
+            Some(("m_Overhead".to_string(), self.m_overhead.to_value())),
+            Some(("m_Contents".to_string(), self.m_contents.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_File" => (self.m_file).inspect_value(path, offset, limit),
+                "m_ShortPath" => (self.m_short_path).inspect_value(path, offset, limit),
+                "m_Overhead" => (self.m_overhead).inspect_value(path, offset, limit),
+                "m_Contents" => (self.m_contents).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_file).inspect_value(path, offset, limit)).map(|v| ("m_File".to_string(), v)),
+            ((self.m_short_path).inspect_value(path, offset, limit))
+                .map(|v| ("m_ShortPath".to_string(), v)),
+            ((self.m_overhead).inspect_value(path, offset, limit))
+                .map(|v| ("m_Overhead".to_string(), v)),
+            ((self.m_contents).inspect_value(path, offset, limit))
+                .map(|v| ("m_Contents".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

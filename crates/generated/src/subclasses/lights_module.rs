@@ -48,3 +48,72 @@ impl crate::Parse for LightsModule {
         })
     }
 }
+
+impl crate::ToValue for LightsModule {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("enabled".to_string(), self.enabled.to_value())),
+            Some(("ratio".to_string(), self.ratio.to_value())),
+            Some(("light".to_string(), self.light.to_value())),
+            Some((
+                "randomDistribution".to_string(),
+                self.random_distribution.to_value(),
+            )),
+            Some(("color".to_string(), self.color.to_value())),
+            Some(("range".to_string(), self.range.to_value())),
+            Some(("intensity".to_string(), self.intensity.to_value())),
+            Some(("rangeCurve".to_string(), self.range_curve.to_value())),
+            Some((
+                "intensityCurve".to_string(),
+                self.intensity_curve.to_value(),
+            )),
+            Some(("maxLights".to_string(), self.max_lights.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "enabled" => (self.enabled).inspect_value(path, offset, limit),
+                "ratio" => (self.ratio).inspect_value(path, offset, limit),
+                "light" => (self.light).inspect_value(path, offset, limit),
+                "randomDistribution" => {
+                    (self.random_distribution).inspect_value(path, offset, limit)
+                }
+                "color" => (self.color).inspect_value(path, offset, limit),
+                "range" => (self.range).inspect_value(path, offset, limit),
+                "intensity" => (self.intensity).inspect_value(path, offset, limit),
+                "rangeCurve" => (self.range_curve).inspect_value(path, offset, limit),
+                "intensityCurve" => (self.intensity_curve).inspect_value(path, offset, limit),
+                "maxLights" => (self.max_lights).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.enabled).inspect_value(path, offset, limit)).map(|v| ("enabled".to_string(), v)),
+            ((self.ratio).inspect_value(path, offset, limit)).map(|v| ("ratio".to_string(), v)),
+            ((self.light).inspect_value(path, offset, limit)).map(|v| ("light".to_string(), v)),
+            ((self.random_distribution).inspect_value(path, offset, limit))
+                .map(|v| ("randomDistribution".to_string(), v)),
+            ((self.color).inspect_value(path, offset, limit)).map(|v| ("color".to_string(), v)),
+            ((self.range).inspect_value(path, offset, limit)).map(|v| ("range".to_string(), v)),
+            ((self.intensity).inspect_value(path, offset, limit))
+                .map(|v| ("intensity".to_string(), v)),
+            ((self.range_curve).inspect_value(path, offset, limit))
+                .map(|v| ("rangeCurve".to_string(), v)),
+            ((self.intensity_curve).inspect_value(path, offset, limit))
+                .map(|v| ("intensityCurve".to_string(), v)),
+            ((self.max_lights).inspect_value(path, offset, limit))
+                .map(|v| ("maxLights".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

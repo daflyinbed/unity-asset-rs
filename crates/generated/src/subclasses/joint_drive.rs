@@ -40,3 +40,54 @@ impl crate::Parse for JointDrive {
         })
     }
 }
+
+impl crate::ToValue for JointDrive {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            crate::opt_field("mode", &self.mode),
+            Some((
+                "positionSpring".to_string(),
+                self.position_spring.to_value(),
+            )),
+            Some((
+                "positionDamper".to_string(),
+                self.position_damper.to_value(),
+            )),
+            Some(("maximumForce".to_string(), self.maximum_force.to_value())),
+            crate::opt_field("useAcceleration", &self.use_acceleration),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "mode" => (self.mode).inspect_value(path, offset, limit),
+                "positionSpring" => (self.position_spring).inspect_value(path, offset, limit),
+                "positionDamper" => (self.position_damper).inspect_value(path, offset, limit),
+                "maximumForce" => (self.maximum_force).inspect_value(path, offset, limit),
+                "useAcceleration" => (self.use_acceleration).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.mode).inspect_value(path, offset, limit)).map(|v| ("mode".to_string(), v)),
+            ((self.position_spring).inspect_value(path, offset, limit))
+                .map(|v| ("positionSpring".to_string(), v)),
+            ((self.position_damper).inspect_value(path, offset, limit))
+                .map(|v| ("positionDamper".to_string(), v)),
+            ((self.maximum_force).inspect_value(path, offset, limit))
+                .map(|v| ("maximumForce".to_string(), v)),
+            ((self.use_acceleration).inspect_value(path, offset, limit))
+                .map(|v| ("useAcceleration".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

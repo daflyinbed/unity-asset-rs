@@ -22,6 +22,21 @@ impl crate::Parse for ExpressionOpVariant {
     }
 }
 
+impl crate::ToValue for ExpressionOpVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V6000_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_5(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：ExpressionValueIndexVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum ExpressionValueIndexVariant {
@@ -40,6 +55,21 @@ impl crate::Parse for ExpressionValueIndexVariant {
         } else {
             let v = rdr.read_i32()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for ExpressionValueIndexVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V6000_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_5(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -98,5 +128,66 @@ impl crate::Parse for Expression {
             jmp_code,
             data_3: data_3.unwrap(),
         })
+    }
+}
+
+impl crate::ToValue for Expression {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("op".to_string(), self.op.to_value())),
+            Some(("valueIndex".to_string(), self.value_index.to_value())),
+            crate::opt_field("dataType", &self.data_type),
+            Some(("data[0]".to_string(), self.data_0.to_value())),
+            crate::opt_field("dataSize", &self.data_size),
+            Some(("data[1]".to_string(), self.data_1.to_value())),
+            crate::opt_field("scalarSwitchCase", &self.scalar_switch_case),
+            Some(("data[2]".to_string(), self.data_2.to_value())),
+            crate::opt_field("jmpCode", &self.jmp_code),
+            Some(("data[3]".to_string(), self.data_3.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "op" => (self.op).inspect_value(path, offset, limit),
+                "valueIndex" => (self.value_index).inspect_value(path, offset, limit),
+                "dataType" => (self.data_type).inspect_value(path, offset, limit),
+                "data[0]" => (self.data_0).inspect_value(path, offset, limit),
+                "dataSize" => (self.data_size).inspect_value(path, offset, limit),
+                "data[1]" => (self.data_1).inspect_value(path, offset, limit),
+                "scalarSwitchCase" => (self.scalar_switch_case).inspect_value(path, offset, limit),
+                "data[2]" => (self.data_2).inspect_value(path, offset, limit),
+                "jmpCode" => (self.jmp_code).inspect_value(path, offset, limit),
+                "data[3]" => (self.data_3).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.op).inspect_value(path, offset, limit)).map(|v| ("op".to_string(), v)),
+            ((self.value_index).inspect_value(path, offset, limit))
+                .map(|v| ("valueIndex".to_string(), v)),
+            ((self.data_type).inspect_value(path, offset, limit))
+                .map(|v| ("dataType".to_string(), v)),
+            ((self.data_0).inspect_value(path, offset, limit)).map(|v| ("data[0]".to_string(), v)),
+            ((self.data_size).inspect_value(path, offset, limit))
+                .map(|v| ("dataSize".to_string(), v)),
+            ((self.data_1).inspect_value(path, offset, limit)).map(|v| ("data[1]".to_string(), v)),
+            ((self.scalar_switch_case).inspect_value(path, offset, limit))
+                .map(|v| ("scalarSwitchCase".to_string(), v)),
+            ((self.data_2).inspect_value(path, offset, limit)).map(|v| ("data[2]".to_string(), v)),
+            ((self.jmp_code).inspect_value(path, offset, limit))
+                .map(|v| ("jmpCode".to_string(), v)),
+            ((self.data_3).inspect_value(path, offset, limit)).map(|v| ("data[3]".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

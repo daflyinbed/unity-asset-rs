@@ -54,3 +54,53 @@ impl crate::Parse for SpriteBone {
         })
     }
 }
+
+impl crate::ToValue for SpriteBone {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("name".to_string(), self.name.to_value())),
+            Some(("position".to_string(), self.position.to_value())),
+            crate::opt_field("guid", &self.guid),
+            Some(("rotation".to_string(), self.rotation.to_value())),
+            Some(("length".to_string(), self.length.to_value())),
+            Some(("parentId".to_string(), self.parent_id.to_value())),
+            crate::opt_field("color", &self.color),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "name" => (self.name).inspect_value(path, offset, limit),
+                "position" => (self.position).inspect_value(path, offset, limit),
+                "guid" => (self.guid).inspect_value(path, offset, limit),
+                "rotation" => (self.rotation).inspect_value(path, offset, limit),
+                "length" => (self.length).inspect_value(path, offset, limit),
+                "parentId" => (self.parent_id).inspect_value(path, offset, limit),
+                "color" => (self.color).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.name).inspect_value(path, offset, limit)).map(|v| ("name".to_string(), v)),
+            ((self.position).inspect_value(path, offset, limit))
+                .map(|v| ("position".to_string(), v)),
+            ((self.guid).inspect_value(path, offset, limit)).map(|v| ("guid".to_string(), v)),
+            ((self.rotation).inspect_value(path, offset, limit))
+                .map(|v| ("rotation".to_string(), v)),
+            ((self.length).inspect_value(path, offset, limit)).map(|v| ("length".to_string(), v)),
+            ((self.parent_id).inspect_value(path, offset, limit))
+                .map(|v| ("parentId".to_string(), v)),
+            ((self.color).inspect_value(path, offset, limit)).map(|v| ("color".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

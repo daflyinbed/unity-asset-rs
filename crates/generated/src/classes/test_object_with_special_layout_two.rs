@@ -23,3 +23,40 @@ impl crate::Parse for TestObjectWithSpecialLayoutTwo {
         })
     }
 }
+
+impl crate::ToValue for TestObjectWithSpecialLayoutTwo {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some((
+                "differentLayout".to_string(),
+                self.different_layout.to_value(),
+            )),
+            Some(("sameLayout".to_string(), self.same_layout.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "differentLayout" => (self.different_layout).inspect_value(path, offset, limit),
+                "sameLayout" => (self.same_layout).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.different_layout).inspect_value(path, offset, limit))
+                .map(|v| ("differentLayout".to_string(), v)),
+            ((self.same_layout).inspect_value(path, offset, limit))
+                .map(|v| ("sameLayout".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

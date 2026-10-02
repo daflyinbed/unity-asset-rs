@@ -35,3 +35,37 @@ impl crate::Parse for PhysicsShapeGroup2D {
         })
     }
 }
+
+impl crate::ToValue for PhysicsShapeGroup2D {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Shapes".to_string(), self.m_shapes.to_value())),
+            Some(("m_Vertices".to_string(), self.m_vertices.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Shapes" => (self.m_shapes).inspect_value(path, offset, limit),
+                "m_Vertices" => (self.m_vertices).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_shapes).inspect_value(path, offset, limit))
+                .map(|v| ("m_Shapes".to_string(), v)),
+            ((self.m_vertices).inspect_value(path, offset, limit))
+                .map(|v| ("m_Vertices".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

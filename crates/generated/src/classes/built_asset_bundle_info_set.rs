@@ -51,6 +51,21 @@ impl crate::Parse for BuiltAssetBundleInfoSetMExternalObjectsVariant {
     }
 }
 
+impl crate::ToValue for BuiltAssetBundleInfoSetMExternalObjectsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2019_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2019_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：BuiltAssetBundleInfoSetMFlipHorizontalVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum BuiltAssetBundleInfoSetMFlipHorizontalVariant {
@@ -75,6 +90,23 @@ impl crate::Parse for BuiltAssetBundleInfoSetMFlipHorizontalVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for BuiltAssetBundleInfoSetMFlipHorizontalVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_2(v) => v.to_value(),
+            Self::V2017_2_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_2(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_2_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -119,6 +151,21 @@ impl crate::Parse for BuiltAssetBundleInfoSetMTargetSettingsVariant {
                     .collect::<Result<Vec<_>, _>>()
             })?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for BuiltAssetBundleInfoSetMTargetSettingsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2023_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2023_3(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -475,5 +522,177 @@ impl crate::Parse for BuiltAssetBundleInfoSet {
             m_source_audio_sample_rate,
             m_pixel_aspect_ratio_denominator,
         })
+    }
+}
+
+impl crate::ToValue for BuiltAssetBundleInfoSet {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            crate::opt_field("bundleInfos", &self.bundle_infos),
+            crate::opt_field("m_Name", &self.m_name),
+            crate::opt_field("m_UseLegacyImporter", &self.m_use_legacy_importer),
+            crate::opt_field("m_ExternalObjects", &self.m_external_objects),
+            crate::opt_field("m_Quality", &self.m_quality),
+            crate::opt_field("m_UsedFileIDs", &self.m_used_file_i_ds),
+            crate::opt_field("m_IsColorLinear", &self.m_is_color_linear),
+            crate::opt_field("m_FrameRange", &self.m_frame_range),
+            crate::opt_field("m_OriginalWidth", &self.m_original_width),
+            crate::opt_field("m_StartFrame", &self.m_start_frame),
+            crate::opt_field("m_OriginalHeight", &self.m_original_height),
+            crate::opt_field("m_EndFrame", &self.m_end_frame),
+            crate::opt_field("m_ColorSpace", &self.m_color_space),
+            crate::opt_field("m_Deinterlace", &self.m_deinterlace),
+            crate::opt_field("m_EncodeAlpha", &self.m_encode_alpha),
+            crate::opt_field("m_FrameCount", &self.m_frame_count),
+            crate::opt_field("m_FlipVertical", &self.m_flip_vertical),
+            crate::opt_field("m_FrameRate", &self.m_frame_rate),
+            crate::opt_field("m_FlipHorizontal", &self.m_flip_horizontal),
+            crate::opt_field("m_ImportAudio", &self.m_import_audio),
+            crate::opt_field("m_TargetSettings", &self.m_target_settings),
+            crate::opt_field("m_SourceFileSize", &self.m_source_file_size),
+            crate::opt_field("m_Output", &self.m_output),
+            crate::opt_field("m_UserData", &self.m_user_data),
+            crate::opt_field("m_SourceHasAlpha", &self.m_source_has_alpha),
+            crate::opt_field("m_AssetBundleName", &self.m_asset_bundle_name),
+            crate::opt_field("m_AssetBundleVariant", &self.m_asset_bundle_variant),
+            crate::opt_field(
+                "m_SourceAudioChannelCount",
+                &self.m_source_audio_channel_count,
+            ),
+            crate::opt_field(
+                "m_PixelAspectRatioNumerator",
+                &self.m_pixel_aspect_ratio_numerator,
+            ),
+            crate::opt_field("m_SourceAudioSampleRate", &self.m_source_audio_sample_rate),
+            crate::opt_field(
+                "m_PixelAspectRatioDenominator",
+                &self.m_pixel_aspect_ratio_denominator,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "bundleInfos" => (self.bundle_infos).inspect_value(path, offset, limit),
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_UseLegacyImporter" => {
+                    (self.m_use_legacy_importer).inspect_value(path, offset, limit)
+                }
+                "m_ExternalObjects" => (self.m_external_objects).inspect_value(path, offset, limit),
+                "m_Quality" => (self.m_quality).inspect_value(path, offset, limit),
+                "m_UsedFileIDs" => (self.m_used_file_i_ds).inspect_value(path, offset, limit),
+                "m_IsColorLinear" => (self.m_is_color_linear).inspect_value(path, offset, limit),
+                "m_FrameRange" => (self.m_frame_range).inspect_value(path, offset, limit),
+                "m_OriginalWidth" => (self.m_original_width).inspect_value(path, offset, limit),
+                "m_StartFrame" => (self.m_start_frame).inspect_value(path, offset, limit),
+                "m_OriginalHeight" => (self.m_original_height).inspect_value(path, offset, limit),
+                "m_EndFrame" => (self.m_end_frame).inspect_value(path, offset, limit),
+                "m_ColorSpace" => (self.m_color_space).inspect_value(path, offset, limit),
+                "m_Deinterlace" => (self.m_deinterlace).inspect_value(path, offset, limit),
+                "m_EncodeAlpha" => (self.m_encode_alpha).inspect_value(path, offset, limit),
+                "m_FrameCount" => (self.m_frame_count).inspect_value(path, offset, limit),
+                "m_FlipVertical" => (self.m_flip_vertical).inspect_value(path, offset, limit),
+                "m_FrameRate" => (self.m_frame_rate).inspect_value(path, offset, limit),
+                "m_FlipHorizontal" => (self.m_flip_horizontal).inspect_value(path, offset, limit),
+                "m_ImportAudio" => (self.m_import_audio).inspect_value(path, offset, limit),
+                "m_TargetSettings" => (self.m_target_settings).inspect_value(path, offset, limit),
+                "m_SourceFileSize" => (self.m_source_file_size).inspect_value(path, offset, limit),
+                "m_Output" => (self.m_output).inspect_value(path, offset, limit),
+                "m_UserData" => (self.m_user_data).inspect_value(path, offset, limit),
+                "m_SourceHasAlpha" => (self.m_source_has_alpha).inspect_value(path, offset, limit),
+                "m_AssetBundleName" => {
+                    (self.m_asset_bundle_name).inspect_value(path, offset, limit)
+                }
+                "m_AssetBundleVariant" => {
+                    (self.m_asset_bundle_variant).inspect_value(path, offset, limit)
+                }
+                "m_SourceAudioChannelCount" => {
+                    (self.m_source_audio_channel_count).inspect_value(path, offset, limit)
+                }
+                "m_PixelAspectRatioNumerator" => {
+                    (self.m_pixel_aspect_ratio_numerator).inspect_value(path, offset, limit)
+                }
+                "m_SourceAudioSampleRate" => {
+                    (self.m_source_audio_sample_rate).inspect_value(path, offset, limit)
+                }
+                "m_PixelAspectRatioDenominator" => {
+                    (self.m_pixel_aspect_ratio_denominator).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.bundle_infos).inspect_value(path, offset, limit))
+                .map(|v| ("bundleInfos".to_string(), v)),
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_use_legacy_importer).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseLegacyImporter".to_string(), v)),
+            ((self.m_external_objects).inspect_value(path, offset, limit))
+                .map(|v| ("m_ExternalObjects".to_string(), v)),
+            ((self.m_quality).inspect_value(path, offset, limit))
+                .map(|v| ("m_Quality".to_string(), v)),
+            ((self.m_used_file_i_ds).inspect_value(path, offset, limit))
+                .map(|v| ("m_UsedFileIDs".to_string(), v)),
+            ((self.m_is_color_linear).inspect_value(path, offset, limit))
+                .map(|v| ("m_IsColorLinear".to_string(), v)),
+            ((self.m_frame_range).inspect_value(path, offset, limit))
+                .map(|v| ("m_FrameRange".to_string(), v)),
+            ((self.m_original_width).inspect_value(path, offset, limit))
+                .map(|v| ("m_OriginalWidth".to_string(), v)),
+            ((self.m_start_frame).inspect_value(path, offset, limit))
+                .map(|v| ("m_StartFrame".to_string(), v)),
+            ((self.m_original_height).inspect_value(path, offset, limit))
+                .map(|v| ("m_OriginalHeight".to_string(), v)),
+            ((self.m_end_frame).inspect_value(path, offset, limit))
+                .map(|v| ("m_EndFrame".to_string(), v)),
+            ((self.m_color_space).inspect_value(path, offset, limit))
+                .map(|v| ("m_ColorSpace".to_string(), v)),
+            ((self.m_deinterlace).inspect_value(path, offset, limit))
+                .map(|v| ("m_Deinterlace".to_string(), v)),
+            ((self.m_encode_alpha).inspect_value(path, offset, limit))
+                .map(|v| ("m_EncodeAlpha".to_string(), v)),
+            ((self.m_frame_count).inspect_value(path, offset, limit))
+                .map(|v| ("m_FrameCount".to_string(), v)),
+            ((self.m_flip_vertical).inspect_value(path, offset, limit))
+                .map(|v| ("m_FlipVertical".to_string(), v)),
+            ((self.m_frame_rate).inspect_value(path, offset, limit))
+                .map(|v| ("m_FrameRate".to_string(), v)),
+            ((self.m_flip_horizontal).inspect_value(path, offset, limit))
+                .map(|v| ("m_FlipHorizontal".to_string(), v)),
+            ((self.m_import_audio).inspect_value(path, offset, limit))
+                .map(|v| ("m_ImportAudio".to_string(), v)),
+            ((self.m_target_settings).inspect_value(path, offset, limit))
+                .map(|v| ("m_TargetSettings".to_string(), v)),
+            ((self.m_source_file_size).inspect_value(path, offset, limit))
+                .map(|v| ("m_SourceFileSize".to_string(), v)),
+            ((self.m_output).inspect_value(path, offset, limit))
+                .map(|v| ("m_Output".to_string(), v)),
+            ((self.m_user_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_UserData".to_string(), v)),
+            ((self.m_source_has_alpha).inspect_value(path, offset, limit))
+                .map(|v| ("m_SourceHasAlpha".to_string(), v)),
+            ((self.m_asset_bundle_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_AssetBundleName".to_string(), v)),
+            ((self.m_asset_bundle_variant).inspect_value(path, offset, limit))
+                .map(|v| ("m_AssetBundleVariant".to_string(), v)),
+            ((self.m_source_audio_channel_count).inspect_value(path, offset, limit))
+                .map(|v| ("m_SourceAudioChannelCount".to_string(), v)),
+            ((self.m_pixel_aspect_ratio_numerator).inspect_value(path, offset, limit))
+                .map(|v| ("m_PixelAspectRatioNumerator".to_string(), v)),
+            ((self.m_source_audio_sample_rate).inspect_value(path, offset, limit))
+                .map(|v| ("m_SourceAudioSampleRate".to_string(), v)),
+            ((self.m_pixel_aspect_ratio_denominator).inspect_value(path, offset, limit))
+                .map(|v| ("m_PixelAspectRatioDenominator".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

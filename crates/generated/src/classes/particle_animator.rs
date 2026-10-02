@@ -64,3 +64,120 @@ impl crate::Parse for ParticleAnimator {
         })
     }
 }
+
+impl crate::ToValue for ParticleAnimator {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some((
+                "Does Animate Color?".to_string(),
+                self.does_animate_color.to_value(),
+            )),
+            Some((
+                "colorAnimation[0]".to_string(),
+                self.color_animation_0.to_value(),
+            )),
+            Some((
+                "colorAnimation[1]".to_string(),
+                self.color_animation_1.to_value(),
+            )),
+            Some((
+                "colorAnimation[2]".to_string(),
+                self.color_animation_2.to_value(),
+            )),
+            Some((
+                "colorAnimation[3]".to_string(),
+                self.color_animation_3.to_value(),
+            )),
+            Some((
+                "colorAnimation[4]".to_string(),
+                self.color_animation_4.to_value(),
+            )),
+            Some((
+                "worldRotationAxis".to_string(),
+                self.world_rotation_axis.to_value(),
+            )),
+            Some((
+                "localRotationAxis".to_string(),
+                self.local_rotation_axis.to_value(),
+            )),
+            Some(("sizeGrow".to_string(), self.size_grow.to_value())),
+            Some(("rndForce".to_string(), self.rnd_force.to_value())),
+            Some(("force".to_string(), self.force.to_value())),
+            Some(("damping".to_string(), self.damping.to_value())),
+            Some((
+                "stopSimulation".to_string(),
+                self.stop_simulation.to_value(),
+            )),
+            Some(("autodestruct".to_string(), self.autodestruct.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "Does Animate Color?" => {
+                    (self.does_animate_color).inspect_value(path, offset, limit)
+                }
+                "colorAnimation[0]" => (self.color_animation_0).inspect_value(path, offset, limit),
+                "colorAnimation[1]" => (self.color_animation_1).inspect_value(path, offset, limit),
+                "colorAnimation[2]" => (self.color_animation_2).inspect_value(path, offset, limit),
+                "colorAnimation[3]" => (self.color_animation_3).inspect_value(path, offset, limit),
+                "colorAnimation[4]" => (self.color_animation_4).inspect_value(path, offset, limit),
+                "worldRotationAxis" => {
+                    (self.world_rotation_axis).inspect_value(path, offset, limit)
+                }
+                "localRotationAxis" => {
+                    (self.local_rotation_axis).inspect_value(path, offset, limit)
+                }
+                "sizeGrow" => (self.size_grow).inspect_value(path, offset, limit),
+                "rndForce" => (self.rnd_force).inspect_value(path, offset, limit),
+                "force" => (self.force).inspect_value(path, offset, limit),
+                "damping" => (self.damping).inspect_value(path, offset, limit),
+                "stopSimulation" => (self.stop_simulation).inspect_value(path, offset, limit),
+                "autodestruct" => (self.autodestruct).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.does_animate_color).inspect_value(path, offset, limit))
+                .map(|v| ("Does Animate Color?".to_string(), v)),
+            ((self.color_animation_0).inspect_value(path, offset, limit))
+                .map(|v| ("colorAnimation[0]".to_string(), v)),
+            ((self.color_animation_1).inspect_value(path, offset, limit))
+                .map(|v| ("colorAnimation[1]".to_string(), v)),
+            ((self.color_animation_2).inspect_value(path, offset, limit))
+                .map(|v| ("colorAnimation[2]".to_string(), v)),
+            ((self.color_animation_3).inspect_value(path, offset, limit))
+                .map(|v| ("colorAnimation[3]".to_string(), v)),
+            ((self.color_animation_4).inspect_value(path, offset, limit))
+                .map(|v| ("colorAnimation[4]".to_string(), v)),
+            ((self.world_rotation_axis).inspect_value(path, offset, limit))
+                .map(|v| ("worldRotationAxis".to_string(), v)),
+            ((self.local_rotation_axis).inspect_value(path, offset, limit))
+                .map(|v| ("localRotationAxis".to_string(), v)),
+            ((self.size_grow).inspect_value(path, offset, limit))
+                .map(|v| ("sizeGrow".to_string(), v)),
+            ((self.rnd_force).inspect_value(path, offset, limit))
+                .map(|v| ("rndForce".to_string(), v)),
+            ((self.force).inspect_value(path, offset, limit)).map(|v| ("force".to_string(), v)),
+            ((self.damping).inspect_value(path, offset, limit)).map(|v| ("damping".to_string(), v)),
+            ((self.stop_simulation).inspect_value(path, offset, limit))
+                .map(|v| ("stopSimulation".to_string(), v)),
+            ((self.autodestruct).inspect_value(path, offset, limit))
+                .map(|v| ("autodestruct".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

@@ -34,6 +34,21 @@ impl crate::Parse for BuildStepInfoMessagesVariant {
         }
     }
 }
+
+impl crate::ToValue for BuildStepInfoMessagesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct BuildStepInfo {
     pub step_name: String,
@@ -69,5 +84,50 @@ impl crate::Parse for BuildStepInfo {
             messages: messages.unwrap(),
             depth,
         })
+    }
+}
+
+impl crate::ToValue for BuildStepInfo {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("stepName".to_string(), self.step_name.to_value())),
+            crate::opt_field("duration", &self.duration),
+            crate::opt_field("durationTicks", &self.duration_ticks),
+            Some(("messages".to_string(), self.messages.to_value())),
+            crate::opt_field("depth", &self.depth),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "stepName" => (self.step_name).inspect_value(path, offset, limit),
+                "duration" => (self.duration).inspect_value(path, offset, limit),
+                "durationTicks" => (self.duration_ticks).inspect_value(path, offset, limit),
+                "messages" => (self.messages).inspect_value(path, offset, limit),
+                "depth" => (self.depth).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.step_name).inspect_value(path, offset, limit))
+                .map(|v| ("stepName".to_string(), v)),
+            ((self.duration).inspect_value(path, offset, limit))
+                .map(|v| ("duration".to_string(), v)),
+            ((self.duration_ticks).inspect_value(path, offset, limit))
+                .map(|v| ("durationTicks".to_string(), v)),
+            ((self.messages).inspect_value(path, offset, limit))
+                .map(|v| ("messages".to_string(), v)),
+            ((self.depth).inspect_value(path, offset, limit)).map(|v| ("depth".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

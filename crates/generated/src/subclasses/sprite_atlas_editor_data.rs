@@ -100,3 +100,85 @@ impl crate::Parse for SpriteAtlasEditorData {
         })
     }
 }
+
+impl crate::ToValue for SpriteAtlasEditorData {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some((
+                "textureSettings".to_string(),
+                self.texture_settings.to_value(),
+            )),
+            Some((
+                "platformSettings".to_string(),
+                self.platform_settings.to_value(),
+            )),
+            Some((
+                "packingSettings".to_string(),
+                self.packing_settings.to_value(),
+            )),
+            Some((
+                "variantMultiplier".to_string(),
+                self.variant_multiplier.to_value(),
+            )),
+            crate::opt_field("secondaryTextureSettings", &self.secondary_texture_settings),
+            Some(("packables".to_string(), self.packables.to_value())),
+            crate::opt_field("totalSpriteSurfaceArea", &self.total_sprite_surface_area),
+            Some(("bindAsDefault".to_string(), self.bind_as_default.to_value())),
+            Some(("isAtlasV2".to_string(), self.is_atlas_v2.to_value())),
+            Some(("cachedData".to_string(), self.cached_data.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "textureSettings" => (self.texture_settings).inspect_value(path, offset, limit),
+                "platformSettings" => (self.platform_settings).inspect_value(path, offset, limit),
+                "packingSettings" => (self.packing_settings).inspect_value(path, offset, limit),
+                "variantMultiplier" => (self.variant_multiplier).inspect_value(path, offset, limit),
+                "secondaryTextureSettings" => {
+                    (self.secondary_texture_settings).inspect_value(path, offset, limit)
+                }
+                "packables" => (self.packables).inspect_value(path, offset, limit),
+                "totalSpriteSurfaceArea" => {
+                    (self.total_sprite_surface_area).inspect_value(path, offset, limit)
+                }
+                "bindAsDefault" => (self.bind_as_default).inspect_value(path, offset, limit),
+                "isAtlasV2" => (self.is_atlas_v2).inspect_value(path, offset, limit),
+                "cachedData" => (self.cached_data).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.texture_settings).inspect_value(path, offset, limit))
+                .map(|v| ("textureSettings".to_string(), v)),
+            ((self.platform_settings).inspect_value(path, offset, limit))
+                .map(|v| ("platformSettings".to_string(), v)),
+            ((self.packing_settings).inspect_value(path, offset, limit))
+                .map(|v| ("packingSettings".to_string(), v)),
+            ((self.variant_multiplier).inspect_value(path, offset, limit))
+                .map(|v| ("variantMultiplier".to_string(), v)),
+            ((self.secondary_texture_settings).inspect_value(path, offset, limit))
+                .map(|v| ("secondaryTextureSettings".to_string(), v)),
+            ((self.packables).inspect_value(path, offset, limit))
+                .map(|v| ("packables".to_string(), v)),
+            ((self.total_sprite_surface_area).inspect_value(path, offset, limit))
+                .map(|v| ("totalSpriteSurfaceArea".to_string(), v)),
+            ((self.bind_as_default).inspect_value(path, offset, limit))
+                .map(|v| ("bindAsDefault".to_string(), v)),
+            ((self.is_atlas_v2).inspect_value(path, offset, limit))
+                .map(|v| ("isAtlasV2".to_string(), v)),
+            ((self.cached_data).inspect_value(path, offset, limit))
+                .map(|v| ("cachedData".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

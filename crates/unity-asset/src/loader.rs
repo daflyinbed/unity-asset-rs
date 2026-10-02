@@ -401,6 +401,7 @@ impl Diagnostic {
                 path_id,
                 class_id,
                 error,
+                ..
             } => Self::error(
                 format!("object 失败 col={collection} pid={path_id} cid={class_id}: {error}"),
                 DiagnosticKind::Object,

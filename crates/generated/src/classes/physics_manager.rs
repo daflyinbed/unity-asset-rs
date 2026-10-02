@@ -26,6 +26,21 @@ impl crate::Parse for PhysicsManagerMDefaultMaterialVariant {
     }
 }
 
+impl crate::ToValue for PhysicsManagerMDefaultMaterialVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2023_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2023_3(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：PhysicsManagerMRaycastsHitTriggersVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum PhysicsManagerMRaycastsHitTriggersVariant {
@@ -45,6 +60,21 @@ impl crate::Parse for PhysicsManagerMRaycastsHitTriggersVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for PhysicsManagerMRaycastsHitTriggersVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_0(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_0(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -73,6 +103,23 @@ impl crate::Parse for PhysicsManagerMEnableAdaptiveForceVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for PhysicsManagerMEnableAdaptiveForceVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_5(v) => v.to_value(),
+            Self::V2017_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_5(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_3(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -110,6 +157,21 @@ impl crate::Parse for PhysicsManagerMLayerCollisionMatrixVariant {
     }
 }
 
+impl crate::ToValue for PhysicsManagerMLayerCollisionMatrixVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：PhysicsManagerMClothInterCollisionStiffnessVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum PhysicsManagerMClothInterCollisionStiffnessVariant {
@@ -129,6 +191,21 @@ impl crate::Parse for PhysicsManagerMClothInterCollisionStiffnessVariant {
         } else {
             let v = rdr.read_f32()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for PhysicsManagerMClothInterCollisionStiffnessVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2023_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2023_1(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -169,6 +246,27 @@ impl crate::Parse for PhysicsManagerMBroadphaseTypeVariant {
     }
 }
 
+impl crate::ToValue for PhysicsManagerMBroadphaseTypeVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2023_1(v) => v.to_value(),
+            Self::V6000_0_59(v) => v.to_value(),
+            Self::V6000_1(v) => v.to_value(),
+            Self::V6000_2_6(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2023_1(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_0_59(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_1(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_2_6(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：PhysicsManagerMWorldSubdivisionsVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum PhysicsManagerMWorldSubdivisionsVariant {
@@ -188,6 +286,21 @@ impl crate::Parse for PhysicsManagerMWorldSubdivisionsVariant {
         } else {
             let v = rdr.read_i32()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for PhysicsManagerMWorldSubdivisionsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V6000_0_59(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_0_59(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -215,6 +328,23 @@ impl crate::Parse for PhysicsManagerMEnableUnifiedHeightmapsVariant {
         } else {
             let v = rdr.read_bool()?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for PhysicsManagerMEnableUnifiedHeightmapsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2019_1(v) => v.to_value(),
+            Self::V2021_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2019_1(v) => (v).inspect_value(path, offset, limit),
+            Self::V2021_2(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -247,6 +377,25 @@ impl crate::Parse for PhysicsManagerMImprovedPatchFrictionVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for PhysicsManagerMImprovedPatchFrictionVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V6000_0_50(v) => v.to_value(),
+            Self::V6000_1(v) => v.to_value(),
+            Self::V6000_1_4(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_0_50(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_1(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_1_4(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -1007,5 +1156,351 @@ impl crate::Parse for PhysicsManager {
             m_log_verbosity,
             m_incremental_static_broadphase,
         })
+    }
+}
+
+impl crate::ToValue for PhysicsManager {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Gravity".to_string(), self.m_gravity.to_value())),
+            Some((
+                "m_DefaultMaterial".to_string(),
+                self.m_default_material.to_value(),
+            )),
+            Some((
+                "m_BounceThreshold".to_string(),
+                self.m_bounce_threshold.to_value(),
+            )),
+            crate::opt_field("m_SleepVelocity", &self.m_sleep_velocity),
+            crate::opt_field("m_SleepThreshold", &self.m_sleep_threshold),
+            crate::opt_field(
+                "m_DefaultMaxDepenetrationVelocity",
+                &self.m_default_max_depenetration_velocity,
+            ),
+            crate::opt_field("m_SleepAngularVelocity", &self.m_sleep_angular_velocity),
+            crate::opt_field("m_DefaultContactOffset", &self.m_default_contact_offset),
+            crate::opt_field("m_MaxAngularVelocity", &self.m_max_angular_velocity),
+            crate::opt_field("m_SolverIterationCount", &self.m_solver_iteration_count),
+            crate::opt_field(
+                "m_DefaultSolverIterations",
+                &self.m_default_solver_iterations,
+            ),
+            crate::opt_field(
+                "m_MinPenetrationForPenalty",
+                &self.m_min_penetration_for_penalty,
+            ),
+            crate::opt_field("m_RaycastsHitTriggers", &self.m_raycasts_hit_triggers),
+            crate::opt_field("m_QueriesHitTriggers", &self.m_queries_hit_triggers),
+            crate::opt_field(
+                "m_SolverVelocityIterations",
+                &self.m_solver_velocity_iterations,
+            ),
+            crate::opt_field(
+                "m_DefaultSolverVelocityIterations",
+                &self.m_default_solver_velocity_iterations,
+            ),
+            crate::opt_field("m_EnableAdaptiveForce", &self.m_enable_adaptive_force),
+            crate::opt_field("m_QueriesHitBackfaces", &self.m_queries_hit_backfaces),
+            Some((
+                "m_LayerCollisionMatrix".to_string(),
+                self.m_layer_collision_matrix.to_value(),
+            )),
+            crate::opt_field("m_EnablePCM", &self.m_enable_pcm),
+            crate::opt_field(
+                "m_ClothInterCollisionDistance",
+                &self.m_cloth_inter_collision_distance,
+            ),
+            crate::opt_field(
+                "m_ClothInterCollisionStiffness",
+                &self.m_cloth_inter_collision_stiffness,
+            ),
+            crate::opt_field("m_AutoSimulation", &self.m_auto_simulation),
+            crate::opt_field("m_ContactsGeneration", &self.m_contacts_generation),
+            crate::opt_field("m_AutoSyncTransforms", &self.m_auto_sync_transforms),
+            crate::opt_field("m_SimulationMode", &self.m_simulation_mode),
+            crate::opt_field(
+                "m_ClothInterCollisionSettingsToggle",
+                &self.m_cloth_inter_collision_settings_toggle,
+            ),
+            crate::opt_field(
+                "m_ReuseCollisionCallbacks",
+                &self.m_reuse_collision_callbacks,
+            ),
+            crate::opt_field("m_ContactPairsMode", &self.m_contact_pairs_mode),
+            crate::opt_field(
+                "m_InvokeCollisionCallbacks",
+                &self.m_invoke_collision_callbacks,
+            ),
+            crate::opt_field("m_BroadphaseType", &self.m_broadphase_type),
+            crate::opt_field("m_ClothGravity", &self.m_cloth_gravity),
+            crate::opt_field("m_WorldBounds", &self.m_world_bounds),
+            crate::opt_field("m_WorldSubdivisions", &self.m_world_subdivisions),
+            crate::opt_field("m_FrictionType", &self.m_friction_type),
+            crate::opt_field(
+                "m_EnableEnhancedDeterminism",
+                &self.m_enable_enhanced_determinism,
+            ),
+            crate::opt_field(
+                "m_EnableUnifiedHeightmaps",
+                &self.m_enable_unified_heightmaps,
+            ),
+            crate::opt_field("m_ImprovedPatchFriction", &self.m_improved_patch_friction),
+            crate::opt_field("m_SolverType", &self.m_solver_type),
+            crate::opt_field(
+                "m_GenerateOnTriggerStayEvents",
+                &self.m_generate_on_trigger_stay_events,
+            ),
+            crate::opt_field(
+                "m_DefaultMaxAngularSpeed",
+                &self.m_default_max_angular_speed,
+            ),
+            crate::opt_field(
+                "m_ScratchBufferChunkCount",
+                &self.m_scratch_buffer_chunk_count,
+            ),
+            crate::opt_field("m_CurrentBackendId", &self.m_current_backend_id),
+            crate::opt_field("m_FastMotionThreshold", &self.m_fast_motion_threshold),
+            crate::opt_field(
+                "m_SceneBuffersReleaseInterval",
+                &self.m_scene_buffers_release_interval,
+            ),
+            crate::opt_field("m_ReleaseSceneBuffers", &self.m_release_scene_buffers),
+            crate::opt_field("m_LogVerbosity", &self.m_log_verbosity),
+            crate::opt_field(
+                "m_IncrementalStaticBroadphase",
+                &self.m_incremental_static_broadphase,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Gravity" => (self.m_gravity).inspect_value(path, offset, limit),
+                "m_DefaultMaterial" => (self.m_default_material).inspect_value(path, offset, limit),
+                "m_BounceThreshold" => (self.m_bounce_threshold).inspect_value(path, offset, limit),
+                "m_SleepVelocity" => (self.m_sleep_velocity).inspect_value(path, offset, limit),
+                "m_SleepThreshold" => (self.m_sleep_threshold).inspect_value(path, offset, limit),
+                "m_DefaultMaxDepenetrationVelocity" => {
+                    (self.m_default_max_depenetration_velocity).inspect_value(path, offset, limit)
+                }
+                "m_SleepAngularVelocity" => {
+                    (self.m_sleep_angular_velocity).inspect_value(path, offset, limit)
+                }
+                "m_DefaultContactOffset" => {
+                    (self.m_default_contact_offset).inspect_value(path, offset, limit)
+                }
+                "m_MaxAngularVelocity" => {
+                    (self.m_max_angular_velocity).inspect_value(path, offset, limit)
+                }
+                "m_SolverIterationCount" => {
+                    (self.m_solver_iteration_count).inspect_value(path, offset, limit)
+                }
+                "m_DefaultSolverIterations" => {
+                    (self.m_default_solver_iterations).inspect_value(path, offset, limit)
+                }
+                "m_MinPenetrationForPenalty" => {
+                    (self.m_min_penetration_for_penalty).inspect_value(path, offset, limit)
+                }
+                "m_RaycastsHitTriggers" => {
+                    (self.m_raycasts_hit_triggers).inspect_value(path, offset, limit)
+                }
+                "m_QueriesHitTriggers" => {
+                    (self.m_queries_hit_triggers).inspect_value(path, offset, limit)
+                }
+                "m_SolverVelocityIterations" => {
+                    (self.m_solver_velocity_iterations).inspect_value(path, offset, limit)
+                }
+                "m_DefaultSolverVelocityIterations" => {
+                    (self.m_default_solver_velocity_iterations).inspect_value(path, offset, limit)
+                }
+                "m_EnableAdaptiveForce" => {
+                    (self.m_enable_adaptive_force).inspect_value(path, offset, limit)
+                }
+                "m_QueriesHitBackfaces" => {
+                    (self.m_queries_hit_backfaces).inspect_value(path, offset, limit)
+                }
+                "m_LayerCollisionMatrix" => {
+                    (self.m_layer_collision_matrix).inspect_value(path, offset, limit)
+                }
+                "m_EnablePCM" => (self.m_enable_pcm).inspect_value(path, offset, limit),
+                "m_ClothInterCollisionDistance" => {
+                    (self.m_cloth_inter_collision_distance).inspect_value(path, offset, limit)
+                }
+                "m_ClothInterCollisionStiffness" => {
+                    (self.m_cloth_inter_collision_stiffness).inspect_value(path, offset, limit)
+                }
+                "m_AutoSimulation" => (self.m_auto_simulation).inspect_value(path, offset, limit),
+                "m_ContactsGeneration" => {
+                    (self.m_contacts_generation).inspect_value(path, offset, limit)
+                }
+                "m_AutoSyncTransforms" => {
+                    (self.m_auto_sync_transforms).inspect_value(path, offset, limit)
+                }
+                "m_SimulationMode" => (self.m_simulation_mode).inspect_value(path, offset, limit),
+                "m_ClothInterCollisionSettingsToggle" => (self
+                    .m_cloth_inter_collision_settings_toggle)
+                    .inspect_value(path, offset, limit),
+                "m_ReuseCollisionCallbacks" => {
+                    (self.m_reuse_collision_callbacks).inspect_value(path, offset, limit)
+                }
+                "m_ContactPairsMode" => {
+                    (self.m_contact_pairs_mode).inspect_value(path, offset, limit)
+                }
+                "m_InvokeCollisionCallbacks" => {
+                    (self.m_invoke_collision_callbacks).inspect_value(path, offset, limit)
+                }
+                "m_BroadphaseType" => (self.m_broadphase_type).inspect_value(path, offset, limit),
+                "m_ClothGravity" => (self.m_cloth_gravity).inspect_value(path, offset, limit),
+                "m_WorldBounds" => (self.m_world_bounds).inspect_value(path, offset, limit),
+                "m_WorldSubdivisions" => {
+                    (self.m_world_subdivisions).inspect_value(path, offset, limit)
+                }
+                "m_FrictionType" => (self.m_friction_type).inspect_value(path, offset, limit),
+                "m_EnableEnhancedDeterminism" => {
+                    (self.m_enable_enhanced_determinism).inspect_value(path, offset, limit)
+                }
+                "m_EnableUnifiedHeightmaps" => {
+                    (self.m_enable_unified_heightmaps).inspect_value(path, offset, limit)
+                }
+                "m_ImprovedPatchFriction" => {
+                    (self.m_improved_patch_friction).inspect_value(path, offset, limit)
+                }
+                "m_SolverType" => (self.m_solver_type).inspect_value(path, offset, limit),
+                "m_GenerateOnTriggerStayEvents" => {
+                    (self.m_generate_on_trigger_stay_events).inspect_value(path, offset, limit)
+                }
+                "m_DefaultMaxAngularSpeed" => {
+                    (self.m_default_max_angular_speed).inspect_value(path, offset, limit)
+                }
+                "m_ScratchBufferChunkCount" => {
+                    (self.m_scratch_buffer_chunk_count).inspect_value(path, offset, limit)
+                }
+                "m_CurrentBackendId" => {
+                    (self.m_current_backend_id).inspect_value(path, offset, limit)
+                }
+                "m_FastMotionThreshold" => {
+                    (self.m_fast_motion_threshold).inspect_value(path, offset, limit)
+                }
+                "m_SceneBuffersReleaseInterval" => {
+                    (self.m_scene_buffers_release_interval).inspect_value(path, offset, limit)
+                }
+                "m_ReleaseSceneBuffers" => {
+                    (self.m_release_scene_buffers).inspect_value(path, offset, limit)
+                }
+                "m_LogVerbosity" => (self.m_log_verbosity).inspect_value(path, offset, limit),
+                "m_IncrementalStaticBroadphase" => {
+                    (self.m_incremental_static_broadphase).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_gravity).inspect_value(path, offset, limit))
+                .map(|v| ("m_Gravity".to_string(), v)),
+            ((self.m_default_material).inspect_value(path, offset, limit))
+                .map(|v| ("m_DefaultMaterial".to_string(), v)),
+            ((self.m_bounce_threshold).inspect_value(path, offset, limit))
+                .map(|v| ("m_BounceThreshold".to_string(), v)),
+            ((self.m_sleep_velocity).inspect_value(path, offset, limit))
+                .map(|v| ("m_SleepVelocity".to_string(), v)),
+            ((self.m_sleep_threshold).inspect_value(path, offset, limit))
+                .map(|v| ("m_SleepThreshold".to_string(), v)),
+            ((self.m_default_max_depenetration_velocity).inspect_value(path, offset, limit))
+                .map(|v| ("m_DefaultMaxDepenetrationVelocity".to_string(), v)),
+            ((self.m_sleep_angular_velocity).inspect_value(path, offset, limit))
+                .map(|v| ("m_SleepAngularVelocity".to_string(), v)),
+            ((self.m_default_contact_offset).inspect_value(path, offset, limit))
+                .map(|v| ("m_DefaultContactOffset".to_string(), v)),
+            ((self.m_max_angular_velocity).inspect_value(path, offset, limit))
+                .map(|v| ("m_MaxAngularVelocity".to_string(), v)),
+            ((self.m_solver_iteration_count).inspect_value(path, offset, limit))
+                .map(|v| ("m_SolverIterationCount".to_string(), v)),
+            ((self.m_default_solver_iterations).inspect_value(path, offset, limit))
+                .map(|v| ("m_DefaultSolverIterations".to_string(), v)),
+            ((self.m_min_penetration_for_penalty).inspect_value(path, offset, limit))
+                .map(|v| ("m_MinPenetrationForPenalty".to_string(), v)),
+            ((self.m_raycasts_hit_triggers).inspect_value(path, offset, limit))
+                .map(|v| ("m_RaycastsHitTriggers".to_string(), v)),
+            ((self.m_queries_hit_triggers).inspect_value(path, offset, limit))
+                .map(|v| ("m_QueriesHitTriggers".to_string(), v)),
+            ((self.m_solver_velocity_iterations).inspect_value(path, offset, limit))
+                .map(|v| ("m_SolverVelocityIterations".to_string(), v)),
+            ((self.m_default_solver_velocity_iterations).inspect_value(path, offset, limit))
+                .map(|v| ("m_DefaultSolverVelocityIterations".to_string(), v)),
+            ((self.m_enable_adaptive_force).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableAdaptiveForce".to_string(), v)),
+            ((self.m_queries_hit_backfaces).inspect_value(path, offset, limit))
+                .map(|v| ("m_QueriesHitBackfaces".to_string(), v)),
+            ((self.m_layer_collision_matrix).inspect_value(path, offset, limit))
+                .map(|v| ("m_LayerCollisionMatrix".to_string(), v)),
+            ((self.m_enable_pcm).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnablePCM".to_string(), v)),
+            ((self.m_cloth_inter_collision_distance).inspect_value(path, offset, limit))
+                .map(|v| ("m_ClothInterCollisionDistance".to_string(), v)),
+            ((self.m_cloth_inter_collision_stiffness).inspect_value(path, offset, limit))
+                .map(|v| ("m_ClothInterCollisionStiffness".to_string(), v)),
+            ((self.m_auto_simulation).inspect_value(path, offset, limit))
+                .map(|v| ("m_AutoSimulation".to_string(), v)),
+            ((self.m_contacts_generation).inspect_value(path, offset, limit))
+                .map(|v| ("m_ContactsGeneration".to_string(), v)),
+            ((self.m_auto_sync_transforms).inspect_value(path, offset, limit))
+                .map(|v| ("m_AutoSyncTransforms".to_string(), v)),
+            ((self.m_simulation_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_SimulationMode".to_string(), v)),
+            ((self.m_cloth_inter_collision_settings_toggle).inspect_value(path, offset, limit))
+                .map(|v| ("m_ClothInterCollisionSettingsToggle".to_string(), v)),
+            ((self.m_reuse_collision_callbacks).inspect_value(path, offset, limit))
+                .map(|v| ("m_ReuseCollisionCallbacks".to_string(), v)),
+            ((self.m_contact_pairs_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_ContactPairsMode".to_string(), v)),
+            ((self.m_invoke_collision_callbacks).inspect_value(path, offset, limit))
+                .map(|v| ("m_InvokeCollisionCallbacks".to_string(), v)),
+            ((self.m_broadphase_type).inspect_value(path, offset, limit))
+                .map(|v| ("m_BroadphaseType".to_string(), v)),
+            ((self.m_cloth_gravity).inspect_value(path, offset, limit))
+                .map(|v| ("m_ClothGravity".to_string(), v)),
+            ((self.m_world_bounds).inspect_value(path, offset, limit))
+                .map(|v| ("m_WorldBounds".to_string(), v)),
+            ((self.m_world_subdivisions).inspect_value(path, offset, limit))
+                .map(|v| ("m_WorldSubdivisions".to_string(), v)),
+            ((self.m_friction_type).inspect_value(path, offset, limit))
+                .map(|v| ("m_FrictionType".to_string(), v)),
+            ((self.m_enable_enhanced_determinism).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableEnhancedDeterminism".to_string(), v)),
+            ((self.m_enable_unified_heightmaps).inspect_value(path, offset, limit))
+                .map(|v| ("m_EnableUnifiedHeightmaps".to_string(), v)),
+            ((self.m_improved_patch_friction).inspect_value(path, offset, limit))
+                .map(|v| ("m_ImprovedPatchFriction".to_string(), v)),
+            ((self.m_solver_type).inspect_value(path, offset, limit))
+                .map(|v| ("m_SolverType".to_string(), v)),
+            ((self.m_generate_on_trigger_stay_events).inspect_value(path, offset, limit))
+                .map(|v| ("m_GenerateOnTriggerStayEvents".to_string(), v)),
+            ((self.m_default_max_angular_speed).inspect_value(path, offset, limit))
+                .map(|v| ("m_DefaultMaxAngularSpeed".to_string(), v)),
+            ((self.m_scratch_buffer_chunk_count).inspect_value(path, offset, limit))
+                .map(|v| ("m_ScratchBufferChunkCount".to_string(), v)),
+            ((self.m_current_backend_id).inspect_value(path, offset, limit))
+                .map(|v| ("m_CurrentBackendId".to_string(), v)),
+            ((self.m_fast_motion_threshold).inspect_value(path, offset, limit))
+                .map(|v| ("m_FastMotionThreshold".to_string(), v)),
+            ((self.m_scene_buffers_release_interval).inspect_value(path, offset, limit))
+                .map(|v| ("m_SceneBuffersReleaseInterval".to_string(), v)),
+            ((self.m_release_scene_buffers).inspect_value(path, offset, limit))
+                .map(|v| ("m_ReleaseSceneBuffers".to_string(), v)),
+            ((self.m_log_verbosity).inspect_value(path, offset, limit))
+                .map(|v| ("m_LogVerbosity".to_string(), v)),
+            ((self.m_incremental_static_broadphase).inspect_value(path, offset, limit))
+                .map(|v| ("m_IncrementalStaticBroadphase".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

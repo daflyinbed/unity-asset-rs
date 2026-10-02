@@ -33,3 +33,51 @@ impl crate::Parse for ConstantForce2D {
         })
     }
 }
+
+impl crate::ToValue for ConstantForce2D {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_Enabled".to_string(), self.m_enabled.to_value())),
+            Some(("m_Force".to_string(), self.m_force.to_value())),
+            Some((
+                "m_RelativeForce".to_string(),
+                self.m_relative_force.to_value(),
+            )),
+            Some(("m_Torque".to_string(), self.m_torque.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "m_Force" => (self.m_force).inspect_value(path, offset, limit),
+                "m_RelativeForce" => (self.m_relative_force).inspect_value(path, offset, limit),
+                "m_Torque" => (self.m_torque).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.m_force).inspect_value(path, offset, limit)).map(|v| ("m_Force".to_string(), v)),
+            ((self.m_relative_force).inspect_value(path, offset, limit))
+                .map(|v| ("m_RelativeForce".to_string(), v)),
+            ((self.m_torque).inspect_value(path, offset, limit))
+                .map(|v| ("m_Torque".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

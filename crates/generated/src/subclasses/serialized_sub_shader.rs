@@ -35,6 +35,21 @@ impl crate::Parse for SerializedSubShaderMPassesVariant {
         }
     }
 }
+
+impl crate::ToValue for SerializedSubShaderMPassesVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct SerializedSubShader {
     pub m_passes: SerializedSubShaderMPassesVariant,
@@ -56,5 +71,41 @@ impl crate::Parse for SerializedSubShader {
             m_tags,
             m_lod,
         })
+    }
+}
+
+impl crate::ToValue for SerializedSubShader {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Passes".to_string(), self.m_passes.to_value())),
+            Some(("m_Tags".to_string(), self.m_tags.to_value())),
+            Some(("m_LOD".to_string(), self.m_lod.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Passes" => (self.m_passes).inspect_value(path, offset, limit),
+                "m_Tags" => (self.m_tags).inspect_value(path, offset, limit),
+                "m_LOD" => (self.m_lod).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_passes).inspect_value(path, offset, limit))
+                .map(|v| ("m_Passes".to_string(), v)),
+            ((self.m_tags).inspect_value(path, offset, limit)).map(|v| ("m_Tags".to_string(), v)),
+            ((self.m_lod).inspect_value(path, offset, limit)).map(|v| ("m_LOD".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

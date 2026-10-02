@@ -39,3 +39,54 @@ impl crate::Parse for SourceTextureInformation {
         })
     }
 }
+
+impl crate::ToValue for SourceTextureInformation {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("width".to_string(), self.width.to_value())),
+            Some(("height".to_string(), self.height.to_value())),
+            Some((
+                "doesTextureContainAlpha".to_string(),
+                self.does_texture_contain_alpha.to_value(),
+            )),
+            crate::opt_field("doesTextureContainColor", &self.does_texture_contain_color),
+            crate::opt_field("sourceWasHDR", &self.source_was_hdr),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "width" => (self.width).inspect_value(path, offset, limit),
+                "height" => (self.height).inspect_value(path, offset, limit),
+                "doesTextureContainAlpha" => {
+                    (self.does_texture_contain_alpha).inspect_value(path, offset, limit)
+                }
+                "doesTextureContainColor" => {
+                    (self.does_texture_contain_color).inspect_value(path, offset, limit)
+                }
+                "sourceWasHDR" => (self.source_was_hdr).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.width).inspect_value(path, offset, limit)).map(|v| ("width".to_string(), v)),
+            ((self.height).inspect_value(path, offset, limit)).map(|v| ("height".to_string(), v)),
+            ((self.does_texture_contain_alpha).inspect_value(path, offset, limit))
+                .map(|v| ("doesTextureContainAlpha".to_string(), v)),
+            ((self.does_texture_contain_color).inspect_value(path, offset, limit))
+                .map(|v| ("doesTextureContainColor".to_string(), v)),
+            ((self.source_was_hdr).inspect_value(path, offset, limit))
+                .map(|v| ("sourceWasHDR".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

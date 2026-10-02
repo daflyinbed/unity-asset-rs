@@ -27,6 +27,21 @@ impl crate::Parse for SerializedPassMHasInstancingVariantVariant {
         }
     }
 }
+
+impl crate::ToValue for SerializedPassMHasInstancingVariantVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2018_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2018_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct SerializedPass {
     pub m_name_indices: Vec<(String, i32)>,
@@ -207,5 +222,130 @@ impl crate::Parse for SerializedPass {
             m_tags: m_tags.unwrap(),
             m_serialized_keyword_state_mask,
         })
+    }
+}
+
+impl crate::ToValue for SerializedPass {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_NameIndices".to_string(), self.m_name_indices.to_value())),
+            crate::opt_field("m_EditorDataHash", &self.m_editor_data_hash),
+            Some(("m_Type".to_string(), self.m_type.to_value())),
+            crate::opt_field("m_Platforms", &self.m_platforms),
+            Some(("m_State".to_string(), self.m_state.to_value())),
+            crate::opt_field("m_LocalKeywordMask", &self.m_local_keyword_mask),
+            Some(("m_ProgramMask".to_string(), self.m_program_mask.to_value())),
+            crate::opt_field("m_GlobalKeywordMask", &self.m_global_keyword_mask),
+            Some(("progVertex".to_string(), self.prog_vertex.to_value())),
+            Some(("progFragment".to_string(), self.prog_fragment.to_value())),
+            Some(("progGeometry".to_string(), self.prog_geometry.to_value())),
+            Some(("progHull".to_string(), self.prog_hull.to_value())),
+            Some(("progDomain".to_string(), self.prog_domain.to_value())),
+            Some((
+                "m_HasInstancingVariant".to_string(),
+                self.m_has_instancing_variant.to_value(),
+            )),
+            crate::opt_field("progRayTracing", &self.prog_ray_tracing),
+            Some(("m_UseName".to_string(), self.m_use_name.to_value())),
+            crate::opt_field(
+                "m_HasProceduralInstancingVariant",
+                &self.m_has_procedural_instancing_variant,
+            ),
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some(("m_TextureName".to_string(), self.m_texture_name.to_value())),
+            Some(("m_Tags".to_string(), self.m_tags.to_value())),
+            crate::opt_field(
+                "m_SerializedKeywordStateMask",
+                &self.m_serialized_keyword_state_mask,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_NameIndices" => (self.m_name_indices).inspect_value(path, offset, limit),
+                "m_EditorDataHash" => (self.m_editor_data_hash).inspect_value(path, offset, limit),
+                "m_Type" => (self.m_type).inspect_value(path, offset, limit),
+                "m_Platforms" => (self.m_platforms).inspect_value(path, offset, limit),
+                "m_State" => (self.m_state).inspect_value(path, offset, limit),
+                "m_LocalKeywordMask" => {
+                    (self.m_local_keyword_mask).inspect_value(path, offset, limit)
+                }
+                "m_ProgramMask" => (self.m_program_mask).inspect_value(path, offset, limit),
+                "m_GlobalKeywordMask" => {
+                    (self.m_global_keyword_mask).inspect_value(path, offset, limit)
+                }
+                "progVertex" => (self.prog_vertex).inspect_value(path, offset, limit),
+                "progFragment" => (self.prog_fragment).inspect_value(path, offset, limit),
+                "progGeometry" => (self.prog_geometry).inspect_value(path, offset, limit),
+                "progHull" => (self.prog_hull).inspect_value(path, offset, limit),
+                "progDomain" => (self.prog_domain).inspect_value(path, offset, limit),
+                "m_HasInstancingVariant" => {
+                    (self.m_has_instancing_variant).inspect_value(path, offset, limit)
+                }
+                "progRayTracing" => (self.prog_ray_tracing).inspect_value(path, offset, limit),
+                "m_UseName" => (self.m_use_name).inspect_value(path, offset, limit),
+                "m_HasProceduralInstancingVariant" => {
+                    (self.m_has_procedural_instancing_variant).inspect_value(path, offset, limit)
+                }
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_TextureName" => (self.m_texture_name).inspect_value(path, offset, limit),
+                "m_Tags" => (self.m_tags).inspect_value(path, offset, limit),
+                "m_SerializedKeywordStateMask" => {
+                    (self.m_serialized_keyword_state_mask).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name_indices).inspect_value(path, offset, limit))
+                .map(|v| ("m_NameIndices".to_string(), v)),
+            ((self.m_editor_data_hash).inspect_value(path, offset, limit))
+                .map(|v| ("m_EditorDataHash".to_string(), v)),
+            ((self.m_type).inspect_value(path, offset, limit)).map(|v| ("m_Type".to_string(), v)),
+            ((self.m_platforms).inspect_value(path, offset, limit))
+                .map(|v| ("m_Platforms".to_string(), v)),
+            ((self.m_state).inspect_value(path, offset, limit)).map(|v| ("m_State".to_string(), v)),
+            ((self.m_local_keyword_mask).inspect_value(path, offset, limit))
+                .map(|v| ("m_LocalKeywordMask".to_string(), v)),
+            ((self.m_program_mask).inspect_value(path, offset, limit))
+                .map(|v| ("m_ProgramMask".to_string(), v)),
+            ((self.m_global_keyword_mask).inspect_value(path, offset, limit))
+                .map(|v| ("m_GlobalKeywordMask".to_string(), v)),
+            ((self.prog_vertex).inspect_value(path, offset, limit))
+                .map(|v| ("progVertex".to_string(), v)),
+            ((self.prog_fragment).inspect_value(path, offset, limit))
+                .map(|v| ("progFragment".to_string(), v)),
+            ((self.prog_geometry).inspect_value(path, offset, limit))
+                .map(|v| ("progGeometry".to_string(), v)),
+            ((self.prog_hull).inspect_value(path, offset, limit))
+                .map(|v| ("progHull".to_string(), v)),
+            ((self.prog_domain).inspect_value(path, offset, limit))
+                .map(|v| ("progDomain".to_string(), v)),
+            ((self.m_has_instancing_variant).inspect_value(path, offset, limit))
+                .map(|v| ("m_HasInstancingVariant".to_string(), v)),
+            ((self.prog_ray_tracing).inspect_value(path, offset, limit))
+                .map(|v| ("progRayTracing".to_string(), v)),
+            ((self.m_use_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseName".to_string(), v)),
+            ((self.m_has_procedural_instancing_variant).inspect_value(path, offset, limit))
+                .map(|v| ("m_HasProceduralInstancingVariant".to_string(), v)),
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_texture_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_TextureName".to_string(), v)),
+            ((self.m_tags).inspect_value(path, offset, limit)).map(|v| ("m_Tags".to_string(), v)),
+            ((self.m_serialized_keyword_state_mask).inspect_value(path, offset, limit))
+                .map(|v| ("m_SerializedKeywordStateMask".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

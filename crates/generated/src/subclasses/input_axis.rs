@@ -60,3 +60,105 @@ impl crate::Parse for InputAxis {
         })
     }
 }
+
+impl crate::ToValue for InputAxis {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some((
+                "descriptiveName".to_string(),
+                self.descriptive_name.to_value(),
+            )),
+            Some((
+                "descriptiveNegativeName".to_string(),
+                self.descriptive_negative_name.to_value(),
+            )),
+            Some((
+                "negativeButton".to_string(),
+                self.negative_button.to_value(),
+            )),
+            Some((
+                "positiveButton".to_string(),
+                self.positive_button.to_value(),
+            )),
+            Some((
+                "altNegativeButton".to_string(),
+                self.alt_negative_button.to_value(),
+            )),
+            Some((
+                "altPositiveButton".to_string(),
+                self.alt_positive_button.to_value(),
+            )),
+            Some(("gravity".to_string(), self.gravity.to_value())),
+            Some(("dead".to_string(), self.dead.to_value())),
+            Some(("sensitivity".to_string(), self.sensitivity.to_value())),
+            Some(("snap".to_string(), self.snap.to_value())),
+            Some(("invert".to_string(), self.invert.to_value())),
+            Some(("type".to_string(), self.r#type.to_value())),
+            Some(("axis".to_string(), self.axis.to_value())),
+            Some(("joyNum".to_string(), self.joy_num.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "descriptiveName" => (self.descriptive_name).inspect_value(path, offset, limit),
+                "descriptiveNegativeName" => {
+                    (self.descriptive_negative_name).inspect_value(path, offset, limit)
+                }
+                "negativeButton" => (self.negative_button).inspect_value(path, offset, limit),
+                "positiveButton" => (self.positive_button).inspect_value(path, offset, limit),
+                "altNegativeButton" => {
+                    (self.alt_negative_button).inspect_value(path, offset, limit)
+                }
+                "altPositiveButton" => {
+                    (self.alt_positive_button).inspect_value(path, offset, limit)
+                }
+                "gravity" => (self.gravity).inspect_value(path, offset, limit),
+                "dead" => (self.dead).inspect_value(path, offset, limit),
+                "sensitivity" => (self.sensitivity).inspect_value(path, offset, limit),
+                "snap" => (self.snap).inspect_value(path, offset, limit),
+                "invert" => (self.invert).inspect_value(path, offset, limit),
+                "type" => (self.r#type).inspect_value(path, offset, limit),
+                "axis" => (self.axis).inspect_value(path, offset, limit),
+                "joyNum" => (self.joy_num).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.descriptive_name).inspect_value(path, offset, limit))
+                .map(|v| ("descriptiveName".to_string(), v)),
+            ((self.descriptive_negative_name).inspect_value(path, offset, limit))
+                .map(|v| ("descriptiveNegativeName".to_string(), v)),
+            ((self.negative_button).inspect_value(path, offset, limit))
+                .map(|v| ("negativeButton".to_string(), v)),
+            ((self.positive_button).inspect_value(path, offset, limit))
+                .map(|v| ("positiveButton".to_string(), v)),
+            ((self.alt_negative_button).inspect_value(path, offset, limit))
+                .map(|v| ("altNegativeButton".to_string(), v)),
+            ((self.alt_positive_button).inspect_value(path, offset, limit))
+                .map(|v| ("altPositiveButton".to_string(), v)),
+            ((self.gravity).inspect_value(path, offset, limit)).map(|v| ("gravity".to_string(), v)),
+            ((self.dead).inspect_value(path, offset, limit)).map(|v| ("dead".to_string(), v)),
+            ((self.sensitivity).inspect_value(path, offset, limit))
+                .map(|v| ("sensitivity".to_string(), v)),
+            ((self.snap).inspect_value(path, offset, limit)).map(|v| ("snap".to_string(), v)),
+            ((self.invert).inspect_value(path, offset, limit)).map(|v| ("invert".to_string(), v)),
+            ((self.r#type).inspect_value(path, offset, limit)).map(|v| ("type".to_string(), v)),
+            ((self.axis).inspect_value(path, offset, limit)).map(|v| ("axis".to_string(), v)),
+            ((self.joy_num).inspect_value(path, offset, limit)).map(|v| ("joyNum".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

@@ -24,4 +24,7 @@ pub use unity_object::UnityObject;
 
 // 从 unity-core re-export，使生成代码中的 `crate::UnityVersion`、`crate::Parse`、
 // `crate::EndianReader`、`crate::PPtr` 等引用仍然解析正确。
-pub use unity_core::{Endian, EndianReader, PPtr, Parse, UnityVersion};
+pub use unity_core::{
+    Endian, EndianReader, PPtr, Parse, ToValue, UnityVersion, Value, inspect_array, inspect_bytes,
+    opt_field,
+};

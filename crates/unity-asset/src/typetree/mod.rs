@@ -89,33 +89,9 @@ impl TypeNode {
     }
 }
 
-/// 动态值树（MonoBehaviour / 所有 class 的解码产物）。
-#[derive(Debug, Clone)]
-pub enum Value {
-    Bool(bool),
-    I8(i8),
-    U8(u8),
-    I16(i16),
-    U16(u16),
-    I32(i32),
-    U32(u32),
-    I64(i64),
-    U64(u64),
-    F32(f32),
-    F64(f64),
-    String(String),
-    Bytes(Vec<u8>),
-    Pair(Box<Value>, Box<Value>),
-    Array(Vec<Value>),
-    Struct(Vec<(String, Value)>),
-    PPtr(PPtrValue),
-}
-
-#[derive(Debug, Clone)]
-pub struct PPtrValue {
-    pub file_id: i32,
-    pub path_id: i64,
-}
+/// 动态值树与 `PPtrValue` 定义在 unity-core（generated 的 codegen 发射代码
+/// 也要引用它们），此处 re-export 维持 `crate::typetree::Value` 既有路径。
+pub use unity_core::{PPtrValue, Value};
 
 /// `[SerializeReference]` 引用类型查表（由 SerializedFile.ref_types 构建）。
 #[derive(Default)]

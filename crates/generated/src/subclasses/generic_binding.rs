@@ -29,6 +29,23 @@ impl crate::Parse for GenericBindingIsPPtrCurveVariant {
     }
 }
 
+impl crate::ToValue for GenericBindingIsPPtrCurveVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V5_6(v) => v.to_value(),
+            Self::V2022_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V5_6(v) => (v).inspect_value(path, offset, limit),
+            Self::V2022_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：GenericBindingIsIntCurveVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum GenericBindingIsIntCurveVariant {
@@ -52,6 +69,21 @@ impl crate::Parse for GenericBindingIsIntCurveVariant {
     }
 }
 
+impl crate::ToValue for GenericBindingIsIntCurveVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2022_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2022_2(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：GenericBindingIsSerializeReferenceCurveVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum GenericBindingIsSerializeReferenceCurveVariant {
@@ -71,6 +103,21 @@ impl crate::Parse for GenericBindingIsSerializeReferenceCurveVariant {
             let v = rdr.read_u8()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for GenericBindingIsSerializeReferenceCurveVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V6000_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_5(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -142,5 +189,73 @@ impl crate::Parse for GenericBinding {
             is_serialize_reference_curve,
             meta_data,
         })
+    }
+}
+
+impl crate::ToValue for GenericBinding {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("path".to_string(), self.path.to_value())),
+            Some(("attribute".to_string(), self.attribute.to_value())),
+            Some(("script".to_string(), self.script.to_value())),
+            crate::opt_field("classID", &self.class_id),
+            crate::opt_field("typeID", &self.type_id),
+            Some(("customType".to_string(), self.custom_type.to_value())),
+            Some(("isPPtrCurve".to_string(), self.is_p_ptr_curve.to_value())),
+            crate::opt_field("isIntCurve", &self.is_int_curve),
+            crate::opt_field(
+                "isSerializeReferenceCurve",
+                &self.is_serialize_reference_curve,
+            ),
+            crate::opt_field("metaData", &self.meta_data),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "path" => (self.path).inspect_value(path, offset, limit),
+                "attribute" => (self.attribute).inspect_value(path, offset, limit),
+                "script" => (self.script).inspect_value(path, offset, limit),
+                "classID" => (self.class_id).inspect_value(path, offset, limit),
+                "typeID" => (self.type_id).inspect_value(path, offset, limit),
+                "customType" => (self.custom_type).inspect_value(path, offset, limit),
+                "isPPtrCurve" => (self.is_p_ptr_curve).inspect_value(path, offset, limit),
+                "isIntCurve" => (self.is_int_curve).inspect_value(path, offset, limit),
+                "isSerializeReferenceCurve" => {
+                    (self.is_serialize_reference_curve).inspect_value(path, offset, limit)
+                }
+                "metaData" => (self.meta_data).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.path).inspect_value(path, offset, limit)).map(|v| ("path".to_string(), v)),
+            ((self.attribute).inspect_value(path, offset, limit))
+                .map(|v| ("attribute".to_string(), v)),
+            ((self.script).inspect_value(path, offset, limit)).map(|v| ("script".to_string(), v)),
+            ((self.class_id).inspect_value(path, offset, limit))
+                .map(|v| ("classID".to_string(), v)),
+            ((self.type_id).inspect_value(path, offset, limit)).map(|v| ("typeID".to_string(), v)),
+            ((self.custom_type).inspect_value(path, offset, limit))
+                .map(|v| ("customType".to_string(), v)),
+            ((self.is_p_ptr_curve).inspect_value(path, offset, limit))
+                .map(|v| ("isPPtrCurve".to_string(), v)),
+            ((self.is_int_curve).inspect_value(path, offset, limit))
+                .map(|v| ("isIntCurve".to_string(), v)),
+            ((self.is_serialize_reference_curve).inspect_value(path, offset, limit))
+                .map(|v| ("isSerializeReferenceCurve".to_string(), v)),
+            ((self.meta_data).inspect_value(path, offset, limit))
+                .map(|v| ("metaData".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

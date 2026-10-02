@@ -117,3 +117,120 @@ impl crate::Parse for DetailPrototype {
         })
     }
 }
+
+impl crate::ToValue for DetailPrototype {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("prototype".to_string(), self.prototype.to_value())),
+            Some((
+                "prototypeTexture".to_string(),
+                self.prototype_texture.to_value(),
+            )),
+            Some(("minWidth".to_string(), self.min_width.to_value())),
+            Some(("maxWidth".to_string(), self.max_width.to_value())),
+            Some(("minHeight".to_string(), self.min_height.to_value())),
+            Some(("maxHeight".to_string(), self.max_height.to_value())),
+            Some(("noiseSpread".to_string(), self.noise_spread.to_value())),
+            crate::opt_field("noiseSeed", &self.noise_seed),
+            crate::opt_field("bendFactor", &self.bend_factor),
+            crate::opt_field("holeTestRadius", &self.hole_test_radius),
+            Some(("healthyColor".to_string(), self.healthy_color.to_value())),
+            Some(("dryColor".to_string(), self.dry_color.to_value())),
+            crate::opt_field("density", &self.density),
+            crate::opt_field("lightmapFactor", &self.lightmap_factor),
+            Some(("renderMode".to_string(), self.render_mode.to_value())),
+            Some((
+                "usePrototypeMesh".to_string(),
+                self.use_prototype_mesh.to_value(),
+            )),
+            crate::opt_field("useInstancing", &self.use_instancing),
+            crate::opt_field("useDensityScaling", &self.use_density_scaling),
+            crate::opt_field("alignToGround", &self.align_to_ground),
+            crate::opt_field("positionJitter", &self.position_jitter),
+            crate::opt_field("targetCoverage", &self.target_coverage),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "prototype" => (self.prototype).inspect_value(path, offset, limit),
+                "prototypeTexture" => (self.prototype_texture).inspect_value(path, offset, limit),
+                "minWidth" => (self.min_width).inspect_value(path, offset, limit),
+                "maxWidth" => (self.max_width).inspect_value(path, offset, limit),
+                "minHeight" => (self.min_height).inspect_value(path, offset, limit),
+                "maxHeight" => (self.max_height).inspect_value(path, offset, limit),
+                "noiseSpread" => (self.noise_spread).inspect_value(path, offset, limit),
+                "noiseSeed" => (self.noise_seed).inspect_value(path, offset, limit),
+                "bendFactor" => (self.bend_factor).inspect_value(path, offset, limit),
+                "holeTestRadius" => (self.hole_test_radius).inspect_value(path, offset, limit),
+                "healthyColor" => (self.healthy_color).inspect_value(path, offset, limit),
+                "dryColor" => (self.dry_color).inspect_value(path, offset, limit),
+                "density" => (self.density).inspect_value(path, offset, limit),
+                "lightmapFactor" => (self.lightmap_factor).inspect_value(path, offset, limit),
+                "renderMode" => (self.render_mode).inspect_value(path, offset, limit),
+                "usePrototypeMesh" => (self.use_prototype_mesh).inspect_value(path, offset, limit),
+                "useInstancing" => (self.use_instancing).inspect_value(path, offset, limit),
+                "useDensityScaling" => {
+                    (self.use_density_scaling).inspect_value(path, offset, limit)
+                }
+                "alignToGround" => (self.align_to_ground).inspect_value(path, offset, limit),
+                "positionJitter" => (self.position_jitter).inspect_value(path, offset, limit),
+                "targetCoverage" => (self.target_coverage).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.prototype).inspect_value(path, offset, limit))
+                .map(|v| ("prototype".to_string(), v)),
+            ((self.prototype_texture).inspect_value(path, offset, limit))
+                .map(|v| ("prototypeTexture".to_string(), v)),
+            ((self.min_width).inspect_value(path, offset, limit))
+                .map(|v| ("minWidth".to_string(), v)),
+            ((self.max_width).inspect_value(path, offset, limit))
+                .map(|v| ("maxWidth".to_string(), v)),
+            ((self.min_height).inspect_value(path, offset, limit))
+                .map(|v| ("minHeight".to_string(), v)),
+            ((self.max_height).inspect_value(path, offset, limit))
+                .map(|v| ("maxHeight".to_string(), v)),
+            ((self.noise_spread).inspect_value(path, offset, limit))
+                .map(|v| ("noiseSpread".to_string(), v)),
+            ((self.noise_seed).inspect_value(path, offset, limit))
+                .map(|v| ("noiseSeed".to_string(), v)),
+            ((self.bend_factor).inspect_value(path, offset, limit))
+                .map(|v| ("bendFactor".to_string(), v)),
+            ((self.hole_test_radius).inspect_value(path, offset, limit))
+                .map(|v| ("holeTestRadius".to_string(), v)),
+            ((self.healthy_color).inspect_value(path, offset, limit))
+                .map(|v| ("healthyColor".to_string(), v)),
+            ((self.dry_color).inspect_value(path, offset, limit))
+                .map(|v| ("dryColor".to_string(), v)),
+            ((self.density).inspect_value(path, offset, limit)).map(|v| ("density".to_string(), v)),
+            ((self.lightmap_factor).inspect_value(path, offset, limit))
+                .map(|v| ("lightmapFactor".to_string(), v)),
+            ((self.render_mode).inspect_value(path, offset, limit))
+                .map(|v| ("renderMode".to_string(), v)),
+            ((self.use_prototype_mesh).inspect_value(path, offset, limit))
+                .map(|v| ("usePrototypeMesh".to_string(), v)),
+            ((self.use_instancing).inspect_value(path, offset, limit))
+                .map(|v| ("useInstancing".to_string(), v)),
+            ((self.use_density_scaling).inspect_value(path, offset, limit))
+                .map(|v| ("useDensityScaling".to_string(), v)),
+            ((self.align_to_ground).inspect_value(path, offset, limit))
+                .map(|v| ("alignToGround".to_string(), v)),
+            ((self.position_jitter).inspect_value(path, offset, limit))
+                .map(|v| ("positionJitter".to_string(), v)),
+            ((self.target_coverage).inspect_value(path, offset, limit))
+                .map(|v| ("targetCoverage".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

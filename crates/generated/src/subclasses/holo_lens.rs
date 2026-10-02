@@ -24,3 +24,42 @@ impl crate::Parse for HoloLens {
         })
     }
 }
+
+impl crate::ToValue for HoloLens {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("depthFormat".to_string(), self.depth_format.to_value())),
+            crate::opt_field(
+                "depthBufferSharingEnabled",
+                &self.depth_buffer_sharing_enabled,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "depthFormat" => (self.depth_format).inspect_value(path, offset, limit),
+                "depthBufferSharingEnabled" => {
+                    (self.depth_buffer_sharing_enabled).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.depth_format).inspect_value(path, offset, limit))
+                .map(|v| ("depthFormat".to_string(), v)),
+            ((self.depth_buffer_sharing_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("depthBufferSharingEnabled".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

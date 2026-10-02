@@ -38,3 +38,61 @@ impl crate::Parse for BoneWeights4 {
         })
     }
 }
+
+impl crate::ToValue for BoneWeights4 {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("weight[0]".to_string(), self.weight_0.to_value())),
+            Some(("weight[1]".to_string(), self.weight_1.to_value())),
+            Some(("weight[2]".to_string(), self.weight_2.to_value())),
+            Some(("weight[3]".to_string(), self.weight_3.to_value())),
+            Some(("boneIndex[0]".to_string(), self.bone_index_0.to_value())),
+            Some(("boneIndex[1]".to_string(), self.bone_index_1.to_value())),
+            Some(("boneIndex[2]".to_string(), self.bone_index_2.to_value())),
+            Some(("boneIndex[3]".to_string(), self.bone_index_3.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "weight[0]" => (self.weight_0).inspect_value(path, offset, limit),
+                "weight[1]" => (self.weight_1).inspect_value(path, offset, limit),
+                "weight[2]" => (self.weight_2).inspect_value(path, offset, limit),
+                "weight[3]" => (self.weight_3).inspect_value(path, offset, limit),
+                "boneIndex[0]" => (self.bone_index_0).inspect_value(path, offset, limit),
+                "boneIndex[1]" => (self.bone_index_1).inspect_value(path, offset, limit),
+                "boneIndex[2]" => (self.bone_index_2).inspect_value(path, offset, limit),
+                "boneIndex[3]" => (self.bone_index_3).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.weight_0).inspect_value(path, offset, limit))
+                .map(|v| ("weight[0]".to_string(), v)),
+            ((self.weight_1).inspect_value(path, offset, limit))
+                .map(|v| ("weight[1]".to_string(), v)),
+            ((self.weight_2).inspect_value(path, offset, limit))
+                .map(|v| ("weight[2]".to_string(), v)),
+            ((self.weight_3).inspect_value(path, offset, limit))
+                .map(|v| ("weight[3]".to_string(), v)),
+            ((self.bone_index_0).inspect_value(path, offset, limit))
+                .map(|v| ("boneIndex[0]".to_string(), v)),
+            ((self.bone_index_1).inspect_value(path, offset, limit))
+                .map(|v| ("boneIndex[1]".to_string(), v)),
+            ((self.bone_index_2).inspect_value(path, offset, limit))
+                .map(|v| ("boneIndex[2]".to_string(), v)),
+            ((self.bone_index_3).inspect_value(path, offset, limit))
+                .map(|v| ("boneIndex[3]".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

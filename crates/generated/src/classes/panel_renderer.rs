@@ -149,3 +149,323 @@ impl crate::Parse for PanelRenderer {
         })
     }
 }
+
+impl crate::ToValue for PanelRenderer {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_Enabled".to_string(), self.m_enabled.to_value())),
+            Some(("m_CastShadows".to_string(), self.m_cast_shadows.to_value())),
+            Some((
+                "m_ReceiveShadows".to_string(),
+                self.m_receive_shadows.to_value(),
+            )),
+            Some((
+                "m_DynamicOccludee".to_string(),
+                self.m_dynamic_occludee.to_value(),
+            )),
+            Some((
+                "m_StaticShadowCaster".to_string(),
+                self.m_static_shadow_caster.to_value(),
+            )),
+            Some((
+                "m_MotionVectors".to_string(),
+                self.m_motion_vectors.to_value(),
+            )),
+            Some((
+                "m_LightProbeUsage".to_string(),
+                self.m_light_probe_usage.to_value(),
+            )),
+            Some((
+                "m_ReflectionProbeUsage".to_string(),
+                self.m_reflection_probe_usage.to_value(),
+            )),
+            Some((
+                "m_RayTracingMode".to_string(),
+                self.m_ray_tracing_mode.to_value(),
+            )),
+            Some((
+                "m_RayTraceProcedural".to_string(),
+                self.m_ray_trace_procedural.to_value(),
+            )),
+            Some((
+                "m_RayTracingAccelStructBuildFlagsOverride".to_string(),
+                self.m_ray_tracing_accel_struct_build_flags_override
+                    .to_value(),
+            )),
+            Some((
+                "m_RayTracingAccelStructBuildFlags".to_string(),
+                self.m_ray_tracing_accel_struct_build_flags.to_value(),
+            )),
+            Some((
+                "m_SmallMeshCulling".to_string(),
+                self.m_small_mesh_culling.to_value(),
+            )),
+            Some((
+                "m_ForceMeshLod".to_string(),
+                self.m_force_mesh_lod.to_value(),
+            )),
+            Some((
+                "m_MeshLodSelectionBias".to_string(),
+                self.m_mesh_lod_selection_bias.to_value(),
+            )),
+            Some((
+                "m_RenderingLayerMask".to_string(),
+                self.m_rendering_layer_mask.to_value(),
+            )),
+            Some((
+                "m_RendererPriority".to_string(),
+                self.m_renderer_priority.to_value(),
+            )),
+            Some((
+                "m_LightmapIndex".to_string(),
+                self.m_lightmap_index.to_value(),
+            )),
+            Some((
+                "m_LightmapIndexDynamic".to_string(),
+                self.m_lightmap_index_dynamic.to_value(),
+            )),
+            Some((
+                "m_LightmapTilingOffset".to_string(),
+                self.m_lightmap_tiling_offset.to_value(),
+            )),
+            Some((
+                "m_LightmapTilingOffsetDynamic".to_string(),
+                self.m_lightmap_tiling_offset_dynamic.to_value(),
+            )),
+            Some(("m_Materials".to_string(), self.m_materials.to_value())),
+            Some((
+                "m_StaticBatchInfo".to_string(),
+                self.m_static_batch_info.to_value(),
+            )),
+            Some((
+                "m_StaticBatchRoot".to_string(),
+                self.m_static_batch_root.to_value(),
+            )),
+            Some(("m_ProbeAnchor".to_string(), self.m_probe_anchor.to_value())),
+            Some((
+                "m_LightProbeVolumeOverride".to_string(),
+                self.m_light_probe_volume_override.to_value(),
+            )),
+            Some((
+                "m_SortingLayerID".to_string(),
+                self.m_sorting_layer_id.to_value(),
+            )),
+            Some((
+                "m_SortingLayer".to_string(),
+                self.m_sorting_layer.to_value(),
+            )),
+            Some((
+                "m_SortingOrder".to_string(),
+                self.m_sorting_order.to_value(),
+            )),
+            Some((
+                "m_MaskInteraction".to_string(),
+                self.m_mask_interaction.to_value(),
+            )),
+            Some((
+                "m_PanelSettings".to_string(),
+                self.m_panel_settings.to_value(),
+            )),
+            Some(("sourceAsset".to_string(), self.source_asset.to_value())),
+            Some(("m_ParentUI".to_string(), self.m_parent_ui.to_value())),
+            Some((
+                "m_WorldSpaceSizeMode".to_string(),
+                self.m_world_space_size_mode.to_value(),
+            )),
+            Some((
+                "m_WorldSpaceWidth".to_string(),
+                self.m_world_space_width.to_value(),
+            )),
+            Some((
+                "m_WorldSpaceHeight".to_string(),
+                self.m_world_space_height.to_value(),
+            )),
+            Some((
+                "m_PivotReferenceSize".to_string(),
+                self.m_pivot_reference_size.to_value(),
+            )),
+            Some(("m_Pivot".to_string(), self.m_pivot.to_value())),
+            Some(("m_Position".to_string(), self.m_position.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "m_CastShadows" => (self.m_cast_shadows).inspect_value(path, offset, limit),
+                "m_ReceiveShadows" => (self.m_receive_shadows).inspect_value(path, offset, limit),
+                "m_DynamicOccludee" => (self.m_dynamic_occludee).inspect_value(path, offset, limit),
+                "m_StaticShadowCaster" => {
+                    (self.m_static_shadow_caster).inspect_value(path, offset, limit)
+                }
+                "m_MotionVectors" => (self.m_motion_vectors).inspect_value(path, offset, limit),
+                "m_LightProbeUsage" => {
+                    (self.m_light_probe_usage).inspect_value(path, offset, limit)
+                }
+                "m_ReflectionProbeUsage" => {
+                    (self.m_reflection_probe_usage).inspect_value(path, offset, limit)
+                }
+                "m_RayTracingMode" => (self.m_ray_tracing_mode).inspect_value(path, offset, limit),
+                "m_RayTraceProcedural" => {
+                    (self.m_ray_trace_procedural).inspect_value(path, offset, limit)
+                }
+                "m_RayTracingAccelStructBuildFlagsOverride" => (self
+                    .m_ray_tracing_accel_struct_build_flags_override)
+                    .inspect_value(path, offset, limit),
+                "m_RayTracingAccelStructBuildFlags" => {
+                    (self.m_ray_tracing_accel_struct_build_flags).inspect_value(path, offset, limit)
+                }
+                "m_SmallMeshCulling" => {
+                    (self.m_small_mesh_culling).inspect_value(path, offset, limit)
+                }
+                "m_ForceMeshLod" => (self.m_force_mesh_lod).inspect_value(path, offset, limit),
+                "m_MeshLodSelectionBias" => {
+                    (self.m_mesh_lod_selection_bias).inspect_value(path, offset, limit)
+                }
+                "m_RenderingLayerMask" => {
+                    (self.m_rendering_layer_mask).inspect_value(path, offset, limit)
+                }
+                "m_RendererPriority" => {
+                    (self.m_renderer_priority).inspect_value(path, offset, limit)
+                }
+                "m_LightmapIndex" => (self.m_lightmap_index).inspect_value(path, offset, limit),
+                "m_LightmapIndexDynamic" => {
+                    (self.m_lightmap_index_dynamic).inspect_value(path, offset, limit)
+                }
+                "m_LightmapTilingOffset" => {
+                    (self.m_lightmap_tiling_offset).inspect_value(path, offset, limit)
+                }
+                "m_LightmapTilingOffsetDynamic" => {
+                    (self.m_lightmap_tiling_offset_dynamic).inspect_value(path, offset, limit)
+                }
+                "m_Materials" => (self.m_materials).inspect_value(path, offset, limit),
+                "m_StaticBatchInfo" => {
+                    (self.m_static_batch_info).inspect_value(path, offset, limit)
+                }
+                "m_StaticBatchRoot" => {
+                    (self.m_static_batch_root).inspect_value(path, offset, limit)
+                }
+                "m_ProbeAnchor" => (self.m_probe_anchor).inspect_value(path, offset, limit),
+                "m_LightProbeVolumeOverride" => {
+                    (self.m_light_probe_volume_override).inspect_value(path, offset, limit)
+                }
+                "m_SortingLayerID" => (self.m_sorting_layer_id).inspect_value(path, offset, limit),
+                "m_SortingLayer" => (self.m_sorting_layer).inspect_value(path, offset, limit),
+                "m_SortingOrder" => (self.m_sorting_order).inspect_value(path, offset, limit),
+                "m_MaskInteraction" => (self.m_mask_interaction).inspect_value(path, offset, limit),
+                "m_PanelSettings" => (self.m_panel_settings).inspect_value(path, offset, limit),
+                "sourceAsset" => (self.source_asset).inspect_value(path, offset, limit),
+                "m_ParentUI" => (self.m_parent_ui).inspect_value(path, offset, limit),
+                "m_WorldSpaceSizeMode" => {
+                    (self.m_world_space_size_mode).inspect_value(path, offset, limit)
+                }
+                "m_WorldSpaceWidth" => {
+                    (self.m_world_space_width).inspect_value(path, offset, limit)
+                }
+                "m_WorldSpaceHeight" => {
+                    (self.m_world_space_height).inspect_value(path, offset, limit)
+                }
+                "m_PivotReferenceSize" => {
+                    (self.m_pivot_reference_size).inspect_value(path, offset, limit)
+                }
+                "m_Pivot" => (self.m_pivot).inspect_value(path, offset, limit),
+                "m_Position" => (self.m_position).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.m_cast_shadows).inspect_value(path, offset, limit))
+                .map(|v| ("m_CastShadows".to_string(), v)),
+            ((self.m_receive_shadows).inspect_value(path, offset, limit))
+                .map(|v| ("m_ReceiveShadows".to_string(), v)),
+            ((self.m_dynamic_occludee).inspect_value(path, offset, limit))
+                .map(|v| ("m_DynamicOccludee".to_string(), v)),
+            ((self.m_static_shadow_caster).inspect_value(path, offset, limit))
+                .map(|v| ("m_StaticShadowCaster".to_string(), v)),
+            ((self.m_motion_vectors).inspect_value(path, offset, limit))
+                .map(|v| ("m_MotionVectors".to_string(), v)),
+            ((self.m_light_probe_usage).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightProbeUsage".to_string(), v)),
+            ((self.m_reflection_probe_usage).inspect_value(path, offset, limit))
+                .map(|v| ("m_ReflectionProbeUsage".to_string(), v)),
+            ((self.m_ray_tracing_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_RayTracingMode".to_string(), v)),
+            ((self.m_ray_trace_procedural).inspect_value(path, offset, limit))
+                .map(|v| ("m_RayTraceProcedural".to_string(), v)),
+            ((self.m_ray_tracing_accel_struct_build_flags_override)
+                .inspect_value(path, offset, limit))
+            .map(|v| ("m_RayTracingAccelStructBuildFlagsOverride".to_string(), v)),
+            ((self.m_ray_tracing_accel_struct_build_flags).inspect_value(path, offset, limit))
+                .map(|v| ("m_RayTracingAccelStructBuildFlags".to_string(), v)),
+            ((self.m_small_mesh_culling).inspect_value(path, offset, limit))
+                .map(|v| ("m_SmallMeshCulling".to_string(), v)),
+            ((self.m_force_mesh_lod).inspect_value(path, offset, limit))
+                .map(|v| ("m_ForceMeshLod".to_string(), v)),
+            ((self.m_mesh_lod_selection_bias).inspect_value(path, offset, limit))
+                .map(|v| ("m_MeshLodSelectionBias".to_string(), v)),
+            ((self.m_rendering_layer_mask).inspect_value(path, offset, limit))
+                .map(|v| ("m_RenderingLayerMask".to_string(), v)),
+            ((self.m_renderer_priority).inspect_value(path, offset, limit))
+                .map(|v| ("m_RendererPriority".to_string(), v)),
+            ((self.m_lightmap_index).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightmapIndex".to_string(), v)),
+            ((self.m_lightmap_index_dynamic).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightmapIndexDynamic".to_string(), v)),
+            ((self.m_lightmap_tiling_offset).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightmapTilingOffset".to_string(), v)),
+            ((self.m_lightmap_tiling_offset_dynamic).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightmapTilingOffsetDynamic".to_string(), v)),
+            ((self.m_materials).inspect_value(path, offset, limit))
+                .map(|v| ("m_Materials".to_string(), v)),
+            ((self.m_static_batch_info).inspect_value(path, offset, limit))
+                .map(|v| ("m_StaticBatchInfo".to_string(), v)),
+            ((self.m_static_batch_root).inspect_value(path, offset, limit))
+                .map(|v| ("m_StaticBatchRoot".to_string(), v)),
+            ((self.m_probe_anchor).inspect_value(path, offset, limit))
+                .map(|v| ("m_ProbeAnchor".to_string(), v)),
+            ((self.m_light_probe_volume_override).inspect_value(path, offset, limit))
+                .map(|v| ("m_LightProbeVolumeOverride".to_string(), v)),
+            ((self.m_sorting_layer_id).inspect_value(path, offset, limit))
+                .map(|v| ("m_SortingLayerID".to_string(), v)),
+            ((self.m_sorting_layer).inspect_value(path, offset, limit))
+                .map(|v| ("m_SortingLayer".to_string(), v)),
+            ((self.m_sorting_order).inspect_value(path, offset, limit))
+                .map(|v| ("m_SortingOrder".to_string(), v)),
+            ((self.m_mask_interaction).inspect_value(path, offset, limit))
+                .map(|v| ("m_MaskInteraction".to_string(), v)),
+            ((self.m_panel_settings).inspect_value(path, offset, limit))
+                .map(|v| ("m_PanelSettings".to_string(), v)),
+            ((self.source_asset).inspect_value(path, offset, limit))
+                .map(|v| ("sourceAsset".to_string(), v)),
+            ((self.m_parent_ui).inspect_value(path, offset, limit))
+                .map(|v| ("m_ParentUI".to_string(), v)),
+            ((self.m_world_space_size_mode).inspect_value(path, offset, limit))
+                .map(|v| ("m_WorldSpaceSizeMode".to_string(), v)),
+            ((self.m_world_space_width).inspect_value(path, offset, limit))
+                .map(|v| ("m_WorldSpaceWidth".to_string(), v)),
+            ((self.m_world_space_height).inspect_value(path, offset, limit))
+                .map(|v| ("m_WorldSpaceHeight".to_string(), v)),
+            ((self.m_pivot_reference_size).inspect_value(path, offset, limit))
+                .map(|v| ("m_PivotReferenceSize".to_string(), v)),
+            ((self.m_pivot).inspect_value(path, offset, limit)).map(|v| ("m_Pivot".to_string(), v)),
+            ((self.m_position).inspect_value(path, offset, limit))
+                .map(|v| ("m_Position".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

@@ -28,3 +28,41 @@ impl crate::Parse for MultiModeParameter_MeshSpawn {
         })
     }
 }
+
+impl crate::ToValue for MultiModeParameter_MeshSpawn {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("value".to_string(), self.value.to_value())),
+            Some(("mode".to_string(), self.mode.to_value())),
+            Some(("spread".to_string(), self.spread.to_value())),
+            Some(("speed".to_string(), self.speed.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "value" => (self.value).inspect_value(path, offset, limit),
+                "mode" => (self.mode).inspect_value(path, offset, limit),
+                "spread" => (self.spread).inspect_value(path, offset, limit),
+                "speed" => (self.speed).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.value).inspect_value(path, offset, limit)).map(|v| ("value".to_string(), v)),
+            ((self.mode).inspect_value(path, offset, limit)).map(|v| ("mode".to_string(), v)),
+            ((self.spread).inspect_value(path, offset, limit)).map(|v| ("spread".to_string(), v)),
+            ((self.speed).inspect_value(path, offset, limit)).map(|v| ("speed".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

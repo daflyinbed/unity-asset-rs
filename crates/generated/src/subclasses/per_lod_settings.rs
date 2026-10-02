@@ -22,6 +22,21 @@ impl crate::Parse for PerLodSettingsEnableHueVariant {
         }
     }
 }
+
+impl crate::ToValue for PerLodSettingsEnableHueVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2018_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2018_3(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 pub struct PerLodSettings {
     pub height: f32,
@@ -83,5 +98,83 @@ impl crate::Parse for PerLodSettings {
             wind_quality: wind_quality.unwrap(),
             enable_subsurface,
         })
+    }
+}
+
+impl crate::ToValue for PerLodSettings {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("height".to_string(), self.height.to_value())),
+            crate::opt_field("enableSettingOverride", &self.enable_setting_override),
+            Some(("castShadows".to_string(), self.cast_shadows.to_value())),
+            Some((
+                "receiveShadows".to_string(),
+                self.receive_shadows.to_value(),
+            )),
+            Some((
+                "useLightProbes".to_string(),
+                self.use_light_probes.to_value(),
+            )),
+            Some((
+                "reflectionProbeUsage".to_string(),
+                self.reflection_probe_usage.to_value(),
+            )),
+            Some(("enableBump".to_string(), self.enable_bump.to_value())),
+            Some(("enableHue".to_string(), self.enable_hue.to_value())),
+            Some(("windQuality".to_string(), self.wind_quality.to_value())),
+            crate::opt_field("enableSubsurface", &self.enable_subsurface),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "height" => (self.height).inspect_value(path, offset, limit),
+                "enableSettingOverride" => {
+                    (self.enable_setting_override).inspect_value(path, offset, limit)
+                }
+                "castShadows" => (self.cast_shadows).inspect_value(path, offset, limit),
+                "receiveShadows" => (self.receive_shadows).inspect_value(path, offset, limit),
+                "useLightProbes" => (self.use_light_probes).inspect_value(path, offset, limit),
+                "reflectionProbeUsage" => {
+                    (self.reflection_probe_usage).inspect_value(path, offset, limit)
+                }
+                "enableBump" => (self.enable_bump).inspect_value(path, offset, limit),
+                "enableHue" => (self.enable_hue).inspect_value(path, offset, limit),
+                "windQuality" => (self.wind_quality).inspect_value(path, offset, limit),
+                "enableSubsurface" => (self.enable_subsurface).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.height).inspect_value(path, offset, limit)).map(|v| ("height".to_string(), v)),
+            ((self.enable_setting_override).inspect_value(path, offset, limit))
+                .map(|v| ("enableSettingOverride".to_string(), v)),
+            ((self.cast_shadows).inspect_value(path, offset, limit))
+                .map(|v| ("castShadows".to_string(), v)),
+            ((self.receive_shadows).inspect_value(path, offset, limit))
+                .map(|v| ("receiveShadows".to_string(), v)),
+            ((self.use_light_probes).inspect_value(path, offset, limit))
+                .map(|v| ("useLightProbes".to_string(), v)),
+            ((self.reflection_probe_usage).inspect_value(path, offset, limit))
+                .map(|v| ("reflectionProbeUsage".to_string(), v)),
+            ((self.enable_bump).inspect_value(path, offset, limit))
+                .map(|v| ("enableBump".to_string(), v)),
+            ((self.enable_hue).inspect_value(path, offset, limit))
+                .map(|v| ("enableHue".to_string(), v)),
+            ((self.wind_quality).inspect_value(path, offset, limit))
+                .map(|v| ("windQuality".to_string(), v)),
+            ((self.enable_subsurface).inspect_value(path, offset, limit))
+                .map(|v| ("enableSubsurface".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

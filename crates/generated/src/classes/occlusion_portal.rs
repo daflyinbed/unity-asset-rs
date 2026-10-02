@@ -30,3 +30,43 @@ impl crate::Parse for OcclusionPortal {
         })
     }
 }
+
+impl crate::ToValue for OcclusionPortal {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_Open".to_string(), self.m_open.to_value())),
+            Some(("m_Center".to_string(), self.m_center.to_value())),
+            Some(("m_Size".to_string(), self.m_size.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Open" => (self.m_open).inspect_value(path, offset, limit),
+                "m_Center" => (self.m_center).inspect_value(path, offset, limit),
+                "m_Size" => (self.m_size).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_open).inspect_value(path, offset, limit)).map(|v| ("m_Open".to_string(), v)),
+            ((self.m_center).inspect_value(path, offset, limit))
+                .map(|v| ("m_Center".to_string(), v)),
+            ((self.m_size).inspect_value(path, offset, limit)).map(|v| ("m_Size".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

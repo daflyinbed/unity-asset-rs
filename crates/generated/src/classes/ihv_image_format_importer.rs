@@ -49,6 +49,21 @@ impl crate::Parse for IhvImageFormatImporterMExternalObjectsVariant {
     }
 }
 
+impl crate::ToValue for IhvImageFormatImporterMExternalObjectsVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2019_1(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2019_1(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：IhvImageFormatImporterMIsReadableVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum IhvImageFormatImporterMIsReadableVariant {
@@ -68,6 +83,21 @@ impl crate::Parse for IhvImageFormatImporterMIsReadableVariant {
             let v = rdr.read_bool()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for IhvImageFormatImporterMIsReadableVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2017_3(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2017_3(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -95,6 +125,21 @@ impl crate::Parse for IhvImageFormatImporterMSRgbTextureVariant {
     }
 }
 
+impl crate::ToValue for IhvImageFormatImporterMSRgbTextureVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2018_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2018_2(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：IhvImageFormatImporterMStreamingMipmapsPriorityVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum IhvImageFormatImporterMStreamingMipmapsPriorityVariant {
@@ -114,6 +159,21 @@ impl crate::Parse for IhvImageFormatImporterMStreamingMipmapsPriorityVariant {
             let v = rdr.read_i32()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for IhvImageFormatImporterMStreamingMipmapsPriorityVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2022_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2022_2(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -214,5 +274,106 @@ impl crate::Parse for IhvImageFormatImporter {
             m_ignore_mipmap_limit,
             m_mipmap_limit_group_name,
         })
+    }
+}
+
+impl crate::ToValue for IhvImageFormatImporter {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_Name".to_string(), self.m_name.to_value())),
+            Some((
+                "m_TextureSettings".to_string(),
+                self.m_texture_settings.to_value(),
+            )),
+            crate::opt_field("m_ExternalObjects", &self.m_external_objects),
+            Some(("m_IsReadable".to_string(), self.m_is_readable.to_value())),
+            crate::opt_field("m_UsedFileIDs", &self.m_used_file_i_ds),
+            Some(("m_UserData".to_string(), self.m_user_data.to_value())),
+            Some((
+                "m_AssetBundleName".to_string(),
+                self.m_asset_bundle_name.to_value(),
+            )),
+            crate::opt_field("m_sRGBTexture", &self.m_s_rgb_texture),
+            Some((
+                "m_AssetBundleVariant".to_string(),
+                self.m_asset_bundle_variant.to_value(),
+            )),
+            crate::opt_field("m_StreamingMipmaps", &self.m_streaming_mipmaps),
+            crate::opt_field(
+                "m_StreamingMipmapsPriority",
+                &self.m_streaming_mipmaps_priority,
+            ),
+            crate::opt_field("m_IgnoreMipmapLimit", &self.m_ignore_mipmap_limit),
+            crate::opt_field("m_MipmapLimitGroupName", &self.m_mipmap_limit_group_name),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_Name" => (self.m_name).inspect_value(path, offset, limit),
+                "m_TextureSettings" => (self.m_texture_settings).inspect_value(path, offset, limit),
+                "m_ExternalObjects" => (self.m_external_objects).inspect_value(path, offset, limit),
+                "m_IsReadable" => (self.m_is_readable).inspect_value(path, offset, limit),
+                "m_UsedFileIDs" => (self.m_used_file_i_ds).inspect_value(path, offset, limit),
+                "m_UserData" => (self.m_user_data).inspect_value(path, offset, limit),
+                "m_AssetBundleName" => {
+                    (self.m_asset_bundle_name).inspect_value(path, offset, limit)
+                }
+                "m_sRGBTexture" => (self.m_s_rgb_texture).inspect_value(path, offset, limit),
+                "m_AssetBundleVariant" => {
+                    (self.m_asset_bundle_variant).inspect_value(path, offset, limit)
+                }
+                "m_StreamingMipmaps" => {
+                    (self.m_streaming_mipmaps).inspect_value(path, offset, limit)
+                }
+                "m_StreamingMipmapsPriority" => {
+                    (self.m_streaming_mipmaps_priority).inspect_value(path, offset, limit)
+                }
+                "m_IgnoreMipmapLimit" => {
+                    (self.m_ignore_mipmap_limit).inspect_value(path, offset, limit)
+                }
+                "m_MipmapLimitGroupName" => {
+                    (self.m_mipmap_limit_group_name).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_name).inspect_value(path, offset, limit)).map(|v| ("m_Name".to_string(), v)),
+            ((self.m_texture_settings).inspect_value(path, offset, limit))
+                .map(|v| ("m_TextureSettings".to_string(), v)),
+            ((self.m_external_objects).inspect_value(path, offset, limit))
+                .map(|v| ("m_ExternalObjects".to_string(), v)),
+            ((self.m_is_readable).inspect_value(path, offset, limit))
+                .map(|v| ("m_IsReadable".to_string(), v)),
+            ((self.m_used_file_i_ds).inspect_value(path, offset, limit))
+                .map(|v| ("m_UsedFileIDs".to_string(), v)),
+            ((self.m_user_data).inspect_value(path, offset, limit))
+                .map(|v| ("m_UserData".to_string(), v)),
+            ((self.m_asset_bundle_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_AssetBundleName".to_string(), v)),
+            ((self.m_s_rgb_texture).inspect_value(path, offset, limit))
+                .map(|v| ("m_sRGBTexture".to_string(), v)),
+            ((self.m_asset_bundle_variant).inspect_value(path, offset, limit))
+                .map(|v| ("m_AssetBundleVariant".to_string(), v)),
+            ((self.m_streaming_mipmaps).inspect_value(path, offset, limit))
+                .map(|v| ("m_StreamingMipmaps".to_string(), v)),
+            ((self.m_streaming_mipmaps_priority).inspect_value(path, offset, limit))
+                .map(|v| ("m_StreamingMipmapsPriority".to_string(), v)),
+            ((self.m_ignore_mipmap_limit).inspect_value(path, offset, limit))
+                .map(|v| ("m_IgnoreMipmapLimit".to_string(), v)),
+            ((self.m_mipmap_limit_group_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_MipmapLimitGroupName".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }

@@ -74,3 +74,98 @@ impl crate::Parse for BuoyancyEffector2D {
         })
     }
 }
+
+impl crate::ToValue for BuoyancyEffector2D {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_Enabled".to_string(), self.m_enabled.to_value())),
+            Some((
+                "m_UseColliderMask".to_string(),
+                self.m_use_collider_mask.to_value(),
+            )),
+            Some((
+                "m_ColliderMask".to_string(),
+                self.m_collider_mask.to_value(),
+            )),
+            Some((
+                "m_SurfaceLevel".to_string(),
+                self.m_surface_level.to_value(),
+            )),
+            Some(("m_Density".to_string(), self.m_density.to_value())),
+            crate::opt_field("m_LinearDrag", &self.m_linear_drag),
+            crate::opt_field("m_LinearDamping", &self.m_linear_damping),
+            crate::opt_field("m_AngularDrag", &self.m_angular_drag),
+            crate::opt_field("m_AngularDamping", &self.m_angular_damping),
+            Some(("m_FlowAngle".to_string(), self.m_flow_angle.to_value())),
+            Some((
+                "m_FlowMagnitude".to_string(),
+                self.m_flow_magnitude.to_value(),
+            )),
+            Some((
+                "m_FlowVariation".to_string(),
+                self.m_flow_variation.to_value(),
+            )),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "m_UseColliderMask" => {
+                    (self.m_use_collider_mask).inspect_value(path, offset, limit)
+                }
+                "m_ColliderMask" => (self.m_collider_mask).inspect_value(path, offset, limit),
+                "m_SurfaceLevel" => (self.m_surface_level).inspect_value(path, offset, limit),
+                "m_Density" => (self.m_density).inspect_value(path, offset, limit),
+                "m_LinearDrag" => (self.m_linear_drag).inspect_value(path, offset, limit),
+                "m_LinearDamping" => (self.m_linear_damping).inspect_value(path, offset, limit),
+                "m_AngularDrag" => (self.m_angular_drag).inspect_value(path, offset, limit),
+                "m_AngularDamping" => (self.m_angular_damping).inspect_value(path, offset, limit),
+                "m_FlowAngle" => (self.m_flow_angle).inspect_value(path, offset, limit),
+                "m_FlowMagnitude" => (self.m_flow_magnitude).inspect_value(path, offset, limit),
+                "m_FlowVariation" => (self.m_flow_variation).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.m_use_collider_mask).inspect_value(path, offset, limit))
+                .map(|v| ("m_UseColliderMask".to_string(), v)),
+            ((self.m_collider_mask).inspect_value(path, offset, limit))
+                .map(|v| ("m_ColliderMask".to_string(), v)),
+            ((self.m_surface_level).inspect_value(path, offset, limit))
+                .map(|v| ("m_SurfaceLevel".to_string(), v)),
+            ((self.m_density).inspect_value(path, offset, limit))
+                .map(|v| ("m_Density".to_string(), v)),
+            ((self.m_linear_drag).inspect_value(path, offset, limit))
+                .map(|v| ("m_LinearDrag".to_string(), v)),
+            ((self.m_linear_damping).inspect_value(path, offset, limit))
+                .map(|v| ("m_LinearDamping".to_string(), v)),
+            ((self.m_angular_drag).inspect_value(path, offset, limit))
+                .map(|v| ("m_AngularDrag".to_string(), v)),
+            ((self.m_angular_damping).inspect_value(path, offset, limit))
+                .map(|v| ("m_AngularDamping".to_string(), v)),
+            ((self.m_flow_angle).inspect_value(path, offset, limit))
+                .map(|v| ("m_FlowAngle".to_string(), v)),
+            ((self.m_flow_magnitude).inspect_value(path, offset, limit))
+                .map(|v| ("m_FlowMagnitude".to_string(), v)),
+            ((self.m_flow_variation).inspect_value(path, offset, limit))
+                .map(|v| ("m_FlowVariation".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

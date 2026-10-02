@@ -19,3 +19,36 @@ impl crate::Parse for VfxTemporaryGpuBufferDesc {
         Ok(VfxTemporaryGpuBufferDesc { desc, frame_count })
     }
 }
+
+impl crate::ToValue for VfxTemporaryGpuBufferDesc {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("desc".to_string(), self.desc.to_value())),
+            Some(("frameCount".to_string(), self.frame_count.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "desc" => (self.desc).inspect_value(path, offset, limit),
+                "frameCount" => (self.frame_count).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.desc).inspect_value(path, offset, limit)).map(|v| ("desc".to_string(), v)),
+            ((self.frame_count).inspect_value(path, offset, limit))
+                .map(|v| ("frameCount".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

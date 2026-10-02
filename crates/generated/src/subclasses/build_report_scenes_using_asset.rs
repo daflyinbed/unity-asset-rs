@@ -26,3 +26,37 @@ impl crate::Parse for BuildReportScenesUsingAsset {
         })
     }
 }
+
+impl crate::ToValue for BuildReportScenesUsingAsset {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("assetPath".to_string(), self.asset_path.to_value())),
+            Some(("scenePaths".to_string(), self.scene_paths.to_value())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "assetPath" => (self.asset_path).inspect_value(path, offset, limit),
+                "scenePaths" => (self.scene_paths).inspect_value(path, offset, limit),
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.asset_path).inspect_value(path, offset, limit))
+                .map(|v| ("assetPath".to_string(), v)),
+            ((self.scene_paths).inspect_value(path, offset, limit))
+                .map(|v| ("scenePaths".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
+    }
+}

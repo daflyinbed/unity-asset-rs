@@ -31,6 +31,23 @@ impl crate::Parse for VisualEffectMResetSeedOnPlayVariant {
     }
 }
 
+impl crate::ToValue for VisualEffectMResetSeedOnPlayVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V2019_3(v) => v.to_value(),
+            Self::V2022_2(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V2019_3(v) => (v).inspect_value(path, offset, limit),
+            Self::V2022_2(v) => (v).inspect_value(path, offset, limit),
+        }
+    }
+}
+
 /// 版本枚举：VisualEffectMAllowInstancingVariant 的类型跨版本变化。
 #[derive(Debug, Clone)]
 pub enum VisualEffectMAllowInstancingVariant {
@@ -50,6 +67,21 @@ impl crate::Parse for VisualEffectMAllowInstancingVariant {
             let v = rdr.read_u8()?;
             rdr.align(4)?;
             Ok(Self::Default(v))
+        }
+    }
+}
+
+impl crate::ToValue for VisualEffectMAllowInstancingVariant {
+    fn to_value(&self) -> crate::Value {
+        match self {
+            Self::Default(v) => v.to_value(),
+            Self::V6000_5(v) => v.to_value(),
+        }
+    }
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        match self {
+            Self::Default(v) => (v).inspect_value(path, offset, limit),
+            Self::V6000_5(v) => (v).inspect_value(path, offset, limit),
         }
     }
 }
@@ -116,5 +148,90 @@ impl crate::Parse for VisualEffect {
             m_allow_instancing,
             m_release_instance_on_disable,
         })
+    }
+}
+
+impl crate::ToValue for VisualEffect {
+    fn to_value(&self) -> crate::Value {
+        let fields: Vec<(String, crate::Value)> = [
+            Some(("m_GameObject".to_string(), self.m_game_object.to_value())),
+            Some(("m_Enabled".to_string(), self.m_enabled.to_value())),
+            Some(("m_Asset".to_string(), self.m_asset.to_value())),
+            Some(("m_StartSeed".to_string(), self.m_start_seed.to_value())),
+            crate::opt_field("m_InitialEventName", &self.m_initial_event_name),
+            Some((
+                "m_ResetSeedOnPlay".to_string(),
+                self.m_reset_seed_on_play.to_value(),
+            )),
+            crate::opt_field(
+                "m_InitialEventNameOverriden",
+                &self.m_initial_event_name_overriden,
+            ),
+            Some((
+                "m_PropertySheet".to_string(),
+                self.m_property_sheet.to_value(),
+            )),
+            crate::opt_field("m_AllowInstancing", &self.m_allow_instancing),
+            crate::opt_field(
+                "m_ReleaseInstanceOnDisable",
+                &self.m_release_instance_on_disable,
+            ),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        crate::Value::Struct(fields)
+    }
+
+    fn inspect_value(&self, path: &[String], offset: usize, limit: usize) -> Option<crate::Value> {
+        if let Some((name, path)) = path.split_first() {
+            return match name.as_str() {
+                "m_GameObject" => (self.m_game_object).inspect_value(path, offset, limit),
+                "m_Enabled" => (self.m_enabled).inspect_value(path, offset, limit),
+                "m_Asset" => (self.m_asset).inspect_value(path, offset, limit),
+                "m_StartSeed" => (self.m_start_seed).inspect_value(path, offset, limit),
+                "m_InitialEventName" => {
+                    (self.m_initial_event_name).inspect_value(path, offset, limit)
+                }
+                "m_ResetSeedOnPlay" => {
+                    (self.m_reset_seed_on_play).inspect_value(path, offset, limit)
+                }
+                "m_InitialEventNameOverriden" => {
+                    (self.m_initial_event_name_overriden).inspect_value(path, offset, limit)
+                }
+                "m_PropertySheet" => (self.m_property_sheet).inspect_value(path, offset, limit),
+                "m_AllowInstancing" => (self.m_allow_instancing).inspect_value(path, offset, limit),
+                "m_ReleaseInstanceOnDisable" => {
+                    (self.m_release_instance_on_disable).inspect_value(path, offset, limit)
+                }
+                _ => None,
+            };
+        }
+        let (path, offset, limit): (&[String], usize, usize) = (&[], 0, 0);
+        let fields: Vec<(String, crate::Value)> = vec![
+            ((self.m_game_object).inspect_value(path, offset, limit))
+                .map(|v| ("m_GameObject".to_string(), v)),
+            ((self.m_enabled).inspect_value(path, offset, limit))
+                .map(|v| ("m_Enabled".to_string(), v)),
+            ((self.m_asset).inspect_value(path, offset, limit)).map(|v| ("m_Asset".to_string(), v)),
+            ((self.m_start_seed).inspect_value(path, offset, limit))
+                .map(|v| ("m_StartSeed".to_string(), v)),
+            ((self.m_initial_event_name).inspect_value(path, offset, limit))
+                .map(|v| ("m_InitialEventName".to_string(), v)),
+            ((self.m_reset_seed_on_play).inspect_value(path, offset, limit))
+                .map(|v| ("m_ResetSeedOnPlay".to_string(), v)),
+            ((self.m_initial_event_name_overriden).inspect_value(path, offset, limit))
+                .map(|v| ("m_InitialEventNameOverriden".to_string(), v)),
+            ((self.m_property_sheet).inspect_value(path, offset, limit))
+                .map(|v| ("m_PropertySheet".to_string(), v)),
+            ((self.m_allow_instancing).inspect_value(path, offset, limit))
+                .map(|v| ("m_AllowInstancing".to_string(), v)),
+            ((self.m_release_instance_on_disable).inspect_value(path, offset, limit))
+                .map(|v| ("m_ReleaseInstanceOnDisable".to_string(), v)),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        Some(crate::Value::Struct(fields))
     }
 }
