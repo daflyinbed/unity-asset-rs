@@ -4,24 +4,9 @@
 //! rotation 和 downscale multiplier，输出 PNG。算法对齐 AssetStudio `SpriteHelper.CutImage`
 //! 与 UnityPy `SpriteHelper.get_image_from_sprite`（两者核心一致）。
 //!
-//! # 覆盖范围（第一阶段）
-//!
-//! - **Rectangle packing**：`SpriteRenderData` / `SpriteAtlasData` 的 `texture_rect` 裁剪。
-//! - **standalone sprite**：直接用 `Sprite.m_rd`（`m_rd.texture` 指向 atlas Texture2D）。
-//! - **SpriteAtlas sprite**：优先 `Sprite.m_sprite_atlas`（PPtr → SpriteAtlas），在
-//!   `atlas.m_render_data_map` 里按 `Sprite.m_render_data_key` 查找 `SpriteAtlasData`；
-//!   PPtr 为空但 `m_atlas_tags` 非空时按名称扫描同 collection 的 SpriteAtlas（兜底）。
-//! - **packing rotation**：`settings_raw` bits 2-5（None / FlipH / FlipV / Rotate180 /
-//!   Rotate90），在裁剪后 top-down 空间应用。
-//! - **downscale multiplier**：若 `> 0 && != 1`，整图 resize 到 `w/mul × h/mul`（最近邻）。
-//!
-//! # 不做（留坑）
-//!
-//! - **Tight mesh packing**（`packingMode == Tight`）：需移植 UnityPy `MeshHelper` 顶点 /
-//!   SubMesh / index buffer 解析 + 三角光栅化，工作量 ≈ 本模块全部。第一阶段跳过并报
-//!   [`SpriteExportError::UnsupportedTight`]。
-//! - **alpha texture 合并**（`m_rd.alpha_texture` / `SpriteAtlasData.alpha_texture`）：
-//!   需解码两张图 merge RGBA 通道；第一阶段忽略 alpha（输出 RGB 部分）。
+//! 支持 Rectangle / Tight packing、SpriteAtlas、packing rotation 和 downscale。
+//! Tight 复用 AssetRipper 移植的顶点/索引解码；CPU 三角形光栅化保留贴图 alpha。
+//! 独立 alpha texture 的红通道合并到输出 alpha。
 //!
 //! # Y 翻转策略（top-down 空间裁剪）
 //!
@@ -75,9 +60,9 @@ pub enum SpriteExportError {
     #[snafu(display("atlas texture 格式不支持: format_id={format_id}"))]
     UnsupportedAtlasFormat { format_id: i32 },
 
-    /// Tight mesh packing 暂未实现（`packingMode == Tight`）。
-    #[snafu(display("tight packing 暂不支持（第一阶段）"))]
-    UnsupportedTight,
+    /// 几何解码或光栅化失败。
+    #[snafu(display("sprite mesh: {source}"))]
+    Mesh { source: crate::MeshDecodeError },
 
     /// 在 `m_render_data_map` 里按 `m_render_data_key` 找不到对应 `SpriteAtlasData`。
     #[snafu(display("sprite atlas render data map 未命中 render_data_key"))]
@@ -120,7 +105,7 @@ impl SpriteSettings {
     fn packed(self) -> bool {
         self.0 & 1 == 1
     }
-    /// `true` = Tight（多边形 mesh，第一阶段不支持），`false` = Rectangle。
+    /// `true` = Tight（多边形 mesh），`false` = Rectangle。
     fn packing_mode_tight(self) -> bool {
         (self.0 >> 1) & 1 == 0
     }
@@ -152,6 +137,10 @@ enum PackingRotation {
 /// 所有引用的生命周期绑定到 `env` 的借用（实际调用中 `s` 也派生自 `env`，故统一为 `'e`）。
 struct ResolvedRenderData<'e> {
     texture: &'e PPtr,
+    owner: &'e EnvironmentObject,
+    alpha_texture: Option<&'e PPtr>,
+    texture_rect_offset: &'e generated::subclasses::vector2f::Vector2f,
+    from_atlas: bool,
     texture_rect: &'e Rectf,
     settings_raw: u32,
     downscale_multiplier: Option<f32>,
@@ -173,6 +162,10 @@ fn resolve_render_data<'e>(
     {
         return Ok(ResolvedRenderData {
             texture: &rd.texture,
+            owner: atlas_obj,
+            alpha_texture: Some(&rd.alpha_texture),
+            texture_rect_offset: &rd.texture_rect_offset,
+            from_atlas: true,
             texture_rect: &rd.texture_rect,
             settings_raw: rd.settings_raw,
             downscale_multiplier: Some(rd.downscale_multiplier),
@@ -183,10 +176,14 @@ fn resolve_render_data<'e>(
     // (2) m_atlas_tags 名称扫描同 Environment 的 SpriteAtlas（兜底，对齐 UnityPy）
     if let Some(tags) = s.m_atlas_tags.as_ref()
         && let Some(tag0) = tags.first()
-        && let Some(rd) = scan_atlas_by_name(env, tag0, s.m_render_data_key.as_ref())
+        && let Some((atlas_obj, rd)) = scan_atlas_by_name(env, tag0, s.m_render_data_key.as_ref())
     {
         return Ok(ResolvedRenderData {
             texture: &rd.texture,
+            owner: atlas_obj,
+            alpha_texture: Some(&rd.alpha_texture),
+            texture_rect_offset: &rd.texture_rect_offset,
+            from_atlas: true,
             texture_rect: &rd.texture_rect,
             settings_raw: rd.settings_raw,
             downscale_multiplier: Some(rd.downscale_multiplier),
@@ -197,6 +194,10 @@ fn resolve_render_data<'e>(
     let rd: &SpriteRenderData = &s.m_rd;
     Ok(ResolvedRenderData {
         texture: &rd.texture,
+        owner: sprite_obj,
+        alpha_texture: rd.alpha_texture.as_ref(),
+        texture_rect_offset: &rd.texture_rect_offset,
+        from_atlas: false,
         texture_rect: &rd.texture_rect,
         settings_raw: rd.settings_raw,
         downscale_multiplier: rd.downscale_multiplier,
@@ -228,7 +229,7 @@ fn scan_atlas_by_name<'e>(
     env: &'e Environment,
     name: &str,
     key: Option<&(Guid, i64)>,
-) -> Option<&'e SpriteAtlasData> {
+) -> Option<(&'e EnvironmentObject, &'e SpriteAtlasData)> {
     env.objects().iter().find_map(|obj| {
         if obj.class_id != ClassId::from(ClassIDType::SpriteAtlas) {
             return None;
@@ -239,7 +240,7 @@ fn scan_atlas_by_name<'e>(
         if atlas.m_name != name {
             return None;
         }
-        find_atlas_data_by_key(atlas, key)
+        find_atlas_data_by_key(atlas, key).map(|rd| (obj, rd))
     })
 }
 
@@ -261,7 +262,12 @@ fn decode_atlas_texture(
         return Err(SpriteExportError::TextureNotFound);
     };
     // 统一调 export::decode_texture(消除与 main.rs / texture_export 的 5 路分派重复)。
-    let img = crate::export::decode_texture(t, env, ver)?;
+    let texture_version = env
+        .collections()
+        .get(tex_obj.collection.to_index())
+        .map(|c| c.unity_version)
+        .unwrap_or(ver);
+    let img = crate::export::decode_texture(t, env, texture_version)?;
     Ok((img.rgba, img.width, img.height))
 }
 
@@ -437,7 +443,20 @@ pub fn sprite_pixel_bytes(
 
     // 2) 解码 atlas Texture2D（top-down RGBA）。
     let (mut rgba, mut atlas_w, mut atlas_h) =
-        decode_atlas_texture(env, sprite_obj, rd.texture, ver)?;
+        decode_atlas_texture(env, rd.owner, rd.texture, ver)?;
+    if let Some(alpha) = rd.alpha_texture
+        && alpha.m_path_id != 0
+    {
+        let (a, aw, ah) = decode_atlas_texture(env, rd.owner, alpha, ver)?;
+        if aw != atlas_w || ah != atlas_h {
+            return Err(SpriteExportError::Mesh {
+                source: crate::mesh::invalid("alpha texture 尺寸不匹配"),
+            });
+        }
+        for (pixel, alpha) in rgba.chunks_exact_mut(4).zip(a.chunks_exact(4)) {
+            pixel[3] = alpha[0];
+        }
+    }
 
     // 3) downscale multiplier（整图 resize，对齐参考实现顺序：先 resize 再 crop）。
     if let Some(mul) = rd.downscale_multiplier {
@@ -447,11 +466,7 @@ pub fn sprite_pixel_bytes(
         atlas_h = h;
     }
 
-    // 4) tight packing 检查（第一阶段跳过）。
     let settings = SpriteSettings(rd.settings_raw);
-    if settings.packed() && settings.packing_mode_tight() {
-        return Err(SpriteExportError::UnsupportedTight);
-    }
 
     // 5) 裁剪 textureRect（top-down 空间换算）。
     let (cropped, cw, ch) = crop_top_down(&rgba, atlas_w, atlas_h, rd.texture_rect)?;
@@ -462,7 +477,45 @@ pub fn sprite_pixel_bytes(
     } else {
         PackingRotation::None
     };
-    let (final_rgba, fw, fh) = apply_packing_rotation(cropped, cw, ch, rot);
+    let (mut final_rgba, fw, fh) = apply_packing_rotation(cropped, cw, ch, rot);
+    if settings.packing_mode_tight() {
+        let col = env
+            .collections()
+            .get(sprite_obj.collection.to_index())
+            .ok_or_else(|| SpriteExportError::Mesh {
+                source: crate::mesh::invalid("Sprite collection 不存在"),
+            })?;
+        let mesh = crate::mesh::decode_sprite(&s.m_rd, ver, col.endian)
+            .map_err(|source| SpriteExportError::Mesh { source })?;
+        let pivot = s
+            .m_pivot
+            .as_ref()
+            .map(|p| [p.x * s.m_rect.width, p.y * s.m_rect.height])
+            .unwrap_or([
+                s.m_rect.width / 2. + s.m_offset.x,
+                s.m_rect.height / 2. + s.m_offset.y,
+            ]);
+        let origin = [
+            pivot[0] - rd.texture_rect_offset.x,
+            pivot[1] - rd.texture_rect_offset.y,
+        ];
+        // atlas 打包后原始 m_RD 的 UV 可能已过时；这时在解旋后的裁图上应用几何遮罩。
+        let texture = if !rd.from_atlas {
+            Some((&rgba[..], atlas_w, atlas_h))
+        } else {
+            None
+        };
+        rasterize_tight(
+            &mesh,
+            &mut final_rgba,
+            fw,
+            fh,
+            s.m_pixels_to_units,
+            origin,
+            texture,
+        )
+        .map_err(|source| SpriteExportError::Mesh { source })?;
+    }
 
     Ok((final_rgba, fw, fh))
 }
@@ -740,5 +793,300 @@ mod tests {
         };
         assert!(guid_eq(&a, &b));
         assert!(!guid_eq(&a, &c));
+    }
+}
+
+/// 像素中心采样，两个绕序均支持。UV 可用时从 atlas 采样，否则保留裁图像素。
+/// 先合并三角形覆盖，再保留原有透明度；共享边不会重复混合。
+fn rasterize_tight(
+    mesh: &crate::DecodedMesh,
+    rgba: &mut [u8],
+    w: u32,
+    h: u32,
+    scale: f32,
+    origin: [f32; 2],
+    texture: Option<(&[u8], u32, u32)>,
+) -> Result<(), crate::MeshDecodeError> {
+    use crate::mesh::{check, invalid};
+    check(
+        scale.is_finite() && scale > 0. && origin.iter().all(|x| x.is_finite()),
+        "Sprite 坐标变换无效",
+    )?;
+    check(!mesh.positions.is_empty(), "Tight Sprite 缺少顶点")?;
+    let points: Vec<[f64; 2]> = mesh
+        .positions
+        .iter()
+        .map(|p| {
+            [
+                (p[0] as f64 * scale as f64 + origin[0] as f64),
+                h as f64 - (p[1] as f64 * scale as f64 + origin[1] as f64),
+            ]
+        })
+        .collect();
+    check(
+        points.iter().flatten().all(|v| v.is_finite()),
+        "Sprite 顶点非有限",
+    )?;
+    let uv = mesh.tex_coords[0]
+        .as_ref()
+        .filter(|uv| uv.dimension >= 2 && uv.values.iter().any(|v| v[0] != 0. || v[1] != 0.));
+    if let Some(uv) = uv {
+        check(
+            uv.values.len() == points.len() && uv.values.iter().flatten().all(|v| v.is_finite()),
+            "Sprite UV 无效",
+        )?;
+    }
+    let mut covered = vec![false; w as usize * h as usize];
+    let edge = |a: [f64; 2], b: [f64; 2], p: [f64; 2]| {
+        (b[0] - a[0]) * (p[1] - a[1]) - (b[1] - a[1]) * (p[0] - a[0])
+    };
+    let mut triangle_count = 0;
+    for sub in &mesh.submeshes {
+        for triangle in sub.triangles()? {
+            let ids = triangle.map(|i| i as usize);
+            check(
+                ids.iter().all(|i| *i < points.len()),
+                "Sprite 三角形索引越界",
+            )?;
+            let [a, b, c] = ids.map(|i| points[i]);
+            let area = edge(a, b, c);
+            if area.abs() < 1e-12 {
+                continue;
+            }
+            triangle_count += 1;
+            let min_x = a[0].min(b[0]).min(c[0]).floor().clamp(0., w as f64) as u32;
+            let max_x = a[0].max(b[0]).max(c[0]).ceil().clamp(0., w as f64) as u32;
+            let min_y = a[1].min(b[1]).min(c[1]).floor().clamp(0., h as f64) as u32;
+            let max_y = a[1].max(b[1]).max(c[1]).ceil().clamp(0., h as f64) as u32;
+            for y in min_y..max_y {
+                for x in min_x..max_x {
+                    let p = [x as f64 + 0.5, y as f64 + 0.5];
+                    let weights = [
+                        edge(b, c, p) / area,
+                        edge(c, a, p) / area,
+                        edge(a, b, p) / area,
+                    ];
+                    if weights.iter().any(|v| *v < -1e-9) {
+                        continue;
+                    }
+                    let dst = y as usize * w as usize + x as usize;
+                    covered[dst] = true;
+                    if let (Some(uv), Some((src, tw, th))) = (uv, texture) {
+                        check(tw > 0 && th > 0, "空 atlas")?;
+                        let u = (0..3)
+                            .map(|k| uv.values[ids[k]][0] as f64 * weights[k])
+                            .sum::<f64>();
+                        let v = (0..3)
+                            .map(|k| uv.values[ids[k]][1] as f64 * weights[k])
+                            .sum::<f64>();
+                        let sx = (u * tw as f64).floor().clamp(0., (tw - 1) as f64) as usize;
+                        let sy = ((1. - v) * th as f64).floor().clamp(0., (th - 1) as f64) as usize;
+                        let off = (sy * tw as usize + sx) * 4;
+                        let pixel = src
+                            .get(off..off + 4)
+                            .ok_or_else(|| invalid("atlas buffer 截断"))?;
+                        rgba[dst * 4..dst * 4 + 4].copy_from_slice(pixel);
+                    }
+                }
+            }
+        }
+    }
+    check(triangle_count > 0, "Tight Sprite 缺少非退化三角形")?;
+    for (p, keep) in rgba.chunks_exact_mut(4).zip(covered) {
+        if !keep {
+            p.fill(0);
+        }
+    }
+    Ok(())
+}
+
+#[cfg(test)]
+mod tight_tests {
+    use super::*;
+    fn triangle() -> crate::DecodedMesh {
+        crate::DecodedMesh {
+            positions: vec![[0., 0., 0.], [2., 0., 0.], [0., 2., 0.]],
+            submeshes: vec![crate::DecodedSubMesh {
+                topology: crate::MeshTopology::Triangles,
+                indices: vec![0, 1, 2],
+            }],
+            ..Default::default()
+        }
+    }
+    #[test]
+    fn tight_mask_preserves_alpha_and_winding() {
+        let mut m = triangle();
+        let mut pixels = [10, 20, 30, 73].repeat(4);
+        rasterize_tight(&m, &mut pixels, 2, 2, 1., [0., 0.], None).unwrap();
+        assert_eq!(&pixels[4..8], &[0; 4]);
+        assert_eq!(&pixels[8..12], &[10, 20, 30, 73]);
+        m.submeshes[0].indices.reverse();
+        let mut reversed = [10, 20, 30, 73].repeat(4);
+        rasterize_tight(&m, &mut reversed, 2, 2, 1., [0., 0.], None).unwrap();
+        assert_eq!(pixels, reversed);
+    }
+    #[test]
+    fn tight_uv_samples_top_down_texture() {
+        let mut m = triangle();
+        m.tex_coords[0] = Some(crate::TexCoordSet {
+            dimension: 2,
+            values: vec![[0., 0., 0., 0.], [1., 0., 0., 0.], [0., 1., 0., 0.]],
+        });
+        let src: Vec<u8> = [1u8, 2, 3, 4]
+            .into_iter()
+            .flat_map(|v| [v, 0, 0, 200])
+            .collect();
+        let mut pixels = vec![0; 16];
+        rasterize_tight(&m, &mut pixels, 2, 2, 1., [0., 0.], Some((&src, 2, 2))).unwrap();
+        assert_eq!(pixels[0], 1);
+        assert_eq!(pixels[8], 3);
+        assert_eq!(pixels[12], 4);
+        assert_eq!(pixels[11], 200);
+    }
+    #[test]
+    fn tight_translation_and_bad_geometry() {
+        let m = triangle();
+        let mut pixels = [1, 2, 3, 255].repeat(16);
+        rasterize_tight(&m, &mut pixels, 4, 4, 1., [1., 1.], None).unwrap();
+        assert_eq!(pixels[3], 0);
+        assert_eq!(pixels[(2 * 4 + 1) * 4 + 3], 255);
+        assert!(rasterize_tight(&m, &mut pixels, 4, 4, f32::NAN, [0., 0.], None).is_err());
+    }
+}
+
+#[cfg(test)]
+mod atlas_tests {
+    use super::*;
+    use crate::{AssetCollection, CollectionId, Endian};
+    use generated::{
+        Parse,
+        classes::texture2_d::Texture2D,
+        subclasses::{sprite_vertex::SpriteVertex, vector2f::Vector2f, vector3f::Vector3f},
+    };
+    fn zero<T: Parse>(v: &UnityVersion) -> T {
+        T::parse(
+            &mut crate::cursor::Cursor::new(&[0; 8192], Endian::Little),
+            v,
+        )
+        .unwrap()
+    }
+    #[test]
+    fn tight_atlas_cross_collection_rotation_and_alpha() {
+        let version = UnityVersion::new(2020, 3, 0);
+        for rotation in 0..=4 {
+            let mut env = Environment::empty();
+            for i in 0..2 {
+                env.collections.push(AssetCollection {
+                    name: format!("{i}.assets"),
+                    name_fixed: format!("{i}.assets"),
+                    unity_version: version,
+                    endian: Endian::Little,
+                    dependencies: vec![
+                        Some(CollectionId::from_index(i)),
+                        Some(CollectionId::from_index(1)),
+                    ],
+                    assets: Default::default(),
+                    externals: vec![],
+                });
+            }
+            let mut sprite: Sprite = zero(&version);
+            sprite.m_rect = Rectf {
+                x: 0.,
+                y: 0.,
+                width: 2.,
+                height: 2.,
+            };
+            sprite.m_pivot = Some(Vector2f { x: 0.5, y: 0.5 });
+            sprite.m_pixels_to_units = 1.;
+            sprite.m_sprite_atlas = Some(PPtr {
+                m_file_id: 1,
+                m_path_id: 10,
+            });
+            sprite.m_rd.m_vertex_data = None;
+            sprite.m_rd.m_sub_meshes = None;
+            sprite.m_rd.m_index_buffer = None;
+            sprite.m_rd.indices = Some(vec![0, 1, 2]);
+            sprite.m_rd.vertices = Some(
+                [[-1., -1.], [1., -1.], [-1., 1.]]
+                    .into_iter()
+                    .map(|p| SpriteVertex {
+                        pos: Vector3f {
+                            x: p[0],
+                            y: p[1],
+                            z: 0.,
+                        },
+                        uv: None,
+                    })
+                    .collect(),
+            );
+            let key = (
+                Guid {
+                    data_0: 0,
+                    data_1: 0,
+                    data_2: 0,
+                    data_3: 0,
+                },
+                0,
+            );
+            sprite.m_render_data_key = Some(key.clone());
+            let mut atlas: SpriteAtlas = zero(&version);
+            let mut rd: SpriteAtlasData = zero(&version);
+            rd.texture = PPtr {
+                m_file_id: 0,
+                m_path_id: 20,
+            };
+            rd.alpha_texture = PPtr {
+                m_file_id: 0,
+                m_path_id: 21,
+            };
+            rd.texture_rect = sprite.m_rect.clone();
+            rd.downscale_multiplier = 1.;
+            rd.settings_raw = 1 | (rotation << 2);
+            atlas.m_render_data_map = vec![(key, rd)];
+            let mut color: Texture2D = zero(&version);
+            color.m_width = 2;
+            color.m_height = 2;
+            color.m_format = 4;
+            color.image_data = [1u8, 2, 3, 4]
+                .into_iter()
+                .flat_map(|v| [v, 0, 0, 255])
+                .collect();
+            let mut alpha = color.clone();
+            alpha.image_data = [73, 0, 0, 255].repeat(4);
+            for (path_id, object) in [
+                (10, UnityObject::SpriteAtlas(atlas)),
+                (20, UnityObject::Texture2D(color)),
+                (21, UnityObject::Texture2D(alpha)),
+            ] {
+                let index = env.objects.len();
+                env.collections[1].assets.insert(path_id, index);
+                env.objects.push(EnvironmentObject {
+                    collection: CollectionId::from_index(1),
+                    path_id,
+                    class_id: ClassId::from(ClassIDType::Texture2D),
+                    object: ParsedObject::Typed(object),
+                });
+            }
+            let obj = EnvironmentObject {
+                collection: CollectionId::from_index(0),
+                path_id: 1,
+                class_id: ClassId::from(ClassIDType::Sprite),
+                object: ParsedObject::Typed(UnityObject::Sprite(sprite.clone())),
+            };
+            let (rgba, w, h) = sprite_pixel_bytes(&env, &obj, &sprite, version).unwrap();
+            assert_eq!((w, h), (2, 2));
+            let top_down: Vec<u8> = [3u8, 4, 1, 2]
+                .into_iter()
+                .flat_map(|v| [v, 0, 0, 73])
+                .collect();
+            let (mut expected, _, _) = apply_packing_rotation(
+                top_down,
+                2,
+                2,
+                SpriteSettings(1 | (rotation << 2)).packing_rotation(),
+            );
+            expected[4..8].fill(0);
+            assert_eq!(rgba, expected, "rotation={rotation}");
+        }
     }
 }

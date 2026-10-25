@@ -321,8 +321,8 @@ pub trait DependencyProvider: Send + Sync {
 /// `prefetch_resources` 接到 `Bytes` 后自己算 `name_fixed` 并注册进 `resources`
 /// (旧实现要求 Provider 构造带 `name_fixed` 的 `ResourceFile`,职责过重)。
 ///
-/// 在 `build` 末尾 `prefetch_resources` 中实际回调:扫描已加载 Texture2D
-/// (`m_stream_data.path`)与 AudioClip(`m_resource.m_source` / pre-5.0 隐式
+/// 在 `build` 末尾 `prefetch_resources` 中实际回调:扫描已加载 Texture2D / Mesh
+/// (`m_stream_data.path`)、VideoClip 与 AudioClip(`m_resource.m_source` / pre-5.0 隐式
 /// `collection.name + ".resS"`)的 streaming 引用,对未命中的 name 调 `open`,
 /// 返回 `Ok(Some(_))` 则注册进 `resources`。默认 no-op。
 ///
@@ -699,7 +699,7 @@ impl Environment {
     /// `read_old_streamed_audio` 等只读查找即能命中。
     ///
     /// 覆盖的 streaming 引用来源（对齐聚合层取数路径）：
-    /// - **Texture2D** `m_stream_data.path`（`streaming_data` 入口）。
+    /// - **Texture2D / Mesh** `m_stream_data.path`（`streaming_data` 入口）。
     /// - **AudioClip** `m_resource.m_source`（post-5.0，`streamed_resource_data` 入口）。
     /// - **AudioClip** pre-5.0 `m_audio_data == Streamed`（`read_old_streamed_audio`
     ///   用 `collection.name + ".resS"` 隐式名）。
@@ -718,6 +718,13 @@ impl Environment {
             match &o.object {
                 ParsedObject::Typed(UnityObject::Texture2D(t)) => {
                     if let Some(sd) = &t.m_stream_data
+                        && !sd.path.is_empty()
+                    {
+                        wanted.push((sd.path.clone(), o.collection));
+                    }
+                }
+                ParsedObject::Typed(UnityObject::Mesh(m)) => {
+                    if let Some(sd) = &m.m_stream_data
                         && !sd.path.is_empty()
                     {
                         wanted.push((sd.path.clone(), o.collection));

@@ -15,8 +15,12 @@
    - **Sprite** `crates/unity-asset/src/sprite_export.rs`：从 atlas Texture2D 裁 `textureRect` + packing rotation + downscale→PNG，对齐 AssetStudio `SpriteHelper.CutImage` / UnityPy。
    - **音频** `crates/unity-asset/src/audio_export.rs`：复用 `Environment::audio_data` 取内联/`.resS` 字节；FSB5 经同 workspace crate `crates/fsb-rs`（Fmod5Sharp Rust port）逐 sample 重建为 WAV/Ogg，旧版原始格式与 tracker module 按 AssetRipper 规则保留。
 
+**Mesh 几何解码已落地**：`Environment::decode_mesh` 返回 `DecodedMesh`（位置、法线、切线、颜色、保留维数的 UV、四权重 skin、bind poses、SubMesh）。`mesh/` 按 AssetRipper 移植版本化 VertexData / CompressedMesh；支持外部顶点资源、16/32 位索引、baseVertex。关闭 export feature 仍可用。详见 [`mesh-sprite-plan.md`](mesh-sprite-plan.md)。
+
+**Tight Sprite 已落地**：共用 Mesh 顶点/索引解码；CPU 三角形遮罩，standalone 有有效 UV 时采样 atlas。SpriteAtlas 使用解旋裁图，避免采用打包前的旧 UV；独立 alpha texture 红通道合并；atlas 内 PPtr 以 atlas 所属 collection 解引用。
+
 **未实现**：CN 加密（`0x100` flag）、on-demand 逐块解压、SpillPolicy::AutoTempFile、bumpalo arena、Python 绑定（ADR-0002）。
-**暂缓**：ASTC HDR、PVRTC/ATC、BC6H SF16（走 UF16）、Tight mesh packing、alpha texture 合并、多输出格式、法线贴图。
+**暂缓**：ASTC HDR、PVRTC/ATC、BC6H SF16（走 UF16）、多输出格式、法线贴图。
 
 实现细节（格式分派 / 数值映射公式 / Y 翻转策略 / Crunch 两段式解码等）见各源文件头注释。
 

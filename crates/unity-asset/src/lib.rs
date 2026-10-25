@@ -32,6 +32,7 @@ pub mod environment;
 mod error;
 pub mod format;
 pub mod loader;
+mod mesh;
 pub mod names;
 pub mod object_parser;
 mod serialized_file;
@@ -65,6 +66,7 @@ pub use environment::{
 pub use export::{DecodeImageError, DecodeOptions, DecodedImage, decode_texture, dump_object};
 pub use format::{FileFormat, LoadedFile, load_recursive, sniff};
 pub use loader::{Diagnostic, DiagnosticKind, LoadReport, Loader, LoaderBuilder, Severity};
+pub use mesh::{DecodedMesh, DecodedSubMesh, MeshDecodeError, MeshTopology, SkinWeight, TexCoordSet};
 pub use object_parser::{MonoBehaviour, ParsedObject};
 pub use typetree::{PPtrValue, RefTypeTable, Value};
 

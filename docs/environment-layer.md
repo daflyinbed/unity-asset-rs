@@ -636,7 +636,7 @@ for obj in env.objects() {
 - **`AssetType.Meta`（GUID 匹配）**：外部引用匹配仅按 `name_fixed`（Normal 类）。
   Meta 类（`type_==1`，按 GUID 匹配）罕见，留作后续。
 - **`ResourceProvider` 对其他对象类型的 streaming 引用**：`prefetch_resources`
-  当前扫 Texture2D（`m_stream_data.path`）+ AudioClip（`m_resource.m_source` / pre-5.0
+  当前扫 Texture2D / Mesh（`m_stream_data.path`）+ AudioClip（`m_resource.m_source` / pre-5.0
   隐式 `.resS` 名）+ VideoClip（`m_external_resources.m_source`）。其余对象类型若有
   streaming 引用会漏，`resolve_resource` 仍返回 `None`
   （与无 provider 时一致，不回归）。
